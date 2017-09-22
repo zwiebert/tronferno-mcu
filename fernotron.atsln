@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Atmel Studio Solution File, Format Version 11.00
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "fernotron", "fernotron.cproj", "{2E8F985B-AE3D-498F-A186-EF585FA40781}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		dbug|AVR = dbug|AVR
+		default|AVR = default|AVR
+		lean|AVR = lean|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E8F985B-AE3D-498F-A186-EF585FA40781}.dbug|AVR.ActiveCfg = dbug|AVR
+		{2E8F985B-AE3D-498F-A186-EF585FA40781}.dbug|AVR.Build.0 = dbug|AVR
+		{2E8F985B-AE3D-498F-A186-EF585FA40781}.default|AVR.ActiveCfg = default|AVR
+		{2E8F985B-AE3D-498F-A186-EF585FA40781}.default|AVR.Build.0 = default|AVR
+		{2E8F985B-AE3D-498F-A186-EF585FA40781}.lean|AVR.ActiveCfg = lean|AVR
+		{2E8F985B-AE3D-498F-A186-EF585FA40781}.lean|AVR.Build.0 = lean|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
