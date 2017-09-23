@@ -66,19 +66,19 @@
 void timer_handler(void)
 {
 
-	  if (transmTick == C.transm)
+	  if (transmTick == C.app_transm)
 	  {
 	    tick_ferSender();
 	  }
 
 	 #ifdef FER_RECEIVER
-	  if (recvTick == C.recv)
+	  if (recvTick == C.app_recv)
 	  {
 	    tick_ferReceiver();
 	  }
 	 #endif
 
-	  if (rtcAvrTime == C.rtc)
+	  if (rtcAvrTime == C.app_rtc)
 	  {
 		extern volatile time_t __system_time;
 	    const uint16_t ticks_per_second = TICK_HZ + (-0); // add config correction value here

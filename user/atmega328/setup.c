@@ -21,7 +21,7 @@ void setup_mcu(void)
    
    setup_pin();
 
-   init_usart(C.serialBaud);
+   init_usart(C.mcu_serialBaud);
    init_usart_rx_buffer();
    io_putc_fun = ser_putc_block;
    io_getc_fun = ser_getc_nonblock;

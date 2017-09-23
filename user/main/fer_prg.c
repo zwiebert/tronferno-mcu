@@ -200,7 +200,7 @@ bool ICACHE_FLASH_ATTR testModule_fer_prg() {
 
 	static fer_sender_basic fsb_, *fsb = &fsb_;
 
-	FSB_PUT_DEVID(fsb, C.centralUnitID);
+	FSB_PUT_DEVID(fsb, C.fer_centralUnitID);
 	FSB_PUT_GRP(fsb, 2);
 	FSB_PUT_MEMB(fsb, 2);
 	FSB_PUT_CMD(fsb, fer_cmd_Program);
@@ -218,7 +218,7 @@ bool ICACHE_FLASH_ATTR testModule_fer_prg()
 	fer_cmd cmd = fer_cmd_Program;
 	fer_sender_basic fsb_, *fsb = &fsb_;
 
-	FSB_PUT_DEVID(fsb, C.centralUnitID);
+	FSB_PUT_DEVID(fsb, C.fer_centralUnitID);
 	FSB_PUT_GRP(fsb, group);
 	FSB_PUT_MEMB(fsb, memb);
 	FSB_PUT_CMD(fsb, cmd);

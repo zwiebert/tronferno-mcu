@@ -18,7 +18,7 @@ struct ee_config {
   uint8_t reserve[64];
   };
   
-struct ee_config EEMEM ee_cfg = {0, {MY_CENTRAL_UNIT, MY_ATMEGA328_BAUD_RATE,
+struct ee_config EEMEM ee_cfg = {0, {MY_FER_CENTRAL_UNIT_ID, MY_MCU_ATMEGA328_BAUD_RATE,
    MY_GEO_LONGITUDE, MY_GEO_LATITUDE, MY_GEO_TIMEZONE, MY_GEO_DST, recvTick, transmTick, rtcAvrTime  }, };
   //FIXME: transmTick does not make it into the eep file
 

@@ -14,20 +14,20 @@ ISR(TIMER1_COMPA_vect)
 {
  
  #ifdef FER_TRANSMITTER
-  if (transmTick == C.transm)
+  if (transmTick == C.app_transm)
   {
     tick_ferSender();
   }
   #endif
  
  #ifdef FER_RECEIVER 
-  if (recvTick == C.recv)
+  if (recvTick == C.app_recv)
   {
     tick_ferReceiver();
   }
  #endif
  #if 1
-  if (rtcAvrTime == C.rtc)
+  if (rtcAvrTime == C.app_rtc)
   {
     const uint32_t ticks_per_second = (9989UL * FER_TICK_FREQ_MULT); // should be 10000 in theory, but its compensated
     static uint32_t rtc_ticks;

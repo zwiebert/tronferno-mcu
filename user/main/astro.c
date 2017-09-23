@@ -97,7 +97,7 @@ write_astro(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
   
     for (i=0; i < 12; ++i) {
       for (j=0; j < 4; ++j, (day += 3.8125)) {
-        calc_sunrise_sunset(NULL, &sunset, C.timezone + (mint_offset / 60.0f), ((int)day) % 366, C.longitude, C.latitude);
+        calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + (mint_offset / 60.0f), ((int)day) % 366, C.geo_longitude, C.geo_latitude);
         time_to_bcd(&dst[i][j*2],&dst[i][j*2+1], sunset);
       }
     }
@@ -111,9 +111,9 @@ testModule_astro()
 {
   float rise, set;
   uint16_t doy = 172;
-  calc_sunrise_sunset(&rise, &set, C.timezone, doy, C.longitude, C.latitude);
+  calc_sunrise_sunset(&rise, &set, C.timezone, doy, C.geo_longitude, C.geo_latitude);
   
-  fill_astro(data, C.timezone, 0, C.longitude, C.latitude);
+  fill_astro(data, C.geo_timezone, 0, C.geo_longitude, C.geo_latitude);
   
 
   return rise == set;

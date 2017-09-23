@@ -1,13 +1,14 @@
 #ifndef _common_h
 #define _common_h
 
+#ifndef AVR // FIXME: check for ESP instead
 #define FER_RECEIVER
-#define FER_RECEIVER_MINIMAL
-
-#ifndef AVR
+#define FER_RECEIVER_MINIMAL  // not enough IRAM on ESP8266
 #include "user_interface.h" //ESP8266
-#else
-#define ICACHE_FLASH_ATTR
+#endif
+
+#ifdef AVR
+#define ICACHE_FLASH_ATTR  // remove ESP specific attribute
 #endif
 
 #include <stdint.h>

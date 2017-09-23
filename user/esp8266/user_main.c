@@ -61,7 +61,7 @@ user_init() {
     setup_dataFlash();
 	read_config();
 
-    setup_serial(C.serialBaud);
+    setup_serial(C.mcu_serialBaud);
 
 
   //  setup_serial(C.serialBaud);

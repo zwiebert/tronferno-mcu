@@ -40,9 +40,9 @@ setup_1() {
 	int i;
 
 	set_zone(ONE_HOUR); //* C.timezone);
-	set_position(C.latitude * ONE_DEGREE, C.longitude * ONE_DEGREE);
+	set_position(C.geo_latitude * ONE_DEGREE, C.geo_longitude * ONE_DEGREE);
 
-	switch (C.dST) {
+	switch (C.geo_dST) {
 
 	case dstEU:
 		set_dst(eu_dst);
@@ -62,7 +62,7 @@ setup_1() {
 	for (i = 1; i < 10; ++i) {
 		fer_init_sender(&senders[i], 0x105dc5 - i);
 	}
-	fer_init_sender(&default_sender, C.centralUnitID);
+	fer_init_sender(&default_sender, C.fer_centralUnitID);
 
 }
 
@@ -155,8 +155,8 @@ main_setup() {
 	db_test_all_indicators(3);
 
 	io_puts("main program starting ...\n" "build-date: " __DATE__ " " __TIME__ "\n");
-	io_puts("C.centralUnitID: "), io_print_hex_32(C.centralUnitID, false), io_puts("\n");
-	io_puts("C.serialBaud: "), io_print_dec_32(C.serialBaud, false), io_puts("\n");
+	io_puts("C.fer_centralUnitID: "), io_print_hex_32(C.fer_centralUnitID, false), io_puts("\n");
+	io_puts("C.mcu_serialBaud: "), io_print_dec_32(C.mcu_serialBaud, false), io_puts("\n");
 
 	dbg_trace();
 	return 0;

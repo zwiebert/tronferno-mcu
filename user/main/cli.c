@@ -139,9 +139,9 @@ reply_failure() {
 
 bool ICACHE_FLASH_ATTR config_receiver(const char *val) {
 	if (strcmp(val, "on") == 0) {
-		C.recv = recvTick;
+		C.app_recv = recvTick;
 	} else if (strcmp(val, "off") == 0) {
-		C.recv = recvNone;
+		C.app_recv = recvNone;
 	} else {
 		return false;
 	}
@@ -152,9 +152,9 @@ bool ICACHE_FLASH_ATTR config_receiver(const char *val) {
 bool ICACHE_FLASH_ATTR
 config_transmitter(const char *val) {
 	if (strcmp(val, "on") == 0) {
-		C.transm = transmTick;
+		C.app_transm = transmTick;
 	} else if (strcmp(val, "off") == 0) {
-		C.transm = transmNone;
+		C.app_transm = transmNone;
 	} else {
 		return false;
 	}
@@ -179,6 +179,12 @@ get_sender_by_addr(long addr) {
 	}
 	return NULL ;
 }
+
+const char help_parmSend[] =
+		  "a=(0|SenderID) address of the sender or 0 for the configured CentralUnit\n"
+		  "g=[0-7]  group number. 0 is for broadcast\n"
+		  "m=[0-7]  group member. 0 is for broadcast all groups members\n"
+		  "c=(up|down|stop|sun-down|time) command to send\n";
 
 static int ICACHE_FLASH_ATTR
 process_parmSend(clpar p[], int len) {
@@ -245,6 +251,13 @@ process_parmSend(clpar p[], int len) {
 	return 0;
 }
 
+const char help_parmConfig[] =
+		  "cu=(CentralUnitID|auto)\n"
+		  "rtc=ISO_TIME_STRING  like 2017-12-31T23:59:59\n"
+		  "baud=serial_baud_rate\n"
+		  "wlan_ssid=\"your_wlan_ssid\"\n"
+		  "wlan_password=\"your_wlan_password\"\n";
+
 static int ICACHE_FLASH_ATTR
 process_parmConfig(clpar p[], int len) {
 	int i;
@@ -266,14 +279,24 @@ process_parmConfig(clpar p[], int len) {
 				return -1;
 			}
 			FSB_PUT_DEVID(&default_sender, cu);
-			C.centralUnitID = cu;
+			C.fer_centralUnitID = cu;
 			save_config();
 			reply_success();
 		} else if (strcmp(key, "baud") == 0) {
 			uint32_t baud = strtoul(val, NULL, 10);
-			C.serialBaud = baud;
+			C.mcu_serialBaud = baud;
 			save_config();
 			reply_success();
+            		} else if (strcmp(key, "wlan_ssid") == 0) {
+            		uint32_t baud = strtoul(val, NULL, 10);
+            		C.mcu_serialBaud = baud;
+            		save_config();
+            		reply_success();
+                    		} else if (strcmp(key, "wlan_password") == 0) {
+                    		uint32_t baud = strtoul(val, NULL, 10);
+                    		C.mcu_serialBaud = baud;
+                    		save_config();
+                    		reply_success();
 		} else if (strcmp(key, "receiver") == 0) {
 			reply(config_receiver(val));
 		} else if (strcmp(key, "transmitter") == 0) {
@@ -287,6 +310,10 @@ process_parmConfig(clpar p[], int len) {
 }
 
 extern uint32_t data_clock_ticks, pre_len, pre_phase;
+
+const char help_parmDbg[] =
+		"print=(rtc|cu)\n";
+
 
 static int ICACHE_FLASH_ATTR
 process_parmDbg(clpar p[], int len) {
@@ -310,7 +337,7 @@ process_parmDbg(clpar p[], int len) {
 #endif
 			} else if (strcmp(val, "cu") == 0) {
 				io_puts("central unit address: ");
-				io_putl(C.centralUnitID, 16);
+				io_putl(C.fer_centralUnitID, 16);
 				io_puts("\n");
 			} else if (strcmp(val, "clk") == 0) {
 #ifdef FER_RECEIVER
@@ -342,23 +369,28 @@ process_parmDbg(clpar p[], int len) {
 	return 0;
 }
 
+static int process_parmHelp(clpar p[], int len);
+
+struct {
+  const char *parm;
+  int (*process_parmX)(clpar p[], int len);
+  const char *help;
+  } parm_handlers[] = {
+    {"send", process_parmSend, help_parmSend},
+    {"config", process_parmConfig, help_parmConfig},
+    {"dbg", process_parmDbg, help_parmDbg},
+    {"help", process_parmHelp, "none"},
+    };  
+      
+
 int ICACHE_FLASH_ATTR
 process_parm(clpar p[], int len) {
 	int i;
-
-	// get command
-	if (strcmp(p[0].opt, "send") == 0) {
-		return process_parmSend(p, len);
-
-	} else if (strcmp(p[0].opt, "config") == 0) {
-		return process_parmConfig(p, len);
-
-	} else if (strcmp(p[0].opt, "program") == 0) {
-
-	} else if (strcmp(p[0].opt, "dbg") == 0) {
-		return process_parmDbg(p, len);
-	}
-	return 0;
+    for (i=0; i < (sizeof (parm_handlers) / sizeof (parm_handlers[0])); ++i) {
+    	if (strcmp(p[0].opt, parm_handlers[i].parm) == 0)
+           parm_handlers[i].process_parmX(p, len);
+    }
+ return 0;
 }
 
 void ICACHE_FLASH_ATTR
@@ -366,6 +398,29 @@ process_cmdline(char *line) {
 	int n = parse_commandline(line);
 	process_parm(par, n);
 
+}
+
+
+
+static int ICACHE_FLASH_ATTR
+process_parmHelp(clpar p[], int len) {
+	int i;
+
+  const char *usage = "syntax: command option=value ...;\n"
+  "commands are: ";
+  io_puts(usage);
+
+  for (i=0; i < (sizeof (parm_handlers) / sizeof (parm_handlers[0])); ++i) {
+	  io_puts(parm_handlers[i].parm), io_puts(", ");
+  }
+  io_puts("\n");
+
+  for (i=0; i < (sizeof (parm_handlers) / sizeof (parm_handlers[0])); ++i) {
+	  io_puts(parm_handlers[i].parm), io_puts(" options:\n");
+	  io_puts(parm_handlers[i].help), io_puts("\n");
+  }
+
+   return 0;
 }
 
 #if TEST_MODULE_CLI
@@ -394,7 +449,7 @@ dbg_test_sendprg() {
 
 	static fer_sender_basic fsb_, *fsb = &fsb_;
 
-	FSB_PUT_DEVID(fsb, C.centralUnitID);
+	FSB_PUT_DEVID(fsb, C.fer_centralUnitID);
 	FSB_PUT_GRP(fsb, fer_grp_G2);
 	FSB_PUT_MEMB(fsb, fer_memb_M2);
 	FSB_PUT_CMD(fsb, fer_cmd_Program);
