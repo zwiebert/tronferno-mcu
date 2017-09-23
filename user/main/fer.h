@@ -16,33 +16,44 @@
 #define HUS_TO_TICKS(hus) (((hus) * 100 ) / TICK_US)
 #define US_TO_TICKS(us) ((us) / TICK_US)
 
-// timings (relative to "data clock" which is "four times prelude frequency" (usually 200us)).
-// before sending any data we have 7 pre-bits 
+// timings (relative to an imaginary "data clock" which is "four times prelude frequency" (usually 200us)).
+// before sending any data we have 7 pre-bits
+// /--\__ (2_on + 2_off = 4) * 7 
+// (200us * 4 * 7)
 #define FER_PRE_WIDTH_REL         4
 #define FER_PRE_WIDTH_MAX_REL    10
-#define FER_PRE_WIDTH_MIN_REL     3 //3.5
+#define FER_PRE_WIDTH_MIN_REL     3 
 #define FER_PRE_NEDGE_MIN_REL     1
 #define FER_PRE_NEDGE_MAX_REL     5
 
-// a stop bits separate each data-word from another
-// and also the first data word from the pre-bits
+// 1 stop bit follows after the pre-bits
+// 1 stop bit follows also each data-word
+// /--\__________________ (2_on + 16_off = 18) * 1
+// (200us * 18 * 1)
 #define FER_STP_WIDTH_REL        18
 #define FER_STP_WIDTH_MIN_REL    15
 #define FER_STP_WIDTH_MAX_REL    30
 #define FER_STP_NEDGE_REL         2
 #define FER_STP_NEDGE_MIN_REL     1
-#define FER_STP_NEDGE_MAX_REL     6 // 5.5
+#define FER_STP_NEDGE_MAX_REL     6 
 
-// data bits are represented by two different positions of the negative edge
-// 0=short-long  /--\____/
-// 1=long-short  /----\__/
+// data bits are represented by two different positions of the negative edge (on-off)
+// 0=short-long  /--\____  (2_on, 4_off)
+// 1=long-short  /----\__  (4_on, 2_off)
+// 10 bits makes one data-word
+// (200us * 6 * 10)
 #define FER_BIT_WIDTH_REL         6
-#define FER_BIT_NEDGE_0_REL       2
-#define FER_BIT_NEDGE_1_REL       4
-#define FER_BIT_SAMP_POS_REL      3
+#define FER_BIT_NEDGE_0_REL       2  // if encoded bit is 0
+#define FER_BIT_NEDGE_1_REL       4  // if encoded bit is 1
+#define FER_BIT_SAMP_POS_REL      (FER_BIT_WIDTH_REL / 2) // for receiving: look if negative edge lies before or after
 
-#define FER_DAT_WORD_WIDTH_US    (FER_STP_WIDTH_US + (1UL * FER_BIT_WIDTH_US * FER_CMD_BIT_CT)) //15600
-#define FER_PRG_FRAME_WIDTH_US   (1UL * FER_DAT_WORD_WIDTH_US * FER_PRG_WORD_CT * FER_PRG_PACK_CT)  //5054400
+//  ---------pre--    ----stop------     --data-word---     ----stop------     --data-word---     ----stop------   ...
+// (200us * 4 * 7) + (200us * 18 * 1) + (200us * 6 * 10) + (200us * 18 * 1) + (200us * 6 * 10) + (200us * 18 * 1)  ...
+
+
+
+#define FER_DAT_WORD_WIDTH_REL    (FER_STP_WIDTH_REL + (1UL * FER_BIT_WIDTH_REL * FER_CMD_BIT_CT))
+#define FER_PRG_FRAME_WIDTH_REL   (1UL * FER_DAT_WORD_WIDTH_REL * FER_PRG_WORD_CT * FER_PRG_PACK_CT) 
 
 #define FER_PRE_WIDTH       REL_TO_TICKS(FER_PRE_WIDTH_REL)
 #define FER_PRE_WIDTH_MIN   REL_TO_TICKS(FER_PRE_WIDTH_MIN_REL)
@@ -66,14 +77,14 @@
 #define FER_CMD_BIT_CT           10  // we have 10 data bits + 1 stop bit
 #define FER_CMD_WORD_CT          12
 #define FER_CMD_BYTE_CT           (FER_CMD_WORD_CT / 2 - 1)
-#define FER_STP_BIT_CT            3  // 3 times larger than a databit (\___/--------------------------\)
+#define FER_STP_BIT_CT            (FER_STP_WIDTH_REL / FER_BIT_WIDTH_REL)  // 18/6=3 (a stop-bit is 3 times larger than a databit)
 #define FER_PRE_BIT_CT            7
 #define FER_PRG_WORD_CT          18   // words per line
 #define FER_PRG_BYTE_CT          (FER_PRG_WORD_CT / 2)
 #define FER_PRG_PACK_CT          18   // lines per frame
 #define FER_RTC_PACK_CT           1   // lines per frame
 
-#define bitsPerPause          FER_STP_BIT_CT  // this just means 3 databits would fit into 1 pause/stop-bit
+#define bitsPerPause          FER_STP_BIT_CT  // this just means 3 databits would fit into 1 pause/stop-bit. helps with counting them out
 #define bitsPerPre            FER_PRE_BIT_CT
 #define bitsPerWord           FER_CMD_BIT_CT
 #define wordsPerCmdPacket     FER_CMD_WORD_CT
