@@ -136,6 +136,20 @@ void init_prgPacket(uint8_t[linesPerPrg][bytesPerPrgLine]);
 void write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only);
 void write_lastline(fer_sender_basic *fsb, uint8_t d[FPR_ASTRO_WIDTH]);
 
+
+
+void write_dtimer(uint8_t d[FPR_TIMER_STAMP_WIDTH], const uint8_t *dtimer_data);
+void write_wtimer(uint8_t d[][FER_PRG_BYTE_CT], const uint8_t *wtimer_data);
+void write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only);
+void write_flags(uint8_t d[FPR_RTC_WIDTH], uint8_t flags, uint8_t mask);
+
+void txbuf_write_wtimer(const uint8_t *wtimer_data);
+void txbuf_write_dtimer(const uint8_t *dtimer_data);
+void txbuf_write_astro(int mint_offset);
+void txbuf_write_rtc(bool rtc_only);
+void txbuf_write_lastline(fer_sender_basic *fsb);
+void txbuf_write_flags(uint8_t flags, uint8_t mask);
+
 // diagnostic output
 void frb_printPacket(const uint8_t *dg);
 void fpr_printPrgPacketInfo(uint8_t d[linesPerPrg][bytesPerPrgLine], bool rtc_only);

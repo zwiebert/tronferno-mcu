@@ -6,6 +6,7 @@
  */
 
 #include <time.h>
+#include <string.h>
 
 #include "common.h"
 #include "fer.h"
@@ -97,7 +98,7 @@ void ICACHE_FLASH_ATTR init_prgPacket(uint8_t d[linesPerPrg][bytesPerPrgLine]) {
 }
 #if 0
 void
-write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], const uint8_t ad[12][8], int mint_offset) {
+ICACHE_FLASH_ATTR write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], const uint8_t ad[12][8], int mint_offset) {
 	int col, line;
 
 	for (line=0; line < FPR_ASTRO_HEIGHT; ++line) {
@@ -111,6 +112,28 @@ write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], const uint8_t ad[12][8
 #endif
 
 void ICACHE_FLASH_ATTR write_wtimer(uint8_t d[][FER_PRG_BYTE_CT], const uint8_t *wtimer_data) {
+  #ifdef WEEK_STARTS_AT_SUNDAY
+  memcpy(d[0], wtimer_data, FPR_TIMER_WIDTH);
+  memcpy(d[1],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_WIDTH);
+  memcpy(d[2],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_WIDTH);
+  memcpy(d[3],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_WIDTH - FPR_TIMER_STAMP_WIDTH);
+  #else
+  //reorder. input week starts with monday. output with sunday
+  memcpy(d[0] + FPR_TIMER_STAMP_WIDTH, wtimer_data, FPR_TIMER_STAMP_WIDTH);
+  memcpy(d[1],  (wtimer_data += FPR_TIMER_STAMP_WIDTH), FPR_TIMER_WIDTH);
+  memcpy(d[2],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_WIDTH);
+  memcpy(d[3],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_STAMP_WIDTH);
+  memcpy(d[0], (wtimer_data += FPR_TIMER_STAMP_WIDTH), FPR_TIMER_STAMP_WIDTH);
+  #endif
+
+  #if 0
+  	int col, line;
+  	int byte_counter = 0;
+
+  	for (line = 0; line < FPR_TIMER_HEIGHT; ++line, wtimer_data += FPR_TIMER_WIDTH) {
+          memcpy(d[line], wtimer_data, FPR_TIMER_WIDTH - (line<3 ? 0 : FPR_TIMER_STAMP_WIDTH));
+      }        
+  #elif 0
 	int col, line;
 	int byte_counter = 0;
 
@@ -119,21 +142,40 @@ void ICACHE_FLASH_ATTR write_wtimer(uint8_t d[][FER_PRG_BYTE_CT], const uint8_t 
 			d[line][col] = wtimer_data[byte_counter];
 
 			++byte_counter;
-			if (byte_counter > (FPR_WEEKLY_TIMER_STAMP_CT * 4) || wtimer_data[byte_counter] == 0) {
+			if (byte_counter >= (FPR_TIMER_STAMP_WIDTH * 7)) {
 				return;
 			}
 		}
 	}
+    #endif
 }
 
 void ICACHE_FLASH_ATTR write_dtimer(uint8_t d[FPR_TIMER_STAMP_WIDTH], const uint8_t *dtimer_data) {
+    #if 1
+    memcpy(d, dtimer_data, FPR_TIMER_STAMP_WIDTH);
+    #else
 	int col;
 	for (col = 0; col < FPR_TIMER_STAMP_WIDTH; ++col) {
 		if ((d[col] = dtimer_data[col]) == 0) {
 			return;
 		}
 	}
+    #endif
 }
+
+void ICACHE_FLASH_ATTR txbuf_write_dtimer(const uint8_t *dtimer_data) {
+  write_dtimer(get_sendPrgBufLine(FPR_DAILY_START_ROW) + FPR_DAILY_START_COL, dtimer_data);
+}
+
+void ICACHE_FLASH_ATTR txbuf_write_wtimer(const uint8_t *wtimer_data) {
+  write_wtimer(&dtSendPrgFrame[FPR_WEEKLY_START_ROW], wtimer_data);
+}
+
+#ifdef AVR
+void ICACHE_FLASH_ATTR txbuf_write_astro(int mint_offset) {
+  write_astro(&dtSendPrgFrame[FPR_ASTRO_START_ROW], mint_offset);
+}
+#endif
 
 void ICACHE_FLASH_ATTR write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only) {
 	time_t timer = time(NULL);
@@ -148,6 +190,23 @@ void ICACHE_FLASH_ATTR write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only) {
 	d[fpr0_RTC_wdayMask] = (1 << t->tm_wday);
 }
 
+
+void ICACHE_FLASH_ATTR write_flags(uint8_t d[FPR_RTC_WIDTH], uint8_t flags, uint8_t mask) {
+    d[fpr0_FlagBits] = flags;
+#if 0 // FIXME: I forgot how to use bit masks
+  d[fpr0_FlagBits] |=  (flags & mask);
+  d[fpr0_FlagBits] ^=  ~(flags & mask);
+#endif
+
+}
+
+void ICACHE_FLASH_ATTR txbuf_write_rtc(bool rtc_only) {
+   write_rtc(&dtSendPrgFrame[FPR_RTC_START_ROW][0], rtc_only);
+}
+void ICACHE_FLASH_ATTR txbuf_write_flags(uint8_t flags, uint8_t mask) {
+  write_flags(&dtSendPrgFrame[FPR_RTC_START_ROW][0], flags, mask);
+}
+
 void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, uint8_t d[FPR_ASTRO_WIDTH]) {
 	d[0] = 0x00;
 	d[1] = fsb->data[fer_dat_ADDR_2];
@@ -159,6 +218,11 @@ void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, uint8_t d[FPR_ASTRO
 	d[7] = 0x11;
 	d[8] = 0x05;
 }
+
+void ICACHE_FLASH_ATTR txbuf_write_lastline(fer_sender_basic *fsb) {
+	write_lastline(fsb, get_sendPrgBufLine(FPR_LAST_START_ROW));
+}    
+
 
 #if TEST_MODULE_FER_PRG
 
@@ -191,6 +255,7 @@ uint8_t test_prg[18][9] =
 const uint8_t testdat_wtimer[] =
 	{ 0x56, 0x06, 0x45, 0x19, 0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x56,
 			0x06, 0x45, 0x19, 0x0 };
+const uint8_t testdat_dtimer[] = { };
 extern const uint8_t astro_data[12][8];
 
 #include "config.h"

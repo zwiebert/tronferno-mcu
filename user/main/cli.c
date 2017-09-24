@@ -8,6 +8,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef AVR
+#include <avr/pgmspace.h>
+#else
+#define PROGMEM
+#endif
 
 #include "all.h"
 
@@ -80,6 +85,20 @@ find_next_whitespace_or_eq(char *s) {
 }
 
 int ICACHE_FLASH_ATTR
+asc2bool(const char *s)
+{
+   switch(*s) {
+     case '0':
+      return 0;
+     case '1':
+     return 1;
+     default:
+     return -1;
+   }
+  
+}  
+
+int ICACHE_FLASH_ATTR
 parse_commandline(char *cl) {
 	int p;
 
@@ -118,13 +137,31 @@ parse_commandline(char *cl) {
 
 }
 
+
+struct {
+	const char *fs;
+	fer_cmd fc;
+
+} const fc_map[] PROGMEM = {
+		{"down", fer_cmd_DOWN},
+		{"up", fer_cmd_UP},
+		{"stop", fer_cmd_STOP},
+		{"sun-down", fer_cmd_SunDOWN},
+		{"sun-up", fer_cmd_SunUP},
+		{"sun-inst", fer_cmd_SunINST},
+//		{"sun-test", fer_cmd_Program},
+};
+
 fer_cmd ICACHE_FLASH_ATTR
 cli_parm_to_ferCMD(const char *token) {
+  int i;
 	dbg_trace();
 
-	return ((strcmp(token, "down") == 0) ? fer_cmd_DOWN : (strcmp(token, "up") == 0) ? fer_cmd_UP : (strcmp(token, "stop") == 0) ? fer_cmd_STOP :
-			(strcmp(token, "sun-down") == 0) ? fer_cmd_SunDOWN : (strcmp(token, "sun-up") == 0) ? fer_cmd_SunUP :
-			(strcmp(token, "sun-inst") == 0) ? fer_cmd_SunINST : (strcmp(token, "sun-test") == 0) ? fer_cmd_Program : fer_cmd_None);
+    for (i=0; i < (sizeof (fc_map) / sizeof (fc_map[0])); ++i) {
+      if (strcmp(token, fc_map[i].fs) == 0)
+    	  return fc_map[i].fc;
+    }
+    return fer_cmd_None;
 }
 
 void ICACHE_FLASH_ATTR
@@ -180,21 +217,23 @@ get_sender_by_addr(long addr) {
 	return NULL ;
 }
 
-const char help_parmSend[] =
+fer_grp asc2group(const char *s) { return (fer_grp) atoi(s); }
+fer_memb asc2memb(const char *s) { int m = atoi(s); return m == 0 ? fer_memb_Broadcast : (fer_memb) (m - 1) + fer_memb_M1; }
+  
+const char help_parmSend[] PROGMEM =
 		  "a=(0|SenderID) address of the sender or 0 for the configured CentralUnit\n"
 		  "g=[0-7]  group number. 0 is for broadcast\n"
 		  "m=[0-7]  group member. 0 is for broadcast all groups members\n"
-		  "c=(up|down|stop|sun-down|time) command to send\n";
+		  "c=(up|down|stop|sun-down|sun-inst) command to send\n";
 
 static int ICACHE_FLASH_ATTR
 process_parmSend(clpar p[], int len) {
 	int i;
 
 	long addr = 0;
-	int group = 0, memb = 0;
+	fer_grp group = fer_grp_Broadcast;
+    fer_memb memb = fer_memb_Broadcast;
 	fer_cmd cmd = fer_cmd_None;
-	const char *cmdStr = 0;
-	const char *rtc = 0;
 
 	for (i = 1; i < len; ++i) {
 		const char *key = p[i].opt, *val = p[i].arg;
@@ -204,14 +243,11 @@ process_parmSend(clpar p[], int len) {
 		} else if (strcmp(key, "a") == 0) {
 			addr = strtol(val, NULL, 0);
 		} else if (strcmp(key, "g") == 0) {
-			group = atoi(val);
+			group = asc2group(val);
 		} else if (strcmp(key, "m") == 0) {
-			memb = atoi(val);
+			memb = asc2memb(val);
 		} else if (strcmp(key, "c") == 0) {
-			cmd = cli_parm_to_ferCMD(val);
-			cmdStr = val;
-		} else if (strcmp(key, "t") == 0) {
-			rtc = val;
+			cmd = cli_parm_to_ferCMD(val);                            
 		} else {
 			reply(false); // unknown parameter
 			return -1;
@@ -226,24 +262,12 @@ process_parmSend(clpar p[], int len) {
 
 	FSB_PUT_GRP(fsb, group);
 
-	FSB_PUT_MEMB(fsb, (memb == 0) ? fer_memb_Broadcast : fer_memb_M1 + memb - 1);
+	FSB_PUT_MEMB(fsb, memb);
 
 	if (cmd != fer_cmd_None) {
 		FSB_PUT_CMD(fsb, cmd);
 		fer_update_tglNibble(fsb);
 		reply(fer_send_cmd(fsb));
-
-	} else if (cmdStr != NULL && strcmp(cmdStr, "time") == 0) {
-		FSB_PUT_CMD(fsb, fer_cmd_Program);
-		fer_update_tglNibble(fsb);
-		if (!rtc || rtc_set_by_string(rtc)) {
-			write_rtc(get_sendPrgBufLine(FPR_RTC_START_ROW), true);
-			reply(fer_send_prg(fsb));
-			io_puts("S:"), print_array_8(get_sendPrgBufLine(FPR_RTC_START_ROW),
-			FPR_ASTRO_WIDTH), io_puts("\n");
-		} else {
-			reply(false);
-		}
 	} else {
 		reply(false);
 	}
@@ -251,7 +275,7 @@ process_parmSend(clpar p[], int len) {
 	return 0;
 }
 
-const char help_parmConfig[] =
+const char help_parmConfig[] PROGMEM =
 		  "cu=(CentralUnitID|auto)\n"
 		  "rtc=ISO_TIME_STRING  like 2017-12-31T23:59:59\n"
 		  "baud=serial_baud_rate\n"
@@ -309,9 +333,9 @@ process_parmConfig(clpar p[], int len) {
 	return 0;
 }
 
-extern uint32_t data_clock_ticks, pre_len, pre_phase;
+extern uint32_t data_clock_ticks, pre_len, pre_nedge;
 
-const char help_parmDbg[] =
+const char help_parmDbg[] PROGMEM =
 		"print=(rtc|cu)\n";
 
 
@@ -345,8 +369,8 @@ process_parmDbg(clpar p[], int len) {
 				io_putl(data_clock_ticks, 10);
 				io_puts(", pre_len: ");
 				io_putl(pre_len, 10);
-				io_puts(", pre_phase: ");
-				io_putl(pre_phase, 10);
+				io_puts(", pre_nedge: ");
+				io_putl(pre_nedge, 10);
 
 				io_puts("\n");
 #endif
@@ -369,6 +393,169 @@ process_parmDbg(clpar p[], int len) {
 	return 0;
 }
 
+enum { TIMER_KEY_WEEKLY, TIMER_KEY_DAILY, TIMER_KEY_ASTRO, TIMER_KEY_RTC_ONLY, TIMER_KEY_FLAG_RANDOM, TIMER_KEY_FLAG_SUN_AUTO};
+
+const char *const timer_keys[] PROGMEM = {
+  "weekly", "daily", "astro", "rtc-only", "random", "sun-auto"
+};
+
+#ifdef WEEK_STARTS_AT_SUNDAY
+const char *const timer_wdays[] PROGMEM = { "sun", "mon", "tue", "wed", "thu", "fri", "sat" };
+#else
+const char *const timer_wdays[] PROGMEM = { "mon", "tue", "wed", "thu", "fri", "sat", "sun" };
+#endif
+  
+int asc2wday(const char *s) {
+  int i;
+      for (i=0; i < (sizeof (timer_wdays) / sizeof (timer_wdays[0])); ++i) {
+        if (strcmp(s, timer_wdays[i]) == 0)
+        return i;
+      }
+    return -1;      
+}
+
+
+//////////////FIXME: what is wrong with timer g=2 m=2 sun=22080020;  ... the 20 turns into 0f
+bool ICACHE_FLASH_ATTR  // FIXME: special case '9' or is it '19' (try programming a timer with original central)
+string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst) {
+  char buf[3];
+  int i;
+  
+  buf[2] = 0;
+  
+  for (i=0; i < size_dst && src[0]; ++i) { 
+    switch (*src) {
+      case '-': // timer off
+        dst[i] = (i % 2 == 0) ? 0xff : 0x0f;
+        if (!(++i < size_dst)) return false;;
+        dst[i] = (i % 2 == 0) ? 0xff : 0x0f;
+        ++src;
+      break;
+      case '+': // copy previous day on+off timer
+      if (i < FPR_TIMER_STAMP_WIDTH || i + FPR_TIMER_STAMP_WIDTH > size_dst)
+       return false;
+       dst[i] = dst[i - FPR_TIMER_STAMP_WIDTH], ++i;
+       dst[i] = dst[i - FPR_TIMER_STAMP_WIDTH], ++i;
+       dst[i] = dst[i - FPR_TIMER_STAMP_WIDTH], ++i;
+       dst[i] = dst[i - FPR_TIMER_STAMP_WIDTH];
+        ++src;
+      break;
+      
+      default:
+         buf[0] = *src++;
+         buf[1] = *src++;
+         if (!(++i < size_dst)) return false;;
+         dst[i] = dec2bcd(atoi(buf));
+         buf[0] = *src++;
+         buf[1] = *src++;
+         dst[i-1] = dec2bcd(atoi(buf));
+
+    }
+
+  }
+  
+  return i == size_dst;
+}
+
+#define FLAG_NONE -2
+#define FLAG_ERROR -1
+#define FLAG_FALSE 0
+#define FLAG_TRUE 1
+#define HAS_FLAG(v) (v >= 0)
+
+static int ICACHE_FLASH_ATTR
+process_parmTimer(clpar p[], int len) {
+  int i; bool has_daily = false, has_weekly = false, has_astro = false;
+  int16_t astro_offset = 0;
+  uint8_t  weekly_data[FPR_TIMER_STAMP_WIDTH * 7];
+  uint8_t  daily_data[FPR_TIMER_STAMP_WIDTH];
+  fer_sender_basic *fsb = &default_sender;
+  	fer_grp group = fer_grp_Broadcast;
+  	fer_memb memb = fer_memb_Broadcast;
+    int wday = -1;
+    uint8_t fpr0_flags = 0, fpr0_mask = 0;
+    int8_t flag_rtc_only = FLAG_NONE;
+    
+   // init data
+   for(i=0; i+1 < sizeof (weekly_data) / sizeof(weekly_data[0]); i += 2) {
+     weekly_data[i] = 0xff;
+     weekly_data[i+1] = 0x0f;       
+   }
+      for(i=0; i+1 < sizeof (daily_data) / sizeof(daily_data[0]); i += 2) {
+             daily_data[i] = 0xff;
+             daily_data[i+1] = 0x0f;
+      }
+
+  for (i = 1; i < len; ++i) {
+    const char *key = p[i].opt, *val = p[i].arg;
+
+    if (key == NULL || val == NULL) {
+      return -1;
+      } else if (strcmp(key, timer_keys[TIMER_KEY_WEEKLY]) == 0) {
+      has_weekly = string2bcdArray(val, weekly_data, sizeof weekly_data);
+
+      } else if (strcmp(key, timer_keys[TIMER_KEY_DAILY]) == 0) {
+      has_daily = string2bcdArray(val, daily_data, sizeof daily_data);
+       } else if (strcmp(key, timer_keys[TIMER_KEY_ASTRO]) == 0) {
+         has_astro = true;
+         astro_offset = atoi(val);
+         		} else if (strcmp(key,  timer_keys[TIMER_KEY_FLAG_RANDOM]) == 0) {
+         		int flag = asc2bool(val);
+         		if (flag >= 0) {
+           		fpr0_mask |= (1 << flag_Random);
+           		if (flag) fpr0_flags |= (1 << flag_Random);
+           		else fpr0_flags &= ~(1 << flag_Random);
+         		}
+         		} else if (strcmp(key,  timer_keys[TIMER_KEY_FLAG_SUN_AUTO]) == 0) {
+         		int flag = asc2bool(val);
+         		if (flag >= 0) {
+           		fpr0_mask |= (1 << flag_SunAuto);
+           		if (flag) fpr0_flags |= (1 << flag_SunAuto);
+           		else fpr0_flags &= ~(1 << flag_SunAuto);
+         		}
+                 
+         	   } else if (strcmp(key,  timer_keys[TIMER_KEY_RTC_ONLY]) == 0) {
+                 flag_rtc_only = asc2bool(val);
+	   } else if (strcmp(key, "g") == 0) {
+		group = asc2group(val);
+		} else if (strcmp(key, "m") == 0) {
+		memb = asc2memb(val);
+    } else if ((wday = asc2wday(key)) >= 0) {
+      io_puts(val), io_puts("\n");
+      has_weekly = string2bcdArray(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
+    }      
+  }
+  
+  FSB_PUT_GRP(fsb, group);
+  FSB_PUT_MEMB(fsb, memb);
+  FSB_PUT_CMD(fsb, fer_cmd_Program);
+  FSB_TOGGLE(fsb);
+  
+  init_prgPacket(dtSendPrgFrame);
+  if (flag_rtc_only == FLAG_TRUE) { 
+      txbuf_write_rtc(true);
+      txbuf_write_flags(fpr0_flags, fpr0_mask);
+      print_array_8(get_sendPrgBufLine(0), FER_PRG_BYTE_CT);
+  } else {    
+  if (has_weekly) txbuf_write_wtimer(weekly_data);
+  if (has_daily)  txbuf_write_dtimer(daily_data);
+#ifdef AVR
+  if (has_astro)  txbuf_write_astro(astro_offset);
+#endif
+  txbuf_write_rtc(false);
+  txbuf_write_flags(fpr0_flags, fpr0_mask);
+  txbuf_write_lastline(fsb);
+  
+  		for (i=0; i < FPR_DATA_HEIGHT; ++i) {
+    		print_array_8(get_sendPrgBufLine(i), FER_PRG_BYTE_CT);
+  		}
+  }
+    
+  fer_send_prg(fsb);
+  
+  return 0;
+}
+
 static int process_parmHelp(clpar p[], int len);
 
 struct {
@@ -379,6 +566,7 @@ struct {
     {"send", process_parmSend, help_parmSend},
     {"config", process_parmConfig, help_parmConfig},
     {"dbg", process_parmDbg, help_parmDbg},
+    {"timer", process_parmTimer, "none" },
     {"help", process_parmHelp, "none"},
     };  
       
@@ -388,7 +576,7 @@ process_parm(clpar p[], int len) {
 	int i;
     for (i=0; i < (sizeof (parm_handlers) / sizeof (parm_handlers[0])); ++i) {
     	if (strcmp(p[0].opt, parm_handlers[i].parm) == 0)
-           parm_handlers[i].process_parmX(p, len);
+           return parm_handlers[i].process_parmX(p, len);
     }
  return 0;
 }
@@ -427,7 +615,7 @@ process_parmHelp(clpar p[], int len) {
 bool
 testModule_cli()
 {
-	char cl[] = "send a=2 g=3 m=2 c=up";
+	char cl[] = "timer g=2 m=2 weekly=08222000++++10552134+";
 	int n = parse_commandline(cl);
 	if (n > 0)
 	process_parm(par, n);

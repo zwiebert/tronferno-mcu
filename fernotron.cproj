@@ -170,6 +170,7 @@
       <Value>AVR</Value>
       <Value>FER_RECEIVER</Value>
       <Value>FER_TRANSMITTER</Value>
+      <Value>DEBUGGER</Value>
     </ListValues>
   </avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.directories.IncludePaths>

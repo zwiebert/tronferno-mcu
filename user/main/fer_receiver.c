@@ -13,19 +13,36 @@
 
 #define DB_FORCE_CMD 0
 #define TEST_CLOCK_EDGE 0
-#define TEST_DATA_EDGE 0
+#define TEST_DATA_EDGE 1
+
+#define IS_EO_BIT (CountTicks == 0)
+#define IS_EO_WORD (IS_EO_BIT && CountBits == 0)
+#define IS_EO_LINE (IS_EO_WORD && CountWords == 0)
+#define IS_EO_FRAME (IS_EO_LINE && CountLines == 0)
+
 
 /////////////////////////// interrupt code //////////////////////
-
+#define IS_P_INPUT (input == true)
+#define IS_N_INPUT (input == false)
 #define veryLongPauseLow_Len (2 * FER_STP_WIDTH_MAX)
 #define  fuzCmp(a,b) (abs((a)-(b)) < (FER_TICK_FREQ_MULT * 2))
 #define  fuzzCmp(a,b,n) (abs((a)-(b)) < (FER_TICK_FREQ_MULT * (n)))
 
 uint32_t data_clock_ticks = DEFAULT_DATA_CLOCK_TICKS;
-uint32_t pre_len, pre_phase;
-static bool clock_edge, data_edge;
+uint32_t pre_len, pre_nedge;
+#define clock_edge (input_edge > 0)
+#define data_edge (input_edge < 0)
+static int8_t input_edge; // Usually 0, but -1 or +1 at tick input change is detected
 static bool old_input;
-static int16_t data_edge_ticks;
+static uint16_t pos_width_ticks, neg_width_ticks;
+//static volatile uint16_t old_pos_width_ticks, old_neg_width_ticks;
+#define LATEST_BIT_A_TICKS (LATEST_BIT_P_TICKS + LATEST_BIT_N_TICKS)
+#define LATEST_BIT_P_TICKS (pos_width_ticks)
+#define LATEST_BIT_N_TICKS (neg_width_ticks)
+static uint16_t test_highCount;
+#define POS__IN_DATA (CountTicks > 0 && CountBits < bitsPerWord)
+#define POS__NOT_IN_DATA ((CountTicks == 0) && (CountBits == 0))
+#define PUTBIT(dst,bit,val) (put_bit_16(&dst, (bit), (val)))
 
 #if 0
 #undef bitLen
@@ -37,7 +54,7 @@ static int16_t data_edge_ticks;
 // holds sampled value of input pin
 static bool input;
 
-static uint32_t prgCallCount;
+static uint32_t prgTickCount;
 static int error;
 
 // flags
@@ -49,7 +66,7 @@ volatile bool has_prgReceived;
 uint16_t CountRecvErrors;
 static uint8_t CountTicks, CountBits, CountWords, CountLines;
 
-// received data goes here
+// buffer to store received RF data
 static uint16_t dtRecvBuffer[2];
 static uint8_t dtRecvCmd[bytesPerCmdPacket];
 uint8_t dtRecvPrgFrame[linesPerPrg][bytesPerPrgLine];
@@ -57,26 +74,18 @@ uint8_t dtRecvPrgFrame[linesPerPrg][bytesPerPrgLine];
 ferCmdBuf_type ICACHE_FLASH_ATTR get_recvCmdBuf(void) {
 	return dtRecvCmd;
 }
+
 uint8_t * ICACHE_FLASH_ATTR get_recvPrgBufLine(uint8_t idx) {
 	return dtRecvPrgFrame[idx];
 }
 
-#define PUTBIT(dst,bit,val) (put_bit_16(&dst, (bit), (val)))
-#define POS__NOT_IN_DATA ((CountTicks == 0) && (CountBits == 0))
 
 /* Sample and store current input data bit.  */
 static void store_sample() {
-  #if TEST_DATA_EDGE
     if (data_edge) {
-      PUTBIT(dtRecvBuffer[CountWords % 2], CountBits, data_edge_ticks < dtSample_Pos);
-      data_edge = 0;
+      PUTBIT(dtRecvBuffer[CountWords % 2], CountBits, pos_width_ticks < dtSample_Pos);
       data_clock_ticks = CountBits;
     }
-  #else
-	if ((CountTicks == dtSample_Pos)) {
-		PUTBIT(dtRecvBuffer[CountWords % 2], CountBits, !input);
-	}
-#endif
 }
 
 static void recv_decodeByte(uint8_t *dst) {
@@ -86,183 +95,127 @@ static void recv_decodeByte(uint8_t *dst) {
 	}
 }
 
-static bool advance_CmdCounter() {
-	bool end_of_bit = false, end_of_word = false, end_of_line = false;
+
+static void advance_Counter(uint8_t wordsPerLine) {
+
  #if TEST_CLOCK_EDGE   
         if (clock_edge) {
           if (CountTicks > bitLen / 2) {
              CountTicks = bitLen;
           }          
-          clock_edge = false;
         }
   #endif      
 
-	(end_of_bit = ct_incr(CountTicks, bitLen)) && (end_of_word = ct_incr(CountBits, bitsPerWord)) && (end_of_line = ct_incr(CountWords, wordsPerCmdPacket));
-
-	if (!end_of_line) {
-
-		if (end_of_word && (CountWords % 2) != 0) {
-			recv_decodeByte(&dtRecvCmd[CountWords / 2]);
-		}
-
-	}
-	return end_of_line;
+	(void)((ct_incr(CountTicks, bitLen)) 
+    && (ct_incr(CountBits, bitsPerWord))
+     && (ct_incr(CountWords, wordsPerLine))
+     && (ct_incr(CountLines, linesPerPrg)));
 }
 
-static bool is_start_bit(int len, int phase) {
-	if ((FER_STP_WIDTH_MIN <= len && len <= FER_STP_WIDTH_MAX) && (FER_STP_NEDGE_MIN <= phase && phase <= FER_STP_NEDGE_MAX))
+
+static bool is_start_bit(unsigned len, unsigned nedge) {
+	if ((FER_STP_WIDTH_MIN <= len && len <= FER_STP_WIDTH_MAX) && (FER_STP_NEDGE_MIN <= nedge && nedge <= FER_STP_NEDGE_MAX))
 		return true;
 
 	return false;
 }
 
-static bool is_pre_bit(int len, int phase) {
-	if ((FER_PRE_WIDTH_MIN <= len && len <= FER_PRE_WIDTH_MAX) && (FER_PRE_NEDGE_MIN <= phase && phase <= FER_PRE_NEDGE_MAX)) {
-      pre_len = len; pre_phase = phase;
+static bool is_pre_bit(unsigned len, unsigned nedge) {
+	if ((FER_PRE_WIDTH_MIN <= len && len <= FER_PRE_WIDTH_MAX) && (FER_PRE_NEDGE_MIN <= nedge && nedge <= FER_PRE_NEDGE_MAX)) {
+      pre_len = len; pre_nedge = nedge;
 		return true;
     }
 	return false;
 }
 
 /* returns true if we are inside a start/sync bit. it returns false at
- the rising edge of the next data bit. */
+the rising edge of the next data bit. */
 // returns: 0
+// returns 1 + n:  stop bit behind pre-bits
+// returns 1: stop bit behind data-bits
+// returns -1: error
+// returns -2: ??
 static int recv_detect_start() {
-	// ----____________________________________ (STP_NEDGE:STP_WIDTH) (4:36 @T100)
-	// ---_____ || -----___ || ------__ || --______  PRE (7x)
-	int result = false;
-	static int highCount, allCount, preCounter;
-#define lowCount (allCount - highCount)
+  // ----____________________________________ (STP_NEDGE:STP_WIDTH) (4:36 @T100)
+  // ---_____ || -----___ || ------__ || --______  PRE (7x)
+  int result = 0;
+  static int preCounter;
+  
+  
+  if (clock_edge) { 		// one -_/ bit received. analyzing now
 
-	if (!(input && (highCount < allCount)))
-		++allCount;
 
-	if (input && (highCount + 1 == allCount)) {
-		++highCount;
-		goto before_phase;
-	}
-
-	if (!input)
-		goto after_phase;
-	else {
-
-		// one -_/bit received. analyzing now
-		if (is_pre_bit(allCount, highCount)) {
-			++preCounter;
-			goto after_pre;
-		}
-
-		{
-			bool is_long = (allCount > FER_STP_WIDTH_MAX * 2);
-
-			if (is_long) {
-				result = -1;
-			} else if (is_start_bit(allCount, highCount)) {
-				result = 1 + preCounter;
-			} else {
-				result = -2;
-			}
-		}
-		goto done;
-	}
-
-	after_pre: allCount = highCount = 1;
-	return result;
-
-	done: preCounter = allCount = highCount = 0;
-	after_phase: before_phase: return result;
-
-#undef lowCount
+    // latest bit was a pre-bit?
+    if (is_pre_bit(LATEST_BIT_A_TICKS, test_highCount + 1)) {
+      ++preCounter;
+      return 0;
+    }
+    
+    // latest bit was too long
+    if (LATEST_BIT_A_TICKS > (FER_STP_WIDTH_MAX * 2)) { 
+      result = -1; // error
+      
+      // latest bit was the start/stop bit we are looking for
+      } else if (is_start_bit(LATEST_BIT_A_TICKS, test_highCount + 1)) {
+      result = 1 + preCounter;
+      
+      // ???
+      } else {
+      result = -2;
+    }
+    
+    preCounter = 0;
+    return result;
+    
+  }
+  
+  return 0;
 }
 
-static bool dg_detect_longPause() {
-	static uint16_t lastFall;
-	bool result = false;
 
-	if (input && lastFall > veryLongPauseLow_Len)
-		result = true;
 
-	if (input)
-		lastFall = 0;
-	else
-		++lastFall;
-
-	return result;
-}
+static bool dg_detect_tooLongPause() { return (IS_P_INPUT && neg_width_ticks > veryLongPauseLow_Len); }
 
 static bool cmd_recv(void) {
-	bool result = false;
 
-#if 1
-	if (dg_detect_longPause()) {
-		//db_puts("LP");
-		goto err;
-	}
-#endif
 
-	// stop counter at zero until start bit is over
-	if (POS__NOT_IN_DATA) {
-		if (CountWords == 0 && (recv_detect_start() < 1 + 5))
-			goto cont;
-		//(FIXME: literals)  some pre bits + 1 start bit required
-		if (CountWords > 0 && (recv_detect_start() != 1))
-			goto cont;
-		// only start bit required, no pre bits allowed
-		//db_puts("sbc\n");
-		// start bit is over here
-	}
-#define POS__IN_DATA (CountTicks > 0 && CountBits < bitsPerWord)
+  #if 1
+  if (dg_detect_tooLongPause()) {
+    //db_puts("LP");
+    CountTicks = CountBits = CountWords = CountLines = 0;
+    return false;
+  }
+  #endif
 
-	if (POS__IN_DATA) {
-		store_sample();  // try sampling data
-	}
+  // hold counters at zero until pre-bits and stop bits are over
+  if (POS__NOT_IN_DATA) {
+    if (CountWords == 0) {
+      if (recv_detect_start() < 1 + 5)
+        return false; // less than 7 pre-bits received
+    } else {
+      if (recv_detect_start() != 1) 
+         return false;  // stop bit is not over
+    }    
+    }  else { // POS__IN_DATA
+      store_sample();  // try sampling data
+  }
 
-	// advance counters until end_of_line
-	if (advance_CmdCounter()) {
-		result = true;
-		goto succ;
-	}
 
-	goto cont;
-	err: result = false; //?
-	succ: CountTicks = CountBits = CountWords = CountLines = 0;
-	cont: return result;
-
-}
-
-static bool advancePrgCounter(void) {
-	bool end_of_bit = false, end_of_word = false, end_of_line = false, end_of_frame = false;
-    
-	precond((CountTicks < bitLen) && (CountBits < bitsPerWord) && (CountWords < FER_PRG_WORD_CT) && (CountLines < FER_PRG_PACK_CT));
- #if TEST_CLOCK_EDGE  
-    if (clock_edge) {
-      if (CountTicks > bitLen / 2) {
-        CountTicks = bitLen;
-      }
-      clock_edge = false;
+  advance_Counter(wordsPerCmdPacket);
+  
+  if (IS_EO_LINE) {
+   CountLines = 0;
+   return true;
+   
+    } else if (IS_EO_WORD) {
+    if ((CountWords % 2) != 0) {
+      recv_decodeByte(&dtRecvCmd[CountWords / 2]);
     }
- #endif       
-	(end_of_bit = ct_incr(CountTicks, bitLen)) && (end_of_word = ct_incr(CountBits, bitsPerWord)) && (end_of_line = ct_incr(CountWords, wordsPerPrgLine))
-			&& (end_of_frame = ct_incr(CountLines, linesPerPrg));
-
-	// check for RTC-only frame
-	if (!end_of_frame && end_of_line && (CountLines == 1) && FRB_GET_FPR0_IS_RTC_ONLY(dtRecvPrgFrame[FPR_RTC_START_ROW])) {
-		CountLines = 0;
-		end_of_frame = true;
-	}
-
-	// store received words into byte array
-	if (!end_of_frame && end_of_word && (CountWords % 2) != 0) {
-		recv_decodeByte(&dtRecvPrgFrame[CountLines][CountWords / 2]);
-	}
-
-	// when end_frame is reached we return true and all counters should be zero
-	postcond(!end_of_frame || (!(CountTicks || CountBits || CountWords || CountLines)));
-
-	return end_of_frame;
+  }
+  return false;
 }
 
-#define MAX_PRGCALLCOUNT ((FER_PRG_FRAME_WIDTH_T100 * FER_TICK_FREQ_MULT)  + (100 * FER_TICK_FREQ_MULT))
+#define MAX_PRG_TICK_COUNT ((FER_PRG_FRAME_WIDTH_T100 * FER_TICK_FREQ_MULT)  + (100 * FER_TICK_FREQ_MULT))
 
 /* Called by tick interrupt handler. Stores state and data internally
  between calls.  We are called again and again at every tick until
@@ -283,22 +236,22 @@ static bool advancePrgCounter(void) {
 static int prg_recv(void) {
 	int result = 0;
 	// counters should be zero at fist call on new data
-	precond(prgCallCount != 0 || !(CountTicks || CountBits || CountWords || CountLines));
+	precond(prgTickCount != 0 || !(CountTicks || CountBits || CountWords || CountLines));
 
 	// reset error
-	if (prgCallCount++ == 0) {
+	if (prgTickCount++ == 0) {
 		error = 0;
 	}
 
 #if 0 //FIXME
 	// timeout (e.g. signal loss)
-	if (prgCallCount > MAX_PRGCALLCOUNT) {
+	if (prgTickCount > MAX_PRG_TICK_COUNT) {
 		goto err;
 	}
 #endif
 
 	// there is no pause inside a prg sequence
-	if (dg_detect_longPause()) {
+	if (dg_detect_tooLongPause()) {
 		goto err;
 	}
 
@@ -308,25 +261,40 @@ static int prg_recv(void) {
 		if (recv_detect_start() < 1)
 			goto cont;
 		// db_puts("S");
-	}
+	} else {
+	  store_sample();  // try to store sample
+    }
+  
+  // counting ticks until end_of_frame
+  advance_Counter(wordsPerPrgLine);
+  
+  if (IS_EO_WORD) {
+    bool rtc_frame = false;
 
-	store_sample();  // try to store sample
+    if (IS_EO_LINE && CountLines == 1 &&  FRB_GET_FPR0_IS_RTC_ONLY(dtRecvPrgFrame[FPR_RTC_START_ROW])) {
+      CountLines = 0;
+     rtc_frame = true;
+    }
+    
+    if (IS_EO_FRAME || rtc_frame) {
+      if (error || CountRecvErrors)
+      goto err;
+      result = 1;
+      goto succ;
+      
+      } else if ((CountWords % 2) != 0) {
+      // store received words into byte array
+         recv_decodeByte(&dtRecvPrgFrame[CountLines][CountWords / 2]);
+      }  
+  }
 
-	// counting ticks until end_of_frame
-	if (advancePrgCounter() != 0) {
-		if (error || CountRecvErrors)
-			goto err;
-
-		result = 1;
-		goto succ;
-	}
 
 	goto cont;
 	err: error = 1;
 	result = -1;
 	succ:
 	//io_puts(error ? "Pbd\n" :"Pgd\n");
-	prgCallCount = 0;
+	prgTickCount = 0;
 	CountTicks = CountBits = CountWords = CountLines = 0;
 	cont: return result;
 }
@@ -370,24 +338,38 @@ static void tick_recv_programmingFrame() {
 
 
 void tick_ferReceiver() {
-	input = fer_get_recvPin();
- 
- #if 1   
-        if (input != old_input) {
-          old_input = input;
-          clock_edge = input;
-          data_edge = !clock_edge;
-          
-          if (clock_edge) {
-              data_edge_ticks = -1;
-          }                           
-        }
-           ++data_edge_ticks;
-  #endif      
-	tick_recv_command();
-#ifndef FER_RECEIVER_MINIMAL
-	tick_recv_programmingFrame();
-#endif
+  if (is_sendCmdPending || is_sendPrgPending) // FIXME: to avoid receiving our own transmission (good coding?)
+    return;
+  
+  input = fer_get_recvPin();
+  
+  
+  input_edge = (old_input == input) ? 0 : (IS_P_INPUT ? +1 : -1);
+  old_input = input;
+  
+  
+  if (IS_P_INPUT) {
+    ++pos_width_ticks;
+    } else {
+    ++neg_width_ticks;
+  }
+   
+  if (POS__NOT_IN_DATA && IS_P_INPUT) {
+    ++test_highCount;
+  }
+  
+  
+  tick_recv_command();
+  #ifndef FER_RECEIVER_MINIMAL
+  tick_recv_programmingFrame();
+  #endif
+
+  if (clock_edge) {
+    test_highCount = 0;
+    pos_width_ticks = 0;
+    } else if (data_edge) {
+    neg_width_ticks = 0;
+  }
 }
 
 #endif

@@ -14,7 +14,7 @@ ISR(TIMER1_COMPA_vect)
 {
  
  #ifdef FER_TRANSMITTER
-  if (transmTick == C.app_transm)
+ // if (transmTick == C.app_transm)
   {
     tick_ferSender();
   }

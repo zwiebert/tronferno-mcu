@@ -82,7 +82,7 @@ typedef struct {
 
 #define FSB_PUT_DATA(fsb,idx,val)     ((fsb)->data[(idx)] = (val))
 
-
+#define FSB_TOGGLE(fsb) fer_update_tglNibble(fsb)
 
 
 ////////////// programming frame /////////////////////
@@ -176,6 +176,10 @@ extern uint8_t bcd2dec(uint8_t bcd);
 
 #define FPR_LAST_START_ROW 17
 #define FPR_LAST_HEIGHT 1
+
+#define FPR_DATA_HEIGHT 18
+#define FPR_DATA_WIDTH 8
+#define FPR_CS_WIDTH 1
 
 
 

@@ -4,6 +4,13 @@
 #include "codec.h"
 #include "inout.h"
 
+
+#define IS_EO_BIT (CountTicks == 0)
+#define IS_EO_WORD (IS_EO_BIT && CountBits == 0)
+#define IS_EO_LINE (IS_EO_WORD && CountWords == 0)
+#define IS_EO_FRAME (IS_EO_LINE && CountLines == 0)
+
+
 volatile bool is_sendCmdPending, is_sendPrgPending;
 
 static uint8_t CountTicks, CountBits, CountWords, CountLines;

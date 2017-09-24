@@ -25,9 +25,11 @@ void setup_mcu(void)
    init_usart_rx_buffer();
    io_putc_fun = ser_putc_block;
    io_getc_fun = ser_getc_nonblock;
-
   
+  #ifndef DEBUGGER
   // interrupts
   setup_timer();
+  #endif
+  
   sei();
 }

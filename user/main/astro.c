@@ -73,8 +73,10 @@ time_to_bcd(uint8_t *dstMinutes, uint8_t *dstHours, float time)
   }
 }
 
+#if 0
+
 void ICACHE_FLASH_ATTR
-write_astro_(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
+write_astro(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
 {
 	int i, j;
   time_t day_stamp = 355 * ONE_DAY;
@@ -88,7 +90,7 @@ write_astro_(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
       }
     }
 }  
-
+#elif 1
 
 void ICACHE_FLASH_ATTR
 write_astro(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
@@ -102,6 +104,8 @@ write_astro(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
       }
     }
 }  
+
+#endif
 
 #if TEST_MODULE_ASTRO
 uint8_t data[12][8];
