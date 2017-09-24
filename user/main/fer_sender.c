@@ -3,6 +3,7 @@
 #include "counter.h"
 #include "codec.h"
 #include "inout.h"
+#include "utils.h"
 
 
 #define IS_EO_BIT (CountTicks == 0)
@@ -28,6 +29,20 @@ ferCmdBuf_type ICACHE_FLASH_ATTR get_sendCmdBuf(void) {
 uint8_t * ICACHE_FLASH_ATTR get_sendPrgBufLine(uint8_t idx) {
 	return dtSendPrgFrame[idx];
 }
+
+uint8_t
+fer_make_cmdPacket(const uint8_t *src, uint8_t *dst) {
+  int i;
+  uint8_t check_sum = 0;
+
+  for (i=0; i < (bytesPerCmdPacket - 1); ++i) {
+    dst[i] = src[i];
+    check_sum += src[i];
+  }
+
+  return dst[i] = check_sum;
+}
+
 
 bool ICACHE_FLASH_ATTR fer_send_cmd(fer_sender_basic *fsb) {
 	if (is_sendCmdPending || is_sendPrgPending)
@@ -56,6 +71,34 @@ bool ICACHE_FLASH_ATTR fer_send_prg(fer_sender_basic *fsb) {
 }
 
 /////////////////////////// interrupt code //////////////////////
+
+
+/* "calculate 2bit parity value for DATA_BYTE according to POS" */
+static uint8_t
+fer_get_word_parity (uint8_t data_byte, uint8_t pos) {
+  uint8_t result;
+
+  result = ((pos & 1) != 0) ?
+  (byte_even_p (data_byte) ? 3 : 1)
+  : (byte_even_p (data_byte) ? 0 : 2);
+
+  return result;
+}
+
+/* "extend DATA_BYTE with parity according to POS" */
+static uint16_t
+fer_add_word_parity (uint8_t data_byte, int pos) {
+  uint16_t result= (data_byte | (((uint16_t)fer_get_word_parity(data_byte, pos)) << 8));
+  return result;
+}
+
+static uint16_t
+make_Word(uint8_t val, uint8_t wordCounter)
+{
+  uint16_t result = fer_add_word_parity(val, wordCounter);
+  return result;
+}
+
 
 static void init_counter() {
 	CountTicks = CountBits = CountWords = CountLines = 0;

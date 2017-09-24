@@ -2,8 +2,8 @@
 #define _common_h
 
 #ifndef AVR // FIXME: check for ESP instead
-//#define FER_RECEIVER
-//#define FER_RECEIVER_MINIMAL  // not enough IRAM on ESP8266
+#define FER_RECEIVER
+#define FER_RECEIVER_MINIMAL  // not enough IRAM on ESP8266
 #include "user_interface.h" //ESP8266
 #endif
 

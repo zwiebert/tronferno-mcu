@@ -79,6 +79,62 @@ uint8_t * ICACHE_FLASH_ATTR get_recvPrgBufLine(uint8_t idx) {
 	return dtRecvPrgFrame[idx];
 }
 
+/* "calculate 2bit parity value for DATA_BYTE according to POS" */
+static uint8_t
+fer_get_word_parity (uint8_t data_byte, uint8_t pos) {
+  uint8_t result;
+
+  result = ((pos & 1) != 0) ?
+  (byte_even_p (data_byte) ? 3 : 1)
+  : (byte_even_p (data_byte) ? 0 : 2);
+
+  return result;
+}
+
+/* "extend DATA_BYTE with parity according to POS" */
+static uint16_t
+fer_add_word_parity (uint8_t data_byte, int pos) {
+  uint16_t result= (data_byte | (((uint16_t)fer_get_word_parity(data_byte, pos)) << 8));
+  return result;
+}
+
+/* "return t if parity is even and postiion matches parity bit \ 1/3
+on even positions and 0,2 on odd positions)" */
+static bool
+fer_word_parity_p (uint16_t word, uint8_t pos) {
+  bool result = fer_add_word_parity((word & 0xff), pos) == word;
+  return result;
+}
+
+
+static fer_errors
+fer_extract_Byte(const uint16_t *src, uint8_t *dst)
+{
+  int i;
+  
+  for (i=0; i < 2; ++i) {
+    if (fer_word_parity_p(src[i], i)) {
+      *dst = src[i];
+      return fer_OK;
+    }
+  }
+  *dst = 0;
+  return fer_BAD_WORD_PARITY;
+  
+}
+
+fer_errors
+fer_verify_cmd(const uint8_t *dg) {
+  int i;
+  uint8_t checksum = 0;
+
+  for (i=0; i < bytesPerCmdPacket - 1; ++i) {
+    checksum += dg[i];
+  }
+  
+  return (checksum == dg[i] ? fer_OK : fer_BAD_CHECKSUM);
+}
+
 
 /* Sample and store current input data bit.  */
 static void store_sample() {

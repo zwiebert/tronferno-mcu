@@ -288,7 +288,7 @@ bool ICACHE_FLASH_ATTR testModule_fer_prg()
 	FSB_PUT_MEMB(fsb, memb);
 	FSB_PUT_CMD(fsb, cmd);
 
-	uint8_t cmd_checksum = fer_make_cmdPacket(fsb->data, dtSendCmd);
+	uint8_t cmd_checksum; //= fer_make_cmdPacket(fsb->data, dtSendCmd);
 
 	fer_prg_create_checksums(test_prg, cmd_checksum);
 	result = fer_prg_verfiy_checksums(test_prg, cmd_checksum);

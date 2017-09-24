@@ -104,6 +104,8 @@
 
 typedef uint8_t *ferCmdBuf_type;
 
+typedef enum { fer_OK, fer_PAIR_NOT_EQUAL, fer_BAD_WORD_PARITY, fer_BAD_CHECKSUM } fer_errors;
+
 // receiver ///////////////////////////
 bool fer_get_recvPin();
 

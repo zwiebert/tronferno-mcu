@@ -279,8 +279,8 @@ const char help_parmConfig[] PROGMEM =
 		  "cu=(CentralUnitID|auto)\n"
 		  "rtc=ISO_TIME_STRING  like 2017-12-31T23:59:59\n"
 		  "baud=serial_baud_rate\n"
-		  "wlan_ssid=\"your_wlan_ssid\"\n"
-		  "wlan_password=\"your_wlan_password\"\n";
+		  "wlan-ssid=\"your_wlan_ssid\"\n"
+		  "wlan-password=\"your_wlan_password\"\n";
 
 static int ICACHE_FLASH_ATTR
 process_parmConfig(clpar p[], int len) {
@@ -311,12 +311,12 @@ process_parmConfig(clpar p[], int len) {
 			C.mcu_serialBaud = baud;
 			save_config();
 			reply_success();
-            		} else if (strcmp(key, "wlan_ssid") == 0) {
+            		} else if (strcmp(key, "wlan-ssid") == 0) {
             		uint32_t baud = strtoul(val, NULL, 10);
             		C.mcu_serialBaud = baud;
             		save_config();
             		reply_success();
-                    		} else if (strcmp(key, "wlan_password") == 0) {
+                    		} else if (strcmp(key, "wlan-password") == 0) {
                     		uint32_t baud = strtoul(val, NULL, 10);
                     		C.mcu_serialBaud = baud;
                     		save_config();

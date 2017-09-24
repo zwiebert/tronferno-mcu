@@ -41,22 +41,6 @@ printTimerStamp(uint8_t d[18][9], int row, int col) {
   printBCD(d[row][col]);
 }
 
-#if 0
-void ICACHE_FLASH_ATTR
-frw_printPacket_full(const uint16_t *dg, int len) {
-  char s[10];
-  dbg_trace();
-
-  for (int i = 0; i < len; ++i) {
-    io_print_hex_16(dg[i], true);
-  }
-  io_puts("ec:");
-  io_puts(itoa(fer_verify_cmdPacket(dg), s, 10));
-  io_puts("\n");
-}
-#endif
-
-
 void ICACHE_FLASH_ATTR fpr_printPrgPacketInfo(uint8_t d[FER_PRG_PACK_CT][FER_PRG_BYTE_CT], bool rtc_only) {
   const char *const lf = "\n";
   int row, col;
