@@ -267,6 +267,9 @@
     <BuildTarget>all</BuildTarget>
     <CleanTarget>clean</CleanTarget>
     <OutputPath>bin\lean\</OutputPath>
+    <PostBuildEvent>avrdude -V -c avrisp2 -p m328p -P com5 -b 115200 -U "flash:w:fernotron.hex:i"
+
+</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
   <ItemGroup>
@@ -313,12 +316,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="user\main\cli.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="user\main\codec.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="user\main\codec.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="user\main\common.h">

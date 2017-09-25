@@ -1,18 +1,33 @@
 #ifndef _common_h
 #define _common_h
 
-#ifndef AVR // FIXME: check for ESP instead
+#ifndef AVR  // FIXME: how to recognize ESP8266 
+#define MCU_ESP8266
+#endif
+
+////////////////////////
+// disable features not working on some MCUs
+#ifdef MCU_ESP8266
 #define FER_RECEIVER
-#define FER_RECEIVER_MINIMAL  // not enough IRAM on ESP8266
-#include "user_interface.h" //ESP8266
+//#define FER_RECEIVER_MINIMAL  // not enough IRAM on ESP8266
+#endif
+
+////////////////////////////
+// MCU dependent compiler attributes in common code
+#ifdef MCU_ESP8266
+#include "user_interface.h"
+#else
+#define ICACHE_FLASH_ATTR
 #endif
 
 #ifdef AVR
-#define ICACHE_FLASH_ATTR  // remove ESP specific attribute
+#include <avr/pgmspace.h>
+#else
+#define PROGMEM
 #endif
+////////////////////////
 
 #include <stdint.h>
-
 #include <stdbool.h>
 
 typedef bool logicLevel;

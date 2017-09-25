@@ -69,7 +69,7 @@ void db_test_all_indicators(uint8_t nmb_flashs);
 #define TEST_MODULE_RTC 0
 #define TEST_MODULE_FER_PRG 0
 #define TEST_MODULE_CONFIG 0
-#define TEST_MODULE_CLI 0
+#define TEST_MODULE_CLI 1
 
 bool test_modules(void);
 bool testModule_astro(void);

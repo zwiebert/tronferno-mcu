@@ -11,7 +11,6 @@
 #include "common.h"
 #include "inout.h"
 #include "fer.h"
-#include "codec.h"
 #include "fer_code.h"
 #include "utils.h"
 #include "rtc.h"

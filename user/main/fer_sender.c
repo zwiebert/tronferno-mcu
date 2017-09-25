@@ -1,7 +1,6 @@
 #include "common.h"
 #include "fer.h"
 #include "counter.h"
-#include "codec.h"
 #include "inout.h"
 #include "utils.h"
 
@@ -79,8 +78,8 @@ fer_get_word_parity (uint8_t data_byte, uint8_t pos) {
   uint8_t result;
 
   result = ((pos & 1) != 0) ?
-  (byte_even_p (data_byte) ? 3 : 1)
-  : (byte_even_p (data_byte) ? 0 : 2);
+  (is_bits_even (data_byte) ? 3 : 1)
+  : (is_bits_even (data_byte) ? 0 : 2);
 
   return result;
 }
@@ -176,8 +175,6 @@ static bool sendCmd() {
 
 	return state == stDone;
 }
-
-void make_prgWord(int, int);
 
 static bool advancePrgCounter(void) {
 	bool end_of_bit = false, end_of_word = false, end_of_line = false, end_of_frame = false;

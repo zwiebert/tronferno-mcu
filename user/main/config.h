@@ -45,6 +45,7 @@ typedef struct {
 	uint32_t fer_centralUnitID, mcu_serialBaud;
 	float geo_longitude, geo_latitude, geo_timezone;
 	enum dst geo_dST;
+    int16_t app_rtcAdjust;
 	enum receiver app_recv;
 	enum transmitter app_transm;
 	enum rtclock app_rtc;

@@ -31,7 +31,6 @@ eu_dst(const time_t *timer, int32_t * z) {
 extern void setup_mcu(void);
 
 extern fer_sender_basic default_sender;
-
 extern fer_sender_basic last_received_sender;
 
 
@@ -66,13 +65,6 @@ setup_1() {
 
 }
 
-#ifdef TEST_MODULE_FERNOTRON
-
-bool testModule_fernotron ()
-{
-
-}
-#endif  // self test
 
 
 void ICACHE_FLASH_ATTR
@@ -141,8 +133,6 @@ loop(void) {
 
 }
 
-extern bool test();
-
 int ICACHE_FLASH_ATTR
 main_setup() {
 
@@ -163,3 +153,10 @@ main_setup() {
 
 }
 
+#ifdef TEST_MODULE_FERNOTRON
+
+bool testModule_fernotron ()
+{
+
+}
+#endif  // self test

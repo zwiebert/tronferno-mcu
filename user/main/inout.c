@@ -26,7 +26,7 @@ int io_getc(void)   { return (io_getc_fun == 0) ? -1 : io_getc_fun(); }
 #define io_getc_fun #error
 
 
-int io_puts(const char *s) {
+int ICACHE_FLASH_ATTR io_puts(const char *s) {
   for (;*s != '\0'; ++s) {
     if (io_putc(*s) == -1)
       return -1;

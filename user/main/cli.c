@@ -8,11 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef AVR
-#include <avr/pgmspace.h>
-#else
-#define PROGMEM
-#endif
+
 
 #include "all.h"
 
@@ -150,6 +146,7 @@ struct {
 		{"sun-up", fer_cmd_SunUP},
 		{"sun-inst", fer_cmd_SunINST},
 //		{"sun-test", fer_cmd_Program},
+        {"set", fer_cmd_SET},
 };
 
 fer_cmd ICACHE_FLASH_ATTR
@@ -230,7 +227,7 @@ static int ICACHE_FLASH_ATTR
 process_parmSend(clpar p[], int len) {
 	int i;
 
-	long addr = 0;
+	uint32_t addr = 0;
 	fer_grp group = fer_grp_Broadcast;
     fer_memb memb = fer_memb_Broadcast;
 	fer_cmd cmd = fer_cmd_None;
@@ -256,8 +253,11 @@ process_parmSend(clpar p[], int len) {
 
 	fer_sender_basic *fsb = get_sender_by_addr(addr);
 	if (!fsb) {
-		reply(false);
-		return -1;
+      static fer_sender_basic fsb_direct; // FIXME: or was senders[0] meant for this?
+      fsb = &fsb_direct;
+      if (FSB_GET_DEVID(fsb) != addr) {
+        fer_init_sender(fsb, addr);
+      }        
 	}
 
 	FSB_PUT_GRP(fsb, group);
@@ -363,19 +363,7 @@ process_parmDbg(clpar p[], int len) {
 				io_puts("central unit address: ");
 				io_putl(C.fer_centralUnitID, 16);
 				io_puts("\n");
-			} else if (strcmp(val, "clk") == 0) {
-#ifdef FER_RECEIVER
-				io_puts("data_clock_ticks: ");
-				io_putl(data_clock_ticks, 10);
-				io_puts(", pre_len: ");
-				io_putl(pre_len, 10);
-				io_puts(", pre_nedge: ");
-				io_putl(pre_nedge, 10);
-
-				io_puts("\n");
-#endif
 			}
-
 		} else if (strcmp(key, "test") == 0) {
 			if (strcmp(val, "sendprg") == 0) {
 				extern bool dbg_test_sendprg();
@@ -414,9 +402,7 @@ int asc2wday(const char *s) {
     return -1;      
 }
 
-
-//////////////FIXME: what is wrong with timer g=2 m=2 sun=22080020;  ... the 20 turns into 0f
-bool ICACHE_FLASH_ATTR  // FIXME: special case '9' or is it '19' (try programming a timer with original central)
+bool ICACHE_FLASH_ATTR  
 string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst) {
   char buf[3];
   int i;
@@ -615,7 +601,7 @@ process_parmHelp(clpar p[], int len) {
 bool
 testModule_cli()
 {
-	char cl[] = "timer g=2 m=2 weekly=08222000++++10552134+";
+	char cl[] = "send a=0x80495d g=2 m=2  c=down";//"timer g=2 m=2 weekly=08222000++++10552134+";
 	int n = parse_commandline(cl);
 	if (n > 0)
 	process_parm(par, n);

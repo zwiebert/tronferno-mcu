@@ -78,6 +78,20 @@ void timer_handler(void)
 	  }
 	 #endif
 
+#if 1
+ if (rtcAvrTime == C.app_rtc)
+ {
+   static uint32_t rtc_ticks;
+	extern volatile time_t __system_time;
+
+   if (rtc_ticks-- == 0) {
+      rtc_ticks = TICK_FREQ_HZ + (C.app_rtcAdjust * 2 * INTR_TICK_FREQ_MULT);
+	  ++__system_time;
+   }
+ }
+#else
+
+
 	  if (rtcAvrTime == C.app_rtc)
 	  {
 		extern volatile time_t __system_time;
@@ -88,13 +102,13 @@ void timer_handler(void)
 	     ++__system_time;
 	    }
 	  }
-
+#endif
 }
 
 
 void setup_timer(void)
 {
-	uint32_t ticks = F_CPU / TICK_HZ;
+	uint32_t ticks = F_CPU / TICK_FREQ_HZ;
 	uint16_t flags = TIMER1_DIVIDE_BY_1 | TIMER1_ENABLE_TIMER | TIMER1_AUTO_LOAD;
 
 	timer1Start(ticks, flags, timer_handler);

@@ -15,6 +15,7 @@ config C = {
 	MY_GEO_LATITUDE,
 	MY_GEO_TIMEZONE,
 	MY_GEO_DST,
+	0, // app_rtcAdjust
 	recvTick, // recv
 	transmTick,// transm
 	rtcAvrTime,//rtc

@@ -96,20 +96,7 @@ void ICACHE_FLASH_ATTR init_prgPacket(uint8_t d[linesPerPrg][bytesPerPrgLine]) {
 		}
 	}
 }
-#if 0
-void
-ICACHE_FLASH_ATTR write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], const uint8_t ad[12][8], int mint_offset) {
-	int col, line;
 
-	for (line=0; line < FPR_ASTRO_HEIGHT; ++line) {
-		for (col=0; col < FPR_ASTRO_WIDTH; ++col) {
-			d[line][col] = (ad[line][col] + mint_offset) % 60;
-			++col;
-			d[line][col] = ad[line][col] + (mint_offset / 60);
-		}
-	}
-}
-#endif
 
 void ICACHE_FLASH_ATTR write_wtimer(uint8_t d[][FER_PRG_BYTE_CT], const uint8_t *wtimer_data) {
   #ifdef WEEK_STARTS_AT_SUNDAY
@@ -125,42 +112,10 @@ void ICACHE_FLASH_ATTR write_wtimer(uint8_t d[][FER_PRG_BYTE_CT], const uint8_t 
   memcpy(d[3],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_STAMP_WIDTH);
   memcpy(d[0], (wtimer_data += FPR_TIMER_STAMP_WIDTH), FPR_TIMER_STAMP_WIDTH);
   #endif
-
-  #if 0
-  	int col, line;
-  	int byte_counter = 0;
-
-  	for (line = 0; line < FPR_TIMER_HEIGHT; ++line, wtimer_data += FPR_TIMER_WIDTH) {
-          memcpy(d[line], wtimer_data, FPR_TIMER_WIDTH - (line<3 ? 0 : FPR_TIMER_STAMP_WIDTH));
-      }        
-  #elif 0
-	int col, line;
-	int byte_counter = 0;
-
-	for (line = 0; line < FPR_TIMER_HEIGHT; ++line) {
-		for (col = 0; col < FPR_TIMER_WIDTH; ++col) {
-			d[line][col] = wtimer_data[byte_counter];
-
-			++byte_counter;
-			if (byte_counter >= (FPR_TIMER_STAMP_WIDTH * 7)) {
-				return;
-			}
-		}
-	}
-    #endif
 }
 
 void ICACHE_FLASH_ATTR write_dtimer(uint8_t d[FPR_TIMER_STAMP_WIDTH], const uint8_t *dtimer_data) {
-    #if 1
     memcpy(d, dtimer_data, FPR_TIMER_STAMP_WIDTH);
-    #else
-	int col;
-	for (col = 0; col < FPR_TIMER_STAMP_WIDTH; ++col) {
-		if ((d[col] = dtimer_data[col]) == 0) {
-			return;
-		}
-	}
-    #endif
 }
 
 void ICACHE_FLASH_ATTR txbuf_write_dtimer(const uint8_t *dtimer_data) {
@@ -171,11 +126,11 @@ void ICACHE_FLASH_ATTR txbuf_write_wtimer(const uint8_t *wtimer_data) {
   write_wtimer(&dtSendPrgFrame[FPR_WEEKLY_START_ROW], wtimer_data);
 }
 
-#ifdef AVR
+
 void ICACHE_FLASH_ATTR txbuf_write_astro(int mint_offset) {
   write_astro(&dtSendPrgFrame[FPR_ASTRO_START_ROW], mint_offset);
 }
-#endif
+
 
 void ICACHE_FLASH_ATTR write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only) {
 	time_t timer = time(NULL);

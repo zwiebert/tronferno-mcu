@@ -12,7 +12,7 @@
 
 void set_system_time(time_t timestamp);
 
-void
+void ICACHE_FLASH_ATTR
 rtc_setup()
 {
 

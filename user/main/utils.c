@@ -5,7 +5,7 @@
 #include "utils.h"
 
 /*  "t if VAL contains an even number of 1 bits" */
-bool byte_even_p(uint8_t val) {
+bool is_bits_even(uint8_t val) {
 	val ^= val >> 4;
 	val ^= val >> 2;
 	val ^= val >> 1;

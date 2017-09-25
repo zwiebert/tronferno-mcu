@@ -18,22 +18,6 @@ frb_printPacket(const uint8_t *dg) {
   io_puts("\n");
 }
 
-
-#if 1
-void ICACHE_FLASH_ATTR
-frw_printPacket(uint16_t *dg) {
-int i;
-
-  dbg_trace();
-  for (i = 0; i < wordsPerCmdPacket; i+=2) {
-    io_print_hex_8(dg[i], true);
-  }
-
-  io_puts("\n");
-}
-#endif
-
-
 void ICACHE_FLASH_ATTR
 printTimerStamp(uint8_t d[18][9], int row, int col) {
   printBCD(d[row][col+1]);

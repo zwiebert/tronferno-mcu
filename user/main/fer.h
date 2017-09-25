@@ -4,17 +4,20 @@
 
 #include "fer_code.h"
 
-#define FER_TICK_FREQ_MULT             2 // 0.5=5kHz (200us), 1=10kHz (100us), 2=20kHz (50us), 4=40kHz (24us)
-#define TICK_HZ                  (10000UL * FER_TICK_FREQ_MULT)  // 10 kHz * MULT
-#define TICK_US                  (1000000UL / TICK_HZ)      // 100us / MULT
+#define BASE_CLOCK       5000UL  // 5kHz . 200us
+#define INTR_TICK_FREQ_MULT 4     
+#define FER_TICK_FREQ_MULT       (INTR_TICK_FREQ_MULT / 2)  // old-code 100us relative multiplier: 0.5=5kHz (200us), 1=10kHz (100us), 2=20kHz (50us), 4=40kHz (24us)
+#define TICK_FREQ_HZ             (BASE_CLOCK * INTR_TICK_FREQ_MULT) 
+#define TICK_PERIOD_US           (1000000UL / TICK_FREQ_HZ)
+
 
 #define DEFAULT_DATA_CLOCK_US  200
 #define DEFAULT_DATA_CLOCK_HZ  5000
 #define DEFAULT_DATA_CLOCK_TICKS US_TO_TICKS(DEFAULT_DATA_CLOCK_US)
 
-#define REL_TO_TICKS(rel) (((rel) * DEFAULT_DATA_CLOCK_US) / TICK_US)
-#define HUS_TO_TICKS(hus) (((hus) * 100 ) / TICK_US)
-#define US_TO_TICKS(us) ((us) / TICK_US)
+#define REL_TO_TICKS(rel) (((rel) * DEFAULT_DATA_CLOCK_US) / TICK_PERIOD_US)
+#define HUS_TO_TICKS(hus) (((hus) * 100 ) / TICK_PERIOD_US)
+#define US_TO_TICKS(us) ((us) / TICK_PERIOD_US)
 
 // timings (relative to an imaginary "data clock" which is "four times prelude frequency" (usually 200us)).
 // before sending any data we have 7 pre-bits

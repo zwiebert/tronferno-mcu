@@ -29,10 +29,9 @@ ISR(TIMER1_COMPA_vect)
  #if 1
   if (rtcAvrTime == C.app_rtc)
   {
-    const uint32_t ticks_per_second = (9989UL * FER_TICK_FREQ_MULT); // should be 10000 in theory, but its compensated
     static uint32_t rtc_ticks;
-    if (++rtc_ticks == ticks_per_second) {
-       rtc_ticks = 0;
+    if (rtc_ticks-- == 0) {
+       rtc_ticks = TICK_FREQ_HZ + (C.app_rtcAdjust * 2 * INTR_TICK_FREQ_MULT);
        system_tick();
     }
   }
@@ -51,7 +50,7 @@ void setup_timer() {
   TCCR1B = (1<<WGM12) | ((0<<CS12)|(0<<CS11)|(1<<CS10));
 
   // set counter value to reach for interrupt and clearing counter
-  OCR1A  = F_CPU / TICK_HZ;
+  OCR1A  = F_CPU / TICK_FREQ_HZ;
   // enable output compare interrupt A
   TIMSK1 = _BV(OCIE1A);
   // current value: 0,1 ms, 10 kHz
