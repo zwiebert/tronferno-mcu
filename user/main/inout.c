@@ -16,8 +16,8 @@ extern char *ltoa(long val, char *s, int radix);
 #endif
 
 
-int io_putc(char c) { return (io_putc_fun == 0) ? -1 : io_putc_fun(c); }
-int io_getc(void)   { return (io_getc_fun == 0) ? -1 : io_getc_fun(); }
+int ICACHE_FLASH_ATTR io_putc(char c) { return (io_putc_fun == 0) ? -1 : io_putc_fun(c); }
+int ICACHE_FLASH_ATTR io_getc(void)   { return (io_getc_fun == 0) ? -1 : io_getc_fun(); }
 
 
 /* use io_putc()/io_getc(). Don't use the function pointers for

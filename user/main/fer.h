@@ -5,8 +5,8 @@
 #include "fer_code.h"
 
 #define BASE_CLOCK       5000UL  // 5kHz . 200us
-#define INTR_TICK_FREQ_MULT 4     
-#define FER_TICK_FREQ_MULT       (INTR_TICK_FREQ_MULT / 2)  // old-code 100us relative multiplier: 0.5=5kHz (200us), 1=10kHz (100us), 2=20kHz (50us), 4=40kHz (24us)
+#define INTR_TICK_FREQ_MULT 4    // 1=200us, 2=100us, 4=50us, 8=25us
+#define FER_TICK_FREQ_MULT       (INTR_TICK_FREQ_MULT / 2)  // old-code 100us relative multiplier: 0.5=5kHz (200us), 1=10kHz (100us), 2=20kHz (50us), 4=40kHz (25us)
 #define TICK_FREQ_HZ             (BASE_CLOCK * INTR_TICK_FREQ_MULT) 
 #define TICK_PERIOD_US           (1000000UL / TICK_FREQ_HZ)
 

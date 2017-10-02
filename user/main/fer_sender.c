@@ -4,6 +4,7 @@
 #include "inout.h"
 #include "utils.h"
 
+#define USE_MACROS 1
 
 #define IS_EO_BIT (CountTicks == 0)
 #define IS_EO_WORD (IS_EO_BIT && CountBits == 0)
@@ -19,7 +20,6 @@ static uint16_t dtSendBuf;
 static uint8_t dtSendCmd[bytesPerCmdPacket];
 uint8_t dtSendPrgFrame[linesPerPrg][bytesPerPrgLine];
 
-static uint16_t dtWordOut;  // holds current data word
 static bool dtLineOut;   // output line
 
 ferCmdBuf_type ICACHE_FLASH_ATTR get_sendCmdBuf(void) {
@@ -29,8 +29,7 @@ uint8_t * ICACHE_FLASH_ATTR get_sendPrgBufLine(uint8_t idx) {
 	return dtSendPrgFrame[idx];
 }
 
-uint8_t
-fer_make_cmdPacket(const uint8_t *src, uint8_t *dst) {
+uint8_t ICACHE_FLASH_ATTR fer_make_cmdPacket(const uint8_t *src, uint8_t *dst) {
   int i;
   uint8_t check_sum = 0;
 
@@ -76,10 +75,9 @@ bool ICACHE_FLASH_ATTR fer_send_prg(fer_sender_basic *fsb) {
 static uint8_t
 fer_get_word_parity (uint8_t data_byte, uint8_t pos) {
   uint8_t result;
+  bool is_even = is_bits_even (data_byte);
 
-  result = ((pos & 1) != 0) ?
-  (is_bits_even (data_byte) ? 3 : 1)
-  : (is_bits_even (data_byte) ? 0 : 2);
+  result = ((pos & 1)) ?  (is_even ? 3 : 1)  : (is_even ? 0 : 2);
 
   return result;
 }
@@ -91,6 +89,14 @@ fer_add_word_parity (uint8_t data_byte, int pos) {
   return result;
 }
 
+#if USE_MACROS
+#define make_Word fer_add_word_parity
+#define init_counter() (CountTicks = CountBits = CountWords = CountLines = 0)
+#define updateLinePre() (dtLineOut = (CountTicks < shortPositive_Len))
+#define advancePreCounter() (ct_incr(CountTicks, pre_Len) && ct_incr(CountBits, bitsPerPre))
+#define advanceStopCounter() (ct_incr(CountTicks, bitLen) && ct_incr(CountBits, bitsPerPause))
+#define updateLineStop() (dtLineOut = (CountTicks < pauseHigh_Len) && (CountBits == 0))
+#else
 static uint16_t
 make_Word(uint8_t val, uint8_t wordCounter)
 {
@@ -98,9 +104,8 @@ make_Word(uint8_t val, uint8_t wordCounter)
   return result;
 }
 
-
 static void init_counter() {
-	CountTicks = CountBits = CountWords = CountLines = 0;
+  CountTicks = CountBits = CountWords = CountLines = 0;
 }
 
 static void updateLinePre() {
@@ -118,93 +123,75 @@ static bool advanceStopCounter() {
 static void updateLineStop() {
 	dtLineOut = (CountTicks < pauseHigh_Len) && (CountBits == 0);
 }
+#endif
 
 // sets output line according to current bit in data word
 // after the word is sent, the line is set to zero while counting the pause-"bits"
 static void updateLine() {
-	dtWordOut = dtSendBuf;
-	dtLineOut = ((CountTicks < shortPositive_Len && CountBits < bitsPerWord + 1)  // only in data word
-	|| (CountTicks < longPositive_Len && CountBits < bitsPerWord   // only in data word
-	&& !(dtWordOut & (1 << CountBits))));
+	dtLineOut = ((CountTicks < shortPositive_Len && CountBits < bitsPerWord + 1)  // pShort: in both data word and stop bit (+1)
+	|| (CountTicks < longPositive_Len && CountBits < bitsPerWord  && !(dtSendBuf & (1 << CountBits))));  // pLong: only in data word
+	
 }
 
-static bool advanceCmdCounter() {
-	bool end_of_bit = false, end_of_stop = false, end_of_line = false;
 
-	(end_of_bit = ct_incr(CountTicks, bitLen)) && (end_of_stop = ct_incr(CountBits, bitsPerWord + bitsPerPause))
-			&& (end_of_line = ct_incr(CountWords, wordsPerCmdPacket));
-
-	if (!end_of_line // not done?
-	&& (end_of_stop // next word into buffer
-	|| (CountTicks == 1 && !CountBits && !CountWords)))  // very first word into buffer
-			{
-		dtSendBuf = make_Word(dtSendCmd[CountWords / 2], CountWords);
-	}
-	return end_of_line;
-}
 
 static bool sendCmd() {
-	static int state;
-	enum {
-		stPre, stStop, stData, stDone
-	};
-
-	switch (state) {
-
-	case stDone:
-		state = stPre;
-		// fall through
-	case stPre:
-		updateLinePre();
-		if (advancePreCounter())
-			state = stStop;
-		break;
-
-	case stStop:
-		updateLineStop();
-		if (advanceStopCounter())
-			state = stData;
-		break;
-
-	case stData:
-		updateLine();
-		if (advanceCmdCounter())
-			state = stDone;
-		break;
-	}
-
-	return state == stDone;
-}
-
-static bool advancePrgCounter(void) {
-	bool end_of_bit = false, end_of_word = false, end_of_line = false, end_of_frame = false;
-
-	precond((CountTicks < bitLen) && (CountBits < bitsPerWord) && (CountWords < FER_PRG_WORD_CT) && (CountLines < FER_PRG_PACK_CT));
-
-	(end_of_bit = ct_incr(CountTicks, bitLen)) && (end_of_word = ct_incr(CountBits, bitsPerWord + bitsPerPause))
-			&& (end_of_line = ct_incr(CountWords, wordsPerPrgLine)) && (end_of_frame = ct_incr(CountLines, (linesPerPrg)));
-
-	// an rtc frame is only one line long
-	if (!end_of_frame && end_of_line && CountLines == 1 && FRB_GET_FPR0_IS_RTC_ONLY(dtSendPrgFrame[FPR_RTC_START_ROW])) {
-		end_of_frame = true;
-	}
-
-	// copy data into sendBuf
-	if (!end_of_frame) {
-		if (end_of_word  // next word into buffer
-		|| (CountTicks == 1 && !CountBits && !CountWords))  // very first word into buffer)
-			dtSendBuf = make_Word(dtSendPrgFrame[CountLines][CountWords / 2], CountWords);
-	}
-
-	// when end_frame is reached we return true and all counters should be zero
-	postcond(!end_of_frame || (!(CountTicks || CountBits || CountWords || CountLines)));
-
-	return end_of_frame;
+  static bool end_of_preamble, end_of_stop;
+  
+  if (!end_of_preamble) {
+    // send preamble
+    updateLinePre();
+    end_of_preamble = advancePreCounter();
+    } else 	if (!end_of_stop) {
+      //send single stop bit after preamble
+    updateLineStop();
+    if ((end_of_stop = advanceStopCounter()))
+       dtSendBuf = make_Word(dtSendCmd[0], 0); // load first word into send buffer
+    
+    } else {
+      // send data words + stop bits
+    updateLine();
+    // counting ticks until end_of_frame
+    if (ct_incr(CountTicks, bitLen)) {
+      // bit sent
+      if ((ct_incr(CountBits, bitsPerWord + bitsPerPause))) {
+        // word + stop sent
+        if (ct_incr(CountWords, wordsPerCmdPacket)) {
+          // line sent
+          end_of_stop = end_of_preamble = false;
+          return true; // done
+        } else {
+          dtSendBuf = make_Word(dtSendCmd[CountWords / 2], CountWords); // load next word
+        }
+      }
+    }
+  }
+  return false; // continue
 }
 
 static bool sendPrg() {
-	updateLine();
-	return advancePrgCounter();
+  bool end_of_word = false;
+  updateLine();
+  
+  // counting ticks until end_of_frame
+  if (ct_incr(CountTicks, bitLen)) {
+    // bit sent
+    if ((end_of_word = ct_incr(CountBits, bitsPerWord + bitsPerPause))) {
+      // word sent
+      if (ct_incr(CountWords, wordsPerPrgLine)) {
+        // line sent
+        if ((CountLines == 0 &&  FRB_GET_FPR0_IS_RTC_ONLY(dtSendPrgFrame[FPR_RTC_START_ROW])) || ct_incr(CountLines, linesPerPrg)) {
+          // frame sent
+          return true;
+        }     
+      }
+    }
+  }
+  
+  if (end_of_word) //|| (CountTicks == 1 && !CountBits && !CountWords))
+  dtSendBuf = make_Word(dtSendPrgFrame[CountLines][CountWords / 2], CountWords);
+  
+  return false; //advancePrgCounter();
 }
 
 
@@ -241,6 +228,7 @@ static void tick_send_programmingFrame() {
 }
 
 void tick_ferSender(void) {
-	tick_send_command();
-	tick_send_programmingFrame();
+  	tick_send_command();
+  	tick_send_programmingFrame();
+
 }

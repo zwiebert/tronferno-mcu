@@ -13,22 +13,25 @@
 config C;
 
 struct ee_config {
-  uint8_t zero;
+  uint32_t zero;
   config c;
   uint8_t reserve[64];
   };
   
-struct ee_config EEMEM ee_cfg = {0, {MY_FER_CENTRAL_UNIT_ID, MY_MCU_ATMEGA328_BAUD_RATE,
-   MY_GEO_LONGITUDE, MY_GEO_LATITUDE, MY_GEO_TIMEZONE, MY_GEO_DST, 0, recvTick, transmTick, rtcAvrTime  }, };
+  
+  config  ee_cfg = {MY_FER_CENTRAL_UNIT_ID, MY_MCU_ATMEGA328_BAUD_RATE,
+   MY_GEO_LONGITUDE, MY_GEO_LATITUDE, MY_GEO_TIMEZONE, MY_GEO_DST, 0, recvTick, transmTick, rtcAvrTime  };
   //FIXME: transmTick does not make it into the eep file
 
+struct ee_config tmp;
 
 void read_config() {
-  eeprom_read_block(&C, &ee_cfg.c, sizeof(config));
+  memcpy(&C, &ee_cfg, sizeof (config));
+ //eeprom_read_block(&C, &ee_cfg, sizeof(config));
 }
 
 void save_config() {
-  eeprom_update_block(&C, &ee_cfg.c, sizeof(config));
+  eeprom_update_block(&C, &ee_cfg, sizeof(config));
 }
 
 #if TEST_MODULE_CONFIG

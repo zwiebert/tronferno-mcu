@@ -106,7 +106,7 @@ testModule_astro()
 }
 
 #endif
-
+#if 1
 static void
 ICACHE_FLASH_ATTR tbl_write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], const uint8_t ad[12][8], int mint_offset) {
   int col, line;
@@ -119,8 +119,22 @@ ICACHE_FLASH_ATTR tbl_write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], 
     }
   }
 }
+#else
+static void
+ICACHE_FLASH_ATTR tbl_write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], const uint8_t *ad, int mint_offset) {
+  int col, line;
 
-static const uint8_t ad_plz_1[12][8] PROGMEM = {
+  for (line=0; line < FPR_ASTRO_HEIGHT; ++line) {
+    for (col=0; col < FPR_ASTRO_WIDTH; ++col, ++ad) {
+      d[line][col] = (*ad + mint_offset) % 60;
+      ++col; ++ad;
+      d[line][col] = *ad + (mint_offset / 60);
+
+    }
+  }
+}
+#endif
+const uint8_t ad_plz_1[12][8]  = {
 {0x34, 0x16, 0x36, 0x16, 0x36, 0x16, 0x38, 0x16 },
 {0x40, 0x16, 0x44, 0x16, 0x48, 0x16, 0x52, 0x16, },
 {0x58, 0x16, 0x04, 0x17, 0x10, 0x17, 0x16, 0x17, },

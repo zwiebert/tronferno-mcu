@@ -525,9 +525,7 @@ process_parmTimer(clpar p[], int len) {
   } else {    
   if (has_weekly) txbuf_write_wtimer(weekly_data);
   if (has_daily)  txbuf_write_dtimer(daily_data);
-#ifdef AVR
   if (has_astro)  txbuf_write_astro(astro_offset);
-#endif
   txbuf_write_rtc(false);
   txbuf_write_flags(fpr0_flags, fpr0_mask);
   txbuf_write_lastline(fsb);
@@ -601,7 +599,7 @@ process_parmHelp(clpar p[], int len) {
 bool
 testModule_cli()
 {
-	char cl[] = "send a=0x80495d g=2 m=2  c=down";//"timer g=2 m=2 weekly=08222000++++10552134+";
+	char cl[] = "timer g=5 astro=0;";//"timer g=2 m=2 weekly=08222000++++10552134+";
 	int n = parse_commandline(cl);
 	if (n > 0)
 	process_parm(par, n);

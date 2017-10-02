@@ -93,8 +93,6 @@ loop(void) {
 
 		io_puts("R:");
 		frb_printPacket(buf);
-
-		CountRecvErrors = 0;
 		has_cmdReceived = false;
 
 
@@ -110,7 +108,7 @@ loop(void) {
 		frb_printPacket(get_recvCmdBuf());
 
 		int used_lines = FRB_GET_FPR0_IS_RTC_ONLY(get_recvPrgBufLine(FPR_RTC_START_ROW)) ? FER_RTC_PACK_CT : FER_PRG_PACK_CT;
-
+used_lines = FER_PRG_PACK_CT;
 		for (i=0; i < used_lines; ++i) {
 			print_array_8(get_recvPrgBufLine(i), FER_PRG_BYTE_CT);
 		}
@@ -125,8 +123,6 @@ loop(void) {
 #ifndef DB_SHORT
 		fpr_printPrgPacketInfo(dtRecvPrgFrame, used_lines == 1);
 #endif
-
-		CountRecvErrors = 0;
 		has_prgReceived = false;
 	}
 #endif

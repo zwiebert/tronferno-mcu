@@ -40,7 +40,7 @@ void db_put_light(int state, int n) {
 
 void ICACHE_FLASH_ATTR setup_notImplemented(void) {
 	static int once;
-#if 0
+#if 1
 	if (once == 0) {
 		once = 1;
 		ip_addr_t *addr = (ip_addr_t *) os_zalloc(sizeof(ip_addr_t));
