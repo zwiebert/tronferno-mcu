@@ -7,7 +7,7 @@ include	 ./user/esp8266/settings.mk
 #SPI_SPEED	= 40
 #SPI_MODE	= QIO
 SPI_SIZE_MAP	= 4
-ESPPORT		= COM13
+ESPPORT		= COM11
 #ESPBAUD		= 115200
 
 #V=1

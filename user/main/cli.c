@@ -138,7 +138,7 @@ struct {
 	const char *fs;
 	fer_cmd fc;
 
-} const fc_map[] PROGMEM = {
+} const fc_map[]  = {
 		{"down", fer_cmd_DOWN},
 		{"up", fer_cmd_UP},
 		{"stop", fer_cmd_STOP},
@@ -356,9 +356,6 @@ process_parmDbg(clpar p[], int len) {
 					io_puts(buf);
 					io_puts("\n");
 				}
-#ifndef AVR
-				setup_notImplemented();
-#endif
 			} else if (strcmp(val, "cu") == 0) {
 				io_puts("central unit address: ");
 				io_putl(C.fer_centralUnitID, 16);
@@ -383,14 +380,14 @@ process_parmDbg(clpar p[], int len) {
 
 enum { TIMER_KEY_WEEKLY, TIMER_KEY_DAILY, TIMER_KEY_ASTRO, TIMER_KEY_RTC_ONLY, TIMER_KEY_FLAG_RANDOM, TIMER_KEY_FLAG_SUN_AUTO};
 
-const char *const timer_keys[] PROGMEM = {
+const char *const timer_keys[]  = {
   "weekly", "daily", "astro", "rtc-only", "random", "sun-auto"
 };
 
 #ifdef WEEK_STARTS_AT_SUNDAY
-const char *const timer_wdays[] PROGMEM = { "sun", "mon", "tue", "wed", "thu", "fri", "sat" };
+const char *const timer_wdays[]  = { "sun", "mon", "tue", "wed", "thu", "fri", "sat" };
 #else
-const char *const timer_wdays[] PROGMEM = { "mon", "tue", "wed", "thu", "fri", "sat", "sun" };
+const char *const timer_wdays[]  = { "mon", "tue", "wed", "thu", "fri", "sat", "sun" };
 #endif
   
 int asc2wday(const char *s) {
@@ -542,6 +539,8 @@ process_parmTimer(clpar p[], int len) {
 
 static int process_parmHelp(clpar p[], int len);
 
+const char help_None[] PROGMEM = "none";
+
 struct {
   const char *parm;
   int (*process_parmX)(clpar p[], int len);
@@ -550,8 +549,8 @@ struct {
     {"send", process_parmSend, help_parmSend},
     {"config", process_parmConfig, help_parmConfig},
     {"dbg", process_parmDbg, help_parmDbg},
-    {"timer", process_parmTimer, "none" },
-    {"help", process_parmHelp, "none"},
+    {"timer", process_parmTimer, help_None },
+    {"help", process_parmHelp, help_None},
     };  
       
 
@@ -573,7 +572,6 @@ process_cmdline(char *line) {
 }
 
 
-
 static int ICACHE_FLASH_ATTR
 process_parmHelp(clpar p[], int len) {
 	int i;
@@ -589,11 +587,12 @@ process_parmHelp(clpar p[], int len) {
 
   for (i=0; i < (sizeof (parm_handlers) / sizeof (parm_handlers[0])); ++i) {
 	  io_puts(parm_handlers[i].parm), io_puts(" options:\n");
-	  io_puts(parm_handlers[i].help), io_puts("\n");
+	  io_puts_P(parm_handlers[i].help), io_puts("\n");
   }
 
    return 0;
 }
+
 
 #if TEST_MODULE_CLI
 bool

@@ -127,6 +127,14 @@ used_lines = FER_PRG_PACK_CT;
 	}
 #endif
 
+#ifdef FER_NTP
+	{
+		static bool got_ntp;
+     if (!got_ntp) {  //FIXME: use counter to poll NTP daily or weekly
+    	 got_ntp = ntp_set_system_time();
+     }
+	}
+#endif
 }
 
 int ICACHE_FLASH_ATTR

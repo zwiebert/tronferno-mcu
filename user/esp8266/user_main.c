@@ -14,6 +14,7 @@
 #include <gpio.h>
 #include "driver/uart.h"
 
+#include "../main/common.h"
 #include "../main/inout.h"
 #include "../main/config.h"
 #include "../main/time.h"
@@ -34,8 +35,7 @@ extern void setup_pin(void);
 void main_setup(void);
 void setup_wifistation(void);
 void setup_dataFlash(void);
-
-
+void setup_ntp(void);
 
 
 
@@ -66,6 +66,9 @@ user_init() {
 
   //  setup_serial(C.serialBaud);
     setup_notImplemented();
+#ifdef FER_NTP
+    setup_ntp();
+#endif
     setup_pin();
     setup_wifistation();
 

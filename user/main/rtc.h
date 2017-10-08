@@ -14,3 +14,6 @@ void rtc_setup(void);
 #define HOUR_PER_DAY   24
 #define MONT_PER_YEAR  12
 #define DAYS_PER_WEEK   7
+
+
+bool ntp_set_system_time(void);
