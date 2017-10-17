@@ -6,29 +6,10 @@
 
 #include "common.h"
 
-#ifdef AVR_TIME
-#include <time.h>
-//#include <util/eu_dst.h>
-#include <util/usa_dst.h>
-#else
-#include "../time/time.h"
-#endif
+#include "rtc.h"
 
-int16_t ICACHE_FLASH_ATTR
-eu_dst(const time_t *timer, int32_t * z) {
-	uint32_t t = *timer;
-	if ((uint8_t) (t >> 24) >= 194)
-		t -= 3029443200U;
-	t = (t + 655513200) / 604800 * 28;
-	if ((uint16_t) (t % 1461) < 856)
-		return 3600;
-	else
-		return 0;
-}
 
 #include "all.h"
-
-extern void setup_mcu(void);
 
 extern fer_sender_basic default_sender;
 extern fer_sender_basic last_received_sender;
@@ -37,26 +18,6 @@ extern fer_sender_basic last_received_sender;
 static void ICACHE_FLASH_ATTR
 setup_1() {
 	int i;
-
-	set_zone(ONE_HOUR); //* C.timezone);
-	set_position(C.geo_latitude * ONE_DEGREE, C.geo_longitude * ONE_DEGREE);
-
-	switch (C.geo_dST) {
-
-	case dstEU:
-		set_dst(eu_dst);
-		break;
-#ifdef AVR_TIME
-		case dstUS:
-		set_dst(usa_dst);
-		break;
-#endif
-
-	case dstNone:
-	default:
-		set_dst(NULL);
-		break;
-	}
 
 	for (i = 1; i < 10; ++i) {
 		fer_init_sender(&senders[i], 0x105dc5 - i);
@@ -82,8 +43,8 @@ loop(void) {
 	}
 
 #ifdef FER_RECEIVER
+
 	// received data
-	extern bool is_recPrgFrame;
 	if (has_cmdReceived) {
 		const uint8_t *buf = get_recvCmdBuf();
 
@@ -93,14 +54,8 @@ loop(void) {
 
 		io_puts("R:");
 		frb_printPacket(buf);
-		has_cmdReceived = false;
-
-
+		fer_recvClearAll();
 	}
-
-	db_put_light(is_recPrgFrame, 1);  // debug LEDs
-
-	db_put_light(has_prgReceived, 2);
 
 	if (has_prgReceived) {
 		int i;
@@ -123,24 +78,21 @@ used_lines = FER_PRG_PACK_CT;
 #ifndef DB_SHORT
 		fpr_printPrgPacketInfo(dtRecvPrgFrame, used_lines == 1);
 #endif
-		has_prgReceived = false;
+		fer_recvClearAll();
 	}
 #endif
 
 #ifdef FER_NTP
-	{
-		static bool got_ntp;
-     if (!got_ntp) {  //FIXME: use counter to poll NTP daily or weekly
-    	 got_ntp = ntp_set_system_time();
-     }
-	}
+	ntp_update_system_time(SECS_PER_DAY);
 #endif
 }
 
 int ICACHE_FLASH_ATTR
 main_setup() {
 
+	rtc_setup();
 	setup_1();
+
 
 #ifdef DEBUG
 	test_modules();

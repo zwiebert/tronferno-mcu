@@ -5,7 +5,6 @@
  *  Author: bertw
  */
 
-#include <time.h>
 #include <string.h>
 
 #include "common.h"
@@ -143,11 +142,12 @@ void ICACHE_FLASH_ATTR write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only) {
 	d[fpr0_RTC_mont] = dec2bcd(t->tm_mon + 1);
 	d[fpr0_RTC_wday] = (rtc_only ? 0x80 : 0x00) | (t->tm_wday == 0 ? 7 : t->tm_wday); // monday==1 ... sunday==7
 	d[fpr0_RTC_wdayMask] = (1 << t->tm_wday);
+	PUT_LOW_NIBBLE(d[fpr0_FlagBits], t->tm_isdst ? 4 : 0); // FIXME: use real dst hour offset here. for now just use 1 hour (germany)
 }
 
 
 void ICACHE_FLASH_ATTR write_flags(uint8_t d[FPR_RTC_WIDTH], uint8_t flags, uint8_t mask) {
-    d[fpr0_FlagBits] = flags;
+    d[fpr0_FlagBits] |= flags;
 #if 0 // FIXME: I forgot how to use bit masks
   d[fpr0_FlagBits] |=  (flags & mask);
   d[fpr0_FlagBits] ^=  ~(flags & mask);

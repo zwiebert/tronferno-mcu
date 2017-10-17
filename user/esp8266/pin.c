@@ -12,10 +12,9 @@
 #include <gpio.h>
 #include "driver/uart.h"
 
-#include "../main/inout.h"
-#include "../main/fer.h"
-#include "../main/config.h"
-#include "../main/time.h"
+#include "main/inout.h"
+#include "main/fer.h"
+#include "main/config.h"
 
 #include "esp_missing_includes.h"
 #define console_printf ets_uart_printf
@@ -40,12 +39,6 @@ bool fer_get_recvPin() {
 
 void ICACHE_FLASH_ATTR
 setup_pin(void) {
-#if 0
-	extern void ets_wdt_enable(void);
-	extern void ets_wdt_disable(void);
-	ets_wdt_enable();
-	ets_wdt_disable();
-#endif
 	PIN_FUNC_SELECT(RFOUT_GPIO_MUX, RFOUT_GPIO_FUNC);
 
 	PIN_FUNC_SELECT(RFIN_GPIO_MUX, RFIN_GPIO_FUNC);

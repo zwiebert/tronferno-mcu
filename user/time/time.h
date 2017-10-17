@@ -1,4 +1,7 @@
+#ifndef AVR
 #include "user_interface.h"
+#include <sys/types.h>
+#endif
 /*
 
  * (C)2012 Michael Duane Rice All rights reserved.
@@ -107,7 +110,7 @@ extern          "C" {
 
 #include <inttypes.h>
 #include <stdlib.h>
-#include <sys/types.h>
+
 
 #define time(p) avr_time(p)
     /** \ingroup avr_time */
@@ -117,8 +120,11 @@ extern          "C" {
         time_t represents seconds elapsed from Midnight, Jan 1 2000 UTC (the Y2K 'epoch').
         Its range allows this implementation to represent time up to Tue Feb 7 06:28:15 2136 UTC.
     */
-    //typedef uint32_t time_t;
-
+#ifdef AVR
+    typedef uint32_t time_t;
+#else
+    typedef _TIME_T_ time_t;
+#endif
 
     /**
     The time function returns the systems current time stamp.

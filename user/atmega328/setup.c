@@ -8,8 +8,8 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 
-#include "../main/config.h"
-#include "../main/inout.h"
+#include "main/config.h"
+#include "main/inout.h"
 #include "rs232.h"
 
 void setup_pin(void);

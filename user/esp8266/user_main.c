@@ -14,14 +14,13 @@
 #include <gpio.h>
 #include "driver/uart.h"
 
-#include "../main/common.h"
-#include "../main/inout.h"
-#include "../main/config.h"
-#include "../main/time.h"
+#include "main/common.h"
+#include "main/inout.h"
+#include "main/config.h"
+#ifdef DEBUG
+#include <../../gdbstub/gdbstub.h>
+#endif
 
-
-
-extern int ets_uart_printf(const char *fmt, ...);
 #define printf ets_uart_printf
 
 extern void loop(void);
@@ -58,6 +57,7 @@ user_procTask(os_event_t *events)
 // hardware specific main setup
 void ICACHE_FLASH_ATTR
 user_init() {
+
     setup_dataFlash();
 	read_config();
 
@@ -79,6 +79,11 @@ user_init() {
     system_os_post(user_procTaskPrio, 0, 0 );
 
     setup_timer();
+
+
+#ifdef DEBUG
+	gdbstub_init();
+#endif
    // system_set_os_print(1);
     //system_print_meminfo();
 

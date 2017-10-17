@@ -33,4 +33,8 @@
 */
 #include "time.h"
 
+#ifdef __system_time
+#error
+#endif
+
 volatile time_t __system_time;

@@ -14,10 +14,10 @@
 #include <gpio.h>
 #include "driver/uart.h"
 
-#include "../main/inout.h"
-#include "../main/fer.h"
-#include "../main/config.h"
-#include "../main/time.h"
+#include "main/inout.h"
+#include "main/fer.h"
+#include "main/config.h"
+#include "main/rtc.h"
 
 #include "esp_missing_includes.h"
 
@@ -63,47 +63,33 @@
 	}
 //////////////////////////////////////////////////////////////////////////
 
-void timer_handler(void)
-{
+void timer_handler(void) {
 
-	  if (transmTick == C.app_transm)
-	  {
-	    tick_ferSender();
-	  }
+#ifdef FER_TRANSMITTER
 
-	 #ifdef FER_RECEIVER
-	  if (recvTick == C.app_recv)
-	  {
-	    tick_ferReceiver();
-	  }
-	 #endif
-
-#if 1
- if (rtcAvrTime == C.app_rtc)
- {
-   static uint32_t rtc_ticks;
-	extern volatile time_t __system_time;
-
-   if (rtc_ticks-- == 0) {
-      rtc_ticks = TICK_FREQ_HZ + (C.app_rtcAdjust * 2 * INTR_TICK_FREQ_MULT);
-	  ++__system_time;
-   }
- }
-#else
-
-
-	  if (rtcAvrTime == C.app_rtc)
-	  {
-		extern volatile time_t __system_time;
-	    const uint16_t ticks_per_second = TICK_HZ + (-0); // add config correction value here
-	    static uint16_t rtc_ticks;
-	    rtc_ticks = (rtc_ticks + 1) % ticks_per_second;
-	    if (rtc_ticks == 0) {
-	     ++__system_time;
-	    }
-	  }
+	if (transmTick == C.app_transm) {
+		tick_ferSender();
+	}
 #endif
+
+#ifdef FER_RECEIVER
+	if (recvTick == C.app_recv) {
+		tick_ferReceiver();
+	}
+#endif
+
+	if (rtcAvrTime == C.app_rtc) {
+		static uint32_t rtc_ticks;
+
+
+		if (rtc_ticks-- == 0) {
+			rtc_ticks = TICK_FREQ_HZ + MS_TO_TICKS(C.app_rtcAdjust);
+			rtc_tick();
+		}
+	}
+
 }
+
 
 
 void setup_timer(void)
@@ -113,3 +99,5 @@ void setup_timer(void)
 
 	timer1Start(ticks, flags, timer_handler);
 }
+
+

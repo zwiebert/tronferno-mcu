@@ -4,7 +4,7 @@
  *  Created on: 16.09.2017
  *      Author: bertw
  */
-#include "config.h"
+#include "main/config.h"
 
 #include "data_flash.h"
 

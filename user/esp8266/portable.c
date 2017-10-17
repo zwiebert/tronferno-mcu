@@ -20,7 +20,7 @@
 #include <gpio.h>
 #include "driver/uart.h"
 
-#include "../main/inout.h"
+#include "main/inout.h"
 
 char * ICACHE_FLASH_ATTR
 itoa(int val, char *s, int radix) {

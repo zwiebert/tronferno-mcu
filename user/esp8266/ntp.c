@@ -14,11 +14,11 @@
 #include "driver/uart.h"
 #include <mem.h>
 
-#include "../main/inout.h"
-#include "../main/fer.h"
-#include "../main/config.h"
-#include "../main/time.h"
-#include "config.h"
+#include "main/inout.h"
+#include "main/fer.h"
+#include "main/config.h"
+#include "main/rtc.h"
+#include "main/config.h"
 
 #include "esp_missing_includes.h"
 
@@ -27,6 +27,7 @@
 extern int ets_uart_printf(const char *fmt, ...);
 #define printf ets_uart_printf
 
+static time_t last_ntp_time;
 
 
 void ICACHE_FLASH_ATTR setup_ntp(void) {
@@ -44,12 +45,55 @@ void ICACHE_FLASH_ATTR setup_ntp(void) {
 	}
 }
 
+
+#define NO_ADJUST_UNTIL (SECS_PER_HOUR) // if ntp is updated too often, don't adjust to avoid wrong values and burning out persistent storage
+#define ADJUST_TOLERANCE_MS 100    // allow tolerance to avoid burning out persistent storage
+
+void ICACHE_FLASH_ATTR auto_adjust_time(time_t rtc_time, time_t ntp_time) {
+
+	if (last_ntp_time != 0 && last_ntp_time + NO_ADJUST_UNTIL < ntp_time) {
+		int32_t diff_time, interval_time;
+		double interval_days;
+		int32_t adj_ms_per_day;
+		int32_t diff_ms;
+
+		diff_time =  difftime(rtc_time, ntp_time);
+		diff_ms = difftime(rtc_time, ntp_time) * 1000L;
+		interval_time = difftime(ntp_time, last_ntp_time);
+		interval_days = (ntp_time - last_ntp_time)  / (double)ONE_DAY;
+		if (abs(adj_ms_per_day = diff_ms / interval_days) > ADJUST_TOLERANCE_MS) {
+		  C.app_rtcAdjust += adj_ms_per_day;
+		  save_config();
+		}
+	}
+}
+
 bool ICACHE_FLASH_ATTR ntp_set_system_time(void) {
 	uint32_t time_stamp = sntp_get_current_timestamp();
 	if (time_stamp != 0) {
-		set_system_time(sntp_get_current_timestamp() -  946684800);
-		printf("ntp stamp: %lu, %s\n", sntp_get_current_timestamp(), sntp_get_real_time(sntp_get_current_timestamp()));
+		time_t rtc_time, ntp_time;
+		bool autoAdjust = (rtc_last_time_source == RTC_SRC_NTP);
+
+		rtc_time = time(NULL);
+		rtc_set_system_time(sntp_get_current_timestamp() -  946684800, RTC_SRC_NTP);
+		ntp_time = time(NULL);
+		if (autoAdjust) {
+#ifdef RTC_AUTO_ADJUST
+		  auto_adjust_time(rtc_time, ntp_time);
+#endif
+		}
+ 		printf("ntp stamp: %lu, %s (adjust=%ld, interval=%d, diff=%d)\n", sntp_get_current_timestamp(), sntp_get_real_time(sntp_get_current_timestamp()), (long)C.app_rtcAdjust, (int)difftime(ntp_time, last_ntp_time), (int)(rtc_time - ntp_time));
+ 		last_ntp_time = ntp_time;
 		return true;
 	}
 	return false;
+}
+
+bool ICACHE_FLASH_ATTR ntp_update_system_time(unsigned interval_seconds) {
+	if (last_ntp_time == 0 || time(NULL) >= last_ntp_time + interval_seconds) {
+		ntp_set_system_time();
+		return true;
+	}
+	return false;
+
 }

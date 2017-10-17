@@ -8,9 +8,12 @@
 ////////////////////////
 // disable features not working on some MCUs
 #ifdef MCU_ESP8266
+#define FER_TRANSMITTER
+#ifndef DEBUG
 #define FER_RECEIVER
-#define FER_RECEIVER_MINIMAL  // not enough IRAM on ESP8266 (disables timer receiving capability)
-#if !defined FER_RECEIVER || defined FER_RECEIVER_MINIMAL
+//#define FER_RECEIVER_MINIMAL  // not enough IRAM on ESP8266 (disables timer receiving capability)
+#endif
+#if 1 //!defined FER_RECEIVER || defined FER_RECEIVER_MINIMAL
 #define FER_NTP
 #endif
 #endif

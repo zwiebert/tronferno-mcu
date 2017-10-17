@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <avr/sleep.h>
 
-#include "../main/common.h"
+#include "main/common.h"
 #include "rs232.h"
 
 #define dprintf(format, args...)                        \

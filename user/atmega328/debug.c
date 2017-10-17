@@ -1,8 +1,8 @@
 #include <stdlib.h>
 
-#include "../main/debug.h"
-#include "../main/inout.h"
-#include "../main/common.h"
+#include "main/debug.h"
+#include "main/inout.h"
+#include "main/common.h"
 
 #ifndef DB_NO_LIGHTS
 

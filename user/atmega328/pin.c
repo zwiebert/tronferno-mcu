@@ -4,7 +4,7 @@
  * Created: 12.09.2017 01:58:00
  *  Author: bertw
  */ 
-#include "../main/common.h"
+#include "main/common.h"
 #include "defines.h"
 
 #define FER_MCUPIN_RECV  (D, 3)

@@ -333,8 +333,6 @@ process_parmConfig(clpar p[], int len) {
 	return 0;
 }
 
-extern uint32_t data_clock_ticks, pre_len, pre_nedge;
-
 const char help_parmDbg[] PROGMEM =
 		"print=(rtc|cu)\n";
 
@@ -517,8 +515,8 @@ process_parmTimer(clpar p[], int len) {
   init_prgPacket(dtSendPrgFrame);
   if (flag_rtc_only == FLAG_TRUE) { 
       txbuf_write_rtc(true);
-      txbuf_write_flags(fpr0_flags, fpr0_mask);
-      print_array_8(get_sendPrgBufLine(0), FER_PRG_BYTE_CT);
+      txbuf_write_flags(fpr0_flags, fpr0_mask); // FIXME: are flags always ignored in RTC_ONLY frames? Or just ignored in Broadcasts
+      io_puts("RTC: "), print_array_8(get_sendPrgBufLine(0), FER_PRG_BYTE_CT);
   } else {    
   if (has_weekly) txbuf_write_wtimer(weekly_data);
   if (has_daily)  txbuf_write_dtimer(daily_data);

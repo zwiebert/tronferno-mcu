@@ -1,5 +1,8 @@
+SRC_BASE = .
+
 # build directory
 BUILD_BASE	= build
+
 
 # firmware directory
 FW_BASE		= firmware
@@ -7,19 +10,16 @@ FW_BASE		= firmware
 # name for the target project
 TARGET		= app
 
-# Base directory for the compiler
-XTENSA_TOOLS_ROOT ?= c:/Espressif/xtensa-lx106-elf/bin
-
 # base directory of the ESP8266 SDK package, absolute
-SDK_BASE	?= c:/Espressif/ESP8266_SDK
-SDK_TOOLS	?= c:/Espressif/utils/ESP8266
+SDK_BASE	?= $(HOME)/esp/ESP8266_NONOS_SDK
+SDK_TOOLS	?= $(HOME)/esp/ESP8266_NONOS_SDK/tools
 
 # Extra libs, include and ld file
-EXTRA_BASE	?= c:/Espressif/extra
+EXTRA_BASE	?= $(HOME)/esp/ESP8266_NONOS_SDK/third_party
 
 # esptool path and port
-ESPTOOL		?= $(SDK_TOOLS)/esptool.exe
-ESPPORT		?= COM11
+ESPTOOL		?= python $(HOME)/esp/esp-idf/components/esptool_py/esptool/esptool.py
+ESPPORT		?= /dev/ttyUSB0
 
 # Baud rate for programmer
 ESPBAUD		?= 115200

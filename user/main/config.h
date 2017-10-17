@@ -8,7 +8,7 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#if __has_include("../sensitive/defaults.h")
+#if 1 // __has_include("../sensitive/defaults.h")
 
 #include "../sensitive/defaults.h"
 
@@ -45,7 +45,7 @@ typedef struct {
 	uint32_t fer_centralUnitID, mcu_serialBaud;
 	float geo_longitude, geo_latitude, geo_timezone;
 	enum dst geo_dST;
-    int16_t app_rtcAdjust;
+    int32_t app_rtcAdjust;
 	enum receiver app_recv;
 	enum transmitter app_transm;
 	enum rtclock app_rtc;

@@ -16,6 +16,7 @@ int strcasecmp(const char *a, const char *b);
 //MOST OF THESE ARE GUESSED! but they seem to work and shut up the compiler.
 typedef struct espconn espconn;
 
+int ets_uart_printf(const char *fmt, ...);
 int atoi(const char *nptr);
 void ets_install_putc1(void (*routine)(char c));
 void ets_isr_attach(int intr, void (*handler)(void *), void *arg);
@@ -32,7 +33,7 @@ int ets_strlen(const char *s);
 int ets_strncmp(const char *s1, const char *s2, unsigned int len);
 char *ets_strncpy(char *dest, const char *src, size_t n);
 char *ets_strstr(const char *haystack, const char *needle);
-void ets_timer_arm_new(os_timer_t *a, uint32_t b, bool repeat, bool isMstimer);
+//void ets_timer_arm_new(os_timer_t *a, uint32_t b, bool repeat, bool isMstimer);
 void ets_timer_disarm(os_timer_t *a);
 void ets_timer_setfn(os_timer_t *t, ETSTimerFunc *fn, void *parg);
 void ets_update_cpu_frequency(int freqmhz);
@@ -47,22 +48,12 @@ int rand(void);
 void ets_bzero(void *s, size_t n);
 void ets_delay_us(uint16_t ms);
 
-//Hack: this is defined in SDK 1.4.0 and undefined in 1.3.0. It's only used for this, the symbol itself
-//has no meaning here.
-#ifndef RC_LIMIT_P2P_11N
-//Defs for SDK <1.4.0
-void *pvPortMalloc(size_t xWantedSize);
-void *pvPortZalloc(size_t);
-void vPortFree(void *ptr);
-void *vPortMalloc(size_t xWantedSize);
-void pvPortFree(void *ptr);
-#else
+
 void *pvPortMalloc(size_t xWantedSize, const char *file, unsigned line);
 void *pvPortZalloc(size_t, const char *file, unsigned line);
 void vPortFree(void *ptr, const char *file, unsigned line);
 void *vPortMalloc(size_t xWantedSize, const char *file, unsigned line);
 void pvPortFree(void *ptr, const char *file, unsigned line);
-#endif
 
 //Standard PIN_FUNC_SELECT gives a warning. Replace by a non-warning one.
 #ifdef PIN_FUNC_SELECT

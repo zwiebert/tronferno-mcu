@@ -7,7 +7,7 @@ include	 ./user/esp8266/settings.mk
 #SPI_SPEED	= 40
 #SPI_MODE	= QIO
 SPI_SIZE_MAP	= 4
-ESPPORT		= COM11
+ESPPORT		= /dev/ttyUSB2
 #ESPBAUD		= 115200
 
 #V=1
@@ -17,3 +17,7 @@ LIBS	= c gcc hal phy pp net80211 lwip wpa main crypto
 # Root includes
 #include	C:/Espressif/examples/ESP8266/common_nonos.mk
 include ./user/esp8266/common.mk
+
+
+
+    

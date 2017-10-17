@@ -31,7 +31,7 @@
 /*
     Impoved system_tick Credit to Wouter van Gulik.
 */
-
+#ifdef AVR
 #include <avr/common.h>
 
     .global	system_tick
@@ -58,3 +58,5 @@ system_tick:
     pop r24
     ret
 	.size	system_tick, .-system_tick
+
+#endif

@@ -9,7 +9,7 @@
 #define FER_TICK_FREQ_MULT       (INTR_TICK_FREQ_MULT / 2)  // old-code 100us relative multiplier: 0.5=5kHz (200us), 1=10kHz (100us), 2=20kHz (50us), 4=40kHz (25us)
 #define TICK_FREQ_HZ             (BASE_CLOCK * INTR_TICK_FREQ_MULT) 
 #define TICK_PERIOD_US           (1000000UL / TICK_FREQ_HZ)
-
+#define TICK_PERIOD_MS           (TICK_PERIOD_US * 1000UL)
 
 #define DEFAULT_DATA_CLOCK_US  200
 #define DEFAULT_DATA_CLOCK_HZ  5000
@@ -18,6 +18,7 @@
 #define REL_TO_TICKS(rel) (((rel) * DEFAULT_DATA_CLOCK_US) / TICK_PERIOD_US)
 #define HUS_TO_TICKS(hus) (((hus) * 100 ) / TICK_PERIOD_US)
 #define US_TO_TICKS(us) ((us) / TICK_PERIOD_US)
+#define MS_TO_TICKS(ms) ((ms) / TICK_PERIOD_MS)
 
 // timings (relative to an imaginary "data clock" which is "four times prelude frequency" (usually 200us)).
 // before sending any data we have 7 pre-bits
@@ -28,6 +29,7 @@
 #define FER_PRE_WIDTH_MIN_REL     3 
 #define FER_PRE_NEDGE_MIN_REL     1
 #define FER_PRE_NEDGE_MAX_REL     5
+#define FER_PRE_BIT_COUNT         7
 
 // 1 stop bit follows after the pre-bits
 // 1 stop bit follows also each data-word
@@ -112,13 +114,13 @@ typedef enum { fer_OK, fer_PAIR_NOT_EQUAL, fer_BAD_WORD_PARITY, fer_BAD_CHECKSUM
 // receiver ///////////////////////////
 bool fer_get_recvPin();
 
-extern uint16_t CountRecvErrors;  // FIXME: get rid of it
-
 ferCmdBuf_type get_recvCmdBuf(void);
 uint8_t *get_recvPrgBufLine(uint8_t line);
 extern uint8_t dtRecvPrgFrame[linesPerPrg][bytesPerPrgLine];
 
-extern volatile bool has_cmdReceived, has_prgReceived;
+extern volatile bool has_cmdReceived;
+extern volatile bool has_prgReceived;
+
 void tick_ferReceiver(void);
 extern bool fer_prg_verfiy_checksums(uint8_t dg[linesPerPrg][bytesPerPrgLine], uint8_t checksum);
 bool fer_cmd_verify_checksum(ferCmdBuf_type dg, uint8_t *checksum_out);

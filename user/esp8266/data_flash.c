@@ -4,7 +4,7 @@
  * read and write data from/to flash. data cannot be larger than 4092 byte
  * configure type and pointer to your data it in data_flash.h
  *
- * FIXME: better check if data is actually larger (even if its very unlikely)
+ * FIXME: better check if data is actually larger than 4092 byte (even if its very unlikely)
  *
  *  Created on: 16.09.2017
  *      Author: bertw
@@ -19,9 +19,8 @@
 #include <osapi.h>
 #include <mem.h>
 
-#include "config.h"
+#include "main/config.h"
 #include "esp_missing_includes.h"
-extern int ets_uart_printf(const char *fmt, ...);
 
 #define DB(x)
 #define printf ets_uart_printf

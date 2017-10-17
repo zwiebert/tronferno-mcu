@@ -9,9 +9,10 @@
  * Modification history:
  *     2014/3/12, v1.0 create this file.
 *******************************************************************************/
-#include "ets_sys.h"
-#include "osapi.h"
-#include "driver/uart.h"
+#include <ets_sys.h>
+#include <osapi.h>
+#include <c_types.h>
+#include "uart.h"
 
 #define UART0   0
 #define UART1   1

@@ -9,7 +9,7 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 
-#include "../main/inout.h"
+#include "main/inout.h"
 
 void loop(void);
 void main_setup(void);

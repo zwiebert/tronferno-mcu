@@ -7,16 +7,18 @@
 #ifdef AVR_TIME
 #include <time.h>
 #else
-#include "../time/time.h"
+#include "time/time.h"
 #endif
 
+#include "config.h"
+
+rtc_time_source_t rtc_last_time_source;
+
+void ICACHE_FLASH_ATTR rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t source) { rtc_last_time_source = source; set_system_time(stamp); }
+rtc_time_t ICACHE_FLASH_ATTR rtc_time(void) { return time(NULL); }
+
+
 void set_system_time(time_t timestamp);
-
-void ICACHE_FLASH_ATTR
-rtc_setup()
-{
-
-}
 
 int8_t ICACHE_FLASH_ATTR
 get_weekDay()
@@ -67,7 +69,7 @@ rtc_set_by_string(const char *dateTimeString)
                 time_t timestamp = mktime(&t);
                 if (timestamp > 0) {
 
-                  set_system_time(timestamp);
+                  rtc_set_system_time(timestamp, RTC_SRC_CLI); //FIXME: rtc_src
                   return true;
                 }
               }
@@ -79,6 +81,66 @@ rtc_set_by_string(const char *dateTimeString)
   }
   return false;
 }
+
+
+#ifdef AVR_TIME
+//#include <util/eu_dst.h>
+#if 0
+#include <util/usa_dst.h>
+
+#else // FIXME: DST
+int16_t ICACHE_FLASH_ATTR
+usa_dst(const time_t *timer, int32_t * z) {
+	uint32_t t = *timer;
+	if ((uint8_t) (t >> 24) >= 194)
+		t -= 3029443200U;
+	t = (t + 655513200) / 604800 * 28;
+	if ((uint16_t) (t % 1461) < 856)
+		return 3600;
+	else
+		return 0;
+}
+#endif
+
+#endif
+
+int16_t ICACHE_FLASH_ATTR
+eu_dst(const time_t *timer, int32_t * z) {
+	uint32_t t = *timer;
+	if ((uint8_t) (t >> 24) >= 194)
+		t -= 3029443200U;
+	t = (t + 655513200) / 604800 * 28;
+	if ((uint16_t) (t % 1461) < 856)
+		return 3600;
+	else
+		return 0;
+}
+
+
+void ICACHE_FLASH_ATTR
+rtc_setup()
+{
+	set_zone(ONE_HOUR); //* C.timezone);
+	set_position(C.geo_latitude * ONE_DEGREE, C.geo_longitude * ONE_DEGREE);
+
+	switch (C.geo_dST) {
+
+	case dstEU:
+		set_dst(eu_dst);
+		break;
+#ifdef AVR_TIME
+		case dstUS:
+		set_dst(usa_dst);
+		break;
+#endif
+
+	case dstNone:
+	default:
+		set_dst(NULL);
+		break;
+	}
+}
+
 
 
 #if TEST_MODULE_RTC

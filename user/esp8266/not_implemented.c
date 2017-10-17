@@ -14,16 +14,16 @@
 #include "driver/uart.h"
 #include <mem.h>
 
-#include "../main/inout.h"
-#include "../main/fer.h"
-#include "../main/config.h"
-#include "../main/time.h"
-#include "config.h"
+#include "main/inout.h"
+#include "main/fer.h"
+#include "main/config.h"
+#include <time.h>
+#include "main/config.h"
 
 #include "esp_missing_includes.h"
 
 
-extern int ets_uart_printf(const char *fmt, ...);
+
 #define printf ets_uart_printf
 
 

@@ -1,12 +1,3 @@
-#############################################################
-#
-# Root Level Makefile
-#
-# Version 2.0
-#
-# (c) by CHERTS <sleuthhound@gmail.com>
-#
-#############################################################
 
 ifeq ($(BOOT), new)
     boot = new
@@ -124,14 +115,22 @@ else
   endif
 endif
 
-EXTRA_INCDIR    = include $(EXTRA_BASE)/include
+
+D ?= $(DEBUG)
+ifeq ("$(D)","1")
+#MODULES += gdbstub
+endif
+
+EXTRA_INCDIR    = $(EXTRA_BASE)/include
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -g -O2 -std=gnu90 -Wpointer-arith -Wundef -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -mno-serialize-volatile -D__ets__ -DICACHE_FLASH
+CFLAGS		=  -std=gnu90 -Wpointer-arith -Wundef -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -mno-serialize-volatile -D__ets__ -DICACHE_FLASH
 CXXFLAGS	= -Os -g -O2 -Wpointer-arith -Wundef  -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -mno-serialize-volatile -D__ets__ -DICACHE_FLASH -fno-rtti -fno-exceptions
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static,
+LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
+
+
 
 # linker script used for the above linkier step
 LD_SCRIPT	= eagle.app.v6.ld
@@ -168,38 +167,72 @@ else
     app = 0
 endif
 
+ifndef SRC_BASE
+SRC_BASE := .
+endif
+
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
 SDK_INCDIR	= include include/json
 
+
+
 # select which tools to use as compiler, librarian and linker
-CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
-CXX		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-g++
-AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
-LD		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
-OBJCOPY		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objcopy
-OBJDUMP		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objdump
+CC		:= xtensa-lx106-elf-gcc
+CXX		:= xtensa-lx106-elf-g++
+AR		:= xtensa-lx106-elf-ar
+LD		:= xtensa-lx106-elf-gcc
+OBJCOPY		:= xtensa-lx106-elf-objcopy
+OBJDUMP		:= xtensa-lx106-elf-objdump
 
-SRC_DIR		:= $(MODULES)
+SRC_DIR		:= $(addprefix $(SRC_BASE)/,$(MODULES))
 BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
-
 SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
-SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c*))
-C_OBJ		:= $(patsubst %.c,%.o,$(SRC))
-CXX_OBJ		:= $(patsubst %.cpp,%.o,$(C_OBJ))
-OBJ		:= $(patsubst %.o,$(BUILD_BASE)/%.o,$(CXX_OBJ))
+C_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
+CXX_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.[cc|cxx|cpp|C])) # FIXME: does this really match?
+ASM_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
+
+C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
+CXX_OBJ		:= $(patsubst %.C,$(BUILD_BASE)/%.o,$(patsubst %.cxx,$(BUILD_BASE)/%.o,$(patsubst %.cc,$(BUILD_BASE)/%.o,$(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC)))))
+ASM_OBJ	    := $(patsubst %.S,$(BUILD_BASE)/%.o,$(ASM_SRC))
+
+SRC		    := $(C_SRC) $(CXX_SRC) $(ASM_SRC)
+OBJ		    := $(C_OBJ) $(CXX_OBJ) $(ASM_OBJ)
+
 LIBS		:= $(addprefix -l,$(LIBS))
 APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
 TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
 
 LD_SCRIPT	:= $(addprefix -T$(SDK_BASE)/$(SDK_LDDIR)/,$(LD_SCRIPT))
 
-INCDIR		:= $(addprefix -I,$(SRC_DIR))
+INCDIR		:= -Iuser -Iuser/time # $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
-MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
+#MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
+
+GDB_SRC := $(wildcard gdbstub/*.[c|S])
+GDB_OBJ := $(patsubst %.S,$(BUILD_BASE)/%.o,$(patsubst %.c,$(BUILD_BASE)/%.o,$(GDB_SRC)))
+GDB_BUILD_DIR := $(BUILD_BASE)/gdbstub
+BUILD_DIR += $(GDB_BUILD_DIR)
+
+ifeq ("$(D)","1")
+CPPFLAGS += -DDEBUG -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
+CFLAGS +=  -Og -ggdb
+LDFLAGS += -ggdb
+#LIBS += $(BUILD_BASE)/gdbstub/libgdbstub.a
+SRC += $(GDB_SRC)
+OBJ += $(GDB_OBJ)
+else
+CPPFLAGS += 
+CFLAGS += -Os -g -O2
+LDFLAGS +=
+endif
+
+
+pri:
+	echo $(BUILD_DIR)
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
@@ -214,15 +247,22 @@ vpath %.c $(SRC_DIR)
 vpath %.cpp $(SRC_DIR)
 
 define compile-objects
-$1/%.o: %.c
+$(1)%.o: $(2)%.S
+	$(vecho) "AS $$<"
+	$(Q) $(CC) -c $$< -o $$@
+$(1)%.o: $(2)%.c
 	$(vecho) "CC $$<"
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
-$1/%.o: %.cpp
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CFLAGS)  -c $$< -o $$@
+$(1)%.o: $(2)%.cpp
 	$(vecho) "C+ $$<"
-	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS)  -c $$< -o $$@
+	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CXXFLAGS)  -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs clean flash flashboot flashinit rebuild
+$(BUILD_BASE)/gdbstub/libgdbstub.a : $(GDB_OBJ)
+	$(vecho) "AR $@"
+	 $(AR) cru $@ $^
+
+.PHONY: all checkdirs clean flash flashboot flashinit flasherase rebuild reflash 
 
 all: checkdirs $(TARGET_OUT)
 
@@ -235,9 +275,9 @@ $(TARGET_OUT): $(APP_AR)
 	$(Q) $(OBJCOPY) --only-section .rodata -O binary $@ eagle.app.v6.rodata.bin
 	$(Q) $(OBJCOPY) --only-section .irom0.text -O binary $@ eagle.app.v6.irom0text.bin
 	$(vecho) "objcopy done"
-	$(vecho) "Run gen_appbin.exe"
+	$(vecho) "Run gen_appbin"
 ifeq ($(app), 0)
-	$(Q) $(SDK_TOOLS)/gen_appbin.exe $@ 0 $(mode) $(freqdiv) $(size_map) $(app)
+	$(Q) python $(SDK_TOOLS)/gen_appbin.py $@ 0 $(mode) $(freqdiv) $(size_map) $(app)
 	$(Q) mv eagle.app.flash.bin $(FW_BASE)/eagle.flash.bin
 	$(Q) mv eagle.app.v6.irom0text.bin $(FW_BASE)/eagle.irom0text.bin
 	$(Q) rm eagle.app.v6.*
@@ -247,11 +287,11 @@ ifeq ($(app), 0)
 	$(vecho) "eagle.irom0text.bin---->0x10000"
 else
     ifneq ($(boot), new)
-	$(Q) $(SDK_TOOLS)/gen_appbin.exe $@ 1 $(mode) $(freqdiv) $(size_map) $(app)
+	$(Q)  python $(SDK_TOOLS)/gen_appbin.py $@ 1 $(mode) $(freqdiv) $(size_map) $(app)
 	$(vecho) "Support boot_v1.1 and +"
     else
-	$(Q) $(SDK_TOOLS)/gen_appbin.exe $@ 2 $(mode) $(freqdiv) $(size_map) $(app)
-    	ifeq ($(size_map), 6)
+	$(Q)  python $(SDK_TOOLS)/gen_appbin.py $@ 2 $(mode) $(freqdiv) $(size_map) $(app)
+        ifeq ($(size_map), 6)
 		$(vecho) "Support boot_v1.4 and +"
         else
             ifeq ($(size_map), 5)
@@ -290,7 +330,7 @@ else
 	$(vecho) "Flash boot_v1.1 and +"
 	$(ESPTOOL) -p $(ESPPORT) -b $(ESPBAUD) write_flash $(flashimageoptions) 0x00000 $(SDK_BASE)/bin/boot_v1.1.bin
     else
-    	ifeq ($(size_map), 6)
+        ifeq ($(size_map), 6)
 		$(vecho) "Flash boot_v1.5 and +"
 		$(ESPTOOL) -p $(ESPPORT) -b $(ESPBAUD) write_flash $(flashimageoptions) 0x00000 $(SDK_BASE)/bin/boot_v1.6.bin
         else
@@ -335,11 +375,45 @@ endif
 # ===============================================================
 
 # FLASH SIZE
+
+
+ifeq ($(flash), 512)
+ sparea = 0x7C000
+ bbarea = 0x7E000
+else
+ ifeq ($(flash), 1024)
+   sparea = 0xFC000
+   bbarea = 0xFE000
+ else
+   ifeq ($(flash), 2048)
+     sparea = 0x1FC000
+     bbarea = 0x1FE000
+   else
+     ifeq ($(flash), 4096)
+       sparea = 0x3FC000
+       bbarea = 0x3FE000
+     endif
+   endif
+  endif
+endif
+
+
 flashinit:
 	$(vecho) "Flash init data default and blank data."
-	$(ESPTOOL) -p $(ESPPORT) write_flash $(flashimageoptions) 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin
+	$(ESPTOOL) -p $(ESPPORT) write_flash $(flashimageoptions) $(sparea) $(SDK_BASE)/bin/esp_init_data_default.bin $(bbarea) $(SDK_BASE)/bin/blank.bin
 
-rebuild: clean all
+flasherase:
+	$(vecho) "Flash erase. May be followed by: make flashinit"
+	$(ESPTOOL) -p $(ESPPORT) erase_flash
+
+
+rebuild:
+	$(MAKE) clean
+	$(MAKE) all
+
+reflash: rebuild
+	$(MAKE) flash
+
 
 clean:
 	$(Q) rm -f $(APP_AR)
@@ -348,4 +422,6 @@ clean:
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
 
-$(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
+
+$(eval $(call compile-objects,$(BUILD_BASE)/,$(SRC_BASE)/))
+

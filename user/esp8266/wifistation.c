@@ -8,8 +8,8 @@
 #include <mem.h>
 
 #include "driver/uart.h"
-#include "config.h"
-#include "inout.h"
+#include "main/config.h"
+#include "main/inout.h"
 
 #define printf io_printf_fun
 
