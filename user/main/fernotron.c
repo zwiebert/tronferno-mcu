@@ -54,6 +54,7 @@ loop(void) {
 
 		io_puts("R:");
 		frb_printPacket(buf);
+		{ extern uint8_t preBitTicks; io_puts("preBitTicks: "), io_print_dec_16(preBitTicks, false), io_puts("\n"); }
 		fer_recvClearAll();
 	}
 
@@ -78,6 +79,7 @@ used_lines = FER_PRG_PACK_CT;
 #ifndef DB_SHORT
 		fpr_printPrgPacketInfo(dtRecvPrgFrame, used_lines == 1);
 #endif
+		{ extern uint8_t preBitTicks; io_puts("preBitTicks: "), io_print_dec_16(preBitTicks, false), io_puts("\n"); }
 		fer_recvClearAll();
 	}
 #endif

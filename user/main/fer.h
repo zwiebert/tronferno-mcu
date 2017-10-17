@@ -16,6 +16,8 @@
 #define DEFAULT_DATA_CLOCK_TICKS US_TO_TICKS(DEFAULT_DATA_CLOCK_US)
 
 #define REL_TO_TICKS(rel) (((rel) * DEFAULT_DATA_CLOCK_US) / TICK_PERIOD_US)
+//#define REL_TO_TICKS(rel) ((rel) * INTR_TICK_FREQ_MULT)
+
 #define HUS_TO_TICKS(hus) (((hus) * 100 ) / TICK_PERIOD_US)
 #define US_TO_TICKS(us) ((us) / TICK_PERIOD_US)
 #define MS_TO_TICKS(ms) ((ms) / TICK_PERIOD_MS)
