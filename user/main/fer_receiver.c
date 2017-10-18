@@ -30,7 +30,7 @@
 #define clockEdge pEdge
 #define dataEdge nEdge
 
-#define MAX_PRG_TICK_COUNT (REL_TO_TICKS(FER_PRG_FRAME_WIDTH_REL) * 100) // FIXME
+#define MAX_PRG_TICK_COUNT (REL_TO_TICKS(FER_PRG_FRAME_WIDTH_REL) * 2) // FIXME
 
 static int8_t input_edge; // Usually 0, but -1 or +1 at tick input change is detected
 static uint16_t aTicks, pTicks, nTicks;
@@ -93,7 +93,7 @@ static bool fer_word_parity_p(uint16_t word, uint8_t pos) {
 }
 
 static fer_errors fer_extract_Byte(const uint16_t *src, uint8_t *dst) {
-#if 0
+#if 1
 	if (fer_word_parity_p(src[0], 0)
 			&& fer_word_parity_p(src[1], 1)
 			&& ((0xff & src[0]) == (0xff & src[1]))) {
@@ -140,14 +140,14 @@ static bool is_pre_bit(unsigned len, unsigned nedge) {
 	return ((FER_PRE_WIDTH_MIN <= len && len <= FER_PRE_WIDTH_MAX) && (FER_PRE_NEDGE_MIN <= nedge && nedge <= FER_PRE_NEDGE_MAX));
 }
 
-static int8_t preBits;
-int8_t preBitTicks;
+ volatile int8_t preBits;
+volatile int8_t preBitTicks;
 
 static bool wait_and_sample(void) {
 
 	if (POS__NOT_IN_DATA) {
 
-		if (preBits == 5) {
+		if (preBits == 6) {
 			// measure length in ticks (for no reason)
 			++preBitTicks;
 		}
@@ -237,10 +237,11 @@ void fer_recvClearAll(void) {
 
 // receive the command and set flags if rtc or timer data will follow
 static void tick_recv_command() {
-	if (!has_cmdReceived && !is_recPrgFrame && !has_prgReceived) {
-		bool done = cmd_recv();
+	if (has_cmdReceived || is_recPrgFrame || has_prgReceived) {
+		return;
+	} else {
 
-		if (done) {
+		if (cmd_recv()) {
 #if DB_FORCE_CMD
 			has_cmdReceived = true;
 #else
@@ -262,10 +263,11 @@ static void tick_recv_command() {
 
 #ifndef FER_RECEIVER_MINIMAL
 static void tick_recv_programmingFrame() {
-	if (is_recPrgFrame && !has_prgReceived) {
-		bool done = prg_recv();
+	if (!is_recPrgFrame || has_prgReceived) {
+		return;
+	} else {
 
-		if (done) {
+		if (prg_recv()) {
 			has_prgReceived = true;
 		}
 	}
