@@ -309,13 +309,14 @@ const char help_parmConfig[] PROGMEM =
 		  "baud=serial_baud_rate\n"
 		  "wlan-ssid=\"your_wlan_ssid\"\n"
 		  "wlan-password=\"your_wlan_password\"\n"
-		  "longitude=N like -13.23452\n"
+		  "longitude=N like -13.23452 (to calculate sunset)\n"
 		  "latitude=N like +52.34234\n"
 		  "time-zone=N like +1\n"
+		  "dst=(eu|0|1) daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
 		;
 
 static int ICACHE_FLASH_ATTR
-process_parmConfig(clpar p[], int len) { // TODO: add geo parameters to config
+process_parmConfig(clpar p[], int len) {
 	int i;
 
 	for (i = 1; i < len; ++i) {
@@ -360,20 +361,41 @@ process_parmConfig(clpar p[], int len) { // TODO: add geo parameters to config
 		} else if (strcmp(key, "longitude") == 0) {
 			float longitude = stof(val);
 			C.geo_longitude = longitude;
+			rtc_setup();
 			save_config();
 			reply_success();
 		} else if (strcmp(key, "latitude") == 0) {
 			float latitude = stof(val);
 			C.geo_latitude = latitude;
+			rtc_setup();
 			save_config();
 			reply_success();
 		} else if (strcmp(key, "time-zone") == 0) {
 			float timezone = stof(val);
 			C.geo_timezone = timezone;
+			rtc_setup();
 			save_config();
 			reply_success();
+		} else if (strcmp(key, "dst") == 0) {
+			if (strcmp(val, "eu")) {
+				C.geo_dST = dstEU;
+			}
+			if (strcmp(val, "0")) {
+				C.geo_dST = dstNone;
+			}
+			if (strcmp(val, "1")) {
+				C.geo_dST = dstAlways;
+			} else {
+				reply(false);
+				return -1;
+			}
+
+			rtc_setup();
+			save_config();
+			reply_success();
+
 		} else {
-				reply(false); // unknown parameter
+			reply(false); // unknown parameter
 			return -1;
 		}
 	}

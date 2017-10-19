@@ -121,8 +121,8 @@ enum fpr0 {
 enum fpr0_FlagBitsValues { // FIXME: there must be more flag bits in use than just random and sunauto (as seen in  captured data)
 	flag_Random, // shutter opens/closes at random times (theft protection during longer absence)
 	flag_1,  // ???
-	flag_2,  // FIXME: DST Offset ???
-	flag_3,  // FIXME: DST Offset ??
+	flag_DST,  // while its set, astro time table data is converted to DST by adding one hour.
+	flag_3,  //
 	flag_4,  // ???
 	flag_5,  // ???
 	flag_6,  // ???

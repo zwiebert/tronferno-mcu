@@ -223,9 +223,7 @@ void tick_ferSender(void) {
 
 	if (is_sendCmdPending) {
 		tick_send_command();
-	}
-
-	if (is_sendPrgPending) {
+	} else if (is_sendPrgPending) {
 		tick_send_programmingFrame();
 	}
 }

@@ -134,7 +134,7 @@ void ICACHE_FLASH_ATTR txbuf_write_astro(int mint_offset) {
 void ICACHE_FLASH_ATTR write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only) {
 	time_t timer = time(NULL);
 	struct tm *t = localtime(&timer);
-	int dstHours = 1; // FIXME: use real dst hour offset here. for now just use 1 hour (germany). not sure yet if the flagBits  are really contain an hour offset for dst
+
 
 	d[fpr0_RTC_secs] = dec2bcd(t->tm_sec);
 	d[fpr0_RTC_mint] = dec2bcd(t->tm_min);
@@ -143,16 +143,25 @@ void ICACHE_FLASH_ATTR write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only) {
 	d[fpr0_RTC_mont] = dec2bcd(t->tm_mon + 1);
 	d[fpr0_RTC_wday] = (rtc_only ? 0x80 : 0x00) | (t->tm_wday == 0 ? 7 : t->tm_wday); // monday==1 ... sunday==7
 	d[fpr0_RTC_wdayMask] = (1 << t->tm_wday);
-
-	PUT_LOW_NIBBLE(d[fpr0_FlagBits], t->tm_isdst ? (dstHours << 2) : 0);
+	PUT_BIT(d[fpr0_FlagBits], flag_DST, t->tm_isdst);
 }
 
-
 void ICACHE_FLASH_ATTR write_flags(uint8_t d[FPR_RTC_WIDTH], uint8_t flags, uint8_t mask) {
-    d[fpr0_FlagBits] |= flags;
-#if 0 // FIXME: I forgot how to use bit masks
-  d[fpr0_FlagBits] |=  (flags & mask);
-  d[fpr0_FlagBits] ^=  ~(flags & mask);
+#if 1
+	int i;
+
+	for (i = 0; i < 8; ++i) {
+		if (mask & 1) {
+			PUT_BIT(d[fpr0_FlagBits], i, (flags & 1));
+		}
+
+		mask >>= 1;
+		flags >>= 1;
+	}
+
+#else // FIXME: did I forgot how to use bit masks
+	d[fpr0_FlagBits] |= (flags & mask);
+	d[fpr0_FlagBits] ^= ~(flags & mask);
 #endif
 
 }

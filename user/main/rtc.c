@@ -69,7 +69,7 @@ rtc_set_by_string(const char *dateTimeString)
                 time_t timestamp = mktime(&t);
                 if (timestamp > 0) {
 
-                  rtc_set_system_time(timestamp, RTC_SRC_CLI); //FIXME: rtc_src
+                  rtc_set_system_time(timestamp, RTC_SRC_CLI); //FIXME: use real rtc_src
                   return true;
                 }
               }
@@ -116,10 +116,13 @@ eu_dst(const time_t *timer, int32_t * z) {
 		return 0;
 }
 
+int16_t ICACHE_FLASH_ATTR
+always_dst(const time_t *timer, int32_t * z) {
+	return 3600;
+}
 
 void ICACHE_FLASH_ATTR
-rtc_setup()
-{
+rtc_setup() {
 	set_zone(ONE_HOUR * C.geo_timezone); //* C.timezone);
 	set_position(C.geo_latitude * ONE_DEGREE, C.geo_longitude * ONE_DEGREE);
 
@@ -133,7 +136,9 @@ rtc_setup()
 		set_dst(usa_dst);
 		break;
 #endif
-
+	case dstAlways:
+		set_dst(always_dst);
+		break;
 	case dstNone:
 	default:
 		set_dst(NULL);

@@ -61,7 +61,9 @@ typedef bool logicLevel;
 
 #define GET_BIT(var,pos) ((var) & (1<<(pos)))
 
-
+#define SET_BIT(var,pos) ((var) |= (1 << (pos)))
+#define CLR_BIT(var,pos) ((var) &= ~((1) << (pos)))
+#define PUT_BIT(var,pos, val) ((val) ? SET_BIT(var,pos) : CLR_BIT(var,pos))
 
 #if 0
 #define NO_PRECOND

@@ -29,7 +29,7 @@
 #include "common.h"
 
 enum dst {
-	dstNone, dstEU, dstUS,
+	dstNone, dstEU, dstUS, dstAlways,
 };
 enum receiver {
 	recvNone, recvTick
