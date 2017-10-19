@@ -30,9 +30,7 @@ void print_array_8(const uint8_t *src, int len);
 void print_array_8_inv(const uint8_t *src, int len);
 
 #ifdef AVR
-int io_putc_P(char c);
 int io_puts_P(const char *s);
 #else
-#define io_putc_P io_putc
 #define io_puts_P io_puts
 #endif

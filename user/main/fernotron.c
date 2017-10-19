@@ -26,6 +26,21 @@ setup_1() {
 
 }
 
+void ICACHE_FLASH_ATTR fer_printData(const uint8_t *cmd, uint8_t prg[linesPerPrg][bytesPerPrgLine]) {
+
+	if (cmd)
+		frb_printPacket(cmd);
+
+	if (prg) {
+		int i, used_lines;
+
+		used_lines = FRB_GET_FPR0_IS_RTC_ONLY(prg[FPR_RTC_START_ROW]) ? FER_RTC_PACK_CT : FER_PRG_PACK_CT;
+		for (i = 0; i < used_lines; ++i) {
+			print_array_8(prg[i], FER_PRG_BYTE_CT);
+		}
+		fpr_printPrgPacketInfo(prg, used_lines == 1);
+	}
+}
 
 
 void ICACHE_FLASH_ATTR
@@ -52,36 +67,21 @@ loop(void) {
 			last_received_sender.data[i] = buf[i];
 		}
 
-		io_puts("R:");
-		frb_printPacket(buf);
-		{ extern uint8_t preBitTicks; io_puts("preBitTicks: "), io_print_dec_16(preBitTicks, false), io_puts("\n"); }
-		{ extern uint8_t preBits; io_puts("preBits: "), io_print_dec_16(preBits, false), io_puts("\n"); }
+		io_puts("R:"), fer_printData(buf, NULL);
 		fer_recvClearAll();
 	}
 
 	if (has_prgReceived) {
-		int i;
-		io_puts("prgStored!\n");
-		frb_printPacket(get_recvCmdBuf());
 
-		int used_lines = FRB_GET_FPR0_IS_RTC_ONLY(get_recvPrgBufLine(FPR_RTC_START_ROW)) ? FER_RTC_PACK_CT : FER_PRG_PACK_CT;
-used_lines = FER_PRG_PACK_CT;
-		for (i=0; i < used_lines; ++i) {
-			print_array_8(get_recvPrgBufLine(i), FER_PRG_BYTE_CT);
-		}
+		io_puts("timer frame received\n"), fer_printData(get_recvCmdBuf(), dtRecvPrgFrame);
 
 		uint8_t cs;
 		if (fer_cmd_verify_checksum(get_recvCmdBuf(), &cs)) {
 			if (fer_prg_verfiy_checksums(dtRecvPrgFrame, cs)) {
-				io_puts("checksum ok\n");
+				io_puts("frame checksums ok\n");
 			}
 		}
 
-#ifndef DB_SHORT
-		fpr_printPrgPacketInfo(dtRecvPrgFrame, used_lines == 1);
-#endif
-		{ extern uint8_t preBitTicks; io_puts("preBitTicks: "), io_print_dec_16(preBitTicks, false), io_puts("\n"); }
-		{ extern uint8_t preBits; io_puts("preBits: "), io_print_dec_16(preBits, false), io_puts("\n"); }
 		fer_recvClearAll();
 	}
 #endif

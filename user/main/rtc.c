@@ -120,7 +120,7 @@ eu_dst(const time_t *timer, int32_t * z) {
 void ICACHE_FLASH_ATTR
 rtc_setup()
 {
-	set_zone(ONE_HOUR); //* C.timezone);
+	set_zone(ONE_HOUR * C.geo_timezone); //* C.timezone);
 	set_position(C.geo_latitude * ONE_DEGREE, C.geo_longitude * ONE_DEGREE);
 
 	switch (C.geo_dST) {

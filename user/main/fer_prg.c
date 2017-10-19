@@ -134,6 +134,7 @@ void ICACHE_FLASH_ATTR txbuf_write_astro(int mint_offset) {
 void ICACHE_FLASH_ATTR write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only) {
 	time_t timer = time(NULL);
 	struct tm *t = localtime(&timer);
+	int dstHours = 1; // FIXME: use real dst hour offset here. for now just use 1 hour (germany). not sure yet if the flagBits  are really contain an hour offset for dst
 
 	d[fpr0_RTC_secs] = dec2bcd(t->tm_sec);
 	d[fpr0_RTC_mint] = dec2bcd(t->tm_min);
@@ -142,7 +143,8 @@ void ICACHE_FLASH_ATTR write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only) {
 	d[fpr0_RTC_mont] = dec2bcd(t->tm_mon + 1);
 	d[fpr0_RTC_wday] = (rtc_only ? 0x80 : 0x00) | (t->tm_wday == 0 ? 7 : t->tm_wday); // monday==1 ... sunday==7
 	d[fpr0_RTC_wdayMask] = (1 << t->tm_wday);
-	PUT_LOW_NIBBLE(d[fpr0_FlagBits], t->tm_isdst ? 4 : 0); // FIXME: use real dst hour offset here. for now just use 1 hour (germany)
+
+	PUT_LOW_NIBBLE(d[fpr0_FlagBits], t->tm_isdst ? (dstHours << 2) : 0);
 }
 
 

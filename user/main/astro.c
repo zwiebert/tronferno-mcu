@@ -66,7 +66,7 @@ math2_write_astro(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offse
     for (i=0; i < 12; ++i) {
       for (j=0; j < 8; ++j, (day_stamp += 329400)) {
         time_t sunset = sun_set(&day_stamp) + (mint_offset * SECS_PER_MINT);
-        struct tm *t = localtime(&sunset); // should be localtime
+        struct tm *t = gmtime(&sunset);
         dst[i][j] = dec2bcd_special(t->tm_min);
         dst[i][++j] = dec2bcd_special(t->tm_hour);
       }
@@ -134,7 +134,7 @@ ICACHE_FLASH_ATTR tbl_write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], 
   }
 }
 #endif
-const uint8_t ad_plz_1[12][8]  = {
+const uint8_t ad_plz_10[12][8]  = {
 {0x34, 0x16, 0x36, 0x16, 0x36, 0x16, 0x38, 0x16 },
 {0x40, 0x16, 0x44, 0x16, 0x48, 0x16, 0x52, 0x16, },
 {0x58, 0x16, 0x04, 0x17, 0x10, 0x17, 0x16, 0x17, },
@@ -149,7 +149,16 @@ const uint8_t ad_plz_1[12][8]  = {
 {0x20, 0x21, 0x20, 0x21, 0x20, 0x21, 0x20, 0x21, },
 };
 
+// berlin actual sunset:    15:54 ... 20:36 (GMT + 1)
+// berlin fernotron table:  16:34 ... 21:20 (GMT + 2 ??) makes no sense
+// dst offset is added in fernotron flag bits. but why is the table based on DST(?) instead of normal time?
 
 void ICACHE_FLASH_ATTR write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
-  tbl_write_astro(d, ad_plz_1, mint_offset);
+#if 0
+  tbl_write_astro(d, ad_plz_10, mint_offset);
+#elif 1
+  math_write_astro(d, mint_offset + 60); // FIXME: added one hour for correction, but not sure if its working worldwide
+#else
+  math2_write_astro(d, mint_offset);
+#endif
 }

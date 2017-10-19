@@ -124,7 +124,9 @@ extern volatile bool has_cmdReceived;
 extern volatile bool has_prgReceived;
 
 void tick_ferReceiver(void);
-extern bool fer_prg_verfiy_checksums(uint8_t dg[linesPerPrg][bytesPerPrgLine], uint8_t checksum);
+void fer_recvClearAll(void); // call it after received data buffers has been processed by main thread
+
+bool fer_prg_verfiy_checksums(uint8_t dg[linesPerPrg][bytesPerPrgLine], uint8_t checksum);
 bool fer_cmd_verify_checksum(ferCmdBuf_type dg, uint8_t *checksum_out);
 
 // transmitter //////////////////////////

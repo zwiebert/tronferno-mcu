@@ -140,17 +140,11 @@ static bool is_pre_bit(unsigned len, unsigned nedge) {
 	return ((FER_PRE_WIDTH_MIN <= len && len <= FER_PRE_WIDTH_MAX) && (FER_PRE_NEDGE_MIN <= nedge && nedge <= FER_PRE_NEDGE_MAX));
 }
 
- volatile int8_t preBits;
-volatile int8_t preBitTicks;
+static int8_t preBits;
 
 static bool wait_and_sample(void) {
 
 	if (POS__NOT_IN_DATA) {
-
-		if (preBits == 6) {
-			// measure length in ticks (for no reason)
-			++preBitTicks;
-		}
 
 		if (pEdge) {
 
@@ -227,7 +221,6 @@ static bool prg_recv(void) {
 void fer_recvClearAll(void) {
 	init_counter();
 	preBits = 0;
-	preBitTicks = 0;
 	error = 0;
 	has_cmdReceived = false;
 	has_prgReceived = false;
@@ -237,62 +230,57 @@ void fer_recvClearAll(void) {
 
 // receive the command and set flags if rtc or timer data will follow
 static void tick_recv_command() {
-	if (has_cmdReceived || is_recPrgFrame || has_prgReceived) {
-		return;
-	} else {
-
-		if (cmd_recv()) {
+	if (cmd_recv()) {
 #if DB_FORCE_CMD
-			has_cmdReceived = true;
+		has_cmdReceived = true;
 #else
-			if (DB_IGNORE_ERRORS || (!error && fer_OK == fer_verify_cmd(dtRecvCmd))) {
-				if (FRB_GET_CMD(dtRecvCmd) == fer_cmd_Program && FRB_MODEL_IS_CENTRAL(dtRecvCmd)) {
-					// timer programming block will follow
-					is_recPrgFrame = true;
-					prgTickCount = MAX_PRG_TICK_COUNT;
-				} else {
-					has_cmdReceived = true;
-				}
+		if (DB_IGNORE_ERRORS || (!error && fer_OK == fer_verify_cmd(dtRecvCmd))) {
+			if (FRB_GET_CMD(dtRecvCmd) == fer_cmd_Program && FRB_MODEL_IS_CENTRAL(dtRecvCmd)) {
+				// timer programming block will follow
+				is_recPrgFrame = true;
+				prgTickCount = MAX_PRG_TICK_COUNT;
 			} else {
-				fer_recvClearAll();
+				has_cmdReceived = true;
 			}
-#endif
+		} else {
+			fer_recvClearAll();
 		}
+#endif
 	}
 }
 
-#ifndef FER_RECEIVER_MINIMAL
-static void tick_recv_programmingFrame() {
-	if (!is_recPrgFrame || has_prgReceived) {
-		return;
-	} else {
 
+static void tick_recv_programmingFrame() {
 		if (prg_recv()) {
 			has_prgReceived = true;
 		}
-	}
 }
-#endif
+
 
 void tick_ferReceiver() {
-	if (is_sendCmdPending || is_sendPrgPending) // FIXME: to avoid receiving our own transmission (good coding?)
-		return;
 
+	// sample input pin and detect input edge
 	input = fer_get_recvPin();
-
 	input_edge = (old_input == input) ? 0 : (IS_P_INPUT ? +1 : -1);
 	old_input = input;
 
-	if ((prgTickCount && !--prgTickCount) || (IS_P_INPUT && nTicks > veryLongPauseLow_Len)) {
-		fer_recvClearAll();
+	// receive and decode input
+	if (!(has_cmdReceived || has_prgReceived || is_sendCmdPending || is_sendPrgPending)) {
+
+		if ((prgTickCount && !--prgTickCount) || (IS_P_INPUT && nTicks > veryLongPauseLow_Len))
+			fer_recvClearAll();
+
+		if (!is_recPrgFrame) {
+			tick_recv_command();
+		} else {
+#ifndef FER_RECEIVER_MINIMAL
+			tick_recv_programmingFrame();
+#endif
+		}
+
 	}
 
-#ifndef FER_RECEIVER_MINIMAL
-	tick_recv_programmingFrame();
-#endif
-
-	tick_recv_command();
-
+	// measure the time between input edges
 	++aTicks;
 	if (IS_P_INPUT) {
 		++pTicks;

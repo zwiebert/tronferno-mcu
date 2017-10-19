@@ -231,6 +231,7 @@ LDFLAGS +=
 endif
 
 
+
 pri:
 	echo $(BUILD_DIR)
 
@@ -266,7 +267,7 @@ $(BUILD_BASE)/gdbstub/libgdbstub.a : $(GDB_OBJ)
 
 all: checkdirs $(TARGET_OUT)
 
-$(TARGET_OUT): $(APP_AR)
+$(TARGET_OUT): $(APP_AR) $(GEN_LIBS)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group  $(LIBS) $(APP_AR) -Wl,--end-group -o $@
 	$(vecho) "Run objcopy, please wait..."

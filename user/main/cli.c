@@ -12,9 +12,37 @@
 
 #include "all.h"
 
+
+
 fer_sender_basic senders[10];
 fer_sender_basic default_sender;
 fer_sender_basic last_received_sender;
+
+
+float ICACHE_FLASH_ATTR stof(const char* s) {
+	int point_seen;
+
+	float rez = 0, fact = 1;
+	if (*s == '-') {
+		s++;
+		fact = -1;
+	};
+	for (point_seen = 0; *s; s++) {
+		if (*s == '.') {
+			point_seen = 1;
+			continue;
+		};
+		int d = *s - '0';
+		if (d >= 0 && d <= 9) {
+			if (point_seen)
+				fact /= 10.0f;
+			rez = rez * 10.0f + (float) d;
+		};
+	};
+	return rez * fact;
+}
+//#define stof atof
+
 
 char * ICACHE_FLASH_ATTR
 get_commandline() {
@@ -280,10 +308,14 @@ const char help_parmConfig[] PROGMEM =
 		  "rtc=ISO_TIME_STRING  like 2017-12-31T23:59:59\n"
 		  "baud=serial_baud_rate\n"
 		  "wlan-ssid=\"your_wlan_ssid\"\n"
-		  "wlan-password=\"your_wlan_password\"\n";
+		  "wlan-password=\"your_wlan_password\"\n"
+		  "longitude=N like -13.23452\n"
+		  "latitude=N like +52.34234\n"
+		  "time-zone=N like +1\n"
+		;
 
 static int ICACHE_FLASH_ATTR
-process_parmConfig(clpar p[], int len) {
+process_parmConfig(clpar p[], int len) { // TODO: add geo parameters to config
 	int i;
 
 	for (i = 1; i < len; ++i) {
@@ -311,22 +343,37 @@ process_parmConfig(clpar p[], int len) {
 			C.mcu_serialBaud = baud;
 			save_config();
 			reply_success();
-            		} else if (strcmp(key, "wlan-ssid") == 0) {
-            		uint32_t baud = strtoul(val, NULL, 10);
-            		C.mcu_serialBaud = baud;
-            		save_config();
-            		reply_success();
-                    		} else if (strcmp(key, "wlan-password") == 0) {
-                    		uint32_t baud = strtoul(val, NULL, 10);
-                    		C.mcu_serialBaud = baud;
-                    		save_config();
-                    		reply_success();
+		} else if (strcmp(key, "wlan-ssid") == 0) {
+			uint32_t baud = strtoul(val, NULL, 10);
+			C.mcu_serialBaud = baud;
+			save_config();
+			reply_success();
+		} else if (strcmp(key, "wlan-password") == 0) {
+			uint32_t baud = strtoul(val, NULL, 10);
+			C.mcu_serialBaud = baud;
+			save_config();
+			reply_success();
 		} else if (strcmp(key, "receiver") == 0) {
 			reply(config_receiver(val));
 		} else if (strcmp(key, "transmitter") == 0) {
 			reply(config_transmitter(val));
+		} else if (strcmp(key, "longitude") == 0) {
+			float longitude = stof(val);
+			C.geo_longitude = longitude;
+			save_config();
+			reply_success();
+		} else if (strcmp(key, "latitude") == 0) {
+			float latitude = stof(val);
+			C.geo_latitude = latitude;
+			save_config();
+			reply_success();
+		} else if (strcmp(key, "time-zone") == 0) {
+			float timezone = stof(val);
+			C.geo_timezone = timezone;
+			save_config();
+			reply_success();
 		} else {
-			reply(false); // unknown parameter
+				reply(false); // unknown parameter
 			return -1;
 		}
 	}
@@ -444,6 +491,16 @@ string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst) {
 #define FLAG_TRUE 1
 #define HAS_FLAG(v) (v >= 0)
 
+const char help_parmTimer[] PROGMEM =
+		  "daily=T T is like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00\n"
+		  "weekly=TTTTTTT like weekly=0730-++++0900+ (+ repeats the previous T) for up 07:30 Mon-Fri and up 09:00 Sat-Sun\n"
+		  "astro=N This enables astro automatic. N is the offset to sunset in minutes. So astro=+60 closes the shutter 60 minutes after sunset\n"
+		  "sun-auto=1  1 enables and 0 disables sun automatic\n"
+		  "random=1 enables random automatic. shutter opens and closes at random times, so it looks like you are home when you are not\n"
+		  "rtc-only=1  Update the built-in real time clock of the shutter. Don't change its programmed timers (and flags)\n"
+		;
+
+
 static int ICACHE_FLASH_ATTR
 process_parmTimer(clpar p[], int len) {
   int i; bool has_daily = false, has_weekly = false, has_astro = false;
@@ -547,7 +604,7 @@ struct {
     {"send", process_parmSend, help_parmSend},
     {"config", process_parmConfig, help_parmConfig},
     {"dbg", process_parmDbg, help_parmDbg},
-    {"timer", process_parmTimer, help_None },
+    {"timer", process_parmTimer, help_parmTimer },
     {"help", process_parmHelp, help_None},
     };  
       
@@ -593,7 +650,7 @@ process_parmHelp(clpar p[], int len) {
 
 
 #if TEST_MODULE_CLI
-bool
+bool ICACHE_FLASH_ATTR
 testModule_cli()
 {
 	char cl[] = "timer g=5 astro=0;";//"timer g=2 m=2 weekly=08222000++++10552134+";

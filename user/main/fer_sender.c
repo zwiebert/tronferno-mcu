@@ -47,8 +47,7 @@ bool ICACHE_FLASH_ATTR fer_send_cmd(fer_sender_basic *fsb) {
 		return false;
 
 	fer_make_cmdPacket(fsb->data, dtSendCmd);
-	io_puts("S:");
-	frb_printPacket(dtSendCmd);
+	io_puts("S:"), frb_printPacket(dtSendCmd);
 	is_sendCmdPending = true;
 	return true;
 }
@@ -60,8 +59,7 @@ bool ICACHE_FLASH_ATTR fer_send_prg(fer_sender_basic *fsb) {
 	uint8_t cmd_checksum = fer_make_cmdPacket(fsb->data, dtSendCmd);
 	fer_prg_create_checksums(dtSendPrgFrame, cmd_checksum);
 
-	io_puts("S:");
-	frb_printPacket(dtSendCmd);
+	io_puts("S:"), fer_printData(dtSendCmd, dtSendPrgFrame);
 
 	is_sendCmdPending = true;
 	is_sendPrgPending = true;
@@ -194,41 +192,40 @@ static bool sendPrg() {
   return false; //advancePrgCounter();
 }
 
-
 static void tick_send_command() {
-	if (is_sendCmdPending) {
-		bool done = sendCmd();
 
-		fer_put_sendPin(dtLineOut);
+	bool done = sendCmd();
+	fer_put_sendPin(dtLineOut);
 
-		if (done) {
-			is_sendCmdPending = false;
-			init_counter();
-			if (is_sendPrgPending) {
-				dtSendBuf = make_Word(dtSendPrgFrame[0][0], 0);
-			} else {
-				fer_put_sendPin(0);
-			}
+	if (done) {
+		is_sendCmdPending = false;
+		init_counter();
+		if (is_sendPrgPending) {
+			dtSendBuf = make_Word(dtSendPrgFrame[0][0], 0);
+		} else {
+			fer_put_sendPin(0);
 		}
 	}
 }
 
 static void tick_send_programmingFrame() {
+	bool done = sendPrg();
+	fer_put_sendPin(dtLineOut);
 
-	if (!is_sendCmdPending && is_sendPrgPending) {
-		bool done = sendPrg();
-		fer_put_sendPin(dtLineOut);
-
-		if (done) {
-			fer_put_sendPin(0);
-			is_sendPrgPending = false;
-			init_counter();
-		}
+	if (done) {
+		fer_put_sendPin(0);
+		is_sendPrgPending = false;
+		init_counter();
 	}
 }
 
 void tick_ferSender(void) {
-  	tick_send_command();
-  	tick_send_programmingFrame();
 
+	if (is_sendCmdPending) {
+		tick_send_command();
+	}
+
+	if (is_sendPrgPending) {
+		tick_send_programmingFrame();
+	}
 }

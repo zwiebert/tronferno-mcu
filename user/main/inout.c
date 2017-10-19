@@ -18,10 +18,7 @@ extern char *ltoa(long val, char *s, int radix);
 
 int ICACHE_FLASH_ATTR io_putc(char c) { return (io_putc_fun == 0) ? -1 : io_putc_fun(c); }
 int ICACHE_FLASH_ATTR io_getc(void)   { return (io_getc_fun == 0) ? -1 : io_getc_fun(); }
-  
-#ifdef AVR
-int ICACHE_FLASH_ATTR io_putc_P(char c) { return (io_putc_fun == 0) ? -1 : io_putc_fun(pgm_read_byte_near(c)); }
-#endif  
+
 
 
 /* use io_putc()/io_getc(). Don't use the function pointers for
@@ -40,11 +37,13 @@ int ICACHE_FLASH_ATTR io_puts(const char *s) {
 
 #ifdef AVR
 int ICACHE_FLASH_ATTR io_puts_P(const char *s) {
-  for (;*s != '\0'; ++s) {
-    if (io_putc_P(*s) == -1)
-    return -1;
-  }
-  return 0;
+	for(;;) {
+		char c = pgm_read_byte(s++);
+		if (c == '\0')
+		break;
+		io_putc(c);
+	}
+	return 0;
 }
 #endif
 
