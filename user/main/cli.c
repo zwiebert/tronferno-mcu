@@ -251,6 +251,7 @@ bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds) {
 
 	if (init_seconds > 0) {
 		end_time = time(NULL) + init_seconds;
+		last_received_sender.data[0] = 0;
 	} else if (end_time == 0) {
 
 	} else if (end_time < time (NULL)){

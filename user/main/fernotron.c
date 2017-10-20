@@ -70,11 +70,13 @@ loop(void) {
 			last_received_sender.data[i] = buf[i];
 		}
 
-		cu_auto_set(0);
+
 
 		io_puts("R:"), fer_printData(buf, NULL);
 		fer_recvClearAll();
 	}
+
+	cu_auto_set(0);
 
 	if (has_prgReceived) {
 
