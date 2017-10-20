@@ -18,6 +18,9 @@ fer_sender_basic senders[10];
 fer_sender_basic default_sender;
 fer_sender_basic last_received_sender;
 
+void ICACHE_FLASH_ATTR reply_message(const char *s) {
+	io_puts("reply: "), io_puts(s), io_puts("\n");
+}
 
 float ICACHE_FLASH_ATTR stof(const char* s) {
 	int point_seen;
@@ -191,12 +194,12 @@ cli_parm_to_ferCMD(const char *token) {
 
 void ICACHE_FLASH_ATTR
 reply_success() {
-	io_puts("reply: ok\n");
+	reply_message("ok");
 }
 
 void ICACHE_FLASH_ATTR
 reply_failure() {
-	io_puts("reply: error\n");
+	reply_message("error");
 }
 
 bool ICACHE_FLASH_ATTR config_receiver(const char *val) {
@@ -253,17 +256,17 @@ bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds) {
 	} else if (end_time < time (NULL)){
 
 		end_time = 0;
-		io_puts("U: Nothing received. time out\n");
-		reply(false);
+		io_puts("U: Nothing received\n");
+		reply_message("cuas=time-out");
 	} else if (FSB_MODEL_IS_CENTRAL(&last_received_sender)) {
 		uint32_t cu = FSB_GET_DEVID(&last_received_sender);
 
 		FSB_PUT_DEVID(&default_sender, cu);
 		C.fer_centralUnitID = cu;
 		end_time = 0;
-		io_puts("U: Central Unit saved\n");
+		io_puts("U: Central Unit received and stored\n");
+		reply_message("cuas=ok");
 		save_config();
-		reply(true);
 		return true;
 	}
 
@@ -302,7 +305,7 @@ process_parmSend(clpar p[], int len) {
 		} else if (strcmp(key, "c") == 0) {
 			cmd = cli_parm_to_ferCMD(val);                            
 		} else {
-			reply(false); // unknown parameter
+			reply_failure(); // unknown parameter
 			return -1;
 		}
 	}
@@ -325,7 +328,7 @@ process_parmSend(clpar p[], int len) {
 		fer_update_tglNibble(fsb);
 		reply(fer_send_cmd(fsb));
 	} else {
-		reply(false);
+		reply_failure();
 	}
 
 	return 0;
@@ -351,7 +354,7 @@ process_parmConfig(clpar p[], int len) {
 		const char *key = p[i].opt, *val = p[i].arg;
 
 		if (key == NULL || val == NULL) {
-			reply(false);
+			reply_failure();
 			return -1;
 		} else if (strcmp(key, "rtc") == 0) {
 			reply(rtc_set_by_string(val));
@@ -360,7 +363,7 @@ process_parmConfig(clpar p[], int len) {
 			if (strcmp(val, "auto") == 0) {
 				cu_auto_set(60);
 				io_puts("U: Press Stop on the Fernotron central unit (60 seconds remaining)\n");
-				reply(true);
+				reply_success();
 			} else {
 			uint32_t cu = (strcmp(val, "auto-old") == 0) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
 
@@ -420,7 +423,7 @@ process_parmConfig(clpar p[], int len) {
 			if (strcmp(val, "1")) {
 				C.geo_dST = dstAlways;
 			} else {
-				reply(false);
+				reply_failure();
 				return -1;
 			}
 
@@ -429,7 +432,7 @@ process_parmConfig(clpar p[], int len) {
 			reply_success();
 
 		} else {
-			reply(false); // unknown parameter
+			reply_failure(); // unknown parameter
 			return -1;
 		}
 	}
@@ -470,7 +473,7 @@ process_parmDbg(clpar p[], int len) {
 			}
 
 		} else {
-			reply(false); // unknown parameter
+			reply_failure(); // unknown parameter
 			return -1;
 		}
 
