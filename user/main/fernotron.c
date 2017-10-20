@@ -43,6 +43,9 @@ void ICACHE_FLASH_ATTR fer_printData(const uint8_t *cmd, uint8_t prg[linesPerPrg
 }
 
 
+bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds);
+
+
 void ICACHE_FLASH_ATTR
 loop(void) {
 	int i;
@@ -66,6 +69,8 @@ loop(void) {
 		for (i=0; i < 5; ++i ) {
 			last_received_sender.data[i] = buf[i];
 		}
+
+		cu_auto_set(0);
 
 		io_puts("R:"), fer_printData(buf, NULL);
 		fer_recvClearAll();

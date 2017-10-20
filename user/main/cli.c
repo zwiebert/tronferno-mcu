@@ -242,6 +242,34 @@ get_sender_by_addr(long addr) {
 	return NULL ;
 }
 
+
+bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds) {
+	static time_t end_time;
+
+	if (init_seconds > 0) {
+		end_time = time(NULL) + init_seconds;
+	} else if (end_time == 0) {
+
+	} else if (end_time < time (NULL)){
+
+		end_time = 0;
+		io_puts("U: Nothing received. time out\n");
+		reply(false);
+	} else if (FSB_MODEL_IS_CENTRAL(&last_received_sender)) {
+		uint32_t cu = FSB_GET_DEVID(&last_received_sender);
+
+		FSB_PUT_DEVID(&default_sender, cu);
+		C.fer_centralUnitID = cu;
+		end_time = 0;
+		io_puts("U: Central Unit saved\n");
+		save_config();
+		reply(true);
+		return true;
+	}
+
+	return false;
+}
+
 fer_grp asc2group(const char *s) { return (fer_grp) atoi(s); }
 fer_memb asc2memb(const char *s) { int m = atoi(s); return m == 0 ? fer_memb_Broadcast : (fer_memb) (m - 1) + fer_memb_M1; }
   
@@ -304,7 +332,7 @@ process_parmSend(clpar p[], int len) {
 }
 
 const char help_parmConfig[] PROGMEM =
-		  "cu=(CentralUnitID|auto)\n"
+		  "cu=(CentralUnitID|auto)  like 80abcd. auto: press Stop key on central unit in the next 60 seconds\n"
 		  "rtc=ISO_TIME_STRING  like 2017-12-31T23:59:59\n"
 		  "baud=serial_baud_rate\n"
 		  "wlan-ssid=\"your_wlan_ssid\"\n"
@@ -329,7 +357,12 @@ process_parmConfig(clpar p[], int len) {
 			reply(rtc_set_by_string(val));
 
 		} else if (strcmp(key, "cu") == 0) {
-			uint32_t cu = (strcmp(val, "auto") == 0) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
+			if (strcmp(val, "auto") == 0) {
+				cu_auto_set(60);
+				io_puts("U: Press Stop on the Fernotron central unit (60 seconds remaining)\n");
+				reply(true);
+			} else {
+			uint32_t cu = (strcmp(val, "auto-old") == 0) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
 
 			if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
 				reply_failure();
@@ -339,6 +372,7 @@ process_parmConfig(clpar p[], int len) {
 			C.fer_centralUnitID = cu;
 			save_config();
 			reply_success();
+			}
 		} else if (strcmp(key, "baud") == 0) {
 			uint32_t baud = strtoul(val, NULL, 10);
 			C.mcu_serialBaud = baud;

@@ -74,6 +74,8 @@ typedef enum {
 #define FER_ADDR_TYPE_CentralUnit   0x80
 #define FER_ADDR_TYPE_Receiver      0x90 // 0x9xxxxx (code written on motor label)
 
+#define FRB_GET_DEVID(data) (((uint32_t)(data[fer_dat_ADDR_2] << 16) | (uint16_t)(data[fer_dat_ADDR_1] << 8) | (data[fer_dat_ADDR_0]))
+
 typedef struct {
 	uint8_t data[5];
 	int8_t repeats;
@@ -87,6 +89,8 @@ typedef struct {
 #define FSB_PUT_ADDR(fsb, a2, a1, a0) (((fsb)->data[fer_dat_ADDR_2] = (a2)), ((fsb)->data[fer_dat_ADDR_1] = (a1)), ((fsb)->data[fer_dat_ADDR_0] = (a0)))
 #define FSB_PUT_DEVID(fsb, devID) (((fsb)->data[fer_dat_ADDR_2] = GET_BYTE_2(devID)), ((fsb)->data[fer_dat_ADDR_1] = GET_BYTE_1(devID)), ((fsb)->data[fer_dat_ADDR_0] = GET_BYTE_0(devID)))
 #define FSB_GET_DEVID(fsb) (((uint32_t)(fsb)->data[fer_dat_ADDR_2] << 16) | (uint16_t)((fsb)->data[fer_dat_ADDR_1] << 8) | ((fsb)->data[fer_dat_ADDR_0]))
+
+
 
 #define FSB_GET_CMD(fsb)          (GET_LOW_NIBBLE((fsb)->data[fer_dat_GRP_and_CMD]))
 #define FSB_PUT_CMD(fsb,val)      (PUT_LOW_NIBBLE((fsb)->data[fer_dat_GRP_and_CMD], val))
@@ -292,7 +296,7 @@ void fer_update_tglNibble(fer_sender_basic *fsb);
 #define FRB_GET_CMD(data)          (GET_LOW_NIBBLE((data)[fer_dat_GRP_and_CMD]))
 #define FRB_GET_MEMB(data)         (GET_LOW_NIBBLE((data)[fer_dat_TGL_and_MEMB]))
 #define FRB_GET_GRP(data)          (GET_HIGH_NIBBLE((data)[fer_dat_GRP_and_CMD]))
-#define FRB_MODEL_IS_CENTRAL(data)  (((data)[fer_dat_ADDR_2] & 0xff)  == FER_ADDR_TYPE_CentralUnit)
+#define FRB_MODEL_IS_CENTRAL(data)  (((data)[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)
 #define FRB_GET_FPR0_IS_RTC_ONLY(data) (((data)[fpr0_RTC_wday] & 0x80) != 0)
 
 #endif //_fer_code
