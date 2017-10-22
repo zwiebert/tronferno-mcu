@@ -8,7 +8,16 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#if 1 // __has_include("../sensitive/defaults.h")
+#ifdef AVR
+#if __has_include("../sensitive/defaults.h")
+#define HAVE_USER_DEFAULTS
+#endif
+#else /* ESP */  // on linux the xtensa-gcc version has not __has_include  FIXME: check for gcc version
+
+#endif
+
+
+#ifdef HAVE_USER_DEFAULTS
 
 #include "../sensitive/defaults.h"
 

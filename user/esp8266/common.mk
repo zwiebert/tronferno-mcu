@@ -230,6 +230,10 @@ CFLAGS += -Os -g -O2
 LDFLAGS +=
 endif
 
+ifneq ($(wildcard $(SRC_BASE)/user/sensitive/defaults.h),)
+CPPFLAGS += -DHAVE_USER_DEFAULTS
+endif
+
 
 
 pri:

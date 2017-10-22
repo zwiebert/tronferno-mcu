@@ -38,8 +38,6 @@ configure the Makefiles in user/esp8266/
 
 #define MY_WIFI_PASSWORD "************"
 
-(if you don't do this step, please uncomment the include in user/main/config.h ... the xtensa-gcc has no __has_include)
-
 
 * build and flash
 
@@ -107,10 +105,11 @@ In case you no longer have working Fernotron central unit. You would start from 
     
    
    
- Too complicated and useless? I currently work on a GUI for android to work on top of the command line interface.
+ Too complicated and useless? I currently work on a GUI for android to work on top of the command line interface.  Maybe I also add a binary repository later, for the people (if any) who just want to flash their MCUs without having to install the build environment on their PC.
+ 
  
  The latitude and longitude configuration is required by astro function. But its currently disabled and a predefined table is used instead. Can be changed in user/main/astro.c  Enable math_write_astro(). But the data it generates is probably wrong at the moment.
  
- 
+ Also, when using timer command: all data is overwritten in the shutter device.  A daily timer will also overwrite the weekly timer and all flags like sun-auto. Exception: if you only send the real time (rtc-only=1), no timer data or flags besides the DST flag are changed.
  
 
