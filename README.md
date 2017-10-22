@@ -69,18 +69,18 @@ In case you no longer have working Fernotron central unit. You would start from 
     
     * press the set-button on the shutter you want to be number 1 in group 1
     
-    send g=1 m=1 c=stop;
+         send g=1 m=1 c=stop;
     
     * press the set-button on the next shutter
     
-    send g=1 m=2 c=stop;
+         send g=1 m=2 c=stop;
     
     * ... continue until  you have added your new central unit to all shutters you want
     
     * instead of pressing the set-button on the shutter you can use the code written on the shutter motor 
-    
-    * send a=9xxxxx    (where xxxxx is the hexadecimal code)
-    
+    ```
+        send a=9xxxxx c=set;  (where xxxxx is the hexadecimal code)
+    ```
  Building it for ATMEGA328P ist similar:
  
  * Prepare Hardware 
@@ -121,10 +121,10 @@ To send the "too much sun" command:
       
 
    
- Too complicated and useless? I currently work on a GUI for android to work on top of the command line interface.  Maybe I also add a binary repository later, for the people (if any) who just want to flash their MCUs without having to install the build environment on their PC.
+ Too complicated and totally useless? I currently work on a GUI for Android.  Maybe I also add a binary repository later, for the people (if any) who just want to flash their MCUs without having to install the build environment on their PC.
  
  
- The latitude and longitude configuration is required by astro function. But its currently disabled and a predefined table is used instead. Can be changed in user/main/astro.c  Enable math_write_astro(). But the data it generates is probably wrong at the moment.
+ The latitude and longitude configuration is required by astro function obviously. But its currently disabled and a predefined table is used instead. Can be changed in user/main/astro.c  Enable math_write_astro(). But the data it generates is probably wrong at the moment.
  
  Also, when using timer command: all data is overwritten in the shutter device.  A daily timer will also overwrite the weekly timer and all flags like sun-auto. Exception: if you only send the real time (rtc-only=1), no timer data or flags besides the DST flag are changed.
  
