@@ -9,7 +9,7 @@ State: Experimental software.
   * RF transmitter 443 MHz (FS1000A) on Pin D2
 
 RF receiver is optional. Its needed to sniff the ID of your original central unit. After that, it should be disconnected again.
-For the sniffing a super-regeneration receiver can be used. It can block the frequency by transmitting noise now and then. To avoid this, use a super-heterodyne receiver like the RXB6. 
+For the sniffing a super-regeneration receiver can be used. It can block the frequency by transmitting noise now and then. If you want to leave the receiver connected, better use a super-heterodyne receiver like the RXB6. 
 
 Build on Linux and flash to esp8266
 
@@ -94,17 +94,26 @@ In case you no longer have working Fernotron central unit. You would start from 
       $ make atmega328-flash
       $ make atmega328-eeprom
   ```
-     
-There is no network support for the ATMega. You can add an WLAN or Bluetooth adapter to the serial port. There is NTP on the ESP8266.  The ATmega has to be told about the clock via CLI.
 
-     config rtc=ISO_DATE_AND_TIME;    (looks like 2017-12-31T23:45:00)
 
-You should not use the "timer" command, if the time and time-zone is not set correctly.  This would mess up the built-in real time clock of the shutter you address any timer command to:
+
+There is no network support for the ATMega. You can add an WLAN or Bluetooth adapter to the serial port. But it will not add NTP like the ESP8266 has.  So the ATmega has to be told about the clock via CLI.
+
+    config rtc=ISO_DATE_AND_TIME;    (looks like 2017-12-31T23:45:00)
+
+You should never use the "timer" command, if the time and time-zone is not set correctly.  This would mess up the built-in real time clock of the shutter you address any timer command to:
 ```
-      timer daily=0700-;    (all shutters opens every day at seven o'clock ... and also updates the built-in RTC)     
-      timer g=1 m=2 daily=-0400 weekly=0700++++00900+ astro=+30 sun-auto=1;  (shutter 2 of group 1 closes daily at four o'clock, opens monday til friday at nine o'clock. closes thirty minutes after sunset, activate the sun automatic.
+    timer daily=0700-;    (all shutters opens daily at seven o'clock ... also updates the built-in RTC)
+``` 
+Some more options. 
+
+```      
+    timer g=1 m=2 daily=-0400 weekly=0700++++00900+ astro=+30 sun-auto=1;   (explanation below)
  ```
-      
+ 
+Explanation: Shutter 2 of group 1, closes daily (or nightly) at four o'clock, opens monday til friday at nine o'clock, opens saturday and sunday at nine o'clock, closes thirty minutes after sunset, activate the sun automatic.
+ 
+       
 The sun automatic is controlled by a wireless window sensor powered by solar cells. You have to set a position the shutters goes whenever he receives the "too much sun" signal from the sensor.
 
 I have bought a few of these sensors in the past, but now the fernotron series is long discontinued.  To set the "too much sun" position:
@@ -121,7 +130,7 @@ To send the "too much sun" command:
       
 
    
- Too complicated and totally useless? I currently work on a GUI for Android.  Maybe I also add a binary repository later, for the people (if any) who just want to flash their MCUs without having to install the build environment on their PC.
+ Its all too complicated and totally useless?  I currently work on a GUI for Android.  Maybe I also add a binary repository later, for the people (if any) who just want to flash their MCUs without having to install the build environment on their PC.
  
  
  The latitude and longitude configuration is required by astro function obviously. But its currently disabled and a predefined table is used instead. Can be changed in user/main/astro.c  Enable math_write_astro(). But the data it generates is probably wrong at the moment.
