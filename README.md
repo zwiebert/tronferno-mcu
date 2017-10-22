@@ -4,9 +4,9 @@ MCU firmware to control Fernotron devices via CLI . Runs on one ESP8266 or ATMEG
 State: Experimental software.
 
 Prepare Hardware:
-* esp8266 board
-* RF receiver 443 MHz on Pin D1
-* RF transmitter 443 MHz on Pin D2
+* esp8266 (development board)
+* RF receiver 443 MHz (like RXB6) on Pin D1
+* RF transmitter 443 MHz (FS1000A) on Pin D2
 
 
 Build and flash on esp8266
@@ -20,13 +20,21 @@ configure the Makefiles in user/esp8266/
 * optional: pre-configure your private in new file user/sensitive/defaults.h which should contain:
 
 #define MY_FER_CENTRAL_UNIT_ID 0x80****
+
 #define MY_MCU_ATMEGA328_BAUD_RATE 38400
+
 #define MY_MCU_ESP8266_BAUD_RATE 115200
+
 #define MY_GEO_LONGITUDE -13.****
+
 #define MY_GEO_LATITUDE +52.****
+
 #define MY_GEO_TIMEZONE +1.0
+
 #define MY_GEO_DST dstEU
+
 #define MY_WIFI_SSID "*******"
+
 #define MY_WIFI_PASSWORD "************"
 
 
@@ -62,7 +70,21 @@ configure the Makefiles in user/esp8266/
     * ... continue until  you have added your new central unit to all shutters you want
     * instead of pressing the set-button on the shutter you can use the code written on the shutter motor 
     * send a=9xxxxx    (where xxxxx is the hexadecimal code)
+    
+ Building it for ATMEGA328P ist similar:
+ 
+  Hardware
+    * Arduino Nano Board (Clone)
+    * RF Receiver on D7
+    * RF Transmitter on D2
+    
+    
+   
    
  Too complicated and useless? I currently work on a GUI for android to work on top of the command line interface.
+ 
+ The latitude and longitude configuration is required by astro function. But its currently disabled and a predefined table is used instead. Can be changed in user/main/astro.c  Enable math_write_astro(). But the data it generates is probably wrong at the moment.
+ 
+ 
  
 
