@@ -42,7 +42,8 @@ configure the Makefiles in user/esp8266/
 
 
 * build and flash
-  $ make esp8266-flash
+
+    $ make esp8266-flash
 
 * optional: configure your private data if not already done above. 
   * connect a serial terminal 115200-8-N-1 with local echo enabled:
