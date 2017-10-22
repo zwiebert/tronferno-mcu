@@ -3,10 +3,10 @@ MCU firmware to control Fernotron devices via CLI . Runs on one ESP8266 or ATMEG
 
 State: Experimental software.
 
-Prepare Hardware:
-* esp8266 (development board)
-* RF receiver 443 MHz (like RXB6) on Pin D1
-* RF transmitter 443 MHz (FS1000A) on Pin D2
+* Prepare Hardware:
+  * esp8266 (development board)
+  * RF receiver 443 MHz (like RXB6) on Pin D1
+  * RF transmitter 443 MHz (FS1000A) on Pin D2
 
 
 Build and flash on esp8266
@@ -42,11 +42,11 @@ configure the Makefiles in user/esp8266/
   $ make esp8266-flash
 
 * optional: configure your private data if not already done above. 
-  * connect a serial terminal 115200-8-N-1 with local echo enabled
+  * connect a serial terminal 115200-8-N-1 with local echo enabled:
   
     $ gtkterm --port /dev/ttyUSB0 --speed 115200 --echo
     
-  * type your commands in the terminal. ca command line ends with a semicolon (;)
+  * type your commands in the terminal. ca command line ends with a semicolon (;):
   
       help;
       
@@ -64,7 +64,7 @@ configure the Makefiles in user/esp8266/
      
 
 
-* try to send commands from serial port terminal or TCP termminal.  RF Transmitter 443Mhz should be connected.
+* try to send commands from serial port terminal or TCP termminal.  RF Transmitter 443Mhz should be connected:
 
      send g=1 m=1 c=down;    (would close the shutter number 1 in group 1
      
@@ -73,7 +73,7 @@ configure the Makefiles in user/esp8266/
      
 In case you no longer have working Fernotron central unit. You would start from scratch:
  
-    * config cu=80xxxx  (just make up an address x can be one of 0...9 a...f  (hexadecimal).  write this address down)
+     config cu=80xxxx  (just make up an address x can be one of 0...9 a...f  (hexadecimal).  write this address down)
     
     * press the set-button on the shutter you want to be number 1 in group 1
     
@@ -91,7 +91,7 @@ In case you no longer have working Fernotron central unit. You would start from 
     
  Building it for ATMEGA328P ist similar:
  
-  Hardware
+ * Prepare Hardware 
     * Arduino Nano Board (Clone)
     * RF Receiver on D7
     * RF Transmitter on D2
