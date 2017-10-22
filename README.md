@@ -9,7 +9,7 @@ State: Experimental software.
   * RF transmitter 443 MHz (FS1000A) on Pin D2
 
 
-Build and flash on esp8266
+Build on Linux and flash to esp8266
 
 
 configure the Makefiles in user/esp8266/
