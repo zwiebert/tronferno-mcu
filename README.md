@@ -16,8 +16,9 @@ configure the Makefiles in user/esp8266/
 * flash size (default: 4MB / 32 MBit)
 * serial port (default: /dev/ttyUSB0)
 * paths to esp8266 build tools and sdk
+* add the tools to your PATH
 
-* optional: pre-configure your private in new file user/sensitive/defaults.h which should contain:
+* optional: pre-configure your private data in new file user/sensitive/defaults.h which should contain:
 
 #define MY_FER_CENTRAL_UNIT_ID 0x80****
 
@@ -36,6 +37,8 @@ configure the Makefiles in user/esp8266/
 #define MY_WIFI_SSID "*******"
 
 #define MY_WIFI_PASSWORD "************"
+
+(if you don't do this step, please uncomment the include in user/main/config.h ... the xtensa-gcc has no __has_include)
 
 
 * build and flash
@@ -96,6 +99,10 @@ In case you no longer have working Fernotron central unit. You would start from 
     * RF Receiver on D7
     * RF Transmitter on D2
     
+  * To build and flash, open the Solution file in AVR Studio Windows or use make on Linux:
+      * $ make atmega328-flash
+      * $ make atmega328-eeprom
+     
     
    
    
