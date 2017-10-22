@@ -66,7 +66,6 @@
 void timer_handler(void) {
 
 #ifdef FER_TRANSMITTER
-
 	if (transmTick == C.app_transm) {
 		tick_ferSender();
 	}

@@ -36,14 +36,18 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
   io_puts(".");
   printBCD(d[0][fpr0_RTC_mont]);
   io_puts(".  ");
-  io_puts(wdays[d[0][GET_LOW_NIBBLE(fpr0_RTC_wday)]]);
+  io_puts(wdays[7 & d[0][fpr0_RTC_wday]]);
   io_puts("  ");
   printBCD(d[0][fpr0_RTC_hour]);
   io_puts(":");
   printBCD(d[0][fpr0_RTC_mint]);
   io_puts(":");
   printBCD(d[0][fpr0_RTC_secs]);
-  io_puts(lf);
+  if (GET_BIT(d[0][fpr0_FlagBits], flag_DST))
+	  io_puts(" DST");
+ io_puts(lf);
+
+
 
   if (rtc_only)
   return;

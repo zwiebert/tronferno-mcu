@@ -72,6 +72,8 @@ get_commandline() {
 
 		// ';" is used to terminate a command line
 		if (c == ';') {
+			if (cmd_buf_idx == 0)
+				goto succ;
 			cmd_buf[cmd_buf_idx] = '\0';
 			result = cmd_buf;
 			goto succ;
@@ -281,7 +283,7 @@ const char help_parmSend[] PROGMEM =
 		  "a=(0|SenderID) address of the sender or 0 for the configured CentralUnit\n"
 		  "g=[0-7]  group number. 0 is for broadcast\n"
 		  "m=[0-7]  group member. 0 is for broadcast all groups members\n"
-		  "c=(up|down|stop|sun-down|sun-inst) command to send\n";
+		  "c=(up|down|stop|sun-down|sun-inst|set) command to send\n";
 
 static int ICACHE_FLASH_ATTR
 process_parmSend(clpar p[], int len) {
@@ -563,93 +565,96 @@ const char help_parmTimer[] PROGMEM =
 
 static int ICACHE_FLASH_ATTR
 process_parmTimer(clpar p[], int len) {
-  int i; bool has_daily = false, has_weekly = false, has_astro = false;
-  int16_t astro_offset = 0;
-  uint8_t  weekly_data[FPR_TIMER_STAMP_WIDTH * 7];
-  uint8_t  daily_data[FPR_TIMER_STAMP_WIDTH];
-  fer_sender_basic *fsb = &default_sender;
-  	fer_grp group = fer_grp_Broadcast;
-  	fer_memb memb = fer_memb_Broadcast;
-    int wday = -1;
-    uint8_t fpr0_flags = 0, fpr0_mask = 0;
-    int8_t flag_rtc_only = FLAG_NONE;
-    
-   // init data
-   for(i=0; i+1 < sizeof (weekly_data) / sizeof(weekly_data[0]); i += 2) {
-     weekly_data[i] = 0xff;
-     weekly_data[i+1] = 0x0f;       
-   }
-      for(i=0; i+1 < sizeof (daily_data) / sizeof(daily_data[0]); i += 2) {
-             daily_data[i] = 0xff;
-             daily_data[i+1] = 0x0f;
-      }
+	int i;
+	bool has_daily = false, has_weekly = false, has_astro = false;
+	int16_t astro_offset = 0;
+	uint8_t weekly_data[FPR_TIMER_STAMP_WIDTH * 7];
+	uint8_t daily_data[FPR_TIMER_STAMP_WIDTH];
+	fer_sender_basic *fsb = &default_sender;
+	fer_grp group = fer_grp_Broadcast;
+	fer_memb memb = fer_memb_Broadcast;
+	int wday = -1;
+	uint8_t fpr0_flags = 0, fpr0_mask = 0;
+	int8_t flag_rtc_only = FLAG_NONE;
 
-  for (i = 1; i < len; ++i) {
-    const char *key = p[i].opt, *val = p[i].arg;
+	// init data
+	for (i = 0; i + 1 < sizeof(weekly_data) / sizeof(weekly_data[0]); i += 2) {
+		weekly_data[i] = 0xff;
+		weekly_data[i + 1] = 0x0f;
+	}
+	for (i = 0; i + 1 < sizeof(daily_data) / sizeof(daily_data[0]); i += 2) {
+		daily_data[i] = 0xff;
+		daily_data[i + 1] = 0x0f;
+	}
 
-    if (key == NULL || val == NULL) {
-      return -1;
-      } else if (strcmp(key, timer_keys[TIMER_KEY_WEEKLY]) == 0) {
-      has_weekly = string2bcdArray(val, weekly_data, sizeof weekly_data);
+	for (i = 1; i < len; ++i) {
+		const char *key = p[i].opt, *val = p[i].arg;
 
-      } else if (strcmp(key, timer_keys[TIMER_KEY_DAILY]) == 0) {
-      has_daily = string2bcdArray(val, daily_data, sizeof daily_data);
-       } else if (strcmp(key, timer_keys[TIMER_KEY_ASTRO]) == 0) {
-         has_astro = true;
-         astro_offset = atoi(val);
-         		} else if (strcmp(key,  timer_keys[TIMER_KEY_FLAG_RANDOM]) == 0) {
-         		int flag = asc2bool(val);
-         		if (flag >= 0) {
-           		fpr0_mask |= (1 << flag_Random);
-           		if (flag) fpr0_flags |= (1 << flag_Random);
-           		else fpr0_flags &= ~(1 << flag_Random);
-         		}
-         		} else if (strcmp(key,  timer_keys[TIMER_KEY_FLAG_SUN_AUTO]) == 0) {
-         		int flag = asc2bool(val);
-         		if (flag >= 0) {
-           		fpr0_mask |= (1 << flag_SunAuto);
-           		if (flag) fpr0_flags |= (1 << flag_SunAuto);
-           		else fpr0_flags &= ~(1 << flag_SunAuto);
-         		}
-                 
-         	   } else if (strcmp(key,  timer_keys[TIMER_KEY_RTC_ONLY]) == 0) {
-                 flag_rtc_only = asc2bool(val);
-	   } else if (strcmp(key, "g") == 0) {
-		group = asc2group(val);
+		if (key == NULL || val == NULL) {
+			return -1;
+		} else if (strcmp(key, timer_keys[TIMER_KEY_WEEKLY]) == 0) {
+			has_weekly = string2bcdArray(val, weekly_data, sizeof weekly_data);
+
+		} else if (strcmp(key, timer_keys[TIMER_KEY_DAILY]) == 0) {
+			has_daily = string2bcdArray(val, daily_data, sizeof daily_data);
+		} else if (strcmp(key, timer_keys[TIMER_KEY_ASTRO]) == 0) {
+			has_astro = true;
+			astro_offset = atoi(val);
+		} else if (strcmp(key, timer_keys[TIMER_KEY_FLAG_RANDOM]) == 0) {
+			int flag = asc2bool(val);
+			if (flag >= 0) {
+				fpr0_mask |= (1 << flag_Random);
+				if (flag)
+					fpr0_flags |= (1 << flag_Random);
+				else
+					fpr0_flags &= ~(1 << flag_Random);
+			}
+		} else if (strcmp(key, timer_keys[TIMER_KEY_FLAG_SUN_AUTO]) == 0) {
+			int flag = asc2bool(val);
+			if (flag >= 0) {
+				fpr0_mask |= (1 << flag_SunAuto);
+				if (flag)
+					fpr0_flags |= (1 << flag_SunAuto);
+				else
+					fpr0_flags &= ~(1 << flag_SunAuto);
+			}
+
+		} else if (strcmp(key, timer_keys[TIMER_KEY_RTC_ONLY]) == 0) {
+			flag_rtc_only = asc2bool(val);
+		} else if (strcmp(key, "g") == 0) {
+			group = asc2group(val);
 		} else if (strcmp(key, "m") == 0) {
-		memb = asc2memb(val);
-    } else if ((wday = asc2wday(key)) >= 0) {
-      io_puts(val), io_puts("\n");
-      has_weekly = string2bcdArray(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
-    }      
-  }
-  
-  FSB_PUT_GRP(fsb, group);
-  FSB_PUT_MEMB(fsb, memb);
-  FSB_PUT_CMD(fsb, fer_cmd_Program);
-  FSB_TOGGLE(fsb);
-  
-  init_prgPacket(dtSendPrgFrame);
-  if (flag_rtc_only == FLAG_TRUE) { 
-      txbuf_write_rtc(true);
-      txbuf_write_flags(fpr0_flags, fpr0_mask); // FIXME: are flags always ignored in RTC_ONLY frames? Or just ignored in Broadcasts
-      io_puts("RTC: "), print_array_8(get_sendPrgBufLine(0), FER_PRG_BYTE_CT);
-  } else {    
-  if (has_weekly) txbuf_write_wtimer(weekly_data);
-  if (has_daily)  txbuf_write_dtimer(daily_data);
-  if (has_astro)  txbuf_write_astro(astro_offset);
-  txbuf_write_rtc(false);
-  txbuf_write_flags(fpr0_flags, fpr0_mask);
-  txbuf_write_lastline(fsb);
-  
-  		for (i=0; i < FPR_DATA_HEIGHT; ++i) {
-    		print_array_8(get_sendPrgBufLine(i), FER_PRG_BYTE_CT);
-  		}
-  }
-    
-  fer_send_prg(fsb);
-  
-  return 0;
+			memb = asc2memb(val);
+		} else if ((wday = asc2wday(key)) >= 0) {
+			io_puts(val), io_puts("\n");
+			has_weekly = string2bcdArray(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
+		}
+	}
+
+	FSB_PUT_GRP(fsb, group);
+	FSB_PUT_MEMB(fsb, memb);
+	FSB_PUT_CMD(fsb, fer_cmd_Program);
+	FSB_TOGGLE(fsb);
+
+	init_prgPacket(dtSendPrgFrame);
+	if (flag_rtc_only == FLAG_TRUE) {
+		txbuf_write_rtc(true);
+		txbuf_write_flags(fpr0_flags, fpr0_mask); // the flags are ignored for RTC-only frames, even for non-broadcast
+	} else {
+		if (has_weekly)
+			txbuf_write_wtimer(weekly_data);
+		if (has_daily)
+			txbuf_write_dtimer(daily_data);
+		if (has_astro)
+			txbuf_write_astro(astro_offset);
+		txbuf_write_rtc(false);
+		txbuf_write_flags(fpr0_flags, fpr0_mask);
+		txbuf_write_lastline(fsb);
+	}
+
+	fer_send_prg(fsb);
+
+	return 0;
 }
 
 static int process_parmHelp(clpar p[], int len);

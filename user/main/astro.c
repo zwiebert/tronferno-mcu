@@ -87,6 +87,20 @@ math_write_astro(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset
     }
 }  
 
+
+static void ICACHE_FLASH_ATTR
+math_write_astro2(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
+{ int i, j;
+  float sunset = 0, day = 355;
+
+    for (i=0; i < 12; ++i) {
+      for (j=0; j < 4; ++j, (day += 4)) {
+        calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + (mint_offset / 60.0f), ((int)day) % 366, C.geo_longitude, C.geo_latitude);
+        time_to_bcd(&dst[i][j*2],&dst[i][j*2+1], sunset);
+      }
+    }
+}
+
 static void ICACHE_FLASH_ATTR
 dbg_write_astro(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
 { int i, j;
@@ -99,6 +113,19 @@ dbg_write_astro(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
     }
 }
 
+static void ICACHE_FLASH_ATTR
+dbg_write_astro2(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
+{ int i, j;
+ float sunset = 18;
+
+    for (i=0; i < 12; ++i) {
+      for (j=0; j < 4; ++j) {
+          time_to_bcd(&dst[i][j*2],&dst[i][j*2+1], sunset);
+
+          sunset += 1.0/60;
+      }
+    }
+}
 
 #if TEST_MODULE_ASTRO
 uint8_t data[12][8];
@@ -146,38 +173,50 @@ ICACHE_FLASH_ATTR tbl_write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], 
 }
 #endif
 
+// real times: 2017-10-22T18:27:00 (DST)  // the device interpolates times from the table
+
 // berlin, germany
+//FIXME: there are no odd minutes in the original astro table.  th
 const uint8_t ad_plz_10[12][8]  = {
+//                       01.01  //FIXME: this data is all wrong, because the debug data with 1 minute difference table confuses the receiver
 {0x34, 0x16, 0x36, 0x16, 0x36, 0x16, 0x38, 0x16, }, // jan1, dec2
+//            01.12.
 {0x40, 0x16, 0x44, 0x16, 0x48, 0x16, 0x52, 0x16, }, // jan2, dec1
-
+//
 {0x58, 0x16, 0x04, 0x17, 0x10, 0x17, 0x16, 0x17, }, // feb1, nov2
+//            01.11
 {0x24, 0x17, 0x30, 0x17, 0x38, 0x17, 0x46, 0x17, }, // feb2, nov1
-
+//  01.02    01.03
 {0x52, 0x17, 0x00, 0x18, 0x08, 0x18, 0x18, 0x18, }, // mar1, oct2
+//
 {0x26, 0x18, 0x34, 0x18, 0x42, 0x18, 0x50, 0x18, }, // mar2, oct1
-
+// 01.10 ??? 01.04
 {0x58, 0x18, 0x06, 0x1f, 0x16, 0x1f, 0x24, 0x1f, }, // apr1, sept2
+// 01.09
 {0x32, 0x1f, 0x42, 0x1f, 0x50, 0x1f, 0x58, 0x1f, }, // apr2, sept1
-
+// 01.05
 {0x08, 0x20, 0x16, 0x20, 0x24, 0x20, 0x32, 0x20, }, // may1, aug2
+// 01.08
 {0x40, 0x20, 0x46, 0x20, 0x54, 0x20, 0x00, 0x21, }, // may2, aug1
-
+//
 {0x06, 0x21, 0x10, 0x21, 0x14, 0x21, 0x18, 0x21, }, // jun1, jul2
+// 01.07                  01.06
 {0x20, 0x21, 0x20, 0x21, 0x20, 0x21, 0x20, 0x21, }, // jun2, jul1
 };
 
 // berlin actual sunset:    15:54 ... 20:36 (GMT + 1)
-// berlin fernotron table:  16:34 ... 21:20 (GMT + 2 ??) // shutters close one hour after sunset by default?  Has nothing to do with DST
+// berlin fernotron table:  16:34 ... 21:20  // shutters close one hour after sunset by default?  Has nothing to do with DST
 
 void ICACHE_FLASH_ATTR write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
 #if 0
-  dbg_write_astro(d, mint_offset); // write 18:18 for all times in astro block
-#elif 0
-  tbl_write_astro(d, ad_plz_10, mint_offset);
+  dbg_write_astro2(d, mint_offset); // write 18:18 for all times in astro block
 #elif 1
+  tbl_write_astro(d, ad_plz_10, mint_offset);
+#elif 0
   math_write_astro(d, mint_offset + 60); // FIXME: added one hour for correction to be consistent with astro original table. (see above)
-#else
+#elif 0
   math2_write_astro(d, mint_offset);
+#else
+  math_write_astro2(d, mint_offset);
 #endif
 }
