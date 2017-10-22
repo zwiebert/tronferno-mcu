@@ -8,6 +8,8 @@ State: Experimental software.
   * RF receiver 443 MHz (like RXB6) on Pin D1
   * RF transmitter 443 MHz (FS1000A) on Pin D2
 
+RF receiver is optional. Its needed to sniff the ID of your original central unit. After that, it should be disconnected again.
+For the sniffing a super-regeneration receiver can be used. It can block the frequency by transmitting noise now and then. To avoid this, use a super-heterodyne receiver like the RXB6. 
 
 Build on Linux and flash to esp8266
 
@@ -75,7 +77,7 @@ configure the Makefiles in user/esp8266/
      
 In case you no longer have working Fernotron central unit. You would start from scratch:
  
-     config cu=80xxxx  (just make up an address x can be one of 0...9 a...f  (hexadecimal).  write this address down)
+     config cu=80xxxx;  (just make up an address, x can be one of 0...9 a...f  (hexadecimal).  write this address down)
     
     * press the set-button on the shutter you want to be number 1 in group 1
     
