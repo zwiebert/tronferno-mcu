@@ -412,15 +412,12 @@ flasherase:
 	$(ESPTOOL) -p $(ESPPORT) erase_flash
 
 
-rebuild:
-	$(MAKE) clean
-	$(MAKE) all
+rebuild: clean all
 
-reflash: rebuild
-	$(MAKE) flash
+reflash: rebuild flash
 
 
-clean:
+clean: force
 	$(Q) rm -f $(APP_AR)
 	$(Q) rm -f $(TARGET_OUT)
 	$(Q) rm -rf $(BUILD_DIR)

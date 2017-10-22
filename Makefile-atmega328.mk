@@ -100,7 +100,7 @@ $(bld_dir)libtime.a: $(bld_dir) $(time_objs)
 
 # All Target
 
-.PHONY: all clean flash
+.PHONY: all clean flash rebuild reflash
 
 all: $(OUTPUT_FILE_PATH)
 
@@ -132,5 +132,11 @@ eeprom: all
 # Other Targets
 clean:
 	-$(RM) $(build_version)
+	
+
+rebuild : clean all
+
+reflash : rebuild flash
+
 
 	
