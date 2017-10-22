@@ -21,25 +21,17 @@ configure the Makefiles in user/esp8266/
 * add the tools to your PATH
 
 * optional: pre-configure your private data in new file user/sensitive/defaults.h which should contain:
-
+```
 #define MY_FER_CENTRAL_UNIT_ID 0x80****
-
 #define MY_MCU_ATMEGA328_BAUD_RATE 38400
-
 #define MY_MCU_ESP8266_BAUD_RATE 115200
-
 #define MY_GEO_LONGITUDE -13.****
-
 #define MY_GEO_LATITUDE +52.****
-
 #define MY_GEO_TIMEZONE +1.0
-
 #define MY_GEO_DST dstEU
-
 #define MY_WIFI_SSID "*******"
-
 #define MY_WIFI_PASSWORD "************"
-
+```
 
 * build and flash
 
@@ -51,15 +43,12 @@ configure the Makefiles in user/esp8266/
     $ gtkterm --port /dev/ttyUSB0 --speed 115200 --echo
     
   * type your commands in the terminal. Command line ends with a semicolon (;):
-  
+  ```
       help;
-      
-      config wlan-ssid="xxx" wlan-password="xxx";
-      
+      config wlan-ssid="xxx" wlan-password="xxx"; 
       config latitude="xxx" longitude="xxx" time-zone="+1.0" dst="euDst";
-      
       config cu=auto;     (this needs an 443Mhz RF receiver connected)
-      
+  ```    
 * connect a TCP terminal (like "Serial WIFI Terminal" from android play store)
 
      * find out which IP4 address your ESP8266 got from your WLAN accesspoint (look into the web interface of the AP).
@@ -69,11 +58,10 @@ configure the Makefiles in user/esp8266/
 
 
 * try to send commands from serial port terminal or TCP termminal.  RF Transmitter 443Mhz should be connected:
-
-     send g=1 m=1 c=down;    (would close the shutter number 1 in group 1
-     
+```
+     send g=1 m=1 c=down;    (would close the shutter number 1 in group 1   
      send c=up;              (would open all shutters from all groups)
-     
+```    
      
 In case you no longer have working Fernotron central unit. You would start from scratch:
  
@@ -102,18 +90,20 @@ In case you no longer have working Fernotron central unit. You would start from 
     * RF Transmitter on D2
     
   * To build and flash, open the Solution file in AVR Studio on Windows or use make on Linux:
-      * $ make atmega328-flash
-      * $ make atmega328-eeprom
+  ```
+      $ make atmega328-flash
+      $ make atmega328-eeprom
+  ```
      
 There is no network support for the ATMega. You can add an WLAN or Bluetooth adapter to the serial port. There is NTP on the ESP8266.  The ATmega has to be told about the clock via CLI.
 
      config rtc=ISO_DATE_AND_TIME;    (looks like 2017-12-31T23:45:00)
 
 You should not use the "timer" command, if the time and time-zone is not set correctly.  This would mess up the built-in real time clock of the shutter you address any timer command to:
-
-      timer daily=0700-;    (all shutters opens every day at seven o'clock ... and also updates the built-in RTC)
-      
+```
+      timer daily=0700-;    (all shutters opens every day at seven o'clock ... and also updates the built-in RTC)     
       timer g=1 m=2 daily=-0400 weekly=0700++++00900+ astro=+30 sun-auto=1;  (shutter 2 of group 1 closes daily at four o'clock, opens monday til friday at nine o'clock. closes thirty minutes after sunset, activate the sun automatic.
+ ```
       
 The sun automatic is controlled by a wireless window sensor powered by solar cells. You have to set a position the shutters goes whenever he receives the "too much sun" signal from the sensor.
 
