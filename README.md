@@ -50,7 +50,7 @@ configure the Makefiles in user/esp8266/
   
     $ gtkterm --port /dev/ttyUSB0 --speed 115200 --echo
     
-  * type your commands in the terminal. ca command line ends with a semicolon (;):
+  * type your commands in the terminal. Command line ends with a semicolon (;):
   
       help;
       
