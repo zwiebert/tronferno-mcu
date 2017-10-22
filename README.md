@@ -97,15 +97,31 @@ In case you no longer have working Fernotron central unit. You would start from 
  
  * Prepare Hardware 
     * Arduino Nano Board (Clone)
+    * ISP programmer hardware (like avrispII, etc)
     * RF Receiver on D7
     * RF Transmitter on D2
     
-  * To build and flash, open the Solution file in AVR Studio Windows or use make on Linux:
+  * To build and flash, open the Solution file in AVR Studio on Windows or use make on Linux:
       * $ make atmega328-flash
       * $ make atmega328-eeprom
      
-    
-   
+There is no network support for the ATMega. You can add an WLAN or Bluetooth adapter to the serial port. There is NTP on the ESP8266.  The ATmega has to be told about the clock via CLI.
+
+     config rtc=ISO_DATE_AND_TIME;    (looks like 2017-12-31T23:45:00)
+
+You should not use the "timer" command, if the time and time-zone is not set correctly.  This would mess up the built-in real time clock of the shutter you address any timer command to:
+
+      timer daily=0700-;    (all shutters opens every day at seven o'clock ... and also updates the built-in RTC)
+      
+      timer g=1 m=2 daily=-0400 weekly=0700++++00900+ astro=+30 sun-auto=1;  (shutter 2 of group 1 closes daily at four o'clock, opens monday til friday at nine o'clock. closes thirty minutes after sunset, activate the sun automatic.
+      
+The sun automatic is controlled by a wireless window sensor powered by solar cells. You have to set a position the shutters goes whenever he receives the "too much sun" signal from the sensor.
+
+I have bought a few of these sensors in the past, but now the fernotron series is long discontinued.  To send the "too much sun" signal:
+
+   send g=2 m=3 c=sun-down;    (shutter 3 of group 2 goes down to the "too much sun" position. note: it would not go up to this position, if its already positioned manually below it)     
+      
+
    
  Too complicated and useless? I currently work on a GUI for android to work on top of the command line interface.  Maybe I also add a binary repository later, for the people (if any) who just want to flash their MCUs without having to install the build environment on their PC.
  
