@@ -117,9 +117,17 @@ You should not use the "timer" command, if the time and time-zone is not set cor
       
 The sun automatic is controlled by a wireless window sensor powered by solar cells. You have to set a position the shutters goes whenever he receives the "too much sun" signal from the sensor.
 
-I have bought a few of these sensors in the past, but now the fernotron series is long discontinued.  To send the "too much sun" signal:
+I have bought a few of these sensors in the past, but now the fernotron series is long discontinued.  To set the "too much sun" position:
 
-   send g=2 m=3 c=sun-down;    (shutter 3 of group 2 goes down to the "too much sun" position. note: it would not go up to this position, if its already positioned manually below it)     
+
+      send g=2 m=3 c=sun-inst;    (set position for shutter 3 of group 2)
+
+To send the "too much sun" command:
+
+      send g=2 m=3 c=sun-down;    (the shutter goes down to the "too much sun" position. note: it would not go up to this position, if already below it)
+      
+      
+ 
       
 
    
