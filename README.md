@@ -42,7 +42,7 @@ configure the Makefiles in user/esp8266/
   
     $ gtkterm --port /dev/ttyUSB0 --speed 115200 --echo
     
-  * type your commands in the terminal. Command line ends with a semicolon (;):
+  * type your commands in the terminal. Command line ends with a semicolon (;). No editing possible:
   ```
       help;
       config wlan-ssid="xxx" wlan-password="xxx"; 
@@ -65,13 +65,13 @@ configure the Makefiles in user/esp8266/
      
 In case you no longer have working Fernotron central unit. You would start from scratch:
  
-     config cu=80xxxx;  (just make up an address, x can be one of 0...9 a...f  (hexadecimal).  write this address down)
+     config cu=80xxxx;  (just make up an address, x can be one of 0...9 a...f  (hex).  write this down)
     
-    * press the set-button on the shutter you want to be number 1 in group 1
+    * press the set-button on the shutter you want to be number 1 in group 1, and type quickly:
     
          send g=1 m=1 c=stop;
     
-    * press the set-button on the next shutter
+    * press the set-button on the next shutter, and type quickly (or type it in advance and add the ; now)
     
          send g=1 m=2 c=stop;
     
