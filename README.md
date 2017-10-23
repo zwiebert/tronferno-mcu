@@ -3,16 +3,22 @@ MCU firmware to control Fernotron devices via CLI . Runs on one ESP8266 or ATMEG
 
 #### This project is Experimental Software. It may contain bugs and errors. Use at your own risk.
 
-* Prepare Hardware:
-  * esp8266 (development board)
-  * RF receiver 443 MHz (like RXB6) on Pin D1
-  * RF transmitter 443 MHz (FS1000A) on Pin D2
 
-RF receiver is optional. Its needed to sniff the ID of your original central unit. After that, it should be disconnected again.
-For the sniffing a super-regeneration receiver can be used. It can block the frequency by transmitting noise now and then. If you want to leave the receiver connected, better use a super-heterodyne receiver like the RXB6. 
+### Hardware Requirements
+ - MCU board.
+ - 443MHz RF transmitter (like FS1000A)
+ - 443 MHz RF receiver (like RXB6)
+
+RF receiver is optional and you may only ever need it to sniff the ID of your original central unit once.  If you want to keep it connected, don't use an inferior super-regeneration receiver. It can block the frequency by transmitting noise occasionally. If you want to leave the receiver connected, use a super-heterodyne receiver like the RXB6. 
 
 
 ### How to build on Linux and flash to esp8266
+
+* Prepare Hardware:
+  * esp8266 (development board) connected to USB on your PC
+  * RF receiver connected to D1
+  * RF transmitter connected to D2
+
 
 configure the Makefiles in user/esp8266/
 * flash size (default: 4MB / 32 MBit)
@@ -84,10 +90,10 @@ In case you no longer have working Fernotron central unit. You would start from 
  ### How to build and flash for ATMEGA328P
  
  * Prepare Hardware 
-    * Arduino Nano Board (Clone)
-    * ISP programmer hardware (like avrispII, etc)
-    * RF Receiver on D7
-    * RF Transmitter on D2
+    * Arduino Nano Board (Clone)  connected to USB on your PC
+    * ISP programmer hardware (like avrispII, etc) connected to USB on your PC
+    * RF Receiver connected to D7
+    * RF Transmitter connected to D2
     
   * To build and flash, open the Solution file in AVR Studio on Windows or use make on Linux:
   ```
