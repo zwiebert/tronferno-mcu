@@ -116,7 +116,7 @@ Explanation: Shutter 2 of group 1, closes daily (or nightly) at four o'clock, op
        
 The sun automatic is controlled by a wireless window sensor powered by solar cells. You have to set a position the shutters goes whenever he receives the "too much sun" signal from the sensor.
 
-I have bought a few of these sensors in the past, but now the fernotron series is long discontinued.  To set the "too much sun" position:
+I have bought a few of these sensors in the past, but now the Fernotron series is long discontinued.  To set the "too much sun" position:
 
 
       send g=2 m=3 c=sun-inst;    (set position for shutter 3 of group 2)
