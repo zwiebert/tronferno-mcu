@@ -1,7 +1,7 @@
 # tronferno-mcu
 MCU firmware to control Fernotron devices via CLI . Runs on one ESP8266 or ATMEGA328P 
 
-State: Experimental software.
+#### This project is Experimental Software. It may contain bugs and errors. Use at your own risk.
 
 * Prepare Hardware:
   * esp8266 (development board)
@@ -11,8 +11,8 @@ State: Experimental software.
 RF receiver is optional. Its needed to sniff the ID of your original central unit. After that, it should be disconnected again.
 For the sniffing a super-regeneration receiver can be used. It can block the frequency by transmitting noise now and then. If you want to leave the receiver connected, better use a super-heterodyne receiver like the RXB6. 
 
-Build on Linux and flash to esp8266
 
+### How to build on Linux and flash to esp8266
 
 configure the Makefiles in user/esp8266/
 * flash size (default: 4MB / 32 MBit)
@@ -81,7 +81,7 @@ In case you no longer have working Fernotron central unit. You would start from 
     ```
         send a=9xxxxx c=set;  (where xxxxx is the hexadecimal code)
     ```
- Building it for ATMEGA328P ist similar:
+ ### How to build and flash for ATMEGA328P
  
  * Prepare Hardware 
     * Arduino Nano Board (Clone)
@@ -95,7 +95,7 @@ In case you no longer have working Fernotron central unit. You would start from 
       $ make atmega328-eeprom
   ```
 
-
+### Command Examples
 
 There is no network support for the ATMega. You can add an WLAN or Bluetooth adapter to the serial port. But it will not add NTP like the ESP8266 has.  So the ATmega has to be told about the clock via CLI.
 
@@ -128,7 +128,7 @@ To send the "too much sun" command:
       
  
       
-
+### Future Changes
    
  Its all too complicated and totally useless?  I currently work on a GUI for Android.  Maybe I also add a binary repository later, for the people (if any) who just want to flash their MCUs without having to install the build environment on their PC.
  
