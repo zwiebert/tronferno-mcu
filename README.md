@@ -13,7 +13,7 @@ MCU firmware to control Fernotron devices via CLI . Can run on ESP8266 or ATMEGA
 RF receiver is optional and you may only ever need it to sniff the ID of your original central unit once.  If you want to keep it connected, don't use an inferior super-regeneration receiver. It can block the frequency by transmitting noise occasionally. If you want to leave the receiver connected, use a super-heterodyne receiver like the RXB6. 
 
 
-### How to build on Linux and flash to ESP-8266
+### How to build on Linux or Windows and flash to ESP-8266
 
 * Prepare Hardware:
   * esp8266 (development board) connected to USB on your PC
@@ -40,14 +40,18 @@ configure the Makefiles in user/esp8266/
 #define MY_WIFI_PASSWORD "************"
 ```
 
-* build and flash
+* build and flash on Linux shell
 
-    $ make esp8266-flash
+        make esp8266-flash
+    
+ *  On Windows Commandline Unofficial Development Kit for Espressif ESP8266:
+   
+        make WINDOWS=1 esp8266-flash
 
 * optional: configure your private data if not already done above. 
   * connect a serial terminal 115200-8-N-1 with local echo enabled:
   
-    $ gtkterm --port /dev/ttyUSB0 --speed 115200 --echo
+        gtkterm --port /dev/ttyUSB0 --speed 115200 --echo
     
   * type your commands in the terminal. Command line ends with a semicolon (;). No editing possible:
   ```
@@ -98,8 +102,8 @@ In case you no longer have working Fernotron central unit. You would start from 
     
   * To build and flash, open the Solution file in AVR Studio on Windows or use make on Linux:
   ```
-      $ make atmega328-flash
-      $ make atmega328-eeprom
+       make atmega328-flash
+       make atmega328-eeprom
   ```
 
 ### Command Examples
