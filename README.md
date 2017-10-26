@@ -1,5 +1,7 @@
 # tronferno-mcu
+
 MCU firmware to control Fernotron devices via CLI . Can run on ESP8266 or ATMEGA328P micro controller.
+Author: Bert Winkelmann
 
 #### This project is Experimental Software. It may contain bugs and errors. Use at your own risk.
 
@@ -136,5 +138,5 @@ To send the "too much sun" command:
  Its all too complicated and totally useless?  I currently work on a GUI for Android.  Maybe I also add a binary repository later, allowing for flashing without a build environment installed.
  
   The latitude and longitude configuration is required by astro function obviously. But its currently disabled and a predefined table for Berlin/Germany is used instead. Can be changed in user/main/astro.c  Enable math_write_astro(). But the data it generates is probably wrong at the moment.
-  
-
+ 
+I started this project 2011 and sending normal commands like "up" and "down" was not to hard to figure out. But I gave up on programming the timers. Lately I could make timer programming work, but there are still a few bytes I don't understand. 
