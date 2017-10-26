@@ -1,5 +1,5 @@
 # tronferno-mcu
-MCU firmware to control Fernotron devices via CLI . Runs on one ESP8266 or ATMEGA328P 
+MCU firmware to control Fernotron devices via CLI . Can run on ESP8266 or ATMEGA328P micro controller.
 
 #### This project is Experimental Software. It may contain bugs and errors. Use at your own risk.
 
@@ -12,11 +12,11 @@ MCU firmware to control Fernotron devices via CLI . Runs on one ESP8266 or ATMEG
 RF receiver is optional and you may only ever need it to sniff the ID of your original central unit once.  If you want to keep it connected, don't use an inferior super-regeneration receiver. It can block the frequency by transmitting noise occasionally. If you want to leave the receiver connected, use a super-heterodyne receiver like the RXB6. 
 
 
-### How to build on Linux and flash to esp8266
+### How to build on Linux and flash to ESP-8266
 
 * Prepare Hardware:
   * esp8266 (development board) connected to USB on your PC
-  * RF receiver connected to D1
+  * RF receiver connected to D1 on the MCU board
   * RF transmitter connected to D2
 
 
@@ -53,7 +53,7 @@ configure the Makefiles in user/esp8266/
       help;
       config wlan-ssid="xxx" wlan-password="xxx"; 
       config latitude="xxx" longitude="xxx" time-zone="+1.0" dst="euDst";
-      config cu=auto;     (this needs an 443Mhz RF receiver connected)
+      config cu=auto;     (this needs a 443Mhz RF receiver connected)
   ```    
 * connect a TCP terminal (like "Serial WIFI Terminal" from android play store)
 
@@ -71,13 +71,13 @@ configure the Makefiles in user/esp8266/
      
 In case you no longer have working Fernotron central unit. You would start from scratch:
  
-     config cu=80xxxx;  (just make up an address, x can be one of 0...9 a...f  (hex).  write this down)
+     config cu=80xxxx;  (just make up an address, x needs to be one of 0...9 a...f  (hex).  write it down)
     
     * press the set-button on the shutter you want to be number 1 in group 1, and type quickly:
     
          send g=1 m=1 c=stop;
     
-    * press the set-button on the next shutter, and type quickly (or type it in advance and add the ; now)
+    * press the set-button on the next shutter, and type quickly (or use copy/paste)
     
          send g=1 m=2 c=stop;
     
@@ -87,7 +87,7 @@ In case you no longer have working Fernotron central unit. You would start from 
     ```
         send a=9xxxxx c=set;  (where xxxxx is the hexadecimal code)
     ```
- ### How to build and flash for ATMEGA328P
+ ### How to build and flash using ATMega-328P
  
  * Prepare Hardware 
     * Arduino Nano Board (Clone)  connected to USB on your PC
