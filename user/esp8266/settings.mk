@@ -10,7 +10,7 @@ FW_BASE		= firmware
 # name for the target project
 TARGET		= app
 
-ifeq ($(WINDOWS),1)
+ifeq ("$(WINDOWS)","1")
 # base directory of the ESP8266 SDK package, absolute
 SDK_BASE	?=  c:/Espressif/ESP8266_SDK
 #SDK_BASE        ?=  c:/ESP8266_NONOS_SDK-2.1.0
@@ -21,7 +21,7 @@ EXTRA_BASE	?= c:/Espressif/extra
 
 # esptool path and port
 ESPTOOL		?=  $(SDK_TOOLS)/esptool.exe
-ESPPORT		?= COM11
+ESPPORT		?= COM3
 else
 # base directory of the ESP8266 SDK package, absolute
 SDK_BASE	?= $(HOME)/esp/ESP8266_NONOS_SDK
