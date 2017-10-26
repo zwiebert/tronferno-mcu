@@ -10,6 +10,19 @@ FW_BASE		= firmware
 # name for the target project
 TARGET		= app
 
+ifeq ($(WINDOWS),1)
+# base directory of the ESP8266 SDK package, absolute
+SDK_BASE	?=  c:/Espressif/ESP8266_SDK
+#SDK_BASE        ?=  c:/ESP8266_NONOS_SDK-2.1.0
+SDK_TOOLS	?= c:/Espressif/utils/ESP8266
+
+# Extra libs, include and ld file
+EXTRA_BASE	?= c:/Espressif/extra
+
+# esptool path and port
+ESPTOOL		?=  $(SDK_TOOLS)/esptool.exe
+ESPPORT		?= COM11
+else
 # base directory of the ESP8266 SDK package, absolute
 SDK_BASE	?= $(HOME)/esp/ESP8266_NONOS_SDK
 SDK_TOOLS	?= $(HOME)/esp/ESP8266_NONOS_SDK/tools
@@ -20,6 +33,7 @@ EXTRA_BASE	?= $(HOME)/esp/ESP8266_NONOS_SDK/third_party
 # esptool path and port
 ESPTOOL		?= python $(HOME)/esp/esp-idf/components/esptool_py/esptool/esptool.py
 ESPPORT		?= /dev/ttyUSB0
+endif
 
 # Baud rate for programmer
 ESPBAUD		?= 115200

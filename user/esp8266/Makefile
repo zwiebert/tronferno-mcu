@@ -26,17 +26,21 @@ LIBM_A := $(HOME)/esp/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/sysroot/lib
 LIBMIROM_A :=  $(HOME)/esp/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/sysroot/lib/libmirom.a
 LIBS += m
 
-GEN_LIBS := $(LIBMIROM_A)
-
+ifeq ($(WINDOWS),1)
+GEN_LIBS := ;
+CPPFLAGS += -DFER_RECEIVER_MINIMAL
+else
+GEN_LIBS := $(LIBMIROM_A) ;
+endif
 
 $(LIBMIROM_A) : $(LIBM_A) force
 	$(OBJCOPY) --rename-section .text=.irom0.text \
 		--rename-section .literal=.irom0.literal $(<) $(@);
-  
-  
-  include ./user/esp8266/common.mk
-  
 
- 
- 
+
+  include ./user/esp8266/common.mk
+
+
+
+
  libmirom: $(LIBMIROM_A)
