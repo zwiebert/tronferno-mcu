@@ -42,11 +42,12 @@ configure the Makefiles in user/esp8266/
 
 * build and flash on Linux shell
 
+        make esp8266-flashinit
         make esp8266-flash
     
  *  On Windows Commandline Unofficial Development Kit for Espressif ESP8266:
    
-        make WINDOWS=1 esp8266-flash
+        make WINDOWS=1 ESPPORT=comX esp8266-flashinit esp8266-flash
 
 * optional: configure your private data if not already done above. 
   * connect a serial terminal 115200-8-N-1 with local echo enabled:
