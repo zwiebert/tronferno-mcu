@@ -41,7 +41,7 @@ calc_sunrise_sunset(float *sunrise, float *sunset, float timezone, int day_of_ye
 }
 
 static void ICACHE_FLASH_ATTR
-time_to_bcd(uint8_t *dstMinutes, uint8_t *dstHours, float time)
+time_to_bcd(uint8_t *dstMinutes, uint8_t *dstHours, float time, bool force_even_minutes)
 {
   double integral, fractional;
   
@@ -51,7 +51,7 @@ time_to_bcd(uint8_t *dstMinutes, uint8_t *dstHours, float time)
     *dstHours = dec2bcd_special((uint8_t)integral);
   }
   if (dstMinutes) {
-    *dstMinutes = dec2bcd_special((uint8_t)(fractional * 60));
+    *dstMinutes = dec2bcd_special((force_even_minutes ? ~1 : ~0) & (uint8_t)(fractional * 60));
   }
 }
 
@@ -82,7 +82,7 @@ math_write_astro(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset
     for (i=0; i < 12; ++i) {
       for (j=0; j < 4; ++j, (day += 3.8125)) {
         calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + (mint_offset / 60.0f), ((int)day) % 366, C.geo_longitude, C.geo_latitude);
-        time_to_bcd(&dst[i][j*2],&dst[i][j*2+1], sunset);
+        time_to_bcd(&dst[i][j*2],&dst[i][j*2+1], sunset, true);
       }
     }
 }  
@@ -96,7 +96,7 @@ math_write_astro2(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offse
     for (i=0; i < 12; ++i) {
       for (j=0; j < 4; ++j, (day += 4)) {
         calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + (mint_offset / 60.0f), ((int)day) % 366, C.geo_longitude, C.geo_latitude);
-        time_to_bcd(&dst[i][j*2],&dst[i][j*2+1], sunset);
+        time_to_bcd(&dst[i][j*2],&dst[i][j*2+1], sunset, true);
       }
     }
 }
@@ -120,7 +120,7 @@ dbg_write_astro2(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset
 
     for (i=0; i < 12; ++i) {
       for (j=0; j < 4; ++j) {
-          time_to_bcd(&dst[i][j*2],&dst[i][j*2+1], sunset);
+          time_to_bcd(&dst[i][j*2],&dst[i][j*2+1], sunset, true);
 
           sunset += 1.0/60;
       }
@@ -149,11 +149,14 @@ static void
 ICACHE_FLASH_ATTR tbl_write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], const uint8_t ad[12][8], int mint_offset) {
   int col, line;
 
+  mint_offset &= ~1;  // make sure the number is even
+
+
   for (line=0; line < FPR_ASTRO_HEIGHT; ++line) {
     for (col=0; col < FPR_ASTRO_WIDTH; ++col) {
-      d[line][col] = (ad[line][col] + mint_offset) % 60;
+      d[line][col] = dec2bcd(bcd2dec(ad[line][col]) + (mint_offset % 60));
       ++col;
-      d[line][col] = ad[line][col] + (mint_offset / 60);
+      d[line][col] = dec2bcd(bcd2dec(ad[line][col]) + (mint_offset / 60));
     }
   }
 }
@@ -162,11 +165,13 @@ static void
 ICACHE_FLASH_ATTR tbl_write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], const uint8_t *ad, int mint_offset) {
   int col, line;
 
+  mint_offset &= ~1;  // make sure the number is even
+
   for (line=0; line < FPR_ASTRO_HEIGHT; ++line) {
     for (col=0; col < FPR_ASTRO_WIDTH; ++col, ++ad) {
-      d[line][col] = (*ad + mint_offset) % 60;
+      d[line][col] = dec2bcd(bcd2dec(*ad) + (mint_offset % 60));
       ++col; ++ad;
-      d[line][col] = *ad + (mint_offset / 60);
+      d[line][col] = dec2bcd(bcd2dec(*ad) + (mint_offset / 60));
 
     }
   }
@@ -212,7 +217,7 @@ void ICACHE_FLASH_ATTR write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT],
   dbg_write_astro2(d, mint_offset); // write 18:18 for all times in astro block
 #elif 1
   tbl_write_astro(d, ad_plz_10, mint_offset);
-#elif 0
+#elif 1
   math_write_astro(d, mint_offset + 60); // FIXME: added one hour for correction to be consistent with astro original table. (see above)
 #elif 0
   math2_write_astro(d, mint_offset);
