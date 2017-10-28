@@ -123,10 +123,10 @@ You should never use the "timer" command, if the time and time-zone is not set c
 Some more options. 
 
 ```      
-    timer g=1 m=2 daily=-0400 weekly=0700++++00900+ astro=+30 sun-auto=1;   (explanation below)
+    timer g=1 m=2 daily=-0400 weekly=0700++++00900-+ astro=+30 sun-auto=1;   (explanation below)
  ```
  
-Explanation: Shutter 2 of group 1, closes daily (or nightly) at four o'clock, opens monday til friday at nine o'clock, opens saturday and sunday at nine o'clock, closes thirty minutes after sunset, activate the sun automatic.
+Explanation: Shutter 2 of group 1, closes daily (or nightly) at four o'clock, opens monday til friday at nine o'clock, opens saturday and sunday at nine o'clock, closes thirty minutes after sunset, activate the sun automatic. Note: there are 2 minus signs per day (for up and down each) but only one plus sign (which copies the entire previous day)
  
        
 The sun automatic is controlled by a wireless window sensor powered by solar cells. You have to set a position the shutters goes whenever he receives the "too much sun" signal from the sensor:
@@ -180,7 +180,7 @@ print=(rtc|cu)
 
 timer options:
 daily=T T is like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00
-weekly=TTTTTTT like weekly=0730-++++0900+ (+ repeats the previous T) for up 07:30 Mon-Fri and up 09:00 Sat-Sun
+weekly=TTTTTTT like weekly=0730-++++0900-+ (+ repeats the previous T) for up 07:30 Mon-Fri and up 09:00 Sat-Sun
 astro=N This enables astro automatic. N is the offset to sunset in minutes. So astro=+60 closes the shutter 60 minutes after sunset
 sun-auto=1  1 enables and 0 disables sun automatic
 random=1 enables random automatic. shutter opens and closes at random times, so it looks like you are home when you are not
