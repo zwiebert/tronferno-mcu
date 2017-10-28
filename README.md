@@ -13,6 +13,9 @@ MCU firmware to control Fernotron devices via CLI . Can run on ESP8266 or ATMEGA
 RF receiver is optional and you may only ever need it to sniff the ID of your original central unit once.  If you want to keep it connected, don't use an inferior super-regeneration receiver. It can block the frequency by transmitting noise occasionally. If you want to leave the receiver connected, use a super-heterodyne receiver like the RXB6. 
 
 
+### How to flash the ESP8266 from binary images
+   * go to the separate github repository zwiebert/tronferno-mcu-flash
+
 ### How to build on Linux or Windows and flash to ESP-8266
 
 * Prepare Hardware:
@@ -145,8 +148,7 @@ To send the "too much sun" command:
 I started this project in 2011 from scratch using an ATmega168. Sending normal commands like "up" and "down" was not to hard to figure out. But I gave up on programming the timers and the project went on hiatus. In 2017 I finally figured out the timer programming.  Had to switch to an ATmega328p for enough flash memory, and then to the ESP8266, for its built-in WIFI.   
 
 ### Future Changes
-Its all too complicated and totally useless?  I currently work on a GUI for Android.  Maybe I also add a binary repository later, allowing for flashing without a build environment installed.
-
+Its all too complicated and totally useless?  I currently work on a GUI for Android.
 
 ### Project Author
 
