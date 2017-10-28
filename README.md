@@ -137,8 +137,8 @@ To send the "too much sun" command:
       
 
 ### Problems
- * I'm not 100% sure about how the astro data table is organized. So the times may be off
- * The function of a few bytes in the last line of the timer pgoramming data is still unknown to me.
+ * I'm not 100% sure about how the astro data is organized. So the times may be off
+ * The function of a few bytes in the last line of the timer programming data is still unknown to me.
  * When building the ESP8266 firmware on windows, the IRAM segment may overflow. Uncomment FER_RECEIVER_MINIMAL in user/main/common.h to disable some code. 
 
 ### History
