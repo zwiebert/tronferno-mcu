@@ -135,15 +135,20 @@ To send the "too much sun" command:
       send g=2 m=3 c=sun-down;    (the shutter goes down to the "too much sun" position. note: it would not go up to this position, if already below it)
       
       
- 
-      
+
+### Problems
+ * I'm not 100% sure about how the astro data table is organized. So the times may be off
+ * The function of a few bytes in the last line of the timer pgoramming data is still unknown to me.
+ * When building the ESP8266 firmware on windows, the IRAM segment may overflow. Uncomment FER_RECEIVER_MINIMAL in user/main/common.h to disable some code. 
+
+### History
+I started this project in 2011 from scratch using an ATmega168. Sending normal commands like "up" and "down" was not to hard to figure out. But I gave up on programming the timers and the project went on hiatus. In 2017 I finally figured out the timer programming.  Had to switch to an ATmega328p for enough flash memory, and then to the ESP8266, for its built-in WIFI.   
+
 ### Future Changes
-   
- Its all too complicated and totally useless?  I currently work on a GUI for Android.  Maybe I also add a binary repository later, allowing for flashing without a build environment installed.
- 
-  The latitude and longitude configuration is required by astro function obviously. But its currently disabled and a predefined table for Berlin/Germany is used instead. Can be changed in user/main/astro.c  Enable math_write_astro(). But the data it generates is probably wrong at the moment.
- 
-I started this project 2011 and sending normal commands like "up" and "down" was not to hard to figure out. But I gave up on programming the timers. Lately I could make timer programming work, but there are still a few bytes I don't understand. 
+Its all too complicated and totally useless?  I currently work on a GUI for Android.  Maybe I also add a binary repository later, allowing for flashing without a build environment installed.
+
+
+
 
 
 ### Project Author
