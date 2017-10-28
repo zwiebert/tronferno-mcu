@@ -58,7 +58,7 @@ configure the Makefiles in user/esp8266/
   ```
       help;
       config wlan-ssid="xxx" wlan-password="xxx"; 
-      config latitude="xxx" longitude="xxx" time-zone="+1.0" dst="euDst";
+      config latitude=xxx longitude=xxx time-zone=+1.0 dst=eu;
       config cu=auto;     (this needs a 443Mhz RF receiver connected)
   ```    
 * connect a TCP terminal (like "Serial WIFI Terminal" from android play store)
@@ -148,9 +148,39 @@ I started this project in 2011 from scratch using an ATmega168. Sending normal c
 Its all too complicated and totally useless?  I currently work on a GUI for Android.  Maybe I also add a binary repository later, allowing for flashing without a build environment installed.
 
 
-
-
-
 ### Project Author
 
 Bert Winkelmann
+
+### CLI options (output of help command)
+```
+syntax: command option=value ...;
+commands are: send, config, dbg, timer, help, 
+send options:
+a=(0|SenderID) address of the sender or 0 for the configured CentralUnit
+g=[0-7]  group number. 0 is for broadcast
+m=[0-7]  group member. 0 is for broadcast all groups members
+c=(up|down|stop|sun-down|sun-inst|set) command to send
+
+config options:
+cu=(CentralUnitID|auto)  like 80abcd. auto: press Stop key on central unit in the next 60 seconds
+rtc=ISO_TIME_STRING  like 2017-12-31T23:59:59
+baud=serial_baud_rate
+wlan-ssid="your_wlan_ssid"
+wlan-password="your_wlan_password"
+longitude=N like -13.23452 (to calculate sunset)
+latitude=N like +52.34234
+time-zone=N like +1
+dst=(eu|0|1) daylight saving time: automatic: eu=europe. manually: 0=off, 1=on
+
+dbg options:
+print=(rtc|cu)
+
+timer options:
+daily=T T is like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00
+weekly=TTTTTTT like weekly=0730-++++0900+ (+ repeats the previous T) for up 07:30 Mon-Fri and up 09:00 Sat-Sun
+astro=N This enables astro automatic. N is the offset to sunset in minutes. So astro=+60 closes the shutter 60 minutes after sunset
+sun-auto=1  1 enables and 0 disables sun automatic
+random=1 enables random automatic. shutter opens and closes at random times, so it looks like you are home when you are not
+rtc-only=1  Update the built-in real time clock of the shutter. Don't change its programmed timers (and flags)
+```
