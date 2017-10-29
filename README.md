@@ -14,7 +14,7 @@ RF receiver is optional and you may only ever need it to sniff the ID of your or
 
 
 ### How to flash the ESP8266 from binary images
-   * go to the separate github repository zwiebert/tronferno-mcu-bin
+   * go to the separate github repository [zwiebert/tronferno-mcu-bin](https://github.com/zwiebert/tronferno-mcu-bin)
 
 ### How to build on Linux or Windows and flash to ESP-8266
 
