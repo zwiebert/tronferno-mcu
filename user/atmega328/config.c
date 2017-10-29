@@ -27,7 +27,8 @@ struct ee_config ee_cfg EEMEM = {
 		0,
 		recvTick,
 		transmTick,
-		rtcAvrTime
+		rtcAvrTime,
+		vrbNone,
 	}
 };
 

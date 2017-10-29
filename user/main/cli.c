@@ -347,6 +347,7 @@ const char help_parmConfig[] PROGMEM =
 		  "latitude=N like +52.34234\n"
 		  "time-zone=N like +1\n"
 		  "dst=(eu|0|1) daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
+		  "verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)"
 		;
 
 static int ICACHE_FLASH_ATTR
@@ -382,6 +383,11 @@ process_parmConfig(clpar p[], int len) {
 		} else if (strcmp(key, "baud") == 0) {
 			uint32_t baud = strtoul(val, NULL, 10);
 			C.mcu_serialBaud = baud;
+			save_config();
+			reply_success();
+		} else if (strcmp(key, "verbose") == 0) {
+			enum verbosity level = atoi(val);
+			C.app_verboseOutput = level;
 			save_config();
 			reply_success();
 		} else if (strcmp(key, "wlan-ssid") == 0) {
@@ -555,7 +561,7 @@ string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst) {
 
 const char help_parmTimer[] PROGMEM =
 		  "daily=T T is like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00\n"
-		  "weekly=TTTTTTT like weekly=0730-++++0900+ (+ repeats the previous T) for up 07:30 Mon-Fri and up 09:00 Sat-Sun\n"
+		  "weekly=TTTTTTT like weekly=0730-++++0900-+ (+ repeats the previous T) for up 07:30 Mon-Fri and up 09:00 Sat-Sun\n"
 		  "astro=N This enables astro automatic. N is the offset to sunset in minutes. So astro=+60 closes the shutter 60 minutes after sunset\n"
 		  "sun-auto=1  1 enables and 0 disables sun automatic\n"
 		  "random=1 enables random automatic. shutter opens and closes at random times, so it looks like you are home when you are not\n"
@@ -652,7 +658,7 @@ process_parmTimer(clpar p[], int len) {
 		txbuf_write_lastline(fsb);
 	}
 
-	fer_send_prg(fsb);
+	reply(fer_send_prg(fsb));
 
 	return 0;
 }

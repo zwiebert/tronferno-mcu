@@ -50,6 +50,10 @@ enum rtclock {
 	rtcNone, rtcAvrTime
 };
 
+enum verbosity {
+	vrbNone, vrb1, vrb2, vrb3, vrb4
+};
+
 typedef struct {
 	uint32_t fer_centralUnitID, mcu_serialBaud;
 	float geo_longitude, geo_latitude, geo_timezone;
@@ -58,6 +62,7 @@ typedef struct {
 	enum receiver app_recv;
 	enum transmitter app_transm;
 	enum rtclock app_rtc;
+	enum verbosity app_verboseOutput;
 	char wifi_SSID[32];
 	char wifi_password[64];
 

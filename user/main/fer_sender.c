@@ -3,6 +3,7 @@
 #include "counter.h"
 #include "inout.h"
 #include "utils.h"
+#include "config.h"
 
 #define USE_MACROS 1
 
@@ -47,7 +48,8 @@ bool ICACHE_FLASH_ATTR fer_send_cmd(fer_sender_basic *fsb) {
 		return false;
 
 	fer_make_cmdPacket(fsb->data, dtSendCmd);
-	io_puts("S:"), frb_printPacket(dtSendCmd);
+	if (C.app_verboseOutput >= vrb1)
+		io_puts("S:"), frb_printPacket(dtSendCmd);
 	is_sendCmdPending = true;
 	return true;
 }
@@ -59,7 +61,8 @@ bool ICACHE_FLASH_ATTR fer_send_prg(fer_sender_basic *fsb) {
 	uint8_t cmd_checksum = fer_make_cmdPacket(fsb->data, dtSendCmd);
 	fer_prg_create_checksums(dtSendPrgFrame, cmd_checksum);
 
-	io_puts("S:"), fer_printData(dtSendCmd, dtSendPrgFrame);
+if (C.app_verboseOutput >= vrb1)
+	io_puts("S:"), fer_printData(dtSendCmd, C.app_verboseOutput >= vrb2 ? dtSendPrgFrame : 0);
 
 	is_sendCmdPending = true;
 	is_sendPrgPending = true;

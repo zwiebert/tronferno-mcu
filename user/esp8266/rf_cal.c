@@ -1,10 +1,3 @@
-/*
- * rf_cal.c
- *
- *  Created on: 11.09.2017
- *      Author: bertw
- */
-
 #include "user_interface.h"
 #include <os_type.h>
 #include <ets_sys.h>

@@ -19,6 +19,7 @@ config C = {
 	recvTick, // recv
 	transmTick,// transm
 	rtcAvrTime,//rtc
+	vrbNone,  //verboseOutput
 	MY_WIFI_SSID,
 	MY_WIFI_PASSWORD
 };
