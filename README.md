@@ -14,7 +14,7 @@ RF receiver is optional and you may only ever need it to sniff the ID of your or
 
 
 ### How to flash the ESP8266 from binary images
-   * go to the separate github repository zwiebert/tronferno-mcu-flash
+   * go to the separate github repository zwiebert/tronferno-mcu-bin
 
 ### How to build on Linux or Windows and flash to ESP-8266
 
@@ -155,6 +155,7 @@ Its all too complicated and totally useless?  I currently work on a GUI for Andr
 Bert Winkelmann
 
 ### CLI options (output of help command)
+
 ```
 syntax: command option=value ...;
 commands are: send, config, dbg, timer, help, 
@@ -174,7 +175,7 @@ longitude=N like -13.23452 (to calculate sunset)
 latitude=N like +52.34234
 time-zone=N like +1
 dst=(eu|0|1) daylight saving time: automatic: eu=europe. manually: 0=off, 1=on
-
+verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)
 dbg options:
 print=(rtc|cu)
 
@@ -185,4 +186,8 @@ astro=N This enables astro automatic. N is the offset to sunset in minutes. So a
 sun-auto=1  1 enables and 0 disables sun automatic
 random=1 enables random automatic. shutter opens and closes at random times, so it looks like you are home when you are not
 rtc-only=1  Update the built-in real time clock of the shutter. Don't change its programmed timers (and flags)
+
+help options:
+none
+
 ```
