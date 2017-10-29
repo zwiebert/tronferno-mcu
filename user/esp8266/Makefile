@@ -33,7 +33,7 @@ else
 GEN_LIBS := $(LIBMIROM_A) ;
 endif
 
-$(LIBMIROM_A) : $(LIBM_A) force
+$(LIBMIROM_A) : $(LIBM_A)
 	$(OBJCOPY) --rename-section .text=.irom0.text \
 		--rename-section .literal=.irom0.literal $(<) $(@);
 

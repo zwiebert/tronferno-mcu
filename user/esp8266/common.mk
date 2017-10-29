@@ -171,6 +171,8 @@ ifndef SRC_BASE
 SRC_BASE := .
 endif
 
+DEP_DIR := $(BUILD_BASE)/dep
+
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
@@ -257,6 +259,7 @@ $(1)%.o: $(2)%.S
 	$(Q) $(CC) -c $$< -o $$@
 $(1)%.o: $(2)%.c
 	$(vecho) "CC $$<"
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CFLAGS) -c $$< -MT $$@ -MM > $$(patsubst %.o,%.d,$(DEP_DIR)/$$(subst /,-,$$@))
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CFLAGS)  -c $$< -o $$@
 $(1)%.o: $(2)%.cpp
 	$(vecho) "C+ $$<"
@@ -318,9 +321,12 @@ $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
 
-checkdirs: $(BUILD_DIR) $(FW_BASE)
+checkdirs: $(BUILD_DIR) $(FW_BASE) $(DEP_DIR)
 
 $(BUILD_DIR):
+	$(Q) mkdir -p $@
+
+$(DEP_DIR):
 	$(Q) mkdir -p $@
 
 $(FW_BASE):
@@ -422,8 +428,10 @@ clean: force
 	$(Q) rm -f $(TARGET_OUT)
 	$(Q) rm -rf $(BUILD_DIR)
 	$(Q) rm -rf $(BUILD_BASE)
+	$(Q) rm -rf $(DEP_DIR)
 	$(Q) rm -rf $(FW_BASE)
 
 
 $(eval $(call compile-objects,$(BUILD_BASE)/,$(SRC_BASE)/))
 
+include $(wildcard $(DEP_DIR)/*.d)

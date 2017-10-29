@@ -17,7 +17,7 @@
 #endif
 
 
-#ifdef HAVE_USER_DEFAULTS
+#if defined HAVE_USER_DEFAULTS && ! defined DISTRIBUTION
 
 #include "../sensitive/defaults.h"
 
@@ -40,12 +40,15 @@
 enum dst {
 	dstNone, dstEU, dstUS, dstAlways,
 };
+
 enum receiver {
 	recvNone, recvTick
 };
+
 enum transmitter {
 	transmNone, transmTick
 };
+
 enum rtclock {
 	rtcNone, rtcAvrTime
 };
