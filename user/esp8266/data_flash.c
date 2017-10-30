@@ -27,7 +27,7 @@
 
 #define NO_CACHE 1
 
-#define DB(x) x
+#define DB(x) ((C.app_verboseOutput >= vrbDebug) && (x),1)
 #define printf ets_uart_printf
 
 ////////////////// private ///////////////////////////////////////////////////////////////

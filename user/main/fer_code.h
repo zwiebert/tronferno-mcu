@@ -41,7 +41,7 @@ typedef enum {
 	fer_grp_G3,
 	fer_grp_G4,
 	fer_grp_G5,
-	fer_grp_6,
+	fer_grp_G6,
 	fer_grp_G7
 /* FIXME: only 3 bits used so far. Is the highest bit used for anything? */
 
@@ -117,20 +117,20 @@ enum fpr0 {
 	fpr0_RTC_days,
 	fpr0_RTC_mont,
 	fpr0_RTC_wday, // low nibble: Mon...Sun = 1...7.  high nibble is 0x0 (full program frame) or 0x8 (RTC only short program frame)
-	fpr0_FlagBits, // bits to enable SunAutomatic, Random, (...and more?)  // FIXME: the high 2 bits of the low nibble might be daylight saving time offset (needed by astro data)
+	fpr0_FlagBits, // bits to enable SunAutomatic, Random, DST
 	fpr0_checksum
 };
 
-// values of fpr0_FlagBits
-enum fpr0_FlagBitsValues { // FIXME: there must be more flag bits in use than just random and sunauto (as seen in  captured data)
-	flag_Random, // shutter opens/closes at random times (theft protection during longer absence)
+// values of fpr0_FlagBits.
+enum fpr0_FlagBitsValues { // FIXME: there may be more flag bits in use. try to find out
+	flag_Random, // shutter opens/closes at random times (theft protection during longer absence). (FIXME: ignored ???)
 	flag_1,  // ???
-	flag_DST,  // while its set, astro time table data is converted to DST by adding one hour.
+	flag_DST,  // daylight saving time. if set, the shutter will add 1 hour to its saved astro time table. (never ignored)
 	flag_3,  //
 	flag_4,  // ???
 	flag_5,  // ???
 	flag_6,  // ???
-	flag_SunAuto  // automatic sunsensor. if off the sun-down command does not work
+	flag_SunAuto  // automatic sunsensor. if off the sun-down command does not work. (ignored at rtc-only frames)
 };
 
 // frames 1 - 4: timer  

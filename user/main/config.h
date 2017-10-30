@@ -54,7 +54,7 @@ enum rtclock {
 };
 
 enum verbosity {
-	vrbNone, vrb1, vrb2, vrb3, vrb4
+	vrbNone, vrb1, vrb2, vrb3, vrb4, vrbDebug
 };
 
 typedef struct {
