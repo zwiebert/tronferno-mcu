@@ -114,9 +114,15 @@ main_setup() {
 
 	db_test_all_indicators(3);
 
-	io_puts("main program starting ...\n" "build-date: " __DATE__ " " __TIME__ "\n");
-	io_puts("C.fer_centralUnitID: "), io_print_hex_32(C.fer_centralUnitID, false), io_puts("\n");
-	io_puts("C.mcu_serialBaud: "), io_print_dec_32(C.mcu_serialBaud, false), io_puts("\n");
+	if (C.app_verboseOutput >= vrbNone) {
+		io_puts("\n\n" "main program starting ...\n" "build-date: " __DATE__ " " __TIME__ "\n");
+		io_puts("C.fer_centralUnitID: "), io_print_hex_32(C.fer_centralUnitID, false), io_puts("\n");
+		io_puts("C.mcu_serialBaud: "), io_print_dec_32(C.mcu_serialBaud, false), io_puts("\n");
+		io_puts("C.geo_longitude: "), io_print_float(C.geo_longitude, 5), io_puts("\n");
+		io_puts("C.geo_latitude: "), io_print_float(C.geo_latitude, 5), io_puts("\n");
+		io_puts("C.geo_timezone: "), io_print_float(C.geo_timezone, 2), io_puts("\n");
+
+	}
 
 	dbg_trace();
 	return 0;

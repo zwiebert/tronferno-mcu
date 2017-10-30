@@ -1,11 +1,11 @@
 SRC_BASE = .
 
 # build directory
-BUILD_BASE	= build
+BUILD_BASE	?= build
 
 
 # firmware directory
-FW_BASE		= firmware
+FW_BASE		?= firmware
 
 # name for the target project
 TARGET		= app

@@ -82,8 +82,10 @@ bool ICACHE_FLASH_ATTR ntp_set_system_time(void) {
 		  auto_adjust_time(rtc_time, ntp_time);
 #endif
 		}
- 		printf("ntp stamp: %lu, %s (adjust=%ld, interval=%d, diff=%d)\n", sntp_get_current_timestamp(), sntp_get_real_time(sntp_get_current_timestamp()), (long)C.app_rtcAdjust, (int)difftime(ntp_time, last_ntp_time), (int)(rtc_time - ntp_time));
- 		last_ntp_time = ntp_time;
+		if (C.app_verboseOutput >= vrb1) {
+ 	     	printf("ntp stamp: %lu, %s (adjust=%ld, interval=%d, diff=%d)\n", sntp_get_current_timestamp(), sntp_get_real_time(sntp_get_current_timestamp()), (long)C.app_rtcAdjust, (int)difftime(ntp_time, last_ntp_time), (int)(rtc_time - ntp_time));
+		}
+		last_ntp_time = ntp_time;
 		return true;
 	}
 	return false;

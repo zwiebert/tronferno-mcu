@@ -47,6 +47,7 @@ int ICACHE_FLASH_ATTR io_puts_P(const char *s) {
 }
 #endif
 
+#ifdef AVR
 int ICACHE_FLASH_ATTR
 io_printf(const char *fmt, ...)
 {
@@ -86,7 +87,7 @@ io_printf(const char *fmt, ...)
   return -1;
 #endif
 }
-
+#endif
 
 
 
@@ -135,7 +136,7 @@ io_print_hex_32(uint32_t n, bool comma) {
 }
       
 void ICACHE_FLASH_ATTR
-io_print_dec_32(uint32_t n, bool comma) {
+io_print_dec_32(int32_t n, bool comma) {
   char s[12];
   ltoa(n, s, 10);
   io_puts(s);
@@ -145,12 +146,33 @@ io_print_dec_32(uint32_t n, bool comma) {
 }
       
 void ICACHE_FLASH_ATTR
-io_print_dec_16(uint16_t n, bool comma) {
+io_print_dec_16(int16_t n, bool comma) {
   char s[10];
   io_puts(itoa(n, s, 10));
   if (comma)
     io_puts(", ");
 }
+
+void ICACHE_FLASH_ATTR io_print_float(float f, int n) {
+	int i;
+	int32_t mult;
+	uint32_t rop;
+	int16_t lop = (int16_t) f;
+	io_print_dec_16(lop, false);
+	io_putc('.');
+
+	f -= lop;
+
+	mult = (lop < 0) ? -1 : 1;
+
+	for (i = 0; i < n; ++i)
+		mult *= 10;
+
+	rop = (uint32_t) (f * mult);
+
+	io_print_dec_32(rop, false);
+}
+
 
 void ICACHE_FLASH_ATTR
 io_putn(int n, int radix) {

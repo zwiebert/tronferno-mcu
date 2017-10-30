@@ -31,13 +31,13 @@
 
 
 
-// tries to copy saved data to DATA_PTR, or does nothing if no data was saved
- // note: read_data must be called at least once before any call to save_data in the program,
- // otherwise the wear leveling will not work
+// tries to copy saved data to DATA_PTR, or does nothing if no saved data exists
+// note: read_data() must be called at least once in the program before calling save_data()
 void read_data(void);
 
 
-// stores data to flash ROM. does nothing if data hasn't been actually changed
+// stores data to flash ROM.
+// call read_data() at least once in the program before the first calling of save_data()!
 void save_data(void);
 
 

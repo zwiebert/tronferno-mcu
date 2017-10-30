@@ -25,13 +25,15 @@
 #include "main/config.h"
 #include "esp_missing_includes.h"
 
-#define DB(x)
+#define NO_CACHE 1
+
+#define DB(x) x
 #define printf ets_uart_printf
 
 ////////////////// private ///////////////////////////////////////////////////////////////
 #define FLASH_MAPPED 0x40200000
 #define SECTOR_SIZE 4096
-#define BLOCK_SIZE (sizeof (flash_obj))
+#define BLOCK_SIZE (sizeof (MAGIC_COOKIE) + sizeof (DATA_TYPE))
 #define BLOCKS_PER_SECTOR (SECTOR_SIZE / BLOCK_SIZE)
 
 // reserve us some flash_sectors we can access via spi_flash_read() and spi_flash_write() from mem.h
@@ -42,26 +44,31 @@ static uint16_t our_start_sector_number;
 
 // the index of the sector we currently use (our_start_sector == index 0) ...
 static uint16_t our_current_sector_index;
-// ... the number of the current sector ...
+// ... and the number of that current sector ...
 #define our_current_sector_number (our_start_sector_number + our_current_sector_index)
-// ... the byte address of the current sector
+// ... and the byte address of that current sector in the memory mapped flash ROM
 #define our_current_sector_address (our_current_sector_number * SECTOR_SIZE + our_current_block_index * BLOCK_SIZE)
 
 // the index of the block we currently use in the current sector
 static uint16_t our_current_block_index;
 
 // magic cookie to mark the data we save, so we can find it at program start
-#define MAGIC_COOKIE 0xDEADBEEF
+static uint32_t MAGIC_COOKIE = 0xDEADBEEF;
 
+
+#if ! NO_CACHE
+// locally cache the user data in flash_obj to keep track of changes and keep code simple (FIXME: not really that useful, waste of RAM)
 static struct {
 	uint32_t magic_cookie;
 	DATA_TYPE data;
 } flash_obj;
+#endif
 
 // find the next free block
 // adjusts current_sector and current_block to point at the free block
 // deletes blocks with previously saved or unknown data
 // erases all visited sectors without free blocks
+/// always succeeds
 static bool ICACHE_FLASH_ATTR find_free_block(void) {
 
 	for (; our_current_sector_index < FLASH_SECTORS; ++our_current_sector_index, our_current_block_index = 0) {
@@ -69,32 +76,24 @@ static bool ICACHE_FLASH_ATTR find_free_block(void) {
 			uint32_t cookie;
 
 			spi_flash_read(our_current_sector_address, &cookie, sizeof(cookie));
-			switch (cookie) {
 
-			case 0xffffffff:  // free block found ... return it
-				return true;
-				break;
-
-			case 0x00000000:  // deleted block ... skip it
-				break;
-
-			case MAGIC_COOKIE: // in-use block found ... delete it
-				// fall trough ...
-			default:  // unknown data found ... delete it
-				cookie = 0;
-				spi_flash_write(our_current_sector_address, &cookie, sizeof(cookie));
-				break;
-
-			}
+			if (cookie == 0xffffffff) {
+				return true; // free block found ... return it
+			} else if (cookie == 0x00000000) {
+				continue; // deleted block ... skip it
+			} else {
+				cookie = 0;	// in-use or undefined block found ... delete it
+			spi_flash_write(our_current_sector_address, &cookie, sizeof(cookie));
 		}
-
-		DB(ets_uart_printf("find_free_block(): erase sector %d\n", (int)our_current_sector_number));
-		spi_flash_erase_sector(our_current_sector_number);
-
 	}
-	our_current_sector_index = 0;
 
-	return true;
+	DB(ets_uart_printf("find_free_block(): erase sector %d\n", (int)our_current_sector_number));
+	spi_flash_erase_sector(our_current_sector_number);
+
+}
+our_current_sector_index = 0;
+
+return true;
 }
 
 // find saved data
@@ -121,13 +120,22 @@ static bool ICACHE_FLASH_ATTR find_data_block() {
 
 // write data to current block
 static void ICACHE_FLASH_ATTR write_flash() {
-	DB(ets_uart_printf("write_flash(): sn=%d, bn=%d, size=%d\n", (int)(our_start_sector_number + our_current_sector_index), (int)our_current_block_index, (int)sizeof(flash_obj)));
+	DB(ets_uart_printf("write_flash(): sn=%d, bn=%d, size=%d\n", (int)(our_start_sector_number + our_current_sector_index), (int)our_current_block_index, (int)BLOCK_SIZE));
+#if NO_CACHE
+	spi_flash_write(our_current_sector_address, &MAGIC_COOKIE, sizeof (MAGIC_COOKIE));
+	spi_flash_write(our_current_sector_address + sizeof (MAGIC_COOKIE), (uint32_t*) DATA_PTR, sizeof (DATA_TYPE));
+#else
 	spi_flash_write(our_current_sector_address, (uint32_t*) &flash_obj, sizeof(flash_obj));
+#endif
 }
 
 // read data from current block
 static void ICACHE_FLASH_ATTR read_flash() {
+#if NO_CACHE
+	spi_flash_read(our_current_sector_address + sizeof (MAGIC_COOKIE), (uint32_t*) DATA_PTR, sizeof (DATA_TYPE));
+#else
 	spi_flash_read(our_current_sector_address, (uint32_t*) &flash_obj, sizeof(flash_obj));
+#endif
 }
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
@@ -138,20 +146,21 @@ void ICACHE_FLASH_ATTR read_data(void) {
 		return; // nothing in flash. just keep the default values until save_config() is called from code
 
 	read_flash();
-
+#if ! NO_CACHE
 	os_memcpy(DATA_PTR, &flash_obj.data, sizeof(DATA_TYPE));
-
+#endif
 }
 
-// reading data from DATA_PTR and if write it to flash
+// reading data from DATA_PTR and write it to flash
 // does nothing if data is unchanged
 void ICACHE_FLASH_ATTR save_data(void) {
+#if ! NO_CACHE
 	if (os_memcmp(&flash_obj.data, DATA_PTR, sizeof(DATA_TYPE)) == 0)
 		return;  // no changes to update
 
 	flash_obj.magic_cookie = MAGIC_COOKIE;
 	os_memcpy(&flash_obj.data, DATA_PTR, sizeof(DATA_TYPE));
-
+#endif
 	if (find_free_block()) {
 		write_flash();
 	}
@@ -159,7 +168,7 @@ void ICACHE_FLASH_ATTR save_data(void) {
 
 // initialize this software module
 void ICACHE_FLASH_ATTR setup_dataFlash() {
-	uint32_t our_start_sector_address;
+	uint32_t our_start_sector_address; // byte address of our storage in memory mapped flash ROM
 
 	our_start_sector_address = (uint32_t) &our_flash_storage[0] - FLASH_MAPPED;
 	our_start_sector_number = (our_start_sector_address >> (3 * 4));

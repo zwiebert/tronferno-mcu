@@ -427,9 +427,9 @@ clean: force
 	$(Q) rm -f $(APP_AR)
 	$(Q) rm -f $(TARGET_OUT)
 	$(Q) rm -rf $(BUILD_DIR)
-	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(DEP_DIR)
 	$(Q) rm -rf $(FW_BASE)
+	$(Q) rm -d $(BUILD_BASE)/user $(BUILD_BASE)
 
 
 $(eval $(call compile-objects,$(BUILD_BASE)/,$(SRC_BASE)/))
