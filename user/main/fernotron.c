@@ -121,6 +121,8 @@ main_setup() {
 		io_puts("C.geo_longitude: "), io_print_float(C.geo_longitude, 5), io_puts("\n");
 		io_puts("C.geo_latitude: "), io_print_float(C.geo_latitude, 5), io_puts("\n");
 		io_puts("C.geo_timezone: "), io_print_float(C.geo_timezone, 2), io_puts("\n");
+		io_puts("C.wifi_SSID: \""), io_puts(C.wifi_SSID), io_puts("\"\n");
+		io_puts("C.wifi_password: \""), io_puts((C.wifi_password[0] == '\0') ? "\"\n" : "***********\"\n");
 
 	}
 
