@@ -67,7 +67,17 @@ void timer_handler(void) {
 
 #ifdef FER_TRANSMITTER
 	if (transmTick == C.app_transm) {
+#ifdef FER_SENDER_DCK
+		{
+			static uint_fast8_t tick_count;
+			if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
+				tick_ferSender();
+			}
+
+		}
+#else
 		tick_ferSender();
+#endif
 	}
 #endif
 
@@ -79,7 +89,6 @@ void timer_handler(void) {
 
 	if (rtcAvrTime == C.app_rtc) {
 		static uint32_t rtc_ticks;
-
 
 		if (rtc_ticks-- == 0) {
 			rtc_ticks = TICK_FREQ_HZ + MS_TO_TICKS(C.app_rtcAdjust);

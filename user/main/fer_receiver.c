@@ -7,6 +7,14 @@
 #include "utils.h"
 #include "fer_code.h"
 
+#define bitLen               FER_BIT_WIDTH_TCK
+#define shortPositive_Len    FER_BIT_NEDGE_0_TCK
+#define longPositive_Len     FER_BIT_NEDGE_1_TCK
+#define dtSample_Pos         FER_BIT_SAMP_POS_TCK
+#define pre_Len              FER_PRE_WIDTH_TCK
+#define pause_Len            FER_STP_WIDTH_TCK
+#define pauseHigh_Len        FER_STP_NEDGE_TCK
+
 #ifdef FER_RECEIVER
 
 #define DB_FORCE_CMD 0
@@ -21,7 +29,7 @@
 /////////////////////////// interrupt code //////////////////////
 #define IS_P_INPUT (input == true)
 #define IS_N_INPUT (input == false)
-#define veryLongPauseLow_Len (2 * FER_STP_WIDTH_MAX)
+#define veryLongPauseLow_Len (2 * FER_STP_WIDTH_MAX_TCK)
 #define fuzCmp(a,b) (abs((a)-(b)) < (FER_TICK_FREQ_MULT * 2))
 #define fuzzCmp(a,b,n) (abs((a)-(b)) < (FER_TICK_FREQ_MULT * (n)))
 
@@ -30,7 +38,7 @@
 #define clockEdge pEdge
 #define dataEdge nEdge
 
-#define MAX_PRG_TICK_COUNT (REL_TO_TICKS(FER_PRG_FRAME_WIDTH_REL) * 2) // FIXME
+#define MAX_PRG_TICK_COUNT (DATA_CLOCK_TO_TICKS(FER_PRG_FRAME_WIDTH_DCK) * 2) // FIXME
 
 static int8_t input_edge; // Usually 0, but -1 or +1 at tick input change is detected
 static uint16_t aTicks, pTicks, nTicks;
@@ -133,11 +141,11 @@ static void recv_decodeByte(uint8_t *dst) {
 }
 
 static bool is_stopBit(unsigned len, unsigned nedge) {
-	return ((FER_STP_WIDTH_MIN <= len && len <= FER_STP_WIDTH_MAX) && (FER_STP_NEDGE_MIN <= nedge && nedge <= FER_STP_NEDGE_MAX));
+	return ((FER_STP_WIDTH_MIN_TCK <= len && len <= FER_STP_WIDTH_MAX_TCK) && (FER_STP_NEDGE_MIN_TCK <= nedge && nedge <= FER_STP_NEDGE_MAX_TCK));
 }
 
 static bool is_pre_bit(unsigned len, unsigned nedge) {
-	return ((FER_PRE_WIDTH_MIN <= len && len <= FER_PRE_WIDTH_MAX) && (FER_PRE_NEDGE_MIN <= nedge && nedge <= FER_PRE_NEDGE_MAX));
+	return ((FER_PRE_WIDTH_MIN_TCK <= len && len <= FER_PRE_WIDTH_MAX_TCK) && (FER_PRE_NEDGE_MIN_TCK <= nedge && nedge <= FER_PRE_NEDGE_MAX_TCK));
 }
 
 static int8_t preBits;
@@ -148,7 +156,7 @@ static bool wait_and_sample(void) {
 
 		if (pEdge) {
 
-			if (preBits < FER_PRE_BIT_COUNT) {
+			if (preBits < FER_PRE_BIT_CT) {
 
 				// wait until preamble is over
 				if (is_pre_bit(aTicks, pTicks) && ++preBits) {
@@ -170,7 +178,7 @@ static bool wait_and_sample(void) {
 		PUTBIT(dtRecvBuffer[CountWords & 1], CountBits, pTicks < dtSample_Pos);
 	}
 
-	return preBits == FER_PRE_BIT_COUNT;
+	return preBits == FER_PRE_BIT_CT;
 }
 
 static bool cmd_recv(void) {

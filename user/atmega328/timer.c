@@ -10,9 +10,18 @@
 ISR(TIMER1_COMPA_vect) {
 
 #ifdef FER_TRANSMITTER
-	if (transmTick == C.app_transm)
-	{
+	if (transmTick == C.app_transm) {
+#ifdef FER_SENDER_DCK
+		{
+			static uint_fast8_t tick_count;
+			if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
+				tick_ferSender();
+			}
+
+		}
+#else
 		tick_ferSender();
+#endif
 	}
 #endif
 
