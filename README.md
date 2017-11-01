@@ -95,7 +95,7 @@ In case you no longer have working Fernotron central unit. You would start from 
     * instead of pressing the set-button on the shutter you can use the code written on the shutter motor 
     ```
         send a=9xxxxx c=set;   where xxxxx is the hexadecimal code. Set the 9 in front of it
-	send a=9xxxxx c=up;    ... or send other commands using that code
+        send a=9xxxxx c=up;    ... or send other commands using that code
     ```
     * or you could sniff out the address of a simple hand sender and sent your commands using that address. Or make up such address and add your made up address via "set" to as many shutters you like. The shutter can memorize a few of these adresses.
     
