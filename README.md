@@ -94,8 +94,11 @@ In case you no longer have working Fernotron central unit. You would start from 
     
     * instead of pressing the set-button on the shutter you can use the code written on the shutter motor 
     ```
-        send a=9xxxxx c=set;  (where xxxxx is the hexadecimal code)
+        send a=9xxxxx c=set;   where xxxxx is the hexadecimal code. Set the 9 in front of it
+	send a=9xxxxx c=up;    ... or send other commands using that code
     ```
+    * or you could sniff out the address of a simple hand sender and sent your commands using that address. Or make up such address and add your made up address via "set" to as many shutters you like. The shutter can memorize a few of these adresses.
+    
  ### How to build and flash using ATMega-328P
  
  * Prepare Hardware 
@@ -162,7 +165,7 @@ Bert Winkelmann
 syntax: command option=value ...;
 commands are: send, config, dbg, timer, help, 
 send options:
-a=(0|SenderID) address of the sender or 0 for the configured CentralUnit
+a=(0|SenderID) hex address of the sender or receiver (add a 9 in front) or 0 for the configured CentralUnit
 g=[0-7]  group number. 0 is for broadcast
 m=[0-7]  group member. 0 is for broadcast all groups members
 c=(up|down|stop|sun-down|sun-inst|set) command to send
@@ -188,8 +191,10 @@ astro=N This enables astro automatic. N is the offset to sunset in minutes. So a
 sun-auto=1  1 enables and 0 disables sun automatic
 random=1 enables random automatic. shutter opens and closes at random times, so it looks like you are home when you are not
 rtc-only=1  Update the built-in real time clock of the shutter. Don't change its programmed timers (and flags)
+a, g and m: like in send command
 
 help options:
 none
+
 
 ```

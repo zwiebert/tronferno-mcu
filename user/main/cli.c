@@ -280,7 +280,7 @@ fer_grp asc2group(const char *s) { return (fer_grp) atoi(s); }
 fer_memb asc2memb(const char *s) { int m = atoi(s); return m == 0 ? fer_memb_Broadcast : (fer_memb) (m - 1) + fer_memb_M1; }
   
 const char help_parmSend[] PROGMEM =
-		  "a=(0|SenderID) address of the sender or 0 for the configured CentralUnit\n"
+		  "a=(0|SenderID) hex address of the sender or receiver (add a 9 in front) or 0 for the configured CentralUnit\n"
 		  "g=[0-7]  group number. 0 is for broadcast\n"
 		  "m=[0-7]  group member. 0 is for broadcast all groups members\n"
 		  "c=(up|down|stop|sun-down|sun-inst|set) command to send\n";
@@ -300,7 +300,7 @@ process_parmSend(clpar p[], int len) {
 		if (key == NULL || val == NULL) {
 			return -1;
 		} else if (strcmp(key, "a") == 0) {
-			addr = strtol(val, NULL, 0);
+			addr = strtol(val, NULL, 16);
 		} else if (strcmp(key, "g") == 0) {
 			group = asc2group(val);
 		} else if (strcmp(key, "m") == 0) {
@@ -322,9 +322,10 @@ process_parmSend(clpar p[], int len) {
       }        
 	}
 
-	FSB_PUT_GRP(fsb, group);
-
-	FSB_PUT_MEMB(fsb, memb);
+	if (FSB_MODEL_IS_CENTRAL(fsb)) {
+      FSB_PUT_GRP(fsb, group);
+ 	  FSB_PUT_MEMB(fsb, memb);  // only set this on central unit!
+	}
 
 	if (cmd != fer_cmd_None) {
 		FSB_PUT_CMD(fsb, cmd);
@@ -566,8 +567,8 @@ const char help_parmTimer[] PROGMEM =
 		  "sun-auto=1  1 enables and 0 disables sun automatic\n"
 		  "random=1 enables random automatic. shutter opens and closes at random times, so it looks like you are home when you are not\n"
 		  "rtc-only=1  Update the built-in real time clock of the shutter. Don't change its programmed timers (and flags)\n"
+		  "a, g and m: like in send command\n"
 		;
-
 
 static int ICACHE_FLASH_ATTR
 process_parmTimer(clpar p[], int len) {
@@ -579,6 +580,7 @@ process_parmTimer(clpar p[], int len) {
 	fer_sender_basic *fsb = &default_sender;
 	fer_grp group = fer_grp_Broadcast;
 	fer_memb memb = fer_memb_Broadcast;
+	uint32_t addr = 0;
 	int wday = -1;
 	uint8_t fpr0_flags = 0, fpr0_mask = 0;
 	int8_t flag_rtc_only = FLAG_NONE;
@@ -627,6 +629,8 @@ process_parmTimer(clpar p[], int len) {
 
 		} else if (strcmp(key, timer_keys[TIMER_KEY_RTC_ONLY]) == 0) {
 			flag_rtc_only = asc2bool(val);
+		} else if (strcmp(key, "a") == 0) {
+			addr = strtol(val, NULL, 16);
 		} else if (strcmp(key, "g") == 0) {
 			group = asc2group(val);
 		} else if (strcmp(key, "m") == 0) {
@@ -637,8 +641,22 @@ process_parmTimer(clpar p[], int len) {
 		}
 	}
 
-	FSB_PUT_GRP(fsb, group);
-	FSB_PUT_MEMB(fsb, memb);
+	if (addr != 0) {
+		fsb = get_sender_by_addr(addr);
+		if (!fsb) {
+			static fer_sender_basic fsb_direct; // FIXME: or was senders[0] meant for this?
+			fsb = &fsb_direct;
+			if (FSB_GET_DEVID(fsb) != addr) {
+				fer_init_sender(fsb, addr);
+			}
+		}
+	}
+
+	if (FSB_MODEL_IS_CENTRAL(fsb)) {
+		FSB_PUT_GRP(fsb, group);
+		FSB_PUT_MEMB(fsb, memb);
+	}
+
 	FSB_PUT_CMD(fsb, fer_cmd_Program);
 	FSB_TOGGLE(fsb);
 

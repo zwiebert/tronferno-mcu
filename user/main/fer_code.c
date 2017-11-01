@@ -8,6 +8,7 @@ fer_init_sender(fer_sender_basic *fsb, uint32_t devID) {
 
   switch (GET_BYTE_2(devID)) {
     case FER_ADDR_TYPE_SimpleSender:
+        FSB_PUT_MEMB(fsb, fer_memb_SINGLE);
     break;
 
     case FER_ADDR_TYPE_SunSensor:
@@ -18,6 +19,7 @@ fer_init_sender(fer_sender_basic *fsb, uint32_t devID) {
     break;
     
     case FER_ADDR_TYPE_Receiver:
+    	FSB_PUT_MEMB(fsb, fer_memb_RecAddress);
     break;
 
     default:
