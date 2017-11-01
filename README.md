@@ -147,11 +147,12 @@ To send the "too much sun" command:
 ### History
 I started this project in 2011 from scratch using an ATmega168. Sending normal commands like "up" and "down" was not to hard to figure out. But I gave up on programming the timers and the project went on hiatus. In 2017 I finally figured out the timer programming.  Had to switch to an ATmega328p for enough flash memory, and then to the ESP8266, for its built-in WIFI.   
 
-### Future Changes
+### Future
 Its all too complicated and totally useless?
-  * I currently work on a [GUI for Android](https://github.com/zwiebert/tronferno-andro).
-  * Could also be made into a FHEM module or something.
-
+  * I work on a [GUI for Android](https://github.com/zwiebert/tronferno-andro).
+  * FHEM module to send CLI commands to our MCU-CLI via TCP socket
+  * Software-only FHEM module directly outputting to a 433MHz RF transmitter
+  
 ### Project Author
 
 Bert Winkelmann
