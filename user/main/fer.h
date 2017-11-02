@@ -25,18 +25,8 @@
 #define US_TO_TICKS(us) ((us) / TICK_PERIOD_US)
 #define MS_TO_TICKS(ms) ((ms) / TICK_PERIOD_MS)
 
-// timings (relative to an imaginary "data clock" which is "four times prelude frequency" (usually 200us)).
-// before sending any data we have 7 pre-bits
-// /--\__ (2_on + 2_off = 4) * 7 
-// (200us * 4 * 7)
-#define FER_PRE_WIDTH_DCK         4
-#define FER_PRE_WIDTH_MAX_DCK    10
-#define FER_PRE_WIDTH_MIN_DCK     3
-#define FER_PRE_NEDGE_MIN_DCK     1
-#define FER_PRE_NEDGE_MAX_DCK     5
-
-// 1 stop bit follows after the pre-bits
-// 1 stop bit follows also each data-word
+// timings (relative to an imaginary "data clock" which is "four times preamble frequency" (usually 200us)).
+// 1 stop bit comes before each preamble and each data word
 // /--\__________________ (2_on + 16_off = 18) * 1
 // (200us * 18 * 1)
 #define FER_STP_WIDTH_DCK        18
@@ -46,18 +36,28 @@
 #define FER_STP_NEDGE_MIN_DCK     1
 #define FER_STP_NEDGE_MAX_DCK     6
 
+// before sending any data we have 7 pre-bits
+// /--\__ (2_on + 2_off = 4) * 7 
+// (200us * 4 * 7)
+#define FER_PRE_WIDTH_DCK         4
+#define FER_PRE_WIDTH_MAX_DCK    10
+#define FER_PRE_WIDTH_MIN_DCK     3
+#define FER_PRE_NEDGE_MIN_DCK     1
+#define FER_PRE_NEDGE_MAX_DCK     5
+
+
 // data bits are represented by two different positions of the negative edge (on-off)
-// 0=short-long  /--\____  (2_on, 4_off)
-// 1=long-short  /----\__  (4_on, 2_off)
+// 1=short-long  /--\____  (2_on, 4_off)
+// 0=long-short  /----\__  (4_on, 2_off)
 // 10 bits makes one data-word
 // (200us * 6 * 10)
 #define FER_BIT_WIDTH_DCK         6
-#define FER_BIT_NEDGE_0_DCK       2  // if encoded bit is 0
-#define FER_BIT_NEDGE_1_DCK       4  // if encoded bit is 1
+#define FER_BIT_SHORT_DCK         2
+#define FER_BIT_LONG_DCK          4
 #define FER_BIT_SAMP_POS_DCK      (FER_BIT_WIDTH_DCK / 2) // for receiving: look if negative edge lies before or after
 
-//  ---------pre--    ----stop------     --data-word---     ----stop------     --data-word---     ----stop------   ...
-// (200us * 4 * 7) + (200us * 18 * 1) + (200us * 6 * 10) + (200us * 18 * 1) + (200us * 6 * 10) + (200us * 18 * 1)  ...
+// -----stop------- ---------pre--    ----stop------     --data-word---     ----stop------     --data-word---     ----stop------      ...  + -- last data-word---
+// (200us * 18 * 1) + (200us * 4 * 7) + (200us * 18 * 1) + (200us * 6 * 10) + (200us * 18 * 1) + (200us * 6 * 10) + (200us * 18 * 1)  ...  + (200us * 6 * 10)
 
 #define FER_DAT_WORD_WIDTH_DCK    (FER_STP_WIDTH_DCK + (1UL * FER_BIT_WIDTH_DCK * FER_CMD_BIT_CT))
 #define FER_PRG_FRAME_WIDTH_DCK   (1UL * FER_DAT_WORD_WIDTH_DCK * FER_PRG_WORD_CT * FER_PRG_PACK_CT)
@@ -78,8 +78,8 @@
 #define FER_STP_NEDGE_MAX_TCK   DATA_CLOCK_TO_TICKS(FER_STP_NEDGE_MAX_DCK)
 
 #define FER_BIT_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_BIT_WIDTH_DCK)
-#define FER_BIT_NEDGE_0_TCK     DATA_CLOCK_TO_TICKS(FER_BIT_NEDGE_0_DCK)
-#define FER_BIT_NEDGE_1_TCK     DATA_CLOCK_TO_TICKS(FER_BIT_NEDGE_1_DCK)
+#define FER_BIT_SHORT_TCK       DATA_CLOCK_TO_TICKS(FER_BIT_SHORT_DCK)
+#define FER_BIT_LONG_TCK        DATA_CLOCK_TO_TICKS(FER_BIT_LONG_DCK)
 #define FER_BIT_SAMP_POS_TCK    DATA_CLOCK_TO_TICKS(FER_BIT_SAMP_POS_DCK)
 
 

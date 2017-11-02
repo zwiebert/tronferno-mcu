@@ -7,15 +7,15 @@
 #include "utils.h"
 #include "fer_code.h"
 
-#define bitLen               FER_BIT_WIDTH_TCK
-#define shortPositive_Len    FER_BIT_NEDGE_0_TCK
-#define longPositive_Len     FER_BIT_NEDGE_1_TCK
-#define dtSample_Pos         FER_BIT_SAMP_POS_TCK
-#define pre_Len              FER_PRE_WIDTH_TCK
-#define pause_Len            FER_STP_WIDTH_TCK
-#define pauseHigh_Len        FER_STP_NEDGE_TCK
 
 #ifdef FER_RECEIVER
+
+#define bitLen               FER_BIT_WIDTH_TCK
+// bit is 1, if data edge comes before sample position (/SHORT\..long../)
+// bit is 0, if data edge comes after sample position  (/..LONG..\short/)
+#define SAMPLE_BIT ((pTicks < FER_BIT_SAMP_POS_TCK))
+
+
 
 #define DB_FORCE_CMD 0
 #define DB_IGNORE_RTC_ONLY 0
@@ -175,7 +175,7 @@ static bool wait_and_sample(void) {
 		}
 
 	} else if (dataEdge) {
-		PUTBIT(dtRecvBuffer[CountWords & 1], CountBits, pTicks < dtSample_Pos);
+		PUTBIT(dtRecvBuffer[CountWords & 1], CountBits, SAMPLE_BIT);
 	}
 
 	return preBits == FER_PRE_BIT_CT;

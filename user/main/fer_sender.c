@@ -7,8 +7,8 @@
 
 #ifdef FER_SENDER_DCK
 #define bitLen               FER_BIT_WIDTH_DCK
-#define shortPositive_Len    FER_BIT_NEDGE_0_DCK
-#define longPositive_Len     FER_BIT_NEDGE_1_DCK
+#define shortPositive_Len    FER_BIT_SHORT_DCK
+#define longPositive_Len     FER_BIT_LONG_DCK
 #define pre_Len              FER_PRE_WIDTH_DCK
 #define pauseHigh_Len        FER_STP_NEDGE_DCK
 #else
