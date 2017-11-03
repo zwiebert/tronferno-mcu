@@ -24,7 +24,7 @@ typedef enum {
 	fer_cmd_SunUP,
 	fer_cmd_SunINST,
 	fer_cmd_EndPosUP,
-	fer_cmd_endPosDOWN,
+	fer_cmd_EndPosDOWN,
 	fer_cmd_0xb,
 	fer_cmd_0xc,
 	fer_cmd_SET,

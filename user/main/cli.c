@@ -180,6 +180,8 @@ struct {
 		{"sun-inst", fer_cmd_SunINST},
 //		{"sun-test", fer_cmd_Program},
         {"set", fer_cmd_SET},
+		{"end-pos-down", fer_cmd_EndPosDOWN},
+		{"end-pos-up", fer_cmd_EndPosUP},
 };
 
 fer_cmd ICACHE_FLASH_ATTR
@@ -283,7 +285,7 @@ const char help_parmSend[] PROGMEM =
 		  "a=(0|SenderID) hex address of the sender or receiver (add a 9 in front) or 0 for the configured CentralUnit\n"
 		  "g=[0-7]  group number. 0 is for broadcast\n"
 		  "m=[0-7]  group member. 0 is for broadcast all groups members\n"
-		  "c=(up|down|stop|sun-down|sun-inst|set) command to send\n";
+		  "c=(up|down|stop|sun-down|sun-inst|set|limit-up|limit-down) command to send  (commands limit-up and -down have to be repeated until position is reached (untested))\n";
 
 static int ICACHE_FLASH_ATTR
 process_parmSend(clpar p[], int len) {

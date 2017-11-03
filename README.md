@@ -169,7 +169,7 @@ send options:
 a=(0|SenderID) hex address of the sender or receiver (add a 9 in front) or 0 for the configured CentralUnit
 g=[0-7]  group number. 0 is for broadcast
 m=[0-7]  group member. 0 is for broadcast all groups members
-c=(up|down|stop|sun-down|sun-inst|set) command to send
+c=(up|down|stop|sun-down|sun-inst|set|limit-up|limit-down) command to send  (commands limit-up and -down have to be repeated until position is reached (untested))
 
 config options:
 cu=(CentralUnitID|auto)  like 80abcd. auto: press Stop key on central unit in the next 60 seconds
