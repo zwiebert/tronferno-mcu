@@ -13,6 +13,7 @@
 #include "all.h"
 
 
+#define ALLOW_ENDPOS 0   // dangerous, could damage your shutter
 
 fer_sender_basic senders[10];
 fer_sender_basic default_sender;
@@ -167,6 +168,7 @@ parse_commandline(char *cl) {
 }
 
 
+
 struct {
 	const char *fs;
 	fer_cmd fc;
@@ -180,8 +182,10 @@ struct {
 		{"sun-inst", fer_cmd_SunINST},
 //		{"sun-test", fer_cmd_Program},
         {"set", fer_cmd_SET},
-		{"end-pos-down", fer_cmd_EndPosDOWN},
-		{"end-pos-up", fer_cmd_EndPosUP},
+#if ALLOW_ENDPOS
+		{"end-pos-down", fer_cmd_EndPosDOWN},  // dangerous, could damage shutter
+		{"end-pos-up", fer_cmd_EndPosUP},      // dangerous, could damage shutter
+#endif
 };
 
 fer_cmd ICACHE_FLASH_ATTR
@@ -285,7 +289,11 @@ const char help_parmSend[] PROGMEM =
 		  "a=(0|SenderID) hex address of the sender or receiver (add a 9 in front) or 0 for the configured CentralUnit\n"
 		  "g=[0-7]  group number. 0 is for broadcast\n"
 		  "m=[0-7]  group member. 0 is for broadcast all groups members\n"
-		  "c=(up|down|stop|sun-down|sun-inst|set|limit-up|limit-down) command to send  (commands limit-up and -down have to be repeated until position is reached (untested))\n";
+		  "c=(up|down|stop|sun-down|sun-inst|set) command to send\n"
+#if ALLOW_ENDPOS
+         "potentially harmful: c=(limit-up|limit-down):  command to set end-position ... it will not stop and end position until you send STOP.\n"
+#endif
+		;
 
 static int ICACHE_FLASH_ATTR
 process_parmSend(clpar p[], int len) {
