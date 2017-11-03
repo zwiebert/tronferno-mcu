@@ -100,7 +100,7 @@ void timer_handler(void) {
 
 
 
-void setup_timer(void)
+void ICACHE_FLASH_ATTR setup_timer(void)
 {
 	uint32_t ticks = F_CPU / TICK_FREQ_HZ;
 	uint16_t flags = TIMER1_DIVIDE_BY_1 | TIMER1_ENABLE_TIMER | TIMER1_AUTO_LOAD;

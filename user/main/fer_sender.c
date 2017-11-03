@@ -19,6 +19,7 @@
 #define pauseHigh_Len        FER_STP_NEDGE_TCK
 #endif
 
+#define SF  // new code: stop bits first before preamble and each data word
 
 #define USE_MACROS 1
 
@@ -142,29 +143,35 @@ static void updateLineStop() {
 #endif
 
 // sets output line according to current bit in data word
-// after the word is sent, the line is set to zero while counting the pause-"bits"
+// a stop bit is sent in CountBits 0 .. 2
+// a data word is sent in CountBits 3 .. 10
 static void updateLine() {
-	dtLineOut = ((CountTicks < shortPositive_Len && CountBits < bitsPerWord + 1)  // pShort: in both data word and stop bit (+1)
-	|| (CountTicks < longPositive_Len && CountBits < bitsPerWord  && !(dtSendBuf & (1 << CountBits))));  // pLong: only in data word
-	
+	int bit = CountBits - bitsPerPause;
+
+    if (bit < 0) {  // in stop bit (CountBits 0 .. 2)
+    	dtLineOut = CountBits == 0 && CountTicks < shortPositive_Len;
+    } else { // in data word
+    	dtLineOut = CountTicks < shortPositive_Len || (CountTicks < longPositive_Len && !(dtSendBuf & (1 << bit)));
+    }
 }
 
 
 
 static bool sendCmd() {
   static bool end_of_preamble, end_of_stop;
-  
-  if (!end_of_preamble) {
+
+  if (!end_of_stop) {
+        //send single stop bit before preamble
+      updateLineStop();
+      end_of_stop = advanceStopCounter();
+
+      } else  if (!end_of_preamble) {
     // send preamble
     updateLinePre();
-    end_of_preamble = advancePreCounter();
-    } else 	if (!end_of_stop) {
-      //send single stop bit after preamble
-    updateLineStop();
-    if ((end_of_stop = advanceStopCounter()))
+    if ((end_of_preamble = advancePreCounter())) {
        dtSendBuf = make_Word(dtSendCmd[0], 0); // load first word into send buffer
-    
-    } else {
+    }
+    } else 	{
       // send data words + stop bits
     updateLine();
     // counting ticks until end_of_frame
@@ -184,6 +191,7 @@ static bool sendCmd() {
   }
   return false; // continue
 }
+
 
 static bool sendPrg() {
   bool end_of_word = false;
