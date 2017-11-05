@@ -43,7 +43,7 @@ Messages like up/down/stop are are encoded into 5 bytes.  If you counted 6 bytes
 
 Explaining Group and Member nunber
 ==================================
-The central unit group/member numbers to control shutters independly. The central unit 2411 lets you configure 7 groups each having up to 7 members.  You can assign multiple motors to a single Group/Member combo, but not one motor to multiple Group/Member combinations.  So group=1 member=1 could address all windows in a room if you want. But group=1 member=1 and group=2 member=1 cannot address the same motor.
+The central unit uses group/member numbers to control shutters independly. The central unit 2411 lets you configure 7 groups each having up to 7 members.  You can assign multiple motors to a single Group/Member combo, but not one motor to multiple Group/Member combinations.  So group=1 member=1 could address all windows in a room if you want. But group=1 member=1 and group=2 member=1 cannot address the same motor.
 
 
 Explaining the Device ID
