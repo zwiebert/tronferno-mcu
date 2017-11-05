@@ -14,7 +14,7 @@ Basics
 
 Fernotron works uni-directional:
 
-One device broadcasts a message on 443 MHz and all receiving devices listen and filter out the messages addressed to them, or the group they belong to. They cannot acknowledge to the sender, that they received the data.  They can only give feedback to the user itself, by moving the shutter a bit when they have succesfully received a command which not involves moving the shutter directly.
+A controller device transmitts a message on 443 MHz and all receiving devices listen and filter out the messages addressed to them, or the group they belong to. They cannot acknowledge to the sender, that they received the data.  They can only give feedback to the user itself, by moving the shutter a bit when they have succesfully received a command which not involves moving the shutter directly.
 
 
 Each device has an unique ID. On motors this ID is usually printed on the motor itself and on some sticker wich can be placed near the shutter. That ID can be used to access the motor without having to press the pyhsical set button, which may not easy accessible.
