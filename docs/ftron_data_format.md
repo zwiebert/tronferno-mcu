@@ -26,7 +26,7 @@ Each message has an address field.  This address can contain a Sender ID (like F
 
 A receiver will listen to all addresses which are equal to its own receiver ID (because the IDs are unique, all other receivers will ignore these messages).
 
-Each receiver keeps a list in its persistent memory, containing sender IDs he will listen to.  If you ativeate the set function or press the set-button, and send a "stop" message, the ID in that message address field will be added (or removed) from that list.  In case of sent by the central unit (2411), the receiver will also memorize the group and member number (which are also part of the message).
+Additionally, each receiver keeps a list in its persistent memory, containing sender IDs he also will listen to.  If you ativate the set function on a receiver and send a "stop" message around from a controller, the ID in that message address field will be added (or removed) from that list.  In case of sent by the central unit (2411), the receiver will also memorize the group and member number (which are also part of the message).
 
 
 Message Format:  Envelope
