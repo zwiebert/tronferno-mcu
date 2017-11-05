@@ -17,7 +17,7 @@ Fernotron works uni-directional:
 A controller device transmitts a message on 443 MHz and all receiving devices listen and filter out the messages addressed to them, or the group they belong to. They cannot acknowledge to the sender, that they received the data.  They can only give feedback to the user itself, by moving the shutter a bit when they have succesfully received a command which not involves moving the shutter directly.
 
 
-Each device has an unique ID. On motors this ID is usually printed on the motor itself and on some sticker wich can be placed near the shutter. That ID can be used to access the motor without having to press the pyhsical set button, which may not easy accessible.
+Each device has an unique ID. On motors this ID is usually printed on the motor itself and on some sticker on the cable. That ID can be used to access the motor without having to press the pyhsical set button, which may not easy accessible.
 
 Controller devices like 2411 or 2431 have an ID too, but its not printed on anywhere. They can be only seen by looking at the messages they send.
 
