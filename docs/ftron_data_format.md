@@ -3,7 +3,7 @@ Warning: This document is meant to provide information for developers.
 Warning: My understanding comes from reverse engineering the data sent by my Fernotron devices.
 Warning: Do not consider it reliable information.
 Warning: It's just guessing, try and error. I may also have made mistakes in writing things down.   
-Warning: There may be risk of damaging shutters when using devices not made by the original equipment manufacturer.
+Warning: There is risk of damaging shutters when using devices not made by the original equipment manufacturer.
 Warning: Use any information in this file only at your own risk.
 ```
 
