@@ -55,9 +55,9 @@ Explaining the Device ID
 
    * ID of central unit (8xxxx). Its not printed out anywhere, because there is no need to know it, when using the original hardware.
 
-  Example: To pair a motor with a central unit, you first press the set button on the motor. Now you send a "Stop" command to Number 3 of Group 2.  To 5-byte command sent will contain:
+  Example: To pair a motor with a central unit, you first press the set button on the motor. Now you send a "Stop" command to Number 3 of Group 2.  The 5-byte command sent will contain:
 
-    * ID of the central Unit, which will the motor stores in its local persistent memory.
+    * ID of the central Unit, which will the motor store in its local persistent memory.
     * The group number (1...7) and a group-member number (1...7) which will also be stored. 
 
    Each motor can store only one central unit ID, groups number and member number. The motor will now listen individually to commands containing that ID and Group/Member number combination. To make more than one motor follow this combo (e.g. large windows with 2 motors), these motors are paired with the same group/member number. . 
