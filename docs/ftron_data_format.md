@@ -24,9 +24,9 @@ Controller devices like 2411 or 2431 have an ID too, but its not printed on anyw
 
 Each message has an address field.  This address can contain a Sender ID (like From:) or an Receiver ID (like To:).
 
-A receiver will listen to all addresses which are equal to its own receiver ID (because the IDs are unique, all other receiver will ignore this messages).
+A receiver will listen to all addresses which are equal to its own receiver ID (because the IDs are unique, all other receivers will ignore these messages).
 
-It also keeps a list in its persistent memory, containing sender IDs he will listen to.  If you ativeate the set function or press the set-button, and send a "stop" message, the ID in that message address field will be added (or removed) from that list.  In case of the central unit (2411), the receiver will also memorize the group and member number (which are also part of the message).
+Each receiver keeps a list in its persistent memory, containing sender IDs he will listen to.  If you ativeate the set function or press the set-button, and send a "stop" message, the ID in that message address field will be added (or removed) from that list.  In case of sent by the central unit (2411), the receiver will also memorize the group and member number (which are also part of the message).
 
 
 Message Format:  Envelope
