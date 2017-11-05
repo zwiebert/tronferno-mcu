@@ -64,7 +64,7 @@ typedef enum {
 	fer_memb_M4,
 	fer_memb_M5,
 	fer_memb_M6,
-	fer_memb_M7,
+	fer_memb_M7
 } fer_memb;
 
 // high nibble of data[fer_dat_ADDR_2]

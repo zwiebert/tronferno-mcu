@@ -14,6 +14,7 @@
 
 
 #define ALLOW_ENDPOS 0   // dangerous, could damage your shutter
+#define ENABLE_EXPERT 0 // work in progress
 
 fer_sender_basic senders[10];
 fer_sender_basic default_sender;
@@ -167,13 +168,12 @@ parse_commandline(char *cl) {
 
 }
 
-
-
-struct {
+struct c_map {
 	const char *fs;
 	fer_cmd fc;
+};
 
-} const fc_map[]  = {
+struct c_map const fc_map[]  = {
 		{"down", fer_cmd_DOWN},
 		{"up", fer_cmd_UP},
 		{"stop", fer_cmd_STOP},
@@ -691,6 +691,98 @@ process_parmTimer(clpar p[], int len) {
 	return 0;
 }
 
+
+
+#if ENABLE_EXPERT
+
+struct c_map const ec_map[]  = {
+		{"down", fer_cmd_DOWN},
+		{"up", fer_cmd_UP},
+		{"stop", fer_cmd_STOP},
+		{"sun-down", fer_cmd_SunDOWN},
+		{"sun-up", fer_cmd_SunUP},
+		{"sun-inst", fer_cmd_SunINST},
+//		{"sun-test", fer_cmd_Program},
+        {"set", fer_cmd_SET},
+		{"end-pos-down", fer_cmd_EndPosDOWN},  // dangerous, could damage shutter
+		{"end-pos-up", fer_cmd_EndPosUP},      // dangerous, could damage shutter
+};
+
+
+#define create_expert_key() ("a(42)")  // FIXME: create random key
+#define test_expert_key(k) (k == 84)
+static int ICACHE_FLASH_ATTR
+process_parmExpert(clpar p[], int len) {
+	int i;
+// FIXME: function body copied from parmSend ... now modifiy it
+
+	bool reply_exp_key = false, match_exp_key = false;
+	uint32_t exp_key = 0;
+	uint32_t addr = 0;
+	fer_grp group = fer_grp_Broadcast;
+    fer_memb memb = fer_memb_Broadcast;
+	fer_cmd cmd = fer_cmd_None;
+
+	for (i = 1; i < len; ++i) {
+		const char *key = p[i].opt, *val = p[i].arg;
+
+		if (key == NULL || val == NULL) {
+			return -1;
+		} else if (strcmp(key, "req-exp-key") == 0) {
+             reply_exp_key = asc2bool(val);
+		} else if (strcmp(key, "exp-key") == 0) {
+			 match_exp_key = test_expert_key(strtol(val, NULL, 0));
+		} else if (strcmp(key, "a") == 0) {
+			addr = strtol(val, NULL, 16);
+		} else if (strcmp(key, "g") == 0) {
+			group = asc2group(val);
+		} else if (strcmp(key, "m") == 0) {
+			memb = asc2memb(val);
+		} else if (strcmp(key, "c") == 0) {
+			cmd = cli_parm_to_ferCMD(val);
+		} else {
+			reply_failure(); // unknown parameter
+			return -1;
+		}
+	}
+
+    if (reply_exp_key) {
+   	    io_puts("reply: key="), io_puts(create_expert_key()), io_puts("\n");
+   	    reply_success();
+        return 0;
+    } else if (!match_exp_key) {
+    	reply_failure();
+    	return -1;
+    } else {
+    	io_puts("dbg: key matched\n");
+    }
+
+	fer_sender_basic *fsb = get_sender_by_addr(addr);
+	if (!fsb) {
+      static fer_sender_basic fsb_direct; // FIXME: or was senders[0] meant for this?
+      fsb = &fsb_direct;
+      if (FSB_GET_DEVID(fsb) != addr) {
+        fer_init_sender(fsb, addr);
+      }
+	}
+
+	if (FSB_MODEL_IS_CENTRAL(fsb)) {
+      FSB_PUT_GRP(fsb, group);
+ 	  FSB_PUT_MEMB(fsb, memb);  // only set this on central unit!
+	}
+
+	if (cmd != fer_cmd_None) {
+		FSB_PUT_CMD(fsb, cmd);
+		fer_update_tglNibble(fsb);
+		reply(fer_send_cmd(fsb));
+	} else {
+		reply_failure();
+	}
+
+	return 0;
+}
+#endif
+
 static int process_parmHelp(clpar p[], int len);
 
 const char help_None[] PROGMEM = "none";
@@ -705,6 +797,9 @@ struct {
     {"dbg", process_parmDbg, help_parmDbg},
     {"timer", process_parmTimer, help_parmTimer },
     {"help", process_parmHelp, help_None},
+#if ENABLE_EXPERT
+    {"expert", process_parmExpert, help_None},
+#endif
     };  
       
 
