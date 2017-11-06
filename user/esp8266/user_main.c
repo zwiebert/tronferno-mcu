@@ -91,5 +91,8 @@ user_init() {
 
 void ICACHE_FLASH_ATTR mcu_restart(void) {
 	system_restart();
-	os_delay_us(10000); // wait for restart
+#if 0
+	os_delay_us(10000);  // FIXME: is calling this function allowed?
+#endif
+	for(;;) {};
 }

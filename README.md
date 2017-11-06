@@ -104,8 +104,8 @@ In case you no longer have working Fernotron central unit. You would start from 
  * Prepare Hardware 
     * Arduino Nano Board (Clone)  connected to USB on your PC
     * ISP programmer hardware (like avrispII, etc) connected to USB on your PC
-    * RF Receiver connected to D7
-    * RF Transmitter connected to D2
+    * RF Receiver connected to D2
+    * RF Transmitter connected to D11
     
   * To build and flash, open the Solution file in AVR Studio on Windows or use make on Linux:
   ```
@@ -162,7 +162,9 @@ Bert Winkelmann
 
 ### CLI options (output of help command)
 
-```syntax: command option=value ...;
+```
+
+syntax: command option=value ...;
 commands are: send, config, dbg, timer, help, 
 send options:
 a=(0|SenderID) hex address of the sender or receiver (add a 9 in front) or 0 for the configured CentralUnit
@@ -175,13 +177,15 @@ cu=(CentralUnitID|auto)  like 80abcd. auto: press Stop key on central unit in th
 rtc=ISO_TIME_STRING  like 2017-12-31T23:59:59
 baud=serial_baud_rate
 wlan-ssid=your_wlan_ssid
-wlan-password=your_wlan_password
+wlan-password=your_wlan_password  example: config wlan-ssid=1234 wlan-password=abcd restart=1;
 longitude=N like -13.23452 (to calculate sunset)
 latitude=N like +52.34234
 time-zone=N like +1
 dst=(eu|0|1) daylight saving time: automatic: eu=europe. manually: 0=off, 1=on
-verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)pw=your config password
+verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)
+pw=your_config_password   if password set, the pw option needs to come first: e.g. config pw=my_passw dst=0 ...
 set-config-password=your_config_password
+restart=(1|0)  if 1 then restart MCU
 
 dbg options:
 print=(rtc|cu)

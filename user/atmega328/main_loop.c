@@ -8,6 +8,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
+#include <avr/wdt.h>
 
 #include "main/inout.h"
 
@@ -29,5 +30,24 @@ main_setup();
 }
 
 void mcu_restart(void) {
-	// FIXME: add restart code
+    wdt_enable(WDTO_15MS);
+    for(;;) {
+
+    }
 }
+
+#if 1
+// disable watch dog at start to avoid restart loop
+
+void wdt_init(void) __attribute__((naked)) __attribute__((section(".init3")));
+
+// Function Implementation
+void wdt_init(void)
+{
+    MCUSR = 0;
+    wdt_disable();
+
+    return;
+}
+
+#endif

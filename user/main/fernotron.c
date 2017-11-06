@@ -54,6 +54,7 @@ void ICACHE_FLASH_ATTR
 loop(void) {
 	int i;
 	char *cmdline;
+	static bool ready;
 
 	// io_printf_fun("loop()\n");
 	// CLI
@@ -62,6 +63,10 @@ loop(void) {
 		io_puts(cmdline);
 		io_puts("\n");
 		process_cmdline(cmdline);
+		ready = false;
+	} else if (!ready) {
+		cli_msg_ready();
+		ready = true;
 	}
 
 #ifdef FER_RECEIVER

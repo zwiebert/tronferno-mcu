@@ -25,6 +25,10 @@ void ICACHE_FLASH_ATTR reply_message(const char *s) {
 	io_puts("reply: "), io_puts(s), io_puts("\n");
 }
 
+void ICACHE_FLASH_ATTR cli_msg_ready(void) {
+	io_puts("\nready:\n");
+}
+
 float ICACHE_FLASH_ATTR stof(const char* s) {
 	int point_seen;
 
@@ -357,7 +361,7 @@ const char help_parmConfig[] PROGMEM =
 		  "wlan-ssid=your_wlan_ssid\n"
 		  "wlan-password=your_wlan_password  example: config wlan-ssid=1234 wlan-password=abcd restart=1;\n"
 #endif
-		  "longitude=N like -13.23452 (to calculate sunset)\n"
+		  "longitude=N like -13.23452 (to calculate astro)\n"
 		  "latitude=N like +52.34234\n"
 		  "time-zone=N like +1\n"
 		  "dst=(eu|0|1) daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
@@ -617,7 +621,7 @@ string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst) {
 const char help_parmTimer[] PROGMEM =
 		  "daily=T T is like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00\n"
 		  "weekly=TTTTTTT like weekly=0730-++++0900-+ (+ repeats the previous T) for up 07:30 Mon-Fri and up 09:00 Sat-Sun\n"
-		  "astro=N This enables astro automatic. N is the offset to sunset in minutes. So astro=+60 closes the shutter 60 minutes after sunset\n"
+		  "astro=N This enables astro automatic. N is the offset to civil dusk in minutes. So astro=+60 closes the shutter 60 minutes after civil dusk\n"
 		  "sun-auto=1  1 enables and 0 disables sun automatic\n"
 		  "random=1 enables random automatic. shutter opens and closes at random times, so it looks like you are home when you are not\n"
 		  "rtc-only=1  Update the built-in real time clock of the shutter. Don't change its programmed timers (and flags)\n"
