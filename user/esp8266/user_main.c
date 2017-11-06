@@ -88,3 +88,8 @@ user_init() {
     //system_print_meminfo();
 
 }
+
+void ICACHE_FLASH_ATTR mcu_restart(void) {
+	system_restart();
+	os_delay_us(10000); // wait for restart
+}

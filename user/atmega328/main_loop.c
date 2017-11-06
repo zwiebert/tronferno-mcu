@@ -27,3 +27,7 @@ main_setup();
     loop();
   }
 }
+
+void mcu_restart(void) {
+	// FIXME: add restart code
+}

@@ -15,6 +15,7 @@
 
 #define ALLOW_ENDPOS 0   // dangerous, could damage your shutter
 #define ENABLE_EXPERT 0 // work in progress
+#define ENABLE_RESTART 1 // allow software reset
 
 fer_sender_basic senders[10];
 fer_sender_basic default_sender;
@@ -354,7 +355,7 @@ const char help_parmConfig[] PROGMEM =
 		  "baud=serial_baud_rate\n"
 #ifdef USE_WLAN
 		  "wlan-ssid=your_wlan_ssid\n"
-		  "wlan-password=your_wlan_password\n"
+		  "wlan-password=your_wlan_password  example: config wlan-ssid=1234 wlan-password=abcd restart=1;\n"
 #endif
 		  "longitude=N like -13.23452 (to calculate sunset)\n"
 		  "latitude=N like +52.34234\n"
@@ -363,6 +364,9 @@ const char help_parmConfig[] PROGMEM =
 		  "verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)\n"
 		  "pw=your_config_password   if password set, the pw option needs to come first: e.g. config pw=my_passw dst=0 ...\n"
 		  "set-config-password=your_config_password\n"
+#if ENABLE_RESTART
+		  "restart=(1|0)  if 1 then restart MCU\n"
+#endif
 		//  "set-expert-password=\n"
 		;
 
@@ -391,6 +395,10 @@ process_parmConfig(clpar p[], int len) {
 			io_puts("missing config password\n");
 			reply_failure();
 			return -1;
+#if ENABLE_RESTART
+		} else if (strcmp(key, "restart") == 0) {
+			mcu_restart();
+#endif
 		} else if (strcmp(key, "rtc") == 0) {
 			reply(rtc_set_by_string(val));
 
