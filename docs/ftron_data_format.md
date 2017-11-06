@@ -84,9 +84,9 @@ byte 4 low nibble: command code number. e.g. stop (encoded as number 3), up (4),
 
 Longer messages are required to set the RTC and set the built-in timers.
 ```
-message stop                           ; 4.5 + 0.5 bytes
-message timer rtc-data                 ; 4.5 + 0.5 + 8 bytes
-message timer rtc-data  timer-data add ; 4.5 + 0.5 + 8 + (8*16) + 8 bytes 
+message up/down/stop/etc                 ; 4.5 + 0.5 bytes
+message timer rtc-data                   ; 4.5 + 0.5 + 8 bytes
+message timer rtc-data  timer-data extra ; 4.5 + 0.5 + 8 + (8*16) + 8 bytes 
 ```
 
 How its transmitted
