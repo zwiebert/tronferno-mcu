@@ -22,9 +22,10 @@ Each device has an unique ID. On motors this ID is usually printed on the motor 
 Controller devices like 2411 or 2431 have an ID too, but its not printed on anywhere. They can be only seen by looking at the messages they send.
 
 
-Each message has an address field.  This address can contain a Sender ID (like From:) or an Receiver ID (like To:).
+Each message has a single address field.  This address can contain a Sender ID (like From:) *or* an Receiver ID (like To:).
 
-A receiver will listen to all addresses which are equal to its own receiver ID (because the IDs are unique, all other receivers will ignore these messages).
+A receiver will listen to all addresses which are equal to its own receiver ID. Because the IDs are supposed to unique, all other receivers will ignore these messages.
+
 
 Additionally, each receiver keeps a list in its persistent memory, containing sender IDs he also will listen to.  If you ativate the set function on a receiver and send a "stop" message around from a controller, the ID in that message address field will be added (or removed) from that list.  In case of sent by the central unit (2411), the receiver will also memorize the group and member number (which are also part of the message).
 
@@ -32,9 +33,9 @@ Additionally, each receiver keeps a list in its persistent memory, containing se
 Message Format:  Envelope
 =========================
 
-Messages like up/down/stop are are encoded into 5 bytes.  If you counted 6 bytes in log output ... yes its really 6, but the 6th contains just a check-sum of that 5 bytes. You may have looked at the data, which actually is sent via 443 MHz, and it looks much more than just 6 bytes ... ok, there really are 12 words of 10bit. The lower 8bit of each word pair is identical to one of the 6 bytes  (word 0/1 = byte 0, word 2/3 = byte 1, ...  word 10/11 = byte 6). The 2 extra bit in each word contain bit parity and indicate if a word is odd or even-numbered.  ... so its really only 5 data bytes. These contain all the addressing info:
+Simple messages like up/down/stop are are encoded into 5 bytes.  If you counted 6 bytes in log output ... yes its really 6, but the 6th contains just a check-sum of that 5 bytes. You may have looked at the data, which actually is sent via 443 MHz, and it looks much more than just 6 bytes ... ok, there really are 12 words of 10bit. The lower 8bit of each word pair is identical to one of the 6 bytes  (word 0/1 = byte 0, word 2/3 = byte 1, ...  word 10/11 = byte 6). The 2 extra bit in each word contain bit parity and indicate if a word is odd or even-numbered.  ... so its really only 5 data bytes. These contain all the addressing info:
 ```
- bytes 0,1,2: containing the 3 byte device ID
+ bytes 0,1,2: this is the adressfield which contains the 3 byte device ID
  byte 3 high nibble: A counter which may increment with each button press. How much it increments depents is not the same for all buttons. message may be discarded if counter stays the same.
  byte 3 low nibble: member number (or type of sender if not sent by central unit)
  byte 4 high nibble: group nunber
@@ -43,7 +44,7 @@ Messages like up/down/stop are are encoded into 5 bytes.  If you counted 6 bytes
 
 Explaining Group and Member nunber
 ==================================
-The central unit uses group/member numbers to control shutters independly. The central unit 2411 lets you configure 7 groups each having up to 7 members.  You can assign multiple motors to a single Group/Member combo, but not one motor to multiple Group/Member combinations.  So group=1 member=1 could address all windows in a room if you want. But group=1 member=1 and group=2 member=1 cannot address the same motor.
+The central unit uses group/member numbers to control shutters independently. The central unit 2411 lets you configure 7 groups each having up to 7 members.  You can assign multiple motors to a single Group/Member combo, but not one motor to multiple Group/Member combinations.  So group=1/member=1 could address all windows in a room if you want. But group=1/member=1 and group=2/member=1 can never address the same motor.
 
 
 Explaining the Device ID
@@ -51,7 +52,7 @@ Explaining the Device ID
 
 * 3-byte Device ID, There are different kind of IDs. The kind is encoded in the first nibble (4 bit)  of the ID:  plain-sender: 0x1, sun-sensor: 0x2, central-unit=0x8, receiver=0x9.
 
-   * ID of a receiver (9xxxx):  A motor has a designated 5 digit hex code number. This number is printed on the motor itself and on a few stickers coming with it. 5 digts are 5 nibbles or 2.5 bytes, not 3.  Prefix these 2.5 bytes with number 9. This will be the Device ID of the Receiver.  If, for example, your orignal 2411 central unit becomes destroyed, you need to press the set button of a motor to add it to your new 2411. Or you can add that code into your new 2411 and send the "press the button" command to that motor.
+   * ID of a receiver (9xxxx):  A motor has a designated 5 digit hex code number. This number is printed on the motor itself and on the cable-sticker. 5 digts are 5 nibbles or 2.5 bytes, not 3.  Prefix these 2.5 bytes with number 9. This will be the Device ID of the Receiver.  If, for example, your orignal 2411 central unit gets destroyed, you need to press the set button of a motor to pair it to your new 2411. Or you can add that code into your new 2411 and send the "press the button" command via RF to that motor.
 
    * ID of central unit (8xxxx). Its not printed out anywhere, because there is no need to know it, when using the original hardware.
 
@@ -77,7 +78,7 @@ Explaining the Device ID
 Message Content
 ===============
 
-Now for the content. Simple messages can fit into the nibble we have left at the end of the 5 bytes mentioned  above:
+Now for the message content. Simple messages can fit into the nibble we have left at the end of the 5 bytes mentioned  above:
 
 byte 4 low nibble: command code number. e.g. stop (encoded as number 3), up (4), down (5), ...
 
@@ -87,12 +88,6 @@ message stop                           ; 4.5 + 0.5 bytes
 message timer rtc-data                 ; 4.5 + 0.5 + 8 bytes
 message timer rtc-data  timer-data add ; 4.5 + 0.5 + 8 + (8*16) + 8 bytes 
 ```
-
-
-Commands with additinal Data
-============================
-There are commands that need to come with some data. A command like "set the builtin RTC" would need to submit the current time. Obvsome data to be useful are used to configure the builtin timer of a motor.  The configuratin data follows the command directly. It can be thought of a command having pa  These data usually contains sets of 8 bytes, followed by a checksum and doubled to make a line of 19 10-bit-words.  To set the RTC
-
 
 How its transmitted
 ===================
