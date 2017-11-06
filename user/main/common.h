@@ -15,6 +15,7 @@
 #endif
 #if 1 //!defined FER_RECEIVER || defined FER_RECEIVER_MINIMAL
 #define USE_NTP
+#define FER_NTP
 #endif
 #define USE_WLAN
 #endif

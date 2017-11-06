@@ -98,7 +98,7 @@ loop(void) {
 #endif
 #endif
 
-#ifdef FER_NTP
+#ifdef USE_NTP
 	ntp_update_system_time(SECS_PER_DAY);
 #endif
 }
