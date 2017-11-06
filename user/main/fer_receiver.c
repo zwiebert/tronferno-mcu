@@ -63,7 +63,9 @@ static uint8_t CountTicks, CountBits, CountWords, CountLines;
 // buffer to store received RF data
 static uint16_t dtRecvBuffer[2];
 static uint8_t dtRecvCmd[bytesPerCmdPacket];
+#ifndef FER_RECEIVER_MINIMAL
 uint8_t dtRecvPrgFrame[linesPerPrg][bytesPerPrgLine];
+#endif
 
 ferCmdBuf_type ICACHE_FLASH_ATTR get_recvCmdBuf(void) {
 	return dtRecvCmd;

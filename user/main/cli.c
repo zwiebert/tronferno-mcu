@@ -359,7 +359,7 @@ const char help_parmConfig[] PROGMEM =
 		  "time-zone=N like +1\n"
 		  "dst=(eu|0|1) daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
 		  "verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)"
-		  "pw=your config password\n"
+		  "pw=your_config_password   if password set, the pw option needs to come first: e.g. config pw=my_passw dst=0 ...\n"
 		  "set-config-password=your_config_password\n"
 		//  "set-expert-password=\n"
 		;
@@ -419,6 +419,7 @@ process_parmConfig(clpar p[], int len) {
 			C.app_verboseOutput = level;
 			save_config();
 			reply_success();
+#ifdef USE_WLAN
 		} else if (strcmp(key, "wlan-ssid") == 0) {
 			if (strlen(val) < sizeof (C.wifi_SSID)) {
 			strcpy (C.wifi_SSID, val);
@@ -435,6 +436,7 @@ process_parmConfig(clpar p[], int len) {
 			} else {
 				reply_failure();
 			}
+#endif // USE_WLAN
 		} else if (strcmp(key, "set-config-password") == 0) {
 			if (strlen(val) < sizeof (C.app_configPassword)) {
 			strcpy (C.app_configPassword, val);

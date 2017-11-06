@@ -69,8 +69,10 @@ typedef struct {
 	enum transmitter app_transm;
 	enum rtclock app_rtc;
 	enum verbosity app_verboseOutput;
+#ifdef USE_WLAN
 	char wifi_SSID[32];
 	char wifi_password[64];
+#endif
 	char app_configPassword[16];
 	char app_expertPassword[16];
 

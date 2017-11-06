@@ -123,10 +123,10 @@ $(OUTPUT_FILE_PATH): $(bld_dir) $(proj_objs) $(bld_dir)libtime.a
 COM := /dev/ttyACM0
 	
 flash: all
-	$(Q) avrdude -V -c avrisp2 -p m328p -P $(COM) -b 115200 -U "flash:w:$(hex_out):i"
+	$(Q) avrdude  -c avrisp2 -p m328p -P $(COM) -b 115200 -U "flash:w:$(hex_out):i"
 
 eeprom: all
-	$(Q) avrdude -V -c avrisp2 -p m328p -P $(COM) -b 115200 -U "eeprom:w:$(eep_out):i"
+	$(Q) avrdude  -c avrisp2 -p m328p -P $(COM) -b 115200 -U "eeprom:w:$(eep_out):i"
 
 
 # Other Targets

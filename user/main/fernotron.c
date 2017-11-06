@@ -30,7 +30,7 @@ void ICACHE_FLASH_ATTR fer_printData(const uint8_t *cmd, uint8_t prg[linesPerPrg
 
 	if (cmd)
 		frb_printPacket(cmd);
-
+#ifndef	FER_RECEIVER_MINIMAL
 	if (prg) {
 		int i, used_lines;
 
@@ -43,6 +43,7 @@ void ICACHE_FLASH_ATTR fer_printData(const uint8_t *cmd, uint8_t prg[linesPerPrg
 		fpr_printPrgPacketInfo(prg, used_lines == 1);
 #endif
 	}
+#endif
 }
 
 
@@ -80,7 +81,7 @@ loop(void) {
 	}
 
 	cu_auto_set(0);
-
+#ifndef	FER_RECEIVER_MINIMAL
 	if (has_prgReceived) {
 
 		io_puts("timer frame received\n"), fer_printData(get_recvCmdBuf(), dtRecvPrgFrame);
@@ -94,6 +95,7 @@ loop(void) {
 
 		fer_recvClearAll();
 	}
+#endif
 #endif
 
 #ifdef FER_NTP
@@ -121,9 +123,10 @@ main_setup() {
 		io_puts("C.geo_longitude: "), io_print_float(C.geo_longitude, 5), io_puts("\n");
 		io_puts("C.geo_latitude: "), io_print_float(C.geo_latitude, 5), io_puts("\n");
 		io_puts("C.geo_timezone: "), io_print_float(C.geo_timezone, 2), io_puts("\n");
+#ifdef USE_WLAN
 		io_puts("C.wifi_SSID: \""), io_puts(C.wifi_SSID), io_puts("\"\n");
 		io_puts("C.wifi_password: \""), io_puts((C.wifi_password[0] == '\0') ? "\"\n" : "***********\"\n");
-
+#endif
 	}
 
 	dbg_trace();
