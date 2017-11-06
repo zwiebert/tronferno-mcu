@@ -7,8 +7,8 @@
 #include "main/common.h"
 #include "defines.h"
 
-#define FER_MCUPIN_RECV  (D, 3)
-#define FER_MCUPIN_SEND  (D, 7)
+#define FER_MCUPIN_RECV  (D, 2) // Nano D2
+#define FER_MCUPIN_SEND  (B, 3) // Nano D11
 
 
 bool  fer_get_recvPin() { return GETPIN(FER_MCUPIN_RECV); }
