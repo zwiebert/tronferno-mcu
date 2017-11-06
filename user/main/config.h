@@ -32,6 +32,9 @@
 #define MY_GEO_DST dstEU
 #define MY_WIFI_SSID ""
 #define MY_WIFI_PASSWORD ""
+#define MY_APP_CONFIG_PASSWORD ""
+#define MY_APP_EXPERT_PASSWORD ""
+
 
 #endif
 
@@ -68,6 +71,8 @@ typedef struct {
 	enum verbosity app_verboseOutput;
 	char wifi_SSID[32];
 	char wifi_password[64];
+	char app_configPassword[16];
+	char app_expertPassword[16];
 
 } config;
 

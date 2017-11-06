@@ -162,8 +162,7 @@ Bert Winkelmann
 
 ### CLI options (output of help command)
 
-```
-syntax: command option=value ...;
+```syntax: command option=value ...;
 commands are: send, config, dbg, timer, help, 
 send options:
 a=(0|SenderID) hex address of the sender or receiver (add a 9 in front) or 0 for the configured CentralUnit
@@ -175,13 +174,15 @@ config options:
 cu=(CentralUnitID|auto)  like 80abcd. auto: press Stop key on central unit in the next 60 seconds
 rtc=ISO_TIME_STRING  like 2017-12-31T23:59:59
 baud=serial_baud_rate
-wlan-ssid="your_wlan_ssid"
-wlan-password="your_wlan_password"
+wlan-ssid=your_wlan_ssid
+wlan-password=your_wlan_password
 longitude=N like -13.23452 (to calculate sunset)
 latitude=N like +52.34234
 time-zone=N like +1
 dst=(eu|0|1) daylight saving time: automatic: eu=europe. manually: 0=off, 1=on
-verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)
+verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)pw=your config password
+set-config-password=your_config_password
+
 dbg options:
 print=(rtc|cu)
 

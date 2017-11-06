@@ -352,23 +352,41 @@ const char help_parmConfig[] PROGMEM =
 		  "cu=(CentralUnitID|auto)  like 80abcd. auto: press Stop key on central unit in the next 60 seconds\n"
 		  "rtc=ISO_TIME_STRING  like 2017-12-31T23:59:59\n"
 		  "baud=serial_baud_rate\n"
-		  "wlan-ssid=\"your_wlan_ssid\"\n"
-		  "wlan-password=\"your_wlan_password\"\n"
+		  "wlan-ssid=your_wlan_ssid\n"
+		  "wlan-password=your_wlan_password\n"
 		  "longitude=N like -13.23452 (to calculate sunset)\n"
 		  "latitude=N like +52.34234\n"
 		  "time-zone=N like +1\n"
 		  "dst=(eu|0|1) daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
 		  "verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)"
+		  "pw=your config password\n"
+		  "set-config-password=your_config_password\n"
+		//  "set-expert-password=\n"
 		;
 
 static int ICACHE_FLASH_ATTR
 process_parmConfig(clpar p[], int len) {
 	int i;
+	bool pw_ok = strlen (C.app_configPassword) == 0;
 
 	for (i = 1; i < len; ++i) {
 		const char *key = p[i].opt, *val = p[i].arg;
 
 		if (key == NULL || val == NULL) {
+			reply_failure();
+			return -1;
+		} else if (strcmp(key, "pw") == 0) {
+			if (strcmp(C.app_configPassword, val) == 0) {
+				pw_ok = true;
+				io_puts("password ok\n");
+
+			} else {
+				io_puts("wrong config password\n");
+				reply_failure();
+				return -1;
+			}
+		} else if (!pw_ok) {
+			io_puts("missing config password\n");
 			reply_failure();
 			return -1;
 		} else if (strcmp(key, "rtc") == 0) {
@@ -402,15 +420,29 @@ process_parmConfig(clpar p[], int len) {
 			save_config();
 			reply_success();
 		} else if (strcmp(key, "wlan-ssid") == 0) {
-			uint32_t baud = strtoul(val, NULL, 10);
-			C.mcu_serialBaud = baud;
+			if (strlen(val) < sizeof (C.wifi_SSID)) {
+			strcpy (C.wifi_SSID, val);
 			save_config();
 			reply_success();
+			} else {
+				reply_failure();
+			}
 		} else if (strcmp(key, "wlan-password") == 0) {
-			uint32_t baud = strtoul(val, NULL, 10);
-			C.mcu_serialBaud = baud;
+			if (strlen(val) < sizeof (C.wifi_password)) {
+			strcpy (C.wifi_password, val);
 			save_config();
 			reply_success();
+			} else {
+				reply_failure();
+			}
+		} else if (strcmp(key, "set-config-password") == 0) {
+			if (strlen(val) < sizeof (C.app_configPassword)) {
+			strcpy (C.app_configPassword, val);
+			save_config();
+			reply_success();
+			} else {
+				reply_failure();
+			}
 		} else if (strcmp(key, "receiver") == 0) {
 			reply(config_receiver(val));
 		} else if (strcmp(key, "transmitter") == 0) {

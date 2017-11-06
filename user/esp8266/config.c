@@ -21,7 +21,9 @@ config C = {
 	rtcAvrTime,//rtc
 	vrbNone,  //verboseOutput
 	MY_WIFI_SSID,
-	MY_WIFI_PASSWORD
+	MY_WIFI_PASSWORD,
+	MY_APP_CONFIG_PASSWORD,
+	MY_APP_EXPERT_PASSWORD,
 };
 
 void ICACHE_FLASH_ATTR read_config(void) {
