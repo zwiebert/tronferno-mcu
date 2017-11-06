@@ -352,13 +352,15 @@ const char help_parmConfig[] PROGMEM =
 		  "cu=(CentralUnitID|auto)  like 80abcd. auto: press Stop key on central unit in the next 60 seconds\n"
 		  "rtc=ISO_TIME_STRING  like 2017-12-31T23:59:59\n"
 		  "baud=serial_baud_rate\n"
+#ifdef USE_WLAN
 		  "wlan-ssid=your_wlan_ssid\n"
 		  "wlan-password=your_wlan_password\n"
+#endif
 		  "longitude=N like -13.23452 (to calculate sunset)\n"
 		  "latitude=N like +52.34234\n"
 		  "time-zone=N like +1\n"
 		  "dst=(eu|0|1) daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
-		  "verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)"
+		  "verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)\n"
 		  "pw=your_config_password   if password set, the pw option needs to come first: e.g. config pw=my_passw dst=0 ...\n"
 		  "set-config-password=your_config_password\n"
 		//  "set-expert-password=\n"

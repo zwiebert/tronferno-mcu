@@ -219,6 +219,10 @@ GDB_OBJ := $(patsubst %.S,$(BUILD_BASE)/%.o,$(patsubst %.c,$(BUILD_BASE)/%.o,$(G
 GDB_BUILD_DIR := $(BUILD_BASE)/gdbstub
 BUILD_DIR += $(GDB_BUILD_DIR)
 
+ifeq ($(DISTRO),1)
+CPPFLAGS += -DDISTRIBUTION
+endif
+
 ifeq ("$(D)","1")
 CPPFLAGS += -DDEBUG -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
 CFLAGS +=  -Og -ggdb

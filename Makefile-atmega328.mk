@@ -9,15 +9,22 @@ Q := @
 vecho := @echo
 endif
 
+SRC_BASE = .
+BUILD_BASE = avr_build
 
+ifeq ($(DISTRO),1)
+CPPFLAGS += -DDISTRIBUTION
+endif
 
 
 project=fernotron
 
 build_version := lean
 src_dir=./
-bld_dir=$(build_version)/
+bld_dir=$(BUILD_BASE)/$(build_version)/
 
+SRC_DIR		:= $(addprefix $(SRC_BASE)/,$(MODULES))
+BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
 
 modules := user/main user/atmega328
 proj_asrc := $(foreach dir,$(src_dir)$(modules),$(wildcard $(dir)/*.S))
@@ -42,6 +49,7 @@ srec_out = $(patsubst %elf,%srec,$(elf_out))
 lss_out = $(patsubst %elf,%lss,$(elf_out))
 map_out = $(patsubst %elf,%map,$(elf_out))
 
+DEP_DIR := $(BUILD_BASE)/dep
 
 pri:
 	echo $(time_objs)
@@ -58,7 +66,7 @@ LIBS := -ltime
 AR = avr-ar
 
 
-CPPFLAGS = -DF_CPU=16000000UL -DAVR_TIME -DAVR -DFER_RECEIVER -DFER_TRANSMITTER  -DICACHE_FLASH_ATTR=  -I"/home/bertw/avr/Packs/atmel/ATmega_DFP/1.2.132/include"  $(PROJ_INCLUDE) $(AVR_INCLUDE)
+CPPFLAGS += -DF_CPU=16000000UL -DAVR_TIME -DAVR -DFER_RECEIVER -DFER_TRANSMITTER  -DICACHE_FLASH_ATTR=  -I"/home/bertw/avr/Packs/atmel/ATmega_DFP/1.2.132/include"  $(PROJ_INCLUDE) $(AVR_INCLUDE)
 CFLAGS =  -c -x c -funsigned-char -funsigned-bitfields  -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega328p  -B "/home/bertw/avr/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p" -gdwarf-2 -std=c99
 
 D ?= $(DEBUG)
@@ -74,14 +82,19 @@ endif
 GCC_VER = 4.9.2
 
 
-$(bld_dir)%.o: $(src_dir)%.c
-	$(vecho) "CC $<"
-	$(Q) $(CC) $(CPPFLAGS) $(CFLAGS) -o "$@" "$<" 
+define compile-objects
+$(1)%.o: $(2)%.S
+	$(vecho) "AS $$<"
+	$(Q) $(CC) $(ASMFLAGS) -o $$@ $$< 
+$(1)%.o: $(2)%.c
+	$(vecho) "CC $$<"
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CFLAGS) -c $$< -MT $$@ -MM > $$(patsubst %.o,%.d,$(DEP_DIR)/$$(subst /,-,$$@))
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CFLAGS)  -c $$< -o $$@
+$(1)%.o: $(2)%.cpp
+	$(vecho) "C+ $$<"
+	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CXXFLAGS)  -c $$< -o $$@
+endef
 
-
-$(bld_dir)%.o: $(src_dir)%.S
-	$(vecho) "AS $<"
-	$(Q) $(CC) $(ASMFLAGS) -o "$@" "$<" 
 
 # AVR32/GNU Preprocessing Assembler
 
@@ -106,7 +119,7 @@ all: $(OUTPUT_FILE_PATH)
 
 
 $(bld_dir):
-	mkdir -p $(foreach dir,$(modules) $(time_modules),$(addprefix $(build_version)/,$(dir)))
+	mkdir -p $(foreach dir,$(modules) $(time_modules),$(addprefix $(bld_dir)/,$(dir))) $(DEP_DIR)
 
 
 $(OUTPUT_FILE_PATH): $(bld_dir) $(proj_objs) $(bld_dir)libtime.a
@@ -131,12 +144,14 @@ eeprom: all
 
 # Other Targets
 clean:
-	-$(RM) $(build_version)
+	-$(RM) $(bld_dir) $(DEP_DIR) 
 	
 
 rebuild : clean all
 
 reflash : rebuild flash
 
+
+$(eval $(call compile-objects,$(bld_dir),$(SRC_BASE)/))
 
 	
