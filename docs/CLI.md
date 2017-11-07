@@ -67,23 +67,74 @@ Examples:
 			
    
 ### send
+ 
+  * Send a plain command via RF to the receivers. Receiver can be a shutter motor, or a light, if you have the hardware for that.
 
-a=(0|SenderID) hex address of the sender or receiver (add a 9 in front) or 0 for the configured CentralUnit
-g=[0-7]  group number. 0 is for broadcast
-m=[0-7]  group member. 0 is for broadcast all groups members
-c=(up|down|stop|sun-down|sun-inst|set) command to send
-
-
-
+  * Options are: a, g, m, c
+  
+   * addressing options
+     * a=(id|0|[1-9]) - the adress field of a command usually contains the ID of the sender, or sometimes the receiver
+	    * id - 6 digit hex ID of sender or receiver
+		* 0 - use internally stored central unit ID (set by config cu)
+		* [1-9] - use on of 9 internally stored IDs (not fully implemented yet)
+		
+	 * g=(0|[1-7])  - group number
+	    * 0 - broadcast to all groups
+		* [1-7] send to a specific group. Groups are numbered from 1 to 7.
+		
+	 * m=(0|[1-7])  - group-member number
+	    * 0 - broadcast to all members
+		* [1-7] sent to specific member. Members are numbered from 1 to 7.
+		
+   * action command option
+     * c=command - specify the action command to be send
+	   * up - shutter up
+	   * down - shutter down
+	   * stop - shutter stop, (in set mode: add/remove sender from receiver)
+	   * sun-inst - defines current shutter position as sun-position
+	   * sun-down - moves shutter down to predefined sun-position
+	   * set - switch receiver to set-mode (like pressing pyhsical set button)
+	   
 ### timer
 
-daily=T T is like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00
-weekly=TTTTTTT like weekly=0730-++++0900-+ (+ repeats the previous T) for up 07:30 Mon-Fri and up 09:00 Sat-Sun
-astro=N This enables astro automatic. N is the offset to civil dusk in minutes. So astro=+60 closes the shutter 60 minutes after civil dusk
-sun-auto=1  1 enables and 0 disables sun automatic
-random=1 enables random automatic. shutter opens and closes at random times, so it looks like you are home when you are not
-rtc-only=1  Update the built-in real time clock of the shutter. Don't change its programmed timers (and flags)
-a, g and m: like in send command
+   * Send a command via RF to the receivers
+   
+   * Options are: a, g, m,  daily, weekly, astro, sun-auto, random, rtc-only
+   
+      * adressing options (a, g, m)  are the same like for the send command. see above.
+	  
+	  * each receiver has four built-in timers: daily, weekly, astro, random. they work independently, but they need to be send by the same command line.
+ ```
+            timer astro=-15;        will set the astro timer and clear all other timers
+			timer astro=-15 daily=0600-;  w
+```
+		
+	  *  daily=T - sets the daily timer
+	     * T is a 8 digit time string like 07302000. The four left digits are the up-time. The four on the right the down-time. A minus sign can replace 4 digits, which means the timer is cleared.
+		  
+		         timer daily=07302000;   up 07:30, down 20:00
+				 timer daily=0730-;      up 07:30, not down
+				 timer daily=-2000;      not up,   down 20:00
+   
+		  
+      * weekly=TTTTTTT - sets a timer for each week day. week days are from left to right: monday, tuesday, wednesday, thursday, friday, saturday, sunday
+	      * T each T is a 8 digit time string like described above with daily option.  A plus sign repeats the previous T.  So you can copy the values from monday to tuesday and so on.
+		  
+		        timer weekly=0730-++++0900-+;    up monday-friday at 07:30, and saturday-sunday at 09:00
+	   
+      * astro=N - Sets the astro timer. The time of civil dusk for each day of the year is calcualated by geographical config settings. The shutter will then close at that time. Note: There is no automatic for open at dawn built into the receivers. Its only for closing.
+          * N - time offset in minutes.  Negative number make the shutter closing earlier.
+		  
+		        timer astro=-30;    closes shutter thirty minutes before civil dusk
+				timer astro=+120;   closes shutter 2 hours after civil dusk
+				
+      * random=(1|0)  enable random timer.  Anti theft function. May make it looks like you are home by open or closing shutterd or lights at random times.
+				
+      * sun-auto=(1|0) enable sun automatic
+	  
+	  
+      * rtc-only=(1|0)  will  set the real time clock of a receiver and leave the timers alone.  If 1, all other timer options will be ignored. 
+
 
 
    
