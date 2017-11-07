@@ -99,3 +99,8 @@ When setting up the builint RTC and timers in the motor, the data words containi
 
 So the number of sent words goes from 12 (plain commmand) to 30 (+ RTC data) up to 336 (+ Timer data).  It takes 5 seconds to transmit 336 words.
 
+
+The bits are modulated by the timing the carrier is switched on and off.   Short-on/long-off means the bit is set (1).  Long-on/short-off means the bit is clear (0).
+
+
+
