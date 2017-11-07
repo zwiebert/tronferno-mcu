@@ -5,7 +5,7 @@
 
      'command option1=value1 option2=value2 ... optionN=valueN;'
 
-#####Examples
+* Examples:
 ```
      send g=1 m=2 c=up;
      timer weekly=05002100++++0800- astro=-15 sun-auto=1;
