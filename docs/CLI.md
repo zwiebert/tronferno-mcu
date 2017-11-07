@@ -52,8 +52,8 @@ Examples:
   * geographical and time related  options, which are used to calculate times for the "astro" automatic built in to receivers. Astro closes the shutter at civil dusk.
      * longitude=N
      * latitude=N
-	 * time-zone=N  - relative to GMT/UTC. Like: +1.0 or -7.0  or -6.5
-	 * dst=(eu|0|1) - enable/disable daylight saving time. eu=europe. manually: 0=off, 1=on. If DST is on, the shutter will add 1 hour to its astro timer
+     * time-zone=N  - relative to GMT/UTC. Like: +1.0 or -7.0  or -6.5
+     * dst=(eu|0|1) - enable/disable daylight saving time. eu=europe. manually: 0=off, 1=on. If DST is on, the shutter will add 1 hour to its astro timer
 
             config longitude=-13.23452 latitude=+52.34234 time-zone=+1	dst=eu; 
 
@@ -113,32 +113,29 @@ Examples:
             timer astro=-15;        will set the astro timer and disables all other timers and options
             timer astro=-15 daily=0600- sun-auto=1;  will set astro, daily timer, sun automatic  and disables all other timers and options
 ```
-		
-	  *  daily=T - sets the daily timer
-	     * T is a 8 digit time string like 07302000. The four left digits are the up-time. The four on the right the down-time. A minus sign can replace 4 digits, which means the timer is cleared.
-		  
+	     *  daily=T - sets the daily timer
+	        * T is a 8 digit time string like 07302000. The four left digits are the up-time. The four on the right the down-time. A minus sign can replace 4 digits, which means the timer is cleared.
+
+```
 		         timer daily=07302000;   up 07:30, down 20:00
-				 timer daily=0730-;      up 07:30, not down
-				 timer daily=-2000;      not up,   down 20:00
-   
-		  
-      * weekly=TTTTTTT - sets a timer for each week day. week days are from left to right: monday, tuesday, wednesday, thursday, friday, saturday, sunday
-	      * T each T is a 8 digit time string like described above with daily option.  A plus sign repeats the previous T.  So you can copy the values from monday to tuesday and so on.
-		  
-		        timer weekly=0730-++++0900-+;    up monday-friday at 07:30, and saturday-sunday at 09:00
-	   
-      * astro=N - Sets the astro timer. The time of civil dusk for each day of the year is calcualated by geographical config settings. The shutter will then close at that time. Note: There is no automatic for open at dawn built into the receivers. Its only for closing.
-          * N - time offset in minutes.  Negative number make the shutter closing earlier.
-		  
-		        timer astro=-30;    closes shutter thirty minutes before civil dusk
-				timer astro=+120;   closes shutter 2 hours after civil dusk
-				
-      * random=(1|0)  enable random timer.  Anti theft function. May make it looks like you are home by open or closing shutterd or lights at random times.
-				
-      * sun-auto=(1|0) enable sun automatic.
+			 timer daily=0730-;      up 07:30, not down
+			 timer daily=-2000;      not up,   down 20:00
+```
+	      * weekly=TTTTTTT - sets a timer for each week day. week days are from left to right: monday, tuesday, wednesday, thursday, friday, saturday, sunday
+	         * T each T is a 8 digit time string like described above with daily option.  A plus sign repeats the previous T.  So you can copy the values from monday to tuesday and so on.
+
+                         timer weekly=0730-++++0900-+;    up monday-friday at 07:30, and saturday-sunday at 09:00
+
+              * astro=N - Sets the astro timer. The time of civil dusk for each day of the year is calcualated by geographical config settings. The shutter will then close at that time. Note: There is no automatic for open at dawn built into the receivers. Its only for closing.
+                 * N - time offset in minutes.  Negative number make the shutter closing earlier.
+```
+	                timer astro=-30;    closes shutter thirty minutes before civil dusk
+                        timer astro=+120;   closes shutter 2 hours after civil dusk
+```
+	    * random=(1|0)  enable random timer.  Anti theft function. May make it looks like you are home by open or closing shutterd or lights at random times.
+	    * sun-auto=(1|0) enable sun automatic.
 	  
-	  
-      * rtc-only=(1|0)  Will  set the real time clock of a receiver and leave the timers alone. Unline the other timer options, it will leave the stored timer data and options alone and will only change the RTC of the receiver.  The RTC is also set by all other timer commands.  This option is used after power loss of a shutter, to synchronize the times of all shutters, when daylight time changes.  (The built-in RTC of a shutter keeps track of day time, day of month, month of year,  day of week and dst yes/no. it does not know about leap-years or years at all)
+	    * rtc-only=(1|0)  Will  set the real time clock of a receiver and leave the timers alone. Unline the other timer options, it will leave the stored timer data and options alone and will only change the RTC of the receiver.  The RTC is also set by all other timer commands.  This option is used after power loss of a shutter, to synchronize the times of all shutters, when daylight time changes.  (The built-in RTC of a shutter keeps track of day time, day of month, month of year,  day of week and dst yes/no. it does not know about leap-years or years at all)
 
 
    
