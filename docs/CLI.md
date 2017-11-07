@@ -1,5 +1,7 @@
 # CLI of TronFerno-MCU
 
+This text describe the command line interface of tronferno-mcu. The CLI interface can be accessed via a terminal, but is best be used by a front-end, like a smart phone app or some server like FHEM.
+ 
 
 ## Syntax
 
@@ -137,7 +139,7 @@ Eeach receiver has four built-in timers: daily, weekly, astro, random. Remember 
        `timer astro=-15 daily=0600- sun-auto=1;  will set astro, daily timer, sun automatic  and disables all other timers and options`
    
 *  daily=T - sets the daily timer
-  * T is a 8 digit time string like 07302000. The four left digits are the up-time. The four on the right the down-time. A minus sign can replace 4 digits, which means the timer is cleared.
+  * T  - T is a 8 digit time string like 07302000. The four left digits are the up-time. The four on the right the down-time. A minus sign can replace 4 digits, which means the timer is cleared.
 
         timer daily=07302000;   up 07:30, down 20:00
         timer daily=0730-;      up 07:30, not down
@@ -145,7 +147,7 @@ Eeach receiver has four built-in timers: daily, weekly, astro, random. Remember 
 
 
 * weekly=TTTTTTT - sets a timer for each week day. week days are from left to right: monday, tuesday, wednesday, thursday, friday, saturday, sunday
-  * T each T is a 8 digit time string like described above with daily option.  A plus sign repeats the previous T.  So you can copy the values from monday to tuesday and so on.
+  * T - Each T is a 8 digit time string like described above with daily option.  A plus sign repeats the previous T.  So you can copy the values from monday to tuesday and so on.
 
        `timer weekly=0730-++++0900-+;    up monday-friday at 07:30, and saturday-sunday at 09:00`
 
