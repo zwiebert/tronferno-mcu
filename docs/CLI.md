@@ -53,7 +53,7 @@ Examples:
      * longitude=N
      * latitude=N
 	 * time-zone=N  - relative to GMT/UTC. Like: +1.0 or -7.0  or -6.5
-	 * dst=(eu|0|1) - enable/disable daylight saving time. eu=europe. manually: 0=off, 1=on
+	 * dst=(eu|0|1) - enable/disable daylight saving time. eu=europe. manually: 0=off, 1=on. If DST is on, the shutter will add 1 hour to its astro timer
 
             config longitude=-13.23452 latitude=+52.34234 time-zone=+1	dst=eu; 
 
@@ -97,7 +97,12 @@ Examples:
 	   
 ### timer
 
-   * Send a command via RF to the receivers
+   * Send a command via RF to the receivers. All options should be send by single command line. Thats required because they are all transmitted in a big chunk of data which overwrites all data sent by previously timer command. Its the task of a front-end app to memorize the data for each receiver. We cannot read any data from the receivers anyway, so to be able to tell a user which timer data is currently stored in a receiver, the only way is to memorize it elsewhere.  Because of this, the original central unit 2411 will no know about any timers or options set by our MCU and vice versa. All timer commands will also set the RTC of the receiver.  So the RTC of the MCU should set to the correct time, which is usally done by NTP. If NTP is not available it needs to be set by the user or the front-end (GUI).
+   
+            timer sun-auto=1 astro=0 ...;    set all options on a single command line
+			timer sun-auto=1;                this enables sun automatic
+			timer astro=0;                   ... but this will disable sun automatic
+			timer ...;                       ... this will disable astro
    
    * Options are: a, g, m,  daily, weekly, astro, sun-auto, random, rtc-only
    
@@ -105,8 +110,8 @@ Examples:
 	  
 	  * each receiver has four built-in timers: daily, weekly, astro, random. they work independently, but they need to be send by the same command line.
  ```
-            timer astro=-15;        will set the astro timer and clear all other timers
-			timer astro=-15 daily=0600-;  w
+            timer astro=-15;        will set the astro timer and disables all other timers and options
+            timer astro=-15 daily=0600- sun-auto=1;  will set astro, daily timer, sun automatic  and disables all other timers and options
 ```
 		
 	  *  daily=T - sets the daily timer
@@ -130,11 +135,10 @@ Examples:
 				
       * random=(1|0)  enable random timer.  Anti theft function. May make it looks like you are home by open or closing shutterd or lights at random times.
 				
-      * sun-auto=(1|0) enable sun automatic
+      * sun-auto=(1|0) enable sun automatic.
 	  
 	  
-      * rtc-only=(1|0)  will  set the real time clock of a receiver and leave the timers alone.  If 1, all other timer options will be ignored. 
-
+      * rtc-only=(1|0)  Will  set the real time clock of a receiver and leave the timers alone. Unline the other timer options, it will leave the stored timer data and options alone and will only change the RTC of the receiver.  The RTC is also set by all other timer commands.  This option is used after power loss of a shutter, to synchronize the times of all shutters, when daylight time changes.  (The built-in RTC of a shutter keeps track of day time, day of month, month of year,  day of week and dst yes/no. it does not know about leap-years or years at all)
 
 
    
