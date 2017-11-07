@@ -1,6 +1,6 @@
 # CLI of TronFerno-MCU
 
-This text describe the command line interface of tronferno-mcu. The CLI interface can be accessed via a terminal, but is best be used by a front-end, like a smart phone app or some server like FHEM.
+This text describe the command line interface of tronferno-mcu. The CLI can be accessed via a terminal, but is best be used by a front-end, like a smart phone app or some server like FHEM.
  
 
 ## Syntax
