@@ -30,8 +30,8 @@ A receiver will listen to all addresses which are equal to its own receiver ID. 
 Additionally, each receiver keeps a list in its persistent memory, containing sender IDs he also will listen to.  If you ativate the set function on a receiver and send a "stop" message around from a controller, the ID in that message address field will be added (or removed) from that list.  In case of sent by the central unit (2411), the receiver will also memorize the group and member number (which are also part of the message).
 
 
-Message Format:  Envelope
-=========================
+Message "Envelope"
+==================
 
 Simple messages like up/down/stop are are encoded into 5 bytes.  If you counted 6 bytes in log output ... yes its really 6, but the 6th contains just a check-sum of that 5 bytes. You may have looked at the data, which actually is sent via 443 MHz, and it looks much more than just 6 bytes ... ok, there really are 12 words of 10bit. The lower 8bit of each word pair is identical to one of the 6 bytes  (word 0/1 = byte 0, word 2/3 = byte 1, ...  word 10/11 = byte 6). The 2 extra bit in each word contain bit parity and indicate if a word is odd or even-numbered.  ... so its really only 5 data bytes. These contain all the addressing info:
 ```
@@ -61,7 +61,7 @@ Explaining the Device ID
     * ID of the central Unit, which will the motor store in its local persistent memory.
     * The group number (1...7) and a group-member number (1...7) which will also be stored. 
 
-   Each motor can store only one central unit ID, groups number and member number. The motor will now listen individually to commands containing that ID and Group/Member number combination. To make more than one motor follow this combo (e.g. large windows with 2 motors), these motors are paired with the same group/member number. . 
+   Each motor can store only one central unit ID, group and member number. The motor will now listen individually to commands containing that ID and Group/Member number combination. To make more than one motor follow this combo (e.g. large windows with 2 motors), these motors are paired with the same group/member number.
 
  
    To make multiple motors with different group or member number  listen to a single command, the number 0 acts as a wildcard for group and/or member.
