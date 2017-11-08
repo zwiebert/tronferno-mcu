@@ -5,14 +5,14 @@ This text describe the command line interface of tronferno-mcu. The CLI can be a
 
 ## Syntax
 
-     'command option1=value1 option2=value2 ... optionN=valueN;'
+        command option1=value1 option2=value2 ... optionN=valueN;
 
 * Examples:
-```
-     send g=1 m=2 c=up;
-     timer weekly=05002100++++0800- astro=-15 sun-auto=1;
-     config wlan-ssid=WLBox wlan-password=34l2cxdfa9 restart=1;
-```
+
+        send g=1 m=2 c=up;
+        timer weekly=05002100++++0800- astro=-15 sun-auto=1;
+        config wlan-ssid=WLBox wlan-password=34l2cxdfa9 restart=1;
+
 
 ## Commands
 
@@ -84,32 +84,38 @@ These options  are used to calculate times for the "astro-automatic" built in to
    
 ### send command
  
-  * Send a plain command message via RF to the receivers. Receiver can be a shutter motor, or a light, if you have the hardware for that.
+Send a plain command message via RF to the receivers. Receiver can be a shutter motor, or a light, if you have the hardware for that.
 
-  * Options are: a, g, m, c
+* Options are: a, g, m, c
   
-   * addressing options
-     * a=(id|0|[1-9]) - the adress field of a command usually contains the ID of the sender, or sometimes the receiver
-        * id - 6 digit hex ID of sender or receiver
-        * 0 - use internally stored central unit ID (set by config cu)
-        * [1-9] - use on of 9 internally stored IDs (not fully implemented yet)
+#### addressing options
+
+* a=(id|0|[1-9]) - the adress field of a command usually contains the ID of the sender, or sometimes the receiver
+  * id - 6 digit hex ID of sender or receiver
+  * 0 - use internally stored central unit ID (set by config cu)
+  * [1-9] - use on of 9 internally stored IDs (not fully implemented yet)
         
-     * g=(0|[1-7])  - group number
-        * 0 - broadcast to all groups
-        * [1-7] send to a specific group. Groups are numbered from 1 to 7.
+* g=(0|[1-7])  - group number
+  * 0 - broadcast to all groups
+  * [1-7] send to a specific group. Groups are numbered from 1 to 7.
         
-     * m=(0|[1-7])  - group-member number
-        * 0 - broadcast to all members
-        * [1-7] sent to specific member. Members are numbered from 1 to 7.
+* m=(0|[1-7])  - group-member number
+  * 0 - broadcast to all members
+  * [1-7] sent to specific member. Members are numbered from 1 to 7.
         
-   * action command option
-     * c=command - specify the action command to be send
-       * up - shutter up
-       * down - shutter down
-       * stop - shutter stop, (in set mode: add/remove sender from receiver)
-       * sun-inst - defines current shutter position as sun-position
-       * sun-down - moves shutter down to predefined sun-position
-       * set - switch receiver to set-mode (like pressing pyhsical set button)
+#### action command option
+* c=command - specify the action command to be send
+  * up - shutter up
+  * down - shutter down
+  * stop - shutter stop, (in set mode: add/remove sender from receiver)
+  * sun-inst - defines current shutter position as sun-position
+  * sun-down - moves shutter down to predefined sun-position
+  * set - switch receiver to set-mode (like pressing pyhsical set button)
+  
+         send g=2 m=3 c=up;     shutter 3 of group 2 goes up
+		 send c=down;           all shutters go down
+		 send a=90abcd c=set;   motor with code label "0abcd" goes into set mode
+         send c=sun-down;       all open shutters go to sun position (even if it rains)
        
 ### timer command
 
@@ -173,5 +179,3 @@ Each timer command has RTC data and will update the internal RTC of the receiver
 
 The built-in RTC of a shutter keeps track of day time, day of month, month of year,  day of week and dst yes/no. it does not know about leap-years or years at all.
 
-   
-	
