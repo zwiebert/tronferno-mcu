@@ -111,6 +111,8 @@ Now lets look at all the bytes inside a timer message. Its organized in lines. E
 
 It starts with a plain 5-byte message plus checksum. Its followed by 8-byte RTC data plus checksum.  A checksum counts *all* bytes which come before it, including the bytes of previous data lines with their checksums included too.  After that are 16 lines containing timer data for weekly, daily and astro timer. The purpose of the very last line I don't fully understand.
 
+###### First the byte data. See below for more details.
+
 ```
   0    1     2     3     4     5     6      7    (8)
 --Addressfield--    C.M    G.c    CS
@@ -162,6 +164,8 @@ upMM  upHH  doMM  doHH  upMM  upHH  doMM  doHH
 
 ```
 
+###### Explaining the byte data in detail
+
 
 ```
 --- plain 5 byte  message -----
@@ -182,6 +186,7 @@ d.0.5    MM - 8bit month of year in BCD
 d.0.6    WD - 8bit weekday as a number (0=sunday)
 d.0.7    BF - bit flags
 d.0.7.0  BF.0 - random timer
+d.0.7.2  BF.2 - daylight saving time
 d.0.7.7  BF.7 - sun automatic
 
 --- 8 byte data lines 1-4: weekly and daily timers
