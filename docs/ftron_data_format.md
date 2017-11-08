@@ -188,6 +188,7 @@ d.0.7    BF - bit flags
 d.0.7.0  BF.0 - random timer
 d.0.7.2  BF.2 - daylight saving time
 d.0.7.7  BF.7 - sun automatic
+d.0.8    checksum
 
 --- 8 byte data lines 1-4: weekly and daily timers
 d.1.0 - d.1.3 - weekly timer for sunday:
@@ -199,16 +200,21 @@ d.1.4 - d.1.7 - weekly timer for monday
 d.1.8    CS  - checksum
 d.2.0 - d.2.3 - weekly timer for tuesday
 d.2.4 - d.2.7 - weekly timer for wednesday
+d.2.8    CS
 d.3.0 - d.3.3 - weekly timer for thursday
 d.3.4 - d.3.7 - weekly timer for friday
+d.3.8    CS
 d.4.0 - d.4.3 - weekly timer for Saturday
 d.4.4 - d.4.7 - daily timer
+d.4.8    CS
 
 --- 8 byte data lines 5-16: astro timer
-... the astro timer  table contais 48 precalculated civil dusk times over half a year.
+... the astro timer  table contais 48 precalculated civil dusk + user offset times over half a year.
 ... the receiver will interpolate in between values
-d.5.0    minutes in BCD (or ff if disabled)
-d.5.1    minutes in BCD (or 0f if disabeld)
+d.5.0    8bit down-time minutes in BCD (or ff if disabled)
+d.5.1    8bit down-time hours in BCD (or 0f if disabeld)
+d.5.2    8bit down-time minutes in BCD (or ff if disabled)
+d.5.3    8bit down-time hours in BCD (or 0f if disabeld)
 ...
 d.5.8  checksum
 ...
