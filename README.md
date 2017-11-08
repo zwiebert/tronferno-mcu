@@ -144,8 +144,9 @@ To send the "too much sun" command:
 
 ### Problems
  * I'm not 100% sure about how the astro data is organized. So the times may be off
- * The function of a few bytes in the last line of the timer programming data is still unknown to me.
+ * The function of some bytes in the last line of the timer programming data is still unknown to me.
  * When building the ESP8266 firmware on windows, the IRAM segment may overflow. Uncomment FER_RECEIVER_MINIMAL in user/main/common.h to disable some code. 
+ * because of the code getting bigger I had to enable FER_RECEIVER_MINIMAL on ATmega328 for now (can no longe receive timer messages)
 
 ### History
 I started this project in 2011 from scratch using an ATmega168. Sending normal commands like "up" and "down" was not to hard to figure out. But I gave up on programming the timers and the project went on hiatus. In 2017 I finally figured out the timer programming.  Had to switch to an ATmega328p for enough flash memory, and then to the ESP8266, for its built-in WIFI.   
@@ -158,49 +159,9 @@ Its all too complicated and totally useless?
   
 ### Project Author
 
-Bert Winkelmann
+Bert Winkelmann <tf.zwiebert@online.de>
 
-### CLI options (output of help command)
+### All CLI commands
 
-```
+Look at the [CLI manual](https://github.com/zwiebert/tronferno-mcu/docs/CLI.md) in the docs folder.
 
-syntax: command option=value ...;
-commands are: send, config, dbg, timer, help, 
-send options:
-a=(0|SenderID) hex address of the sender or receiver (add a 9 in front) or 0 for the configured CentralUnit
-g=[0-7]  group number. 0 is for broadcast
-m=[0-7]  group member. 0 is for broadcast all groups members
-c=(up|down|stop|sun-down|sun-inst|set) command to send
-
-config options:
-cu=(CentralUnitID|auto)  like 80abcd. auto: press Stop key on central unit in the next 60 seconds
-rtc=ISO_TIME_STRING  like 2017-12-31T23:59:59
-baud=serial_baud_rate
-wlan-ssid=your_wlan_ssid
-wlan-password=your_wlan_password  example: config wlan-ssid=1234 wlan-password=abcd restart=1;
-longitude=N like -13.23452 (to calculate sunset)
-latitude=N like +52.34234
-time-zone=N like +1
-dst=(eu|0|1) daylight saving time: automatic: eu=europe. manually: 0=off, 1=on
-verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)
-pw=your_config_password   if password set, the pw option needs to come first: e.g. config pw=my_passw dst=0 ...
-set-config-password=your_config_password
-restart=(1|0)  if 1 then restart MCU
-
-dbg options:
-print=(rtc|cu)
-
-timer options:
-daily=T T is like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00
-weekly=TTTTTTT like weekly=0730-++++0900-+ (+ repeats the previous T) for up 07:30 Mon-Fri and up 09:00 Sat-Sun
-astro=N This enables astro automatic. N is the offset to sunset in minutes. So astro=+60 closes the shutter 60 minutes after sunset
-sun-auto=1  1 enables and 0 disables sun automatic
-random=1 enables random automatic. shutter opens and closes at random times, so it looks like you are home when you are not
-rtc-only=1  Update the built-in real time clock of the shutter. Don't change its programmed timers (and flags)
-a, g and m: like in send command
-
-help options:
-none
-
-
-```
