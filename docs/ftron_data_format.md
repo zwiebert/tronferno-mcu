@@ -172,7 +172,7 @@ upMM  upHH  doMM  doHH  upMM  upHH  doMM  doHH
 p.0-2  Addressfield - 3 byte ID of sender or receiver
 p.3.h  C  - 4bit counter which usually increases by button pressing
 p.3.l  M  - 4bit Member number of group for central unit or kind of sender
-p.4.h  G  - 4bit Grou
+p.4.h  G  - 4bit Group number
 p.4.l  c  - 4bit action comannd like up, down, ...
 p.5    CS - 8bit checksum (sum of all bytes which come before)
 
