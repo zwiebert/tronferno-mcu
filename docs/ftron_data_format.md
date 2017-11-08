@@ -36,7 +36,7 @@ Message "Envelope"
 Simple messages like up/down/stop are are encoded into 5 bytes.  If you counted 6 bytes in log output ... yes its really 6, but the 6th contains just a check-sum of that 5 bytes. You may have looked at the data, which actually is sent via 443 MHz, and it looks much more than just 6 bytes ... ok, there really are 12 words of 10bit. The lower 8bit of each word pair is identical to one of the 6 bytes  (word 0/1 = byte 0, word 2/3 = byte 1, ...  word 10/11 = byte 6). The 2 extra bit in each word contain bit parity and indicate if a word is odd or even-numbered.  ... so its really only 5 data bytes. These contain all the addressing info:
 ```
  bytes 0,1,2: this is the adressfield which contains the 3 byte device ID
- byte 3 high nibble: A counter which may increment with each button press. How much it increments depents is not the same for all buttons. message may be discarded if counter stays the same.
+ byte 3 high nibble: A counter which may increment with each button press. How much it increments depends on button and controller.
  byte 3 low nibble: member number (or type of sender if not sent by central unit)
  byte 4 high nibble: group nunber
  (byte 4 low  nibble: used for message content)
