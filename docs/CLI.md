@@ -1,6 +1,8 @@
 # CLI of TronFerno-MCU
 
 This text describe the command line interface of tronferno-mcu. The CLI can be accessed via a terminal, but is best be used by a front-end, like a smart phone app or some server like FHEM.
+
+When using a terminal, it may be required to enable local echo. Editing is not supported at the moment. Backspace will not work as intendet.
  
 
 ## Syntax
@@ -92,15 +94,15 @@ Send a plain command message via RF to the receivers. Receiver can be a shutter 
 
 * a=(id|0|[1-9]) - the adress field of a command usually contains the ID of the sender, or sometimes the receiver
   * id - 6 digit hex ID of sender or receiver
-  * 0 - use internally stored central unit ID (set by config cu)
+  * 0 - use internally stored central unit ID set by config cu. (default)  
   * [1-9] - use on of 9 internally stored IDs (not fully implemented yet)
         
 * g=(0|[1-7])  - group number
-  * 0 - broadcast to all groups
+  * 0 - broadcast to all groups  (default)
   * [1-7] send to a specific group. Groups are numbered from 1 to 7.
         
 * m=(0|[1-7])  - group-member number
-  * 0 - broadcast to all members
+  * 0 - broadcast to all members (default)
   * [1-7] sent to specific member. Members are numbered from 1 to 7.
         
 #### action command option
@@ -141,8 +143,8 @@ We cannot read any data from the receivers anyway, so to be able to tell a user 
 
 Eeach receiver has four built-in timers: daily, weekly, astro, random. Remember that ommited timers are disabled.
 
-       `timer astro=-15;        will set the astro timer and disables all other timers and options`
-       `timer astro=-15 daily=0600- sun-auto=1;  will set astro, daily timer, sun automatic  and disables all other timers and options`
+       `timer astro=-15;       will set the astro timer and disables all other timers and options`
+       `timer astro=-15 daily=0600- sun-auto=1;  sets astro, daily, sun-automatic  and disables all others`
    
 *  daily=T - sets the daily timer
   * T  - T is a 8 digit time string like 07302000. The four left digits are the up-time. The four on the right the down-time. A minus sign can replace 4 digits, which means the timer is cleared.
@@ -172,7 +174,7 @@ Eeach receiver has four built-in timers: daily, weekly, astro, random. Remember 
 * rtc-only=(1|0)  Send only RTC data and ommit the entire timer data. Will only affect the RTC in the receiver, not any timer data.
 
         timer rtc-only=1;    updates internal RTC of the receiver(s)
-	    timer rtc-only=1 sun-auto=1 daily=0500-;   sun-auto and daily options have no effect here and will be ignored
+	    timer rtc-only=1 sun-auto=1 daily=0500-;   sun-auto and daily options have no effect
 		
 	   
 Each timer command has RTC data and will update the internal RTC of the receivers addressed by a timer command. This rtc-only option is mainly used after power loss of a shutter; to synchronize the times of all shutters; when daylight time changes.

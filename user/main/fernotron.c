@@ -35,13 +35,14 @@ void ICACHE_FLASH_ATTR fer_printData(const uint8_t *cmd, uint8_t prg[linesPerPrg
 		int i, used_lines;
 
 		used_lines = FRB_GET_FPR0_IS_RTC_ONLY(prg[FPR_RTC_START_ROW]) ? FER_RTC_PACK_CT : FER_PRG_PACK_CT;
-#if 0
+if (C.app_verboseOutput >= vrbDebug) {
 		for (i = 0; i < used_lines; ++i) {
 			print_array_8(prg[i], FER_PRG_BYTE_CT);
 		}
-#else
+} else {
 		fpr_printPrgPacketInfo(prg, used_lines == 1);
-#endif
+}
+
 	}
 #endif
 }

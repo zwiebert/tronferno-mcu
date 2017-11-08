@@ -104,3 +104,121 @@ The bits are modulated by the timing the carrier is switched on and off.   Short
 
 
 
+Back to the Bytes
+=================
+
+Now lets look at all the bytes inside a timer message. Its organized in lines. Each line ends with a checksum, except the very last one, which seems to be special.
+
+It starts with a plain 5-byte message plus checksum. Its followed by 8-byte RTC data plus checksum.  A checksum counts *all* bytes which come before it, including the bytes of previous data lines with their checksums included too.  After that are 16 lines containing timer data for weekly, daily and astro timer. The purpose of the very last line I don't fully understand.
+
+```
+  0    1     2     3     4     5     6      7    (8)
+--Addressfield--    C.M    G.c    CS
+0x80, 0xXX, 0xXX, 0x3.8, 0x2.f, 0x8d, 
+
+0 ------RTC data -------------------------
+  ss    mm    hh  wdmsk   DD    MM      WD  BF     CS
+0x46, 0x23, 0x03, 0x04, 0x09, 0x11, 0x0.2, 0x02, 0x08, 
+
+1-4 ------Timer-Block
+------weekly----------  ------weekly---------- 
+--------Sun-----------  -------Mon------------ 
+upMM  upHH  doMM  doHH  upMM  upHH  doMM  doHH
+0x56, 0x06, 0x45, 0x19, 0x12, 0x07, 0x34, 0x21, 0x38, 
+
+------weekly----------  ------weekly---------- 
+-------Tue------------  -------Wed------------
+upMM  upHH  doMM  doHH  upMM  upHH  doMM  doHH
+0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x4c, 
+
+
+------weekly----------  ------weekly---------- 
+-------Thu------------  -------Fri------------
+upMM  upHH  doMM  doHH  upMM  upHH  doMM  doHH
+0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x74, 
+
+------weekly----------  ------daily----------- 
+-------Sat------------  -------all------------
+upMM  upHH  doMM  doHH  upMM  upHH  doMM  doHH
+0x56, 0x06, 0x45, 0x19, 0xff, 0x0f, 0xff, 0x0f, 0xbe, 
+
+5-16 ------Astroblock 12 lines ----------
+0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xb4, 
+0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xa0, 
+0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0x78, 
+0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0x28, 
+0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0x88, 
+0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0x48, 
+0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xc8, 
+0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xc8, 
+0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xc8, 
+0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xc8, 
+0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xc8, 
+0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xff, 0x0f, 0xc8, 
+
+17 ---last line--
+ ???  --addressfield-    ??     ??    ??    ??    ??
+0x00, 0x80, 0xXX, 0xXX, 0x53, 0x00, 0x10, 0x11, 0x05, 
+
+```
+
+
+```
+--- plain 5 byte  message -----
+p.0-2  Addressfield - 3 byte ID of sender or receiver
+p.3.h  C  - 4bit counter which usually increases by button pressing
+p.3.l  M  - 4bit Member number of group for central unit or kind of sender
+p.4.h  G  - 4bit Grou
+p.4.l  c  - 4bit action comannd like up, down, ...
+p.5    CS - 8bit checksum (sum of all bytes which come before)
+
+--- 8 byte data line number 0. RTC data
+d.0.0    ss - 8bit seconds in BCD format
+d.0.1    mm - 8bit minutes in BCD
+d.0.2    hh - 8bit hours in BCD
+d.0.3    wdmsk - 8bit week day bit mask. each weekday is represented by a bit (bit 0=sunday)
+d.0.4    DD - 8bit day of month in BCD
+d.0.5    MM - 8bit month of year in BCD
+d.0.6    WD - 8bit weekday as a number (0=sunday)
+d.0.7    BF - bit flags
+d.0.7.0  BF.0 - random timer
+d.0.7.7  BF.7 - sun automatic
+
+--- 8 byte data lines 1-4: weekly and daily timers
+d.1.0 - d.1.3 - weekly timer for sunday:
+d.1.0    upMM - 8bit up-time minutes in BCD  (or ff if disabled)
+d.1.1    upHH - 8bit up-time hours in BCD    (or 0f if disabled)
+d.1.2    doMM - 8bit down-time minutes in BCD (or ff if disabled)
+d.1.3    doHH - 8bit down-time hours in BCD (or 0f if disabeld)
+d.1.4 - d.1.7 - weekly timer for monday
+d.1.8    CS  - checksum
+d.2.0 - d.2.3 - weekly timer for tuesday
+d.2.4 - d.2.7 - weekly timer for wednesday
+d.3.0 - d.3.3 - weekly timer for thursday
+d.3.4 - d.3.7 - weekly timer for friday
+d.4.0 - d.4.3 - weekly timer for Saturday
+d.4.4 - d.4.7 - daily timer
+
+--- 8 byte data lines 5-16: astro timer
+... the astro timer  table contais 48 precalculated civil dusk times over half a year.
+... the receiver will interpolate in between values
+d.5.0    minutes in BCD (or ff if disabled)
+d.5.1    minutes in BCD (or 0f if disabeld)
+...
+d.5.8  checksum
+...
+...
+d.16.8 checksum
+
+
+
+--- 8 byte data line 17: no idea
+d.17.0     ???
+d.17.1-3 - adressfield - 3 byte ID containing sender or receiver ID 
+d.17.4     ???
+d.17.5     ???
+d.17.6     ???
+d.17.7     ???
+d.17.8     ???
+
+```
