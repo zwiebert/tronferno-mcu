@@ -20,8 +20,8 @@ RF receiver is optional and you may only ever need it to sniff the ID of your or
 
 * Prepare Hardware:
   * Esp8266 board connected to your PC-USB.
-  * RF receiver connected to esp8266-GPIO5 (= pin D1 on mini boards)
-  * RF transmitter connected to esp8266-GPIO4 (= pin D2 on mini boards)
+  * RF receiver connected to esp-GPIO5 (= pin D1 on mini boards)
+  * RF transmitter connected to esp-GPIO4 (= pin D2 on mini boards)
 
 
 configure the Makefiles in user/esp8266/
