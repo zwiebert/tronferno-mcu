@@ -795,14 +795,14 @@ process_parmTimer(clpar p[], int len) {
 
 	if (reply(fer_send_prg(fsb))) {
 #if ENABLE_RSTD
-		if (FSB_MODEL_IS_CENTRAL(fsb) && !flag_rtc_only) {  // FIXME: or better test for default cu?
+		if (FSB_MODEL_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE) {  // FIXME: or better test for default cu?
 			if (has_astro) {
 				td.astro = astro_offset;
 			}
 			td.bf = fpr0_flags;
 
 			if (save_timer_data(&td, group, mn)) {
-				//reply_message("rs: saved");
+				reply_message("rs: saved");
 			} else {
 				reply_message("bug: rs not saved");
 				print_enr();
