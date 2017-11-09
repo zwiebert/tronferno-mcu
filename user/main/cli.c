@@ -12,6 +12,12 @@
 
 #include "all.h"
 
+#ifdef MCU_ESP8266
+#include "../esp8266/data_flash2.h"
+#define ENABLE_RSTD 1
+#else
+#define ENABLE_RSTD 0
+#endif
 
 #define ALLOW_ENDPOS 0   // dangerous, could damage your shutter
 #define ENABLE_EXPERT 0 // work in progress
@@ -20,6 +26,11 @@
 fer_sender_basic senders[10];
 fer_sender_basic default_sender;
 fer_sender_basic last_received_sender;
+
+int ENR; // error number
+void print_enr(void) {
+	io_puts("enr: "), io_putd(ENR), io_puts("\n");
+}
 
 void ICACHE_FLASH_ATTR reply_message(const char *s) {
 	io_puts("reply: "), io_puts(s), io_puts("\n");
@@ -57,7 +68,7 @@ float ICACHE_FLASH_ATTR stof(const char* s) {
 char * ICACHE_FLASH_ATTR
 get_commandline() {
 	char *result = NULL;
-#define CMD_BUF_SIZE 64
+#define CMD_BUF_SIZE 128
 	static char cmd_buf[CMD_BUF_SIZE];
 	static int cmd_buf_idx;
 	static bool error;
@@ -240,12 +251,13 @@ config_transmitter(const char *val) {
 	return true;
 }
 
-void ICACHE_FLASH_ATTR
+bool ICACHE_FLASH_ATTR
 reply(bool success) {
 	if (success)
 		reply_success();
 	else
 		reply_failure();
+  return success;
 }
 
 fer_sender_basic * ICACHE_FLASH_ATTR
@@ -626,6 +638,7 @@ const char help_parmTimer[] PROGMEM =
 		  "random=1 enables random automatic. shutter opens and closes at random times, so it looks like you are home when you are not\n"
 		  "rtc-only=1  Update the built-in real time clock of the shutter. Don't change its programmed timers (and flags)\n"
 		  "a, g and m: like in send command\n"
+		  "rs=(0|1|2) read back saved timer data. if set to 2, return any data matching g and m e.g. m=0 (any member) instead of m=2\n"
 		;
 
 static int ICACHE_FLASH_ATTR
@@ -638,10 +651,13 @@ process_parmTimer(clpar p[], int len) {
 	fer_sender_basic *fsb = &default_sender;
 	fer_grp group = fer_grp_Broadcast;
 	fer_memb memb = fer_memb_Broadcast;
+	uint8_t mn = 0;
 	uint32_t addr = 0;
 	int wday = -1;
 	uint8_t fpr0_flags = 0, fpr0_mask = 0;
 	int8_t flag_rtc_only = FLAG_NONE;
+	uint8_t rs = false;
+	timer_data_t td = { 20000, 0, "", "" };
 
 	// init data
 	for (i = 0; i + 1 < sizeof(weekly_data) / sizeof(weekly_data[0]); i += 2) {
@@ -660,9 +676,14 @@ process_parmTimer(clpar p[], int len) {
 			return -1;
 		} else if (strcmp(key, timer_keys[TIMER_KEY_WEEKLY]) == 0) {
 			has_weekly = string2bcdArray(val, weekly_data, sizeof weekly_data);
-
+			if (has_weekly) {
+				strncpy(td.weekly, val, sizeof(td.weekly) - 1);
+			}
 		} else if (strcmp(key, timer_keys[TIMER_KEY_DAILY]) == 0) {
 			has_daily = string2bcdArray(val, daily_data, sizeof daily_data);
+			if (has_daily) {
+				strncpy(td.daily, val, sizeof(td.daily) - 1);
+			}
 		} else if (strcmp(key, timer_keys[TIMER_KEY_ASTRO]) == 0) {
 			has_astro = true;
 			astro_offset = atoi(val);
@@ -693,11 +714,49 @@ process_parmTimer(clpar p[], int len) {
 			group = asc2group(val);
 		} else if (strcmp(key, "m") == 0) {
 			memb = asc2memb(val);
+			mn = memb ? (memb - 7) : 0;
+		} else if (strcmp(key, "rs") == 0) {
+			rs = atoi(val);
 		} else if ((wday = asc2wday(key)) >= 0) {
 			io_puts(val), io_puts("\n");
 			has_weekly = string2bcdArray(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
+		} else {
+			reply_failure();
+			return -1;
 		}
 	}
+#if ENABLE_RSTD
+	if (rs) {
+		uint8_t g = group, m = mn;
+
+		if (read_timer_data(&td, &g, &m, rs==2)) {
+			io_puts("timer");
+			io_puts(" g="), io_putd(g);
+			io_puts(" m="), io_putd(m);
+			if (td_is_daily(&td)) {
+				io_puts(" daily="), io_puts(td.daily);
+			}
+			if (td_is_weekly(&td)) {
+				io_puts(" weekly="), io_puts(td.weekly);
+			}
+			if (td_is_astro(&td)) {
+				io_puts(" astro="), io_putd(td.astro);
+			}
+			if (td_is_random(&td)) {
+				io_puts(" random=1");
+			}
+			if (td_is_sun_auto(&td)) {
+				io_puts(" sun-auto=1");
+			}
+
+			io_puts(";\n");
+			reply_success();
+		} else {
+			reply_message("rs: empty");
+		}
+		return 0;
+	}
+#endif
 
 	if (addr != 0) {
 		fsb = get_sender_by_addr(addr);
@@ -734,7 +793,23 @@ process_parmTimer(clpar p[], int len) {
 		txbuf_write_lastline(fsb);
 	}
 
-	reply(fer_send_prg(fsb));
+	if (reply(fer_send_prg(fsb))) {
+#if ENABLE_RSTD
+		if (FSB_MODEL_IS_CENTRAL(fsb) && !flag_rtc_only) {  // FIXME: or better test for default cu?
+			if (has_astro) {
+				td.astro = astro_offset;
+			}
+			td.bf = fpr0_flags;
+
+			if (save_timer_data(&td, group, mn)) {
+				//reply_message("rs: saved");
+			} else {
+				reply_message("bug: rs not saved");
+				print_enr();
+			}
+		}
+#endif
+	}
 
 	return 0;
 }

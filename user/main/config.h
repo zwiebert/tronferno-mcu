@@ -78,6 +78,25 @@ typedef struct {
 
 } config;
 
+#if 0
+void cfg_fer_centralUnitID(uint32_t *v, bool set);
+void cfg_mcu_serialBaud(uint32_t *v, bool set);
+void cfg_geo_longitude(float *v, bool set);
+void cfg_geo_latitude(float *v, bool set);
+void cfg_geo_timezone(float *v, bool set);
+void cfg_geo_dST(enum dst *v, bool set);
+void cfg_app_rtcAdjust(int32_t *v, bool set);
+void cfg_app_recv(enum receiver *v, bool set);
+void cfg_app_transm(enum transmitter *v, bool set);
+void cfg_app_rtc(enum rtclock *v, bool set);
+void cfg_app_verboseOutput(enum verbosity *v, bool set);
+void cfg_wifi_SSID(char *v, bool set);
+void cfg_wifi_password(char *v, bool set);
+void cfg_app_configPassword(char *v, bool set);
+void cfg_app_expertPassword(char *v, bool set);
+#endif
+
+
 extern config C;
 
 void read_config(void);  // restore C from persistent storage

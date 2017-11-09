@@ -34,6 +34,7 @@ extern void setup_pin(void);
 void main_setup(void);
 void setup_wifistation(void);
 void setup_dataFlash(void);
+void setup_dataFlash2(void);
 void setup_ntp(void);
 
 
@@ -59,6 +60,7 @@ void ICACHE_FLASH_ATTR
 user_init() {
 
     setup_dataFlash();
+
 	read_config();
 
     setup_serial(C.mcu_serialBaud);
@@ -79,6 +81,8 @@ user_init() {
     system_os_post(user_procTaskPrio, 0, 0 );
 
     setup_timer();
+
+    setup_dataFlash2();
 
 
 #ifdef DEBUG
