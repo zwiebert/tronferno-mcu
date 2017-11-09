@@ -15,7 +15,7 @@
 typedef struct {
 	int16_t astro;
 	uint8_t bf;
-	char daily[4+1];
+	char daily[8+1];
 	char weekly[7*4+1];
 } timer_data_t;
 

@@ -693,7 +693,7 @@ process_parmTimer(clpar p[], int len) {
 	int wday = -1;
 	uint8_t fpr0_flags = 0, fpr0_mask = 0;
 	int8_t flag_rtc_only = FLAG_NONE;
-	uint8_t rs = false;
+	uint8_t rs = 0;
 #if ENABLE_RSTD
 	timer_data_t td = { 20000, 0, "", "" };
 #endif
