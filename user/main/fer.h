@@ -164,5 +164,5 @@ void txbuf_write_flags(uint8_t flags, uint8_t mask);
 // diagnostic output
 void frb_printPacket(const uint8_t *dg);
 void fpr_printPrgPacketInfo(uint8_t d[linesPerPrg][bytesPerPrgLine], bool rtc_only);
-
+void fer_printData(const uint8_t *cmd, uint8_t prg[linesPerPrg][bytesPerPrgLine]);
 #endif // FER_H

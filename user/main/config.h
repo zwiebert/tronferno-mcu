@@ -38,6 +38,9 @@
 
 #endif
 
+#ifndef MY_FER_GM_USE
+#define MY_FER_GM_USE 0x77777777
+#endif
 #include "common.h"
 
 enum dst {
@@ -69,6 +72,8 @@ typedef struct {
 	enum transmitter app_transm;
 	enum rtclock app_rtc;
 	enum verbosity app_verboseOutput;
+	uint32_t fer_usedMembers; // each of the nibbles 1-7 stands for a group. nibble 1 == group 1. nibble 0 = number of used Groups (stored for the front-end, not used here on the MCU)
+
 #ifdef USE_WLAN
 	char wifi_SSID[32];
 	char wifi_password[64];
@@ -77,6 +82,8 @@ typedef struct {
 	char app_expertPassword[16];
 
 } config;
+
+
 
 #if 0
 void cfg_fer_centralUnitID(uint32_t *v, bool set);

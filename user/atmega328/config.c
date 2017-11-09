@@ -29,6 +29,7 @@ struct ee_config ee_cfg EEMEM = {
 		transmTick,
 		rtcAvrTime,
 		vrb1,
+		MY_FER_GM_USE,
 #ifdef USE_WLAN
 		MY_WIFI_SSID,
 		MY_WIFI_PASSWORD,

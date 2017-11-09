@@ -26,14 +26,40 @@
 fer_sender_basic senders[10];
 fer_sender_basic default_sender;
 fer_sender_basic last_received_sender;
+uint16_t msgid;
+
 
 int ENR; // error number
-void print_enr(void) {
+static void ICACHE_FLASH_ATTR print_enr(void) {
 	io_puts("enr: "), io_putd(ENR), io_puts("\n");
 }
 
-void ICACHE_FLASH_ATTR reply_message(const char *s) {
-	io_puts("reply: "), io_puts(s), io_puts("\n");
+static void ICACHE_FLASH_ATTR msg_print(const char *msg, const char *tag) {
+if (msg)
+	io_puts(msg);
+	if (msgid) {
+		io_putc('@');
+		io_putd(msgid);
+	}
+	if (tag) {
+		io_putc(':');
+		io_puts(tag);
+	}
+	io_puts(": ");
+}
+
+void ICACHE_FLASH_ATTR warning_unknown_option(const char *key) {
+	msg_print("warning", "unknown-option"), io_puts(key), io_putc('\n');
+}
+
+static void ICACHE_FLASH_ATTR reply_print(const char *tag) {
+  msg_print("reply", tag);
+}
+
+static void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
+	reply_print(tag);
+	if (msg) io_puts(msg);
+	io_puts("\n");
 }
 
 void ICACHE_FLASH_ATTR cli_msg_ready(void) {
@@ -108,8 +134,8 @@ get_commandline() {
 }
 
 typedef struct {
-	char *opt;
-	char *arg;
+	char *key;
+	char *val;
 } clpar;
 
 #define MAX_PAR 10
@@ -148,17 +174,18 @@ asc2bool(const char *s)
 int ICACHE_FLASH_ATTR
 parse_commandline(char *cl) {
 	int p;
+	msgid = 0;
 
 	for (p = 0; p < MAX_PAR; ++p) {
 		cl = skip_leading_whitespace(cl);
 		if (*cl == '\0') {
 			return p;
 		}
-		par[p].opt = cl;
+		par[p].key = cl;
 		cl = find_next_whitespace_or_eq(cl);
 		switch (*cl) {
 		case '\0':
-			par[p].arg = 0;
+			par[p].val = 0;
 			return p;
 
 		case ' ':
@@ -171,10 +198,14 @@ parse_commandline(char *cl) {
 			if (*cl == '\0') {
 				return -1;
 			}
-			par[p].arg = cl;
+			par[p].val = cl;
 			cl = find_next_whitespace_or_eq(cl);
 			if (*cl == '=')
 				return -1;
+			if (strcmp(par[p].key, "mid") == 0) {
+				msgid = atoi(par[p].val);
+				--p;
+			}
 
 			break;
 		}
@@ -218,12 +249,12 @@ cli_parm_to_ferCMD(const char *token) {
 
 void ICACHE_FLASH_ATTR
 reply_success() {
-	reply_message("ok");
+	reply_message(0, "ok");
 }
 
 void ICACHE_FLASH_ATTR
 reply_failure() {
-	reply_message("error");
+	reply_message(0, "error");
 }
 
 bool ICACHE_FLASH_ATTR config_receiver(const char *val) {
@@ -273,17 +304,21 @@ get_sender_by_addr(long addr) {
 
 bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds) {
 	static time_t end_time;
+	static uint16_t cuas_msgid;
 
 	if (init_seconds > 0) {
 		end_time = time(NULL) + init_seconds;
 		last_received_sender.data[0] = 0;
+		cuas_msgid = msgid;
 	} else if (end_time == 0) {
 
 	} else if (end_time < time (NULL)){
-
+		uint16_t global_msgid = msgid;
 		end_time = 0;
 		io_puts("U: Nothing received\n");
-		reply_message("cuas=time-out");
+		msgid = cuas_msgid;
+		reply_message("cuas=time-out", 0);
+		msgid = global_msgid;
 	} else if (FSB_MODEL_IS_CENTRAL(&last_received_sender)) {
 		uint32_t cu = FSB_GET_DEVID(&last_received_sender);
 
@@ -291,7 +326,7 @@ bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds) {
 		C.fer_centralUnitID = cu;
 		end_time = 0;
 		io_puts("U: Central Unit received and stored\n");
-		reply_message("cuas=ok");
+		reply_message("cuas=ok", 0);
 		save_config();
 		return true;
 	}
@@ -322,7 +357,7 @@ process_parmSend(clpar p[], int len) {
 	fer_cmd cmd = fer_cmd_None;
 
 	for (i = 1; i < len; ++i) {
-		const char *key = p[i].opt, *val = p[i].arg;
+		const char *key = p[i].key, *val = p[i].val;
 
 		if (key == NULL || val == NULL) {
 			return -1;
@@ -335,8 +370,7 @@ process_parmSend(clpar p[], int len) {
 		} else if (strcmp(key, "c") == 0) {
 			cmd = cli_parm_to_ferCMD(val);                            
 		} else {
-			reply_failure(); // unknown parameter
-			return -1;
+			warning_unknown_option(key);
 		}
 	}
 
@@ -392,7 +426,7 @@ process_parmConfig(clpar p[], int len) {
 	bool pw_ok = strlen (C.app_configPassword) == 0;
 
 	for (i = 1; i < len; ++i) {
-		const char *key = p[i].opt, *val = p[i].arg;
+		const char *key = p[i].key, *val = p[i].val;
 
 		if (key == NULL || val == NULL) {
 			reply_failure();
@@ -435,6 +469,11 @@ process_parmConfig(clpar p[], int len) {
 			save_config();
 			reply_success();
 			}
+		} else if (strcmp(key, "gm-used") == 0) {
+			uint32_t gmu = strtoul(val, NULL, 16);
+			C.fer_usedMembers = gmu;
+			save_config();
+			reply_success();
 		} else if (strcmp(key, "baud") == 0) {
 			uint32_t baud = strtoul(val, NULL, 10);
 			C.mcu_serialBaud = baud;
@@ -503,8 +542,7 @@ process_parmConfig(clpar p[], int len) {
 			if (strcmp(val, "1")) {
 				C.geo_dST = dstAlways;
 			} else {
-				reply_failure();
-				return -1;
+				warning_unknown_option(key);
 			}
 
 			rtc_setup();
@@ -512,8 +550,7 @@ process_parmConfig(clpar p[], int len) {
 			reply_success();
 
 		} else {
-			reply_failure(); // unknown parameter
-			return -1;
+			warning_unknown_option(key);
 		}
 	}
 	return 0;
@@ -528,7 +565,7 @@ process_parmDbg(clpar p[], int len) {
 	int i;
 
 	for (i = 1; i < len; ++i) {
-		const char *key = p[i].opt, *val = p[i].arg;
+		const char *key = p[i].key, *val = p[i].val;
 
 		if (key == NULL || val == NULL) {
 			return -1;
@@ -553,8 +590,7 @@ process_parmDbg(clpar p[], int len) {
 			}
 
 		} else {
-			reply_failure(); // unknown parameter
-			return -1;
+			warning_unknown_option(key);
 		}
 
 	}
@@ -645,6 +681,7 @@ static int ICACHE_FLASH_ATTR
 process_parmTimer(clpar p[], int len) {
 	int i;
 	bool has_daily = false, has_weekly = false, has_astro = false;
+	const char *weeklyVal, *dailyVal;
 	int16_t astro_offset = 0;
 	uint8_t weekly_data[FPR_TIMER_STAMP_WIDTH * 7];
 	uint8_t daily_data[FPR_TIMER_STAMP_WIDTH];
@@ -657,8 +694,9 @@ process_parmTimer(clpar p[], int len) {
 	uint8_t fpr0_flags = 0, fpr0_mask = 0;
 	int8_t flag_rtc_only = FLAG_NONE;
 	uint8_t rs = false;
+#if ENABLE_RSTD
 	timer_data_t td = { 20000, 0, "", "" };
-
+#endif
 	// init data
 	for (i = 0; i + 1 < sizeof(weekly_data) / sizeof(weekly_data[0]); i += 2) {
 		weekly_data[i] = 0xff;
@@ -670,20 +708,16 @@ process_parmTimer(clpar p[], int len) {
 	}
 
 	for (i = 1; i < len; ++i) {
-		const char *key = p[i].opt, *val = p[i].arg;
+		const char *key = p[i].key, *val = p[i].val;
 
 		if (key == NULL || val == NULL) {
 			return -1;
 		} else if (strcmp(key, timer_keys[TIMER_KEY_WEEKLY]) == 0) {
 			has_weekly = string2bcdArray(val, weekly_data, sizeof weekly_data);
-			if (has_weekly) {
-				strncpy(td.weekly, val, sizeof(td.weekly) - 1);
-			}
+			weeklyVal = val;
 		} else if (strcmp(key, timer_keys[TIMER_KEY_DAILY]) == 0) {
 			has_daily = string2bcdArray(val, daily_data, sizeof daily_data);
-			if (has_daily) {
-				strncpy(td.daily, val, sizeof(td.daily) - 1);
-			}
+			dailyVal = val;
 		} else if (strcmp(key, timer_keys[TIMER_KEY_ASTRO]) == 0) {
 			has_astro = true;
 			astro_offset = atoi(val);
@@ -721,14 +755,14 @@ process_parmTimer(clpar p[], int len) {
 			io_puts(val), io_puts("\n");
 			has_weekly = string2bcdArray(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
 		} else {
-			reply_failure();
-			return -1;
+			warning_unknown_option(key);
 		}
 	}
 #if ENABLE_RSTD
 	if (rs) {
 		uint8_t g = group, m = mn;
 
+		reply_print("rs=data");
 		if (read_timer_data(&td, &g, &m, rs==2)) {
 			io_puts("timer");
 			io_puts(" g="), io_putd(g);
@@ -752,7 +786,7 @@ process_parmTimer(clpar p[], int len) {
 			io_puts(";\n");
 			reply_success();
 		} else {
-			reply_message("rs: empty");
+			io_puts("none\n");
 		}
 		return 0;
 	}
@@ -800,11 +834,18 @@ process_parmTimer(clpar p[], int len) {
 				td.astro = astro_offset;
 			}
 			td.bf = fpr0_flags;
+			if (has_weekly) {
+				strncpy(td.weekly, weeklyVal, sizeof(td.weekly) - 1);
+			}
+
+			if (has_daily) {
+				strncpy(td.daily, dailyVal, sizeof(td.daily) - 1);
+			}
 
 			if (save_timer_data(&td, group, mn)) {
-				reply_message("rs: saved");
+				reply_message("rs", "saved");
 			} else {
-				reply_message("bug: rs not saved");
+				reply_message("bug", "rs not saved");
 				print_enr();
 			}
 		}
@@ -847,7 +888,7 @@ process_parmExpert(clpar p[], int len) {
 	fer_cmd cmd = fer_cmd_None;
 
 	for (i = 1; i < len; ++i) {
-		const char *key = p[i].opt, *val = p[i].arg;
+		const char *key = p[i].key, *val = p[i].val;
 
 		if (key == NULL || val == NULL) {
 			return -1;
@@ -930,7 +971,7 @@ int ICACHE_FLASH_ATTR
 process_parm(clpar p[], int len) {
 	int i;
     for (i=0; i < (sizeof (parm_handlers) / sizeof (parm_handlers[0])); ++i) {
-    	if (strcmp(p[0].opt, parm_handlers[i].parm) == 0)
+    	if (strcmp(p[0].key, parm_handlers[i].parm) == 0)
            return parm_handlers[i].process_parmX(p, len);
     }
  return 0;
@@ -943,26 +984,30 @@ process_cmdline(char *line) {
 
 }
 
-
 static int ICACHE_FLASH_ATTR
 process_parmHelp(clpar p[], int len) {
 	int i;
 
-  const char *usage = "syntax: command option=value ...;\n"
-  "commands are: ";
-  io_puts(usage);
+	const char *usage=
+			"syntax: command option=value ...;\n"
+			"commands are: ";
 
-  for (i=0; i < (sizeof (parm_handlers) / sizeof (parm_handlers[0])); ++i) {
-	  io_puts(parm_handlers[i].parm), io_puts(", ");
-  }
-  io_puts("\n");
+	io_puts(usage);
 
-  for (i=0; i < (sizeof (parm_handlers) / sizeof (parm_handlers[0])); ++i) {
-	  io_puts(parm_handlers[i].parm), io_puts(" options:\n");
-	  io_puts_P(parm_handlers[i].help), io_puts("\n");
-  }
+	for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
+		io_puts(parm_handlers[i].parm), io_puts(", ");
+	}
+	io_puts("\n");
 
-   return 0;
+	for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
+		io_puts(parm_handlers[i].parm), io_puts(" options:\n");
+		io_puts_P(parm_handlers[i].help), io_puts("\n");
+	}
+
+	io_puts("\ncommon options:\n"
+			"mid=N  N is used as an ID in the reply\n");
+
+	return 0;
 }
 
 

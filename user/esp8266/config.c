@@ -20,6 +20,7 @@ config C = {
 	transmTick,// transm
 	rtcAvrTime,//rtc
 	vrbNone,  //verboseOutput
+	MY_FER_GM_USE,
 	MY_WIFI_SSID,
 	MY_WIFI_PASSWORD,
 	MY_APP_CONFIG_PASSWORD,
