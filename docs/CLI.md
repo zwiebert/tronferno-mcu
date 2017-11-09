@@ -164,6 +164,15 @@ Eeach receiver has four built-in timers: daily, weekly, astro, random. Remember 
 
         `timer astro=-30;    closes shutter thirty minutes before civil dusk`
         `timer astro=+120;   closes shutter 2 hours after civil dusk`
+		
+#### rs - option to read saved timers back
+
+The mcu stores timer commands, so it can print out the timer configuration of each receiver. It overwrites older commands by newer commands and older explicit addressed commands by newer wild-card commands:
+
+* rs=(0|1|2) -   rs=1 will match the exacly group and member. rs=2 will also return matching wild-cards.
+
+         timer g=2 m=3 rs=1;   returns only the timer command saved for g=2 and m=2
+		 timer g=2 m=3 rs=2;   may return also the timer command saved for g=2 m=0,  g=0 m=0, g=0 m=2
 
 #### on/off options
 
@@ -181,3 +190,16 @@ Each timer command has RTC data and will update the internal RTC of the receiver
 
 The built-in RTC of a shutter keeps track of day time, day of month, month of year,  day of week and dst yes/no. it does not know about leap-years or years at all.
 
+
+
+#### unknown options
+
+   Unknown options give a warning, but will not fail the command.
+   
+
+#### common options
+
+  Common options are accepted by all commands.
+  
+  
+* mid=N   N is supposed to be an ID number. It will be part of the reply messages (reply@N: ...). The front-end should use this to check which reply belongs to wich command.
