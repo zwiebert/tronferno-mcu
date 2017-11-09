@@ -6,7 +6,7 @@ MCU firmware to control Fernotron devices via CLI . Can run on ESP8266 or ATMEGA
 
 
 ### Hardware Requirements
- - MCU board.
+ - MCU board
  - 443MHz RF transmitter (like FS1000A)
  - 443 MHz RF receiver (like RXB6)
 
@@ -19,9 +19,9 @@ RF receiver is optional and you may only ever need it to sniff the ID of your or
 ### How to build on Linux or Windows and flash to ESP-8266
 
 * Prepare Hardware:
-  * esp8266 (development board) connected to USB on your PC
-  * RF receiver connected to D1 on the MCU board
-  * RF transmitter connected to D2
+  * Esp8266 board connected to your PC-USB.
+  * RF receiver connected to esp8266-GPIO5 (= pin D1 on mini boards)
+  * RF transmitter connected to esp8266-GPIO4 (= pin D2 on mini boards)
 
 
 configure the Makefiles in user/esp8266/
@@ -99,13 +99,13 @@ In case you no longer have working Fernotron central unit. You would start from 
     ```
     * or you could sniff out the address of a simple hand sender and sent your commands using that address. Or make up such address and add your made up address via "set" to as many shutters you like. The shutter can memorize a few of these adresses.
     
- ### How to build and flash using ATMega-328P
+### How to build and flash using ATMega-328P
  
  * Prepare Hardware 
     * Arduino Nano Board (Clone)  connected to USB on your PC
     * ISP programmer hardware (like avrispII, etc) connected to USB on your PC
-    * RF Receiver connected to D2
-    * RF Transmitter connected to D11
+    * RF receiver connected to atmega-PD2 (= pin D2 on Nano)
+    * RF transmitter connected to atmega-PB3 (= pin D11 on Nano)
     
   * To build and flash, open the Solution file in AVR Studio on Windows or use make on Linux:
   ```
