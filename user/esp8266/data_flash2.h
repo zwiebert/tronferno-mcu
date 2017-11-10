@@ -33,7 +33,7 @@ typedef struct {
 //
 // reduce wear by use more than one flash sector
 // more sectors mean more usable blocks, so each block is written to less often
-#define FLASH_SECTORS 4
+#define FLASH_SECTORS 3
 //
 // configuration end
 /////////////////////////////////////////////////////////////////////////////////////////
