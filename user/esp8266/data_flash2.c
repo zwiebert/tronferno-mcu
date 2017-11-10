@@ -1,9 +1,10 @@
 /*
- * config_flash.c
+ * config_flash2.c
  *
- * read and write a single data object from/to flash.
+ * read and write multiple data objects with same size from/to flash.
+ * (its an array of objects, where each can be written independently)
  *
- * the object cannot be larger than 4092 byte
+ * object size cannot be larger than 4092 byte
  *
  * note: configure type of your data and pointer to the object in related header file
 
@@ -26,6 +27,7 @@
 #define NO_CACHE 1
 
 #define DB(x) ((C.app_verboseOutput >= vrbDebug) && (x),1)
+
 #define printf ets_uart_printf
 extern int ENR; // error number
 enum enr { enr_none, enr_inv_fid, enr_2, enr_3, enr_4, enr_5 };
@@ -59,7 +61,7 @@ static uint32_t MAGIC_COOKIE = 0xBEEF0000;
 #define fid_delete(fid) (files[(fid)] = 0)
 #define fid_setAddr(fid, addr) (files[fid] = (addr))
 #define fid_makeCookie(fid)  (MAGIC_COOKIE | (fid))
-#define fid_getByGM(g, m) (((g)) * 7 + (m))
+#define fid_getByGM(g, m) (((g)) * 8 + (m))
 #define fid_getByCookie(cookie) ((cookie) & 0xffff)
 
 #define NMB_FILES  64
@@ -223,6 +225,9 @@ static bool ICACHE_FLASH_ATTR read_data2(DATA_TYPE *p, uint16_t file_id) {
 	} else {
 		spi_flash_read(fid_getAddr(file_id) + sizeof(MAGIC_COOKIE), (uint32_t*) p, sizeof(DATA_TYPE));
 	}
+
+	DB(printf("file read: fid=%d\n", (int)file_id));
+
 	return true;
 }
 
@@ -236,17 +241,18 @@ static bool ICACHE_FLASH_ATTR delete_file(uint16_t file_id) {
 		uint32_t cookie = 0;
 		spi_flash_write(fid_getAddr(file_id), &cookie, sizeof(cookie));
 		fid_delete(file_id);
+		DB(printf("file deleted: fid=%d\n", (int)file_id));
 		return true;
 	}
 }
 
 static int ICACHE_FLASH_ATTR delete_shadowded_files(uint8_t group, uint8_t memb) {
 	int g, m, result = 0;
-
 	for (g = 0; g <= 7; ++g) {
 		for (m = 0; m <= 7; ++m) {
 			if ((group == 0 || group == g) && (memb == 0 || memb == m)) {
 				if (delete_file(fid_getByGM(g, m))) {
+					DB(printf("shadow deleted: g=%d, m=%d, fid=%d\n", (int)g, (int)m, fid_getByGM(g, m)));
 					++result;
 				}
 			}
@@ -283,6 +289,8 @@ static bool ICACHE_FLASH_ATTR save_data2(DATA_TYPE *p, uint16_t file_id) {
 	cookie = fid_makeCookie(file_id);
 	spi_flash_write(fid_getAddr(file_id), &cookie, sizeof(cookie));
 	spi_flash_write(fid_getAddr(file_id) + sizeof(cookie), (uint32_t*) p, sizeof(DATA_TYPE));
+
+	DB(printf("file saved: fid=%d\n", (int)file_id));
 
 	return true;
 
