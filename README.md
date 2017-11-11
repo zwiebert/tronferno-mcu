@@ -155,6 +155,7 @@ I started this project in 2011 from scratch using an ATmega168. Sending normal c
 Its all too complicated and totally useless?
   * I work on a [GUI for Android](https://github.com/zwiebert/tronferno-andro).
   * FHEM module to send CLI commands to our MCU-CLI via TCP socket
+  * Maybe a module to send simple up/down-commands via FHEM/SIGNALduino. Have written a simple [perl script](https://github.com/zwiebert/tronferno-andro) for start.
   * Software-only FHEM module directly outputting to a 433MHz RF transmitter
   
 ### Project Author
