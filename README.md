@@ -13,7 +13,7 @@ MCU firmware to control Fernotron devices via CLI . Can run on ESP8266 or ATMEGA
 RF receiver is optional and you may only ever need it to sniff the ID of your original central unit once.  If you want to keep it connected, don't use an inferior super-regeneration receiver. It can block the frequency by transmitting noise occasionally. If you want to leave the receiver connected, use a super-heterodyne receiver like the RXB6. 
 
 
-### How to flash the ESP8266 from binary images
+### Download pre-built binary images to flash
    * go to the separate github repository [zwiebert/tronferno-mcu-bin](https://github.com/zwiebert/tronferno-mcu-bin)
 
 ### How to build on Linux or Windows and flash to ESP-8266
@@ -82,22 +82,22 @@ In case you no longer have working Fernotron central unit. You would start from 
  
      config cu=80xxxx;  (just make up an address, x needs to be one of 0...9 a...f  (hex).  write it down)
     
-    * press the set-button on the shutter you want to be number 1 in group 1, and type quickly:
+* press the set-button on the shutter you want to be number 1 in group 1, and type quickly:
     
          send g=1 m=1 c=stop;
     
-    * press the set-button on the next shutter, and type quickly (or use copy/paste)
+ * press the set-button on the next shutter, and type quickly (or use copy/paste)
     
          send g=1 m=2 c=stop;
     
-    * ... continue until  you have added your new central unit to all shutters you want
+ * ... continue until  you have added your new central unit to all shutters you want
     
-    * instead of pressing the set-button on the shutter you can use the code written on the shutter motor 
+ * instead of pressing the set-button on the shutter you can use the code written on the shutter motor 
     ```
         send a=9xxxxx c=set;   where xxxxx is the hexadecimal code. Set the 9 in front of it
         send a=9xxxxx c=up;    ... or send other commands using that code
     ```
-    * or you could sniff out the address of a simple hand sender and sent your commands using that address. Or make up such address and add your made up address via "set" to as many shutters you like. The shutter can memorize a few of these adresses.
+ * or you could sniff out the address of a simple hand sender and sent your commands using that address. Or make up such address and add your made up address via "set" to as many shutters you like. The shutter can memorize a few of these adresses.
     
 ### How to build and flash using ATMega-328P
  
@@ -153,10 +153,10 @@ I started this project in 2011 from scratch using an ATmega168. Sending normal c
 
 ### Future
 Its all too complicated and totally useless?
-  * I work on a [GUI for Android](https://github.com/zwiebert/tronferno-andro).
+  * I'm working on a [GUI for Android](https://github.com/zwiebert/tronferno-andro).
   * FHEM module to send CLI commands to our MCU-CLI via TCP socket
-  * A module to send simple up/down-commands via FHEM/SIGNALduino. Have written a simple [perl script](https://github.com/zwiebert/tronferno-fhem) for start.
-  * Software-only FHEM module directly outputting to a 433MHz RF transmitter
+  * FHEM module to send simple up/down-commands via FHEM/SIGNALduino. Have written a simple [perl script](https://github.com/zwiebert/tronferno-fhem) for start.
+
   
 ### Project Author
 
