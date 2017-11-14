@@ -145,8 +145,6 @@ To send the "too much sun" command:
 ### Problems
  * I'm not 100% sure about how the astro data is organized. So the times may be off
  * The function of some bytes in the last line of the timer programming data is still unknown to me.
- * When building the ESP8266 firmware on windows, the IRAM segment may overflow. Uncomment FER_RECEIVER_MINIMAL in user/main/common.h to disable some code. 
- * because of the code getting bigger I had to enable FER_RECEIVER_MINIMAL on ATmega328 for now (can no longe receive timer messages)
 
 ### History
 I started this project in 2011 from scratch using an ATmega168. Sending normal commands like "up" and "down" was not to hard to figure out. But I gave up on programming the timers and the project went on hiatus. In 2017 I finally figured out the timer programming.  Had to switch to an ATmega328p for enough flash memory, and then to the ESP8266, for its built-in WIFI.   
