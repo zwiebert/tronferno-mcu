@@ -6,9 +6,15 @@
 
 #include "utils.h"
 #include "fer_code.h"
+#include "config.h"
 
+#ifndef FER_RECEIVER
 
-#ifdef FER_RECEIVER
+bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
+	return true;
+}
+
+#else
 
 #define bitLen               FER_BIT_WIDTH_TCK
 // bit is 1, if data edge comes before sample position (/SHORT\..long../)
@@ -16,15 +22,22 @@
 #define SAMPLE_BIT ((pTicks < FER_BIT_SAMP_POS_TCK))
 
 
+static volatile bool requestLock;
+static volatile bool isLocked;
 
-#define DB_FORCE_CMD 0
-#define DB_IGNORE_RTC_ONLY 0
-#define DB_IGNORE_ERRORS 0
-
-#define IS_EO_BIT (CountTicks == 0)
-#define IS_EO_WORD (IS_EO_BIT && CountBits == 0)
-#define IS_EO_LINE (IS_EO_WORD && CountWords == 0)
-#define IS_EO_FRAME (IS_EO_LINE && CountLines == 0)
+bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
+#if BUFFER_SHARING
+	if (enableLock) {
+		requestLock = true;
+		do {
+			mcu_delay_us(100);
+		} while (!isLocked && recvTick == C.app_recv);
+	} else {
+		requestLock = false;
+	}
+#endif
+	return true;
+}
 
 /////////////////////////// interrupt code //////////////////////
 #define IS_P_INPUT (input == true)
@@ -54,29 +67,45 @@ static uint32_t prgTickCount;
 static int error;
 
 // flags
-volatile bool has_cmdReceived, has_prgReceived;
-static bool is_recPrgFrame;
 
+
+volatile uint8_t MessageReceived;
 // counters
-static uint8_t CountTicks, CountBits, CountWords, CountLines;
+static uint8_t CountTicks, CountBits, CountWords;
 
 // buffer to store received RF data
 static uint16_t dtRecvBuffer[2];
-static uint8_t dtRecvCmd[bytesPerCmdPacket];
-#ifndef FER_RECEIVER_MINIMAL
-uint8_t dtRecvPrgFrame[linesPerPrg][bytesPerPrgLine];
+
+#if BUFFER_SHARING
+struct fer_msg *rbuf = &message_buffer;
+#else
+static struct fer_msg rmsg;
+struct fer_msg *rbuf = &rmsg;
 #endif
 
+
+#define getCurrentByteAddr() (currentByteAddr + 0)
+static uint16_t received_byte_ct;
+static uint8_t *currentByteAddr;
+static uint16_t bytesToReceive;
+#define getBytesToReceive() (bytesToReceive + 0)
+#define hasAllBytesReceived() (bytesToReceive <= received_byte_ct)
+
+static void incrCurrentByteAddr(void) {
+	 ++currentByteAddr;
+	++received_byte_ct;
+}
+
 ferCmdBuf_type ICACHE_FLASH_ATTR get_recvCmdBuf(void) {
-	return dtRecvCmd;
+	return rbuf->cmd;
 }
 
 uint8_t * ICACHE_FLASH_ATTR get_recvPrgBufLine(uint8_t idx) {
-	return dtRecvPrgFrame[idx];
+	return rbuf->rtc + idx * bytesPerPrgLine;
 }
 
 static void init_counter() {
-	CountTicks = CountBits = CountWords = CountLines = 0;
+	CountTicks = CountBits = CountWords = 0;
 }
 
 /* "calculate 2bit parity value for DATA_BYTE according to POS" */
@@ -183,17 +212,19 @@ static bool wait_and_sample(void) {
 	return preBits == FER_PRE_BIT_CT;
 }
 
-static bool cmd_recv(void) {
+static bool recvMessage(void) {
 
 	if (wait_and_sample()) {
 		if (ct_incr(CountTicks, bitLen)) {
 			if (ct_incr(CountBits, bitsPerWord)) {
 				// word complete
-				if ((CountWords & 1))
+				if ((CountWords & 1) == 1) {
 					// word pair complete
-					recv_decodeByte(&dtRecvCmd[(CountWords - 1) / 2]);
-
-				if (ct_incr(CountWords, wordsPerCmdPacket)) {
+					recv_decodeByte(getCurrentByteAddr());
+					incrCurrentByteAddr();
+				}
+				++CountWords;
+				if (hasAllBytesReceived()) {
 					return true; // success
 				}
 			}
@@ -203,68 +234,51 @@ static bool cmd_recv(void) {
 	return false;  // continue
 }
 
-static bool prg_recv(void) {
 
-	if (wait_and_sample()) {
-		if (ct_incr(CountTicks, bitLen)) {
-			if (ct_incr(CountBits, bitsPerWord)) {
-				// word complete
-				if ((CountWords & 1))
-					// word pair complete
-					recv_decodeByte(&dtRecvPrgFrame[CountLines][(CountWords - 1) / 2]);
-
-				if (ct_incr(CountWords, wordsPerPrgLine)) {
-					// line complete
-					if (!DB_IGNORE_RTC_ONLY && CountLines == 0 && FRB_GET_FPR0_IS_RTC_ONLY(dtRecvPrgFrame[FPR_RTC_START_ROW]))
-						return true;
-					if (ct_incr(CountLines, linesPerPrg)) {
-						return true;
-
-					}
-				}
-			}
-		}
-	}
-	return false; // continue
-}
 
 void fer_recvClearAll(void) {
 	init_counter();
 	preBits = 0;
 	error = 0;
-	has_cmdReceived = false;
-	has_prgReceived = false;
-	is_recPrgFrame = false;
+	MessageReceived = 0;
+	received_byte_ct = 0;
+	currentByteAddr = &rbuf->cmd[0];
+	bytesToReceive = BYTES_MSG_PLAIN;
 
 }
 
-// receive the command and set flags if rtc or timer data will follow
-static void tick_recv_command() {
-	if (cmd_recv()) {
-#if DB_FORCE_CMD
-		has_cmdReceived = true;
-#else
-		if (DB_IGNORE_ERRORS || (!error && fer_OK == fer_verify_cmd(dtRecvCmd))) {
-			if (FRB_GET_CMD(dtRecvCmd) == fer_cmd_Program && FRB_MODEL_IS_CENTRAL(dtRecvCmd)) {
-				// timer programming block will follow
-				is_recPrgFrame = true;
-				prgTickCount = MAX_PRG_TICK_COUNT;
+static void tickRecvMessage() {
+	if (recvMessage()) {
+
+		switch (getBytesToReceive()) {
+
+		case BYTES_MSG_PLAIN:
+			if ((!error && fer_OK == fer_verify_cmd(rbuf->cmd))) {
+				if (FRB_GET_CMD(rbuf->cmd) == fer_cmd_Program && FRB_MODEL_IS_CENTRAL(rbuf->cmd)) {
+					bytesToReceive = BYTES_MSG_RTC;
+				} else {
+					MessageReceived = MSG_TYPE_PLAIN;
+				}
 			} else {
-				has_cmdReceived = true;
+				fer_recvClearAll();
 			}
-		} else {
-			fer_recvClearAll();
+			break;
+
+		case BYTES_MSG_RTC:
+			if (FRB_GET_FPR0_IS_RTC_ONLY(rbuf->rtc)) {
+				MessageReceived = MSG_TYPE_RTC;
+
+			} else {
+				bytesToReceive = BYTES_MSG_TIMER;
+			}
+			break;
+
+		case BYTES_MSG_TIMER:
+			MessageReceived = MSG_TYPE_TIMER;
 		}
-#endif
 	}
 }
 
-
-static void tick_recv_programmingFrame() {
-		if (prg_recv()) {
-			has_prgReceived = true;
-		}
-}
 
 
 void tick_ferReceiver() {
@@ -275,19 +289,20 @@ void tick_ferReceiver() {
 	old_input = input;
 
 	// receive and decode input
-	if (!(has_cmdReceived || has_prgReceived || is_sendCmdPending || is_sendPrgPending)) {
+	if (!(MessageReceived || is_sendMsgPending || isLocked)) {
 
-		if ((prgTickCount && !--prgTickCount) || (IS_P_INPUT && nTicks > veryLongPauseLow_Len))
+		if ((prgTickCount && !--prgTickCount) || (IS_P_INPUT && nTicks > veryLongPauseLow_Len)) {
 			fer_recvClearAll();
-
-		if (!is_recPrgFrame) {
-			tick_recv_command();
-		} else {
-#ifndef FER_RECEIVER_MINIMAL
-			tick_recv_programmingFrame();
-#endif
 		}
 
+		tickRecvMessage();
+
+	}
+
+	if (requestLock) {
+		isLocked = true;
+	} else {
+		isLocked = false;
 	}
 
 	// measure the time between input edges

@@ -11,12 +11,8 @@
 #define FER_TRANSMITTER
 #ifndef DEBUG
 #define FER_RECEIVER
-//#define FER_RECEIVER_MINIMAL  // not enough IRAM on ESP8266 (disables timer receiving capability)
 #endif
-#if 1 //!defined FER_RECEIVER || defined FER_RECEIVER_MINIMAL
 #define USE_NTP
-#define FER_NTP
-#endif
 #define USE_WLAN
 #endif
 
@@ -30,7 +26,6 @@
 
 #ifdef AVR
 #include <avr/pgmspace.h>
-#define FER_RECEIVER_MINIMAL  // we are out of memory on atmega328, so disabling timer receiving until we can save memory somewhere else
 #else
 #define PROGMEM
 #endif
@@ -74,5 +69,8 @@ typedef bool logicLevel;
 #endif
 
 #include "debug.h"
+
+void mcu_delay_us(uint16_t us);
+void mcu_restart(void);
 
 #endif // _common_h

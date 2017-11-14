@@ -116,15 +116,46 @@ typedef enum {
 	fer_OK, fer_PAIR_NOT_EQUAL, fer_BAD_WORD_PARITY, fer_BAD_CHECKSUM
 } fer_errors;
 
+
+
+struct fer_msg {
+	uint8_t cmd[bytesPerCmdPacket];
+	uint8_t rtc[bytesPerPrgLine];
+	uint8_t wdtimer[FPR_TIMER_HEIGHT][bytesPerPrgLine];
+	uint8_t astro[FPR_ASTRO_HEIGHT][bytesPerPrgLine];
+	uint8_t last[FPR_LAST_HEIGHT][bytesPerPrgLine];
+} __attribute__((__packed__))  ;
+
+extern struct fer_msg *rbuf, *tbuf;
+
+#define get_TxBuf() (tbuf+0)
+#define get_RxBuf() (rbuf+0)
+#define get_sendPrgBufLine(line) (getMsgData(get_TxBuf())[line])
+#define getMsgData(buf) ((uint8_t(*)[bytesPerPrgLine])buf->rtc)
+
+#define BYTES_MSG_PLAIN  bytesPerCmdPacket
+#define BYTES_MSG_RTC    (bytesPerCmdPacket + bytesPerPrgLine * 1)
+#define BYTES_MSG_TIMER  (bytesPerCmdPacket + bytesPerPrgLine * linesPerPrg)
+
+
+#define BUFFER_SHARING 1
+
+#if BUFFER_SHARING
+extern struct fer_msg message_buffer;
+#endif
+
 // receiver ///////////////////////////
 bool fer_get_recvPin();
 
 ferCmdBuf_type get_recvCmdBuf(void);
 uint8_t *get_recvPrgBufLine(uint8_t line);
-extern uint8_t dtRecvPrgFrame[linesPerPrg][bytesPerPrgLine];
 
 extern volatile bool has_cmdReceived;
 extern volatile bool has_prgReceived;
+#define MSG_TYPE_PLAIN 1
+#define MSG_TYPE_RTC 2
+#define MSG_TYPE_TIMER 3
+extern volatile uint8_t MessageReceived;
 
 void tick_ferReceiver(void);
 void fer_recvClearAll(void); // call it after received data buffers has been processed by main thread
@@ -132,14 +163,19 @@ void fer_recvClearAll(void); // call it after received data buffers has been pro
 bool fer_prg_verfiy_checksums(uint8_t dg[linesPerPrg][bytesPerPrgLine], uint8_t checksum);
 bool fer_cmd_verify_checksum(ferCmdBuf_type dg, uint8_t *checksum_out);
 
+
+bool recv_lockBuffer(bool enableLock);  // blocks receiver access to shared buffer
+
+
 // transmitter //////////////////////////
 void fer_put_sendPin(bool dat);
 
 extern uint8_t dtSendPrgFrame[linesPerPrg][bytesPerPrgLine];
-ferCmdBuf_type get_sendCmdBuf(void);
-uint8_t *get_sendPrgBufLine(uint8_t line);
 
-extern volatile bool is_sendCmdPending, is_sendPrgPending;
+
+
+
+extern volatile bool is_sendMsgPending;
 void tick_ferSender(void);
 bool fer_send_prg(fer_sender_basic *fsb);
 bool fer_send_cmd(fer_sender_basic *fsb);

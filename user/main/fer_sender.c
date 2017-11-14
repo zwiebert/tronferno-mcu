@@ -29,22 +29,23 @@
 #define IS_EO_FRAME (IS_EO_LINE && CountLines == 0)
 
 
-volatile bool is_sendCmdPending, is_sendPrgPending;
+volatile bool is_sendMsgPending;
+static uint16_t wordsToSend;
 
-static uint8_t CountTicks, CountBits, CountWords, CountLines;
+static uint8_t CountTicks, CountBits;
+static uint16_t CountWords;
 
 static uint16_t dtSendBuf;
-static uint8_t dtSendCmd[bytesPerCmdPacket];
-uint8_t dtSendPrgFrame[linesPerPrg][bytesPerPrgLine];
+
+#if BUFFER_SHARING
+struct fer_msg *tbuf = &message_buffer;
+#else
+static struct fer_msg tmsg;
+struct fer_msg *tbuf = &tmsg;
+#endif
 
 static bool dtLineOut;   // output line
 
-ferCmdBuf_type ICACHE_FLASH_ATTR get_sendCmdBuf(void) {
-	return dtSendCmd;
-}
-uint8_t * ICACHE_FLASH_ATTR get_sendPrgBufLine(uint8_t idx) {
-	return dtSendPrgFrame[idx];
-}
 
 uint8_t ICACHE_FLASH_ATTR fer_make_cmdPacket(const uint8_t *src, uint8_t *dst) {
   int i;
@@ -60,28 +61,36 @@ uint8_t ICACHE_FLASH_ATTR fer_make_cmdPacket(const uint8_t *src, uint8_t *dst) {
 
 
 bool ICACHE_FLASH_ATTR fer_send_cmd(fer_sender_basic *fsb) {
-	if (is_sendCmdPending || is_sendPrgPending)
+	if (is_sendMsgPending)
 		return false;
-
-	fer_make_cmdPacket(fsb->data, dtSendCmd);
+	if (recv_lockBuffer(true)) {
+	fer_make_cmdPacket(fsb->data, tbuf->cmd);
 	if (C.app_verboseOutput >= vrb1)
-		io_puts("S:"), frb_printPacket(dtSendCmd);
-	is_sendCmdPending = true;
+		io_puts("S:"), frb_printPacket(tbuf->cmd);
+	wordsToSend = 2 * BYTES_MSG_PLAIN;
+
+	is_sendMsgPending = true;
+
+	recv_lockBuffer(false);
 	return true;
+	} else {
+		return false;
+	}
 }
 
+
 bool ICACHE_FLASH_ATTR fer_send_prg(fer_sender_basic *fsb) {
-	if (is_sendCmdPending || is_sendPrgPending)
+	if (is_sendMsgPending)
 		return false;
 
-	uint8_t cmd_checksum = fer_make_cmdPacket(fsb->data, dtSendCmd);
-	fer_prg_create_checksums(dtSendPrgFrame, cmd_checksum);
+	uint8_t cmd_checksum = fer_make_cmdPacket(fsb->data, tbuf->cmd);
+	fer_prg_create_checksums(getMsgData(tbuf), cmd_checksum);
 
 if (C.app_verboseOutput >= vrb1)
-	io_puts("S:"), fer_printData(dtSendCmd, C.app_verboseOutput >= vrb2 ? dtSendPrgFrame : 0);
+	io_puts("S:"), fer_printData(tbuf->cmd, C.app_verboseOutput >= vrb2 ? getMsgData(tbuf) : 0);
 
-	is_sendCmdPending = true;
-	is_sendPrgPending = true;
+	wordsToSend = 2 * (FRB_GET_FPR0_IS_RTC_ONLY(tbuf->rtc) ? BYTES_MSG_RTC : BYTES_MSG_TIMER);
+	is_sendMsgPending = true;
 	return true;
 }
 
@@ -108,7 +117,7 @@ fer_add_word_parity (uint8_t data_byte, int pos) {
 
 #if USE_MACROS
 #define make_Word fer_add_word_parity
-#define init_counter() (CountTicks = CountBits = CountWords = CountLines = 0)
+#define init_counter() (CountTicks = CountBits = CountWords = 0)
 #define updateLinePre() (dtLineOut = (CountTicks < shortPositive_Len))
 #define advancePreCounter() (ct_incr(CountTicks, pre_Len) && ct_incr(CountBits, bitsPerPre))
 #define advanceStopCounter() (ct_incr(CountTicks, bitLen) && ct_incr(CountBits, bitsPerPause))
@@ -157,7 +166,7 @@ static void updateLine() {
 
 
 
-static bool sendCmd() {
+static bool sendMsg() {
   static bool end_of_preamble, end_of_stop;
 
   if (!end_of_stop) {
@@ -169,7 +178,7 @@ static bool sendCmd() {
     // send preamble
     updateLinePre();
     if ((end_of_preamble = advancePreCounter())) {
-       dtSendBuf = make_Word(dtSendCmd[0], 0); // load first word into send buffer
+       dtSendBuf = make_Word(tbuf->cmd[0], 0); // load first word into send buffer
     }
     } else 	{
       // send data words + stop bits
@@ -179,12 +188,12 @@ static bool sendCmd() {
       // bit sent
       if ((ct_incr(CountBits, bitsPerWord + bitsPerPause))) {
         // word + stop sent
-        if (ct_incr(CountWords, wordsPerCmdPacket)) {
+        if (ct_incr(CountWords, wordsToSend)) {
           // line sent
           end_of_stop = end_of_preamble = false;
           return true; // done
         } else {
-          dtSendBuf = make_Word(dtSendCmd[CountWords / 2], CountWords); // load next word
+          dtSendBuf = make_Word(tbuf->cmd[CountWords / 2], CountWords); // load next word
         }
       }
     }
@@ -193,63 +202,25 @@ static bool sendCmd() {
 }
 
 
-static bool sendPrg() {
-  bool end_of_word = false;
-  updateLine();
-  
-  // counting ticks until end_of_frame
-  if (ct_incr(CountTicks, bitLen)) {
-    // bit sent
-    if ((end_of_word = ct_incr(CountBits, bitsPerWord + bitsPerPause))) {
-      // word sent
-      if (ct_incr(CountWords, wordsPerPrgLine)) {
-        // line sent
-        if ((CountLines == 0 &&  FRB_GET_FPR0_IS_RTC_ONLY(dtSendPrgFrame[FPR_RTC_START_ROW])) || ct_incr(CountLines, linesPerPrg)) {
-          // frame sent
-          return true;
-        }     
-      }
-    }
-  }
-  
-  if (end_of_word) //|| (CountTicks == 1 && !CountBits && !CountWords))
-  dtSendBuf = make_Word(dtSendPrgFrame[CountLines][CountWords / 2], CountWords);
-  
-  return false; //advancePrgCounter();
-}
 
 static void tick_send_command() {
 
-	bool done = sendCmd();
+	bool done = sendMsg();
 	fer_put_sendPin(dtLineOut);
 
 	if (done) {
-		is_sendCmdPending = false;
+		is_sendMsgPending = false;
 		init_counter();
-		if (is_sendPrgPending) {
-			dtSendBuf = make_Word(dtSendPrgFrame[0][0], 0);
-		} else {
-			fer_put_sendPin(0);
-		}
-	}
-}
-
-static void tick_send_programmingFrame() {
-	bool done = sendPrg();
-	fer_put_sendPin(dtLineOut);
-
-	if (done) {
 		fer_put_sendPin(0);
-		is_sendPrgPending = false;
-		init_counter();
+
 	}
 }
+
+
 
 void tick_ferSender(void) {
 
-	if (is_sendCmdPending) {
+	if (is_sendMsgPending) {
 		tick_send_command();
-	} else if (is_sendPrgPending) {
-		tick_send_programmingFrame();
 	}
 }

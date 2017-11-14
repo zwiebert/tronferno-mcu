@@ -15,6 +15,12 @@
 #include "rtc.h"
 #include "astro.h"
 
+
+#if BUFFER_SHARING
+	struct fer_msg message_buffer;
+#endif
+
+
 /* verify checksums of data word array */
 bool ICACHE_FLASH_ATTR fer_cmd_verify_checksum(ferCmdBuf_type dg, uint8_t *checksum_out) {
 	uint8_t i, checksum = 0;
@@ -122,12 +128,12 @@ void ICACHE_FLASH_ATTR txbuf_write_dtimer(const uint8_t *dtimer_data) {
 }
 
 void ICACHE_FLASH_ATTR txbuf_write_wtimer(const uint8_t *wtimer_data) {
-  write_wtimer(&dtSendPrgFrame[FPR_WEEKLY_START_ROW], wtimer_data);
+  write_wtimer(tbuf->wdtimer, wtimer_data);
 }
 
 
 void ICACHE_FLASH_ATTR txbuf_write_astro(int mint_offset) {
-  write_astro(&dtSendPrgFrame[FPR_ASTRO_START_ROW], mint_offset);
+  write_astro(tbuf->astro, mint_offset);
 }
 
 
@@ -167,10 +173,10 @@ void ICACHE_FLASH_ATTR write_flags(uint8_t d[FPR_RTC_WIDTH], uint8_t flags, uint
 }
 
 void ICACHE_FLASH_ATTR txbuf_write_rtc(bool rtc_only) {
-   write_rtc(&dtSendPrgFrame[FPR_RTC_START_ROW][0], rtc_only);
+   write_rtc(tbuf->rtc, rtc_only);
 }
 void ICACHE_FLASH_ATTR txbuf_write_flags(uint8_t flags, uint8_t mask) {
-  write_flags(&dtSendPrgFrame[FPR_RTC_START_ROW][0], flags, mask);
+  write_flags(tbuf->rtc, flags, mask);
 }
 
 void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, uint8_t d[FPR_ASTRO_WIDTH]) {

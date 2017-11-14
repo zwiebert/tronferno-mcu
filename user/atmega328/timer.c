@@ -6,6 +6,13 @@
 #include "main/rtc.h"
 #include "main/config.h"
 #include "main/rtc.h"
+#include <util/delay.h>
+
+
+void mcu_delay_us(uint16_t us) {
+	_delay_us(100);  // FIXME: needs constant
+}
+
 
 ISR(TIMER1_COMPA_vect) {
 

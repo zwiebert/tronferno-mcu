@@ -68,7 +68,7 @@ user_init() {
 
   //  setup_serial(C.serialBaud);
     setup_notImplemented();
-#ifdef FER_NTP
+#ifdef USE_NTP
     setup_ntp();
 #endif
     setup_pin();

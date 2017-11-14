@@ -583,11 +583,7 @@ process_parmDbg(clpar p[], int len) {
 				io_puts("\n");
 			}
 		} else if (strcmp(key, "test") == 0) {
-			if (strcmp(val, "sendprg") == 0) {
-				extern bool dbg_test_sendprg();
-				dbg_test_sendprg();
 
-			}
 
 		} else {
 			warning_unknown_option(key);
@@ -681,20 +677,21 @@ static int ICACHE_FLASH_ATTR
 process_parmTimer(clpar p[], int len) {
 	int i;
 	bool has_daily = false, has_weekly = false, has_astro = false;
-	const char *weeklyVal, *dailyVal;
 	int16_t astro_offset = 0;
 	uint8_t weekly_data[FPR_TIMER_STAMP_WIDTH * 7];
 	uint8_t daily_data[FPR_TIMER_STAMP_WIDTH];
 	fer_sender_basic *fsb = &default_sender;
 	fer_grp group = fer_grp_Broadcast;
 	fer_memb memb = fer_memb_Broadcast;
-	uint8_t mn = 0;
 	uint32_t addr = 0;
 	int wday = -1;
 	uint8_t fpr0_flags = 0, fpr0_mask = 0;
 	int8_t flag_rtc_only = FLAG_NONE;
-	uint8_t rs = 0;
+
 #if ENABLE_RSTD
+	const char *weeklyVal, *dailyVal;
+	uint8_t mn = 0;
+	uint8_t rs = 0;
 	timer_data_t td = { 20000, 0, "", "" };
 #endif
 	// init data
@@ -714,10 +711,14 @@ process_parmTimer(clpar p[], int len) {
 			return -1;
 		} else if (strcmp(key, timer_keys[TIMER_KEY_WEEKLY]) == 0) {
 			has_weekly = string2bcdArray(val, weekly_data, sizeof weekly_data);
+#if ENABLE_RSTD
 			weeklyVal = val;
+#endif
 		} else if (strcmp(key, timer_keys[TIMER_KEY_DAILY]) == 0) {
 			has_daily = string2bcdArray(val, daily_data, sizeof daily_data);
+#if ENABLE_RSTD
 			dailyVal = val;
+#endif
 		} else if (strcmp(key, timer_keys[TIMER_KEY_ASTRO]) == 0) {
 			has_astro = true;
 			astro_offset = atoi(val);
@@ -748,9 +749,11 @@ process_parmTimer(clpar p[], int len) {
 			group = asc2group(val);
 		} else if (strcmp(key, "m") == 0) {
 			memb = asc2memb(val);
+#if ENABLE_RSTD
 			mn = memb ? (memb - 7) : 0;
 		} else if (strcmp(key, "rs") == 0) {
 			rs = atoi(val);
+#endif
 		} else if ((wday = asc2wday(key)) >= 0) {
 			io_puts(val), io_puts("\n");
 			has_weekly = string2bcdArray(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
@@ -811,47 +814,50 @@ process_parmTimer(clpar p[], int len) {
 	FSB_PUT_CMD(fsb, fer_cmd_Program);
 	FSB_TOGGLE(fsb);
 
-	init_prgPacket(dtSendPrgFrame);
-	if (flag_rtc_only == FLAG_TRUE) {
-		txbuf_write_rtc(true);
-		txbuf_write_flags(fpr0_flags, fpr0_mask); // the flags are ignored for RTC-only frames, even for non-broadcast
-	} else {
-		if (has_weekly)
-			txbuf_write_wtimer(weekly_data);
-		if (has_daily)
-			txbuf_write_dtimer(daily_data);
-		if (has_astro)
-			txbuf_write_astro(astro_offset);
-		txbuf_write_rtc(false);
-		txbuf_write_flags(fpr0_flags, fpr0_mask);
-		txbuf_write_lastline(fsb);
-	}
-
-	if (reply(fer_send_prg(fsb))) {
-#if ENABLE_RSTD
-		if (FSB_MODEL_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE) {  // FIXME: or better test for default cu?
-			if (has_astro) {
-				td.astro = astro_offset;
-			}
-			td.bf = fpr0_flags;
-			if (has_weekly) {
-				strncpy(td.weekly, weeklyVal, sizeof(td.weekly) - 1);
-			}
-
-			if (has_daily) {
-				strncpy(td.daily, dailyVal, sizeof(td.daily) - 1);
-			}
-
-			if (save_timer_data(&td, group, mn)) {
-				reply_message("rs", "saved");
-			} else {
-				reply_message("bug", "rs not saved");
-				print_enr();
-			}
+	if (recv_lockBuffer(true)) {
+		init_prgPacket(getMsgData(tbuf));
+		if (flag_rtc_only == FLAG_TRUE) {
+			txbuf_write_rtc(true);
+			txbuf_write_flags(fpr0_flags, fpr0_mask); // the flags are ignored for RTC-only frames, even for non-broadcast
+		} else {
+			if (has_weekly)
+				txbuf_write_wtimer(weekly_data);
+			if (has_daily)
+				txbuf_write_dtimer(daily_data);
+			if (has_astro)
+				txbuf_write_astro(astro_offset);
+			txbuf_write_rtc(false);
+			txbuf_write_flags(fpr0_flags, fpr0_mask);
+			txbuf_write_lastline(fsb);
 		}
-#endif
-	}
 
+		if (reply(fer_send_prg(fsb))) {
+#if ENABLE_RSTD
+			if (FSB_MODEL_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE) {  // FIXME: or better test for default cu?
+				if (has_astro) {
+					td.astro = astro_offset;
+				}
+				td.bf = fpr0_flags;
+				if (has_weekly) {
+					strncpy(td.weekly, weeklyVal, sizeof(td.weekly) - 1);
+				}
+
+				if (has_daily) {
+					strncpy(td.daily, dailyVal, sizeof(td.daily) - 1);
+				}
+
+				if (save_timer_data(&td, group, mn)) {
+					reply_message("rs", "saved");
+				} else {
+					reply_message("bug", "rs not saved");
+					print_enr();
+				}
+			}
+#endif
+		}
+
+		recv_lockBuffer(false);
+	}
 	return 0;
 }
 
@@ -1024,30 +1030,4 @@ testModule_cli()
 }
 #endif
 
-#if 1
-#include "fer_code.h"
 
-bool ICACHE_FLASH_ATTR
-dbg_test_sendprg() {
-	static int first;
-	if (first == 0) {
-		rtc_set_by_string("2017-09-08T00:46:44");
-		++first;
-	}
-
-	static fer_sender_basic fsb_, *fsb = &fsb_;
-
-	FSB_PUT_DEVID(fsb, C.fer_centralUnitID);
-	FSB_PUT_GRP(fsb, fer_grp_G2);
-	FSB_PUT_MEMB(fsb, fer_memb_M2);
-	FSB_PUT_CMD(fsb, fer_cmd_Program);
-	fer_update_tglNibble(fsb);
-
-	init_prgPacket(dtSendPrgFrame);
-	write_rtc(get_sendPrgBufLine(FPR_RTC_START_ROW), false);
-	write_lastline(fsb, get_sendPrgBufLine(FPR_LAST_START_ROW));
-	fer_send_prg(fsb);
-	io_puts("ok\n");
-	return true;
-}
-#endif

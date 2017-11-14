@@ -68,7 +68,7 @@ fer_update_tglNibble(fer_sender_basic *fsb) {
   
   step = !FSB_MODEL_IS_CENTRAL(fsb) ? 1
   : (FSB_IS_BUTTON_HOLD(fsb) ?  (FSB_GET_CMD(fsb) == fer_cmd_STOP ? 1 : 0)
-  : 2);
+  : 1);
   
   if (step > 0) {
     FSB_PUT_TGL(fsb, fer_tglNibble_ctUp(FSB_GET_TGL(fsb), step));

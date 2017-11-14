@@ -73,7 +73,7 @@ loop(void) {
 #ifdef FER_RECEIVER
 
 	// received data
-	if (has_cmdReceived) {
+	if (MessageReceived == MSG_TYPE_PLAIN) {
 		const uint8_t *buf = get_recvCmdBuf();
 
 		for (i=0; i < 5; ++i ) {
@@ -88,13 +88,13 @@ loop(void) {
 
 	cu_auto_set(0);
 #ifndef	FER_RECEIVER_MINIMAL
-	if (has_prgReceived) {
+	if (MessageReceived == MSG_TYPE_RTC || MessageReceived == MSG_TYPE_TIMER) {
 
-		io_puts("timer frame received\n"), fer_printData(get_recvCmdBuf(), dtRecvPrgFrame);
+		io_puts("timer frame received\n"), fer_printData(get_recvCmdBuf(), getMsgData(rbuf));
 
 		uint8_t cs;
 		if (fer_cmd_verify_checksum(get_recvCmdBuf(), &cs)) {
-			if (fer_prg_verfiy_checksums(dtRecvPrgFrame, cs)) {
+			if (fer_prg_verfiy_checksums(getMsgData(rbuf), cs)) {
 				io_puts("frame checksums ok\n");
 			}
 		}
