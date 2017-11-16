@@ -123,7 +123,7 @@ struct fer_msg {
 	uint8_t rtc[bytesPerPrgLine];
 	uint8_t wdtimer[FPR_TIMER_HEIGHT][bytesPerPrgLine];
 	uint8_t astro[FPR_ASTRO_HEIGHT][bytesPerPrgLine];
-	uint8_t last[FPR_LAST_HEIGHT][bytesPerPrgLine];
+	uint8_t last[bytesPerPrgLine];
 } __attribute__((__packed__))  ;
 
 extern struct fer_msg *rbuf, *tbuf;

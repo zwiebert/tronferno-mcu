@@ -22,8 +22,9 @@
 #define ALLOW_ENDPOS 0   // dangerous, could damage your shutter
 #define ENABLE_EXPERT 0 // work in progress
 #define ENABLE_RESTART 1 // allow software reset
+#define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
 
-fer_sender_basic senders[10];
+//fer_sender_basic senders[10];
 fer_sender_basic default_sender;
 fer_sender_basic last_received_sender;
 uint16_t msgid;
@@ -31,7 +32,7 @@ uint16_t msgid;
 
 int ENR; // error number
 static void ICACHE_FLASH_ATTR print_enr(void) {
-	io_puts("enr: "), io_putd(ENR), io_puts("\n");
+	io_puts("enr: "), io_putd(ENR), io_putlf();
 }
 
 static void ICACHE_FLASH_ATTR msg_print(const char *msg, const char *tag) {
@@ -59,7 +60,7 @@ static void ICACHE_FLASH_ATTR reply_print(const char *tag) {
 static void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
 	reply_print(tag);
 	if (msg) io_puts(msg);
-	io_puts("\n");
+	io_putlf();
 }
 
 void ICACHE_FLASH_ATTR cli_msg_ready(void) {
@@ -296,7 +297,7 @@ get_sender_by_addr(long addr) {
 	if (addr == 0) {
 		return &default_sender;
 	} else if (addr > 0 && 10 > addr) {
-		return &senders[addr];
+		//return &senders[addr];
 	}
 	return NULL ;
 }
@@ -575,12 +576,12 @@ process_parmDbg(clpar p[], int len) {
 				char buf[20];
 				if (rtc_get_by_string(buf)) {
 					io_puts(buf);
-					io_puts("\n");
+					io_putlf();
 				}
 			} else if (strcmp(val, "cu") == 0) {
 				io_puts("central unit address: ");
 				io_putl(C.fer_centralUnitID, 16);
-				io_puts("\n");
+				io_putlf();
 			}
 		} else if (strcmp(key, "test") == 0) {
 
@@ -600,8 +601,9 @@ const char *const timer_keys[]  = {
   "weekly", "daily", "astro", "rtc-only", "random", "sun-auto"
 };
 
+#if ENABLE_TIMER_WDAY_KEYS
 #ifdef WEEK_STARTS_AT_SUNDAY
-const char *const timer_wdays[]  = { "sun", "mon", "tue", "wed", "thu", "fri", "sat" };
+const char *const timer_wdays[]  = { "sun", "mon", "tue", "wed", "thu", "fri", "sat", "sun" };
 #else
 const char *const timer_wdays[]  = { "mon", "tue", "wed", "thu", "fri", "sat", "sun" };
 #endif
@@ -614,6 +616,7 @@ int asc2wday(const char *s) {
       }
     return -1;      
 }
+#endif
 
 bool ICACHE_FLASH_ATTR  
 string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst) {
@@ -754,13 +757,16 @@ process_parmTimer(clpar p[], int len) {
 		} else if (strcmp(key, "rs") == 0) {
 			rs = atoi(val);
 #endif
+#if ENABLE_TIMER_WDAY_KEYS
 		} else if ((wday = asc2wday(key)) >= 0) {
-			io_puts(val), io_puts("\n");
+			io_puts(val), io_putlf();
 			has_weekly = string2bcdArray(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
+#endif
 		} else {
 			warning_unknown_option(key);
 		}
 	}
+
 #if ENABLE_RSTD
 	if (rs) {
 		uint8_t g = group, m = mn;
@@ -917,7 +923,7 @@ process_parmExpert(clpar p[], int len) {
 	}
 
     if (reply_exp_key) {
-   	    io_puts("reply: key="), io_puts(create_expert_key()), io_puts("\n");
+   	    io_puts("reply: key="), io_puts(create_expert_key()), io_putlf();
    	    reply_success();
         return 0;
     } else if (!match_exp_key) {
@@ -1003,11 +1009,11 @@ process_parmHelp(clpar p[], int len) {
 	for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
 		io_puts(parm_handlers[i].parm), io_puts(", ");
 	}
-	io_puts("\n");
+	io_putlf();
 
 	for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
 		io_puts(parm_handlers[i].parm), io_puts(" options:\n");
-		io_puts_P(parm_handlers[i].help), io_puts("\n");
+		io_puts_P(parm_handlers[i].help), io_putlf();
 	}
 
 	io_puts("\ncommon options:\n"

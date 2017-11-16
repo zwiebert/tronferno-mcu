@@ -99,7 +99,7 @@ void abort_precond(const char *msg, int orig_line)
     int i, n=10000, line = orig_line;
 
 
-    //io_puts(msg); io_puts("\n");
+    //io_puts(msg); io_putlf();
 
     cli();
     SET_DDR_OUT(LED_PRE);
@@ -142,7 +142,7 @@ void abort_postcond(const char *msg, int orig_line)
   while (repeats-- > 0) { 
   
     int i, n=10000, line = orig_line;
-    //io_puts(msg); io_puts("\n");
+    //io_puts(msg); io_putlf();
 
     cli();
     SET_DDR_OUT(LED_POST);

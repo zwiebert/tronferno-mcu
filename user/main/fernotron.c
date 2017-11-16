@@ -17,11 +17,6 @@ extern fer_sender_basic last_received_sender;
 
 static void ICACHE_FLASH_ATTR
 setup_1() {
-	int i;
-
-	for (i = 1; i < 10; ++i) {
-		fer_init_sender(&senders[i], 0x105dc5 - i);
-	}
 	fer_init_sender(&default_sender, C.fer_centralUnitID);
 
 }
@@ -62,7 +57,7 @@ loop(void) {
 	if ((cmdline = get_commandline())) {
 		io_puts("cmd :");
 		io_puts(cmdline);
-		io_puts("\n");
+		io_putlf();
 		process_cmdline(cmdline);
 		ready = false;
 	} else if (!ready) {

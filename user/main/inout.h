@@ -7,7 +7,7 @@ extern int (*io_printf_fun)(const char *fmt, ...);
 
 int io_putc(char c);
 int io_getc(void);
-
+int io_putlf(void);
 int io_puts(const char *s);
 int io_getline(char *buf, unsigned buf_size);
 int io_printf(const char *fmt, ...);

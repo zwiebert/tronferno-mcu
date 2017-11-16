@@ -26,6 +26,8 @@ int ICACHE_FLASH_ATTR io_getc(void)   { return (io_getc_fun == 0) ? -1 : io_getc
 #define io_putc_fun #error
 #define io_getc_fun #error
 
+int ICACHE_FLASH_ATTR io_putlf(void) { return io_putc('\n'); }
+
 
 int ICACHE_FLASH_ATTR io_puts(const char *s) {
   for (;*s != '\0'; ++s) {
@@ -233,7 +235,7 @@ print_array_8(const uint8_t *src, int len) {
   for (i = 0; i < len; ++i) {
     io_print_hex_8(src[i], true);
   }
-  io_puts("\n");
+  io_putlf();
 }
 
 void ICACHE_FLASH_ATTR
@@ -243,6 +245,6 @@ print_array_8_inv(const uint8_t *src, int len) {
   for (i = 0; i < len; ++i) {
     io_print_hex_8(~src[i], true);
   }
-  io_puts("\n");
+  io_putlf();
 }
 

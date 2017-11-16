@@ -179,7 +179,7 @@ void ICACHE_FLASH_ATTR txbuf_write_flags(uint8_t flags, uint8_t mask) {
   write_flags(tbuf->rtc, flags, mask);
 }
 
-void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, uint8_t d[FPR_ASTRO_WIDTH]) {
+void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, uint8_t d[bytesPerPrgLine]) {
 	d[0] = 0x00;
 	d[1] = fsb->data[fer_dat_ADDR_2];
 	d[2] = fsb->data[fer_dat_ADDR_1];
@@ -192,7 +192,7 @@ void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, uint8_t d[FPR_ASTRO
 }
 
 void ICACHE_FLASH_ATTR txbuf_write_lastline(fer_sender_basic *fsb) {
-	write_lastline(fsb, get_sendPrgBufLine(FPR_LAST_START_ROW));
+	write_lastline(fsb, tbuf->last);
 }    
 
 
@@ -243,7 +243,7 @@ bool ICACHE_FLASH_ATTR testModule_fer_prg() {
 	FSB_PUT_CMD(fsb, fer_cmd_Program);
 	fer_update_tglNibble(fsb);
 
-	write_rtc(get_sendPrgBufLine(FPR_RTC_START_ROW), true);
+	write_rtc(tbuf->rtc, true);
 	fer_send_prg(fsb);
 	return true;
 }

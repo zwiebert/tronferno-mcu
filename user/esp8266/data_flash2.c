@@ -24,7 +24,6 @@
 
 #include "data_flash2.h"
 
-#define NO_CACHE 1
 #define TEST_THIS_MODULE 0
 
 #if TEST_THIS_MODULE
@@ -222,39 +221,7 @@ static bool ICACHE_FLASH_ATTR find_free_block(uint32_t *dst) {
 #undef sec_idx
 }
 
-#if 0
-// FIXME: seems still buggy to me
-// populate files table
-static bool ICACHE_FLASH_ATTR reclaim_space(void) {
-	int sec, blk;
 
-	if (!fbc_th()) {
-		return false;
-	}
-
-	for (sec = 0; sec < FLASH_SECTORS; ++sec) {
-		for (blk = 0; blk < BLOCKS_PER_SECTOR; ++blk) {
-			uint32_t cookie, addr;
-			addr = addr_getBySecBlk(sec, blk);
-			spi_flash_read(addr, &cookie, sizeof(cookie));
-
-            if (cookie_isMagic(cookie)) {
-				fid_t fid = fid_getByCookie(cookie);
-				uint32_t new_addr = 0;
-
-				if (find_free_block(&new_addr)) {
-					move_file(fid, new_addr);
-				}
-			}
-		}
-
-		if (free_block_count > NMB_FILES) {
-			return true;
-		}
-	}
-	return true;
-}
-#else
 
 // move away all used files from this sector
 // the sector should contain only deletes files after that, so it can be erased if we run out of free blocks
@@ -305,7 +272,7 @@ static bool ICACHE_FLASH_ATTR reclaim_space(void) {
 	}
 	return true;
 }
-#endif
+
 
 
 // find file which ID is pointed to by p

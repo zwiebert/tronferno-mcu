@@ -15,7 +15,7 @@ frb_printPacket(const uint8_t *dg) {
   for (i = 0; i < bytesPerCmdPacket; ++i) {
     io_print_hex_8(dg[i], true);
   }
-  io_puts("\n");
+  io_putlf();
 }
 
 void ICACHE_FLASH_ATTR
@@ -26,7 +26,6 @@ printTimerStamp(uint8_t d[18][9], int row, int col) {
 }
 
 void ICACHE_FLASH_ATTR fpr_printPrgPacketInfo(uint8_t d[FER_PRG_PACK_CT][FER_PRG_BYTE_CT], bool rtc_only) {
-  const char *const lf = "\n";
   int row, col;
 
 const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
@@ -45,7 +44,7 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
   printBCD(d[0][fpr0_RTC_secs]);
   if (GET_BIT(d[0][fpr0_FlagBits], flag_DST))
 	  io_puts(" DST");
- io_puts(lf);
+ io_putlf();
 
 
 
@@ -67,7 +66,7 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
       printTimerStamp(d, row, col);
       io_puts(", ");
     }
-    io_puts(lf);
+    io_putlf();
   }
 
   io_puts("Astro data:\n");
@@ -77,7 +76,7 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
       printTimerStamp(d, row, col);
       io_puts(", ");
     }
-    io_puts(lf);
+    io_putlf();
   }
   
 }
