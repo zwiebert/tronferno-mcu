@@ -53,7 +53,7 @@ bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
 
 #define MAX_PRG_TICK_COUNT (DATA_CLOCK_TO_TICKS(FER_PRG_FRAME_WIDTH_DCK) * 2) // FIXME
 
-static int8_t input_edge; // Usually 0, but -1 or +1 at tick input change is detected
+static int8_t input_edge; // Usually 0, but -1 or +1 at the tick where input has changed
 static uint16_t aTicks, pTicks, nTicks;
 #define POS__IN_DATA (CountTicks > 0 && CountBits < bitsPerWord)
 #define POS__NOT_IN_DATA ((CountTicks == 0) && (CountBits == 0))
@@ -132,7 +132,7 @@ static bool fer_word_parity_p(uint16_t word, uint8_t pos) {
 }
 
 static fer_errors fer_extract_Byte(const uint16_t *src, uint8_t *dst) {
-#if 1
+#if 0
 	if (fer_word_parity_p(src[0], 0)
 			&& fer_word_parity_p(src[1], 1)
 			&& ((0xff & src[0]) == (0xff & src[1]))) {

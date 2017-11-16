@@ -115,7 +115,7 @@ static bool ICACHE_FLASH_ATTR move_file(uint16_t file_id, uint32_t new_addr) {
 }
 
 // erase sector.
-// sector must be full, or the free_block_clock will be wrong after
+// sector must be full, or the free_block_count will be wrong after
 static void ICACHE_FLASH_ATTR erase_full_sector(uint16_t sec_idx) {
 	SpiFlashOpResult result = spi_flash_erase_sector(secn_getBySecIdx(sec_idx));
 	DB(printf("erase result %d\n", result));
