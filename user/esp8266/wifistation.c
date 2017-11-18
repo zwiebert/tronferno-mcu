@@ -13,7 +13,7 @@
 
 #define printf io_printf_fun
 #ifndef DISTRIBUTION
-#define D(x) x
+#define D(x)
 #else
 #define D(x)
 #endif
@@ -28,7 +28,7 @@ static struct espconn *pTcpServer;
 static struct espconn *tcpClients[NMB_CLIENTS];
 static int nmbConnected;
 
-// disconnect callback arg points to server, not client. Should be wrong, but there is no documentation?
+// argument of disconnect_cb points to server, not client. This should be wrong, but there is no documentation?
 // use a table of callback functions as workaround
 static void trans_tcpclient_discon_cb(void *arg);
 static void ICACHE_FLASH_ATTR bug_discon_cb_00(void *arg) { trans_tcpclient_discon_cb(tcpClients[0]); }
@@ -152,6 +152,8 @@ tcp_server_listen(void *arg) {
 	D(printf("callback tcp_server_listen(%p)\n", arg));
 	struct espconn *pespconn = (struct espconn *) arg;
 
+	if (nmbConnected >= NMB_CLIENTS) mcu_restart(); // FIXME:
+
 	if (pespconn == NULL) {
 		return;
 	}
@@ -167,6 +169,8 @@ tcp_server_listen(void *arg) {
 			break;
 		}
 	}
+	if (i >= NMB_CLIENTS) mcu_restart(); // FIXME:
+
 	espconn_regist_disconcb(pespconn, bug_discon_cb[i]);
 
 	espconn_regist_recvcb(pespconn, trans_tcpclient_recv);
@@ -176,6 +180,8 @@ tcp_server_listen(void *arg) {
 
 	espconn_regist_write_finish(pespconn, trans_tcpclient_write_cb);
 	espconn_regist_sentcb(pespconn, trans_tcpclient_write_cb);
+	io_putc('0'+nmbConnected), io_puts(" tcp client(s) connected\n");
+
 }
 
 static void ICACHE_FLASH_ATTR
@@ -195,7 +201,7 @@ setup_tcp(void) {
 	espconn_regist_connectcb(pTcpServer, tcp_server_listen);
 	espconn_accept(pTcpServer);
 	espconn_regist_time(pTcpServer, 180, 0);
-	espconn_tcp_set_max_con_allow(pTcpServer, NMB_CLIENTS);
+	espconn_tcp_set_max_con_allow(pTcpServer, NMB_CLIENTS + 1);
 
 }
 
