@@ -36,7 +36,7 @@ Message "Envelope"
 Simple messages like up/down/stop are are encoded into 5 bytes.  If you counted 6 bytes in log output ... yes its really 6, but the 6th contains just a check-sum of that 5 bytes. You may have looked at the data, which actually is sent via 443 MHz, and it looks much more than just 6 bytes ... ok, there really are 12 words of 10bit. The lower 8bit of each word pair is identical to one of the 6 bytes  (word 0/1 = byte 0, word 2/3 = byte 1, ...  word 10/11 = byte 6). The 2 extra bit in each word contain bit parity and indicate if a word is odd or even-numbered.  ... so its really only 5 data bytes. These contain all the addressing info:
 ```
  bytes 0,1,2: this is the adressfield which contains the 3 byte device ID
- byte 3 high nibble: A counter which may increment with each button press, or in case of 'stop' while holding the button)
+ byte 3 high nibble: A counter which may increment with each button press
  byte 3 low nibble: member number (or type of sender if not sent by central unit)
  byte 4 high nibble: group nunber
  (byte 4 low  nibble: used for message content)
@@ -72,6 +72,18 @@ Explaining the Device ID
 
 
   * ID of a plain sender (1xxxx).  Each motor can store *multiple* plain senders and will listen to commands containing one of these IDs.  Like with sun-sensor, multiple motors can be controlled by one plain sender, because you can add its ID to as many motors you want.  But unlike sun-sensor, you can also have multiple plain senders each controlling the same motor. This makes them very versatile:  One plain sender could glued to the window frame and controls just the shutter on this  window. Another one could be glued near the door frame, and control the shutters on all the windows in a room.  Another one could control the entire floor, or even  the entire house.
+
+
+Eexplaining the Counter
+=======================
+
+A nibble counted up with each button press. Zero is skipped: ...a,b,c,d,e,f,1,2,3...
+
+When pressing a button, a message is sent not only once, but will be repeated as long the button is pressed.  Repeating a message is done to increase the chance the receiver gets the message at least once.
+
+So the receiver could identify and disregard duplicates because the counter stays the same.  The counter acts like a message ID.
+
+Unlike the other buttons, holding down the stop button on a 2411 increments the counter for each repeat. So each 'Stop' message is not a duplicate but an original. So stop will never be disreagarded.
 
 
 
@@ -221,6 +233,7 @@ d.5.8  checksum
 ...
 d.16.8 checksum
 
+(note: times like 19:30 are BCD encoded to "0x30, 0x1f" and not to "0x30, 0x19".)
 
 
 --- 8 byte data line 17: no idea

@@ -300,6 +300,8 @@ void tick_ferReceiver() {
 	}
 
 	if (requestLock) {
+		if (!isLocked)
+			fer_recvClearAll();
 		isLocked = true;
 	} else {
 		isLocked = false;

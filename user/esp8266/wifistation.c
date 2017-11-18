@@ -12,12 +12,32 @@
 #include "main/inout.h"
 
 #define printf io_printf_fun
+#ifndef DISTRIBUTION
+#define D(x) x
+#else
+#define D(x)
+#endif
+
+
+int (*old_io_putc_fun)(char c);
+int (*old_io_getc_fun)(void);
 
 // TCP Server //////////////////////////////////
 static struct espconn *pTcpServer;
-int (*old_io_putc_fun)(char c);
-int (*old_io_getc_fun)(void);
-int (*old_io_printf_fun)(const char *fmt, ...);
+#define NMB_CLIENTS 6
+static struct espconn *tcpClients[NMB_CLIENTS];
+static int nmbConnected;
+
+// disconnect callback arg points to server, not client. Should be wrong, but there is no documentation?
+// use a table of callback functions as workaround
+static void trans_tcpclient_discon_cb(void *arg);
+static void ICACHE_FLASH_ATTR bug_discon_cb_00(void *arg) { trans_tcpclient_discon_cb(tcpClients[0]); }
+static void ICACHE_FLASH_ATTR bug_discon_cb_01(void *arg) { trans_tcpclient_discon_cb(tcpClients[1]); }
+static void ICACHE_FLASH_ATTR bug_discon_cb_02(void *arg) { trans_tcpclient_discon_cb(tcpClients[2]); }
+static void ICACHE_FLASH_ATTR bug_discon_cb_03(void *arg) { trans_tcpclient_discon_cb(tcpClients[3]); }
+static void ICACHE_FLASH_ATTR bug_discon_cb_04(void *arg) { trans_tcpclient_discon_cb(tcpClients[4]); }
+static void ICACHE_FLASH_ATTR bug_discon_cb_05(void *arg) { trans_tcpclient_discon_cb(tcpClients[5]); }
+static const espconn_connect_callback bug_discon_cb[NMB_CLIENTS] = { bug_discon_cb_00, bug_discon_cb_01, bug_discon_cb_02, bug_discon_cb_03, bug_discon_cb_04, bug_discon_cb_05, };
 
 // circular buffers
 #define RX_BUFSIZE 256
@@ -56,38 +76,64 @@ tcpSocket_io_putc(char c) {
 	return 0xff & c;
 }
 
-static bool tx_pending = false;
+static int tx_pending;
 
 static void ICACHE_FLASH_ATTR
 trans_tcpclient_write_cb(void *arg) {
-	tx_pending = false;
+	--tx_pending;
+	D(printf("trans_tcpclient_write_cb(%p), tx_pend=%d\n", arg, tx_pending));
+  if (tx_pending < 0)
+	  tx_pending = 0;
 }
 
 void ICACHE_FLASH_ATTR
 tcpSocket_txTask(void) {
+int i;
 
 	if (!tx_pending && tx_head != tx_tail) {
-		//uint8_t len = ((tx_tail + TX_BUFSIZE) - tx_head) % TX_BUFSIZE;
 		uint8_t h = tx_head, t = tx_tail, l;
 
 		l = (h <= t) ? t - h : TX_BUFSIZE - h;
 
-		if (0 == espconn_send(pTcpServer, tx_buf + h, l)) {
-			tx_pending = true;
-			tx_head = (l + h) % TX_BUFSIZE;
+		for (i=0; i < NMB_CLIENTS; ++i) {
+			if (tcpClients[i] == 0)
+				continue;
+			if (0 == espconn_send(tcpClients[i], tx_buf + h, l)) {
+				++tx_pending;
+			} else {
+				trans_tcpclient_discon_cb(tcpClients[i]);  // FIXME: in case the callback was not sent for disconnecting
+			}
 		}
+		tx_head = (l + h) % TX_BUFSIZE;
 	}
 
 }
 
 static void ICACHE_FLASH_ATTR
 trans_tcpclient_discon_cb(void *arg) {
-	io_getc_fun = old_io_getc_fun;
-	rx_head = rx_tail = 0;
+	int i;
+	D(printf("trans_tcpclient_discon_cb(%p), clients=%d\n", arg, nmbConnected));
 
-	if ((io_putc_fun = old_io_putc_fun) != NULL) {
+
+	for (i=0; i < NMB_CLIENTS; ++i) {
+		if (tcpClients[i] == (struct espconn*)arg) {
+			tcpClients[i] = 0;
+			--nmbConnected;
+			break;
+		}
+	}
+	if (i == NMB_CLIENTS)
+		return;
+
+	if (nmbConnected <= 0) {
+		io_getc_fun = old_io_getc_fun;
+		io_putc_fun = old_io_putc_fun;
+		D(printf("reset io functions to serial UART\n"));
+		nmbConnected = 0;
+		rx_head = rx_tail = 0;
+
 		while (tx_head != tx_tail) {
-			io_putc_fun(tx_buf[tx_head++]);
+			io_putc(tx_buf[tx_head++]);
 			tx_head %= TX_BUFSIZE;
 		}
 		tx_head = tx_tail = 0;
@@ -101,19 +147,31 @@ trans_tcpclient_recv(void *arg, char *pdata, unsigned short len) {
 
 static void ICACHE_FLASH_ATTR
 tcp_server_listen(void *arg) {
-	printf("callback tcp_server_listen\n");
+	int i;
+
+	D(printf("callback tcp_server_listen(%p)\n", arg));
 	struct espconn *pespconn = (struct espconn *) arg;
 
 	if (pespconn == NULL) {
 		return;
 	}
 
-	espconn_regist_disconcb(pespconn, trans_tcpclient_discon_cb);
+	if (nmbConnected >= NMB_CLIENTS) {
+		return;
+	}
+
+	for (i=0; i < NMB_CLIENTS; ++i) {
+		if (tcpClients[i] == 0) {
+			tcpClients[i] = pespconn;
+			++nmbConnected;
+			break;
+		}
+	}
+	espconn_regist_disconcb(pespconn, bug_discon_cb[i]);
 
 	espconn_regist_recvcb(pespconn, trans_tcpclient_recv);
-	old_io_getc_fun = io_getc_fun;
+
 	io_getc_fun = tcpSocket_io_getc;
-	old_io_putc_fun = io_putc_fun;
 	io_putc_fun = tcpSocket_io_putc;
 
 	espconn_regist_write_finish(pespconn, trans_tcpclient_write_cb);
@@ -129,7 +187,7 @@ setup_tcp(void) {
 		printf("TcpServer Failure\r\n");
 		return;
 	}
-
+	D(printf("tcp_server %p\n", (void*)pTcpServer));
 	pTcpServer->type = ESPCONN_TCP;
 	pTcpServer->state = ESPCONN_NONE;
 	pTcpServer->proto.tcp = (esp_tcp *) os_zalloc((uint32 )sizeof(esp_tcp));
@@ -137,6 +195,7 @@ setup_tcp(void) {
 	espconn_regist_connectcb(pTcpServer, tcp_server_listen);
 	espconn_accept(pTcpServer);
 	espconn_regist_time(pTcpServer, 180, 0);
+	espconn_tcp_set_max_con_allow(pTcpServer, NMB_CLIENTS);
 
 }
 
@@ -178,7 +237,8 @@ void ICACHE_FLASH_ATTR
 setup_wifistation(void) {
 	wifi_set_opmode(STATION_MODE);
 	user_set_station_config();
-
+	old_io_getc_fun = io_getc_fun;
+	old_io_putc_fun = io_putc_fun;
 	setup_tcp();
 
 }
