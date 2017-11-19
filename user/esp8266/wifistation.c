@@ -237,7 +237,7 @@ setup_tcp(void) {
 	espconn_tcp_set_max_con_allow(tcpserver_espconn, NMB_CLIENTS);
 
 	espconn_accept(tcpserver_espconn);
-	//espconn_regist_time(tcpserver_espconn, 180, 0);
+	espconn_regist_time(tcpserver_espconn, 180, 0);
 
 }
 

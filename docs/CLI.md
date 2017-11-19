@@ -2,7 +2,7 @@
 
 This text describe the command line interface of tronferno-mcu. The CLI can be accessed via a terminal, but is best to be acessed via a front-end, like a smart phone app or some server like FHEM.
 
-When using a terminal, it may be required to enable local echo. Backspace key is handled properly.
+When using a terminal, it may be required to enable local echo. Backspace key is now handled properly.
  
 
 ## Syntax
@@ -126,9 +126,9 @@ Except for rtc-only, all timer options should be send together by a single comma
 
 We cannot read any data from the receivers anyway, so to be able to tell a user which timer data is currently stored in a receiver, the only way is to memorize it elsewhere (in the MCU would be best, I'm working on it).  Because of this, the original central unit 2411 will not know about any timers or options set by our MCU and vice versa. All timer commands will also set the RTC of the receiver.  So the RTC of the MCU should set to the correct time, which is usally done by NTP. If NTP is not available it needs to be set by the user or the front-end (GUI).
 ```
-   timer sun-auto astro=0 ...;     set all options on a single command line
+   timer sun-auto astro ...;     set all options on a single command line
    timer sun-auto;                 this enables sun automatic
-   timer astro=0;                   ... but this will disable sun automatic
+   timer astro;                   ... but this will disable sun automatic
    timer ...;                       ... this will disable astro
 ```
 
@@ -181,8 +181,8 @@ The mcu stores timer commands, so it can print out the timer configuration of ea
 #### rtc-only
 * rtc-only=(1|0)  Send only RTC data and ommit the entire timer data. Will only affect the RTC in the receiver, not any timer data.
 
-        timer rtc-only=1;    updates internal RTC of the receiver(s)
-	    timer rtc-only=1 sun-auto=1 daily=0500-;   sun-auto and daily options have no effect
+        timer rtc-only;    updates internal RTC of the receiver(s)
+	    timer rtc-only sun-auto daily=0500-;   sun-auto and daily options have no effect
 		
 	   
 Each timer command has RTC data and will update the internal RTC of the receivers addressed by a timer command. This rtc-only option is mainly used after power loss of a shutter; to synchronize the times of all shutters; when daylight time changes.
