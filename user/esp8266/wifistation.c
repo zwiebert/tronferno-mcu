@@ -13,7 +13,7 @@
 
 #define printf io_printf_fun
 #ifndef DISTRIBUTION
-#define D(x)
+#define D(x) x
 #else
 #define D(x)
 #endif
@@ -105,20 +105,26 @@ static int pendingCount;
 		l = (h <= t) ? t - h : TX_BUFSIZE - h;
 
 		for (i=0; i < NMB_CLIENTS; ++i) {
+			int result;
 			if (tcpclient_espconn[i] == 0)
 				continue;
-			if (0 == espconn_send(tcpclient_espconn[i], tx_buf + h, l)) {
+			if (ESPCONN_OK == (result = espconn_send(tcpclient_espconn[i], tx_buf + h, l))) {
 				++tx_pending;
 				D(printf("send success. length=%d\n", (int)l));
 			} else {
-				D(printf("send failed. length=%d\n", (int)l));
-				//hook_tcpclient_disconnect(tcpclient_espconn[i]);  // FIXME: in case the callback was not sent for disconnecting
+				D(printf("send failed. length=%d result=%d\n", (int)l, result));
+				if (result == ESPCONN_ARG) { // FIXME: kludge
+					if (nmbConnected > 1) {
+					tcpclient_espconn[i] = 0;
+					--nmbConnected;
+					} else {
+						hook_tcpclient_disconnect(tcpclient_espconn[i]);
+					}
+				}
 			}
 		}
 		tx_head = (l + h) % TX_BUFSIZE;
 	} else {
-		if (tx_pending)
-		D(printf(" #%d# ", (int)tx_pending));
 	}
 
 }
@@ -165,6 +171,8 @@ hook_tcpclient_disconnect(void *arg) {
 			tx_head %= TX_BUFSIZE;
 		}
 		tx_head = tx_tail = 0;
+		tx_pending = 0;
+		os_bzero(tcpclient_espconn, sizeof tcpclient_espconn);
 	}
 }
 
