@@ -24,6 +24,8 @@
 #define ENABLE_RESTART 1 // allow software reset
 #define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
 
+
+#define NODEFAULT() if (val==0) return reply_failure()
 //fer_sender_basic senders[10];
 fer_sender_basic default_sender;
 fer_sender_basic last_received_sender;
@@ -100,10 +102,30 @@ get_commandline() {
 	static int cmd_buf_idx;
 	static bool error;
 	int c;
+	static int quoteCount;
 
 	while ((c = io_getc()) != -1) {
-		if (c == '\r' || c == '\n')
+
+		// handle characters who don't get into the buffer
+		if (c == '\r' || c == '\n') {
+			quoteCount = 0;
 			continue;
+		}
+
+		// backspace: remove last character from buffer
+		if (c == '\b') {
+			if (cmd_buf_idx == 0)
+				continue;
+			if (cmd_buf[--cmd_buf_idx] == '\"')
+				--quoteCount;
+			continue;
+		}
+
+		// count the quotes, so we now if we are inside or outside a quoted word
+		if (c=='\"') {
+			++quoteCount;
+		}
+
 		// to throw away rest of a too long command line from earlier
 		if (error) {
 			if (c == ';')
@@ -115,22 +137,27 @@ get_commandline() {
 			goto err;
 		}
 
-		// ';" is used to terminate a command line
-		if (c == ';') {
-			if (cmd_buf_idx == 0)
+		// handle special characters, if outside a quoted word
+		if ((quoteCount & 1) == 0) {
+			// ';' is used to terminate a command line
+			if (c == ';' && (quoteCount & 1) == 0) {
+				if (cmd_buf_idx == 0)
 				goto succ;
-			cmd_buf[cmd_buf_idx] = '\0';
-			result = cmd_buf;
-			goto succ;
-		} else {
-			cmd_buf[cmd_buf_idx++] = (char) c;
+				cmd_buf[cmd_buf_idx] = '\0';
+				result = cmd_buf;
+				goto succ;
+			}
 		}
+
+		// store char to buffer
+		cmd_buf[cmd_buf_idx++] = (char) c;
 	}
 
 	goto cont;
 
 	err: error = true;
 	succ: cmd_buf_idx = 0;
+	quoteCount = 0;
 	cont: return result;
 }
 
@@ -151,7 +178,14 @@ skip_leading_whitespace(char *s) {
 }
 
 static char * ICACHE_FLASH_ATTR
-find_next_whitespace_or_eq(char *s) {
+find_next_space_eq_eol(char *s) {
+	while (*s != '\0' && *s != ' ' && *s != '=') {
+		s++;
+	}
+	return s;
+}
+static char * ICACHE_FLASH_ATTR
+find_next_whitespace_or_eol(char *s) {
 	while (*s != '\0' && *s != ' ' && *s != '=') {
 		s++;
 	}
@@ -161,6 +195,9 @@ find_next_whitespace_or_eq(char *s) {
 int ICACHE_FLASH_ATTR
 asc2bool(const char *s)
 {
+   if (!s)
+	 return 1; // default value for key without value
+
    switch(*s) {
      case '0':
       return 0;
@@ -178,31 +215,69 @@ parse_commandline(char *cl) {
 	msgid = 0;
 
 	for (p = 0; p < MAX_PAR; ++p) {
+		bool isValQuoted=false;
+
+		// trim
 		cl = skip_leading_whitespace(cl);
+
+		// eol
 		if (*cl == '\0') {
 			return p;
 		}
-		par[p].key = cl;
-		cl = find_next_whitespace_or_eq(cl);
-		switch (*cl) {
-		case '\0':
-			par[p].val = 0;
-			return p;
 
+		// first word is the key
+		par[p].key = cl;
+
+		// skip the key
+		cl = find_next_space_eq_eol(cl);
+
+
+		switch (*cl) {
+
+		// no val follows the key. set val to NULL (interpreted as default)
+		case '\0':
 		case ' ':
+			par[p].val = NULL;
 			continue;
 
+	    // got val for the key
 		case '=':
+			// add null terminator to key
 			*cl++ = '\0';
-			cl = skip_leading_whitespace(cl);
 
+			if (*cl == '\"') {
+				isValQuoted = true;
+				++cl;
+			}
+
+			// eol - error
 			if (*cl == '\0') {
 				return -1;
 			}
+
+			// start of val
 			par[p].val = cl;
-			cl = find_next_whitespace_or_eq(cl);
-			if (*cl == '=')
-				return -1;
+
+			// end of val
+			if (isValQuoted) {
+				char *q = strchr(cl, '\"');
+				// quote unbalanced
+				if (q == 0) {
+					return -1;
+				}
+				cl = q;
+
+			} else {
+				cl = find_next_whitespace_or_eol(cl);
+			}
+
+			// terminate val if not already terminated by eol
+			if (*cl != '\0') {
+			   *cl++ = '\0';
+			}
+
+			// found global option
+			// process it here and remove the key/val
 			if (strcmp(par[p].key, "mid") == 0) {
 				msgid = atoi(par[p].val);
 				--p;
@@ -253,9 +328,10 @@ reply_success() {
 	reply_message(0, "ok");
 }
 
-void ICACHE_FLASH_ATTR
+int ICACHE_FLASH_ATTR
 reply_failure() {
 	reply_message(0, "error");
+	return -1;
 }
 
 bool ICACHE_FLASH_ATTR config_receiver(const char *val) {
@@ -339,10 +415,10 @@ fer_grp asc2group(const char *s) { return (fer_grp) atoi(s); }
 fer_memb asc2memb(const char *s) { int m = atoi(s); return m == 0 ? fer_memb_Broadcast : (fer_memb) (m - 1) + fer_memb_M1; }
   
 const char help_parmSend[] PROGMEM =
-		  "a=(0|SenderID) hex address of the sender or receiver (add a 9 in front) or 0 for the configured CentralUnit\n"
-		  "g=[0-7]  group number. 0 is for broadcast\n"
-		  "m=[0-7]  group member. 0 is for broadcast all groups members\n"
-		  "c=(up|down|stop|sun-down|sun-inst|set) command to send\n"
+		  "a=(0|ID)    hex ID of sender or receiver. 0 (default) uses 'cu' in config\n"
+		  "g=[0-7]     group number. 0 (default) addresses all groups\n"
+		  "m=[0-7]     group member. 0 (default) addresses all members\n"
+		  "c=command   Command to send. One of: up, down, stop, sun-down, sun-inst, set\n"
 #if ALLOW_ENDPOS
          "potentially harmful: c=(limit-up|limit-down):  command to set end-position ... it will not stop and end position until you send STOP.\n"
 #endif
@@ -360,16 +436,17 @@ process_parmSend(clpar p[], int len) {
 	for (i = 1; i < len; ++i) {
 		const char *key = p[i].key, *val = p[i].val;
 
-		if (key == NULL || val == NULL) {
+		if (key == NULL) {
 			return -1;
 		} else if (strcmp(key, "a") == 0) {
-			addr = strtol(val, NULL, 16);
+			addr = val ? strtol(val, NULL, 16) : 0;
 		} else if (strcmp(key, "g") == 0) {
-			group = asc2group(val);
+			group = val ? asc2group(val) : 0;
 		} else if (strcmp(key, "m") == 0) {
-			memb = asc2memb(val);
+			memb = val ? asc2memb(val) : 0;
 		} else if (strcmp(key, "c") == 0) {
-			cmd = cli_parm_to_ferCMD(val);                            
+			NODEFAULT();
+			cmd = cli_parm_to_ferCMD(val);
 		} else {
 			warning_unknown_option(key);
 		}
@@ -401,22 +478,22 @@ process_parmSend(clpar p[], int len) {
 }
 
 const char help_parmConfig[] PROGMEM =
-		  "cu=(CentralUnitID|auto)  like 80abcd. auto: press Stop key on central unit in the next 60 seconds\n"
-		  "rtc=ISO_TIME_STRING  like 2017-12-31T23:59:59\n"
-		  "baud=serial_baud_rate\n"
+		  "cu=(ID|auto)     6-digit hex ID of Central-Unit. auto: capture ID with connected RF receiver\n"
+		  "rtc=ISO_TIME     (rtc=2017-12-31T23:59:59)\n"
+		  "baud=N           serial baud rate (baud=38400)\n"
 #ifdef USE_WLAN
-		  "wlan-ssid=your_wlan_ssid\n"
-		  "wlan-password=your_wlan_password  example: config wlan-ssid=1234 wlan-password=abcd restart=1;\n"
+		  "wlan-ssid=SSID\n"
+		  "wlan-password=PW  example: config wlan-ssid=\"1234\" wlan-password=\"abcd\" restart;\n"
 #endif
-		  "longitude=N like -13.23452 (to calculate astro)\n"
-		  "latitude=N like +52.34234\n"
-		  "time-zone=N like +1\n"
-		  "dst=(eu|0|1) daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
-		  "verbose=(0|1|2|3|4|5)  set text output verbosity level: 0 for none ... 5 for max)\n"
-		  "pw=your_config_password   if password set, the pw option needs to come first: e.g. config pw=my_passw dst=0 ...\n"
-		  "set-config-password=your_config_password\n"
+		  "longitude=DEC\n"
+		  "latitude=DEC\n"
+		  "time-zone=N       example: config  longitude=-13.23452 latitude=+52.34234 time-zone=+1.0;\n"
+		  "dst=(eu|0|1)      daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
+		  "verbose=(0..5)    set text output verbosity level: 0 for none ... 5 for max)\n"
+		  "set-config-password=PW  set a config password. if set every config commands needs the pw option\n"
+		  "pw=PW             example: config pw=my_passw dst=eu;\n"
 #if ENABLE_RESTART
-		  "restart=(1|0)  if 1 then restart MCU\n"
+		  "restart           restart MCU\n"
 #endif
 		//  "set-expert-password=\n"
 		;
@@ -429,29 +506,26 @@ process_parmConfig(clpar p[], int len) {
 	for (i = 1; i < len; ++i) {
 		const char *key = p[i].key, *val = p[i].val;
 
-		if (key == NULL || val == NULL) {
-			reply_failure();
-			return -1;
+		if (key == NULL || val == NULL) {  // don't allow any default values in config
+			return reply_failure();
 		} else if (strcmp(key, "pw") == 0) {
-			if (strcmp(C.app_configPassword, val) == 0) {
+			if (val && strcmp(C.app_configPassword, val) == 0) {
 				pw_ok = true;
 				io_puts("password ok\n");
 
 			} else {
 				io_puts("wrong config password\n");
-				reply_failure();
-				return -1;
+				return reply_failure();
 			}
 		} else if (!pw_ok) {
 			io_puts("missing config password\n");
-			reply_failure();
-			return -1;
+			return reply_failure();
 #if ENABLE_RESTART
 		} else if (strcmp(key, "restart") == 0) {
 			mcu_restart();
 #endif
 		} else if (strcmp(key, "rtc") == 0) {
-			reply(rtc_set_by_string(val));
+			reply(val ? rtc_set_by_string(val) : false);
 
 		} else if (strcmp(key, "cu") == 0) {
 			if (strcmp(val, "auto") == 0) {
@@ -462,8 +536,7 @@ process_parmConfig(clpar p[], int len) {
 			uint32_t cu = (strcmp(val, "auto-old") == 0) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
 
 			if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
-				reply_failure();
-				return -1;
+				return reply_failure();
 			}
 			FSB_PUT_DEVID(&default_sender, cu);
 			C.fer_centralUnitID = cu;
@@ -475,12 +548,14 @@ process_parmConfig(clpar p[], int len) {
 			C.fer_usedMembers = gmu;
 			save_config();
 			reply_success();
+
 		} else if (strcmp(key, "baud") == 0) {
 			uint32_t baud = strtoul(val, NULL, 10);
 			C.mcu_serialBaud = baud;
 			save_config();
 			reply_success();
 		} else if (strcmp(key, "verbose") == 0) {
+			NODEFAULT();
 			enum verbosity level = atoi(val);
 			C.app_verboseOutput = level;
 			save_config();
@@ -666,14 +741,14 @@ string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst) {
 #define HAS_FLAG(v) (v >= 0)
 
 const char help_parmTimer[] PROGMEM =
-		  "daily=T T is like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00\n"
-		  "weekly=TTTTTTT like weekly=0730-++++0900-+ (+ repeats the previous T) for up 07:30 Mon-Fri and up 09:00 Sat-Sun\n"
-		  "astro=N This enables astro automatic. N is the offset to civil dusk in minutes. So astro=+60 closes the shutter 60 minutes after civil dusk\n"
-		  "sun-auto=1  1 enables and 0 disables sun automatic\n"
-		  "random=1 enables random automatic. shutter opens and closes at random times, so it looks like you are home when you are not\n"
-		  "rtc-only=1  Update the built-in real time clock of the shutter. Don't change its programmed timers (and flags)\n"
-		  "a, g and m: like in send command\n"
-		  "rs=(0|1|2) read back saved timer data. if set to 2, return any data matching g and m e.g. m=0 (any member) instead of m=2\n"
+		  "daily=T        enables daily timer. T is up/down like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00\n"
+		  "weekly=TTTTTTT enables weekly timer. T like with 'daily' or '+' to copy the T on the left. (weekly=0730-++++0900-+)\n"
+		  "astro[=N]      enables astro automatic. N is the offset to civil dusk in minutes. Can be postive or negative.\n"
+		  "sun-auto       enables sun automatic\n"
+		  "random         enables random automatic. shutter opens and closes at random times.\n"
+		  "rtc-only       don't change timers. only update internal real time clock\n"
+		  "a, g and m:    like in send command\n"
+		  "rs=(0|1|2)     read back saved timer data. if set to 2, return any data matching g and m e.g. m=0 (any member) instead of m=2\n"
 		;
 
 static int ICACHE_FLASH_ATTR
@@ -710,21 +785,23 @@ process_parmTimer(clpar p[], int len) {
 	for (i = 1; i < len; ++i) {
 		const char *key = p[i].key, *val = p[i].val;
 
-		if (key == NULL || val == NULL) {
+		if (key == NULL) {
 			return -1;
 		} else if (strcmp(key, timer_keys[TIMER_KEY_WEEKLY]) == 0) {
+			NODEFAULT();
 			has_weekly = string2bcdArray(val, weekly_data, sizeof weekly_data);
 #if ENABLE_RSTD
 			weeklyVal = val;
 #endif
 		} else if (strcmp(key, timer_keys[TIMER_KEY_DAILY]) == 0) {
+			NODEFAULT();
 			has_daily = string2bcdArray(val, daily_data, sizeof daily_data);
 #if ENABLE_RSTD
 			dailyVal = val;
 #endif
 		} else if (strcmp(key, timer_keys[TIMER_KEY_ASTRO]) == 0) {
+			astro_offset = val ? atoi(val) : 0;
 			has_astro = true;
-			astro_offset = atoi(val);
 		} else if (strcmp(key, timer_keys[TIMER_KEY_FLAG_RANDOM]) == 0) {
 			int flag = asc2bool(val);
 			if (flag >= 0) {
@@ -747,18 +824,20 @@ process_parmTimer(clpar p[], int len) {
 		} else if (strcmp(key, timer_keys[TIMER_KEY_RTC_ONLY]) == 0) {
 			flag_rtc_only = asc2bool(val);
 		} else if (strcmp(key, "a") == 0) {
-			addr = strtol(val, NULL, 16);
+			addr = val ? strtol(val, NULL, 16) : 0;
 		} else if (strcmp(key, "g") == 0) {
-			group = asc2group(val);
+			group = val ? asc2group(val) : 0;
 		} else if (strcmp(key, "m") == 0) {
-			memb = asc2memb(val);
+			memb = val ? asc2memb(val) : 0;
 #if ENABLE_RSTD
 			mn = memb ? (memb - 7) : 0;
 		} else if (strcmp(key, "rs") == 0) {
+			NODEFAULT();
 			rs = atoi(val);
 #endif
 #if ENABLE_TIMER_WDAY_KEYS
 		} else if ((wday = asc2wday(key)) >= 0) {
+			NODEFAULTS();
 			io_puts(val), io_putlf();
 			has_weekly = string2bcdArray(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
 #endif
@@ -963,6 +1042,12 @@ static int process_parmHelp(clpar p[], int len);
 
 const char help_None[] PROGMEM = "none";
 
+
+const char help_parmHelp[] PROGMEM =
+		"help command;  or help all;\n";
+
+
+
 struct {
   const char *parm;
   int (*process_parmX)(clpar p[], int len);
@@ -972,7 +1057,7 @@ struct {
     {"config", process_parmConfig, help_parmConfig},
     {"dbg", process_parmDbg, help_parmDbg},
     {"timer", process_parmTimer, help_parmTimer },
-    {"help", process_parmHelp, help_None},
+    {"help", process_parmHelp, help_parmHelp },
 #if ENABLE_EXPERT
     {"expert", process_parmExpert, help_None},
 #endif
@@ -996,25 +1081,55 @@ process_cmdline(char *line) {
 
 }
 
+
+
 static int ICACHE_FLASH_ATTR
 process_parmHelp(clpar p[], int len) {
 	int i;
 
-	const char *usage=
-			"syntax: command option=value ...;\n"
+
+	static const char usage[] PROGMEM = "syntax: command option=value ...;\n"
 			"commands are: ";
 
-	io_puts(usage);
-
-	for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
-		io_puts(parm_handlers[i].parm), io_puts(", ");
+	if (len == 1) {
+		io_puts_P(help_parmHelp), io_putlf();
+		return 0;
 	}
-	io_putlf();
 
-	for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
-		io_puts(parm_handlers[i].parm), io_puts(" options:\n");
-		io_puts_P(parm_handlers[i].help), io_putlf();
-	}
+
+	for (i = 1; i < len; ++i) {
+		int k;
+		const char *key = p[i].key, *val = p[i].val;
+		bool keyProcessed = false;
+
+		if (strcmp(key, "all") == 0) {
+			io_puts_P(usage);
+			for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
+				io_puts(parm_handlers[i].parm), io_puts(", ");
+			}
+			io_putlf();
+
+			for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
+				io_puts(parm_handlers[i].parm), io_puts(" options:\n");
+				io_puts_P(parm_handlers[i].help), io_putlf();
+			}
+
+		} else {
+
+			for (k = 0; k < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++k) {
+				if (strcmp(parm_handlers[k].parm, key) == 0) {
+					io_puts_P(parm_handlers[k].help), io_putlf();
+					keyProcessed = true;
+					break;
+				}
+			}
+
+			if (!keyProcessed) {
+				warning_unknown_option(key);
+			}
+			}
+		}
+
 
 	io_puts("\ncommon options:\n"
 			"mid=N  N is used as an ID in the reply\n");

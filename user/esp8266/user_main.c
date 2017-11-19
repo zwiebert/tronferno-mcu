@@ -60,14 +60,6 @@ user_procTask(os_event_t *events)
     system_os_post(user_procTaskPrio, 0, 0 );
 }
 
-void ICACHE_FLASH_ATTR
-tcp_loop(void)
-{
-	wifiStation_loop();
-    ets_delay_us(1000);
-    system_os_post(user_procTaskPrio, 0, 0 );
-}
-
 
 static void ICACHE_FLASH_ATTR
 io_procTask(os_event_t *events)

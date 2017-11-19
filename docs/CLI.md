@@ -2,18 +2,18 @@
 
 This text describe the command line interface of tronferno-mcu. The CLI can be accessed via a terminal, but is best to be acessed via a front-end, like a smart phone app or some server like FHEM.
 
-When using a terminal, it may be required to enable local echo. Editing is not supported at the moment. Backspace key will not work as intended.
+When using a terminal, it may be required to enable local echo. Backspace key is handled properly.
  
 
 ## Syntax
 
-        command option1=value1 option2=value2 ... optionN=valueN;
+        command option1=value1 option2 option3="quoted value" ... optionN=valueN;
 
 * Examples:
 
         send g=1 m=2 c=up;
         timer weekly=05002100++++0800- astro=-15 sun-auto=1;
-        config wlan-ssid=WLBox wlan-password=34l2cxdfa9 restart=1;
+        config wlan-ssid=WLBox wlan-password="34l2cx;dfa9" restart=1;
 
 
 ## Commands
@@ -25,9 +25,9 @@ Commands are help, config, send, timer
 
 * Explanation: The help command prints a list of available commands.
 
-* Options: none so far
+* Options: config, send, timer, all
 
-     `help;`
+     `help config;`
 
     
 ### config command
@@ -60,7 +60,7 @@ Data to connect to a WLAN
 
 #### restart
 
-* restart=(0|1)  - Restarts the MCU. Should be the last option in a command line obviuosly.
+* restart  - Restarts the MCU. Should be the last option in a command line obviuosly.
    
             config wlan-password=MyNewPassword restart=1;
 
@@ -68,14 +68,14 @@ Data to connect to a WLAN
 
 These options  are used to calculate times for the "astro-automatic" built in to receivers. Astro closes the shutter at civil dusk. The user can define a offset time (like 10 mintutes before civil dusk).
 
-* longitude=N
-* latitude=N
+* longitude=DEC
+* latitude=DEC
 * time-zone=N  - relative to GMT/UTC. Like: +1.0 or -7.0  or -6.5
 * dst=(eu|0|1) - enable/disable daylight saving time. eu=europe. manually: 0=off, 1=on. If DST is on, the shutter will add 1 hour to its astro timer
 
         config longitude=-13.23452 latitude=+52.34234 time-zone=+1  dst=eu; 
 
-* rtc=ISO-TIME-STRING - Sets the MCUs internal real time clock.  Usually set automatically by NTP server.
+* rtc=ISO-TIME - Sets the MCUs internal real time clock.  Usually set automatically by NTP server.
          
         config 2017-12-31T23:59:59;
 
@@ -92,10 +92,9 @@ Send a plain command message via RF to the receivers. Receiver can be a shutter 
   
 #### addressing options
 
-* a=(id|0|[1-9]) - the adress field of a command usually contains the ID of the sender, or sometimes the receiver
+* a=(id|0) - the adress field of a command usually contains the ID of the sender, or sometimes the receiver
   * id - 6 digit hex ID of sender or receiver
-  * 0 - use internally stored central unit ID set by config cu. (default)  
-  * [1-9] - use on of 9 internally stored IDs (not fully implemented yet)
+  * 0 - use internally stored central unit ID set by config cu. (default)
         
 * g=(0|[1-7])  - group number
   * 0 - broadcast to all groups  (default)
@@ -127,8 +126,8 @@ Except for rtc-only, all timer options should be send together by a single comma
 
 We cannot read any data from the receivers anyway, so to be able to tell a user which timer data is currently stored in a receiver, the only way is to memorize it elsewhere (in the MCU would be best, I'm working on it).  Because of this, the original central unit 2411 will not know about any timers or options set by our MCU and vice versa. All timer commands will also set the RTC of the receiver.  So the RTC of the MCU should set to the correct time, which is usally done by NTP. If NTP is not available it needs to be set by the user or the front-end (GUI).
 ```
-   timer sun-auto=1 astro=0 ...;    set all options on a single command line
-   timer sun-auto=1;                this enables sun automatic
+   timer sun-auto astro=0 ...;     set all options on a single command line
+   timer sun-auto;                 this enables sun automatic
    timer astro=0;                   ... but this will disable sun automatic
    timer ...;                       ... this will disable astro
 ```
