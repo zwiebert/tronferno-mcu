@@ -22,22 +22,14 @@
 int (*old_io_putc_fun)(char c);
 int (*old_io_getc_fun)(void);
 
-// TCP Server //////////////////////////////////
-static struct espconn *pTcpServer;
-#define NMB_CLIENTS 6
-static struct espconn *tcpClients[NMB_CLIENTS];
-static int nmbConnected;
 
-// argument of disconnect_cb points to server, not client. This should be wrong, but there is no documentation?
-// use a table of callback functions as workaround
-static void trans_tcpclient_discon_cb(void *arg);
-static void ICACHE_FLASH_ATTR bug_discon_cb_00(void *arg) { trans_tcpclient_discon_cb(tcpClients[0]); }
-static void ICACHE_FLASH_ATTR bug_discon_cb_01(void *arg) { trans_tcpclient_discon_cb(tcpClients[1]); }
-static void ICACHE_FLASH_ATTR bug_discon_cb_02(void *arg) { trans_tcpclient_discon_cb(tcpClients[2]); }
-static void ICACHE_FLASH_ATTR bug_discon_cb_03(void *arg) { trans_tcpclient_discon_cb(tcpClients[3]); }
-static void ICACHE_FLASH_ATTR bug_discon_cb_04(void *arg) { trans_tcpclient_discon_cb(tcpClients[4]); }
-static void ICACHE_FLASH_ATTR bug_discon_cb_05(void *arg) { trans_tcpclient_discon_cb(tcpClients[5]); }
-static const espconn_connect_callback bug_discon_cb[NMB_CLIENTS] = { bug_discon_cb_00, bug_discon_cb_01, bug_discon_cb_02, bug_discon_cb_03, bug_discon_cb_04, bug_discon_cb_05, };
+static void hook_tcpclient_disconnect(void *arg);
+
+// TCP Server //////////////////////////////////
+static struct espconn *tcpserver_espconn;
+#define NMB_CLIENTS 6
+static struct espconn *tcpclient_espconn[NMB_CLIENTS];
+static int nmbConnected;
 
 // circular buffers
 #define RX_BUFSIZE 256
@@ -47,6 +39,7 @@ static uint8_t rx_head = 0, rx_tail = 0;
 #define TX_BUFSIZE 256
 static uint8_t tx_buf[RX_BUFSIZE];
 static uint8_t tx_head = 0, tx_tail = 0;
+
 
 static void ICACHE_FLASH_ATTR
 rx_copy(uint8_t *start, uint8_t *end) {
@@ -70,8 +63,15 @@ tcpSocket_io_getc(void) {
 
 static int ICACHE_FLASH_ATTR
 tcpSocket_io_putc(char c) {
-	tx_buf[tx_tail++] = c;
-	tx_tail %= TX_BUFSIZE;
+	uint8_t new_tail = tx_tail + 1;
+	if (new_tail == TX_BUFSIZE)
+		new_tail = 0;
+
+	if (new_tail == tx_head)
+		return -1;   // the only thing we can do, as long txTask is not done by interrupt (if this is possible)
+
+	tx_buf[tx_tail] = c;
+	tx_tail = new_tail;
 
 	return 0xff & c;
 }
@@ -89,6 +89,15 @@ trans_tcpclient_write_cb(void *arg) {
 void ICACHE_FLASH_ATTR
 tcpSocket_txTask(void) {
 int i;
+static int pendingCount;
+
+	// recover from unbalanced callbacks
+     if (tx_pending && ++pendingCount < 0) {
+    	 tx_pending = 0;
+    	 pendingCount = 0;
+    	 D(printf("pending unbalanced\n"));
+     }
+
 
 	if (!tx_pending && tx_head != tx_tail) {
 		uint8_t h = tx_head, t = tx_tail, l;
@@ -96,34 +105,53 @@ int i;
 		l = (h <= t) ? t - h : TX_BUFSIZE - h;
 
 		for (i=0; i < NMB_CLIENTS; ++i) {
-			if (tcpClients[i] == 0)
+			if (tcpclient_espconn[i] == 0)
 				continue;
-			if (0 == espconn_send(tcpClients[i], tx_buf + h, l)) {
+			if (0 == espconn_send(tcpclient_espconn[i], tx_buf + h, l)) {
 				++tx_pending;
+				D(printf("send success. length=%d\n", (int)l));
 			} else {
-				trans_tcpclient_discon_cb(tcpClients[i]);  // FIXME: in case the callback was not sent for disconnecting
+				D(printf("send failed. length=%d\n", (int)l));
+				//hook_tcpclient_disconnect(tcpclient_espconn[i]);  // FIXME: in case the callback was not sent for disconnecting
 			}
 		}
 		tx_head = (l + h) % TX_BUFSIZE;
+	} else {
+		if (tx_pending)
+		D(printf(" #%d# ", (int)tx_pending));
 	}
 
 }
 
 static void ICACHE_FLASH_ATTR
-trans_tcpclient_discon_cb(void *arg) {
+hook_tcpclient_disconnect(void *arg) {
 	int i;
+	struct espconn *pesp_conn = arg;
+
+	printf("tcp client disconnected: %d.%d.%d.%d:%d\n", pesp_conn->proto.tcp->remote_ip[0], pesp_conn->proto.tcp->remote_ip[1],
+			pesp_conn->proto.tcp->remote_ip[2], pesp_conn->proto.tcp->remote_ip[3], pesp_conn->proto.tcp->remote_port);
+
 	D(printf("trans_tcpclient_discon_cb(%p), clients=%d\n", arg, nmbConnected));
 
+	for (i = 0; i < NMB_CLIENTS; ++i) {
+		if (tcpclient_espconn[i] == NULL) {
+			continue;
+		} else {
+			esp_tcp *a = pesp_conn->proto.tcp, *b = tcpclient_espconn[i]->proto.tcp;
 
-	for (i=0; i < NMB_CLIENTS; ++i) {
-		if (tcpClients[i] == (struct espconn*)arg) {
-			tcpClients[i] = 0;
-			--nmbConnected;
-			break;
+			if (a->remote_port == b->remote_port && 0 == memcmp(a->remote_ip, b->remote_ip, sizeof(a->remote_ip))) {
+				tcpclient_espconn[i] = 0;
+				--nmbConnected;
+				D(printf("match. connections=%d\n", (int)nmbConnected));
+				break;
+			}
 		}
 	}
-	if (i == NMB_CLIENTS)
+
+	if (i == NMB_CLIENTS) {
+		D(printf("no match\n"));
 		return;
+	}
 
 	if (nmbConnected <= 0) {
 		io_getc_fun = old_io_getc_fun;
@@ -140,46 +168,53 @@ trans_tcpclient_discon_cb(void *arg) {
 	}
 }
 
+
 static void ICACHE_FLASH_ATTR
 trans_tcpclient_recv(void *arg, char *pdata, unsigned short len) {
 	rx_copy(pdata, pdata + len);
 }
 
 static void ICACHE_FLASH_ATTR
-tcp_server_listen(void *arg) {
+hook_tcpclient_connect(void *arg) {
 	int i;
 
-	D(printf("callback tcp_server_listen(%p)\n", arg));
-	struct espconn *pespconn = (struct espconn *) arg;
+	D(printf("callback connect (%p)\n", arg));
+	struct espconn *pesp_conn = (struct espconn *) arg;
 
 	if (nmbConnected >= NMB_CLIENTS) mcu_restart(); // FIXME:
 
-	if (pespconn == NULL) {
+	if (pesp_conn == NULL) {
 		return;
 	}
+
+
 
 	if (nmbConnected >= NMB_CLIENTS) {
 		return;
 	}
 
 	for (i=0; i < NMB_CLIENTS; ++i) {
-		if (tcpClients[i] == 0) {
-			tcpClients[i] = pespconn;
+		if (tcpclient_espconn[i] == 0) {
+			tcpclient_espconn[i] = pesp_conn;
 			++nmbConnected;
 			break;
 		}
 	}
 	if (i >= NMB_CLIENTS) mcu_restart(); // FIXME:
 
-	espconn_regist_disconcb(pespconn, bug_discon_cb[i]);
+	printf("tcp client connected: %d.%d.%d.%d:%d\n", pesp_conn->proto.tcp->remote_ip[0], pesp_conn->proto.tcp->remote_ip[1],
+			pesp_conn->proto.tcp->remote_ip[2], pesp_conn->proto.tcp->remote_ip[3], pesp_conn->proto.tcp->remote_port);
 
-	espconn_regist_recvcb(pespconn, trans_tcpclient_recv);
+
+	espconn_regist_disconcb(pesp_conn, hook_tcpclient_disconnect);
+
+	espconn_regist_recvcb(pesp_conn, trans_tcpclient_recv);
 
 	io_getc_fun = tcpSocket_io_getc;
 	io_putc_fun = tcpSocket_io_putc;
 
-	espconn_regist_write_finish(pespconn, trans_tcpclient_write_cb);
-	espconn_regist_sentcb(pespconn, trans_tcpclient_write_cb);
+	espconn_regist_write_finish(pesp_conn, trans_tcpclient_write_cb);
+	espconn_regist_sentcb(pesp_conn, trans_tcpclient_write_cb);
 	io_putc('0'+nmbConnected), io_puts(" tcp client(s) connected\n");
 
 }
@@ -187,21 +222,22 @@ tcp_server_listen(void *arg) {
 static void ICACHE_FLASH_ATTR
 setup_tcp(void) {
 	// create tcp server
-	pTcpServer = (struct espconn *) os_zalloc((uint32 )sizeof(struct espconn));
+	tcpserver_espconn = (struct espconn *) os_zalloc((uint32 )sizeof(struct espconn));
 
-	if (pTcpServer == NULL) {
-		printf("TcpServer Failure\r\n");
+	if (tcpserver_espconn == NULL) {
+		printf("TCP server failure. Out of memory.\n");
 		return;
 	}
-	D(printf("tcp_server %p\n", (void*)pTcpServer));
-	pTcpServer->type = ESPCONN_TCP;
-	pTcpServer->state = ESPCONN_NONE;
-	pTcpServer->proto.tcp = (esp_tcp *) os_zalloc((uint32 )sizeof(esp_tcp));
-	pTcpServer->proto.tcp->local_port = 7777;      // server port
-	espconn_regist_connectcb(pTcpServer, tcp_server_listen);
-	espconn_accept(pTcpServer);
-	espconn_regist_time(pTcpServer, 180, 0);
-	espconn_tcp_set_max_con_allow(pTcpServer, NMB_CLIENTS + 1);
+	D(printf("tcp_server %p\n", (void*)tcpserver_espconn));
+	tcpserver_espconn->type = ESPCONN_TCP;
+	tcpserver_espconn->state = ESPCONN_NONE;
+	tcpserver_espconn->proto.tcp = (esp_tcp *) os_zalloc((uint32 )sizeof(esp_tcp));
+	tcpserver_espconn->proto.tcp->local_port = 7777;      // server port
+	espconn_regist_connectcb(tcpserver_espconn, hook_tcpclient_connect);
+	espconn_tcp_set_max_con_allow(tcpserver_espconn, NMB_CLIENTS);
+
+	espconn_accept(tcpserver_espconn);
+	//espconn_regist_time(tcpserver_espconn, 180, 0);
 
 }
 
@@ -216,16 +252,6 @@ user_set_station_config(void) {
 	wifi_station_set_config(&stationConf);
 }
 
-/*
- enum{
- STATION_IDLE = 0,
- STATION_CONNECTING,
- STATION_WRONG_PASSWORD,
- STATION_NO_AP_FOUND,
- STATION_CONNECT_FAIL,
- STATION_GOT_IP
- };
- */
 
 void wst_reconnect(void) {
 	uint8_t status = wifi_station_get_connect_status();

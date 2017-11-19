@@ -45,6 +45,12 @@ void setup_ntp(void);
 #define user_procTaskQueueLen 1
 static os_event_t user_procTaskQueue[user_procTaskQueueLen];
 
+// io task
+#define io_procTaskPrio     0
+#define io_procTaskQueueLen 1
+static os_event_t io_procTaskQueue[io_procTaskQueueLen];
+
+
 static void ICACHE_FLASH_ATTR
 user_procTask(os_event_t *events)
 {
@@ -54,6 +60,22 @@ user_procTask(os_event_t *events)
     system_os_post(user_procTaskPrio, 0, 0 );
 }
 
+void ICACHE_FLASH_ATTR
+tcp_loop(void)
+{
+	wifiStation_loop();
+    ets_delay_us(1000);
+    system_os_post(user_procTaskPrio, 0, 0 );
+}
+
+
+static void ICACHE_FLASH_ATTR
+io_procTask(os_event_t *events)
+{
+	wifiStation_loop();
+    ets_delay_us(1000);
+    system_os_post(io_procTaskPrio, 0, 0 );
+}
 
 // hardware specific main setup
 void ICACHE_FLASH_ATTR
@@ -79,6 +101,10 @@ user_init() {
 
     system_os_task(user_procTask, user_procTaskPrio, user_procTaskQueue, user_procTaskQueueLen);
     system_os_post(user_procTaskPrio, 0, 0 );
+#if 0
+    system_os_task(io_procTask, io_procTaskPrio, io_procTaskQueue, io_procTaskQueueLen);
+    system_os_post(io_procTaskPrio, 0, 0 );
+#endif
 
     setup_timer();
 
