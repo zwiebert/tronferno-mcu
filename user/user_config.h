@@ -6,6 +6,8 @@
 // ESP8266 configuration
 #ifdef MCU_ESP8266
 
+#define ENABLE_SPIFFS 0
+
 #define C_BASE_FLASH      0x100000UL   //1MB
 
 #define C_DATA_FLASH_ADDR  C_BASE_FLASH

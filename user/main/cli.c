@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "../user_config.h"
 
 #include "all.h"
 
@@ -658,13 +658,14 @@ process_parmDbg(clpar p[], int len) {
 				io_putl(C.fer_centralUnitID, 16);
 				io_putlf();
 			}
+#if ENABLE_SPIFFS
 		} else if (strcmp(key, "spiffs") == 0) {
 			if (strcmp(val, "format") == 0) {
 				spiffs_format();
 			} else if (strcmp(val, "test") == 0) {
 				spiffs_test();
 			}
-
+#endif
 
 		} else {
 			warning_unknown_option(key);

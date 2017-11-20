@@ -1,3 +1,4 @@
+
 #include "user_interface.h"
 #include <os_type.h>
 #include <ets_sys.h>
@@ -5,10 +6,14 @@
 #include <osapi.h>
 #include <mem.h>
 
-#include "spiffs_config.h"
-#include "spiffs.h"
+
 
 #include "../user_config.h"
+
+#if ENABLE_SPIFFS
+
+#include "spiffs_config.h"
+#include "spiffs.h"
 
 #define min(X,Y) ((X) < (Y) ? (X) : (Y))
 
@@ -302,4 +307,6 @@ void ICACHE_FLASH_ATTR setup_spiffs(void) {
 		spiffs_test();
 	}
 }
+
+#endif
 

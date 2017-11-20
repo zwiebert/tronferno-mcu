@@ -14,12 +14,15 @@
 #include <gpio.h>
 #include "driver/uart.h"
 
+#include "../user_config.h"
+
 #include "main/common.h"
 #include "main/inout.h"
 #include "main/config.h"
 #ifdef DEBUG
 #include <../../gdbstub/gdbstub.h>
 #endif
+
 
 #define printf ets_uart_printf
 
@@ -92,8 +95,9 @@ user_init() {
 	setup_timer();
 
 	setup_dataFlash2();
+#if ENABLE_SPIFFS
 	setup_spiffs();
-
+#endif
 	struct rst_info *rtc_info = system_get_rst_info();
 	if (rtc_info) {
 		printf("reset reason: %x\n", rtc_info->reason);
@@ -115,7 +119,7 @@ user_init() {
 
 void ICACHE_FLASH_ATTR mcu_restart(void) {
 	printf("mcu_restart()\n");
-	os_delay_us(100000);
+	os_delay_us(10000);
 	system_restart();
 #if 0
 	os_delay_us(10000);  // FIXME: is calling this function allowed?
