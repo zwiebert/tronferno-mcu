@@ -18,10 +18,8 @@
 #define D(x)
 #endif
 
-
 int (*old_io_putc_fun)(char c);
 int (*old_io_getc_fun)(void);
-
 
 static void hook_tcpclient_disconnect(void *arg);
 
@@ -39,7 +37,6 @@ static uint8_t rx_head = 0, rx_tail = 0;
 #define TX_BUFSIZE 256
 static uint8_t tx_buf[RX_BUFSIZE];
 static uint8_t tx_head = 0, tx_tail = 0;
-
 
 static void ICACHE_FLASH_ATTR
 rx_copy(uint8_t *start, uint8_t *end) {
@@ -82,29 +79,28 @@ static void ICACHE_FLASH_ATTR
 trans_tcpclient_write_cb(void *arg) {
 	--tx_pending;
 	D(printf("trans_tcpclient_write_cb(%p), tx_pend=%d\n", arg, tx_pending));
-  if (tx_pending < 0)
-	  tx_pending = 0;
+	if (tx_pending < 0)
+		tx_pending = 0;
 }
 
 void ICACHE_FLASH_ATTR
 tcpSocket_txTask(void) {
-int i;
-static int pendingCount;
+	int i;
+	static int pendingCount;
 
 	// recover from unbalanced callbacks
-     if (tx_pending && ++pendingCount < 0) {
-    	 tx_pending = 0;
-    	 pendingCount = 0;
-    	 D(printf("pending unbalanced\n"));
-     }
-
+	if (tx_pending && ++pendingCount < 0) {
+		tx_pending = 0;
+		pendingCount = 0;
+		D(printf("pending unbalanced\n"));
+	}
 
 	if (!tx_pending && tx_head != tx_tail) {
 		uint8_t h = tx_head, t = tx_tail, l;
 
 		l = (h <= t) ? t - h : TX_BUFSIZE - h;
 
-		for (i=0; i < NMB_CLIENTS; ++i) {
+		for (i = 0; i < NMB_CLIENTS; ++i) {
 			int result;
 			if (tcpclient_espconn[i] == 0)
 				continue;
@@ -115,8 +111,8 @@ static int pendingCount;
 				D(printf("send failed. length=%d result=%d\n", (int)l, result));
 				if (result == ESPCONN_ARG) { // FIXME: kludge
 					if (nmbConnected > 1) {
-					tcpclient_espconn[i] = 0;
-					--nmbConnected;
+						tcpclient_espconn[i] = 0;
+						--nmbConnected;
 					} else {
 						hook_tcpclient_disconnect(tcpclient_espconn[i]);
 					}
@@ -176,7 +172,6 @@ hook_tcpclient_disconnect(void *arg) {
 	}
 }
 
-
 static void ICACHE_FLASH_ATTR
 trans_tcpclient_recv(void *arg, char *pdata, unsigned short len) {
 	rx_copy(pdata, pdata + len);
@@ -189,30 +184,29 @@ hook_tcpclient_connect(void *arg) {
 	D(printf("callback connect (%p)\n", arg));
 	struct espconn *pesp_conn = (struct espconn *) arg;
 
-	if (nmbConnected >= NMB_CLIENTS) mcu_restart(); // FIXME:
+	if (nmbConnected >= NMB_CLIENTS)
+		mcu_restart(); // FIXME:
 
 	if (pesp_conn == NULL) {
 		return;
 	}
 
-
-
 	if (nmbConnected >= NMB_CLIENTS) {
 		return;
 	}
 
-	for (i=0; i < NMB_CLIENTS; ++i) {
+	for (i = 0; i < NMB_CLIENTS; ++i) {
 		if (tcpclient_espconn[i] == 0) {
 			tcpclient_espconn[i] = pesp_conn;
 			++nmbConnected;
 			break;
 		}
 	}
-	if (i >= NMB_CLIENTS) mcu_restart(); // FIXME:
+	if (i >= NMB_CLIENTS)
+		mcu_restart(); // FIXME:
 
-	printf("tcp client connected: %d.%d.%d.%d:%d\n", pesp_conn->proto.tcp->remote_ip[0], pesp_conn->proto.tcp->remote_ip[1],
-			pesp_conn->proto.tcp->remote_ip[2], pesp_conn->proto.tcp->remote_ip[3], pesp_conn->proto.tcp->remote_port);
-
+	printf("tcp client connected: %d.%d.%d.%d:%d\n", pesp_conn->proto.tcp->remote_ip[0], pesp_conn->proto.tcp->remote_ip[1], pesp_conn->proto.tcp->remote_ip[2],
+			pesp_conn->proto.tcp->remote_ip[3], pesp_conn->proto.tcp->remote_port);
 
 	espconn_regist_disconcb(pesp_conn, hook_tcpclient_disconnect);
 
@@ -223,7 +217,7 @@ hook_tcpclient_connect(void *arg) {
 
 	espconn_regist_write_finish(pesp_conn, trans_tcpclient_write_cb);
 	espconn_regist_sentcb(pesp_conn, trans_tcpclient_write_cb);
-	io_putc('0'+nmbConnected), io_puts(" tcp client(s) connected\n");
+	io_putc('0' + nmbConnected), io_puts(" tcp client(s) connected\n");
 
 }
 
@@ -259,7 +253,6 @@ user_set_station_config(void) {
 	os_memcpy(&stationConf.password, C.wifi_password, 64);
 	wifi_station_set_config(&stationConf);
 }
-
 
 void wst_reconnect(void) {
 	uint8_t status = wifi_station_get_connect_status();
