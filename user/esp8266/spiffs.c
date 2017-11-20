@@ -47,10 +47,28 @@ static u8_t spiffs_fds[32 * 4];
 static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE + 32) * 4];
 
 
-// read/write/erase are taken from arduino
-// had started to implement it myself, but was too much hassle
-// beware: the stupid c compiler makes a difference between !spi_flash_read() and 0!=spi_flash_read()
-// is it because its decalred returning an enum type? -bertw.2017-11-20
+// read/write/erase functions are taken from arduino/esp8266/spiffs_hal.cpp
+// had started to implement it myself, but that alignment gave me a headache
+// beware: the gcc c compiler makes a difference between !spi_flash_read() and 0!=spi_flash_read()
+// is it because its declared returning an enum type? -bertw.2017-11-20
+
+
+/*
+ spiffs_hal.cpp - SPI read/write/erase functions for SPIFFS.
+ Copyright (c) 2015 Ivan Grokhotkov. All rights reserved.
+ This file is part of the esp8266 core for Arduino environment.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 
 /*
  spi_flash_read function requires flash address to be aligned on word boundary.
@@ -118,6 +136,7 @@ int32_t ICACHE_FLASH_ATTR my_spiffs_read(uint32_t addr, uint32_t size, uint8_t *
  and amount of stack required. This is chosen to be 512 bytes here, but might
  be adjusted in the future if there are good reasons to do so.
  */
+
 
 static const int UNALIGNED_WRITE_BUFFER_SIZE = 512;
 
