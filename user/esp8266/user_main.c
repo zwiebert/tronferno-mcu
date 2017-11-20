@@ -112,6 +112,8 @@ user_init() {
 }
 
 void ICACHE_FLASH_ATTR mcu_restart(void) {
+	printf("mcu_restart()\n");
+	os_delay_us(100000);
 	system_restart();
 #if 0
 	os_delay_us(10000);  // FIXME: is calling this function allowed?
