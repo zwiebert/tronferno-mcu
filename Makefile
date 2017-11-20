@@ -1,7 +1,7 @@
 .PHONY: clean all rebuild 
 
 mcus := esp8266 atmega328
-tgts := clean all rebuild flash reflash eeprom flashinit flasherase
+tgts := clean all rebuild flash reflash eeprom flashinit flasherase spiffs
 
 
 define GEN_RULE

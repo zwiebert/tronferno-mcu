@@ -84,16 +84,18 @@ struct fer_msg *rbuf = &rmsg;
 #endif
 
 
-#define getCurrentByteAddr() (currentByteAddr + 0)
+#define getCurrentByteAddr() (&rbuf->cmd[0] + received_byte_ct)
 static uint16_t received_byte_ct;
-static uint8_t *currentByteAddr;
 static uint16_t bytesToReceive;
 #define getBytesToReceive() (bytesToReceive + 0)
 #define hasAllBytesReceived() (bytesToReceive <= received_byte_ct)
 
 static void incrCurrentByteAddr(void) {
-	 ++currentByteAddr;
-	++received_byte_ct;
+	if (received_byte_ct <= bytesToReceive) { // FIXME:
+		++received_byte_ct;
+	} else {
+
+	}
 }
 
 ferCmdBuf_type ICACHE_FLASH_ATTR get_recvCmdBuf(void) {
@@ -242,7 +244,6 @@ void fer_recvClearAll(void) {
 	error = 0;
 	MessageReceived = 0;
 	received_byte_ct = 0;
-	currentByteAddr = &rbuf->cmd[0];
 	bytesToReceive = BYTES_MSG_PLAIN;
 
 }

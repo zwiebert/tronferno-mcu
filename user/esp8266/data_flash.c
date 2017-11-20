@@ -24,7 +24,7 @@
 
 #include "main/config.h"
 #include "esp_missing_includes.h"
-
+#include "../user_config.h"
 
 
 #define NO_CACHE 1
@@ -39,11 +39,18 @@ extern int ENR;
 #define BLOCK_SIZE (sizeof (MAGIC_COOKIE) + sizeof (DATA_TYPE))
 #define BLOCKS_PER_SECTOR (SECTOR_SIZE / BLOCK_SIZE)
 
+#ifndef C_DATA_FLASH_ADDR
 // reserve us some flash_sectors we can access via spi_flash_read() and spi_flash_write() from mem.h
 static volatile const uint8_t our_flash_storage[SECTOR_SIZE * FLASH_SECTORS] __attribute__((section(".irom.text"), aligned(4096)));
-
 // number of first sector of our_flash_storage
 static uint16_t our_start_sector_number;
+#else
+static uint16_t our_start_sector_number = ((uint16_t)((C_DATA_FLASH_ADDR) / 4096));
+#undef FLASH_SECTORS
+#define FLASH_SECTORS (C_DATA_FLASH_SIZE / 4096)
+#endif
+
+
 
 // the index of the sector we currently use (our_start_sector == index 0) ...
 static uint16_t our_current_sector_index;
@@ -171,10 +178,12 @@ void ICACHE_FLASH_ATTR save_data(void) {
 
 // initialize this software module
 void ICACHE_FLASH_ATTR setup_dataFlash() {
+#ifndef C_DATA_FLASH_ADDR
 	uint32_t our_start_sector_address; // byte address of our storage in memory mapped flash ROM
 
 	our_start_sector_address = (uint32_t) &our_flash_storage[0] - FLASH_MAPPED;
 	our_start_sector_number = (our_start_sector_address >> (3 * 4));
+#endif
 
 	DB(ets_uart_printf("setup_dataFlash()\n"));
 }

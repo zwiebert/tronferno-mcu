@@ -658,7 +658,12 @@ process_parmDbg(clpar p[], int len) {
 				io_putl(C.fer_centralUnitID, 16);
 				io_putlf();
 			}
-		} else if (strcmp(key, "test") == 0) {
+		} else if (strcmp(key, "spiffs") == 0) {
+			if (strcmp(val, "format") == 0) {
+				spiffs_format();
+			} else if (strcmp(val, "test") == 0) {
+				spiffs_test();
+			}
 
 
 		} else {

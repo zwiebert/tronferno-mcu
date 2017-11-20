@@ -121,7 +121,7 @@ ifeq ("$(D)","1")
 #MODULES += gdbstub
 endif
 
-EXTRA_INCDIR    = $(EXTRA_BASE)/include
+EXTRA_INCDIR   += $(EXTRA_BASE)/include
 
 # compiler flags using during compilation of source files
 CFLAGS		=  -std=gnu90 -Wpointer-arith -Wundef -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -mno-serialize-volatile -D__ets__ -DICACHE_FLASH
@@ -212,7 +212,7 @@ LD_SCRIPT	:= $(addprefix -T$(SDK_BASE)/$(SDK_LDDIR)/,$(LD_SCRIPT))
 
 INCDIR		:= -Iuser -Iuser/time # $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
-#MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
+#MODULE_INCDIR	:= $(foreach sdir,$(SRC_DIR),$(addprefix -I,$(sdir)))
 
 GDB_SRC := $(wildcard gdbstub/*.[c|S])
 GDB_OBJ := $(patsubst %.S,$(BUILD_BASE)/%.o,$(patsubst %.c,$(BUILD_BASE)/%.o,$(GDB_SRC)))
@@ -280,7 +280,7 @@ all: checkdirs $(TARGET_OUT)
 
 $(TARGET_OUT): $(APP_AR) $(GEN_LIBS)
 	$(vecho) "LD $@"
-	$(Q) $(LD) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group  $(LIBS) $(APP_AR) -Wl,--end-group -o $@
+	$(Q) $(LD) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group  $(LIBS) $(APP_AR) $(SPIFFS_AR) -Wl,--end-group -o $@
 	$(vecho) "Run objcopy, please wait..."
 	$(Q) $(OBJCOPY) --only-section .text -O binary $@ eagle.app.v6.text.bin
 	$(Q) $(OBJCOPY) --only-section .data -O binary $@ eagle.app.v6.data.bin
@@ -433,7 +433,8 @@ clean: force
 	$(Q) rm -rf $(BUILD_DIR)
 	$(Q) rm -rf $(DEP_DIR)
 	$(Q) rm -rf $(FW_BASE)
-	$(Q) rm -d $(BUILD_BASE)/user $(BUILD_BASE)
+	$(Q) rm -rf $(BUILD_BASE)/user $(BUILD_BASE)
+	$(Q) rm -rf spiffs/build/*.o  spiffs/build/*.a
 
 
 $(eval $(call compile-objects,$(BUILD_BASE)/,$(SRC_BASE)/))
