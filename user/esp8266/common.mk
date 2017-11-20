@@ -189,7 +189,7 @@ OBJCOPY		:= xtensa-lx106-elf-objcopy
 OBJDUMP		:= xtensa-lx106-elf-objdump
 
 SRC_DIR		:= $(addprefix $(SRC_BASE)/,$(MODULES))
-BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
+BUILD_DIR	+= $(addprefix $(BUILD_BASE)/,$(MODULES))
 SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
@@ -328,6 +328,7 @@ $(APP_AR): $(OBJ)
 checkdirs: $(BUILD_DIR) $(FW_BASE) $(DEP_DIR)
 
 $(BUILD_DIR):
+	$(vecho) mkdir $@
 	$(Q) mkdir -p $@
 
 $(DEP_DIR):
@@ -336,6 +337,7 @@ $(DEP_DIR):
 $(FW_BASE):
 	$(Q) mkdir -p $@
 	$(Q) mkdir -p $@/upgrade
+	
 
 flashboot:
 ifeq ($(app), 0)
