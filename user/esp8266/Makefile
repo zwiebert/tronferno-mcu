@@ -41,23 +41,23 @@ $(LIBMIROM_A) : $(LIBM_A)
 
 ## spiffs.a, spiffsirom.a
 SPIFFS_BUILD_DIR := $(BUILD_BASE)/spiffs/src
-BUILD_DIR += $(SPIFFS_BUILD_DIR)	
+BUILD_DIRS += $(SPIFFS_BUILD_DIR)	
 SPIFFS_SRC := $(wildcard spiffs/src/*.c)
 SPIFFS_OBJ := $(patsubst spiffs/src/%.c,$(SPIFFS_BUILD_DIR)/%.o,$(SPIFFS_SRC))
 
-LIBSPIFFS_A := $(SPIFFS_BUILD_DIR)/libspiffs.a
-LIBSPIFFSIROM_A := $(SPIFFS_BUILD_DIR)/libspiffsirom.a
-SPIFFS_AR += $(LIBSPIFFSIROM_A) 
+SPIFFS_A := $(SPIFFS_BUILD_DIR)/spiffs.a
+SPIFFSIROM_A := $(SPIFFS_BUILD_DIR)/spiffsirom.a
+SPIFFS_AR += $(SPIFFSIROM_A) 
 EXTRA_INCDIR += spiffs/src user/esp8266
-GEN_LIBS += $(LIBSPIFFSIROM_A)
+GEN_LIBS += $(SPIFFSIROM_A)
 CPPFLAGS += -DCONFIG_BUILD_SPIFFS 
 
-$(LIBSPIFFSIROM_A) : $(LIBSPIFFS_A)
-	$(OBJCOPY) --rename-section .text=.irom0.text \
-		--rename-section .literal=.irom0.literal $(<) $(@);
-$(LIBSPIFFS_A) : $(SPIFFS_OBJ)
+$(SPIFFS_A) : $(SPIFFS_OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
+
+$(SPIFFSIROM_A) : $(SPIFFS_A)
+	$(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal $(<) $(@);
 ## end spiffs.a
 
 

@@ -45,8 +45,9 @@ configure the Makefiles in user/esp8266/
 
 * build and flash on Linux shell
 
-        make esp8266-flashinit
-        make esp8266-flash
+		make esp8266-erase       #optional. erases flash.  any configuration data and stored files are lost
+        make esp8266-flashinit   #required after erase. rewrites some calibration and blank data (can fix a boot-loop)
+        make esp8266-flash       #writes our firmware program
     
  *  On Windows Commandline Unofficial Development Kit for Espressif ESP8266:
    
@@ -125,7 +126,7 @@ You should never use the "timer" command, if the time and time-zone is not set c
 ``` 
 Some more options. 
 
-```      
+```
     timer g=1 m=2 daily=-0400 weekly=0700++++00900-+ astro=+30 sun-auto=1;   (explanation below)
  ```
  
@@ -140,14 +141,16 @@ To send the "too much sun" command:
 
       send g=2 m=3 c=sun-down;    (the shutter goes down to the "too much sun" position. note: it would not go up to this position, if already below it)
       
-      
-
+### Recent Changes
+ * 2017-11: added SPIFFS for later use. Currently disabled in user_config.h
+ * 2017-11: persistent data will no longer be erased by updating the firmware. (used to be stored with the irom segment, now its separate)
+ 
 ### Problems
  * I'm not 100% sure about how the astro data is organized. So the times may be off
  * The function of some bytes in the last line of the timer programming data is still unknown to me.
 
 ### History
-I started this project in 2011 from scratch using an ATmega168. Sending normal commands like "up" and "down" was not to hard to figure out. But I gave up on programming the timers and the project went on hiatus. In 2017 I finally figured out the timer programming.  Had to switch to an ATmega328p for enough flash memory, and then to the ESP8266, for its built-in WIFI.   
+I started this project in 2011 from scratch using an ATmega168. Sending normal commands like "up" and "down" was not to hard to figure out. But I gave up on programming the timers and the project went on hiatus. In 2017 I finally figured out the timer programming.  Had to switch to an ATmega328p for enough flash memory, and then to the ESP8266, for its built-in WIFI.
 
 ### Future
 Its all too complicated and totally useless?

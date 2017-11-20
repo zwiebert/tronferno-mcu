@@ -107,6 +107,8 @@ user_init() {
 			}
 			printf("epc1=0x%08x, epc2=0x%08x, epc3=0x%08x, excvaddr=0x%08x,	depc=0x%08x\n", rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr,
 					rtc_info->depc); //The address of the last crash is printed, which is used to debug garbled	output.
+			printf("to find error location, pass epc1 to $ xtensa-lx106-elf-addr2line -e ./app.out\n");
+
 		}
 	}
 #ifdef DEBUG

@@ -189,7 +189,7 @@ OBJCOPY		:= xtensa-lx106-elf-objcopy
 OBJDUMP		:= xtensa-lx106-elf-objdump
 
 SRC_DIR		:= $(addprefix $(SRC_BASE)/,$(MODULES))
-BUILD_DIR	+= $(addprefix $(BUILD_BASE)/,$(MODULES))
+BUILD_DIRS	+= $(addprefix $(BUILD_BASE)/,$(MODULES))
 SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
@@ -217,7 +217,7 @@ EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 GDB_SRC := $(wildcard gdbstub/*.[c|S])
 GDB_OBJ := $(patsubst %.S,$(BUILD_BASE)/%.o,$(patsubst %.c,$(BUILD_BASE)/%.o,$(GDB_SRC)))
 GDB_BUILD_DIR := $(BUILD_BASE)/gdbstub
-BUILD_DIR += $(GDB_BUILD_DIR)
+BUILD_DIRS += $(GDB_BUILD_DIR)
 
 ifeq ($(DISTRO),1)
 CPPFLAGS += -DDISTRIBUTION
@@ -243,7 +243,7 @@ endif
 
 
 pri:
-	echo $(BUILD_DIR)
+	echo $(BUILD_DIRS)
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
@@ -325,9 +325,9 @@ $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
 
-checkdirs: $(BUILD_DIR) $(FW_BASE) $(DEP_DIR)
+checkdirs: $(BUILD_DIRS) $(FW_BASE) $(DEP_DIR)
 
-$(BUILD_DIR):
+$(BUILD_DIRS):
 	$(vecho) mkdir $@
 	$(Q) mkdir -p $@
 
@@ -432,7 +432,7 @@ reflash: rebuild flash
 clean: force
 	$(Q) rm -f $(APP_AR)
 	$(Q) rm -f $(TARGET_OUT)
-	$(Q) rm -rf $(BUILD_DIR)
+	$(Q) rm -rf $(BUILD_DIRS)
 	$(Q) rm -rf $(DEP_DIR)
 	$(Q) rm -rf $(FW_BASE)
 	$(Q) rm -rf $(BUILD_BASE)/user $(BUILD_BASE)
