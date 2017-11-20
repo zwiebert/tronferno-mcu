@@ -142,8 +142,11 @@ To send the "too much sun" command:
       send g=2 m=3 c=sun-down;    (the shutter goes down to the "too much sun" position. note: it would not go up to this position, if already below it)
       
 ### Recent Changes
+ 
+ * 2017-11: print now debug info after mcu crash like described in the manual. was really helpful with finding that random crash introduced recently
  * 2017-11: added SPIFFS for later use. Currently disabled in user_config.h
  * 2017-11: persistent data will no longer be erased by updating the firmware. (used to be stored with the irom segment, now its separate)
+ * 2017-11: CLI: backspace editing now works. Also quoting strings (like strange-password="ab;c d";). And most boolean options default to 1 now (can write now: sun-auto instead sun-auto=1)
  
 ### Problems
  * I'm not 100% sure about how the astro data is organized. So the times may be off
