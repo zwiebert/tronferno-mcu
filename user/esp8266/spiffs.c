@@ -6,8 +6,6 @@
 #include <osapi.h>
 #include <mem.h>
 
-
-
 #include "../user_config.h"
 
 #if ENABLE_SPIFFS
@@ -307,6 +305,7 @@ void ICACHE_FLASH_ATTR setup_spiffs(void) {
 		spiffs_test();
 	}
 }
+#endif
 
 #endif
 
