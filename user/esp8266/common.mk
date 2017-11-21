@@ -280,7 +280,7 @@ all: checkdirs $(TARGET_OUT)
 
 $(TARGET_OUT): $(APP_AR) $(GEN_LIBS)
 	$(vecho) "LD $@"
-	$(Q) $(LD) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group  $(LIBS) $(APP_AR) $(SPIFFS_AR) -Wl,--end-group -o $@
+	$(Q) $(LD) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group  $(LIBS) $(APP_AR) $(EXTRA_AR) -Wl,--end-group -o $@
 	$(vecho) "Run objcopy, please wait..."
 	$(Q) $(OBJCOPY) --only-section .text -O binary $@ eagle.app.v6.text.bin
 	$(Q) $(OBJCOPY) --only-section .data -O binary $@ eagle.app.v6.data.bin
@@ -431,6 +431,7 @@ reflash: rebuild flash
 
 clean: force
 	$(Q) rm -f $(APP_AR)
+	$(Q) rm -f $(EXTRA_AR)
 	$(Q) rm -f $(TARGET_OUT)
 	$(Q) rm -rf $(BUILD_DIRS)
 	$(Q) rm -rf $(DEP_DIR)

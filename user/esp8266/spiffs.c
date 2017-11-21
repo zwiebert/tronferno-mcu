@@ -47,11 +47,8 @@ static u8_t spiffs_fds[32 * 4];
 static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE + 32) * 4];
 
 
-// read/write/erase functions are taken from arduino/esp8266/spiffs_hal.cpp
-// had started to implement it myself, but that alignment gave me a headache
-// beware: the gcc c compiler makes a difference between !spi_flash_read() and 0!=spi_flash_read()
-// is it because its declared returning an enum type? -bertw.2017-11-20
-
+// read/write/erase functions are taken from arduino/esp8266/spiffs_hal.cpp -bw/20-Nov-17
+/
 
 /*
  spiffs_hal.cpp - SPI read/write/erase functions for SPIFFS.
@@ -246,6 +243,7 @@ void ICACHE_FLASH_ATTR spiffs_test() {
 		printf("1: errno %d\n", (int) SPIFFS_errno(&fs));
 		return;
 	}
+
 	if (SPIFFS_write(&fs, fd, (u8_t *) "Hello world", 12) < 0) {
 		printf("2: errno %d\n", (int) SPIFFS_errno(&fs));
 		SPIFFS_close(&fs, fd);
@@ -256,7 +254,7 @@ void ICACHE_FLASH_ATTR spiffs_test() {
 
 	if ((fd = SPIFFS_open(&fs, "my_file", SPIFFS_RDWR, 0)) < 0) {
 		printf("3: errno %d\n", (int) SPIFFS_errno(&fs));
-
+		return;
 	}
 
 	if (SPIFFS_read(&fs, fd, (u8_t *) buf, 12) < 0) {
@@ -290,34 +288,9 @@ spiffs_format(void) {
 	return 0 == my_spiffs_mount();
 }
 
+
+// setup module
 void ICACHE_FLASH_ATTR setup_spiffs(void) {
-#if 0
-	uint32_t tmp = 0xDEADBEEF;
-	if (spi_flash_write(PHYS_ADDR, &tmp, 4) == 0) {
-		printf ("success\n");
-	}
-
-	if (spi_flash_erase_sector (PHYS_ADDR/SPI_FLASH_SEC_SIZE) == 0) {
-		if (my_spiffs_erase(PHYS_ADDR, 4096) == 0) {
-			if (my_spiffs_write(PHYS_ADDR, 4, (uint8*)&tmp) == 0) {
-				uint32_t x;
-				if (my_spiffs_read(PHYS_ADDR, 4, (uint8*)&x) == 0) {
-					printf ("read: %lx\n", x);
-					if (my_spiffs_erase(PHYS_ADDR, 4096) == 0) {
-						if (my_spiffs_read(PHYS_ADDR, 4, (uint8*)&x) == 0) {
-							printf ("read2: %lx\n", x);
-							return;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	printf("error\n");
-	return;
-#endif
-
 	int result = my_spiffs_mount();
 
 	if (result == 0) {
