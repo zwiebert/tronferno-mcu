@@ -224,22 +224,22 @@ hook_tcpclient_connect(void *arg) {
 static void ICACHE_FLASH_ATTR
 setup_tcp(void) {
 	// create tcp server
-	tcpserver_espconn = (struct espconn *) os_zalloc((uint32 )sizeof(struct espconn));
+	struct espconn *pesp_conn = os_zalloc((uint32 )sizeof(struct espconn));
 
-	if (tcpserver_espconn == NULL) {
+	if (!(tcpserver_espconn = pesp_conn)) {
 		printf("TCP server failure. Out of memory.\n");
 		return;
 	}
-	D(printf("tcp_server %p\n", (void*)tcpserver_espconn));
-	tcpserver_espconn->type = ESPCONN_TCP;
-	tcpserver_espconn->state = ESPCONN_NONE;
-	tcpserver_espconn->proto.tcp = (esp_tcp *) os_zalloc((uint32 )sizeof(esp_tcp));
-	tcpserver_espconn->proto.tcp->local_port = 7777;      // server port
-	espconn_regist_connectcb(tcpserver_espconn, hook_tcpclient_connect);
-	espconn_tcp_set_max_con_allow(tcpserver_espconn, NMB_CLIENTS);
 
-	espconn_accept(tcpserver_espconn);
-	espconn_regist_time(tcpserver_espconn, 180, 0);
+	pesp_conn->type = ESPCONN_TCP;
+	pesp_conn->state = ESPCONN_NONE;
+	pesp_conn->proto.tcp = (esp_tcp *) os_zalloc((uint32 )sizeof(esp_tcp));
+	pesp_conn->proto.tcp->local_port = 7777;      // server port
+	espconn_regist_connectcb(pesp_conn, hook_tcpclient_connect);
+	espconn_tcp_set_max_con_allow(pesp_conn, NMB_CLIENTS);
+
+	espconn_accept(pesp_conn);
+	espconn_regist_time(pesp_conn, 180, 0);
 
 }
 

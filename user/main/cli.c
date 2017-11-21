@@ -483,7 +483,7 @@ const char help_parmConfig[] PROGMEM =
 		  "baud=N           serial baud rate (baud=38400)\n"
 #ifdef USE_WLAN
 		  "wlan-ssid=SSID\n"
-		  "wlan-password=PW  example: config wlan-ssid=\"1234\" wlan-password=\"abcd\" restart;\n"
+		  "wlan-password=PW  example: config wlan-ssid=\"1234\" wlan-password=\"abcd\" restart=1;\n"
 #endif
 		  "longitude=DEC\n"
 		  "latitude=DEC\n"
@@ -1051,7 +1051,7 @@ const char help_None[] PROGMEM = "none";
 
 
 const char help_parmHelp[] PROGMEM =
-		"help command;  or help all;\n";
+		"type 'help command;'  or 'help all;'\ncommands are: ";
 
 
 
@@ -1098,12 +1098,17 @@ process_parmHelp(clpar p[], int len) {
 	static const char usage[] PROGMEM = "syntax: command option=value ...;\n"
 			"commands are: ";
 
+	// print help for help;
 	if (len == 1) {
-		io_puts_P(help_parmHelp), io_putlf();
+		io_puts_P(help_parmHelp);
+		for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
+			io_puts(parm_handlers[i].parm), io_puts(", ");
+		}
+		io_putlf();
 		return 0;
 	}
 
-
+	// print help for help command; or help all;
 	for (i = 1; i < len; ++i) {
 		int k;
 		const char *key = p[i].key, *val = p[i].val;
