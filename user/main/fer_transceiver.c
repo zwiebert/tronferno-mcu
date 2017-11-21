@@ -3,14 +3,44 @@
 #include "common.h"
 #include "counter.h"
 #include "fer.h"
-
 #include "utils.h"
 #include "fer_code.h"
 #include "config.h"
+#include "inout.h"
 
 
+#ifndef FER_RECEIVER
+bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
+	return true;
+}
+#else
+static volatile bool requestLock;
+static volatile bool isLocked;
+
+bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
+#if BUFFER_SHARING
+	if (enableLock) {
+		requestLock = true;
+		do {
+			mcu_delay_us(100);
+		} while (!isLocked && recvTick == C.app_recv);
+	} else {
+		requestLock = false;
+	}
+#endif
+	return true;
+}
+#endif
+
+
+
+/////////////////////////// interrupt code //////////////////////
+#if defined FER_RECEIVER || defined FER_TRANSMITTER
 // counters
 static uint8_t CountTicks, CountBits, CountWords;
+// buffer to store received RF data
+static uint16_t dtRecvBuffer[2];
+#define dtSendBuf (dtRecvBuffer[0])
 
 
 /* "calculate 2bit parity value for DATA_BYTE according to POS" */
@@ -29,14 +59,9 @@ static uint16_t fer_add_word_parity(uint8_t data_byte, int pos) {
 	return result;
 }
 
+#endif
 
-#ifndef FER_RECEIVER
-
-bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
-	return true;
-}
-
-#else
+#ifdef FER_RECEIVER
 
 #define bitLen               FER_BIT_WIDTH_TCK
 // bit is 1, if data edge comes before sample position (/SHORT\..long../)
@@ -44,26 +69,9 @@ bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
 #define SAMPLE_BIT ((pTicks < FER_BIT_SAMP_POS_TCK))
 
 
-static volatile bool requestLock;
-static volatile bool isLocked;
 
-bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
-#if BUFFER_SHARING
-	if (enableLock) {
-		requestLock = true;
-		do {
-			mcu_delay_us(100);
-		} while (!isLocked && recvTick == C.app_recv);
-	} else {
-		requestLock = false;
-	}
-#endif
-	return true;
-}
-
-/////////////////////////// interrupt code //////////////////////
-#define IS_P_INPUT (input == true)
-#define IS_N_INPUT (input == false)
+#define IS_P_INPUT (rx_input == true)
+#define IS_N_INPUT (rx_input == false)
 #define veryLongPauseLow_Len (2 * FER_STP_WIDTH_MAX_TCK)
 #define fuzCmp(a,b) (abs((a)-(b)) < (FER_TICK_FREQ_MULT * 2))
 #define fuzzCmp(a,b,n) (abs((a)-(b)) < (FER_TICK_FREQ_MULT * (n)))
@@ -75,6 +83,7 @@ bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
 
 #define MAX_PRG_TICK_COUNT (DATA_CLOCK_TO_TICKS(FER_PRG_FRAME_WIDTH_DCK) * 2) // FIXME
 
+static int8_t preBits;
 static int8_t input_edge; // Usually 0, but -1 or +1 at the tick where input has changed
 static uint16_t aTicks, pTicks, nTicks;
 #define POS__IN_DATA (CountTicks > 0 && CountBits < bitsPerWord)
@@ -83,26 +92,18 @@ static uint16_t aTicks, pTicks, nTicks;
 #define PUTBIT(dst,bit,val) ((val) ? (dst |= (1 << (bit))) : (dst &= ~(1 << (bit))))
 
 // holds sampled value of input pin
-static bool input, old_input;
+static bool rx_input, old_rx_input;
 
 static uint32_t prgTickCount;
 static int error;
 
 // flags
 
-
 volatile uint8_t MessageReceived;
 
 
-// buffer to store received RF data
-static uint16_t dtRecvBuffer[2];
 
-#if BUFFER_SHARING
-struct fer_msg *rbuf = &message_buffer;
-#else
-static struct fer_msg rmsg;
-struct fer_msg *rbuf = &rmsg;
-#endif
+#define rbuf (&message_buffer)
 
 
 #define getCurrentByteAddr() (&rbuf->cmd[0] + received_byte_ct)
@@ -117,14 +118,6 @@ static void incrCurrentByteAddr(void) {
 	} else {
 
 	}
-}
-
-ferCmdBuf_type ICACHE_FLASH_ATTR get_recvCmdBuf(void) {
-	return rbuf->cmd;
-}
-
-uint8_t * ICACHE_FLASH_ATTR get_recvPrgBufLine(uint8_t idx) {
-	return rbuf->rtc + idx * bytesPerPrgLine;
 }
 
 static void init_counter() {
@@ -186,7 +179,6 @@ static bool is_pre_bit(unsigned len, unsigned nedge) {
 	return ((FER_PRE_WIDTH_MIN_TCK <= len && len <= FER_PRE_WIDTH_MAX_TCK) && (FER_PRE_NEDGE_MIN_TCK <= nedge && nedge <= FER_PRE_NEDGE_MAX_TCK));
 }
 
-static int8_t preBits;
 
 static bool wait_and_sample(void) {
 
@@ -241,8 +233,6 @@ static bool recvMessage(void) {
 	return false;  // continue
 }
 
-
-
 void fer_recvClearAll(void) {
 	init_counter();
 	preBits = 0;
@@ -285,14 +275,12 @@ static void tickRecvMessage() {
 	}
 }
 
-
-
 void tick_ferReceiver() {
 
 	// sample input pin and detect input edge
-	input = fer_get_recvPin();
-	input_edge = (old_input == input) ? 0 : (IS_P_INPUT ? +1 : -1);
-	old_input = input;
+	rx_input = fer_get_rxPin();
+	input_edge = (old_rx_input == rx_input) ? 0 : (IS_P_INPUT ? +1 : -1);
+	old_rx_input = rx_input;
 
 	// receive and decode input
 	if (!(MessageReceived || is_sendMsgPending || isLocked)) {
@@ -332,18 +320,9 @@ void tick_ferReceiver() {
 #endif
 
 #ifdef FER_TRANSMITTER
-
-#if 1
-/////////////////////////// sender //////////////////////////////////////
-#include "common.h"
-#include "fer.h"
-#include "counter.h"
-#include "inout.h"
-#include "utils.h"
-#include "config.h"
-
+/////////////////////////// transmitter /////////////////////////
+/////////////////////////// interrupt code //////////////////////
 #undef bitLen
-
 
 #ifdef FER_SENDER_DCK
 #define bitLen               FER_BIT_WIDTH_DCK
@@ -359,20 +338,18 @@ void tick_ferReceiver() {
 #define pauseHigh_Len        FER_STP_NEDGE_TCK
 #endif
 
-
-static bool dtLineOut;   // output line
-static uint16_t dtSendBuf;
+static bool tx_output;   // output line
 extern volatile uint16_t wordsToSend;
-/////////////////////////// interrupt code //////////////////////
 
 
 #define make_Word fer_add_word_parity
 #define init_counter() (CountTicks = CountBits = CountWords = 0)
-#define updateLinePre() (dtLineOut = (CountTicks < shortPositive_Len))
+#define updateLinePre() (tx_output = (CountTicks < shortPositive_Len))
 #define advancePreCounter() (ct_incr(CountTicks, pre_Len) && ct_incr(CountBits, bitsPerPre))
 #define advanceStopCounter() (ct_incr(CountTicks, bitLen) && ct_incr(CountBits, bitsPerPause))
-#define updateLineStop() (dtLineOut = (CountTicks < pauseHigh_Len) && (CountBits == 0))
+#define updateLineStop() (tx_output = (CountTicks < pauseHigh_Len) && (CountBits == 0))
 
+#define tbuf (&message_buffer)
 
 // sets output line according to current bit in data word
 // a stop bit is sent in CountBits 0 .. 2
@@ -380,66 +357,60 @@ extern volatile uint16_t wordsToSend;
 static void updateLine() {
 	int bit = CountBits - bitsPerPause;
 
-    if (bit < 0) {  // in stop bit (CountBits 0 .. 2)
-    	dtLineOut = CountBits == 0 && CountTicks < shortPositive_Len;
-    } else { // in data word
-    	dtLineOut = CountTicks < shortPositive_Len || (CountTicks < longPositive_Len && !(dtSendBuf & (1 << bit)));
-    }
+	if (bit < 0) {  // in stop bit (CountBits 0 .. 2)
+		tx_output = CountBits == 0 && CountTicks < shortPositive_Len;
+	} else { // in data word
+		tx_output = CountTicks < shortPositive_Len || (CountTicks < longPositive_Len && !(dtSendBuf & (1 << bit)));
+	}
 }
-
-
 
 static bool sendMsg() {
-  static bool end_of_preamble, end_of_stop;
+	static bool end_of_preamble, end_of_stop;
 
-  if (!end_of_stop) {
-        //send single stop bit before preamble
-      updateLineStop();
-      end_of_stop = advanceStopCounter();
+	if (!end_of_stop) {
+		//send single stop bit before preamble
+		updateLineStop();
+		end_of_stop = advanceStopCounter();
 
-      } else  if (!end_of_preamble) {
-    // send preamble
-    updateLinePre();
-    if ((end_of_preamble = advancePreCounter())) {
-       dtSendBuf = make_Word(tbuf->cmd[0], 0); // load first word into send buffer
-    }
-    } else 	{
-      // send data words + stop bits
-    updateLine();
-    // counting ticks until end_of_frame
-    if (ct_incr(CountTicks, bitLen)) {
-      // bit sent
-      if ((ct_incr(CountBits, bitsPerWord + bitsPerPause))) {
-        // word + stop sent
-        if (ct_incr(CountWords, wordsToSend)) {
-          // line sent
-          end_of_stop = end_of_preamble = false;
-          return true; // done
-        } else {
-          dtSendBuf = make_Word(tbuf->cmd[CountWords / 2], CountWords); // load next word
-        }
-      }
-    }
-  }
-  return false; // continue
+	} else if (!end_of_preamble) {
+		// send preamble
+		updateLinePre();
+		if ((end_of_preamble = advancePreCounter())) {
+			dtSendBuf = make_Word(tbuf->cmd[0], 0); // load first word into send buffer
+		}
+	} else {
+		// send data words + stop bits
+		updateLine();
+		// counting ticks until end_of_frame
+		if (ct_incr(CountTicks, bitLen)) {
+			// bit sent
+			if ((ct_incr(CountBits, bitsPerWord + bitsPerPause))) {
+				// word + stop sent
+				if (ct_incr(CountWords, wordsToSend)) {
+					// line sent
+					end_of_stop = end_of_preamble = false;
+					return true; // done
+				} else {
+					dtSendBuf = make_Word(tbuf->cmd[CountWords / 2], CountWords); // load next word
+				}
+			}
+		}
+	}
+	return false; // continue
 }
-
-
 
 static void tick_send_command() {
 
 	bool done = sendMsg();
-	fer_put_sendPin(dtLineOut);
+	fer_put_txPin(tx_output);
 
 	if (done) {
 		is_sendMsgPending = false;
 		init_counter();
-		fer_put_sendPin(0);
+		fer_put_txPin(0);
 
 	}
 }
-
-
 
 void tick_ferSender(void) {
 
@@ -447,7 +418,6 @@ void tick_ferSender(void) {
 		tick_send_command();
 	}
 }
-#endif
 #endif
 
 

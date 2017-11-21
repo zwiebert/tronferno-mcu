@@ -128,12 +128,12 @@ void ICACHE_FLASH_ATTR txbuf_write_dtimer(const uint8_t *dtimer_data) {
 }
 
 void ICACHE_FLASH_ATTR txbuf_write_wtimer(const uint8_t *wtimer_data) {
-  write_wtimer(tbuf->wdtimer, wtimer_data);
+  write_wtimer(txmsg->wdtimer, wtimer_data);
 }
 
 
 void ICACHE_FLASH_ATTR txbuf_write_astro(int mint_offset) {
-  write_astro(tbuf->astro, mint_offset);
+  write_astro(txmsg->astro, mint_offset);
 }
 
 
@@ -173,10 +173,10 @@ void ICACHE_FLASH_ATTR write_flags(uint8_t d[FPR_RTC_WIDTH], uint8_t flags, uint
 }
 
 void ICACHE_FLASH_ATTR txbuf_write_rtc(bool rtc_only) {
-   write_rtc(tbuf->rtc, rtc_only);
+   write_rtc(txmsg->rtc, rtc_only);
 }
 void ICACHE_FLASH_ATTR txbuf_write_flags(uint8_t flags, uint8_t mask) {
-  write_flags(tbuf->rtc, flags, mask);
+  write_flags(txmsg->rtc, flags, mask);
 }
 
 void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, uint8_t d[bytesPerPrgLine]) {
@@ -192,7 +192,7 @@ void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, uint8_t d[bytesPerP
 }
 
 void ICACHE_FLASH_ATTR txbuf_write_lastline(fer_sender_basic *fsb) {
-	write_lastline(fsb, tbuf->last);
+	write_lastline(fsb, txmsg->last);
 }    
 
 

@@ -13,16 +13,11 @@
 extern fer_sender_basic default_sender;
 extern fer_sender_basic last_received_sender;
 
-static void ICACHE_FLASH_ATTR
-setup_1() {
-	fer_init_sender(&default_sender, C.fer_centralUnitID);
-
-}
-
 void ICACHE_FLASH_ATTR fer_printData(const uint8_t *cmd, uint8_t prg[linesPerPrg][bytesPerPrgLine]) {
 
 	if (cmd)
 		frb_printPacket(cmd);
+
 #ifndef	FER_RECEIVER_MINIMAL
 	if (prg) {
 		int i, used_lines;
@@ -61,13 +56,9 @@ loop(void) {
 #ifdef FER_RECEIVER
 	// received data
 	if (MessageReceived == MSG_TYPE_PLAIN) {
-		const uint8_t *buf = get_recvCmdBuf();
+		memcpy (&last_received_sender.data, rxmsg->cmd, 5);
 
-		for (i = 0; i < 5; ++i) {
-			last_received_sender.data[i] = buf[i];
-		}
-
-		io_puts("R:"), fer_printData(buf, NULL);
+		io_puts("R:"), fer_printData(rxbuf, NULL);
 		fer_recvClearAll();
 	}
 
@@ -75,11 +66,11 @@ loop(void) {
 #ifndef	FER_RECEIVER_MINIMAL
 	if (MessageReceived == MSG_TYPE_RTC || MessageReceived == MSG_TYPE_TIMER) {
 
-		io_puts("timer frame received\n"), fer_printData(get_recvCmdBuf(), getMsgData(rbuf));
+		io_puts("timer frame received\n"), fer_printData(rxbuf, getMsgData(rxmsg));
 
 		uint8_t cs;
-		if (fer_cmd_verify_checksum(get_recvCmdBuf(), &cs)) {
-			if (fer_prg_verfiy_checksums(getMsgData(rbuf), cs)) {
+		if (fer_cmd_verify_checksum(rxbuf, &cs)) {
+			if (fer_prg_verfiy_checksums(getMsgData(rxmsg), cs)) {
 				io_puts("frame checksums ok\n");
 			}
 		}
@@ -94,17 +85,8 @@ loop(void) {
 #endif
 }
 
-int ICACHE_FLASH_ATTR
-main_setup() {
-
-	rtc_setup();
-	setup_1();
-
-#ifdef DEBUG
-	test_modules();
-#endif
-
-	db_test_all_indicators(3);
+void ICACHE_FLASH_ATTR
+print_startup_info(void) {
 #define slf ";\n"
 #define cfg "config "
 
@@ -117,6 +99,21 @@ main_setup() {
 #endif
 		io_puts("\n(hint: type help; to get a command list)\n");
 	}
+}
+
+
+int ICACHE_FLASH_ATTR
+main_setup() {
+
+	rtc_setup();
+	fer_init_sender(&default_sender, C.fer_centralUnitID);
+#ifdef DEBUG
+	test_modules();
+#endif
+
+	print_startup_info();
+
+	db_test_all_indicators(3);
 
 	dbg_trace();
 	return 0;

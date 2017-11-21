@@ -910,7 +910,7 @@ process_parmTimer(clpar p[], int len) {
 	FSB_TOGGLE(fsb);
 
 	if (recv_lockBuffer(true)) {
-		init_prgPacket(getMsgData(tbuf));
+		init_prgPacket(getMsgData(txmsg));
 		if (flag_rtc_only == FLAG_TRUE) {
 			txbuf_write_rtc(true);
 			txbuf_write_flags(fpr0_flags, fpr0_mask); // the flags are ignored for RTC-only frames, even for non-broadcast

@@ -126,11 +126,9 @@ struct fer_msg {
 	uint8_t last[bytesPerPrgLine];
 } __attribute__((__packed__))  ;
 
-extern struct fer_msg *rbuf, *tbuf;
 
-#define get_TxBuf() (tbuf+0)
-#define get_RxBuf() (rbuf+0)
-#define get_sendPrgBufLine(line) (getMsgData(get_TxBuf())[line])
+
+#define get_sendPrgBufLine(line) (getMsgData(txmsg)[line])
 #define getMsgData(buf) ((uint8_t(*)[bytesPerPrgLine])buf->rtc)
 
 #define BYTES_MSG_PLAIN  bytesPerCmdPacket
@@ -142,12 +140,20 @@ extern struct fer_msg *rbuf, *tbuf;
 
 #if BUFFER_SHARING
 extern struct fer_msg message_buffer;
+#define rxmsg (&message_buffer)
+#define txmsg (&message_buffer)
+#define rxbuf ((uint8_t *)&message_buffer)
+#define txbuf ((uint8_t *)&message_buffer)
+#else
+struct fer_msg *get_rxbuf();
+struct fer_msg *get_txBuf();
 #endif
 
-// receiver ///////////////////////////
-bool fer_get_recvPin();
 
-ferCmdBuf_type get_recvCmdBuf(void);
+
+// receiver ///////////////////////////
+bool fer_get_rxPin();
+
 uint8_t *get_recvPrgBufLine(uint8_t line);
 
 extern volatile bool has_cmdReceived;
@@ -168,7 +174,7 @@ bool recv_lockBuffer(bool enableLock);  // blocks receiver access to shared buff
 
 
 // transmitter //////////////////////////
-void fer_put_sendPin(bool dat);
+void fer_put_txPin(bool dat);
 
 extern uint8_t dtSendPrgFrame[linesPerPrg][bytesPerPrgLine];
 
