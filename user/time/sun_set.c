@@ -34,7 +34,7 @@
 
 #include "time.h"
 
-time_t ICACHE_FLASH_ATTR
+time_t 
 sun_set(const time_t * timer)
 {
     int32_t         n;

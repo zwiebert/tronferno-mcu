@@ -42,7 +42,7 @@ extern int32_t     __utc_offset;
 const char      strfwkdays[] = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday ";
 const char      strfmonths[] = "January February March April May June July August September October November December ";
 
-unsigned char ICACHE_FLASH_ATTR
+unsigned char 
 pgm_copystring(const char *p, unsigned char i, char *b, unsigned char l)
 {
     unsigned char   ret, c;
@@ -64,7 +64,7 @@ pgm_copystring(const char *p, unsigned char i, char *b, unsigned char l)
     return ret;
 }
 
-size_t ICACHE_FLASH_ATTR
+size_t 
 strftime(char *buffer, size_t limit, const char *pattern, const struct tm * timeptr)
 {
     uint16_t    count, length;

@@ -39,7 +39,7 @@
 
 extern int32_t     __latitude;
 
-int32_t ICACHE_FLASH_ATTR
+int32_t 
 daylight_seconds(const time_t * timer)
 {
     float          l, d;

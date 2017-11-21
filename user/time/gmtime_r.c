@@ -35,7 +35,7 @@
 
 #include "time.h"
 
-void ICACHE_FLASH_ATTR
+void 
 gmtime_r(const time_t * timer, struct tm * timeptr)
 {
     int32_t         fract;

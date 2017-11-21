@@ -37,7 +37,7 @@
 
 extern void __print_lz(int , char *, char );
 
-void ICACHE_FLASH_ATTR
+void 
 isotime_r(const struct tm * tmptr, char *buffer)
 {
 	int16_t  i;

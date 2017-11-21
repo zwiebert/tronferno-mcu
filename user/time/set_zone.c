@@ -37,7 +37,7 @@
 
 extern int32_t     __utc_offset;
 
-void ICACHE_FLASH_ATTR
+void 
 set_zone(int32_t z)
 {
 	__utc_offset = z;

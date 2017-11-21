@@ -34,7 +34,7 @@
 */
 #include "time.h"
 
-int32_t ICACHE_FLASH_ATTR
+int32_t 
 difftime(time_t t1, time_t t2)
 {
 	return (int32_t) t1 - (int32_t) t2;

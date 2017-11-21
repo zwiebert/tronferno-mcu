@@ -36,7 +36,7 @@
 
 extern char    *__asc_store;
 
-char           * ICACHE_FLASH_ATTR
+char           * 
 ctime(const time_t * timeptr)
 {
 	struct tm       calendar;

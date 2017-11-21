@@ -36,7 +36,7 @@
 
 extern long     __longitude;
 
-time_t ICACHE_FLASH_ATTR
+time_t 
 solar_noon(const time_t * timer)
 {
     time_t          t;

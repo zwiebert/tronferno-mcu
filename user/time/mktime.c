@@ -39,7 +39,7 @@ extern int32_t     __utc_offset;
 
 extern int16_t      (*__dst_ptr) (const time_t *, int32_t *);
 
-time_t ICACHE_FLASH_ATTR
+time_t 
 mktime(struct tm * timeptr)
 {
 	time_t          ret;

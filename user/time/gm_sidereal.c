@@ -46,7 +46,7 @@
 
 #include "time.h"
 
-uint32_t ICACHE_FLASH_ATTR
+uint32_t 
 gm_sidereal(const time_t * timer)
 {
     uint64_t        tmp;

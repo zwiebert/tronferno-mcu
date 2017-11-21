@@ -45,7 +45,7 @@
 
 #include "time.h"
 
-void ICACHE_FLASH_ATTR
+void 
 iso_week_date_r(uint16_t y, uint16_t yday, struct week_date * iso)
 {
     uint16_t        years, n, wday;

@@ -47,7 +47,7 @@
 
 #define LAG 38520
 
-float ICACHE_FLASH_ATTR
+float 
 solar_declination(const time_t * timer)
 {
 

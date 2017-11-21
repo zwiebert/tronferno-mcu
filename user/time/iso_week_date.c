@@ -40,7 +40,7 @@
 
 extern char    *__asc_store;
 
-struct week_date * ICACHE_FLASH_ATTR
+struct week_date * 
 iso_week_date(uint16_t y, uint16_t yday)
 {
     struct week_date *iso;

@@ -36,7 +36,7 @@
 #include <stdint.h>
 #include "time.h"
 
-uint8_t ICACHE_FLASH_ATTR
+uint8_t 
 is_leap_year(uint16_t year)
 {
     div_t           d;

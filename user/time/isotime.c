@@ -36,7 +36,7 @@
 
 extern char    *__asc_store;
 
-char           * ICACHE_FLASH_ATTR
+char           * 
 isotime(const struct tm * tmptr)
 {
 	isotime_r(tmptr, __asc_store);

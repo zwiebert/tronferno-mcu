@@ -38,7 +38,7 @@
 
 #include "time.h"
 
-uint8_t ICACHE_FLASH_ATTR
+uint8_t 
 week_of_month(const struct tm * timestruct, uint8_t base)
 {
 	int16_t             first, n;

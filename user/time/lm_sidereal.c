@@ -35,7 +35,7 @@
 
 extern long     __longitude;
 
-uint32_t ICACHE_FLASH_ATTR
+uint32_t 
 lm_sidereal(const time_t * timer)
 {
     int32_t   n;

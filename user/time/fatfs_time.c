@@ -34,7 +34,7 @@
 
 #include "time.h"
 
-uint32_t ICACHE_FLASH_ATTR
+uint32_t 
 system_fatfs(const struct tm * timeptr)
 {
 	uint32_t        ret;

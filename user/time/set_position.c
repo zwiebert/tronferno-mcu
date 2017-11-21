@@ -39,7 +39,7 @@
 extern int32_t     __latitude;
 extern int32_t     __longitude;
 
-void ICACHE_FLASH_ATTR
+void 
 set_position(int32_t lat, int32_t lon)
 {
 	__latitude = lat;

@@ -39,7 +39,7 @@ extern int32_t     __utc_offset;
 
 extern int16_t      (*__dst_ptr) (const time_t *, int32_t *);
 
-void ICACHE_FLASH_ATTR
+void 
 localtime_r(const time_t * timer, struct tm * timeptr)
 {
 	time_t          lt;

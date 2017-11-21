@@ -36,7 +36,7 @@
 
 extern struct tm __tm_store;
 
-struct tm      * ICACHE_FLASH_ATTR
+struct tm      * 
 localtime(const time_t * timer)
 {
 	localtime_r(timer, &__tm_store);

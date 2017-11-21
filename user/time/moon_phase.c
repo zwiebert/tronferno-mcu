@@ -37,7 +37,7 @@
 
 #include "time.h"
 
-int8_t ICACHE_FLASH_ATTR
+int8_t 
 moon_phase(const time_t * timestamp)
 {
 	uint32_t        t;

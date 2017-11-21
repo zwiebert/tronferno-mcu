@@ -37,7 +37,7 @@
 
 extern struct tm __tm_store;
 
-struct tm      * ICACHE_FLASH_ATTR
+struct tm      * 
 gmtime(const time_t * timeptr)
 {
 	gmtime_r(timeptr, &__tm_store);

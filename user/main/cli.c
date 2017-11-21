@@ -244,6 +244,9 @@ parse_commandline(char *cl) {
 		case '=':
 			// add null terminator to key
 			*cl++ = '\0';
+			if (*cl == ';'  || *cl == ' ') {
+				return -1;
+			}
 
 			if (*cl == '\"') {
 				isValQuoted = true;
@@ -1084,8 +1087,11 @@ process_parm(clpar p[], int len) {
 void ICACHE_FLASH_ATTR
 process_cmdline(char *line) {
 	int n = parse_commandline(line);
-	process_parm(par, n);
-
+	if (n < 0) {
+		reply_failure();
+	} else {
+		process_parm(par, n);
+	}
 }
 
 

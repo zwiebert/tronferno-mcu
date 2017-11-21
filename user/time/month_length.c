@@ -35,7 +35,7 @@
 
 #include "time.h"
 
-uint8_t ICACHE_FLASH_ATTR
+uint8_t 
 month_length(uint16_t year, uint8_t month)
 {
     if (month == 2)

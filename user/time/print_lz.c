@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include "time.h"
 
-void ICACHE_FLASH_ATTR
+void 
 __print_lz(int i, char *buffer, char s)
 {
     div_t result;

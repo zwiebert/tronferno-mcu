@@ -51,7 +51,7 @@
 #include "time.h"
 #include "ephemera_common.h"
 
-int16_t ICACHE_FLASH_ATTR
+int16_t 
 equation_of_time(const time_t * timer)
 {
     int32_t       s, p;

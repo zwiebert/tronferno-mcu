@@ -38,7 +38,7 @@
 
 extern int16_t      (*__dst_ptr) (const time_t *, int32_t *);
 
-void ICACHE_FLASH_ATTR
+void 
 set_dst(int16_t (*d) (const time_t *, int32_t *))
 {
 	__dst_ptr = d;

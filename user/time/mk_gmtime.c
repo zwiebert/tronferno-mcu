@@ -36,7 +36,7 @@
 
 #include "time.h"
 
-time_t ICACHE_FLASH_ATTR
+time_t 
 mk_gmtime(const struct tm * timeptr)
 {
 
