@@ -50,7 +50,8 @@ SPIFFS_OBJ := $(patsubst spiffs/src/%.c,$(SPIFFS_BUILD_DIR)/%.o,$(SPIFFS_SRC))
 EXTRA_AR += $(SPIFFSIROM_A) 
 EXTRA_INCDIR += spiffs/src user/esp8266
 GEN_LIBS += $(SPIFFSIROM_A)
-CPPFLAGS += -DCONFIG_BUILD_SPIFFS 
+CPPFLAGS += -DCONFIG_BUILD_SPIFFS
+SUBMODULES += spiffs/src
 
 $(SPIFFS_A) : $(SPIFFS_OBJ)
 	$(vecho) "AR $@"
@@ -64,10 +65,10 @@ BUILD_DIRS += $(TIME_BUILD_DIR)
 TIME_A := $(TIME_BUILD_DIR)/time.a
 TIMEIROM_A := $(TIME_BUILD_DIR)/timeirom.a
 
-TIME_CSRC := $(wildcard user/time/*.c)
-TIME_SSRC := $(wildcard user/time/*.S)
-TIME_OBJ := $(patsubst user/time/%.c,$(TIME_BUILD_DIR)/%.o,$(TIME_CSRC))
-TIME_OBJ += $(patsubst user/time/%.S,$(TIME_BUILD_DIR)/%.o,$(TIME_SSRC))
+TIME_C_SRC := $(wildcard user/time/*.c)
+TIME_ASM_SRC := $(wildcard user/time/*.S)
+TIME_OBJ := $(patsubst user/time/%.c,$(TIME_BUILD_DIR)/%.o,$(TIME_C_SRC))
+TIME_OBJ += $(patsubst user/time/%.S,$(TIME_BUILD_DIR)/%.o,$(TIME_ASM_SRC))
 
 EXTRA_AR += $(TIMEIROM_A) 
 #EXTRA_INCDIR +=
@@ -78,6 +79,36 @@ $(TIME_A) : $(TIME_OBJ)
 	$(Q) $(AR) cru $@ $^
 ## end time.a
 
+
+## gdbstub.a
+ifeq ("$(DEBUG)","1")
+GDBSTUB_BUILD_DIR := $(BUILD_BASE)/gdbstub
+BUILD_DIRS += $(GDBSTUB_BUILD_DIR)
+GDBSTUB_A := $(GDBSTUB_BUILD_DIR)/gdbstub.a
+GDBSTUBIROM_A := $(GDBSTUB_BUILD_DIR)/gdbstubirom.a
+
+CPPFLAGS += -DDEBUG -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
+CFLAGS +=  -Og -ggdb
+LDFLAGS += -ggdb
+
+GDBSTUB_SRC := $(wildcard gdbstub/*.[c|S])
+GDBSTUB_OBJ := $(patsubst %.S,$(BUILD_BASE)/%.o,$(patsubst %.c,$(BUILD_BASE)/%.o,$(GDBSTUB_SRC)))
+
+EXTRA_AR += $(GDBSTUB_A) 
+#EXTRA_INCDIR +=
+GEN_LIBS += $(GDBSTUB_A)
+
+$(GDBSTUB_A) : $(GDBSTUB_OBJ)
+	$(vecho) "AR $@"
+	$(Q) $(AR) cru $@ $^
+endif
+## end gdbstub.a
+
+
+
+# fetch submodule #FIXME:
+spiffs/src:
+	git submodule update --init --recursive
 
 ## make irom archive (move functions from RAM to Flash-ROM on ESP8266)
 %irom.a : %.a

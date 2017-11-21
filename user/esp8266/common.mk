@@ -118,7 +118,7 @@ endif
 
 D ?= $(DEBUG)
 ifeq ("$(D)","1")
-#MODULES += gdbstub
+
 endif
 
 EXTRA_INCDIR   += $(EXTRA_BASE)/include
@@ -194,11 +194,11 @@ SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
 C_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
-CXX_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.[cc|cxx|cpp|C])) # FIXME: does this really match?
+CXX_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 ASM_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
 
 C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
-CXX_OBJ		:= $(patsubst %.C,$(BUILD_BASE)/%.o,$(patsubst %.cxx,$(BUILD_BASE)/%.o,$(patsubst %.cc,$(BUILD_BASE)/%.o,$(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC)))))
+CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(C_SRC))
 ASM_OBJ	    := $(patsubst %.S,$(BUILD_BASE)/%.o,$(ASM_SRC))
 
 SRC		    := $(C_SRC) $(CXX_SRC) $(ASM_SRC)
@@ -214,36 +214,18 @@ INCDIR		:= -Iuser -Iuser/time # $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 #MODULE_INCDIR	:= $(foreach sdir,$(SRC_DIR),$(addprefix -I,$(sdir)))
 
-GDB_SRC := $(wildcard gdbstub/*.[c|S])
-GDB_OBJ := $(patsubst %.S,$(BUILD_BASE)/%.o,$(patsubst %.c,$(BUILD_BASE)/%.o,$(GDB_SRC)))
-GDB_BUILD_DIR := $(BUILD_BASE)/gdbstub
-BUILD_DIRS += $(GDB_BUILD_DIR)
-
 ifeq ($(DISTRO),1)
 CPPFLAGS += -DDISTRIBUTION
 endif
 
-ifeq ("$(D)","1")
-CPPFLAGS += -DDEBUG -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
-CFLAGS +=  -Og -ggdb
-LDFLAGS += -ggdb
-#LIBS += $(BUILD_BASE)/gdbstub/libgdbstub.a
-SRC += $(GDB_SRC)
-OBJ += $(GDB_OBJ)
-else
-CPPFLAGS += 
+ifneq ("$(D)","1")
 CFLAGS += -Os -g -O2
-LDFLAGS +=
 endif
 
 ifneq ($(wildcard $(SRC_BASE)/user/sensitive/defaults.h),)
 CPPFLAGS += -DHAVE_USER_DEFAULTS
 endif
 
-
-
-pri:
-	echo $(BUILD_DIRS)
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
@@ -254,12 +236,10 @@ Q := @
 vecho := @echo
 endif
 
-vpath %.c $(SRC_DIR)
-vpath %.cpp $(SRC_DIR)
-
 define compile-objects
 $(1)%.o: $(2)%.S
 	$(vecho) "AS $$<"
+	$(Q) $(CC) -c $$< -o $$@ -MM > $$(patsubst %.o,%.d,$(DEP_DIR)/$$(subst /,-,$$@))
 	$(Q) $(CC) -c $$< -o $$@
 $(1)%.o: $(2)%.c
 	$(vecho) "CC $$<"
@@ -267,16 +247,14 @@ $(1)%.o: $(2)%.c
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CFLAGS)  -c $$< -o $$@
 $(1)%.o: $(2)%.cpp
 	$(vecho) "C+ $$<"
+	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CXXFLAGS)  -c $$< -o $$@ -MM > $$(patsubst %.o,%.d,$(DEP_DIR)/$$(subst /,-,$$@))
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CXXFLAGS)  -c $$< -o $$@
 endef
 
-$(BUILD_BASE)/gdbstub/libgdbstub.a : $(GDB_OBJ)
-	$(vecho) "AR $@"
-	 $(AR) cru $@ $^
 
 .PHONY: all checkdirs clean flash flashboot flashinit flasherase rebuild reflash 
 
-all: checkdirs $(TARGET_OUT)
+all: checkdirs $(TARGET_OUT) $(SUBMODULES)
 
 $(TARGET_OUT): $(APP_AR) $(GEN_LIBS)
 	$(vecho) "LD $@"
