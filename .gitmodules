@@ -1,3 +1,6 @@
 [submodule "spiffs"]
 	path = spiffs
 	url = https://github.com/pellepl/spiffs.git
+[submodule "esp-gdbstub"]
+	path = esp-gdbstub
+	url = https://github.com/espressif/esp-gdbstub.git

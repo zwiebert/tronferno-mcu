@@ -5,37 +5,8 @@
 #include "utils.h"
 #include "config.h"
 
-#ifdef FER_SENDER_DCK
-#define bitLen               FER_BIT_WIDTH_DCK
-#define shortPositive_Len    FER_BIT_SHORT_DCK
-#define longPositive_Len     FER_BIT_LONG_DCK
-#define pre_Len              FER_PRE_WIDTH_DCK
-#define pauseHigh_Len        FER_STP_NEDGE_DCK
-#else
-#define bitLen               FER_BIT_WIDTH_TCK
-#define shortPositive_Len    FER_BIT_NEDGE_0_TCK
-#define longPositive_Len     FER_BIT_NEDGE_1_TCK
-#define pre_Len              FER_PRE_WIDTH_TCK
-#define pauseHigh_Len        FER_STP_NEDGE_TCK
-#endif
-
-#define SF  // new code: stop bits first before preamble and each data word
-
-#define USE_MACROS 1
-
-#define IS_EO_BIT (CountTicks == 0)
-#define IS_EO_WORD (IS_EO_BIT && CountBits == 0)
-#define IS_EO_LINE (IS_EO_WORD && CountWords == 0)
-#define IS_EO_FRAME (IS_EO_LINE && CountLines == 0)
-
-
 volatile bool is_sendMsgPending;
-static uint16_t wordsToSend;
-
-static uint8_t CountTicks, CountBits;
-static uint16_t CountWords;
-
-static uint16_t dtSendBuf;
+volatile uint16_t wordsToSend;
 
 #if BUFFER_SHARING
 struct fer_msg *tbuf = &message_buffer;
@@ -43,8 +14,6 @@ struct fer_msg *tbuf = &message_buffer;
 static struct fer_msg tmsg;
 struct fer_msg *tbuf = &tmsg;
 #endif
-
-static bool dtLineOut;   // output line
 
 
 uint8_t ICACHE_FLASH_ATTR fer_make_cmdPacket(const uint8_t *src, uint8_t *dst) {
@@ -94,6 +63,28 @@ if (C.app_verboseOutput >= vrb1)
 	return true;
 }
 
+// buffer is shared between rx and tx
+// ... interrupt code is now in one file too
+#if 0
+static uint8_t CountTicks, CountBits;
+static uint16_t CountWords;
+static uint16_t dtSendBuf;
+static bool dtLineOut;   // output line
+
+#ifdef FER_SENDER_DCK
+#define bitLen               FER_BIT_WIDTH_DCK
+#define shortPositive_Len    FER_BIT_SHORT_DCK
+#define longPositive_Len     FER_BIT_LONG_DCK
+#define pre_Len              FER_PRE_WIDTH_DCK
+#define pauseHigh_Len        FER_STP_NEDGE_DCK
+#else
+#define bitLen               FER_BIT_WIDTH_TCK
+#define shortPositive_Len    FER_BIT_NEDGE_0_TCK
+#define longPositive_Len     FER_BIT_NEDGE_1_TCK
+#define pre_Len              FER_PRE_WIDTH_TCK
+#define pauseHigh_Len        FER_STP_NEDGE_TCK
+#endif
+
 /////////////////////////// interrupt code //////////////////////
 
 
@@ -115,41 +106,14 @@ fer_add_word_parity (uint8_t data_byte, int pos) {
   return result;
 }
 
-#if USE_MACROS
+
 #define make_Word fer_add_word_parity
 #define init_counter() (CountTicks = CountBits = CountWords = 0)
 #define updateLinePre() (dtLineOut = (CountTicks < shortPositive_Len))
 #define advancePreCounter() (ct_incr(CountTicks, pre_Len) && ct_incr(CountBits, bitsPerPre))
 #define advanceStopCounter() (ct_incr(CountTicks, bitLen) && ct_incr(CountBits, bitsPerPause))
 #define updateLineStop() (dtLineOut = (CountTicks < pauseHigh_Len) && (CountBits == 0))
-#else
-static uint16_t
-make_Word(uint8_t val, uint8_t wordCounter)
-{
-  uint16_t result = fer_add_word_parity(val, wordCounter);
-  return result;
-}
 
-static void init_counter() {
-  CountTicks = CountBits = CountWords = CountLines = 0;
-}
-
-static void updateLinePre() {
-	dtLineOut = (CountTicks < shortPositive_Len);
-}
-
-static bool advancePreCounter() {
-	return (ct_incr(CountTicks, pre_Len) && ct_incr(CountBits, bitsPerPre));
-}
-
-static bool advanceStopCounter() {
-	return (ct_incr(CountTicks, bitLen) && ct_incr(CountBits, bitsPerPause));
-}
-
-static void updateLineStop() {
-	dtLineOut = (CountTicks < pauseHigh_Len) && (CountBits == 0);
-}
-#endif
 
 // sets output line according to current bit in data word
 // a stop bit is sent in CountBits 0 .. 2
@@ -224,3 +188,6 @@ void tick_ferSender(void) {
 		tick_send_command();
 	}
 }
+#endif
+
+

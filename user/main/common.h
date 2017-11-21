@@ -8,12 +8,12 @@
 ////////////////////////
 // disable features not working on some MCUs
 #ifdef MCU_ESP8266
-#define FER_TRANSMITTER
 #ifndef DEBUG
+#define FER_TRANSMITTER
 #define FER_RECEIVER
-#endif
 #define USE_NTP
 #define USE_WLAN
+#endif
 #endif
 
 ////////////////////////////

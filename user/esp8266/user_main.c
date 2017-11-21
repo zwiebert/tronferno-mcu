@@ -20,7 +20,7 @@
 #include "main/inout.h"
 #include "main/config.h"
 #ifdef DEBUG
-#include <../../gdbstub/gdbstub.h>
+#include <../../esp-gdbstub/gdbstub.h>
 #endif
 
 

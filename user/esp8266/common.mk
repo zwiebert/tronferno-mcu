@@ -239,8 +239,8 @@ endif
 define compile-objects
 $(1)%.o: $(2)%.S
 	$(vecho) "AS $$<"
-	$(Q) $(CC) -c $$< -o $$@ -MM > $$(patsubst %.o,%.d,$(DEP_DIR)/$$(subst /,-,$$@))
-	$(Q) $(CC) -c $$< -o $$@
+	$(Q) $(CC) $(CPPFLAGS) -c $$< -o $$@ -MM > $$(patsubst %.o,%.d,$(DEP_DIR)/$$(subst /,-,$$@))
+	$(Q) $(CC) $(CPPFLAGS) -c $$< -o $$@
 $(1)%.o: $(2)%.c
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CFLAGS) -c $$< -MT $$@ -MM > $$(patsubst %.o,%.d,$(DEP_DIR)/$$(subst /,-,$$@))

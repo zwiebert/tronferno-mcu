@@ -21,8 +21,10 @@ config C = {
 	rtcAvrTime,//rtc
 	vrbNone,  //verboseOutput
 	MY_FER_GM_USE,
+#ifdef USE_WLAN
 	MY_WIFI_SSID,
 	MY_WIFI_PASSWORD,
+#endif
 	MY_APP_CONFIG_PASSWORD,
 	MY_APP_EXPERT_PASSWORD,
 };

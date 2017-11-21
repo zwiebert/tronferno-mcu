@@ -249,8 +249,10 @@ void ICACHE_FLASH_ATTR
 user_set_station_config(void) {
 	struct station_config stationConf;
 	stationConf.bssid_set = 0; //need not check MAC address of AP
+#ifdef USE_WLAN
 	os_memcpy(&stationConf.ssid, C.wifi_SSID, 32);
 	os_memcpy(&stationConf.password, C.wifi_password, 64);
+#endif
 	wifi_station_set_config(&stationConf);
 }
 
