@@ -658,6 +658,11 @@ process_parmDbg(clpar p[], int len) {
 				io_putl(C.fer_centralUnitID, 16);
 				io_putlf();
 			}
+#ifdef MCU_ESP8266
+			if (strcmp(val, "reset-info") == 0) {
+				print_reset_info();
+			}
+#endif
 #if ENABLE_SPIFFS
 		} else if (strcmp(key, "spiffs") == 0) {
 			if (strcmp(val, "format") == 0) {
@@ -683,11 +688,7 @@ const char *const timer_keys[]  = {
 };
 
 #if ENABLE_TIMER_WDAY_KEYS
-#ifdef WEEK_STARTS_AT_SUNDAY
-const char *const timer_wdays[]  = { "sun", "mon", "tue", "wed", "thu", "fri", "sat", "sun" };
-#else
 const char *const timer_wdays[]  = { "mon", "tue", "wed", "thu", "fri", "sat", "sun" };
-#endif
   
 int asc2wday(const char *s) {
   int i;

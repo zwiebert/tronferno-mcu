@@ -8,12 +8,10 @@
 
 #include "rtc.h"
 
-
 #include "all.h"
 
 extern fer_sender_basic default_sender;
 extern fer_sender_basic last_received_sender;
-
 
 static void ICACHE_FLASH_ATTR
 setup_1() {
@@ -30,21 +28,19 @@ void ICACHE_FLASH_ATTR fer_printData(const uint8_t *cmd, uint8_t prg[linesPerPrg
 		int i, used_lines;
 
 		used_lines = FRB_GET_FPR0_IS_RTC_ONLY(prg[FPR_RTC_START_ROW]) ? FER_RTC_PACK_CT : FER_PRG_PACK_CT;
-if (C.app_verboseOutput >= vrbDebug) {
-		for (i = 0; i < used_lines; ++i) {
-			print_array_8(prg[i], FER_PRG_BYTE_CT);
+		if (C.app_verboseOutput >= vrbDebug) {
+			for (i = 0; i < used_lines; ++i) {
+				print_array_8(prg[i], FER_PRG_BYTE_CT);
+			}
+		} else {
+			fpr_printPrgPacketInfo(prg, used_lines == 1);
 		}
-} else {
-		fpr_printPrgPacketInfo(prg, used_lines == 1);
-}
 
 	}
 #endif
 }
 
-
 bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds);
-
 
 void ICACHE_FLASH_ATTR
 loop(void) {
@@ -52,11 +48,8 @@ loop(void) {
 	char *cmdline;
 	static bool ready;
 
-	// io_printf_fun("loop()\n");
 	// CLI
 	if ((cmdline = get_commandline())) {
-		io_puts("cmd :");
-		io_puts(cmdline);
 		io_putlf();
 		process_cmdline(cmdline);
 		ready = false;
@@ -66,16 +59,13 @@ loop(void) {
 	}
 
 #ifdef FER_RECEIVER
-
 	// received data
 	if (MessageReceived == MSG_TYPE_PLAIN) {
 		const uint8_t *buf = get_recvCmdBuf();
 
-		for (i=0; i < 5; ++i ) {
+		for (i = 0; i < 5; ++i) {
 			last_received_sender.data[i] = buf[i];
 		}
-
-
 
 		io_puts("R:"), fer_printData(buf, NULL);
 		fer_recvClearAll();
@@ -110,7 +100,6 @@ main_setup() {
 	rtc_setup();
 	setup_1();
 
-
 #ifdef DEBUG
 	test_modules();
 #endif
@@ -120,17 +109,13 @@ main_setup() {
 #define cfg "config "
 
 	if (C.app_verboseOutput >= vrbNone) {
-		io_puts("\n\n" "main program starting ...\n" "build-date: " __DATE__ " " __TIME__ "\n\n");
-		io_puts(cfg "cu="), io_print_hex_32(C.fer_centralUnitID, false), io_puts(slf);
-		io_puts(cfg "baud="), io_print_dec_32(C.mcu_serialBaud, false), io_puts(slf);
-		io_puts(cfg "longitude="), io_print_float(C.geo_longitude, 5), io_puts(slf);
-		io_puts(cfg "latitude="), io_print_float(C.geo_latitude, 5), io_puts(slf);
-		io_puts(cfg "time-zone="), io_print_float(C.geo_timezone, 2), io_puts(slf);
+		io_puts("\n\n" "Tronferno-MCU starting ...\n" "build-date: " __DATE__ " " __TIME__ "\n\n");
+		io_puts(cfg "cu="), io_print_hex_32(C.fer_centralUnitID, false), io_puts(" baud="), io_print_dec_32(C.mcu_serialBaud, false), io_puts(slf);
+		io_puts(cfg "longitude="), io_print_float(C.geo_longitude, 5), io_puts(" latitude="), io_print_float(C.geo_latitude, 5), io_puts(" time-zone="), io_print_float(C.geo_timezone, 2), io_puts(slf);
 #ifdef USE_WLAN
-		io_puts(cfg "wlan-ssid="), io_puts(C.wifi_SSID), io_puts(slf);
-		io_puts(cfg "wlan-password="), io_puts((C.wifi_password[0] == '\0') ? slf : "***********" slf);
+		io_puts(cfg "wlan-ssid=\""), io_puts(C.wifi_SSID), io_puts("\" wlan-password="), io_puts((C.wifi_password[0] == '\0') ? "\"\""slf : "\"***********\"" slf);
 #endif
-		io_puts("\nto print a command list use: help;\n");
+		io_puts("\n(hint: type help; to get a command list)\n");
 	}
 
 	dbg_trace();
