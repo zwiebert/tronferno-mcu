@@ -490,7 +490,7 @@ const char help_parmConfig[] PROGMEM =
 		  "time-zone=N       example: config  longitude=-13.23452 latitude=+52.34234 time-zone=+1.0;\n"
 		  "dst=(eu|0|1)      daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
 		  "verbose=(0..5)    set text output verbosity level: 0 for none ... 5 for max)\n"
-		  "set-config-password=PW  set a config password. if set every config commands needs the pw option\n"
+		  "set-pw=password   set a config password. if set every config commands needs the pw option\n"
 		  "pw=PW             example: config pw=my_passw dst=eu;\n"
 #if ENABLE_RESTART
 		  "restart           restart MCU\n"
@@ -578,7 +578,7 @@ process_parmConfig(clpar p[], int len) {
 				reply_failure();
 			}
 #endif // USE_WLAN
-		} else if (strcmp(key, "set-config-password") == 0) {
+		} else if (strcmp(key, "set-pw") == 0) {
 			if (strlen(val) < sizeof (C.app_configPassword)) {
 			strcpy (C.app_configPassword, val);
 			save_config();
