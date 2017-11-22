@@ -69,7 +69,8 @@ void ICACHE_FLASH_ATTR
 print_reset_info() {
 	struct rst_info *rtc_info = system_get_rst_info();
 	if (rtc_info) {
-		printf("\n\nreset reason: %x\n", rtc_info->reason);
+		printf("\n                                          \n");
+		printf("\r\n\r\n\r\nreset reason: %x\n", rtc_info->reason);
 		if (rtc_info->reason == REASON_WDT_RST || rtc_info->reason == REASON_EXCEPTION_RST || rtc_info->reason == REASON_SOFT_WDT_RST) {
 			if (rtc_info->reason == REASON_EXCEPTION_RST) {
 				printf("Fatal exception (%d):\n", rtc_info->exccause);
