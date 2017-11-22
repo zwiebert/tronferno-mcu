@@ -29,11 +29,11 @@
 #define RFIN_GPIO_FUNC FUNC_GPIO5
 
 
-void fer_put_txPin(bool dat) {
+void mcu_put_txPin(bool dat) {
 	GPIO_OUTPUT_SET(RFOUT_GPIO, dat);
 }
 
-bool fer_get_rxPin() {
+bool mcu_get_rxPin() {
 	return GPIO_INPUT_GET(GPIO_ID_PIN(RFIN_GPIO));
 }
 
@@ -44,5 +44,5 @@ setup_pin(void) {
 	PIN_FUNC_SELECT(RFIN_GPIO_MUX, RFIN_GPIO_FUNC);
 	GPIO_DIS_OUTPUT(GPIO_ID_PIN(RFIN_GPIO));
 
-	fer_put_txPin(false); // make sure, the RF transmitter is off
+	mcu_put_txPin(false); // make sure, the RF transmitter is off
 }

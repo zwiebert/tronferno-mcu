@@ -19,7 +19,6 @@ static volatile bool requestLock;
 static volatile bool isLocked;
 
 bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
-#if BUFFER_SHARING
 	if (enableLock) {
 		requestLock = true;
 		do {
@@ -28,7 +27,6 @@ bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
 	} else {
 		requestLock = false;
 	}
-#endif
 	return true;
 }
 #endif
@@ -115,16 +113,12 @@ static uint16_t bytesToReceive;
 #define getBytesToReceive() (bytesToReceive + 0)
 #define hasAllBytesReceived() (bytesToReceive <= received_byte_ct)
 
-static void incrCurrentByteAddr(void) {
+static void frx_incr_received_bytes(void) {
 	if (received_byte_ct <= bytesToReceive) { // FIXME:
 		++received_byte_ct;
 	} else {
 
 	}
-}
-
-static void init_counter() {
-	CountTicks = CountBits = CountWords = 0;
 }
 
 /* "return t if parity is even and position matches parity bit \ 1/3
@@ -134,7 +128,7 @@ static bool fer_word_parity_p(uint16_t word, uint8_t pos) {
 	return result;
 }
 
-static fer_errors fer_extract_Byte(const uint16_t *src, uint8_t *dst) {
+static fer_error frx_extract_Byte(const uint16_t *src, uint8_t *dst) {
 #if 0
 	if (fer_word_parity_p(src[0], 0)
 			&& fer_word_parity_p(src[1], 1)
@@ -157,7 +151,7 @@ static fer_errors fer_extract_Byte(const uint16_t *src, uint8_t *dst) {
 	return fer_BAD_WORD_PARITY;
 }
 
-static fer_errors fer_verify_cmd(const uint8_t *dg) {
+static fer_error frx_verify_cmd(const uint8_t *dg) {
 	int i;
 	uint8_t checksum = 0;
 
@@ -168,22 +162,22 @@ static fer_errors fer_verify_cmd(const uint8_t *dg) {
 	return (checksum == dg[i] ? fer_OK : fer_BAD_CHECKSUM);
 }
 
-static void recv_decodeByte(uint8_t *dst) {
-	if (fer_OK != fer_extract_Byte(dtRecvBuffer, dst)) {
+static void frx_recv_decodeByte(uint8_t *dst) {
+	if (fer_OK != frx_extract_Byte(dtRecvBuffer, dst)) {
 		++error;
 	}
 }
 
-static bool is_stopBit(unsigned len, unsigned nedge) {
+static bool frx_is_stopBit(unsigned len, unsigned nedge) {
 	return ((FER_STP_WIDTH_MIN_TCK <= len && len <= FER_STP_WIDTH_MAX_TCK) && (FER_STP_NEDGE_MIN_TCK <= nedge && nedge <= FER_STP_NEDGE_MAX_TCK));
 }
 
-static bool is_pre_bit(unsigned len, unsigned nedge) {
+static bool frx_is_pre_bit(unsigned len, unsigned nedge) {
 	return ((FER_PRE_WIDTH_MIN_TCK <= len && len <= FER_PRE_WIDTH_MAX_TCK) && (FER_PRE_NEDGE_MIN_TCK <= nedge && nedge <= FER_PRE_NEDGE_MAX_TCK));
 }
 
 
-static bool wait_and_sample(void) {
+static bool frx_wait_and_sample(void) {
 
 	if (POS__NOT_IN_DATA) {
 
@@ -192,14 +186,14 @@ static bool wait_and_sample(void) {
 			if (preBits < FER_PRE_BIT_CT) {
 
 				// wait until preamble is over
-				if (is_pre_bit(aTicks, pTicks) && ++preBits) {
+				if (frx_is_pre_bit(aTicks, pTicks) && ++preBits) {
 					return false;
 				}
 
 			} else {
 
 				// wait until stopBit is over
-				if (!is_stopBit(aTicks, pTicks))
+				if (!frx_is_stopBit(aTicks, pTicks))
 					return false; // continue
 			}
 
@@ -214,16 +208,16 @@ static bool wait_and_sample(void) {
 	return preBits == FER_PRE_BIT_CT;
 }
 
-static bool recvMessage(void) {
+static bool frx_receive_message(void) {
 
-	if (wait_and_sample()) {
+	if (frx_wait_and_sample()) {
 		if (ct_incr(CountTicks, bitLen)) {
 			if (ct_incr(CountBits, bitsPerWord)) {
 				// word complete
 				if ((CountWords & 1) == 1) {
 					// word pair complete
-					recv_decodeByte(getCurrentByteAddr());
-					incrCurrentByteAddr();
+					frx_recv_decodeByte(getCurrentByteAddr());
+					frx_incr_received_bytes();
 				}
 				++CountWords;
 				if (hasAllBytesReceived()) {
@@ -236,8 +230,8 @@ static bool recvMessage(void) {
 	return false;  // continue
 }
 
-void fer_recvClearAll(void) {
-	init_counter();
+void frx_clear(void) {
+	CountTicks = CountBits = CountWords = 0;
 	preBits = 0;
 	error = 0;
 	MessageReceived = 0;
@@ -246,20 +240,20 @@ void fer_recvClearAll(void) {
 
 }
 
-static void tickRecvMessage() {
-	if (recvMessage()) {
+static void frx_tick_receive_message() {
+	if (frx_receive_message()) {
 
 		switch (getBytesToReceive()) {
 
 		case BYTES_MSG_PLAIN:
-			if ((!error && fer_OK == fer_verify_cmd(rbuf->cmd))) {
+			if ((!error && fer_OK == frx_verify_cmd(rbuf->cmd))) {
 				if (FRB_GET_CMD(rbuf->cmd) == fer_cmd_Program && FRB_MODEL_IS_CENTRAL(rbuf->cmd)) {
 					bytesToReceive = BYTES_MSG_RTC;
 				} else {
 					MessageReceived = MSG_TYPE_PLAIN;
 				}
 			} else {
-				fer_recvClearAll();
+				frx_clear();
 			}
 			break;
 
@@ -278,10 +272,10 @@ static void tickRecvMessage() {
 	}
 }
 
-void tick_ferReceiver() {
+void frx_tick() {
 
 	// sample input pin and detect input edge
-	rx_input = fer_get_rxPin();
+	rx_input = mcu_get_rxPin();
 	input_edge = (old_rx_input == rx_input) ? 0 : (IS_P_INPUT ? +1 : -1);
 	old_rx_input = rx_input;
 
@@ -289,16 +283,16 @@ void tick_ferReceiver() {
 	if (!(MessageReceived || is_sendMsgPending || isLocked)) {
 
 		if ((prgTickCount && !--prgTickCount) || (IS_P_INPUT && nTicks > veryLongPauseLow_Len)) {
-			fer_recvClearAll();
+			frx_clear();
 		}
 
-		tickRecvMessage();
+		frx_tick_receive_message();
 
 	}
 
 	if (requestLock) {
 		if (!isLocked)
-			fer_recvClearAll();
+			frx_clear();
 		isLocked = true;
 	} else {
 		isLocked = false;
@@ -352,12 +346,10 @@ extern volatile uint16_t wordsToSend;
 #define advanceStopCounter() (ct_incr(CountTicks, bitLen) && ct_incr(CountBits, bitsPerPause))
 #define updateLineStop() (tx_output = (CountTicks < pauseHigh_Len) && (CountBits == 0))
 
-#define tbuf (&message_buffer)
-
 // sets output line according to current bit in data word
 // a stop bit is sent in CountBits 0 .. 2
 // a data word is sent in CountBits 3 .. 10
-static void updateLine() {
+static void ftx_update_output() {
 	int bit = CountBits - bitsPerPause;
 
 	if (bit < 0) {  // in stop bit (CountBits 0 .. 2)
@@ -367,7 +359,7 @@ static void updateLine() {
 	}
 }
 
-static bool sendMsg() {
+static bool ftx_send_message() {
 	static bool end_of_preamble, end_of_stop;
 
 	if (!end_of_stop) {
@@ -379,11 +371,11 @@ static bool sendMsg() {
 		// send preamble
 		updateLinePre();
 		if ((end_of_preamble = advancePreCounter())) {
-			dtSendBuf = make_Word(tbuf->cmd[0], 0); // load first word into send buffer
+			dtSendBuf = make_Word(txmsg->cmd[0], 0);
 		}
 	} else {
 		// send data words + stop bits
-		updateLine();
+		ftx_update_output();
 		// counting ticks until end_of_frame
 		if (ct_incr(CountTicks, bitLen)) {
 			// bit sent
@@ -394,7 +386,7 @@ static bool sendMsg() {
 					end_of_stop = end_of_preamble = false;
 					return true; // done
 				} else {
-					dtSendBuf = make_Word(tbuf->cmd[CountWords / 2], CountWords); // load next word
+					dtSendBuf = make_Word(txmsg->cmd[CountWords / 2], CountWords); // load next word
 				}
 			}
 		}
@@ -402,23 +394,23 @@ static bool sendMsg() {
 	return false; // continue
 }
 
-static void tick_send_command() {
+static void ftx_tick_send_message() {
 
-	bool done = sendMsg();
-	fer_put_txPin(tx_output);
+	bool done = ftx_send_message();
+	mcu_put_txPin(tx_output);
 
 	if (done) {
 		is_sendMsgPending = false;
 		init_counter();
-		fer_put_txPin(0);
+		mcu_put_txPin(0);
 
 	}
 }
 
-void tick_ferSender(void) {
+void ftx_tick(void) {
 
 	if (is_sendMsgPending) {
-		tick_send_command();
+		ftx_tick_send_message();
 	}
 }
 #endif

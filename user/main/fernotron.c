@@ -13,33 +13,10 @@
 extern fer_sender_basic default_sender;
 extern fer_sender_basic last_received_sender;
 
-void ICACHE_FLASH_ATTR fer_printData(const uint8_t *cmd, uint8_t prg[linesPerPrg][bytesPerPrgLine]) {
-
-	if (cmd)
-		frb_printPacket(cmd);
-
-#ifndef	FER_RECEIVER_MINIMAL
-	if (prg) {
-		int i, used_lines;
-
-		used_lines = FRB_GET_FPR0_IS_RTC_ONLY(prg[FPR_RTC_START_ROW]) ? FER_RTC_PACK_CT : FER_PRG_PACK_CT;
-		if (C.app_verboseOutput >= vrbDebug) {
-			for (i = 0; i < used_lines; ++i) {
-				print_array_8(prg[i], FER_PRG_BYTE_CT);
-			}
-		} else {
-			fpr_printPrgPacketInfo(prg, used_lines == 1);
-		}
-
-	}
-#endif
-}
-
 bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds);
 
 void ICACHE_FLASH_ATTR
 loop(void) {
-	int i;
 	char *cmdline;
 	static bool ready;
 
@@ -59,21 +36,21 @@ loop(void) {
 		case MSG_TYPE_PLAIN:
 			memcpy(&last_received_sender.data, rxmsg->cmd, 5);
 			cu_auto_set(0);
-			io_puts("R:"), fer_printData(rxmsg->cmd, NULL);
+			io_puts("R:"), fmsg_print(rxmsg, MessageReceived);
 			break;
 #ifndef	FER_RECEIVER_MINIMAL
 		case MSG_TYPE_RTC:
 		case MSG_TYPE_TIMER:
-			io_puts("timer frame received\n"), fer_printData(rxmsg->cmd, getMsgData(rxmsg));
+			io_puts("timer frame received\n"), fmsg_print(rxmsg, MessageReceived);
 			break;
 #endif
 		}
 
-		if (!fer_msg_verify_checksums(rxmsg, MessageReceived)) {
+		if (!fmsg_verify_checksums(rxmsg, MessageReceived)) {
 			io_puts("checksum(s) wrong\n");
 		}
 
-		fer_recvClearAll();
+		frx_clear();
 	}
 #endif
 

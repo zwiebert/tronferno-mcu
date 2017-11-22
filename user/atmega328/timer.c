@@ -22,19 +22,19 @@ ISR(TIMER1_COMPA_vect) {
 		{
 			static uint_fast8_t tick_count;
 			if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
-				tick_ferSender();
+				ftx_tick();
 			}
 
 		}
 #else
-		tick_ferSender();
+		ftx_tick();
 #endif
 	}
 #endif
 
 #ifdef FER_RECEIVER
 	if (recvTick == C.app_recv) {
-		tick_ferReceiver();
+		frx_tick();
 	}
 #endif
 #if 1

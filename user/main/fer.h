@@ -45,7 +45,6 @@
 #define FER_PRE_NEDGE_MIN_DCK     1
 #define FER_PRE_NEDGE_MAX_DCK     5
 
-
 // data bits are represented by two different positions of the negative edge (on-off)
 // 1=short-long  /--\____  (2_on, 4_off)
 // 0=long-short  /----\__  (4_on, 2_off)
@@ -61,7 +60,6 @@
 
 #define FER_DAT_WORD_WIDTH_DCK    (FER_STP_WIDTH_DCK + (1UL * FER_BIT_WIDTH_DCK * FER_CMD_BIT_CT))
 #define FER_PRG_FRAME_WIDTH_DCK   (1UL * FER_DAT_WORD_WIDTH_DCK * FER_PRG_WORD_CT * FER_PRG_PACK_CT)
-
 
 //  the same timings relative to ticks of interrupt frequency
 #define FER_PRE_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_DCK)
@@ -82,7 +80,6 @@
 #define FER_BIT_LONG_TCK        DATA_CLOCK_TO_TICKS(FER_BIT_LONG_DCK)
 #define FER_BIT_SAMP_POS_TCK    DATA_CLOCK_TO_TICKS(FER_BIT_SAMP_POS_DCK)
 
-
 // counts
 #define FER_CMD_BIT_CT           10  // we have 10 data bits (+ 1 stop bit)
 #define FER_CMD_WORD_CT          12
@@ -94,7 +91,6 @@
 #define FER_PRG_PACK_CT          18   // lines per frame
 #define FER_RTC_PACK_CT           1   // lines per frame
 
-
 // aliases
 #define bitsPerPause          FER_STP_BIT_CT  // this just means 3 databits would fit into 1 pause/stop-bit. helps with counting them out
 #define bitsPerPre            FER_PRE_BIT_CT
@@ -105,105 +101,76 @@
 #define bytesPerPrgLine       FER_PRG_BYTE_CT
 #define wordsPerPrgLine       FER_PRG_WORD_CT
 
-
 #define FER_SENDER_DCK   // use data clock instead of tick clock for fer_sender.c
 
 ////////////////////////////////////////////////////////////////////////////////////
 // implementation interface
-typedef uint8_t *ferCmdBuf_type;
 
 typedef enum {
 	fer_OK, fer_PAIR_NOT_EQUAL, fer_BAD_WORD_PARITY, fer_BAD_CHECKSUM
-} fer_errors;
+} fer_error;
 
+typedef enum {
+	MSG_TYPE_NONE, MSG_TYPE_PLAIN, MSG_TYPE_RTC, MSG_TYPE_TIMER
+} fmsg_type;
 
-
-struct fer_msg {
+typedef struct fer_msg {
 	uint8_t cmd[bytesPerCmdPacket];
 	uint8_t rtc[bytesPerPrgLine];
 	uint8_t wdtimer[FPR_TIMER_HEIGHT][bytesPerPrgLine];
 	uint8_t astro[FPR_ASTRO_HEIGHT][bytesPerPrgLine];
 	uint8_t last[bytesPerPrgLine];
-} __attribute__((__packed__))  ;
+}__attribute__((__packed__)) fer_msg;
 
-
-
-#define get_sendPrgBufLine(line) (getMsgData(txmsg)[line])
-#define getMsgData(buf) ((uint8_t(*)[bytesPerPrgLine])buf->rtc)
+#define fmsg_get_data(msg) ((uint8_t(*)[bytesPerPrgLine])(msg)->rtc)
+typedef uint8_t(*fmsg_data)[bytesPerPrgLine];
 
 #define BYTES_MSG_PLAIN  bytesPerCmdPacket
 #define BYTES_MSG_RTC    (bytesPerCmdPacket + bytesPerPrgLine * 1)
 #define BYTES_MSG_TIMER  (bytesPerCmdPacket + bytesPerPrgLine * linesPerPrg)
 
-
-#define BUFFER_SHARING 1
-
-#if BUFFER_SHARING
 extern struct fer_msg message_buffer;
 #define rxmsg (&message_buffer)
 #define txmsg (&message_buffer)
-#define rxbuf ((uint8_t *)&message_buffer)
-#define txbuf ((uint8_t *)&message_buffer)
-#else
-struct fer_msg *get_rxbuf();
-struct fer_msg *get_txBuf();
-#endif
-
-
+#define rxbuf ((uint8_t *)rxmsg)
+#define txbuf ((uint8_t *)txmsg)
+#define rxdat fmsg_get_data(rxmsg)
+#define txdat fmsg_get_data(txmsg)
 
 // receiver ///////////////////////////
-bool fer_get_rxPin();
+bool mcu_get_rxPin();
 
 uint8_t *get_recvPrgBufLine(uint8_t line);
 
 extern volatile bool has_cmdReceived;
 extern volatile bool has_prgReceived;
-typedef enum { MSG_TYPE_NONE, MSG_TYPE_PLAIN, MSG_TYPE_RTC, MSG_TYPE_TIMER } fer_msg_type;
 
 extern volatile uint8_t MessageReceived;
 
-void tick_ferReceiver(void);
-void fer_recvClearAll(void); // call it after received data buffers has been processed by main thread
-
-bool fer_prg_verfiy_checksums(uint8_t dg[linesPerPrg][bytesPerPrgLine], uint8_t checksum);
-bool fer_cmd_verify_checksum(ferCmdBuf_type dg, uint8_t *checksum_out);
-
-void fer_msg_create_checksums(struct fer_msg *m, fer_msg_type t);
-bool fer_msg_verify_checksums(const struct fer_msg *m, fer_msg_type t);
-
+void frx_tick(void);
+void frx_clear(void); // call it after received data buffers has been processed by main thread
 bool recv_lockBuffer(bool enableLock);  // blocks receiver access to shared buffer
 
-
 // transmitter //////////////////////////
-void fer_put_txPin(bool dat);
+void mcu_put_txPin(bool dat);
 
 extern uint8_t dtSendPrgFrame[linesPerPrg][bytesPerPrgLine];
 
-
-
-
 extern volatile bool is_sendMsgPending;
-void tick_ferSender(void);
+void ftx_tick(void);
 bool fer_send_prg(fer_sender_basic *fsb);
 bool fer_send_cmd(fer_sender_basic *fsb);
-extern uint8_t fer_prg_create_checksums(uint8_t dg[linesPerPrg][bytesPerPrgLine], uint8_t checksum);
 
-void init_prgPacket(uint8_t[linesPerPrg][bytesPerPrgLine]);
-void write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only);
-void write_lastline(fer_sender_basic *fsb, uint8_t d[FPR_ASTRO_WIDTH]);
-
-void write_dtimer(uint8_t d[FPR_TIMER_STAMP_WIDTH], const uint8_t *dtimer_data);
-void write_wtimer(uint8_t d[][FER_PRG_BYTE_CT], const uint8_t *wtimer_data);
-void write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only);
-void write_flags(uint8_t d[FPR_RTC_WIDTH], uint8_t flags, uint8_t mask);
-
-void txbuf_write_wtimer(const uint8_t *wtimer_data);
-void txbuf_write_dtimer(const uint8_t *dtimer_data);
-void txbuf_write_astro(int mint_offset);
-void txbuf_write_rtc(bool rtc_only);
-void txbuf_write_lastline(fer_sender_basic *fsb);
-void txbuf_write_flags(uint8_t flags, uint8_t mask);
-
+void fmsg_create_checksums(struct fer_msg *m, fmsg_type t);
+bool fmsg_verify_checksums(const struct fer_msg *m, fmsg_type t);
+void fmsg_init_data(fer_msg *msg);
+void fmsg_write_rtc(fer_msg *msg, bool rtc_only);
+void fmsg_write_flags(fer_msg *msg, uint8_t flags, uint8_t mask);
+void fmsg_write_wtimer(fer_msg *msg, const uint8_t *wtimer_data);
+void fmsg_write_dtimer(fer_msg *msg, const uint8_t *dtimer_data);
+void fmsg_write_astro(fer_msg *msg, int mint_offset);
+void fmsg_write_lastline(fer_msg *msg, fer_sender_basic *fsb);
+void fmsg_print(const fer_msg *msg, fmsg_type t);
 // diagnostic output
 void frb_printPacket(const uint8_t *dg);
 void fpr_printPrgPacketInfo(uint8_t d[linesPerPrg][bytesPerPrgLine], bool rtc_only);

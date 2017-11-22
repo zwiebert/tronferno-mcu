@@ -910,20 +910,20 @@ process_parmTimer(clpar p[], int len) {
 	FSB_TOGGLE(fsb);
 
 	if (recv_lockBuffer(true)) {
-		init_prgData(txmsg);
+		fmsg_init_data(txmsg);
 		if (flag_rtc_only == FLAG_TRUE) {
-			txbuf_write_rtc(true);
-			txbuf_write_flags(fpr0_flags, fpr0_mask); // the flags are ignored for RTC-only frames, even for non-broadcast
+			fmsg_write_rtc(txmsg, true);
+			fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask); // the flags are ignored for RTC-only frames, even for non-broadcast
 		} else {
 			if (has_weekly)
-				txbuf_write_wtimer(weekly_data);
+				fmsg_write_wtimer(txmsg, weekly_data);
 			if (has_daily)
-				txbuf_write_dtimer(daily_data);
+				fmsg_write_dtimer(txmsg, daily_data);
 			if (has_astro)
-				txbuf_write_astro(astro_offset);
-			txbuf_write_rtc(false);
-			txbuf_write_flags(fpr0_flags, fpr0_mask);
-			txbuf_write_lastline(fsb);
+				fmsg_write_astro(txmsg, astro_offset);
+			fmsg_write_rtc(txmsg, false);
+			fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask);
+			fmsg_write_lastline(txmsg, fsb);
 		}
 
 		if (reply(fer_send_prg(fsb))) {
