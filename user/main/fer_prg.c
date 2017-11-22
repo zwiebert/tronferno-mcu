@@ -16,63 +16,108 @@
 #include "astro.h"
 
 
-#if BUFFER_SHARING
-	struct fer_msg message_buffer;
-#endif
-
-
-/* verify checksums of data word array */
-bool ICACHE_FLASH_ATTR fer_cmd_verify_checksum(ferCmdBuf_type dg, uint8_t *checksum_out) {
-	uint8_t i, checksum = 0;
-
-	for (i = 0; i < bytesPerCmdPacket - 1; ++i) {
-		checksum += dg[i];
-	}
-	if (dg[i] == checksum) {
-		if (checksum_out)
-			*checksum_out = checksum;
-		return true;
-	}
-
-	return false;
-
-}
-
-/* verify checksums in prg byte array. parameter checksum is the starting value (the checksum of the leading data packet) */
-bool ICACHE_FLASH_ATTR fer_prg_verfiy_checksums(uint8_t dg[linesPerPrg][bytesPerPrgLine], uint8_t checksum) {
+/* verify all checksums of message in place. */
+bool ICACHE_FLASH_ATTR fer_msg_verify_checksums(const struct fer_msg *m, fer_msg_type t) {
 	int line, column;
-	checksum *= 2;
+	uint8_t checksum = 0;
 
-	for (line = 0; line < linesPerPrg - 1; ++line) {
+
+	for (column=0; column < bytesPerCmdPacket; ++column) {
+
+		if (column == bytesPerCmdPacket - 1)
+			 if (m->cmd[column] != checksum)
+				 return false;
+
+		checksum += m->cmd[column];
+	}
+
+	if (MSG_TYPE_PLAIN == t)
+		return true;
+
+	for (column = 0; column < bytesPerPrgLine; ++ column) {
+
+		if (column == bytesPerPrgLine - 1)
+			 if (m->rtc[column] != checksum)
+				 return false;
+
+		checksum += m->rtc[column];
+	}
+
+	if (MSG_TYPE_RTC == t)
+		return true;
+
+	for (line = 0; line < FPR_TIMER_HEIGHT; ++line) {
 		for (column = 0; column < bytesPerPrgLine; ++column) {
 
-			if (column == bytesPerPrgLine - 1 && dg[line][column] != checksum) {
-				return false;
-			}
+			if (column == bytesPerPrgLine - 1)
+				 if (m->wdtimer[line][column] != checksum)
+					 return false;
 
-			checksum += dg[line][column];
+			checksum += m->wdtimer[line][column];
+		}
+	}
 
+	for (line = 0; line < FPR_ASTRO_HEIGHT; ++line) {
+		for (column = 0; column < bytesPerPrgLine; ++column) {
+
+			if (column == bytesPerPrgLine - 1)
+				 if (m->astro[line][column] != checksum)
+					 return false;
+
+			checksum += m->astro[line][column];
 		}
 	}
 	return true;
 }
 
-/* create checksums of prg byte array in place. parameter checksum is the starting value (the checksum of the leading data packet) */
-uint8_t ICACHE_FLASH_ATTR fer_prg_create_checksums(uint8_t dg[linesPerPrg][bytesPerPrgLine], uint8_t checksum) {
-	int line, column;
-	checksum *= 2; // add the previous checksum to all sums ... should this better be done by the caller?
 
-	for (line = 0; line < linesPerPrg - 1; ++line) {
+/* create all checksums of message in place. */
+void ICACHE_FLASH_ATTR fer_msg_create_checksums(struct fer_msg *m, fer_msg_type t) {
+	int line, column;
+	uint8_t checksum = 0;
+
+	for (column=0; column < bytesPerCmdPacket; ++column) {
+
+		if (column == bytesPerCmdPacket - 1)
+			 m->cmd[column] = checksum;
+
+		checksum += m->cmd[column];
+	}
+
+	if (MSG_TYPE_PLAIN == t)
+		return;
+
+	for (column = 0; column < bytesPerPrgLine; ++ column) {
+
+		if (column == bytesPerPrgLine - 1)
+			 m->rtc[column] = checksum;
+
+		checksum += m->rtc[column];
+	}
+
+	if (MSG_TYPE_RTC == t)
+		return;
+
+	for (line = 0; line < FPR_TIMER_HEIGHT; ++line) {
 		for (column = 0; column < bytesPerPrgLine; ++column) {
 
-			if (column == bytesPerPrgLine - 1) {
-				dg[line][column] = checksum;
-			}
+			if (column == bytesPerPrgLine - 1)
+				 m->wdtimer[line][column] = checksum;
 
-			checksum += dg[line][column];
+			checksum += m->wdtimer[line][column];
 		}
 	}
-	return checksum;
+
+	for (line = 0; line < FPR_ASTRO_HEIGHT; ++line) {
+		for (column = 0; column < bytesPerPrgLine; ++column) {
+
+			if (column == bytesPerPrgLine - 1)
+				 m->astro[line][column] = checksum;
+
+			checksum += m->astro[line][column];
+		}
+	}
+
 }
 
 void ICACHE_FLASH_ATTR disable_timer(uint8_t d[][FER_PRG_BYTE_CT], uint8_t lines) {
@@ -86,21 +131,12 @@ void ICACHE_FLASH_ATTR disable_timer(uint8_t d[][FER_PRG_BYTE_CT], uint8_t lines
 	}
 }
 
-void ICACHE_FLASH_ATTR init_prgPacket(uint8_t d[linesPerPrg][bytesPerPrgLine]) {
-	int col, line;
 
-	for (col = 0; col < FPR_RTC_WIDTH; ++col) {
-		d[FPR_RTC_START_ROW][col] = 0x00;
-	}
-
-	for (line = FPR_TIMER_START_ROW; line < (FPR_TIMER_START_ROW + FPR_TIMER_HEIGHT + FPR_ASTRO_HEIGHT); ++line) {
-		for (col = 0; col < FPR_TIMER_WIDTH; ++col) {
-			d[line][col] = 0xff;
-			++col;
-			d[line][col] = 0x0f;
-		}
-	}
+void ICACHE_FLASH_ATTR init_prgData(struct fer_msg *m) {
+	bzero(m->rtc, FPR_RTC_WIDTH);
+	disable_timer(m->wdtimer, FPR_TIMER_HEIGHT + FPR_ASTRO_HEIGHT);
 }
+
 
 
 void ICACHE_FLASH_ATTR write_wtimer(uint8_t d[][FER_PRG_BYTE_CT], const uint8_t *wtimer_data) {
@@ -265,7 +301,7 @@ bool ICACHE_FLASH_ATTR testModule_fer_prg()
 	fer_prg_create_checksums(test_prg, cmd_checksum);
 	result = fer_prg_verfiy_checksums(test_prg, cmd_checksum);
 
-	init_prgPacket(test_prg);
+	//init_prgData((test_prg);
 
 	write_rtc(&test_prg[FPR_RTC_START_ROW][0], false);
 	write_wtimer(&test_prg[FPR_WEEKLY_START_ROW], testdat_wtimer);

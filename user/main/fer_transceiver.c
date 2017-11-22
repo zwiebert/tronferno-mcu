@@ -8,6 +8,7 @@
 #include "config.h"
 #include "inout.h"
 
+struct fer_msg message_buffer;
 
 #ifndef FER_RECEIVER
 bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
@@ -37,10 +38,12 @@ bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
 /////////////////////////// interrupt code //////////////////////
 #if defined FER_RECEIVER || defined FER_TRANSMITTER
 // counters
-static uint8_t CountTicks, CountBits, CountWords;
+static uint8_t CountTicks, CountBits;
+static uint16_t CountWords;
 // buffer to store received RF data
 static uint16_t dtRecvBuffer[2];
 #define dtSendBuf (dtRecvBuffer[0])
+
 
 
 /* "calculate 2bit parity value for DATA_BYTE according to POS" */

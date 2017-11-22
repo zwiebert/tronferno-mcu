@@ -158,9 +158,8 @@ uint8_t *get_recvPrgBufLine(uint8_t line);
 
 extern volatile bool has_cmdReceived;
 extern volatile bool has_prgReceived;
-#define MSG_TYPE_PLAIN 1
-#define MSG_TYPE_RTC 2
-#define MSG_TYPE_TIMER 3
+typedef enum { MSG_TYPE_NONE, MSG_TYPE_PLAIN, MSG_TYPE_RTC, MSG_TYPE_TIMER } fer_msg_type;
+
 extern volatile uint8_t MessageReceived;
 
 void tick_ferReceiver(void);
@@ -169,6 +168,8 @@ void fer_recvClearAll(void); // call it after received data buffers has been pro
 bool fer_prg_verfiy_checksums(uint8_t dg[linesPerPrg][bytesPerPrgLine], uint8_t checksum);
 bool fer_cmd_verify_checksum(ferCmdBuf_type dg, uint8_t *checksum_out);
 
+void fer_msg_create_checksums(struct fer_msg *m, fer_msg_type t);
+bool fer_msg_verify_checksums(const struct fer_msg *m, fer_msg_type t);
 
 bool recv_lockBuffer(bool enableLock);  // blocks receiver access to shared buffer
 

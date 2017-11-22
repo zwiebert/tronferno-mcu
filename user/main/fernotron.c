@@ -54,30 +54,27 @@ loop(void) {
 	}
 
 #ifdef FER_RECEIVER
-	// received data
-	if (MessageReceived == MSG_TYPE_PLAIN) {
-		memcpy (&last_received_sender.data, rxmsg->cmd, 5);
-
-		io_puts("R:"), fer_printData(rxbuf, NULL);
-		fer_recvClearAll();
-	}
-
-	cu_auto_set(0);
+	if (MessageReceived != MSG_TYPE_NONE) {
+		switch (MessageReceived) {
+		case MSG_TYPE_PLAIN:
+			memcpy(&last_received_sender.data, rxmsg->cmd, 5);
+			cu_auto_set(0);
+			io_puts("R:"), fer_printData(rxmsg->cmd, NULL);
+			break;
 #ifndef	FER_RECEIVER_MINIMAL
-	if (MessageReceived == MSG_TYPE_RTC || MessageReceived == MSG_TYPE_TIMER) {
+		case MSG_TYPE_RTC:
+		case MSG_TYPE_TIMER:
+			io_puts("timer frame received\n"), fer_printData(rxmsg->cmd, getMsgData(rxmsg));
+			break;
+#endif
+		}
 
-		io_puts("timer frame received\n"), fer_printData(rxbuf, getMsgData(rxmsg));
-
-		uint8_t cs;
-		if (fer_cmd_verify_checksum(rxbuf, &cs)) {
-			if (fer_prg_verfiy_checksums(getMsgData(rxmsg), cs)) {
-				io_puts("frame checksums ok\n");
-			}
+		if (!fer_msg_verify_checksums(rxmsg, MessageReceived)) {
+			io_puts("checksum(s) wrong\n");
 		}
 
 		fer_recvClearAll();
 	}
-#endif
 #endif
 
 #ifdef USE_NTP
