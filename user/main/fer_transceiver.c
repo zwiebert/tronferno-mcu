@@ -107,7 +107,7 @@ volatile uint8_t MessageReceived;
 #define rbuf (&message_buffer)
 
 
-#define getCurrentByteAddr() (&rbuf->cmd[0] + received_byte_ct)
+#define rxbuf_current_byte() (&rbuf->cmd[0] + received_byte_ct)
 static uint16_t received_byte_ct;
 static uint16_t bytesToReceive;
 #define getBytesToReceive() (bytesToReceive + 0)
@@ -154,10 +154,16 @@ static fer_error frx_extract_Byte(const uint16_t *src, uint8_t *dst) {
 static fer_error frx_verify_cmd(const uint8_t *dg) {
 	int i;
 	uint8_t checksum = 0;
+	bool all_null = true;
 
 	for (i = 0; i < bytesPerCmdPacket - 1; ++i) {
 		checksum += dg[i];
+		if (dg[i] != 0)
+			all_null = false;
 	}
+
+	if (all_null)
+		return fer_BAD_CHECKSUM;
 
 	return (checksum == dg[i] ? fer_OK : fer_BAD_CHECKSUM);
 }
@@ -216,7 +222,7 @@ static bool frx_receive_message(void) {
 				// word complete
 				if ((CountWords & 1) == 1) {
 					// word pair complete
-					frx_recv_decodeByte(getCurrentByteAddr());
+					frx_recv_decodeByte(rxbuf_current_byte());
 					frx_incr_received_bytes();
 				}
 				++CountWords;
@@ -341,15 +347,15 @@ extern volatile uint16_t wordsToSend;
 
 #define make_Word fer_add_word_parity
 #define init_counter() (CountTicks = CountBits = CountWords = 0)
-#define updateLinePre() (tx_output = (CountTicks < shortPositive_Len))
+#define ftx_update_output_preamble() (tx_output = (CountTicks < shortPositive_Len))
 #define advancePreCounter() (ct_incr(CountTicks, pre_Len) && ct_incr(CountBits, bitsPerPre))
 #define advanceStopCounter() (ct_incr(CountTicks, bitLen) && ct_incr(CountBits, bitsPerPause))
-#define updateLineStop() (tx_output = (CountTicks < pauseHigh_Len) && (CountBits == 0))
+#define ftx_update_output_stop() (tx_output = (CountTicks < pauseHigh_Len) && (CountBits == 0))
 
 // sets output line according to current bit in data word
 // a stop bit is sent in CountBits 0 .. 2
 // a data word is sent in CountBits 3 .. 10
-static void ftx_update_output() {
+static void ftx_update_output_data() {
 	int bit = CountBits - bitsPerPause;
 
 	if (bit < 0) {  // in stop bit (CountBits 0 .. 2)
@@ -364,18 +370,18 @@ static bool ftx_send_message() {
 
 	if (!end_of_stop) {
 		//send single stop bit before preamble
-		updateLineStop();
+		ftx_update_output_stop();
 		end_of_stop = advanceStopCounter();
 
 	} else if (!end_of_preamble) {
 		// send preamble
-		updateLinePre();
+		ftx_update_output_preamble();
 		if ((end_of_preamble = advancePreCounter())) {
 			dtSendBuf = make_Word(txmsg->cmd[0], 0);
 		}
 	} else {
 		// send data words + stop bits
-		ftx_update_output();
+		ftx_update_output_data();
 		// counting ticks until end_of_frame
 		if (ct_incr(CountTicks, bitLen)) {
 			// bit sent
