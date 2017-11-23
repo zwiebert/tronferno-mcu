@@ -38,6 +38,12 @@ static uint8_t rx_head = 0, rx_tail = 0;
 static uint8_t tx_buf[RX_BUFSIZE];
 static uint8_t tx_head = 0, tx_tail = 0;
 
+#define txb_isEmpty() (tx_head == tx_tail)
+
+
+#define rxb_isEmpty() (rx_head == rx_tail)
+
+
 static void ICACHE_FLASH_ATTR
 rx_copy(uint8_t *start, uint8_t *end) {
 	while (start < end) {
@@ -53,6 +59,14 @@ tcpSocket_io_getc(void) {
 	if (rx_head != rx_tail) {
 		result = buf[rx_head++] & 0xFF;
 		rx_head %= RX_BUFSIZE;
+	}
+
+	if (nmbConnected <= 0) {
+		if (rxb_isEmpty()) {
+			io_getc_fun = old_io_getc_fun;
+			D(printf("reset io_getc_fun to serial UART\n"));
+			rx_head = rx_tail = 0;
+		}
 	}
 
 	return result;
@@ -156,19 +170,23 @@ hook_tcpclient_disconnect(void *arg) {
 	}
 
 	if (nmbConnected <= 0) {
-		io_getc_fun = old_io_getc_fun;
-		io_putc_fun = old_io_putc_fun;
-		D(printf("reset io functions to serial UART\n"));
-		nmbConnected = 0;
-		rx_head = rx_tail = 0;
+			io_putc_fun = old_io_putc_fun;
+			D(printf("reset io_putc_fun to serial UART\n"));
+			nmbConnected = 0;
 
-		while (tx_head != tx_tail) {
-			io_putc(tx_buf[tx_head++]);
-			tx_head %= TX_BUFSIZE;
+			while (tx_head != tx_tail) {
+				io_putc(tx_buf[tx_head++]);
+				tx_head %= TX_BUFSIZE;
+			}
+			tx_head = tx_tail = 0;
+			tx_pending = 0;
+			os_bzero(tcpclient_espconn, sizeof tcpclient_espconn);
+
+		if (rxb_isEmpty()) {
+			io_getc_fun = old_io_getc_fun;
+			D(printf("reset io_getc_fun to serial UART\n"));
+			rx_head = rx_tail = 0;
 		}
-		tx_head = tx_tail = 0;
-		tx_pending = 0;
-		os_bzero(tcpclient_espconn, sizeof tcpclient_espconn);
 	}
 }
 
