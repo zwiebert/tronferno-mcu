@@ -6,7 +6,7 @@
 #include <c_types.h>
 
 
-int strcasecmp(const char *a, const char *b);
+//int strcasecmp(const char *a, const char *b);
 #ifndef FREERTOS
 #include <eagle_soc.h>
 #include <ets_sys.h>

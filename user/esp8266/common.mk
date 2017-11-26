@@ -198,7 +198,7 @@ CXX_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 ASM_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
 
 C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
-CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(C_SRC))
+CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC))
 ASM_OBJ	    := $(patsubst %.S,$(BUILD_BASE)/%.o,$(ASM_SRC))
 
 SRC		    := $(C_SRC) $(CXX_SRC) $(ASM_SRC)
@@ -226,6 +226,8 @@ ifneq ($(wildcard $(SRC_BASE)/user/sensitive/defaults.h),)
 CPPFLAGS += -DHAVE_USER_DEFAULTS
 endif
 
+pri:
+	echo $(OBJ)
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
@@ -247,7 +249,7 @@ $(1)%.o: $(2)%.c
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CFLAGS)  -c $$< -o $$@
 $(1)%.o: $(2)%.cpp
 	$(vecho) "C+ $$<"
-	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CXXFLAGS)  -c $$< -o $$@ -MM > $$(patsubst %.o,%.d,$(DEP_DIR)/$$(subst /,-,$$@))
+	#$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CXXFLAGS)  -c $$< -o $$@ -MM > $$(patsubst %.o,%.d,$(DEP_DIR)/$$(subst /,-,$$@))
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CXXFLAGS)  -c $$< -o $$@
 endef
 
