@@ -4,6 +4,3 @@
 [submodule "esp-gdbstub"]
 	path = esp-gdbstub
 	url = https://github.com/espressif/esp-gdbstub.git
-[submodule "esp8266FTPServer"]
-	path = esp8266FTPServer
-	url = https://github.com/nailbuster/esp8266FTPServer.git
