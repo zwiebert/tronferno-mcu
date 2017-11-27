@@ -58,7 +58,7 @@ configure the Makefiles in user/esp8266/
   
         gtkterm --port /dev/ttyUSB0 --speed 115200 --echo
     
-  * type your commands in the terminal. Command line ends with a semicolon (;). No editing possible:
+  * type your commands in the terminal. Command line ends with a semicolon (;):
   ```
       help;
       config wlan-ssid="xxx" wlan-password="xxx"; 
@@ -79,7 +79,7 @@ configure the Makefiles in user/esp8266/
      send c=up;              (would open all shutters from all groups)
 ```    
      
-In case you no longer have working Fernotron central unit. You would start from scratch:
+In case you no longer have a working Fernotron central unit. You would start from scratch:
  
      config cu=80xxxx;  (just make up an address, x needs to be one of 0...9 a...f  (hex).  write it down)
     
@@ -116,11 +116,11 @@ In case you no longer have working Fernotron central unit. You would start from 
 
 ### Command Examples
 
-There is no network support for the ATMega. You can add an WLAN or Bluetooth adapter to the serial port. But it will not add NTP like the ESP8266 has.  So the ATmega has to be told about the clock via CLI.
+There is no network support for the ATMega. You can add an WLAN or Bluetooth adapter to the serial port. But it will not have NTP like the ESP8266 has.  So the ATmega has to be told about the clock via CLI.
 
     config rtc=ISO_DATE_AND_TIME;    (looks like 2017-12-31T23:45:00)
 
-You should never use the "timer" command, if the time and time-zone is not set correctly.  This would mess up the built-in real time clock of the shutter you address any timer command to:
+You should never use the "timer" command unless time and time-zone are set correctly, because *any* timer command will also update the built-in RTC of the receiver.
 ```
     timer daily=0700-;    (all shutters opens daily at seven o'clock ... also updates the built-in RTC)
 ``` 
@@ -132,7 +132,6 @@ Some more options.
  
 Explanation: Shutter 2 of group 1, closes daily (or nightly) at four o'clock, opens monday til friday at nine o'clock, opens saturday and sunday at nine o'clock, closes thirty minutes after sunset, activate the sun automatic. Note: there are 2 minus signs per day (for up and down each) but only one plus sign (which copies the entire previous day)
  
-       
 The sun automatic is controlled by a wireless window sensor powered by solar cells. You have to set a position the shutters goes whenever he receives the "too much sun" signal from the sensor:
 
       send g=2 m=3 c=sun-inst;    (set position for shutter 3 of group 2)
@@ -155,12 +154,12 @@ To send the "too much sun" command:
 ### History
 I started this project in 2011 from scratch using an ATmega168. Sending normal commands like "up" and "down" was not to hard to figure out. But I gave up on programming the timers and the project went on hiatus. In 2017 I finally figured out the timer programming.  Had to switch to an ATmega328p for enough flash memory, and then to the ESP8266, for its built-in WIFI.
 
-### Future
+### Related Projects
 Its all too complicated and totally useless?
-  * I'm working on a [GUI for Android](https://github.com/zwiebert/tronferno-andro).
-  * FHEM module to send CLI commands to our MCU-CLI via TCP socket
-  * FHEM module to send simple up/down-commands via FHEM/SIGNALduino. Have written a simple [perl script](https://github.com/zwiebert/tronferno-fhem) for start.
-
+  * [GUI for Android](https://github.com/zwiebert/tronferno-andro). It kinda works already.
+  * FHEM module [10_Tronferno.pm](https://github.com/zwiebert/tronferno-fhem) to send plain commands via TCP to tronferno-mcu
+  * FHEM module [10_Fernotron.pm](https://github.com/zwiebert/tronferno-fhem) to send plain commands via SIGNALduino-IODev to Fernotron devices.
+ 
   
 ### Project Author
 
