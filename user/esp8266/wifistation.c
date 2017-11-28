@@ -29,25 +29,27 @@ static struct espconn *tcpserver_espconn, *tcpc_last_received;
 static struct espconn *tcpclient_espconn[NMB_CLIENTS];
 static int nmbConnected;
 
+#define wrap_idx(idx, limit) (idx &= (limit - 1))
+
 // circular buffers
-#define RX_BUFSIZE 256
+#define RX_BUFSIZE 256  // power of 2
 static uint8_t rx_buf[RX_BUFSIZE];
 static uint8_t rx_head = 0, rx_tail = 0;
 #define rxb_isEmpty() (rx_head == rx_tail)
-#define  rxb_push(c) do {  rx_buf[rx_tail++] = (c);   rx_tail %= RX_BUFSIZE;  } while(0)
+#define  rxb_push(c) do {  rx_buf[rx_tail++] = (c);   wrap_idx(rx_tail, RX_BUFSIZE);  } while(0)
 
-#define TX_BUFSIZE 256
+#define TX_BUFSIZE 256 // power of 2
 static uint8_t tx_buf[RX_BUFSIZE];
 static uint8_t tx_head = 0, tx_tail = 0;
 #define txb_isEmpty() (tx_head == tx_tail)
-#define  txb_push(c) do {  tx_buf[tx_tail++] = (c);   tx_tail %= TX_BUFSIZE;  } while(0)
+#define  txb_push(c) do {  tx_buf[tx_tail++] = (c);   wrap_idx(tx_tail, TX_BUFSIZE);  } while(0)
 
-#ifdef USE_UDP
+#ifdef USE_UDP  // power of 2
 #define URX_BUFSIZE 256
 static uint8_t urx_buf[URX_BUFSIZE];
 static uint8_t urx_head = 0, urx_tail = 0;
 #define urxb_isEmpty() (urx_head == urx_tail)
-#define urxb_push(c) do { urx_buf[urx_tail++] = (c); urx_tail %= URX_BUFSIZE;  } while(0)
+#define urxb_push(c) do { urx_buf[urx_tail++] = (c); wrap_idx(urx_tail, URX_BUFSIZE);  } while(0)
 #endif
 
 static int ICACHE_FLASH_ATTR
@@ -56,7 +58,7 @@ tcpSocket_io_getc(void) {
 
 	if (rx_head != rx_tail) {
 		result = rx_buf[rx_head++] & 0xFF;
-		rx_head %= RX_BUFSIZE;
+		wrap_idx(rx_head, RX_BUFSIZE);
 	}
 
 	if (nmbConnected <= 0) {
@@ -90,7 +92,7 @@ static int tx_pending;
 static void ICACHE_FLASH_ATTR
 tcps_send_cb(void *arg) {
 	--tx_pending;
-	D(printf("trans_tcpclient_write_cb(%p), tx_pend=%d\n", arg, tx_pending));
+	D(printf("%s(%p), tx_pend=%d\n", __func__, arg, tx_pending));
 	if (tx_pending < 0)
 		tx_pending = 0;
 }
@@ -113,8 +115,7 @@ tcpSocket_txTask(void) {
 		l = (h <= t) ? t - h : TX_BUFSIZE - h;
 
 		if (tcpc_last_received)
-	    	espconn_send(tcpc_last_received, tx_buf + h, l);
-
+			espconn_send(tcpc_last_received, tx_buf + h, l);
 
 		for (i = 0; i < NMB_CLIENTS; ++i) {
 			int result;
@@ -154,7 +155,7 @@ tcps_disconnect_cb(void *arg) {
 	printf("tcp client disconnected: %d.%d.%d.%d:%d\n", pesp_conn->proto.tcp->remote_ip[0], pesp_conn->proto.tcp->remote_ip[1],
 			pesp_conn->proto.tcp->remote_ip[2], pesp_conn->proto.tcp->remote_ip[3], pesp_conn->proto.tcp->remote_port);
 
-	D(printf("trans_tcpclient_discon_cb(%p), clients=%d\n", arg, nmbConnected));
+	D(printf("%s(%p), clients=%d\n", __func__, arg, nmbConnected));
 
 	for (i = 0; i < NMB_CLIENTS; ++i) {
 		if (tcpclient_espconn[i] == NULL) {
@@ -177,17 +178,17 @@ tcps_disconnect_cb(void *arg) {
 	}
 
 	if (nmbConnected <= 0) {
-			io_putc_fun = old_io_putc_fun;
-			D(printf("reset io_putc_fun to serial UART\n"));
-			nmbConnected = 0;
+		io_putc_fun = old_io_putc_fun;
+		D(printf("reset io_putc_fun to serial UART\n"));
+		nmbConnected = 0;
 
-			while (tx_head != tx_tail) {
-				io_putc(tx_buf[tx_head++]);
-				tx_head %= TX_BUFSIZE;
-			}
-			tx_head = tx_tail = 0;
-			tx_pending = 0;
-			os_bzero(tcpclient_espconn, sizeof tcpclient_espconn);
+		while (tx_head != tx_tail) {
+			io_putc(tx_buf[tx_head++]);
+			wrap_idx(tx_head, TX_BUFSIZE);
+		}
+		tx_head = tx_tail = 0;
+		tx_pending = 0;
+		os_bzero(tcpclient_espconn, sizeof tcpclient_espconn);
 
 		if (rxb_isEmpty()) {
 			io_getc_fun = old_io_getc_fun;
@@ -209,7 +210,7 @@ static void ICACHE_FLASH_ATTR
 tcps_connect_cb(void *arg) {
 	int i;
 
-	D(printf("callback connect (%p)\n", arg));
+	D(printf("%s(%p)\n", __func__, arg));
 	struct espconn *pesp_conn = (struct espconn *) arg;
 
 	if (nmbConnected >= NMB_CLIENTS)
@@ -275,27 +276,22 @@ setup_tcp(void) {
 //////////// UDP ///////////////////////////////
 int udp_available;
 
-
-
 int ICACHE_FLASH_ATTR udp_getc(void) {
 	int result = -1;
 
 	if (! urxb_isEmpty()) {
 		result = urx_buf[urx_head++] & 0xFF;
-		urx_head %= URX_BUFSIZE;
+		wrap_idx(urx_head, URX_BUFSIZE);
 		--udp_available;
 	}
 
 	return result;
 }
 
-
 static void ICACHE_FLASH_ATTR
 udp_sendcb(void *arg) {
 	struct espconn *pesp_conn = arg;
 }
-
-
 
 static void ICACHE_FLASH_ATTR
 udp_recvb(void *arg, char *pdata, unsigned short len) {
@@ -306,20 +302,19 @@ udp_recvb(void *arg, char *pdata, unsigned short len) {
 	udp_available += len;
 }
 
- bool sendDatagram(char *datagram, uint16 size) {
-	 static struct espconn sendResponse;
-	 static esp_udp udp;
+bool sendDatagram(char *datagram, uint16 size) {
+	static struct espconn sendResponse;
+	static esp_udp udp;
 
-     sendResponse.type = ESPCONN_UDP;
-     sendResponse.state = ESPCONN_NONE;
-     sendResponse.proto.udp = &udp;
-     IP4_ADDR((ip_addr_t *)sendResponse.proto.udp->remote_ip, 192, 168, 1, 7);
-     sendResponse.proto.udp->remote_port = 9876; // Remote port
-     return ESPCONN_OK == espconn_create(&sendResponse) &&
-     ESPCONN_OK == espconn_sendto(&sendResponse, datagram, strlen(datagram)) &&
-     ESPCONN_OK == espconn_delete(&sendResponse);
- }
-
+	sendResponse.type = ESPCONN_UDP;
+	sendResponse.state = ESPCONN_NONE;
+	sendResponse.proto.udp = &udp;
+	IP4_ADDR((ip_addr_t *)sendResponse.proto.udp->remote_ip, 192, 168, 1, 7);
+	sendResponse.proto.udp->remote_port = 9876; // Remote port
+	return ESPCONN_OK == espconn_create(&sendResponse) &&
+	ESPCONN_OK == espconn_sendto(&sendResponse, datagram, strlen(datagram)) &&
+	ESPCONN_OK == espconn_delete(&sendResponse);
+}
 
 static bool ICACHE_FLASH_ATTR
 setup_udp(void) {
@@ -334,9 +329,9 @@ setup_udp(void) {
 	pesp_conn->proto.udp = (esp_udp *) os_zalloc((uint32 )sizeof(esp_udp));
 	pesp_conn->proto.udp->local_port = 7777;      // server port
 	return ESPCONN_OK == espconn_create(pesp_conn)
-			&&	ESPCONN_OK == espconn_regist_recvcb(pesp_conn, udp_recvb),
-			//&&  ESPCONN_OK == espconn_regist_sentcb(pesp_conn, udp_sendcb),
-			1;
+	&& ESPCONN_OK == espconn_regist_recvcb(pesp_conn, udp_recvb),
+	//&&  ESPCONN_OK == espconn_regist_sentcb(pesp_conn, udp_sendcb),
+	1;
 }
 #endif ///// end UDP /////////////
 

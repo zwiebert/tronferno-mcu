@@ -9,16 +9,33 @@
 #include "rtc.h"
 
 #include "all.h"
+#include "set_endpos.h"
 
 extern fer_sender_basic default_sender;
 extern fer_sender_basic last_received_sender;
 
 bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds);
 
+
+#define ENABLE_SET_ENDPOS 1
+
+#if ENABLE_SET_ENDPOS
+
+#endif
+
+
+
+
 void ICACHE_FLASH_ATTR
 loop(void) {
 	char *cmdline;
 	static bool ready;
+
+	fers_loop();
+
+#if ENABLE_SET_ENDPOS
+	sep_loop();
+#endif
 
 	// CLI
 	if ((cmdline = get_commandline())) {

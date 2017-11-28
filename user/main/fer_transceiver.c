@@ -15,17 +15,17 @@ bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
 	return true;
 }
 #else
-static volatile bool requestLock;
+static volatile uint8_t requestLock;
 static volatile bool isLocked;
 
 bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
 	if (enableLock) {
-		requestLock = true;
+		requestLock++;
 		do {
 			mcu_delay_us(100);
 		} while (!isLocked && recvTick == C.app_recv);
 	} else {
-		requestLock = false;
+		requestLock--;
 	}
 	return true;
 }

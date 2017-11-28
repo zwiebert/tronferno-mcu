@@ -9,11 +9,36 @@
 volatile bool is_sendMsgPending;
 volatile uint16_t wordsToSend;
 
+fer_sender_basic send_fsb;
+
+bool ICACHE_FLASH_ATTR
+fers_loop() {
+	if (is_sendMsgPending)
+		return false;
+
+	if (send_fsb.repeats > 0) {
+		if (FSB_GET_CMD(&send_fsb) == fer_cmd_STOP) {
+			fer_update_tglNibble(&send_fsb);
+		}
+		fer_send_cmd(0);
+
+	}
+}
 
 bool ICACHE_FLASH_ATTR fer_send_cmd(fer_sender_basic *fsb) {
 	if (is_sendMsgPending)
 		return false;
+	if (fsb && send_fsb.repeats > 0)
+		return false;
 	if (recv_lockBuffer(true)) {
+		if (fsb) {
+			send_fsb = *fsb;
+		} else {
+			fsb = &send_fsb;
+			--fsb->repeats;
+		}
+
+
 		memcpy(txmsg->cmd, fsb->data, 5);
 		fmsg_create_checksums(txmsg, MSG_TYPE_PLAIN);
 

@@ -157,6 +157,7 @@ void mcu_put_txPin(bool dat);
 extern uint8_t dtSendPrgFrame[linesPerPrg][bytesPerPrgLine];
 
 extern volatile bool is_sendMsgPending;
+
 void ftx_tick(void);
 bool fer_send_prg(fer_sender_basic *fsb);
 bool fer_send_cmd(fer_sender_basic *fsb);

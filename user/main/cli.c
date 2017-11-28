@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include "../user_config.h"
 
+
 #include "all.h"
+#include "set_endpos.h"
 
 #ifdef MCU_ESP8266
 #include "../esp8266/data_flash2.h"
@@ -19,10 +21,11 @@
 #define ENABLE_RSTD 0
 #endif
 
-#define ALLOW_ENDPOS 0   // dangerous, could damage your shutter
 #define ENABLE_EXPERT 0 // work in progress
 #define ENABLE_RESTART 1 // allow software reset
 #define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
+
+#define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
 
 #define NODEFAULT() if (val==0) return reply_failure()
@@ -308,22 +311,20 @@ struct c_map const fc_map[]  = {
 		{"sun-inst", fer_cmd_SunINST},
 //		{"sun-test", fer_cmd_Program},
         {"set", fer_cmd_SET},
-#if ALLOW_ENDPOS
-		{"end-pos-down", fer_cmd_EndPosDOWN},  // dangerous, could damage shutter
-		{"end-pos-up", fer_cmd_EndPosUP},      // dangerous, could damage shutter
-#endif
 };
 
-fer_cmd ICACHE_FLASH_ATTR
-cli_parm_to_ferCMD(const char *token) {
+bool ICACHE_FLASH_ATTR
+cli_parm_to_ferCMD(const char *token, fer_cmd *cmd) {
   int i;
 	dbg_trace();
 
     for (i=0; i < (sizeof (fc_map) / sizeof (fc_map[0])); ++i) {
-      if (strcmp(token, fc_map[i].fs) == 0)
-    	  return fc_map[i].fc;
+      if (strcmp(token, fc_map[i].fs) == 0) {
+    	  *cmd = fc_map[i].fc;
+    	  return true;
+      }
     }
-    return fer_cmd_None;
+    return false;
 }
 
 void ICACHE_FLASH_ATTR
@@ -414,17 +415,38 @@ bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds) {
 	return false;
 }
 
-fer_grp asc2group(const char *s) { return (fer_grp) atoi(s); }
-fer_memb asc2memb(const char *s) { int m = atoi(s); return m == 0 ? fer_memb_Broadcast : (fer_memb) (m - 1) + fer_memb_M1; }
+static bool ICACHE_FLASH_ATTR asc2group(const char *s, fer_grp *grp) {
+	if (s) {
+		int g = atoi(s);
+		if (0 <= g && g <= 7) {
+			*grp = g;
+			return true;
+		}
+	}
+	return false;
+
+	return (fer_grp) atoi(s);
+}
+
+static bool ICACHE_FLASH_ATTR asc2memb(const char *s, fer_memb *memb) {
+	if (s) {
+
+		int m = atoi(s);
+		if (0 <= m && m <= 7) {
+			*memb = (m == 0 ? fer_memb_Broadcast : (fer_memb) (m - 1) + fer_memb_M1);
+			return true;
+		}
+	}
+	return false;
+}
   
 const char help_parmSend[] PROGMEM =
 		  "a=(0|ID)    hex ID of sender or receiver. 0 (default) uses 'cu' in config\n"
 		  "g=[0-7]     group number. 0 (default) addresses all groups\n"
 		  "m=[0-7]     group member. 0 (default) addresses all members\n"
 		  "c=command   Command to send. One of: up, down, stop, sun-down, sun-inst, set\n"
-#if ALLOW_ENDPOS
-         "potentially harmful: c=(limit-up|limit-down):  command to set end-position ... it will not stop and end position until you send STOP.\n"
-#endif
+		  "r=N         Repeated sending for better reception. Send the command 1+N times"
+		  "SEP[=0|1]   Switch to enable end-position adjustment. Hold hardware button to adjust end position (esp8266: gpio0/flash button on mini boards)"
 		;
 
 static int ICACHE_FLASH_ATTR
@@ -435,6 +457,8 @@ process_parmSend(clpar p[], int len) {
 	fer_grp group = fer_grp_Broadcast;
     fer_memb memb = fer_memb_Broadcast;
 	fer_cmd cmd = fer_cmd_None;
+	int set_end_pos = -1;
+	uint8_t repeats = FSB_PLAIN_REPEATS;
 
 	for (i = 1; i < len; ++i) {
 		const char *key = p[i].key, *val = p[i].val;
@@ -444,12 +468,25 @@ process_parmSend(clpar p[], int len) {
 		} else if (strcmp(key, "a") == 0) {
 			addr = val ? strtol(val, NULL, 16) : 0;
 		} else if (strcmp(key, "g") == 0) {
-			group = val ? asc2group(val) : 0;
+			if (!asc2group(val, &group))
+				return reply_failure();
 		} else if (strcmp(key, "m") == 0) {
-			memb = val ? asc2memb(val) : 0;
+			if (!asc2memb(val, &memb))
+			   return reply_failure();
+		} else if (strcmp(key, "r") == 0) {
+			NODEFAULT();
+			repeats = atoi(val);
+			if (!(0<= repeats && repeats <= 10)) {
+				return reply_failure();
+			}
 		} else if (strcmp(key, "c") == 0) {
 			NODEFAULT();
-			cmd = cli_parm_to_ferCMD(val);
+			if (!cli_parm_to_ferCMD(val, &cmd))
+				return reply_failure();
+		} else if (strcmp(key, "SEP") == 0) {
+			set_end_pos = asc2bool(val);
+			if (set_end_pos != 1)
+				set_end_pos = 0;  // force disable
 		} else {
 			warning_unknown_option(key);
 		}
@@ -469,9 +506,13 @@ process_parmSend(clpar p[], int len) {
  	  FSB_PUT_MEMB(fsb, memb);  // only set this on central unit!
 	}
 
-	if (cmd != fer_cmd_None) {
+	if (set_end_pos >= 0) { // enable hardware buttons to set end position
+		FSB_PUT_CMD(fsb, cmd);
+		if (set_end_pos) sep_enable(fsb); else sep_disable();
+	} else if (cmd != fer_cmd_None) {
 		FSB_PUT_CMD(fsb, cmd);
 		fer_update_tglNibble(fsb);
+		fsb->repeats = repeats;
 		reply(fer_send_cmd(fsb));
 	} else {
 		reply_failure();
@@ -836,9 +877,11 @@ process_parmTimer(clpar p[], int len) {
 		} else if (strcmp(key, "a") == 0) {
 			addr = val ? strtol(val, NULL, 16) : 0;
 		} else if (strcmp(key, "g") == 0) {
-			group = val ? asc2group(val) : 0;
+			if (!asc2group(val, &group))
+				return reply_failure();
 		} else if (strcmp(key, "m") == 0) {
-			memb = val ? asc2memb(val) : 0;
+			if (!asc2memb(val, &memb))
+			   return reply_failure();
 #if ENABLE_RSTD
 			mn = memb ? (memb - 7) : 0;
 		} else if (strcmp(key, "rs") == 0) {

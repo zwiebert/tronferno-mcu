@@ -39,3 +39,9 @@ int io_puts_P(const char *s);
 extern int ets_uart_printf(const char *fmt, ...);
 #define io_printf ets_uart_printf
 #endif
+
+
+
+bool mcu_get_buttonUpPin(void);
+bool mcu_get_buttonDownPin(void);
+bool mcu_get_buttonPin(void);
