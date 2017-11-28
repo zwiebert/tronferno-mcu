@@ -142,6 +142,8 @@ To send the "too much sun" command:
       
 ### Recent Changes
  
+ * 2017-11: allow adjusting end positions (needs hardware button) (send option SEP)
+ * 2017-11: finally implemented repeated sending for plain commands. (send option r)
  * 2017-11: print now debug info after mcu crash like described in the manual. was really helpful with finding that random crash introduced recently
  * 2017-11: added SPIFFS for later use. Currently disabled in user_config.h
  * 2017-11: persistent data will no longer be erased by updating the firmware. (used to be stored with the irom segment, now its separate)
