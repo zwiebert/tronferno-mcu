@@ -120,10 +120,10 @@ Send a plain command message via RF to the receivers. Receiver can be a shutter 
 		 
 #### option SEP for setting end position
 
-  *WARNING: the shutter can be damaged by moving the end position beyond the physical possible limit.
-  *WARNING: make sure, to address a single shutter only (g=1 m=1 can address more than motor).
-  *WARNING: Its best to use this with motor codes (IDs starting with 9). They will never address more than one motor.
-  *WARNING: Would be best to have an additional controller handy to send a stop signal to the shutter, in cases our MCU loses power or crashes.
+  * WARNING: the shutter can be damaged by moving the end position beyond the physical possible limit.
+  * WARNING: make sure, to address a single shutter only (g=1 m=1 can address more than motor).
+  * WARNING: Its best to use this with motor codes (IDs starting with 9). They will never address more than one motor.
+  * WARNING: Would be best to have an additional controller handy to send a stop signal to the shutter, in cases our MCU loses power or crashes.
 
 By adding the SEP option to c=up or c=down, the set-end-position-mode is entered.  In this mode you hold a hardware button to move the shutter in the direction you have specified with c=up/down.
 If you release the button, the shutter position will be saved as the new end position for that direction.
@@ -137,7 +137,7 @@ You can hold down the button several time until you are satisfied with the new e
 	   send g=2 m=3 c=down SEP;  enter SEP mode.  You can set lower end position with hardware button
 	   send SEP;                 disable SEP mode
 	   
- *WARNING: When you press the hardware button, the up or down command is sent once. When you release the button, a stop command is sent. If that stop command is not received, the shutter will continue moving. Try pressing and releasing the button again or use another controller to send stop. Or cut the power to the shutter. Otherwise it may be damaged.
+ * WARNING: When you press the hardware button, the up or down command is sent once. When you release the button, a stop command is sent. If that stop command is not received, the shutter will continue moving. Try pressing and releasing the button again or use another controller to send stop. Or cut the power to the shutter. Otherwise it may be damaged.
        
 ### timer command
 
