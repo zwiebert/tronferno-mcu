@@ -33,24 +33,22 @@ static int nmbConnected;
 #define RX_BUFSIZE 256
 static uint8_t rx_buf[RX_BUFSIZE];
 static uint8_t rx_head = 0, rx_tail = 0;
+#define rxb_isEmpty() (rx_head == rx_tail)
+#define  rxb_push(c) do {  rx_buf[rx_tail++] = (c);   rx_tail %= RX_BUFSIZE;  } while(0)
 
 #define TX_BUFSIZE 256
 static uint8_t tx_buf[RX_BUFSIZE];
 static uint8_t tx_head = 0, tx_tail = 0;
+#define txb_isEmpty() (tx_head == tx_tail)
+#define  txb_push(c) do {  tx_buf[tx_tail++] = (c);   tx_tail %= TX_BUFSIZE;  } while(0)
 
-// circular buffers
+#ifdef USE_UDP
 #define URX_BUFSIZE 256
 static uint8_t urx_buf[URX_BUFSIZE];
 static uint8_t urx_head = 0, urx_tail = 0;
-
-
-#define txb_isEmpty() (tx_head == tx_tail)
-#define rxb_isEmpty() (rx_head == rx_tail)
 #define urxb_isEmpty() (urx_head == urx_tail)
-
-#define  txb_push(c) do {  tx_buf[tx_tail++] = (c);   tx_tail %= TX_BUFSIZE;  } while(0)
-#define  rxb_push(c) do {  rx_buf[rx_tail++] = (c);   rx_tail %= RX_BUFSIZE;  } while(0)
 #define urxb_push(c) do { urx_buf[urx_tail++] = (c); urx_tail %= URX_BUFSIZE;  } while(0)
+#endif
 
 static int ICACHE_FLASH_ATTR
 tcpSocket_io_getc(void) {
@@ -273,6 +271,7 @@ setup_tcp(void) {
 
 }
 
+#ifdef USE_UDP
 //////////// UDP ///////////////////////////////
 int udp_available;
 
@@ -339,8 +338,7 @@ setup_udp(void) {
 			//&&  ESPCONN_OK == espconn_regist_sentcb(pesp_conn, udp_sendcb),
 			1;
 }
-
-////// end UDP /////////////
+#endif ///// end UDP /////////////
 
 // WIFI Station ////////////////////////////////////////
 
@@ -374,6 +372,8 @@ setup_wifistation(void) {
 	old_io_getc_fun = io_getc_fun;
 	old_io_putc_fun = io_putc_fun;
 	setup_tcp();
+#ifdef USE_UDP
 	setup_udp();
+#endif
 
 }
