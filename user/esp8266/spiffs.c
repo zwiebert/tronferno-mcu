@@ -48,7 +48,7 @@ static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE + 32) * 4];
 
 
 // read/write/erase functions are taken from arduino/esp8266/spiffs_hal.cpp -bw/20-Nov-17
-/
+
 
 /*
  spiffs_hal.cpp - SPI read/write/erase functions for SPIFFS.
