@@ -447,6 +447,7 @@ const char help_parmSend[] PROGMEM =
 		  "c=command   Command to send. One of: up, down, stop, sun-down, sun-inst, set\n"
 		  "r=N         Repeated sending for better reception. Send the command 1+N times"
 		  "SEP[=0|1]   Switch to enable end-position adjustment. Hold hardware button to adjust end position (esp8266: gpio0/flash button on mini boards)"
+		 // "TROT        Toggle rotation direction"
 		;
 
 static int ICACHE_FLASH_ATTR
