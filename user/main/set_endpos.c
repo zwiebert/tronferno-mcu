@@ -7,7 +7,6 @@
 #include "all.h"
 #include "fer.h"
 
-
 //////////////////////////////////////////////////////////////////
 // DANGER ZONE
 //
@@ -40,14 +39,12 @@ static time_t end_time;
 #define TIMEOUT_SET() (end_time = time(NULL) + TIMEOUT_SECS)
 #define IS_TIMEOUT_REACHED() (end_time < time(NULL) || (end_time > (time(NULL) + TIMEOUT_SECS + 1)))
 
-
-
 /*
-if (init_seconds > 0) {
-	end_time = time(NULL) + init_seconds;
-	last_received_sender.data[0] = 0;
-	cuas_msgid = msgid;
-*/
+ if (init_seconds > 0) {
+ end_time = time(NULL) + init_seconds;
+ last_received_sender.data[0] = 0;
+ cuas_msgid = msgid;
+ */
 
 #define D(x) x
 
@@ -59,9 +56,12 @@ if (init_seconds > 0) {
 #define BUTT_UP (mcu_get_buttonPin() && SEP_UP == sep_cmd)
 #endif
 
-
 #define IS_BUTTON_PRESSED()  (mcu_get_buttonPin())
 
+
+bool ICACHE_FLASH_ATTR sep_is_enabled(void) {
+	return sep_buttons_enabled;
+}
 
 static bool ICACHE_FLASH_ATTR
 sep_send_stop(void) {
@@ -69,7 +69,9 @@ sep_send_stop(void) {
 	fsb->repeats = 2;
 	FSB_PUT_CMD(fsb, fer_cmd_STOP);
 	fer_update_tglNibble(fsb);
-	while (fer_send_cmd(fsb)) { fer_update_tglNibble(fsb); }
+	while (fer_send_cmd(fsb)) {
+		fer_update_tglNibble(fsb);
+	}
 	return true;
 }
 
@@ -94,6 +96,7 @@ sep_send_up(void) {
 void ICACHE_FLASH_ATTR
 sep_disable(void) {
 	if (sep_buttons_enabled) {
+		sep_send_stop();  // don't remove this line
 		D(io_puts("sep disable\n"));
 		up_pressed = down_pressed = false;
 		sep_buttons_enabled = false;
@@ -104,13 +107,12 @@ sep_disable(void) {
 bool ICACHE_FLASH_ATTR
 sep_enable(fer_sender_basic *fsb) {
 	if (sep_buttons_enabled) { // already activated
-		sep_send_stop();
 		sep_disable();
 		return false;
 	} else if (IS_BUTTON_PRESSED()) {
 		io_puts("error: hardware button is pressed\n");
 		return false;
-    } else {
+	} else {
 
 		// check for possible broadcast
 		if (FSB_MODEL_IS_CENTRAL(fsb)
@@ -145,7 +147,6 @@ sep_loop(void) {
 		const bool down_pin = BUTT_DOWN;
 
 		if (up_pin && down_pin) {  // emergency stop
-			sep_send_stop();
 			sep_disable();
 			return false;
 		}

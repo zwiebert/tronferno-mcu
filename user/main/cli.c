@@ -493,6 +493,7 @@ process_parmSend(clpar p[], int len) {
 		}
 	}
 
+
 	fer_sender_basic *fsb = get_sender_by_addr(addr);
 	if (!fsb) {
       static fer_sender_basic fsb_direct; // FIXME: or was senders[0] meant for this?
@@ -1121,6 +1122,14 @@ struct {
 int ICACHE_FLASH_ATTR
 process_parm(clpar p[], int len) {
 	int i;
+
+	// if in sep mode, don't accept commands FIXME
+	if (sep_is_enabled()) {
+		sep_disable();
+		reply_message(0, "error: CLI is disabled in set-endposition-mode\n");
+		return -1;
+	}
+
     for (i=0; i < (sizeof (parm_handlers) / sizeof (parm_handlers[0])); ++i) {
     	if (strcmp(p[0].key, parm_handlers[i].parm) == 0)
            return parm_handlers[i].process_parmX(p, len);
