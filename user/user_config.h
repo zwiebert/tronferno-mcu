@@ -32,6 +32,7 @@
 
 
 
+#define ENABLE_SET_ENDPOS 1
 
 
 

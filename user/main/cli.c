@@ -97,6 +97,8 @@ float ICACHE_FLASH_ATTR stof(const char* s) {
 //#define stof atof
 
 
+
+
 char * ICACHE_FLASH_ATTR
 get_commandline() {
 	char *result = NULL;
@@ -382,24 +384,26 @@ get_sender_by_addr(long addr) {
 	return NULL ;
 }
 
-
+bool cuas_active;
 bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds) {
 	static time_t end_time;
 	static uint16_t cuas_msgid;
 
 	if (init_seconds > 0) {
-		end_time = time(NULL) + init_seconds;
+		end_time = run_time(NULL) + init_seconds;
 		last_received_sender.data[0] = 0;
 		cuas_msgid = msgid;
+		cuas_active = true;
 	} else if (end_time == 0) {
 
-	} else if (end_time < time (NULL)){
+	} else if (end_time < run_time(NULL)){
 		uint16_t global_msgid = msgid;
 		end_time = 0;
 		io_puts("U: Nothing received\n");
 		msgid = cuas_msgid;
 		reply_message("cuas=time-out", 0);
 		msgid = global_msgid;
+		cuas_active = false;
 	} else if (FSB_MODEL_IS_CENTRAL(&last_received_sender)) {
 		uint32_t cu = FSB_GET_DEVID(&last_received_sender);
 
@@ -409,6 +413,7 @@ bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds) {
 		io_puts("U: Central Unit received and stored\n");
 		reply_message("cuas=ok", 0);
 		save_config();
+		cuas_active = false;
 		return true;
 	}
 
@@ -1208,6 +1213,30 @@ process_parmHelp(clpar p[], int len) {
 	return 0;
 }
 
+
+// called when command processing starts and ends
+static void ICACHE_FLASH_ATTR command_processing_hooks(bool done) {
+#ifdef USE_WLAN
+	tcps_command_processing_hook(done);
+#endif
+}
+
+
+
+void ICACHE_FLASH_ATTR cli_loop(void) {
+	char *cmdline;
+	static bool ready;
+	if ((cmdline = get_commandline())) {
+		command_processing_hooks(false);
+		io_putlf();
+		process_cmdline(cmdline);
+		cli_msg_ready();
+		command_processing_hooks(true);
+	} else if (!ready) {
+		cli_msg_ready();
+		ready = true;
+	}
+}
 
 #if TEST_MODULE_CLI
 bool ICACHE_FLASH_ATTR

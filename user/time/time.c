@@ -42,7 +42,7 @@ time_t
 avr_time(time_t * timer)
 
 #if 1
-{ return __system_time; }
+{ return (timer) ? (*timer = __system_time) : __system_time; }
 #else
 {
 	time_t          ret;

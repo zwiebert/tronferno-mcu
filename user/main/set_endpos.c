@@ -6,6 +6,7 @@
 #include "rtc.h"
 #include "all.h"
 #include "fer.h"
+#include "rtc.h"
 
 //////////////////////////////////////////////////////////////////
 // DANGER ZONE
@@ -36,12 +37,12 @@ static fer_cmd sep_cmd;
 static time_t end_time;
 
 #define TIMEOUT_SECS 30  // disable set position mode after being idle for N seconds
-#define TIMEOUT_SET() (end_time = time(NULL) + TIMEOUT_SECS)
-#define IS_TIMEOUT_REACHED() (end_time < time(NULL) || (end_time > (time(NULL) + TIMEOUT_SECS + 1)))
+#define TIMEOUT_SET() (end_time = run_time(NULL) + TIMEOUT_SECS)
+#define IS_TIMEOUT_REACHED() (end_time < run_time(NULL) || (end_time > (run_time(NULL) + TIMEOUT_SECS + 1)))
 
 /*
  if (init_seconds > 0) {
- end_time = time(NULL) + init_seconds;
+ end_time = run_time(NULL) + init_seconds;
  last_received_sender.data[0] = 0;
  cuas_msgid = msgid;
  */

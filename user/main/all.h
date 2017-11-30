@@ -8,6 +8,8 @@
 
 #ifndef ALL_H_
 #define ALL_H_
+#include "../user_config.h"
+
 #include "common.h"
 #include "inout.h"
 #include "fer.h"
@@ -16,10 +18,6 @@
 #include "rtc.h"
 #include "cli.h"
 #include "config.h"
-
-
-
-
 
 
 
