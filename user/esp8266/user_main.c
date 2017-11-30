@@ -25,8 +25,8 @@
 
 #define printf ets_uart_printf
 
-extern void loop(void);
-extern void wifiStation_loop(void);
+void loop(void);
+void tcps_loop(void);
 
 extern void setup_timer(void);
 extern void setup_serial(uint32_t baudrate);
@@ -51,7 +51,8 @@ static os_event_t io_procTaskQueue[io_procTaskQueueLen];
 
 static void ICACHE_FLASH_ATTR
 user_procTask(os_event_t *events) {
-  wifiStation_loop();
+  tcps_loop();
+  udp_loop();
   loop();
   ets_delay_us(1000);
   system_os_post(user_procTaskPrio, 0, 0);
@@ -59,7 +60,7 @@ user_procTask(os_event_t *events) {
 
 static void ICACHE_FLASH_ATTR
 io_procTask(os_event_t *events) {
-  wifiStation_loop();
+  tcps_loop();
   ets_delay_us(1000);
   system_os_post(io_procTaskPrio, 0, 0);
 }
@@ -101,6 +102,8 @@ user_init() {
 #endif
   setup_pin();
   setup_wifistation();
+  setup_tcp_server();
+  setup_udp();
 
   main_setup();
 
