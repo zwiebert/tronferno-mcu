@@ -7,7 +7,7 @@
 // indexes of data[5]
 typedef enum {
 	fer_dat_ADDR_2, fer_dat_ADDR_1, fer_dat_ADDR_0, // sender or receiver address
-	fer_dat_TGL_and_MEMB, // key-press counter + some ID of the sender (like Member number, Type of sender, ...)
+	fer_dat_TGL_and_MEMB, // key-press counter (0x1..0xf) + some ID of the sender (like Member number, Type of sender, ...)
 	fer_dat_GRP_and_CMD  // Group-ID of sender + the command code (0...0xF)
 } fer_dat;
 
@@ -17,32 +17,32 @@ typedef enum {
 	fer_cmd_None,
 	fer_cmd_1,
 	fer_cmd_2,
-	fer_cmd_STOP,
-	fer_cmd_UP,
-	fer_cmd_DOWN,
-	fer_cmd_SunDOWN,
-	fer_cmd_SunUP,
-	fer_cmd_SunINST,
-	fer_cmd_EndPosUP,
-	fer_cmd_EndPosDOWN,
-	fer_cmd_ChangeRotationDirection, //check directions with UP+STOP or DOWN+STOP, then send this command
+	fer_cmd_STOP,   // stop motor
+	fer_cmd_UP,     // run motor 'up'
+	fer_cmd_DOWN,   // run motor 'down'
+	fer_cmd_SunDOWN,  // run motor 'down' until sun position is reached (works only if sun auto is enabled)
+	fer_cmd_SunUP,   // run motor 'up' (works only if sun auto is enabled)
+	fer_cmd_SunINST,  // set current position als sun position
+	fer_cmd_EndPosUP, // move motor 'up' until 'stop' is sent (the position at stop is saved as end position)
+	fer_cmd_EndPosDOWN, // move motor 'down' until 'stop' is sent (the position at 'stop' is saved as end position)
+	fer_cmd_ChangeRotationDirection, // toggles motor rotation direction (used to match up/down commands with real shutter movement)
 	fer_cmd_0xc,
-	fer_cmd_SET,
+	fer_cmd_SET,   // atcivates set function to add or remove a controller
 	fer_cmd_0xe,
-	fer_cmd_Program // Sun-Test (dat_MEMB=1), Time send (dat_Memb=0), Data send (dat_MEMB=member)
+	fer_cmd_Program // RTC/TImer data (or Sun-Test if dat_MEMB=fer_memb_SUN)
 } fer_cmd;
 
 // values of high nibble in data[fer_dat_GRP_and_CMD].
 /////// Sender IDs
 typedef enum {
 	fer_grp_Broadcast,
-	fer_grp_G1,
+	fer_grp_G1,  // group number 1
 	fer_grp_G2,
 	fer_grp_G3,
 	fer_grp_G4,
 	fer_grp_G5,
 	fer_grp_G6,
-	fer_grp_G7
+	fer_grp_G7   // group number 7
 /* FIXME: only 3 bits used so far. Is the highest bit used for anything? */
 
 } fer_grp;
@@ -51,25 +51,25 @@ typedef enum {
 /////// Sender IDs
 typedef enum {
 	fer_memb_Broadcast,        // RTC data, ...
-	fer_memb_SUN,              // sent by SunSensor
-	fer_memb_SINGLE,           // sent by hand sender
+	fer_memb_FromSunSensor,              // originated from a SunSensor
+	fer_memb_FromPlainSender,           // originated from a plain sender
 	fer_memb_P3,
 	fer_memb_P4,
 	fer_memb_P5,
 	fer_memb_P6,
-	fer_memb_RecAddress, // Adressfield contains address of the receiver
-	fer_memb_M1 = 8,
+	fer_memb_ToReceiver, // send to the receiver specified by fer_dat_ADDR
+	fer_memb_M1 = 8,  // member number 1
 	fer_memb_M2,
 	fer_memb_M3,
 	fer_memb_M4,
 	fer_memb_M5,
 	fer_memb_M6,
-	fer_memb_M7
+	fer_memb_M7       // member number 7
 } fer_memb;
 
 // high nibble of data[fer_dat_ADDR_2]
 ////// device type
-#define FER_ADDR_TYPE_SimpleSender  0x10
+#define FER_ADDR_TYPE_PlainSender  0x10
 #define FER_ADDR_TYPE_SunSensor     0x20
 #define FER_ADDR_TYPE_CentralUnit   0x80
 #define FER_ADDR_TYPE_Receiver      0x90 // 0x9xxxxx (code written on motor label)
@@ -83,7 +83,7 @@ typedef struct {
 
 #define FSB_MODEL_IS_CENTRAL(fsb)  (((fsb)->data[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)
 #define FSB_MODEL_IS_SUNSENS(fsb)  (((fsb)->data[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_SunSensor)
-#define FSB_MODEL_IS_STANDARD(fsb) (((fsb)->data[fer_dat_ADDR_2] & 0xf0) == FER_ADDR_TYPE_SimpleSender)
+#define FSB_MODEL_IS_PLAIN(fsb) (((fsb)->data[fer_dat_ADDR_2] & 0xf0) == FER_ADDR_TYPE_PlainSender)
 #define FSB_IS_BUTTON_HOLD(fsb)    ((fsb)->repeats > 0) 
 
 #define FSB_PUT_ADDR(fsb, a2, a1, a0) (((fsb)->data[fer_dat_ADDR_2] = (a2)), ((fsb)->data[fer_dat_ADDR_1] = (a1)), ((fsb)->data[fer_dat_ADDR_0] = (a0)))
@@ -113,9 +113,10 @@ typedef struct {
 
 /// entire frame
 enum fpr0 {
-	fpr0_RTC_secs, fpr0_RTC_mint, fpr0_RTC_hour, fpr0_RTC_wdayMask, // Sun...Sat = 0x01 ... 0x40 (each bit represents  weekday)
-	fpr0_RTC_days,
-	fpr0_RTC_mont,
+	fpr0_RTC_secs, fpr0_RTC_mint, fpr0_RTC_hour,  // RTC time
+  fpr0_RTC_wdayMask, // Sun...Sat = 0x01 ... 0x40 (each bit represents a weekday)
+	fpr0_RTC_days,  // day of month 1..31
+	fpr0_RTC_mont,  // month of year 1..12
 	fpr0_RTC_wday, // low nibble: Mon...Sun = 1...7.  high nibble is 0x0 (full program frame) or 0x8 (RTC only short program frame)
 	fpr0_FlagBits, // bits to enable SunAutomatic, Random, DST
 	fpr0_checksum
@@ -206,7 +207,7 @@ enum fpr17 {
 
 // sub frames
 
-// timer sub frame. There is one timer stamp (Up/Down) for each weekday (7 day timer) and one every day (daily timer) 
+// timer sub frame. There are 8 timer stamps (Up/Down).  7 are for weekly timer (one timer for each weekday) and 1 is for daily timer (for every day).
 enum fpr_tim {
 	fpr_tim_sun,
 	fpr_tim_mon,

@@ -44,35 +44,46 @@ static uint8_t rx_buf[RX_BUFSIZE];
 static uint8_t rx_head = 0, rx_tail = 0;
 #define rxb_isEmpty() (rx_head == rx_tail)
 #define  rxb_push(c) do {  rx_buf[rx_tail++] = (c);   wrap_idx(rx_tail, RX_BUFSIZE);  } while(0)
+static bool ICACHE_FLASH_ATTR rxb_pop(uint8_t *res) {
+  if (rxb_isEmpty())
+    return false;
+  *res = rx_buf[rx_head++];
+  wrap_idx(rx_head, RX_BUFSIZE);
+  return true;
+}
 
 #define TX_BUFSIZE 256 // power of 2
 static uint8_t tx_buf[RX_BUFSIZE];
 static uint8_t tx_head = 0, tx_tail = 0;
 #define txb_isEmpty() (tx_head == tx_tail)
 #define  txb_push(c) do {  tx_buf[tx_tail++] = (c);   wrap_idx(tx_tail, TX_BUFSIZE);  } while(0)
+static bool ICACHE_FLASH_ATTR txb_pop(uint8_t *res) {
+  if (txb_isEmpty())
+    return false;
+  *res = tx_buf[tx_head++];
+  wrap_idx(tx_head, TX_BUFSIZE);
+  return true;
+}
 
 static int ICACHE_FLASH_ATTR
 tcpSocket_io_getc(void) {
-  int result = -1;
+  uint8_t c;
 
-  if (rx_head != rx_tail) {
-    result = rx_buf[rx_head++] & 0xFF;
-    wrap_idx(rx_head, RX_BUFSIZE);
-  }
+  if (rxb_pop(&c)) {
 
-  if (nmbConnected <= 0) {
-    if (rxb_isEmpty()) {
-      io_getc_fun = old_io_getc_fun;
-      D(printf("reset io_getc_fun to serial UART\n"));
-      rx_head = rx_tail = 0;
+    if (nmbConnected <= 0) {
+      if (rxb_isEmpty()) {
+        io_getc_fun = old_io_getc_fun;
+        D(printf("reset io_getc_fun to serial UART\n"));
+        rx_head = rx_tail = 0;
+      }
     }
-  }
-
-  if (result == -1 && old_io_getc_fun) {
+    return c;
+  } else if (old_io_getc_fun) {
     return old_io_getc_fun();
   }
 
-  return result;
+  return -1;
 }
 
 static int ICACHE_FLASH_ATTR
@@ -106,8 +117,8 @@ tcps_send_cb(void *arg) {
     tx_pending = 0;
 }
 
-void ICACHE_FLASH_ATTR
-tcpSocket_txTask(void) {
+static void ICACHE_FLASH_ATTR
+tcps_tx_loop(void) {
   int i;
   static int pendingCount;
 
@@ -244,9 +255,6 @@ tcps_connect_cb(void *arg) {
   io_putd(nmbConnected), io_puts(" tcp client(s) connected\n");
 }
 
-
-
-
 static bool command_processing_done;
 void ICACHE_FLASH_ATTR
 tcps_command_processing_hook(bool done) {
@@ -261,7 +269,7 @@ void ICACHE_FLASH_ATTR
 tcps_loop(void) {
   int i;
 
-  tcpSocket_txTask();
+  tcps_tx_loop();
 
   if (command_processing_done && txb_isEmpty()) {
     tcpc_last_received = 0;

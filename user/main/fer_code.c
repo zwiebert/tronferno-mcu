@@ -7,19 +7,19 @@ fer_init_sender(fer_sender_basic *fsb, uint32_t devID) {
   fer_init_plain(fsb, GET_BYTE_2(devID), GET_BYTE_1(devID), GET_BYTE_0(devID));
 
   switch (GET_BYTE_2(devID)) {
-    case FER_ADDR_TYPE_SimpleSender:
-        FSB_PUT_MEMB(fsb, fer_memb_SINGLE);
+    case FER_ADDR_TYPE_PlainSender:
+        FSB_PUT_MEMB(fsb, fer_memb_FromPlainSender);
     break;
 
     case FER_ADDR_TYPE_SunSensor:
-    FSB_PUT_MEMB(fsb, fer_memb_SUN);
+    FSB_PUT_MEMB(fsb, fer_memb_FromSunSensor);
     break;
 
     case FER_ADDR_TYPE_CentralUnit:
     break;
     
     case FER_ADDR_TYPE_Receiver:
-    	FSB_PUT_MEMB(fsb, fer_memb_RecAddress);
+    	FSB_PUT_MEMB(fsb, fer_memb_ToReceiver);
     break;
 
     default:
@@ -31,7 +31,7 @@ void ICACHE_FLASH_ATTR
 fer_init_plain(fer_sender_basic *fsb, uint8_t a2, uint8_t a1, uint8_t a0) {
   FSB_PUT_ADDR(fsb, a2, a1, a0);
   FSB_PUT_TGL(fsb, 1);
-  FSB_PUT_MEMB(fsb, fer_memb_SINGLE);
+  FSB_PUT_MEMB(fsb, fer_memb_FromPlainSender);
   FSB_PUT_GRP(fsb, fer_grp_Broadcast);
   FSB_PUT_CMD(fsb, fer_cmd_None);
   fsb->repeats = -1;
@@ -40,7 +40,7 @@ fer_init_plain(fer_sender_basic *fsb, uint8_t a2, uint8_t a1, uint8_t a0) {
 void ICACHE_FLASH_ATTR
 fer_init_sunSensor(fer_sender_basic *fsb, uint8_t a2, uint8_t a1, uint8_t a0) {
   fer_init_plain(fsb, a2, a1, a0);
-  FSB_PUT_MEMB(fsb, fer_memb_SUN);
+  FSB_PUT_MEMB(fsb, fer_memb_FromSunSensor);
 }
 
 

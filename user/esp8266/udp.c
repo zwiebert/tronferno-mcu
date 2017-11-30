@@ -13,10 +13,6 @@
 #include "time.h"
 #include "main/rtc.h"
 
-#define TCP_HARD_TIMEOUT  (60 * 10)  // terminate connections to avoid dead connections piling up
-#define SERIAL_ECHO 0
-#define EXP1 1
-
 #define printf io_printf_fun
 #ifndef DISTRIBUTION
 #define D(x) x
