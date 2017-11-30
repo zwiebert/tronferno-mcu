@@ -9,7 +9,6 @@
 // SPIFFS is currently unused
 #define ENABLE_SPIFFS 0
 
-
 // define addresses with empty flash to use for flash data files
 #define C_START_FREE_FLASH  0x100000UL   //start our data here (1MB)
 
@@ -25,27 +24,8 @@
 #define C_SPIFFS_FLASH_ADDR  (C_DATA2_FLASH_ADDR + C_DATA2_FLASH_SIZE)
 #define C_SPIFFS_FLASH_SIZE   0x80000 // 128 sectors (500KB)
 
-
 #endif
 
-
-
-
-
 #define ENABLE_SET_ENDPOS 1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif /* USER_CONFIG_H_ */

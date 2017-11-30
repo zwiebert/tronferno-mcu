@@ -59,117 +59,115 @@ static time_t end_time;
 
 #define IS_BUTTON_PRESSED()  (mcu_get_buttonPin())
 
-
 bool ICACHE_FLASH_ATTR sep_is_enabled(void) {
-	return sep_buttons_enabled;
+  return sep_buttons_enabled;
 }
 
 static bool ICACHE_FLASH_ATTR
 sep_send_stop(void) {
-	fer_sender_basic * const fsb = &sep_fsb;
-	fsb->repeats = 2;
-	FSB_PUT_CMD(fsb, fer_cmd_STOP);
-	fer_update_tglNibble(fsb);
-	while (fer_send_cmd(fsb)) {
-		fer_update_tglNibble(fsb);
-	}
-	return true;
+  fer_sender_basic * const fsb = &sep_fsb;
+  fsb->repeats = 2;
+  FSB_PUT_CMD(fsb, fer_cmd_STOP);
+  fer_update_tglNibble(fsb);
+  while (fer_send_cmd(fsb)) {
+    fer_update_tglNibble(fsb);
+  }
+  return true;
 }
 
 static bool ICACHE_FLASH_ATTR
 sep_send_down(void) {
-	fer_sender_basic * const fsb = &sep_fsb;
-	fsb->repeats = 0;
-	FSB_PUT_CMD(fsb, SEP_DOWN);
-	fer_update_tglNibble(fsb);
-	return fer_send_cmd(fsb);
+  fer_sender_basic * const fsb = &sep_fsb;
+  fsb->repeats = 0;
+  FSB_PUT_CMD(fsb, SEP_DOWN);
+  fer_update_tglNibble(fsb);
+  return fer_send_cmd(fsb);
 }
 
 static bool ICACHE_FLASH_ATTR
 sep_send_up(void) {
-	fer_sender_basic * const fsb = &sep_fsb;
-	fsb->repeats = 0;
-	FSB_PUT_CMD(fsb, SEP_UP);
-	fer_update_tglNibble(fsb);
-	return fer_send_cmd(fsb);
+  fer_sender_basic * const fsb = &sep_fsb;
+  fsb->repeats = 0;
+  FSB_PUT_CMD(fsb, SEP_UP);
+  fer_update_tglNibble(fsb);
+  return fer_send_cmd(fsb);
 }
 
 void ICACHE_FLASH_ATTR
 sep_disable(void) {
-	if (sep_buttons_enabled) {
-		sep_send_stop();  // don't remove this line
-		D(io_puts("sep disable\n"));
-		up_pressed = down_pressed = false;
-		sep_buttons_enabled = false;
-		recv_lockBuffer(false);
-	}
+  if (sep_buttons_enabled) {
+    sep_send_stop();  // don't remove this line
+    D(io_puts("sep disable\n"));
+    up_pressed = down_pressed = false;
+    sep_buttons_enabled = false;
+    recv_lockBuffer(false);
+  }
 }
 
 bool ICACHE_FLASH_ATTR
 sep_enable(fer_sender_basic *fsb) {
-	if (sep_buttons_enabled) { // already activated
-		sep_disable();
-		return false;
-	} else if (IS_BUTTON_PRESSED()) {
-		io_puts("error: hardware button is pressed\n");
-		return false;
-	} else {
+  if (sep_buttons_enabled) { // already activated
+    sep_disable();
+    return false;
+  } else if (IS_BUTTON_PRESSED()) {
+    io_puts("error: hardware button is pressed\n");
+    return false;
+  } else {
 
-		// check for possible broadcast
-		if (FSB_MODEL_IS_CENTRAL(fsb)
-				&& !((fer_memb_M1 <= FSB_GET_MEMB(fsb) && FSB_GET_MEMB(fsb) <= fer_memb_M7)
-						&& (fer_grp_G1 <= FSB_GET_GRP(fsb) && FSB_GET_GRP(fsb) <= fer_grp_G7))) {
-			return false; // no broadcast allowed
-		}
+    // check for possible broadcast
+    if (FSB_MODEL_IS_CENTRAL(fsb)
+        && !((fer_memb_M1 <= FSB_GET_MEMB(fsb) && FSB_GET_MEMB(fsb) <= fer_memb_M7) && (fer_grp_G1 <= FSB_GET_GRP(fsb) && FSB_GET_GRP(fsb) <= fer_grp_G7))) {
+      return false; // no broadcast allowed
+    }
 
-		// set our endpos-up/down command according to normal up/down command in fsb
-		if (FSB_GET_CMD(fsb) == fer_cmd_UP) {
-			sep_cmd = SEP_UP;
-		} else if (FSB_GET_CMD(fsb) == fer_cmd_DOWN) {
-			sep_cmd = SEP_DOWN;
-		} else {
-			return false;
-		}
+    // set our endpos-up/down command according to normal up/down command in fsb
+    if (FSB_GET_CMD(fsb) == fer_cmd_UP) {
+      sep_cmd = SEP_UP;
+    } else if (FSB_GET_CMD(fsb) == fer_cmd_DOWN) {
+      sep_cmd = SEP_DOWN;
+    } else {
+      return false;
+    }
 
-		D(io_puts("sep enable\n"));
-		sep_fsb = *fsb;
-		sep_buttons_enabled = true;
-		recv_lockBuffer(true);
-		TIMEOUT_SET();
-		return true;
-	}
-	return false;
+    D(io_puts("sep enable\n"));
+    sep_fsb = *fsb;
+    sep_buttons_enabled = true;
+    recv_lockBuffer(true);
+    TIMEOUT_SET();
+    return true;
+  }
+  return false;
 }
 
 bool ICACHE_FLASH_ATTR
 sep_loop(void) {
-	if (sep_buttons_enabled && !is_sendMsgPending) {
-		const bool up_pin = BUTT_UP;
-		const bool down_pin = BUTT_DOWN;
+  if (sep_buttons_enabled && !is_sendMsgPending) {
+    const bool up_pin = BUTT_UP;
+    const bool down_pin = BUTT_DOWN;
 
-		if (up_pin && down_pin) {  // emergency stop
-			sep_disable();
-			return false;
-		}
+    if (up_pin && down_pin) {  // emergency stop
+      sep_disable();
+      return false;
+    }
 
-		if (!up_pressed && !down_pressed) {
-			if ((up_pressed = up_pin)) {
-				sep_send_up();
-				TIMEOUT_SET();
-			} else if ((down_pressed = down_pin)) {
-				sep_send_down();
-				TIMEOUT_SET();
-			} else if (IS_TIMEOUT_REACHED()) {
-				sep_disable();
-				return false;
-			}
-		} else {
-			if (up_pressed && !(up_pressed = up_pin)) {
-				sep_send_stop();
-			}
-			if (down_pressed && !(down_pressed = down_pin)) {
-				sep_send_stop();
-			}
-		}
-	}
+    if (!up_pressed && !down_pressed) {
+      if ((up_pressed = up_pin)) {
+        sep_send_up();
+        TIMEOUT_SET();
+      } else if ((down_pressed = down_pin)) {
+        sep_send_down();
+        TIMEOUT_SET();
+      } else if (IS_TIMEOUT_REACHED()) {
+        sep_disable();
+        return false;
+      }
+    } else {
+      if (up_pressed && !(up_pressed = up_pin)) {
+        sep_send_stop();
+      }
+      if (down_pressed && !(down_pressed = down_pin)) {
+        sep_send_stop();
+      }
+    }
+  }
 }
