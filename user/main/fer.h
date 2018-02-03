@@ -161,6 +161,7 @@ extern volatile bool is_sendMsgPending;
 void ftx_tick(void);
 bool fer_send_prg(fer_sender_basic *fsb);
 bool fer_send_cmd(fer_sender_basic *fsb);
+bool fer_send_msg(fer_sender_basic *fsb, fmsg_type msgType);
 
 void fmsg_create_checksums(struct fer_msg *m, fmsg_type t);
 bool fmsg_verify_checksums(const struct fer_msg *m, fmsg_type t);

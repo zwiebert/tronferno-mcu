@@ -391,7 +391,7 @@ bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds) {
     reply_message("cuas=time-out", 0);
     msgid = global_msgid;
     cuas_active = false;
-  } else if (FSB_MODEL_IS_CENTRAL(&last_received_sender)) {
+  } else if (FSB_ADDR_IS_CENTRAL(&last_received_sender)) {
     uint32_t cu = FSB_GET_DEVID(&last_received_sender);
 
     FSB_PUT_DEVID(&default_sender, cu);
@@ -494,7 +494,7 @@ process_parmSend(clpar p[], int len) {
     }
   }
 
-  if (FSB_MODEL_IS_CENTRAL(fsb)) {
+  if (FSB_ADDR_IS_CENTRAL(fsb)) {
     FSB_PUT_GRP(fsb, group);
     FSB_PUT_MEMB(fsb, memb);  // only set this on central unit!
   }
@@ -509,7 +509,7 @@ process_parmSend(clpar p[], int len) {
     FSB_PUT_CMD(fsb, cmd);
     fer_update_tglNibble(fsb);
     fsb->repeats = repeats;
-    reply(fer_send_cmd(fsb));
+    reply(fer_send_msg(fsb, MSG_TYPE_PLAIN));
   } else {
     reply_failure();
   }
@@ -942,7 +942,7 @@ process_parmTimer(clpar p[], int len) {
     }
   }
 
-  if (FSB_MODEL_IS_CENTRAL(fsb)) {
+  if (FSB_ADDR_IS_CENTRAL(fsb)) {
     FSB_PUT_GRP(fsb, group);
     FSB_PUT_MEMB(fsb, memb);
   }
@@ -967,9 +967,9 @@ process_parmTimer(clpar p[], int len) {
       fmsg_write_lastline(txmsg, fsb);
     }
 
-    if (reply(fer_send_prg(fsb))) {
+    if (reply(fer_send_msg(fsb, (flag_rtc_only == FLAG_TRUE) ? MSG_TYPE_RTC : MSG_TYPE_TIMER))) {
 #if ENABLE_RSTD
-      if (FSB_MODEL_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE) {  // FIXME: or better test for default cu?
+      if (FSB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE) {  // FIXME: or better test for default cu?
         if (has_astro) {
           td.astro = astro_offset;
         }
@@ -1069,7 +1069,7 @@ process_parmExpert(clpar p[], int len) {
     }
   }
 
-  if (FSB_MODEL_IS_CENTRAL(fsb)) {
+  if (FSB_ADDR_IS_CENTRAL(fsb)) {
     FSB_PUT_GRP(fsb, group);
     FSB_PUT_MEMB(fsb, memb);  // only set this on central unit!
   }

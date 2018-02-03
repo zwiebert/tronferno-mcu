@@ -69,7 +69,7 @@ sep_send_stop(void) {
   fsb->repeats = 2;
   FSB_PUT_CMD(fsb, fer_cmd_STOP);
   fer_update_tglNibble(fsb);
-  while (fer_send_cmd(fsb)) {
+  while (fer_send_msg(fsb, MSG_TYPE_PLAIN)) {
     fer_update_tglNibble(fsb);
   }
   return true;
@@ -81,7 +81,7 @@ sep_send_down(void) {
   fsb->repeats = 0;
   FSB_PUT_CMD(fsb, SEP_DOWN);
   fer_update_tglNibble(fsb);
-  return fer_send_cmd(fsb);
+  return fer_send_msg(fsb, MSG_TYPE_PLAIN);
 }
 
 static bool ICACHE_FLASH_ATTR
@@ -90,7 +90,7 @@ sep_send_up(void) {
   fsb->repeats = 0;
   FSB_PUT_CMD(fsb, SEP_UP);
   fer_update_tglNibble(fsb);
-  return fer_send_cmd(fsb);
+  return fer_send_msg(fsb, MSG_TYPE_PLAIN);
 }
 
 void ICACHE_FLASH_ATTR
@@ -115,7 +115,7 @@ sep_enable(fer_sender_basic *fsb) {
   } else {
 
     // check for possible broadcast
-    if (FSB_MODEL_IS_CENTRAL(fsb)
+    if (FSB_ADDR_IS_CENTRAL(fsb)
         && !((fer_memb_M1 <= FSB_GET_MEMB(fsb) && FSB_GET_MEMB(fsb) <= fer_memb_M7) && (fer_grp_G1 <= FSB_GET_GRP(fsb) && FSB_GET_GRP(fsb) <= fer_grp_G7))) {
       return false; // no broadcast allowed
     }

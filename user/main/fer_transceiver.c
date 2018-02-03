@@ -243,7 +243,7 @@ static void frx_tick_receive_message() {
 
     case BYTES_MSG_PLAIN:
       if ((!error && fer_OK == frx_verify_cmd(rbuf->cmd))) {
-        if (FRB_GET_CMD(rbuf->cmd) == fer_cmd_Program && FRB_MODEL_IS_CENTRAL(rbuf->cmd)) {
+        if (FRB_GET_CMD(rbuf->cmd) == fer_cmd_Program && FRB_ADDR_IS_CENTRAL(rbuf->cmd)) {
           bytesToReceive = BYTES_MSG_RTC;
         } else {
           MessageReceived = MSG_TYPE_PLAIN;

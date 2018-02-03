@@ -21,7 +21,7 @@ typedef enum {
 	fer_cmd_UP,     // run motor 'up'
 	fer_cmd_DOWN,   // run motor 'down'
 	fer_cmd_SunDOWN,  // run motor 'down' until sun position is reached (works only if sun auto is enabled)
-	fer_cmd_SunUP,   // run motor 'up' (works only if sun auto is enabled)
+	fer_cmd_SunUP,   // run motor 'up' (should work only after SunDOWN (or if not below sun pos?))
 	fer_cmd_SunINST,  // set current position als sun position
 	fer_cmd_EndPosUP, // move motor 'up' until 'stop' is sent (the position at stop is saved as end position)
 	fer_cmd_EndPosDOWN, // move motor 'down' until 'stop' is sent (the position at 'stop' is saved as end position)
@@ -35,7 +35,7 @@ typedef enum {
 // values of high nibble in data[fer_dat_GRP_and_CMD].
 /////// Sender IDs
 typedef enum {
-	fer_grp_Broadcast,
+	fer_grp_Broadcast, // for all group numbers
 	fer_grp_G1,  // group number 1
 	fer_grp_G2,
 	fer_grp_G3,
@@ -50,8 +50,8 @@ typedef enum {
 // values of low nibble in data[fer_dat_TGL_and_MEMB].
 /////// Sender IDs
 typedef enum {
-	fer_memb_Broadcast,        // RTC data, ...
-	fer_memb_FromSunSensor,              // originated from a SunSensor
+	fer_memb_Broadcast,                // for all member numbers
+	fer_memb_FromSunSensor,            // originated from a SunSensor
 	fer_memb_FromPlainSender,           // originated from a plain sender
 	fer_memb_P3,
 	fer_memb_P4,
@@ -81,9 +81,9 @@ typedef struct {
 	int8_t repeats;
 } fer_sender_basic;
 
-#define FSB_MODEL_IS_CENTRAL(fsb)  (((fsb)->data[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)
-#define FSB_MODEL_IS_SUNSENS(fsb)  (((fsb)->data[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_SunSensor)
-#define FSB_MODEL_IS_PLAIN(fsb) (((fsb)->data[fer_dat_ADDR_2] & 0xf0) == FER_ADDR_TYPE_PlainSender)
+#define FSB_ADDR_IS_CENTRAL(fsb)  (((fsb)->data[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)
+#define FSB_ADDR_IS_SUNSENS(fsb)  (((fsb)->data[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_SunSensor)
+#define FSB_ADDR_IS_PLAIN(fsb) (((fsb)->data[fer_dat_ADDR_2] & 0xf0) == FER_ADDR_TYPE_PlainSender)
 #define FSB_IS_BUTTON_HOLD(fsb)    ((fsb)->repeats > 0) 
 
 #define FSB_PUT_ADDR(fsb, a2, a1, a0) (((fsb)->data[fer_dat_ADDR_2] = (a2)), ((fsb)->data[fer_dat_ADDR_1] = (a1)), ((fsb)->data[fer_dat_ADDR_0] = (a0)))
@@ -297,7 +297,7 @@ void fer_update_tglNibble(fer_sender_basic *fsb);
 #define FRB_GET_CMD(data)          (GET_LOW_NIBBLE((data)[fer_dat_GRP_and_CMD]))
 #define FRB_GET_MEMB(data)         (GET_LOW_NIBBLE((data)[fer_dat_TGL_and_MEMB]))
 #define FRB_GET_GRP(data)          (GET_HIGH_NIBBLE((data)[fer_dat_GRP_and_CMD]))
-#define FRB_MODEL_IS_CENTRAL(data)  (((data)[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)
+#define FRB_ADDR_IS_CENTRAL(data)  (((data)[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)
 #define FRB_GET_FPR0_IS_RTC_ONLY(data) (((data)[fpr0_RTC_wday] & 0x80) != 0)
 
 #endif //_fer_code

@@ -64,15 +64,19 @@ fer_tglNibble_ctUp(uint8_t toggle_nibble, int step) {
 
 void ICACHE_FLASH_ATTR
 fer_update_tglNibble(fer_sender_basic *fsb) {
+#if 0
   int step = 0;
-  
-  step = !FSB_MODEL_IS_CENTRAL(fsb) ? 1
+
+  step = !FSB_ADDR_IS_CENTRAL(fsb) ? 1
   : (FSB_IS_BUTTON_HOLD(fsb) ?  (FSB_GET_CMD(fsb) == fer_cmd_STOP ? 1 : 0)
   : 1);
-  
   if (step > 0) {
     FSB_PUT_TGL(fsb, fer_tglNibble_ctUp(FSB_GET_TGL(fsb), step));
   }
+  #else
+    FSB_PUT_TGL(fsb, fer_tglNibble_ctUp(FSB_GET_TGL(fsb), 1));
+#endif
+
 }
 
 
