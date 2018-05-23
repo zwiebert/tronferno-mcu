@@ -90,8 +90,14 @@ bool ICACHE_FLASH_ATTR fer_send_prg(fer_sender_basic *fsb) {
 bool ICACHE_FLASH_ATTR fer_send_msg(fer_sender_basic *fsb, fmsg_type msgType) {
   if (is_sendMsgPending)
     return false;
+#if 0
   if (fsb && send_fsb.repeats > 0)
     return false;
+#else
+  if (fsb && send_fsb.repeats > 0) {
+    send_fsb.repeats = 0;
+  }
+#endif
 
   if (!recv_lockBuffer(true)) {
     return false;

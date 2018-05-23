@@ -35,7 +35,7 @@ configure the Makefiles in user/esp8266/
 #define MY_FER_CENTRAL_UNIT_ID 0x80****
 #define MY_MCU_ATMEGA328_BAUD_RATE 38400
 #define MY_MCU_ESP8266_BAUD_RATE 115200
-#define MY_GEO_LONGITUDE -13.****
+#define MY_GEO_LONGITUDE +13.****
 #define MY_GEO_LATITUDE +52.****
 #define MY_GEO_TIMEZONE +1.0
 #define MY_GEO_DST dstEU

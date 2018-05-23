@@ -73,7 +73,7 @@ These options  are used to calculate times for the "astro-automatic" built in to
 * time-zone=N  - relative to GMT/UTC. Like: +1.0 or -7.0  or -6.5
 * dst=(eu|0|1) - enable/disable daylight saving time. eu=europe. manually: 0=off, 1=on. If DST is on, the shutter will add 1 hour to its astro timer
 
-        config longitude=-13.23452 latitude=+52.34234 time-zone=+1  dst=eu; 
+        config longitude=+13.23452 latitude=+52.34234 time-zone=+1  dst=eu; 
 
 * rtc=ISO-TIME - Sets the MCUs internal real time clock.  Usually set automatically by NTP server.
          
