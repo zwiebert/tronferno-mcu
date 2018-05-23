@@ -31,7 +31,7 @@
  * timezone - time offset to UTC
  * day_of_year - 1..366
  * longitude - geographical longitude (in decimal degrees)
- * latidude - geographical latitude (in decimal degrees)
+ * latitude - geographical latitude (in decimal degrees)
  * horizon - horizon (in rad) to calculate twilight
  */
 static void ICACHE_FLASH_ATTR
@@ -39,8 +39,8 @@ calc_sunrise_sunset(float *sunrise, float *sunset, float timezone, int day_of_ye
 
   float rad_latitude = M_PI * dgrad_latidude / 180;
 
-  float declination_of_time = 0.4095 * sin(0.016906 * (day_of_year - 80.086));
-  float time_diff = 12 * acos((sin(horizon) - sin(rad_latitude) * sin(declination_of_time)) / (cos(rad_latitude) * cos(declination_of_time))) / M_PI;
+  float declination_of_sun = 0.4095 * sin(0.016906 * (day_of_year - 80.086));
+  float time_diff = 12 * acos((sin(horizon) - sin(rad_latitude) * sin(declination_of_sun)) / (cos(rad_latitude) * cos(declination_of_sun))) / M_PI;
   float equation_of_time = -0.171 * sin(0.0337 * day_of_year + 0.465) - 0.1299 * sin(0.01787 * day_of_year - 0.168);
 
   if (sunrise) {
