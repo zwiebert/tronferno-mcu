@@ -88,7 +88,7 @@ math_write_astro(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset
         if (sunset < last_sunset) {
           sunset = last_sunset;
         } else {
-          //last_sunset = sunset;
+          last_sunset = sunset;
         }
         time_to_bcd(&dst[i][j*2],&dst[i][j*2+1], sunset, true);
       }
@@ -187,7 +187,7 @@ const uint8_t ad_plz_10[12][8]  = {
 
 #endif
 
-// berlin actual civl dusk: 16:33 ... 21:23 (GMT + 1)
+// berlin actual civil dusk: 16:33 ... 21:23 (GMT + 1)
 // berlin fernotron table:  16:34 ... 21:20
 void ICACHE_FLASH_ATTR write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
 #if 0
