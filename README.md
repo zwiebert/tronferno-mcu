@@ -142,6 +142,8 @@ To send the "too much sun" command:
       
 ### Recent Changes
  
+ * 2018-05: bugfix: astro function was totally off (sorry)
+ * 2018-02: bugfix: rolling counter was no longer updated (shutter ignores commands)
  * 2017-11: allow adjusting end positions (needs hardware button) (send option SEP)
  * 2017-11: finally implemented repeated sending for plain commands. (send option r)
  * 2017-11: print now debug info after mcu crash like described in the manual. was really helpful with finding that random crash introduced recently
