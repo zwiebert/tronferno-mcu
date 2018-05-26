@@ -7,7 +7,7 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include "time.h"
+
 
 #include "astro.h"
 #include "common.h"
@@ -37,23 +37,23 @@
  * horizon - horizon (in rad) to calculate twilight
  */
 static void ICACHE_FLASH_ATTR
-calc_sunrise_sunset(float *sunrise, float *sunset, float timezone, float day_of_year, float longitude_dec, float latitude_dec, float horizon) {
+calc_sunrise_sunset(float *sunrise, float *sunset, float timezone, float day_of_year, float longitude_deg, float latitude_deg, float horizon) {
 
-  float latitude_rad = M_PI * latitude_dec / 180;
+  float latitude = M_PI * latitude_deg / 180;
 
   float declination_of_sun = 0.4095 * sin(0.016906 * (day_of_year - 80.086));
-  float time_diff = 12 * acos((sin(horizon) - sin(latitude_rad) * sin(declination_of_sun)) / (cos(latitude_rad) * cos(declination_of_sun))) / M_PI;
+  float time_diff = 12 * acos((sin(horizon) - sin(latitude) * sin(declination_of_sun)) / (cos(latitude) * cos(declination_of_sun))) / M_PI;
   float equation_of_time = -0.171 * sin(0.0337 * day_of_year + 0.465) - 0.1299 * sin(0.01787 * day_of_year - 0.168);
 
   if (sunrise) {
     float sunrise_moz = (12 - time_diff - equation_of_time);
-    float sunrise_gmt = sunrise_moz - longitude_dec / 15;
+    float sunrise_gmt = sunrise_moz - longitude_deg / 15;
     *sunrise = sunrise_gmt + timezone;
   }
 
   if (sunset) {
     float sunset_moz = (12 + time_diff - equation_of_time);
-    float sunset_gmt = sunset_moz - longitude_dec / 15;
+    float sunset_gmt = sunset_moz - longitude_deg / 15;
     *sunset = sunset_gmt + timezone;
   }
 }
@@ -63,16 +63,16 @@ calc_sunrise_sunset(float *sunrise, float *sunset, float timezone, float day_of_
  * force_even_minutes  - if true, no odd number will be outputted in dstMinutes
  */
 static void ICACHE_FLASH_ATTR
-time_to_bcd(uint8_t *dstMinutes, uint8_t *dstHours, float time, bool force_even_minutes) {
+time_to_bcd(uint8_t *bcdMinutes, uint8_t *bcdHours, float time, bool force_even_minutes) {
   double integral, fractional;
 
   fractional = modf(time, &integral);
 
-  if (dstHours) {
-    *dstHours = dec2bcd_special((uint8_t) integral);
+  if (bcdHours) {
+    *bcdHours = dec2bcd_special((uint8_t) integral);
   }
-  if (dstMinutes) {
-    *dstMinutes = dec2bcd_special((force_even_minutes ? ~1 : ~0) & (1+(uint8_t) (fractional * 60)));
+  if (bcdMinutes) {
+    *bcdMinutes = dec2bcd_special((force_even_minutes ? ~1 : ~0) & (1+(uint8_t) (fractional * 60)));
   }
 }
 
@@ -90,6 +90,7 @@ math_write_astro(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset
         } else {
           last_sunset = sunset;
         }
+
         time_to_bcd(&dst[i][j*2],&dst[i][j*2+1], sunset, true);
       }
     }
@@ -114,7 +115,16 @@ math_write_astro2(uint8_t dst[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offse
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////
 
+
+void ICACHE_FLASH_ATTR write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
+  math_write_astro(d, mint_offset);
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////
 #if TEST_MODULE_ASTRO
 uint8_t data[12][8];
 
@@ -134,23 +144,6 @@ testModule_astro()
 #endif
 
 
-#if 0
-static void
-ICACHE_FLASH_ATTR tbl_write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], const uint8_t ad[12][8], int mint_offset) {
-  int col, line;
-
-  mint_offset &= ~1;  // make sure the number is even
-
-
-  for (line=0; line < FPR_ASTRO_HEIGHT; ++line) {
-    for (col=0; col < FPR_ASTRO_WIDTH; ++col) {
-      d[line][col] = dec2bcd(bcd2dec(ad[line][col]) + (mint_offset % 60));
-      ++col;
-      d[line][col] = dec2bcd(bcd2dec(ad[line][col]) + (mint_offset / 60));
-    }
-  }
-}
-#endif
 
 // real times: 2017-10-22T18:27:00 (DST)  // the device interpolates times from the table
 
@@ -189,10 +182,5 @@ const uint8_t ad_plz_10[12][8]  = {
 
 // berlin actual civil dusk: 16:33 ... 21:23 (GMT + 1)
 // berlin fernotron table:  16:34 ... 21:20
-void ICACHE_FLASH_ATTR write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
-#if 0
-  tbl_write_astro(d, ad_plz_10, mint_offset);
-#elif 1
-  math_write_astro(d, mint_offset);
-#endif
-}
+
+

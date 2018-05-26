@@ -537,10 +537,16 @@ const char help_parmConfig[] PROGMEM =
 #endif
 //  "set-expert-password=\n"
 ;
+#define slf "\n"
+#define cfg "config "
 
 static int ICACHE_FLASH_ATTR
 process_parmConfig(clpar p[], int len) {
   int i;
+  int errors = 0;
+  bool save = false;
+  const char *cfgSep = "config ";
+
   bool pw_ok = strlen(C.app_configPassword) == 0;
 
   for (i = 1; i < len; ++i) {
@@ -580,40 +586,46 @@ process_parmConfig(clpar p[], int len) {
         }
         FSB_PUT_DEVID(&default_sender, cu);
         C.fer_centralUnitID = cu;
-        save_config();
-        reply_success();
+        save = true;
       }
     } else if (strcmp(key, "gm-used") == 0) {
       uint32_t gmu = strtoul(val, NULL, 16);
       C.fer_usedMembers = gmu;
-      save_config();
-      reply_success();
+      save = true;
 
     } else if (strcmp(key, "baud") == 0) {
-      uint32_t baud = strtoul(val, NULL, 10);
-      C.mcu_serialBaud = baud;
-      save_config();
-      reply_success();
+      if (*val == '?') {
+        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_dec_32(C.mcu_serialBaud, false), (cfgSep = " ");
+      } else {
+        uint32_t baud = strtoul(val, NULL, 10);
+        C.mcu_serialBaud = baud;
+        save = true;
+      }
     } else if (strcmp(key, "verbose") == 0) {
-      NODEFAULT();
-      enum verbosity level = atoi(val);
-      C.app_verboseOutput = level;
-      save_config();
-      reply_success();
+      if (*val == '?') {
+        io_puts(cfgSep), io_puts(key), io_puts("="), io_putd(C.app_verboseOutput), (cfgSep = " ");
+      } else {
+        NODEFAULT();
+        enum verbosity level = atoi(val);
+        C.app_verboseOutput = level;
+        save = true;
+      }
 #ifdef USE_WLAN
     } else if (strcmp(key, "wlan-ssid") == 0) {
-      if (strlen(val) < sizeof (C.wifi_SSID)) {
-        strcpy (C.wifi_SSID, val);
-        save_config();
-        reply_success();
+      if (*val=='?') {
+        io_puts(cfgSep), io_puts(key), io_puts("=\""), io_puts(C.wifi_SSID), io_puts("\""), (cfgSep = " ");
       } else {
-        reply_failure();
+        if (strlen(val) < sizeof (C.wifi_SSID)) {
+          strcpy (C.wifi_SSID, val);
+          save = true;
+        } else {
+          reply_failure();
+        }
       }
     } else if (strcmp(key, "wlan-password") == 0) {
       if (strlen(val) < sizeof (C.wifi_password)) {
         strcpy (C.wifi_password, val);
-        save_config();
-        reply_success();
+        save = true;
       } else {
         reply_failure();
       }
@@ -621,8 +633,7 @@ process_parmConfig(clpar p[], int len) {
     } else if (strcmp(key, "set-pw") == 0) {
       if (strlen(val) < sizeof (C.app_configPassword)) {
         strcpy (C.app_configPassword, val);
-        save_config();
-        reply_success();
+        save = true;
       } else {
         reply_failure();
       }
@@ -631,44 +642,62 @@ process_parmConfig(clpar p[], int len) {
     } else if (strcmp(key, "transmitter") == 0) {
       reply(config_transmitter(val));
     } else if (strcmp(key, "longitude") == 0) {
-      float longitude = stof(val);
-      C.geo_longitude = longitude;
-      rtc_setup();
-      save_config();
-      reply_success();
-    } else if (strcmp(key, "latitude") == 0) {
-      float latitude = stof(val);
-      C.geo_latitude = latitude;
-      rtc_setup();
-      save_config();
-      reply_success();
-    } else if (strcmp(key, "time-zone") == 0) {
-      float timezone = stof(val);
-      C.geo_timezone = timezone;
-      rtc_setup();
-      save_config();
-      reply_success();
-    } else if (strcmp(key, "dst") == 0) {
-      if (strcmp(val, "eu")) {
-        C.geo_dST = dstEU;
-      }
-      if (strcmp(val, "0")) {
-        C.geo_dST = dstNone;
-      }
-      if (strcmp(val, "1")) {
-        C.geo_dST = dstAlways;
+      if (*val=='?') {
+        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_longitude, 5), (cfgSep = " ");
       } else {
-        warning_unknown_option(key);
+        float longitude = stof(val);
+        C.geo_longitude = longitude;
+        rtc_setup();
+        save = true;
       }
+    } else if (strcmp(key, "latitude") == 0) {
+      if (*val=='?') {
+        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_latitude, 5), (cfgSep = " ");
+      } else {
+        float latitude = stof(val);
+        C.geo_latitude = latitude;
+        rtc_setup();
+        save = true;
+      }
+    } else if (strcmp(key, "time-zone") == 0) {
+      if (*val=='?') {
+        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_timezone, 2), (cfgSep = " ");
+      } else {
+        float timezone = stof(val);
+        C.geo_timezone = timezone;
+        rtc_setup();
+        save = true;
+      }
+    } else if (strcmp(key, "dst") == 0) {
+      if (*val=='?') {
+        io_puts(cfgSep), io_puts(key), io_puts("="), io_puts((C.geo_dST == dstEU ? "eu": (C.geo_dST == dstNone ? "0" : "1"))), (cfgSep = " ");
+      } else {
+        if (strcmp(val, "eu") == 0) {
+          C.geo_dST = dstEU;
+        } else if (strcmp(val, "0") == 0) {
+          C.geo_dST = dstNone;
+        } else if (strcmp(val, "1") == 0) {
+          C.geo_dST = dstAlways;
+        } else {
+          warning_unknown_option(key);
+        }
 
-      rtc_setup();
-      save_config();
-      reply_success();
-
+        rtc_setup();
+        save = true;
+      }
     } else {
+      ++errors;
       warning_unknown_option(key);
     }
   }
+
+  if (save)
+    save_config();
+
+if (strcmp(cfgSep, " ") == 0)
+  io_puts(";\n");
+
+  reply(errors==0);
   return 0;
 }
 

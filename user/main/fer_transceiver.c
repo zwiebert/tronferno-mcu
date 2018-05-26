@@ -355,17 +355,17 @@ static void ftx_update_output_data() {
 }
 
 static bool ftx_send_message() {
-  static bool end_of_preamble, end_of_stop;
+  static bool preamble_done, stop_done;
 
-  if (!end_of_stop) {
+  if (!stop_done) {
     //send single stop bit before preamble
     ftx_update_output_stop();
-    end_of_stop = advanceStopCounter();
+    stop_done = advanceStopCounter();
 
-  } else if (!end_of_preamble) {
+  } else if (!preamble_done) {
     // send preamble
     ftx_update_output_preamble();
-    if ((end_of_preamble = advancePreCounter())) {
+    if ((preamble_done = advancePreCounter())) {
       dtSendBuf = make_Word(txmsg->cmd[0], 0);
     }
   } else {
@@ -378,7 +378,7 @@ static bool ftx_send_message() {
         // word + stop sent
         if (ct_incr(CountWords, wordsToSend)) {
           // line sent
-          end_of_stop = end_of_preamble = false;
+          stop_done = preamble_done = false;
           return true; // done
         } else {
           dtSendBuf = make_Word(txmsg->cmd[CountWords / 2], CountWords); // load next word
