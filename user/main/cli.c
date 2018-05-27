@@ -571,10 +571,18 @@ process_parmConfig(clpar p[], int len) {
       mcu_restart();
 #endif
     } else if (strcmp(key, "rtc") == 0) {
-      reply(val ? rtc_set_by_string(val) : false);
-
+      if (*val == '?') {
+        char buf[20];
+        if (rtc_get_by_string(buf)) {
+          io_puts(cfgSep), io_puts(key), io_puts("="), io_puts(buf), (cfgSep = " ");
+        }
+      } else {
+        reply(val ? rtc_set_by_string(val) : false);
+      }
     } else if (strcmp(key, "cu") == 0) {
-      if (strcmp(val, "auto") == 0) {
+      if (*val == '?') {
+        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_hex_32(C.fer_centralUnitID, false), (cfgSep = " ");
+      } else if (strcmp(val, "auto") == 0) {
         cu_auto_set(60);
         io_puts("U: Press Stop on the Fernotron central unit (60 seconds remaining)\n");
         reply_success();
