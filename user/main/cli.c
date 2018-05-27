@@ -518,18 +518,19 @@ process_parmSend(clpar p[], int len) {
 }
 
 const char help_parmConfig[] PROGMEM =
-"cu=(ID|auto)     6-digit hex ID of Central-Unit. auto: capture ID with connected RF receiver\n"
-    "rtc=ISO_TIME     (rtc=2017-12-31T23:59:59)\n"
-    "baud=N           serial baud rate (baud=38400)\n"
+    "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
+    "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID with connected RF receiver\n"
+    "rtc=(ISO_TIME|?)     (rtc=2017-12-31T23:59:59)\n"
+    "baud=(N|?)           serial baud rate (baud=38400)\n"
 #ifdef USE_WLAN
-    "wlan-ssid=SSID\n"
+    "wlan-ssid=(SSID|?)\n"
     "wlan-password=PW  example: config wlan-ssid=\"1234\" wlan-password=\"abcd\" restart=1;\n"
 #endif
-    "longitude=DEC\n"
-    "latitude=DEC\n"
-    "time-zone=N       example: config  longitude=-13.23452 latitude=+52.34234 time-zone=+1.0;\n"
-    "dst=(eu|0|1)      daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
-    "verbose=(0..5)    set text output verbosity level: 0 for none ... 5 for max)\n"
+    "longitude=(DEG|?)\n"
+    "latitude=(DEG|?)\n"
+    "time-zone=(N|?)       example: config  longitude=+13.23452 latitude=+52.34234 time-zone=+1.0;\n"
+    "dst=(eu|0|1|?)      daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
+    "verbose=(0..5|?)    set text output verbosity level: 0 for none ... 5 for max)\n"
     "set-pw=password   set a config password. if set every config commands needs the pw option\n"
     "pw=PW             example: config pw=my_passw dst=eu;\n"
 #if ENABLE_RESTART
@@ -566,10 +567,14 @@ process_parmConfig(clpar p[], int len) {
     } else if (!pw_ok) {
       io_puts("missing config password\n");
       return reply_failure();
+
+
 #if ENABLE_RESTART
     } else if (strcmp(key, "restart") == 0) {
       mcu_restart();
 #endif
+
+
     } else if (strcmp(key, "rtc") == 0) {
       if (*val == '?') {
         char buf[20];
@@ -579,6 +584,8 @@ process_parmConfig(clpar p[], int len) {
       } else {
         reply(val ? rtc_set_by_string(val) : false);
       }
+
+
     } else if (strcmp(key, "cu") == 0) {
       if (*val == '?') {
         io_puts(cfgSep), io_puts(key), io_puts("="), io_print_hex_32(C.fer_centralUnitID, false), (cfgSep = " ");
@@ -596,10 +603,13 @@ process_parmConfig(clpar p[], int len) {
         C.fer_centralUnitID = cu;
         save = true;
       }
+
+
     } else if (strcmp(key, "gm-used") == 0) {
       uint32_t gmu = strtoul(val, NULL, 16);
       C.fer_usedMembers = gmu;
       save = true;
+
 
     } else if (strcmp(key, "baud") == 0) {
       if (*val == '?') {
@@ -609,6 +619,8 @@ process_parmConfig(clpar p[], int len) {
         C.mcu_serialBaud = baud;
         save = true;
       }
+
+
     } else if (strcmp(key, "verbose") == 0) {
       if (*val == '?') {
         io_puts(cfgSep), io_puts(key), io_puts("="), io_putd(C.app_verboseOutput), (cfgSep = " ");
@@ -618,6 +630,8 @@ process_parmConfig(clpar p[], int len) {
         C.app_verboseOutput = level;
         save = true;
       }
+
+
 #ifdef USE_WLAN
     } else if (strcmp(key, "wlan-ssid") == 0) {
       if (*val=='?') {
@@ -630,6 +644,8 @@ process_parmConfig(clpar p[], int len) {
           reply_failure();
         }
       }
+
+
     } else if (strcmp(key, "wlan-password") == 0) {
       if (strlen(val) < sizeof (C.wifi_password)) {
         strcpy (C.wifi_password, val);
@@ -638,6 +654,8 @@ process_parmConfig(clpar p[], int len) {
         reply_failure();
       }
 #endif // USE_WLAN
+
+
     } else if (strcmp(key, "set-pw") == 0) {
       if (strlen(val) < sizeof (C.app_configPassword)) {
         strcpy (C.app_configPassword, val);
@@ -645,10 +663,16 @@ process_parmConfig(clpar p[], int len) {
       } else {
         reply_failure();
       }
+
+
     } else if (strcmp(key, "receiver") == 0) {
       reply(config_receiver(val));
+
+
     } else if (strcmp(key, "transmitter") == 0) {
       reply(config_transmitter(val));
+
+
     } else if (strcmp(key, "longitude") == 0) {
       if (*val=='?') {
         io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_longitude, 5), (cfgSep = " ");
@@ -658,6 +682,8 @@ process_parmConfig(clpar p[], int len) {
         rtc_setup();
         save = true;
       }
+
+
     } else if (strcmp(key, "latitude") == 0) {
       if (*val=='?') {
         io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_latitude, 5), (cfgSep = " ");
@@ -667,6 +693,8 @@ process_parmConfig(clpar p[], int len) {
         rtc_setup();
         save = true;
       }
+
+
     } else if (strcmp(key, "time-zone") == 0) {
       if (*val=='?') {
         io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_timezone, 2), (cfgSep = " ");
@@ -676,6 +704,8 @@ process_parmConfig(clpar p[], int len) {
         rtc_setup();
         save = true;
       }
+
+
     } else if (strcmp(key, "dst") == 0) {
       if (*val=='?') {
         io_puts(cfgSep), io_puts(key), io_puts("="), io_puts((C.geo_dST == dstEU ? "eu": (C.geo_dST == dstNone ? "0" : "1"))), (cfgSep = " ");
@@ -693,6 +723,8 @@ process_parmConfig(clpar p[], int len) {
         rtc_setup();
         save = true;
       }
+
+
     } else {
       ++errors;
       warning_unknown_option(key);

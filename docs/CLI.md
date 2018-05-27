@@ -32,28 +32,32 @@ Commands are help, config, send, timer
     
 ### config command
 
-Sets some configuration values. Most of them are stored persistently in the MCU.
+Sets or gets some configuration values. Most of them are stored persistently in the MCU.
 
 Possible options are: cu, rtc, baud, wlan-ssid, wlan-password, longitude, latitude, time-zone, dst, verbose, pw, set-config-password, restart
 
+To set a value: config option=value
+To get a value: config option=?  (not supported by all options)
 
 #### cu
 
-* cu=(id|auto) - Sets the ID to be used in address field when sending commands. A receiver will listen only to commands from the central unit with the ID he was paired to.
+* cu=(id|auto|?) - Sets the ID to be used in address field when sending commands. A receiver will listen only to commands from the central unit with the ID he was paired to.
      * id  - The ID is a 6 digit hex number, which identifies the central unit (2411) as the sender.
      * auto  - Get the ID from the air automatically.  You have to press the STOP button of your original central unit shortly after.
+	 * print current value
       
 #### baud
 
-* baud=N - baud rate of the serial interface where your terminal is connected
+* baud=(N|?) - baud rate of the serial interface where your terminal is connected
+
 
 
 #### WLAN options
 
 Data to connect to a WLAN
 
-* wlan-ssid=string  - the SSID
-* wlan-password=string - the password
+* wlan-ssid=(string|?)  - Wlan SSID
+* wlan-password=string - Wlan password
   
             config wlan-ssid=1234 wlan-password=abcd restart=1;
 
@@ -68,18 +72,18 @@ Data to connect to a WLAN
 
 These options  are used to calculate times for the "astro-automatic" built in to receivers. Astro closes the shutter at civil dusk. The user can define a offset time (like 10 mintutes before civil dusk).
 
-* longitude=DEC
-* latitude=DEC
-* time-zone=N  - relative to GMT/UTC. Like: +1.0 or -7.0  or -6.5
-* dst=(eu|0|1) - enable/disable daylight saving time. eu=europe. manually: 0=off, 1=on. If DST is on, the shutter will add 1 hour to its astro timer
+* longitude=(DEG|?)
+* latitude=(DEG|?)
+* time-zone=(N|?)  - relative to GMT/UTC. Like: +1.0 or -7.0  or -6.5
+* dst=(eu|0|1|?) - enable/disable daylight saving time. eu=europe. manually: 0=off, 1=on. If DST is on, the shutter will add 1 hour to its astro timer
 
         config longitude=+13.23452 latitude=+52.34234 time-zone=+1  dst=eu; 
 
-* rtc=ISO-TIME - Sets the MCUs internal real time clock.  Usually set automatically by NTP server.
+* rtc=(ISO-TIME|?) - Sets the MCUs internal real time clock.  Usually set automatically by NTP server.
          
         config 2017-12-31T23:59:59;
 
-* verbose=(0..5) - sets terminal output verbosity to levels 0 ... 5
+* verbose=(0..5|?) - sets terminal output verbosity to levels 0 ... 5
    
         config verbose=5;
             
