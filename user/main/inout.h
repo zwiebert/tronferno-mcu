@@ -2,7 +2,9 @@
 #define _inout_h
 
 #include <stdint.h>
+#ifndef AVR
 #include <c_types.h>
+#endif
 #ifndef true
 #include <stdbool.h>
 #endif
