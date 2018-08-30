@@ -580,6 +580,8 @@ process_parmConfig(clpar p[], int len) {
 
 #if ENABLE_RESTART
     } else if (strcmp(key, "restart") == 0) {
+      if (save)
+        save_config();
       mcu_restart();
 #endif
 
