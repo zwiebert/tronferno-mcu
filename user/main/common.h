@@ -13,6 +13,7 @@
 #define FER_RECEIVER
 #define USE_NTP
 #define USE_WLAN
+#define ACCESS_GPIO
 #endif
 #endif
 

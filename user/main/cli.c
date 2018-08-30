@@ -444,7 +444,7 @@ const char help_parmSend[] PROGMEM =
 
 static int ICACHE_FLASH_ATTR
 process_parmSend(clpar p[], int len) {
-  int i;
+  int arg_idx;
 
   uint32_t addr = 0;
   fer_grp group = fer_grp_Broadcast;
@@ -453,8 +453,8 @@ process_parmSend(clpar p[], int len) {
   int set_end_pos = -1;
   uint8_t repeats = FSB_PLAIN_REPEATS;
 
-  for (i = 1; i < len; ++i) {
-    const char *key = p[i].key, *val = p[i].val;
+  for (arg_idx = 1; arg_idx < len; ++arg_idx) {
+    const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
     if (key == NULL) {
       return -1;
@@ -517,11 +517,18 @@ process_parmSend(clpar p[], int len) {
   return 0;
 }
 
+#ifdef ACCESS_GPIO
+//PIN_DEFAULT=0, PIN_INPUT, PIN_INPUT_PULLUP, PIN_OUTPUT, PIN_ERROR, PIN_READ, PIN_CLEAR, PIN_SET, PIN_TOGGLE
+const char pin_state_args[] = {
+    'd', 'i', 'p', 'o', ' ', '?', '0', '1', 't'
+};
+#endif
+
 const char help_parmConfig[] PROGMEM =
     "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
     "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID with connected RF receiver\n"
-    "rtc=(ISO_TIME|?)     (rtc=2017-12-31T23:59:59)\n"
-    "baud=(N|?)           serial baud rate (baud=38400)\n"
+    "rtc=(ISO_TIME|?)   set local time with this (or use NTP). example: config rtc=2017-12-31T23:59:59;\n"
+    "baud=(N|?)           serial baud rate (... baud=115200)\n"
 #ifdef USE_WLAN
     "wlan-ssid=(SSID|?)\n"
     "wlan-password=PW  example: config wlan-ssid=\"1234\" wlan-password=\"abcd\" restart=1;\n"
@@ -536,6 +543,9 @@ const char help_parmConfig[] PROGMEM =
 #if ENABLE_RESTART
     "restart           restart MCU\n"
 #endif
+#ifdef ACCESS_GPIO
+    "gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default\n"
+#endif
 //  "set-expert-password=\n"
 ;
 #define slf "\n"
@@ -543,19 +553,18 @@ const char help_parmConfig[] PROGMEM =
 
 static int ICACHE_FLASH_ATTR
 process_parmConfig(clpar p[], int len) {
-  int i;
+  int arg_idx;
   int errors = 0;
   bool save = false;
   const char *cfgSep = "config ";
 
   bool pw_ok = strlen(C.app_configPassword) == 0;
 
-  for (i = 1; i < len; ++i) {
-    const char *key = p[i].key, *val = p[i].val;
+  for (arg_idx = 1; arg_idx < len; ++arg_idx) {
+    const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
     if (key == NULL || val == NULL) {  // don't allow any default values in config
-      return reply_failure();
-    } else if (strcmp(key, "pw") == 0) {
+      return reply_failure();   } else if (strcmp(key, "pw") == 0) {
       if (val && strcmp(C.app_configPassword, val) == 0) {
         pw_ok = true;
         io_puts("password ok\n");
@@ -620,6 +629,60 @@ process_parmConfig(clpar p[], int len) {
         save = true;
       }
 
+#ifdef ACCESS_GPIO
+    } else if (strncmp(key, "gpio", 4) == 0) {
+      int gpio_number = atoi(key + 4);
+      mcu_pin_state ps, ps_result = 0;
+      bool gpio_func = false;
+
+      if (!is_gpio_number_usable(gpio_number, true)) {
+        reply_message("gpio:error", "gpio number cannot be used");
+        ++errors;
+
+      } else if (*val == '?') {
+        io_puts(cfgSep), io_puts(key), io_putc('='), io_putc(pin_state_args[C.gpio[gpio_number]]), (cfgSep = " ");
+
+      } else {
+        const char *error = NULL;
+
+        for (ps = 0; ps < sizeof pin_state_args; ++ps) {
+          if (pin_state_args[ps] == *val) {
+            break;
+          }
+        }
+
+        switch (ps) {
+
+        case PIN_DEFAULT:
+          break;
+
+        case PIN_CLEAR:
+        case PIN_SET:
+        case PIN_OUTPUT:
+          error = mcu_access_pin(gpio_number, NULL, PIN_OUTPUT);
+          if (!error && ps != PIN_OUTPUT) {
+            error = mcu_access_pin(gpio_number, NULL, ps);
+          }
+          break;
+
+        case PIN_INPUT:
+        case PIN_INPUT_PULLUP:
+          error = mcu_access_pin(gpio_number, NULL, ps);
+          break;
+
+        default:
+          error = "unknown gpio config";
+          ++errors;
+        }
+
+        if (error) {
+          reply_message("gpio:failure", error);
+        } else {
+          C.gpio[gpio_number] = ps;
+          save = true;
+        }
+      }
+#endif
 
     } else if (strcmp(key, "verbose") == 0) {
       if (*val == '?') {
@@ -741,15 +804,23 @@ if (strcmp(cfgSep, " ") == 0)
   return 0;
 }
 
-const char help_parmDbg[] PROGMEM =
-"print=(rtc|cu)\n";
+const char help_parmMcu[] PROGMEM =
+"print=(rtc|cu|reset-info)\n"
+#if ENABLE_SPIFFS
+    "spiffs=(format|test)\n"
+#endif
+#ifdef ACCESS_GPIO
+    "gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N\n"
+#endif
+;
 
 static int ICACHE_FLASH_ATTR
-process_parmDbg(clpar p[], int len) {
-  int i;
+process_parmMcu(clpar p[], int len) {
+  int arg_idx;
+  const char *mcuSep = "mcu ";
 
-  for (i = 1; i < len; ++i) {
-    const char *key = p[i].key, *val = p[i].val;
+  for (arg_idx = 1; arg_idx < len; ++arg_idx) {
+    const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
     if (key == NULL || val == NULL) {
       return -1;
@@ -773,6 +844,7 @@ process_parmDbg(clpar p[], int len) {
 #endif
 #if ENABLE_SPIFFS
     } else if (strcmp(key, "spiffs") == 0) {
+
       if (strcmp(val, "format") == 0) {
         spiffs_format();
       } else if (strcmp(val, "test") == 0) {
@@ -780,11 +852,61 @@ process_parmDbg(clpar p[], int len) {
       }
 #endif
 
+
+#ifdef ACCESS_GPIO
+    } else if (strncmp(key, "gpio", 4) == 0) {
+      int gpio_number = atoi(key + 4);
+      mcu_pin_state ps = 0, ps_result = 0;
+
+      if (!is_gpio_number_usable(gpio_number, true)) {
+        reply_message("gpio:error", "gpio number cannot be used");
+        return -1;
+      } else {
+
+        const char *error = NULL;
+
+        for (ps = 0; ps < sizeof pin_state_args; ++ps) {
+          if (pin_state_args[ps] == *val) {
+            break;
+          }
+        }
+
+        switch (ps) {
+
+        case PIN_CLEAR:
+        case PIN_SET:
+        case PIN_TOGGLE:
+          error = mcu_access_pin(gpio_number, NULL, ps);
+          break;
+
+        case PIN_READ:
+          error = mcu_access_pin(gpio_number, &ps_result, ps);
+          if (!error) {
+            io_puts(mcuSep), io_puts(key), io_puts((ps_result == PIN_SET ? "=1" : "=0")), (mcuSep = " ");
+          }
+          break;
+
+        default:
+          error = "invalid command";
+
+        }
+
+        if (error) {
+          reply_message("gpio:failure", error);
+          return -1;
+        }
+      }
+#endif
+
+
     } else {
       warning_unknown_option(key);
     }
 
   }
+
+  if (strcmp(mcuSep, " ") == 0)
+    io_puts(";\n");
 
   return 0;
 }
@@ -1166,7 +1288,7 @@ struct {
   const char *parm;
   int (*process_parmX)(clpar p[], int len);
   const char *help;
-} parm_handlers[] = { { "send", process_parmSend, help_parmSend }, { "config", process_parmConfig, help_parmConfig }, { "dbg", process_parmDbg, help_parmDbg },
+} parm_handlers[] = { { "send", process_parmSend, help_parmSend }, { "config", process_parmConfig, help_parmConfig }, { "mcu", process_parmMcu, help_parmMcu },
     { "timer", process_parmTimer, help_parmTimer }, { "help", process_parmHelp, help_parmHelp },
 #if ENABLE_EXPERT
     { "expert", process_parmExpert, help_None},

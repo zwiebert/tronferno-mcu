@@ -8,6 +8,8 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+#include "main/inout.h"
+
 #ifdef AVR
 #if __has_include("../sensitive/defaults.h")
 #define HAVE_USER_DEFAULTS
@@ -80,7 +82,9 @@ typedef struct {
 #endif
 	char app_configPassword[16];
 	char app_expertPassword[16];
-
+#ifdef ACCESS_GPIO
+	 enum mcu_pin_state gpio[17];
+#endif
 } config;
 
 

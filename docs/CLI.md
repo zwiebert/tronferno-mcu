@@ -1,8 +1,8 @@
 # CLI of TronFerno-MCU
 
-This text describe the command line interface of tronferno-mcu. The CLI can be accessed via a terminal, but is best to be acessed via a front-end, like a smart phone app or some server like FHEM.
+This text describes the command line interface (CLI) of tronferno-mcu. The CLI can be accessed via a terminal or via front-ends like a smart phone app or an FHEM module..
 
-When using a terminal, it may be required to enable local echo. Backspace key is now handled properly.
+When using a terminal, local echo should be enabled, so you can see what you type. Backspace key is working.
  
 
 ## Syntax
@@ -18,7 +18,7 @@ When using a terminal, it may be required to enable local echo. Backspace key is
 
 ## Commands
 
-Commands are help, config, send, timer
+Commands are help, config, send, timer, mcu
 
 
 ### help command
@@ -87,7 +87,17 @@ These options  are used to calculate times for the "astro-automatic" built in to
    
         config verbose=5;
             
-   
+#### additional options
+
+* gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default
+  This options configures some GPIO pins of the MCU which can then be used freely for your own purposes. Like the other config options, its persistent.
+
+  Examples:
+    config gpio12=i;           sets gpio-12 as input pin. can then be read by CLI command: mcu gpio12=?
+    config gpio13=1;           sets gpio-13 as output pin and the initial output level (after each reboot) is On.
+    config gpio14=d restart=1; sets gpio-14 back to its default (it will be left alone). works only after reboot.
+    config gpio15=?;           returns current configuration of gpio15
+
 ### send command
  
 Send a plain command message via RF to the receivers. Receiver can be a shutter motor, or a light, if you have the hardware for that.
@@ -227,3 +237,19 @@ The built-in RTC of a shutter keeps track of day time, day of month, month of ye
   
   
 * mid=N   N is supposed to be an ID number. It will be part of the reply messages (reply@N: ...). The front-end should use this to check which reply belongs to wich command.
+
+
+### mcu command
+
+#### set or read MCU pins
+
+*  gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N
+
+   Before using this command, configue the pin via "config gpioN"  once (it will survive reboots).
+
+   Examples:
+
+     config gpio12=0 gpio13=p;    configure gpio12 as output and gpio13 as input with pullup resistor (configuration will survive reboots)
+     mcu gpio12=t gpio13=?;      toggle gpio12 output pin and read gpio13 input pin
+
+* print=(rtc|reset-info)    prints some information: rtc: current real time clock. reset-info: MCU reset info (to find out why and where the firmware has crashed)

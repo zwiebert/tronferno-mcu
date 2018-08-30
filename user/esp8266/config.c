@@ -27,6 +27,9 @@ config C = {
 #endif
 	MY_APP_CONFIG_PASSWORD,
 	MY_APP_EXPERT_PASSWORD,
+#ifdef ACCESS_GPIO
+	{ 0, }
+#endif
 };
 
 void ICACHE_FLASH_ATTR read_config(void) {

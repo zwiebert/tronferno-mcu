@@ -114,12 +114,18 @@ typedef enum {
 	MSG_TYPE_NONE, MSG_TYPE_PLAIN, MSG_TYPE_RTC, MSG_TYPE_TIMER
 } fmsg_type;
 
+typedef uint8_t cmd_byte_data[bytesPerCmdPacket];
+typedef uint8_t rtc_byte_data[bytesPerPrgLine];
+typedef uint8_t last_byte_data[bytesPerPrgLine];
+typedef uint8_t astro_byte_data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];
+typedef uint8_t wdtimer_byte_data[FPR_TIMER_HEIGHT][bytesPerPrgLine];
+
 typedef struct fer_msg {
-	uint8_t cmd[bytesPerCmdPacket];
-	uint8_t rtc[bytesPerPrgLine];
-	uint8_t wdtimer[FPR_TIMER_HEIGHT][bytesPerPrgLine];
-	uint8_t astro[FPR_ASTRO_HEIGHT][bytesPerPrgLine];
-	uint8_t last[bytesPerPrgLine];
+  cmd_byte_data cmd;
+  rtc_byte_data rtc;
+	wdtimer_byte_data wdtimer;
+	astro_byte_data astro;
+	last_byte_data last;
 }__attribute__((__packed__)) fer_msg;
 
 #define fmsg_get_data(msg) ((uint8_t(*)[bytesPerPrgLine])(msg)->rtc)

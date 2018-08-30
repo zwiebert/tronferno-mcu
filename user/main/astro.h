@@ -13,7 +13,10 @@
 #include "fer_code.h"
 #include "fer.h"
 
-void write_astro(uint8_t d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset);
+
+
+
+void write_astro(astro_byte_data d, int mint_offset);
 
 
 #endif /* ASTRO_H_ */
