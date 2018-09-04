@@ -452,6 +452,7 @@ process_parmSend(clpar p[], int len) {
   fer_cmd cmd = fer_cmd_None;
   int set_end_pos = -1;
   uint8_t repeats = FSB_PLAIN_REPEATS;
+  bool read_state = false;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -474,8 +475,11 @@ process_parmSend(clpar p[], int len) {
       }
     } else if (strcmp(key, "c") == 0) {
       NODEFAULT();
-      if (!cli_parm_to_ferCMD(val, &cmd))
-      return reply_failure();
+      if (*val == '?') {
+        read_state = true;
+      } else if (!cli_parm_to_ferCMD(val, &cmd)) {
+        return reply_failure();
+      }
     } else if (strcmp(key, "SEP") == 0) {
       set_end_pos = asc2bool(val);
       if (set_end_pos != 1)
@@ -485,35 +489,40 @@ process_parmSend(clpar p[], int len) {
     }
   }
 
-  fer_sender_basic *fsb = get_sender_by_addr(addr);
-  if (!fsb) {
-    static fer_sender_basic fsb_direct; // FIXME: or was senders[0] meant for this?
-    fsb = &fsb_direct;
-    if (FSB_GET_DEVID(fsb) != addr) {
-      fer_init_sender(fsb, addr);
+  if (read_state) {
+    io_puts("current state: "), io_print_dec_16(get_shutter_state(addr, group, memb), false), io_puts("\n");
+  } else {
+    fer_sender_basic *fsb = get_sender_by_addr(addr);
+    if (!fsb) {
+      static fer_sender_basic fsb_direct; // FIXME: or was senders[0] meant for this?
+      fsb = &fsb_direct;
+      if (FSB_GET_DEVID(fsb) != addr) {
+        fer_init_sender(fsb, addr);
+      }
+    }
+
+    if (FSB_ADDR_IS_CENTRAL(fsb)) {
+      FSB_PUT_GRP(fsb, group);
+      FSB_PUT_MEMB(fsb, memb);  // only set this on central unit!
+    }
+
+    if (set_end_pos >= 0) { // enable hardware buttons to set end position
+      FSB_PUT_CMD(fsb, cmd);
+      if (set_end_pos)
+        sep_enable(fsb);
+      else
+        sep_disable();
+    } else if (cmd != fer_cmd_None) {
+      FSB_PUT_CMD(fsb, cmd);
+      fer_update_tglNibble(fsb);
+      fsb->repeats = repeats;
+      if(reply(fer_send_msg(fsb, MSG_TYPE_PLAIN))) {
+        set_shutter_state(addr, group, memb, cmd);
+      }
+    } else {
+      reply_failure();
     }
   }
-
-  if (FSB_ADDR_IS_CENTRAL(fsb)) {
-    FSB_PUT_GRP(fsb, group);
-    FSB_PUT_MEMB(fsb, memb);  // only set this on central unit!
-  }
-
-  if (set_end_pos >= 0) { // enable hardware buttons to set end position
-    FSB_PUT_CMD(fsb, cmd);
-    if (set_end_pos)
-      sep_enable(fsb);
-    else
-      sep_disable();
-  } else if (cmd != fer_cmd_None) {
-    FSB_PUT_CMD(fsb, cmd);
-    fer_update_tglNibble(fsb);
-    fsb->repeats = repeats;
-    reply(fer_send_msg(fsb, MSG_TYPE_PLAIN));
-  } else {
-    reply_failure();
-  }
-
   return 0;
 }
 
@@ -855,6 +864,7 @@ process_parmMcu(clpar p[], int len) {
 #endif
 
 
+
 #ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
@@ -899,6 +909,13 @@ process_parmMcu(clpar p[], int len) {
         }
       }
 #endif
+
+    } else if (strcmp(key, "up-time") == 0) {
+      if (*val=='?') {
+        io_puts(mcuSep), io_puts(key), io_puts("="), io_print_dec_32(run_time(), false), (mcuSep = " ");
+      } else {
+        reply_message("error:mcu:up-time", "option is read-only");
+      }
 
 
     } else {
