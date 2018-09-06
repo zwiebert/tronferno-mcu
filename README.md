@@ -171,5 +171,5 @@ Bert Winkelmann <tf.zwiebert@online.de>
 
 ### All CLI commands
 
-Look at the [CLI manual](https://github.com/zwiebert/tronferno-mcu/docs/CLI.md) in the docs folder.
+Look at the [CLI manual](https://github.com/zwiebert/tronferno-mcu/blob/masterdocs/CLI.md) in the docs folder.
 

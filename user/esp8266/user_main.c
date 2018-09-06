@@ -14,10 +14,6 @@
 #include <gpio.h>
 #include "driver/uart.h"
 
-#if ESP_PLATFORM
-#include "user_esp_platform.h"
-#endif
-
 #include "../user_config.h"
 
 #include "main/common.h"
@@ -132,7 +128,7 @@ print_reset_info() {
 #define SYSTEM_PARTITION_CUSTOMER_PRIV_PARAM                SYSTEM_PARTITION_CUSTOMER_BEGIN
 
 uint32 priv_param_start_sec;
-
+#ifdef SPI_FLASH_SIZE_MAP
 static const partition_item_t at_partition_table[] = {
     { SYSTEM_PARTITION_BOOTLOADER,            0x0,                        0x1000},
     { SYSTEM_PARTITION_OTA_1,               0x1000,                       SYSTEM_PARTITION_OTA_SIZE},
@@ -143,6 +139,7 @@ static const partition_item_t at_partition_table[] = {
     { SYSTEM_PARTITION_CUSTOMER_PRIV_PARAM,             SYSTEM_PARTITION_CUSTOMER_PRIV_PARAM_ADDR,          0x1000},
 };
 
+
 void ICACHE_FLASH_ATTR user_pre_init(void)
 {
     if(!system_partition_table_regist(at_partition_table, sizeof(at_partition_table)/sizeof(at_partition_table[0]),SPI_FLASH_SIZE_MAP)) {
@@ -150,7 +147,7 @@ void ICACHE_FLASH_ATTR user_pre_init(void)
     while(1);
   }
 }
-
+#endif
 
 
 // hardware specific main setup
