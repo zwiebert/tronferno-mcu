@@ -171,6 +171,8 @@ ifndef SRC_BASE
 SRC_BASE := .
 endif
 
+CPPFLAGS += -DSPI_FLASH_SIZE_MAP=$(size_map)
+
 DEP_DIR := $(BUILD_BASE)/dep
 
 # various paths from the SDK used in this project
@@ -181,7 +183,7 @@ SDK_INCDIR	= include include/json
 
 
 # select which tools to use as compiler, librarian and linker
-CC		:= xtensa-lx106-elf-gcc
+CC		:= xtensa-lx106-elf-gcc 
 CXX		:= xtensa-lx106-elf-g++
 AR		:= xtensa-lx106-elf-ar
 LD		:= xtensa-lx106-elf-gcc
@@ -397,7 +399,7 @@ endif
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
-	$(ESPTOOL) -p $(ESPPORT) write_flash $(flashimageoptions) $(sparea) $(SDK_BASE)/bin/esp_init_data_default.bin $(bbarea) $(SDK_BASE)/bin/blank.bin
+	$(ESPTOOL) -p $(ESPPORT) write_flash $(flashimageoptions) $(sparea) $(SDK_BASE)/bin/esp_init_data_default_v08.bin $(bbarea) $(SDK_BASE)/bin/blank.bin
 
 flasherase:
 	$(vecho) "Flash erase. May be followed by: make flashinit"
