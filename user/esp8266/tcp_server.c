@@ -18,7 +18,7 @@
 
 #define printf io_printf_fun
 #ifndef DISTRIBUTION
-#define D(x) x
+#define D(x)
 #else
 #define D(x)
 #endif

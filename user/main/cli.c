@@ -517,7 +517,7 @@ process_parmSend(clpar p[], int len) {
       fer_update_tglNibble(fsb);
       fsb->repeats = repeats;
       if(reply(fer_send_msg(fsb, MSG_TYPE_PLAIN))) {
-        set_shutter_state(addr, group, memb, cmd);
+        set_shutter_state(FSB_GET_DEVID(fsb), FSB_GET_GRP(fsb), FSB_GET_MEMB(fsb), FSB_GET_CMD(fsb));
       }
     } else {
       reply_failure();

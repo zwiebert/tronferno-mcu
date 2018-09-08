@@ -24,17 +24,35 @@ set_state(uint32_t a, int g, int m, int state) {
 
 int ICACHE_FLASH_ATTR
 get_shutter_state(uint32_t a, fer_grp g, fer_memb m) {
-  return set_state(a, g, m-7, -1);
+  if (0 < m && m < 8)
+    return -1;
+  else if (m > 7 )
+    m -= 7;
+  if (m > 7)
+    return -1;
+
+  return set_state(a, g, m, -1);
 }
 
 int ICACHE_FLASH_ATTR
 set_shutter_state(uint32_t a, fer_grp g, fer_memb m, fer_cmd cmd) {
-  int state = -1;
+  int position = -1;
+
+  if (0 < m && m < 8)
+    return -1;
+  else if (m > 7)
+    m -= 7;
+  if (m > 7)
+    return -1;
 
   if (cmd == fer_cmd_UP)
-    state = 100;
+    position = 100;
   else if (cmd == fer_cmd_DOWN)
-    state = 0;
+    position = 0;
 
-  return set_state(a, g, m-7, state);
+  if (0 <= position && position <= 100) {
+    io_puts("U:position: a="), io_print_hex_32(a, false), io_puts(" g="), io_putd(g), io_puts(" m="), io_putd(m), io_puts(" p="), io_putd(position), io_puts(";\n");
+  }
+
+  return set_state(a, g, m, position);
 }
