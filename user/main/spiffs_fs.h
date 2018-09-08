@@ -8,6 +8,7 @@
 #ifndef USER_MAIN_SPIFFS_FS_H_
 #define USER_MAIN_SPIFFS_FS_H_
 
+#if ENABLE_SPIFFS
 
 #include "spiffs_config.h"
 #include "spiffs.h"
@@ -17,4 +18,5 @@ extern spiffs fs;
 
 bool spiffs_format_fs(spiffs *fs);  // unmout, format, mount. returns success
 
+#endif /* ENABLE_SPIFFS */
 #endif /* USER_MAIN_SPIFFS_FS_H_ */

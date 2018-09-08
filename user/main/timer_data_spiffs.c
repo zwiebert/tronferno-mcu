@@ -4,6 +4,8 @@
  *  Created on: 08.09.2018
  *      Author: bertw
  */
+#include "../user_config.h"
+#if ENABLE_SPIFFS
 
 #include "timer_data_spiffs.h"
 
@@ -171,4 +173,4 @@ void ICACHE_FLASH_ATTR setup_timer_data_spiffs() {
 #endif
 }
 
-
+#endif /* ENABLE_SPIFFS */

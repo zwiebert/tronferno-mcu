@@ -5,7 +5,9 @@
  *      Author: bertw
  */
 
+#include "../user_config.h"
 
+#if ENABLE_SPIFFS
 
 #include "config_spiffs.h"
 
@@ -64,3 +66,5 @@ config_save(void) {
   io_putd(nmb_written), io_puts("<-written-\n");
   return true;
 }
+
+#endif /* ENABLE_SPIFFS */
