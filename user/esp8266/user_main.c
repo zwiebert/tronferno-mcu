@@ -156,6 +156,9 @@ user_init() {
 
   // load config and setup serial interface
   setup_dataFlash();
+#if ENABLE_SPIFFS
+  setup_spiffs();
+#endif
   read_config();
   setup_serial(C.mcu_serialBaud);
   io_puts("\r\n\r\n");
@@ -184,9 +187,7 @@ user_init() {
   setup_timer();
 
   setup_dataFlash2();
-#if ENABLE_SPIFFS
-  setup_spiffs();
-#endif
+
 
 #ifdef DEBUG
   gdbstub_init();

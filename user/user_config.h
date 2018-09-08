@@ -7,7 +7,12 @@
 #ifdef MCU_ESP8266
 
 // SPIFFS is currently unused
-#define ENABLE_SPIFFS 0
+#define ENABLE_SPIFFS 1
+
+#define LEGACY_STORAGE_READ 1
+#define LEGACY_STORAGE_WRITE 0
+#define LEGACY_STORAGE_2_READ 1
+#define LEGACY_STORAGE_2_WRITE 0
 
 // define addresses with empty flash to use for flash data files
 #define C_START_FREE_FLASH  0x100000UL   //start our data here (1MB)

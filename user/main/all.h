@@ -18,7 +18,7 @@
 #include "rtc.h"
 #include "cli.h"
 #include "config.h"
-
+#include "spiffs_fs.h"
 
 
 #endif /* ALL_H_ */

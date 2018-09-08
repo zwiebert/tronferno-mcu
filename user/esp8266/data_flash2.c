@@ -393,7 +393,7 @@ static bool ICACHE_FLASH_ATTR save_data2(DATA_TYPE *p, uint16_t file_id) {
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 
 
-bool ICACHE_FLASH_ATTR save_timer_data(DATA_TYPE *p, uint8_t g, uint8_t m) {
+bool ICACHE_FLASH_ATTR save_timer_data_old(DATA_TYPE *p, uint8_t g, uint8_t m) {
 	bool result = false;
 
 	delete_shadowded_files(g, m);
@@ -403,7 +403,7 @@ bool ICACHE_FLASH_ATTR save_timer_data(DATA_TYPE *p, uint8_t g, uint8_t m) {
 	return result;
 }
 
-bool ICACHE_FLASH_ATTR read_timer_data(DATA_TYPE *p, uint8_t *g, uint8_t *m, bool wildcard) {
+bool ICACHE_FLASH_ATTR read_timer_data_old(DATA_TYPE *p, uint8_t *g, uint8_t *m, bool wildcard) {
 	bool result = read_data2(p, fid_getByGM(*g, *m));
 
 	if (!result && wildcard) {

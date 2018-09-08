@@ -14,7 +14,7 @@
 #include "set_endpos.h"
 
 #ifdef MCU_ESP8266
-#include "../esp8266/data_flash2.h"
+#include "timer_data.h"
 #define ENABLE_RSTD 1
 #else
 #define ENABLE_RSTD 0
@@ -857,7 +857,7 @@ process_parmMcu(clpar p[], int len) {
     } else if (strcmp(key, "spiffs") == 0) {
 
       if (strcmp(val, "format") == 0) {
-        spiffs_format();
+        spiffs_format_fs(fs_A);
       } else if (strcmp(val, "test") == 0) {
         spiffs_test();
       }

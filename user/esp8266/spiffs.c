@@ -38,7 +38,7 @@
 #define PHYS_LOG_PAGE_SIZE PHYS_ERASE_BLOCK
 #define FLASH_FIRST_SECTOR ((PHYS_ADDR) / SECTOR_SIZE)
 
-static spiffs fs;
+spiffs fs;
 
 #define LOG_PAGE_SIZE   4096
 
@@ -268,11 +268,11 @@ void ICACHE_FLASH_ATTR spiffs_test() {
 }
 
 bool ICACHE_FLASH_ATTR
-spiffs_format(void) {
-	if (SPIFFS_mounted(&fs)) {
-		SPIFFS_unmount(&fs);
-	} else if (my_spiffs_mount(&fs) == 0) {
-		SPIFFS_unmount(&fs);
+spiffs_format_fs(spiffs *fs) {
+	if (SPIFFS_mounted(fs)) {
+		SPIFFS_unmount(fs);
+	} else if (my_spiffs_mount(fs) == 0) {
+		SPIFFS_unmount(fs);
 	}
 
 #if SPIFFS_USE_MAGIC
@@ -291,11 +291,7 @@ spiffs_format(void) {
 
 // setup module
 void ICACHE_FLASH_ATTR setup_spiffs(void) {
-	int result = my_spiffs_mount();
-
-	if (result == 0) {
-		spiffs_test();
-	}
+	int result = my_spiffs_mount(); // FIXME: error handling, like reformat fs
 }
 #endif
 
