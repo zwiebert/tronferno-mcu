@@ -7,7 +7,7 @@
 #ifdef MCU_ESP8266
 
 // SPIFFS is currently unused
-#define ENABLE_SPIFFS 1
+#define ENABLE_SPIFFS 0
 
 #define LEGACY_STORAGE_READ 1
 #define LEGACY_STORAGE_WRITE 0

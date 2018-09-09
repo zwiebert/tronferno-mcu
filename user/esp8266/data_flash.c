@@ -26,10 +26,15 @@
 #include "esp_missing_includes.h"
 #include "../user_config.h"
 
+#define LEAN_MODULE 1
 
 #define NO_CACHE 1
 
+#if LEAN_MODULE || LEAN_ALL
+#define DB(x)
+#else
 #define DB(x) ((C.app_verboseOutput >= vrbDebug) && (x),1)
+#endif
 #define printf ets_uart_printf
 extern int ENR;
 

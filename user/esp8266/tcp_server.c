@@ -242,7 +242,7 @@ tcps_connect_cb(void *arg) {
     }
   }
 
-  printf("tcp client connected: %d.%d.%d.%d:%d\n", pesp_conn->proto.tcp->remote_ip[0], pesp_conn->proto.tcp->remote_ip[1], pesp_conn->proto.tcp->remote_ip[2],
+  printf("tcp client %d connected: %d.%d.%d.%d:%d\n", nmbConnected, pesp_conn->proto.tcp->remote_ip[0], pesp_conn->proto.tcp->remote_ip[1], pesp_conn->proto.tcp->remote_ip[2],
       pesp_conn->proto.tcp->remote_ip[3], pesp_conn->proto.tcp->remote_port);
 
   io_getc_fun = tcpSocket_io_getc;

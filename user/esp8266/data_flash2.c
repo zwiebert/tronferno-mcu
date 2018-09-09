@@ -26,9 +26,13 @@
 #include "../user_config.h"
 
 #define TEST_THIS_MODULE 0
+#define LEAN_MODULE 1
 
 #if TEST_THIS_MODULE
 #define DB(x) x
+#define DB2(x)
+#elif LEAN_MODULE
+#define DB(x)
 #define DB2(x)
 #else
 #define DB(x) ((C.app_verboseOutput >= vrbDebug) && (x),1)
