@@ -1,7 +1,7 @@
-SRC_BASE = .
+SRC_BASE = ../..
 
 # build directory
-BUILD_BASE	?= build
+BUILD_BASE	?= ../../esp8266-build
 
 
 # firmware directory

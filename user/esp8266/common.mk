@@ -199,7 +199,7 @@ C_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
 CXX_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 ASM_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
 
-C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
+C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE),,$(C_SRC)))
 CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC))
 ASM_OBJ	    := $(patsubst %.S,$(BUILD_BASE)/%.o,$(ASM_SRC))
 
@@ -212,7 +212,7 @@ TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
 
 LD_SCRIPT	:= $(addprefix -T$(SDK_BASE)/$(SDK_LDDIR)/,$(LD_SCRIPT))
 
-INCDIR		:= -Iuser -Iuser/time # $(addprefix -I,$(SRC_DIR))
+INCDIR		:= -Iuser -I$(SRC_BASE)/user/time -I$(SRC_BASE)/user # $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 #MODULE_INCDIR	:= $(foreach sdir,$(SRC_DIR),$(addprefix -I,$(sdir)))
 
@@ -319,7 +319,7 @@ $(DEP_DIR):
 $(FW_BASE):
 	$(Q) mkdir -p $@
 	$(Q) mkdir -p $@/upgrade
-	
+
 
 flashboot:
 ifeq ($(app), 0)

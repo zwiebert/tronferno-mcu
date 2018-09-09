@@ -1,5 +1,5 @@
 # Main settings includes
-include	 ./user/esp8266/settings.mk
+include	 ./settings.mk
 
 # Individual project settings (Optional)
 #BOOT		= new
@@ -45,7 +45,7 @@ SPIFFS_SRC := $(wildcard spiffs/src/*.c)
 SPIFFS_OBJ := $(patsubst spiffs/src/%.c,$(SPIFFS_BUILD_DIR)/%.o,$(SPIFFS_SRC))
 
 EXTRA_AR += $(SPIFFSIROM_A) 
-EXTRA_INCDIR += spiffs/src user/esp8266
+EXTRA_INCDIR += $(SRC_BASE)/spiffs/src  $(SRC_BASE)/user/esp8266
 GEN_LIBS += $(SPIFFSIROM_A)
 CPPFLAGS += -DCONFIG_BUILD_SPIFFS
 SUBMODULES += spiffs/src
@@ -62,10 +62,10 @@ BUILD_DIRS += $(TIME_BUILD_DIR)
 TIME_A := $(TIME_BUILD_DIR)/time.a
 TIMEIROM_A := $(TIME_BUILD_DIR)/timeirom.a
 
-TIME_C_SRC := $(wildcard user/time/*.c)
-TIME_ASM_SRC := $(wildcard user/time/*.S)
-TIME_OBJ := $(patsubst user/time/%.c,$(TIME_BUILD_DIR)/%.o,$(TIME_C_SRC))
-TIME_OBJ += $(patsubst user/time/%.S,$(TIME_BUILD_DIR)/%.o,$(TIME_ASM_SRC))
+TIME_C_SRC := $(wildcard  $(SRC_BASE)/user/time/*.c)
+TIME_ASM_SRC := $(wildcard  $(SRC_BASE)/user/time/*.S)
+TIME_OBJ := $(patsubst %.c,$(TIME_BUILD_DIR)/%.o,$(subst $(SRC_BASE)/user/time,,$(TIME_C_SRC)))
+TIME_OBJ += $(patsubst %.S,$(TIME_BUILD_DIR)/%.o,$(subst $(SRC_BASE)/user/time,,$(TIME_ASM_SRC)))
 
 EXTRA_AR += $(TIMEIROM_A) 
 #EXTRA_INCDIR +=
@@ -107,15 +107,15 @@ endif
 # fetch submodule #FIXME:
 spiffs/src esp-gdbstub:
 	git submodule update --init --recursive
-	
+
 ## make irom archive (move functions from RAM to Flash-ROM on ESP8266)
 %irom.a : %.a
 	$(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal $(<) $(@);
-	
-	
-include ./user/esp8266/common.mk
+
+
+include ./common.mk
 
 
 libmirom: $(LIBMIROM_A)
 
-	
+

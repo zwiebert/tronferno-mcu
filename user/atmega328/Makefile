@@ -9,8 +9,8 @@ Q := @
 vecho := @echo
 endif
 
-SRC_BASE = .
-BUILD_BASE = avr_build
+SRC_BASE = ../..
+BUILD_BASE = ../../atmega328-build
 
 ifeq ($(DISTRO),1)
 CPPFLAGS += -DDISTRIBUTION
@@ -18,28 +18,37 @@ endif
 
 
 project=fernotron
-
-build_version := lean
-src_dir=./
-bld_dir=$(BUILD_BASE)/$(build_version)/
+bld_dir := $(BUILD_BASE)/
+modules := user/main user/atmega328
+MODULES = $(modules)
 
 SRC_DIR		:= $(addprefix $(SRC_BASE)/,$(MODULES))
 BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
 
-modules := user/main user/atmega328
-proj_asrc := $(foreach dir,$(src_dir)$(modules),$(wildcard $(dir)/*.S))
-proj_csrc := $(foreach dir,$(src_dir)$(modules),$(wildcard $(dir)/*.c))
-proj_objs := $(addprefix $(bld_dir),$(patsubst %c,%o,$(proj_csrc))) $(addprefix $(bld_dir),$(patsubst %S,%o,$(proj_asrc)))
+C_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
+CXX_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
+ASM_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
+
+C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(C_SRC)))
+CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(CXX_SRC)))
+ASM_OBJ	    := $(patsubst %.S,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(ASM_SRC)))
+
+SRC		    := $(C_SRC) $(CXX_SRC) $(ASM_SRC)
+OBJ		    := $(C_OBJ) $(CXX_OBJ) $(ASM_OBJ)
 
 time_modules := user/time
-time_asrc := $(wildcard $(src_dir)user/time/*.S)
-time_csrc := $(wildcard $(src_dir)user/time/*.c)
-time_objs := $(addprefix $(bld_dir),$(patsubst %c,%o,$(time_csrc))) $(addprefix $(bld_dir),$(patsubst %S,%o,$(time_asrc)))
+TIME_ASM_SRC := $(wildcard $(SRC_BASE)/user/time/*.S)
+TIME_C_SRC := $(wildcard $(SRC_BASE)/user/time/*.c)
+
+TIME_C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(TIME_C_SRC)))
+TIME_ASM_OBJ	    := $(patsubst %.S,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(TIME_ASM_SRC)))
+
+TIME_OBJ := $(TIME_C_OBJ) $(TIME_ASM_OBJ)
 
 
-OUTPUT_FILE_PATH += $(bld_dir)fernotron.elf
+OUTPUT_FILE_PATH += $(BUILD_BASE)/fernotron.elf
 
-OUTPUT_FILE_PATH_AS_ARGS += $(bld_dir)fernotron.elf
+OUTPUT_FILE_PATH_AS_ARGS += $(BUILD_BASE)/fernotron.elf
 
 
 elf_out = $(bld_dir)$(project).elf
@@ -52,12 +61,12 @@ map_out = $(patsubst %elf,%map,$(elf_out))
 DEP_DIR := $(BUILD_BASE)/dep
 
 pri:
-	echo $(time_objs)
+	echo $(TIME_OBJ)
 
 # AVR32/GNU C Compiler
 
 AVR_INCLUDE:= -I/usr/lib/avr/include -I./user/time
-PROJ_INCLUDE:= -I$(src_dir)user
+PROJ_INCLUDE:= -I$(SRC_BASE)/user
  
 CC = avr-gcc
 ASMFLAGS := -c -Wall -mmcu=atmega328p 
@@ -106,9 +115,9 @@ endef
 
 # Add inputs and outputs from these tool invocations to the build variables 
 
-$(bld_dir)libtime.a: $(bld_dir) $(time_objs)
+$(bld_dir)libtime.a: $(bld_dir) $(TIME_OBJ)
 	$(vecho) "AR $@"
-	$(Q) $(AR) cru $@ $(time_objs)
+	$(Q) $(AR) cru $@ $(TIME_OBJ)
 
 
 # All Target
@@ -122,19 +131,19 @@ $(bld_dir):
 	mkdir -p $(foreach dir,$(modules) $(time_modules),$(addprefix $(bld_dir)/,$(dir))) $(DEP_DIR)
 
 
-$(OUTPUT_FILE_PATH): $(bld_dir) $(proj_objs) $(bld_dir)libtime.a
+$(OUTPUT_FILE_PATH): $(bld_dir) $(OBJ) $(bld_dir)libtime.a
 	$(vecho) "LD builds $(elf_out)"
-	$(Q) $(QUOTE)avr-gcc$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(proj_objs) $(LDFLAGS) $(LIBS) -Wl,-Map="$(map_out)" -Wl,--start-group  -Wl,--end-group -Wl,--gc-sections -mmcu=atmega328p  -B "/home/bertw/avr/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p"  -Wl,-gc-sections  
+	$(Q) $(QUOTE)avr-gcc$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJ) $(LDFLAGS) $(LIBS) -Wl,-Map="$(map_out)" -Wl,--start-group  -Wl,--end-group -Wl,--gc-sections -mmcu=atmega328p  -B "/home/bertw/avr/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p"  -Wl,-gc-sections  
 	$(Q) "avr-objcopy" -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures  "$(elf_out)" "$(hex_out)"
 	$(Q) "avr-objcopy" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "$(elf_out)" "$(eep_out)" || exit 0
 	$(Q) "avr-objdump" -h -S "$(elf_out)" > "$(lss_out)"
 	$(Q) "avr-objcopy" -O srec -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures "$(elf_out)" "$(srec_out)"
 	$(Q) "avr-size" "$(elf_out)"
 	$(Q) echo; ls -l $(bld_dir)$(project).*
-	
-	
+
+
 COM := /dev/ttyACM0
-	
+
 flash: all
 	$(Q) avrdude  -c avrisp2 -p m328p -P $(COM) -b 115200 -U "flash:w:$(hex_out):i"
 
@@ -145,13 +154,14 @@ eeprom: all
 # Other Targets
 clean:
 	-$(RM) $(bld_dir) $(DEP_DIR) 
-	
+
 
 rebuild : clean all
 
 reflash : rebuild flash
 
 
-$(eval $(call compile-objects,$(bld_dir),$(SRC_BASE)/))
+$(eval $(call compile-objects,$(BUILD_BASE)/,$(SRC_BASE)/))
 
-	
+
+
