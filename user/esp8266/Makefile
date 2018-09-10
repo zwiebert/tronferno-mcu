@@ -1,5 +1,7 @@
+SRC_BASE ?= ../..
+
 # Main settings includes
-include	 ./settings.mk
+include	 $(SRC_BASE)/user/esp8266/settings.mk
 
 # Individual project settings (Optional)
 #BOOT		= new
@@ -113,7 +115,7 @@ spiffs/src esp-gdbstub:
 	$(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal $(<) $(@);
 
 
-include ./common.mk
+include $(SRC_BASE)/user/esp8266/common.mk
 
 
 libmirom: $(LIBMIROM_A)

@@ -1,11 +1,9 @@
-SRC_BASE = ../..
 
 # build directory
-BUILD_BASE	?= ../../esp8266-build
-
+BUILD_BASE	?= $(SRC_BASE)/esp8266-build
 
 # firmware directory
-FW_BASE		?= firmware
+FW_BASE		?= $(BUILD_BASE)/firmware
 
 # name for the target project
 TARGET		= app

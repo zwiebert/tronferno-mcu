@@ -8,7 +8,7 @@ define GEN_RULE
 .PHONY: $(1)-$(2) $(1)-$(2)-force $(1)-rebuild
 
 $(1)-$(2):
-	$$(MAKE) --directory user/$(1) $(2)
+	$$(MAKE) -j --directory user/$(1) $(2)
 
 $(1)-$(2)-force: $(1)-$(2)
 	$$(MAKE) --always-make $(1)-$(2)

@@ -199,12 +199,12 @@ C_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
 CXX_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 ASM_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
 
-C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE),,$(C_SRC)))
-CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC))
-ASM_OBJ	    := $(patsubst %.S,$(BUILD_BASE)/%.o,$(ASM_SRC))
+C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(C_SRC)))
+CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(CXX_SRC)))
+ASM_OBJ	    	:= $(patsubst %.S,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(ASM_SRC)))
 
-SRC		    := $(C_SRC) $(CXX_SRC) $(ASM_SRC)
-OBJ		    := $(C_OBJ) $(CXX_OBJ) $(ASM_OBJ)
+SRC		:= $(C_SRC) $(CXX_SRC) $(ASM_SRC)
+OBJ		:= $(C_OBJ) $(CXX_OBJ) $(ASM_OBJ)
 
 LIBS		:= $(addprefix -l,$(LIBS))
 APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
@@ -420,6 +420,7 @@ clean: force
 	$(Q) rm -rf $(FW_BASE)
 	$(Q) rm -rf $(BUILD_BASE)/user $(BUILD_BASE)
 	$(Q) rm -rf spiffs/build/*.o  spiffs/build/*.a
+	$(Q) mkdir -p $(DEP_DIR) # FIXME: kludge to allow "make -j" 
 
 
 $(eval $(call compile-objects,$(BUILD_BASE)/,$(SRC_BASE)/))
