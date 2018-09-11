@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../user_config.h"
+#include "current_state.h"
 
 #include "all.h"
 #include "set_endpos.h"
@@ -771,10 +772,17 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (strcmp(key, "time-zone") == 0) {
       if (*val=='?') {
+#ifdef MCU_ESP32
+        io_puts(cfgSep), io_puts(key), io_puts("="), io_puts(C.geo_timezone), (cfgSep = " ");
+#else
         io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_timezone, 2), (cfgSep = " ");
+#endif
       } else {
-        float timezone = stof(val);
-        C.geo_timezone = timezone;
+#ifdef MCU_ESP32
+        strncpy(C.geo_timezone, val, sizeof (C.geo_timezone) -1);
+#else
+        C.geo_timezone = stof(val);
+#endif
         rtc_setup();
         save = true;
       }
@@ -823,6 +831,7 @@ const char help_parmMcu[] PROGMEM =
 #ifdef ACCESS_GPIO
     "gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N\n"
 #endif
+    "up-time=?\n"
 ;
 
 static int ICACHE_FLASH_ATTR
@@ -1401,7 +1410,7 @@ process_parmHelp(clpar p[], int len) {
 
 // called when command processing starts and ends
 static void ICACHE_FLASH_ATTR command_processing_hooks(bool done) {
-#ifdef USE_WLAN
+#if defined USE_WLAN && defined MCU_ESP8266
   tcps_command_processing_hook(done);
 #endif
 }

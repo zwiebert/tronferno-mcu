@@ -10,7 +10,7 @@
 
 #include "main/inout.h"
 
-#ifdef AVR
+#if defined AVR || defined MCU_ESP32
 #if __has_include("../sensitive/defaults.h")
 #define HAVE_USER_DEFAULTS
 #endif
@@ -31,6 +31,7 @@
 #define MY_GEO_LONGITUDE +12.34567
 #define MY_GEO_LATITUDE  +54.32109
 #define MY_GEO_TIMEZONE +1.0
+#define MY_GEO_TZ "Europe/Berlin"
 #define MY_GEO_DST dstEU
 #define MY_WIFI_SSID ""
 #define MY_WIFI_PASSWORD ""
@@ -67,7 +68,14 @@ enum verbosity {
 
 typedef struct {
 	uint32_t fer_centralUnitID, mcu_serialBaud;
-	float geo_longitude, geo_latitude, geo_timezone;
+	float geo_longitude, geo_latitude;
+#if !defined MCU_ESP32
+	float geo_timezone;
+#else
+	char geo_timezone[64];
+#endif
+
+
 	enum dst geo_dST;
     int32_t app_rtcAdjust;
 	enum receiver app_recv;
@@ -76,7 +84,7 @@ typedef struct {
 	enum verbosity app_verboseOutput;
 	uint32_t fer_usedMembers; // each of the nibbles 1-7 stands for a group. nibble 1 == group 1. nibble 0 = number of used Groups (stored for the front-end, not used here on the MCU)
 
-#ifdef USE_WLAN
+#if 1 //ndef USE_WLAN
 	char wifi_SSID[32];
 	char wifi_password[64];
 #endif

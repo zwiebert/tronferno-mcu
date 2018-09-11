@@ -1,4 +1,5 @@
 SRC_BASE ?= ../..
+CPPFLAGS += -DMCU_ESP8266
 
 # Main settings includes
 include	 $(SRC_BASE)/user/esp8266/settings.mk
@@ -23,7 +24,6 @@ LIBS	= c  gcc hal phy pp net80211 lwip wpa main crypto
 
 ## libm, libmirom
 LIBM_A := $(HOME)/esp/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/sysroot/lib/libm.a
-LIBMIROM_A :=  $(HOME)/esp/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/sysroot/lib/libmirom.a
 LIBS += mirom
 ifeq ($(WINDOWS),1)
 #GEN_LIBS +=

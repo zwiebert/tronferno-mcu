@@ -15,7 +15,8 @@
 extern fer_sender_basic default_sender;
 extern fer_sender_basic last_received_sender;
 
-bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds);
+bool  cu_auto_set(unsigned init_seconds);
+bool  ntp_update_system_time(unsigned interval_seconds);
 
 void ICACHE_FLASH_ATTR
 loop(void) {
@@ -71,8 +72,13 @@ print_startup_info(void) {
   if (C.app_verboseOutput >= vrbNone) {
     io_puts("\n\n" "Tronferno-MCU starting ...\n" "build-date: " __DATE__ " " __TIME__ "\n\n");
     io_puts(cfg "cu="), io_print_hex_32(C.fer_centralUnitID, false), io_puts(" baud="), io_print_dec_32(C.mcu_serialBaud, false), io_puts(slf);
-    io_puts(cfg "longitude="), io_print_float(C.geo_longitude, 5), io_puts(" latitude="), io_print_float(C.geo_latitude, 5), io_puts(" time-zone="), io_print_float(
-        C.geo_timezone, 2), io_puts(slf);
+    io_puts(cfg "longitude="), io_print_float(C.geo_longitude, 5), io_puts(" latitude="), io_print_float(C.geo_latitude, 5), io_puts(" time-zone="),
+#ifdef MCU_ESP32
+        io_puts(C.geo_timezone),
+#else
+        io_print_float(C.geo_timezone, 2),
+#endif
+        io_puts(slf);
 #ifdef USE_WLAN
     io_puts(cfg "wlan-ssid=\""), io_puts(C.wifi_SSID), io_puts("\" wlan-password="), io_puts((C.wifi_password[0] == '\0') ? "\"\""slf : "\"***********\"" slf);
 #endif

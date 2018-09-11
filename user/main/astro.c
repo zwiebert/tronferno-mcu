@@ -76,6 +76,7 @@ time_to_bcd(uint8_t *bcdMinutes, uint8_t *bcdHours, float time, bool force_even_
   }
 }
 
+#define float_tz() (((float)rtc_timezone_in_secs())/ SECS_PER_HOUR)
 
 static void ICACHE_FLASH_ATTR
 math_write_astro(astro_byte_data dst, int mint_offset)
@@ -84,7 +85,7 @@ math_write_astro(astro_byte_data dst, int mint_offset)
 
     for (i=0; i < FPR_ASTRO_HEIGHT; ++i) {
       for (j=0; j < 4; ++j, (day -= 3.8046875)) {
-        calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + (mint_offset / 60.0f), day, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+        calc_sunrise_sunset(NULL, &sunset, float_tz() + (mint_offset / 60.0f), day, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
         if (sunset < last_sunset) {
           sunset = last_sunset;
         } else {
@@ -104,7 +105,7 @@ math_write_astro2(astro_byte_data dst, int mint_offset) {
 
   for (i = 0; i < FPR_ASTRO_HEIGHT; ++i) {
     for (j = 0; j < 4; ++j, (day -= 4)) {
-      calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + (mint_offset / 60.0f), day, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+      calc_sunrise_sunset(NULL, &sunset, float_tz() + (mint_offset / 60.0f), day, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
       if (sunset < last_sunset) {
         sunset = last_sunset;
       } else {

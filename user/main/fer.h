@@ -183,4 +183,8 @@ void fmsg_print(const fer_msg *msg, fmsg_type t);
 void frb_printPacket(const uint8_t *dg);
 void fpr_printPrgPacketInfo(uint8_t d[linesPerPrg][bytesPerPrgLine], bool rtc_only);
 void fer_printData(const uint8_t *cmd, uint8_t prg[linesPerPrg][bytesPerPrgLine]);
+
+bool fers_loop(void);
+void loop(void);
+int main_setup(void);
 #endif // FER_H

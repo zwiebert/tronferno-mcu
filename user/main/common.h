@@ -2,7 +2,9 @@
 #define _common_h
 
 #ifndef AVR  // FIXME: how to recognize ESP8266 
-#define MCU_ESP8266
+#ifdef ESP_PLATFORM
+#define MCU_ESP32
+#endif
 #endif
 
 ////////////////////////
@@ -15,6 +17,14 @@
 #define USE_WLAN
 #define ACCESS_GPIO
 #endif
+#endif
+
+#ifdef MCU_ESP32
+#define FER_TRANSMITTER
+#define FER_RECEIVER
+#define USE_NTP
+#define USE_WLAN
+#define ACCESS_GPIO
 #endif
 
 ////////////////////////////

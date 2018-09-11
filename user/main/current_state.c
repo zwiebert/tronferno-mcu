@@ -1,4 +1,5 @@
 #include "current_state.h"
+#include "main/inout.h"
 
 
 uint8_t groups[7];

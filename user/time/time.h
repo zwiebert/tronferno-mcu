@@ -1,4 +1,4 @@
-#ifndef AVR
+#ifdef MCU_ESP8266
 #include "user_interface.h"
 #include <sys/types.h>
 #endif

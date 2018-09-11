@@ -13,6 +13,7 @@
 
 char *get_commandline(void);
 void process_cmdline(char *line);
+void cli_loop(void);
 
 extern fer_sender_basic senders[10];
 

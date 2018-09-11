@@ -12,6 +12,8 @@ void rtc_secTick(void);
 bool rtc_set_by_string(const char *dateTimeString);
 bool rtc_get_by_string(char *dst);
 
+time_t rtc_timezone_in_secs();
+
 int8_t get_weekDay();
 
 void rtc_setup(void);
@@ -23,7 +25,7 @@ void rtc_setup(void);
 #define MONT_PER_YEAR  12
 #define DAYS_PER_WEEK   7
 #define SECS_PER_DAY 86400
-#define SECS_PER_HOUR ONE_HOUR
+#define SECS_PER_HOUR (60 * 60)
 
 
 typedef time_t rtc_time_t;
@@ -34,6 +36,9 @@ bool ntp_set_system_time(void);
 
 #ifdef AVR
 #define rtc_tick() system_tick()
+#elif defined MCU_ESP32
+extern volatile rtc_time_t rtc_clock;
+#define rtc_tick() do { ++rtc_clock; ++run_time_secs; } while (0)
 #else
 extern volatile time_t __system_time;
 #define rtc_tick() do { ++__system_time; ++run_time_secs; } while (0)

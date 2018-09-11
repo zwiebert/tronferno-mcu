@@ -2,7 +2,7 @@
 #define _inout_h
 
 #include <stdint.h>
-#ifndef AVR
+#ifdef MCU_ESP8266
 #include <c_types.h>
 #endif
 #ifndef true

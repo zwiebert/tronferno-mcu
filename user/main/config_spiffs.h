@@ -8,8 +8,6 @@
 #ifndef USER_MAIN_CONFIG_SPIFFS_H_
 #define USER_MAIN_CONFIG_SPIFFS_H_
 
-#include <c_types.h>
-
 
 
 

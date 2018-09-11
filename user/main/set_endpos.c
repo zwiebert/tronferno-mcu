@@ -170,4 +170,5 @@ sep_loop(void) {
       }
     }
   }
+  return true;
 }

@@ -1,4 +1,5 @@
 RM := rm -rf
+CPPFLAGS += -DMCU_ATMEGA328
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
