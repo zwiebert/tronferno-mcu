@@ -12,6 +12,7 @@
 extern int (*io_putc_fun)(char c);
 extern int (*io_getc_fun)(void);
 extern int (*io_printf_fun)(const char *fmt, ...);
+extern int (*io_puts_fun)(const char *s);
 
 int io_putc(char c);
 int io_getc(void);

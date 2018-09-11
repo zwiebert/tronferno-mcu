@@ -4,12 +4,20 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#ifdef MCU_ESP32
+#include <rom/ets_sys.h>
+#define db_puts(s) ets_printf("%s\n",s)
+#endif
+
 void abort_precond(const char *msg, int line);
 void abort_postcond(const char *msg, int line);
 
 #if 0
 #define db_puts(s) io_puts(s)
-#else
+#endif
+
+#ifdef DISTRIBUTION
+#undef db_puts
 #define db_puts(s)
 #endif
 

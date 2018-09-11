@@ -24,7 +24,7 @@
 #define printf ets_uart_printf
 
 #define RFOUT_GPIO GPIO_NUM_22
-#define RFIN_GPIO GPIO_NUM_5
+#define RFIN_GPIO GPIO_NUM_17
 #define BUTTON_GPIO GPIO_NUM_6
 
 
@@ -204,7 +204,7 @@ const char* ICACHE_FLASH_ATTR mcu_access_pin2(int gpio_number, mcu_pin_state *re
 }
 
 const char* ICACHE_FLASH_ATTR mcu_access_pin(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
-
+#ifdef DISTRIBUTION
   if (state != PIN_READ)
     switch (gpio_number) {
    case 12:
@@ -214,8 +214,9 @@ const char* ICACHE_FLASH_ATTR mcu_access_pin(int gpio_number, mcu_pin_state *res
      break;
 
    default:
-     return "gpio number not writable (use 12, 13, 14, 15)";
+     return "gpio number not writable (use 12, 13, 14, 15)";  // FIXME:
    }
+#endif
 
     return mcu_access_pin2(gpio_number, result, state);
 }

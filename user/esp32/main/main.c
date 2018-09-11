@@ -94,9 +94,6 @@ void app_main(void) {
   }
 }
 
-
-
-
 void  mcu_restart(void) {
   printf("mcu_restart()\n");
   ets_delay_us(10000);

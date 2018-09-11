@@ -1035,7 +1035,7 @@ process_parmTimer(clpar p[], int len) {
   int8_t flag_rtc_only = FLAG_NONE;
 
 #if ENABLE_RSTD
-  const char *weeklyVal, *dailyVal;
+  const char *weeklyVal = 0, *dailyVal = 0;
   uint8_t mn = 0;
   uint8_t rs = 0;
   timer_data_t td = { 20000, 0, "", "" };
@@ -1112,6 +1112,10 @@ process_parmTimer(clpar p[], int len) {
       has_weekly = string2bcdArray(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
 #endif
     } else {
+      if (strcmp(key, "rs") == 0) {
+        reply_failure();
+        return -1;
+      }
       warning_unknown_option(key);
     }
   }
