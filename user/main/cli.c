@@ -772,13 +772,13 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (strcmp(key, "time-zone") == 0) {
       if (*val=='?') {
-#ifdef MCU_ESP32
+#if POSIX_TIME
         io_puts(cfgSep), io_puts(key), io_puts("="), io_puts(C.geo_timezone), (cfgSep = " ");
 #else
         io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_timezone, 2), (cfgSep = " ");
 #endif
       } else {
-#ifdef MCU_ESP32
+#if POSIX_TIME
         strncpy(C.geo_timezone, val, sizeof (C.geo_timezone) -1);
 #else
         C.geo_timezone = stof(val);
@@ -789,9 +789,15 @@ process_parmConfig(clpar p[], int len) {
 
 
     } else if (strcmp(key, "dst") == 0) {
+#if POSIX_TIME
+      if (*val=='?') {
+        io_puts(cfgSep), io_puts("dst=0"), (cfgSep = " ");
+      }
+#else
       if (*val=='?') {
         io_puts(cfgSep), io_puts(key), io_puts("="), io_puts((C.geo_dST == dstEU ? "eu": (C.geo_dST == dstNone ? "0" : "1"))), (cfgSep = " ");
       } else {
+
         if (strcmp(val, "eu") == 0) {
           C.geo_dST = dstEU;
         } else if (strcmp(val, "0") == 0) {
@@ -801,11 +807,11 @@ process_parmConfig(clpar p[], int len) {
         } else {
           warning_unknown_option(key);
         }
-
         rtc_setup();
         save = true;
-      }
 
+      }
+#endif
 
     } else {
       ++errors;

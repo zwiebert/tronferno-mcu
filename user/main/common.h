@@ -1,6 +1,8 @@
 #ifndef _common_h
 #define _common_h
 
+
+
 #ifndef AVR  // FIXME: how to recognize ESP8266 
 #ifdef ESP_PLATFORM
 #define MCU_ESP32
@@ -33,6 +35,10 @@
 #include "user_interface.h"
 #else
 #define ICACHE_FLASH_ATTR
+#endif
+
+#ifdef MCU_ESP32
+#include "esp_attr.h"
 #endif
 
 #ifdef AVR

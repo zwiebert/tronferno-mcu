@@ -57,9 +57,9 @@ OUTPUT_FILE_PATH_AS_ARGS += $(FW_BASE)/fernotron.elf
 elf_out = $(FW_BASE)/fernotron.elf
 hex_out = $(FW_BASE)/fernotron.hex
 eep_out =  $(FW_BASE)/fernotron.eep
-srec_out =  $(patsubst %elf,%srec,$(elf_out))
-lss_out =   $(patsubst %elf,%lss,$(elf_out))
-map_out =   $(patsubst %elf,%map,$(elf_out))
+srec_out =  $(FW_BASE)/fernotron.rec
+lss_out =   $(FW_BASE)/fernotron.lss
+map_out =  $(FW_BASE)/fernotron.map
 
 DEP_DIR := $(BUILD_BASE)/dep
 

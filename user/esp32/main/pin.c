@@ -73,12 +73,12 @@ bool ICACHE_FLASH_ATTR is_gpio_number_usable(int gpio_number, bool cli) {
   return false;
 }
 
-void mcu_put_txPin(bool dat) {
-  gpio_set_level(RFOUT_GPIO, dat);
+void IRAM_ATTR mcu_put_txPin(bool dat) {
+  GPIO_OUTPUT_SET(RFOUT_GPIO, dat);
 }
 
-bool mcu_get_rxPin() {
-  return gpio_get_level(RFIN_GPIO);
+bool IRAM_ATTR mcu_get_rxPin() {
+    return GPIO_INPUT_GET(RFIN_GPIO);
 }
 
 void ICACHE_FLASH_ATTR

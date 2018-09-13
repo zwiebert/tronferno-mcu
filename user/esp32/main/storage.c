@@ -54,7 +54,7 @@ write_to_file(const char *path, const void *src, size_t len) {
 
    FILE* f = fopen(complete_path, "w");
    if (f == NULL) {
-     ESP_LOGE(TAG, "Failed to open file for writing");
+    // ESP_LOGE(TAG, "Failed to open file for writing");
      return false;
    }
 
@@ -74,7 +74,7 @@ read_from_file(const char *path, void *dst, size_t len) {
 
   FILE* f = fopen(complete_path, "r");
   if (f == NULL) {
-    ESP_LOGE(TAG, "Failed to open file for reading");
+   // ESP_LOGE(TAG, "Failed to open file for reading");
     return false;
   }
 

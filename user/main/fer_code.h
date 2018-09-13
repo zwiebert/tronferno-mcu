@@ -3,6 +3,7 @@
 #define _fer_code
 
 #include "common.h"
+#include "boolean.h"
 
 // indexes of data[5]
 typedef enum {

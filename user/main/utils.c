@@ -4,14 +4,7 @@
 #include "common.h"
 #include "utils.h"
 
-/*  "t if VAL contains an even number of 1 bits" */
-bool is_bits_even(uint8_t val) {
-	val ^= val >> 4;
-	val ^= val >> 2;
-	val ^= val >> 1;
-	val &= 0x01;
-	return (val == 0);
-}
+
 
 void ICACHE_FLASH_ATTR put_bit_16(uint16_t *dst, uint8_t bitnmb, bool val) {
 	if (val)

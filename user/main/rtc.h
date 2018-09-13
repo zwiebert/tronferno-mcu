@@ -1,6 +1,7 @@
 #ifndef RTC_H_
 #define RTC_H_
 
+#include "../user_config.h"
 #include <time.h>
 
 volatile time_t run_time_secs;
@@ -36,9 +37,8 @@ bool ntp_set_system_time(void);
 
 #ifdef AVR
 #define rtc_tick() system_tick()
-#elif defined MCU_ESP32
-extern volatile rtc_time_t rtc_clock;
-#define rtc_tick() do { ++rtc_clock; ++run_time_secs; } while (0)
+#elif POSIX_TIME
+#define rtc_tick() do { ++run_time_secs; } while (0)
 #else
 extern volatile time_t __system_time;
 #define rtc_tick() do { ++__system_time; ++run_time_secs; } while (0)

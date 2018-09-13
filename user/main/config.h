@@ -9,6 +9,7 @@
 #define CONFIG_H_
 
 #include "main/inout.h"
+#include "../user_config.h"
 
 #if defined AVR || defined MCU_ESP32
 #if __has_include("../sensitive/defaults.h")
@@ -31,7 +32,7 @@
 #define MY_GEO_LONGITUDE +12.34567
 #define MY_GEO_LATITUDE  +54.32109
 #define MY_GEO_TIMEZONE +1.0
-#define MY_GEO_TZ "Europe/Berlin"
+#define MY_GEO_TZ "CET-1CEST-2,M3.5.0,M10.5.0"
 #define MY_GEO_DST dstEU
 #define MY_WIFI_SSID ""
 #define MY_WIFI_PASSWORD ""
@@ -69,15 +70,14 @@ enum verbosity {
 typedef struct {
 	uint32_t fer_centralUnitID, mcu_serialBaud;
 	float geo_longitude, geo_latitude;
-#if !defined MCU_ESP32
+#if !POSIX_TIME
 	float geo_timezone;
+  enum dst geo_dST;
 #else
 	char geo_timezone[64];
 #endif
 
-
-	enum dst geo_dST;
-    int32_t app_rtcAdjust;
+  int32_t app_rtcAdjust;
 	enum receiver app_recv;
 	enum transmitter app_transm;
 	enum rtclock app_rtc;

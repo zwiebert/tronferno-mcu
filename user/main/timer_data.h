@@ -9,6 +9,7 @@
 #define USER_MAIN_TIMER_DATA_H_
 
 #include "fer_code.h"
+#include "boolean.h"
 
 typedef struct {
   int16_t astro;

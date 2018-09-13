@@ -1,5 +1,5 @@
 #include <stdlib.h>
-
+#include "../user_config.h"
 #include "common.h"
 #include "counter.h"
 #include "fer.h"
@@ -40,8 +40,17 @@ static uint16_t CountWords;
 static uint16_t dtRecvBuffer[2];
 #define dtSendBuf (dtRecvBuffer[0])
 
+/*  "t if VAL contains an even number of 1 bits" */
+static bool IRAM_ATTR is_bits_even(uint8_t val) {
+  val ^= val >> 4;
+  val ^= val >> 2;
+  val ^= val >> 1;
+  val &= 0x01;
+  return (val == 0);
+}
+
 /* "calculate 2bit parity value for DATA_BYTE according to POS" */
-static uint8_t fer_get_word_parity(uint8_t data_byte, uint8_t pos) {
+static uint8_t IRAM_ATTR fer_get_word_parity(uint8_t data_byte, uint8_t pos) {
   uint8_t result;
   bool is_even = is_bits_even(data_byte);
 
@@ -51,7 +60,7 @@ static uint8_t fer_get_word_parity(uint8_t data_byte, uint8_t pos) {
 }
 
 /* "extend DATA_BYTE with parity according to POS" */
-static uint16_t fer_add_word_parity(uint8_t data_byte, int pos) {
+static uint16_t  IRAM_ATTR fer_add_word_parity(uint8_t data_byte, int pos) {
   uint16_t result = (data_byte | (((uint16_t) fer_get_word_parity(data_byte, pos)) << 8));
   return result;
 }
@@ -104,7 +113,7 @@ static uint16_t bytesToReceive;
 #define getBytesToReceive() (bytesToReceive + 0)
 #define hasAllBytesReceived() (bytesToReceive <= received_byte_ct)
 
-static void frx_incr_received_bytes(void) {
+static void  IRAM_ATTR frx_incr_received_bytes(void) {
   if (received_byte_ct <= bytesToReceive) { // FIXME:
     ++received_byte_ct;
   } else {
@@ -114,12 +123,12 @@ static void frx_incr_received_bytes(void) {
 
 /* "return t if parity is even and position matches parity bit \ 1/3
  on even positions and 0,2 on odd positions)" */
-static bool fer_word_parity_p(uint16_t word, uint8_t pos) {
+static bool  IRAM_ATTR fer_word_parity_p(uint16_t word, uint8_t pos) {
   bool result = fer_add_word_parity((word & 0xff), pos) == word;
   return result;
 }
 
-static fer_error frx_extract_Byte(const uint16_t *src, uint8_t *dst) {
+static fer_error  IRAM_ATTR frx_extract_Byte(const uint16_t *src, uint8_t *dst) {
 #if 0
   if (fer_word_parity_p(src[0], 0)
       && fer_word_parity_p(src[1], 1)
@@ -142,7 +151,7 @@ static fer_error frx_extract_Byte(const uint16_t *src, uint8_t *dst) {
   return fer_BAD_WORD_PARITY;
 }
 
-static fer_error frx_verify_cmd(const uint8_t *dg) {
+static fer_error  IRAM_ATTR frx_verify_cmd(const uint8_t *dg) {
   int i;
   uint8_t checksum = 0;
   bool all_null = true;
@@ -159,21 +168,21 @@ static fer_error frx_verify_cmd(const uint8_t *dg) {
   return (checksum == dg[i] ? fer_OK : fer_BAD_CHECKSUM);
 }
 
-static void frx_recv_decodeByte(uint8_t *dst) {
+static void  IRAM_ATTR frx_recv_decodeByte(uint8_t *dst) {
   if (fer_OK != frx_extract_Byte(dtRecvBuffer, dst)) {
     ++error;
   }
 }
 
-static bool frx_is_stopBit(unsigned len, unsigned nedge) {
+static bool  IRAM_ATTR frx_is_stopBit(unsigned len, unsigned nedge) {
   return ((FER_STP_WIDTH_MIN_TCK <= len && len <= FER_STP_WIDTH_MAX_TCK) && (FER_STP_NEDGE_MIN_TCK <= nedge && nedge <= FER_STP_NEDGE_MAX_TCK));
 }
 
-static bool frx_is_pre_bit(unsigned len, unsigned nedge) {
+static bool  IRAM_ATTR frx_is_pre_bit(unsigned len, unsigned nedge) {
   return ((FER_PRE_WIDTH_MIN_TCK <= len && len <= FER_PRE_WIDTH_MAX_TCK) && (FER_PRE_NEDGE_MIN_TCK <= nedge && nedge <= FER_PRE_NEDGE_MAX_TCK));
 }
 
-static bool frx_wait_and_sample(void) {
+static bool  IRAM_ATTR frx_wait_and_sample(void) {
 
   if (POS__NOT_IN_DATA) {
 
@@ -204,7 +213,7 @@ static bool frx_wait_and_sample(void) {
   return preBits == FER_PRE_BIT_CT;
 }
 
-static bool frx_receive_message(void) {
+static bool  IRAM_ATTR frx_receive_message(void) {
 
   if (frx_wait_and_sample()) {
     if (ct_incr(CountTicks, bitLen)) {
@@ -226,7 +235,7 @@ static bool frx_receive_message(void) {
   return false;  // continue
 }
 
-void frx_clear(void) {
+void IRAM_ATTR  frx_clear(void) {
   CountTicks = CountBits = CountWords = 0;
   preBits = 0;
   error = 0;
@@ -236,7 +245,7 @@ void frx_clear(void) {
 
 }
 
-static void frx_tick_receive_message() {
+static void  IRAM_ATTR frx_tick_receive_message() {
   if (frx_receive_message()) {
 
     switch (getBytesToReceive()) {
@@ -268,7 +277,7 @@ static void frx_tick_receive_message() {
   }
 }
 
-void frx_tick() {
+void  IRAM_ATTR frx_tick() {
 
   // sample input pin and detect input edge
   rx_input = mcu_get_rxPin();
@@ -344,7 +353,7 @@ extern volatile uint16_t wordsToSend;
 // sets output line according to current bit in data word
 // a stop bit is sent in CountBits 0 .. 2
 // a data word is sent in CountBits 3 .. 10
-static void ftx_update_output_data() {
+static void  IRAM_ATTR ftx_update_output_data() {
   int bit = CountBits - bitsPerPause;
 
   if (bit < 0) {  // in stop bit (CountBits 0 .. 2)
@@ -354,7 +363,7 @@ static void ftx_update_output_data() {
   }
 }
 
-static bool ftx_send_message() {
+static bool  IRAM_ATTR ftx_send_message() {
   static bool preamble_done, stop_done;
 
   if (!stop_done) {
@@ -389,7 +398,7 @@ static bool ftx_send_message() {
   return false; // continue
 }
 
-static void ftx_tick_send_message() {
+static void  IRAM_ATTR ftx_tick_send_message() {
 
   bool done = ftx_send_message();
   mcu_put_txPin(tx_output);
@@ -402,7 +411,7 @@ static void ftx_tick_send_message() {
   }
 }
 
-void ftx_tick(void) {
+void IRAM_ATTR  ftx_tick(void) {
 
   if (is_sendMsgPending) {
     ftx_tick_send_message();

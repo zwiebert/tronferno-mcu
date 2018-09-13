@@ -91,7 +91,7 @@ void app_main(void) {
   while (1) {
     tcps_loop();
     loop();
-    vTaskDelay(300 / portTICK_PERIOD_MS);
+    vTaskDelay(25 / portTICK_PERIOD_MS);
   }
 }
 

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../user_config.h"
 #include "common.h"
 #include "current_state.h"
 
@@ -73,7 +74,7 @@ print_startup_info(void) {
     io_puts("\n\n" "Tronferno-MCU starting ...\n" "build-date: " __DATE__ " " __TIME__ "\n\n");
     io_puts(cfg "cu="), io_print_hex_32(C.fer_centralUnitID, false), io_puts(" baud="), io_print_dec_32(C.mcu_serialBaud, false), io_puts(slf);
     io_puts(cfg "longitude="), io_print_float(C.geo_longitude, 5), io_puts(" latitude="), io_print_float(C.geo_latitude, 5), io_puts(" time-zone="),
-#ifdef MCU_ESP32
+#if  POSIX_TIME
         io_puts(C.geo_timezone),
 #else
         io_print_float(C.geo_timezone, 2),

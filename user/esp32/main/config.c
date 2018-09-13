@@ -32,7 +32,6 @@ config C = {
   MY_GEO_LONGITUDE,
   MY_GEO_LATITUDE,
   MY_GEO_TZ,
-  MY_GEO_DST,
   0, // app_rtcAdjust
   recvTick, // recv
   transmTick,// transm
@@ -64,7 +63,6 @@ void ICACHE_FLASH_ATTR read_config(void) {
 void ICACHE_FLASH_ATTR save_config(void) {
   esp_err_t err = 0;
   nvs_handle my_handle;
-  size_t len;
 
   if ((err = nvs_open(CFG_NAMESPACE, NVS_READWRITE, &my_handle)) == ESP_OK) {
     err = nvs_set_blob(my_handle, CFG_KEY, &C, sizeof (C));

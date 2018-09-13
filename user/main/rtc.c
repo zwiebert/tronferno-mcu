@@ -1,3 +1,4 @@
+#include "../user_config.h"
 #include "common.h"
 #include "counter.h"
 #include "utils.h"
@@ -21,16 +22,15 @@ rtc_time_source_t rtc_last_time_source;
 
 void set_system_time(time_t timestamp);
 
-#if defined MCU_ESP32
+#if !POSIX_TIME
 volatile rtc_time_t rtc_clock;
 #define set_system_time(clock) (rtc_clock=(clock))
 #endif
 
 void ICACHE_FLASH_ATTR rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t source) {
   rtc_last_time_source = source;
-#ifdef MCU_ESP32
-//FIXME: not implemented yet
-
+#if POSIX_TIME
+  //FIXME: not implemented yet
 #else
   set_system_time(stamp);
 #endif
@@ -52,11 +52,12 @@ get_weekDay() {
 bool ICACHE_FLASH_ATTR
 rtc_get_by_string(char *s) {
   time_t timer = time(NULL);
-  struct tm *t = localtime(&timer);
-#ifdef MCU_ESP32
-  strftime(s, 20, "%FT%H:%M:%S", t);
+  struct tm t;
+  localtime_r(&timer, &t);
+#if POSIX_TIME
+  strftime(s, 20, "%FT%H:%M:%S", &t);
 #else
-  isotime_r(t, s);
+  isotime_r(&t, s);
   s[10] = 'T';
 #endif
   return true;
@@ -148,43 +149,39 @@ time_t rtc_timezone_in_secs() {
 
 void ICACHE_FLASH_ATTR
 rtc_setup() {
-#ifdef MCU_ESP32
-  setenv("TZ", "Europe/Berlin", 1); //FIXME: not implemented
+
+#if POSIX_TIME
+  setenv("TZ", C.geo_timezone, 1);
   tzset();
+
 #else
+
   set_zone(ONE_HOUR * C.geo_timezone); //* C.timezone);
  //obsolete: set_position(C.geo_latitude * ONE_DEGREE, C.geo_longitude * ONE_DEGREE);
-#endif
+
   switch (C.geo_dST) {
 
   case dstEU:
-#ifdef MCU_ESP32
-    // FIXME: not implemented yet
-#else
     set_dst(eu_dst);
-#endif
     break;
+
 #ifdef AVR_TIME
     case dstUS:
     set_dst(usa_dst);
     break;
 #endif
+
   case dstAlways:
-#ifdef MCU_ESP32
-    // FIXME: not implemented yet
-#else
      set_dst(always_dst);
-#endif
     break;
+
   case dstNone:
   default:
-#ifdef MCU_ESP32
-    // FIXME: not implemented yet
-#else
      set_dst(NULL);
-#endif
+
     break;
   }
+#endif
 }
 
 #if TEST_MODULE_RTC

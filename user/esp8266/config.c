@@ -16,8 +16,12 @@ config C = {
 	MY_MCU_ESP8266_BAUD_RATE,
 	MY_GEO_LONGITUDE,
 	MY_GEO_LATITUDE,
+#if POSIX_TIME
+	MY_GEO_TZ,
+#else
 	MY_GEO_TIMEZONE,
 	MY_GEO_DST,
+#endif
 	0, // app_rtcAdjust
 	recvTick, // recv
 	transmTick,// transm
