@@ -39,6 +39,8 @@
 
 #ifdef MCU_ESP32
 #include "esp_attr.h"
+#else
+#define IRAM_ATTR
 #endif
 
 #ifdef AVR
