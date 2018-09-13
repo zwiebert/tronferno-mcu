@@ -38,19 +38,24 @@ $(LIBMIROM_A) : $(LIBM_A)
 
 
 ## spiffs.a, spiffsirom.a
+SPIFFS_SRC_DIR := $(SRC_BASE)/spiffs/src
 SPIFFS_BUILD_DIR := $(BUILD_BASE)/spiffs/src
+
 BUILD_DIRS += $(SPIFFS_BUILD_DIR)	
 SPIFFS_A := $(SPIFFS_BUILD_DIR)/spiffs.a
 SPIFFSIROM_A := $(SPIFFS_BUILD_DIR)/spiffsirom.a
 
-SPIFFS_SRC := $(wildcard spiffs/src/*.c)
-SPIFFS_OBJ := $(patsubst spiffs/src/%.c,$(SPIFFS_BUILD_DIR)/%.o,$(SPIFFS_SRC))
+SPIFFS_SRC := $(wildcard $(SPIFFS_SRC_DIR)/*.c)
+SPIFFS_OBJ := $(patsubst %.c,$(SPIFFS_BUILD_DIR)/%.o,$(subst $(SPIFFS_SRC_DIR)/,,$(SPIFFS_SRC)))
 
 EXTRA_AR += $(SPIFFSIROM_A) 
 EXTRA_INCDIR += $(SRC_BASE)/spiffs/src  $(SRC_BASE)/user/esp8266
 GEN_LIBS += $(SPIFFSIROM_A)
 CPPFLAGS += -DCONFIG_BUILD_SPIFFS
 SUBMODULES += spiffs/src
+
+pso :
+	echo $(SPIFFS_OBJ)
 
 $(SPIFFS_A) : $(SPIFFS_OBJ)
 	$(vecho) "AR $@"
@@ -59,15 +64,17 @@ $(SPIFFS_A) : $(SPIFFS_OBJ)
 
 
 ## time.a, timeirom.a
+TIME_SRC_DIR := $(SRC_BASE)/user/time
 TIME_BUILD_DIR := $(BUILD_BASE)/user/time
+
 BUILD_DIRS += $(TIME_BUILD_DIR)
 TIME_A := $(TIME_BUILD_DIR)/time.a
 TIMEIROM_A := $(TIME_BUILD_DIR)/timeirom.a
 
-TIME_C_SRC := $(wildcard  $(SRC_BASE)/user/time/*.c)
-TIME_ASM_SRC := $(wildcard  $(SRC_BASE)/user/time/*.S)
-TIME_OBJ := $(patsubst %.c,$(TIME_BUILD_DIR)/%.o,$(subst $(SRC_BASE)/user/time,,$(TIME_C_SRC)))
-TIME_OBJ += $(patsubst %.S,$(TIME_BUILD_DIR)/%.o,$(subst $(SRC_BASE)/user/time,,$(TIME_ASM_SRC)))
+TIME_C_SRC := $(wildcard  $(TIME_SRC_DIR)/*.c)
+TIME_ASM_SRC := $(wildcard  $(TIME_SRC_DIR)/*.S)
+TIME_OBJ := $(patsubst %.c,$(TIME_BUILD_DIR)/%.o,$(subst $(TIME_SRC_DIR)/,,$(TIME_C_SRC)))
+TIME_OBJ += $(patsubst %.S,$(TIME_BUILD_DIR)/%.o,$(subst $(TIME_SRC_DIR)/,,$(TIME_ASM_SRC)))
 
 EXTRA_AR += $(TIMEIROM_A) 
 #EXTRA_INCDIR +=
