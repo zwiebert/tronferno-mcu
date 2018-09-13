@@ -14,7 +14,7 @@
 #include "all.h"
 #include "set_endpos.h"
 
-#ifdef MCU_ESP8266
+#if defined  MCU_ESP8266 || defined MCU_ESP32
 #include "timer_data.h"
 #define ENABLE_RSTD 1
 #else

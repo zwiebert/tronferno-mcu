@@ -12,24 +12,9 @@
 
 
 bool ICACHE_FLASH_ATTR save_timer_data(DATA_TYPE *p, uint8_t g, uint8_t m) {
-  bool result = false;
-
-#if ENABLE_SPIFFS
-  result = save_timer_data_spiffs(p, g, m);
-#else
-  result = save_timer_data_old(p, g, m);
-#endif
-
-  return result;
+  return SAVE_TIMER_DATA_FUN(p, g, m);
 }
 
 bool ICACHE_FLASH_ATTR read_timer_data(DATA_TYPE *p, uint8_t *g, uint8_t *m, bool wildcard) {
-  bool result = false;
-#if ENABLE_SPIFFS
-  result = read_timer_data_spiffs(p, g, m, wildcard);
-#else
-  result = read_timer_data_old(p, g, m, wildcard);
-#endif
-
-  return result;
+  return READ_TIMER_DATA_FUN(p, g, m, wildcard);
 }

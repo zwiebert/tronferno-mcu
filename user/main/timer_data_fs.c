@@ -5,7 +5,6 @@
  *      Author: bertw
  */
 #include "../user_config.h"
-#if ENABLE_SPIFFS
 
 #include "timer_data_fs.h"
 
@@ -20,10 +19,10 @@
 #define DB(x) x
 #define DB2(x)
 #else
-#define DB(x) ((C.app_verboseOutput >= vrbDebug) && (x),1)
+#define DB(x) do { if (C.app_verboseOutput >= vrbDebug) { x; } } while(0)
 #define DB2(x) DB(x)
 #endif
-#define printf ets_uart_printf
+#define printf ets_printf
 
 
 
@@ -93,5 +92,3 @@ bool ICACHE_FLASH_ATTR read_timer_data_fs(timer_data_t *p, uint8_t *g, uint8_t *
   return result;
 }
 
-
-#endif /* ENABLE_SPIFFS */

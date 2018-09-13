@@ -20,6 +20,7 @@ void setup_tcp_server(void);
 void tcps_loop(void);
 void setup_timer(void);
 void setup_ntp(void);
+void setup_storage(void);
 
 esp_err_t event_handler(void *ctx, system_event_t *event)
 {
@@ -66,7 +67,7 @@ mcu_init() {
   setup_tcp_server();
   //setup_udp();
   setup_timer();
-
+  setup_storage();
   main_setup();
 
   //system_os_task(user_procTask, user_procTaskPrio, user_procTaskQueue, user_procTaskQueueLen);
