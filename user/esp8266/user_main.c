@@ -159,7 +159,7 @@ user_init() {
 #if ENABLE_SPIFFS
   setup_spiffs();
 #endif
-  read_config();
+  read_config(~0);
   setup_serial(C.mcu_serialBaud);
   io_puts("\r\n\r\n");
 

@@ -55,7 +55,7 @@ bool mcu_get_buttonUpPin(void);
 bool mcu_get_buttonDownPin(void);
 bool mcu_get_buttonPin(void);
 
-typedef enum mcu_pin_state { PIN_DEFAULT=0, PIN_INPUT, PIN_INPUT_PULLUP, PIN_OUTPUT, PIN_ERROR, PIN_READ, PIN_CLEAR, PIN_SET, PIN_TOGGLE } mcu_pin_state;
+typedef enum mcu_pin_state { PIN_DEFAULT=0, PIN_INPUT, PIN_INPUT_PULLUP, PIN_OUTPUT, PIN_ERROR, PIN_READ, PIN_CLEAR, PIN_SET, PIN_TOGGLE, PIN_INPUT_OUTPUT } mcu_pin_state;
 const char* mcu_access_pin(int gpio_number, mcu_pin_state *result, mcu_pin_state state);
 bool  is_gpio_number_usable(int gpio_number, bool cli);
 #endif

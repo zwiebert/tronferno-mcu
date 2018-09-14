@@ -56,8 +56,6 @@ static void modify_io_fun(void);
 
 static int sockfd;
 static struct sockaddr_in self;
-static char buffer[MAX_BUF];
-static int clientfd = -1;
 static int cconn_count;
 
 

@@ -151,7 +151,7 @@ void ICACHE_FLASH_ATTR
 rtc_setup() {
 
 #if POSIX_TIME
-  setenv("TZ", C.geo_timezone, 1);
+  setenv("TZ", C.geo_tz, 1);
   tzset();
 
 #else

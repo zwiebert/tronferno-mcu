@@ -55,10 +55,10 @@ void ICACHE_FLASH_ATTR save_config(void) {
 #endif
 }
 #else
-void ICACHE_FLASH_ATTR read_config(void) {
+void ICACHE_FLASH_ATTR read_config(uint32_t mask) {
 	read_data();
 }
-void ICACHE_FLASH_ATTR save_config(void) {
+void ICACHE_FLASH_ATTR save_config(uint32_t mask) {
 	save_data();
 }
 #endif

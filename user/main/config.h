@@ -29,11 +29,18 @@
 #define MY_FER_CENTRAL_UNIT_ID 0x8012345
 #define MY_MCU_ATMEGA328_BAUD_RATE 19200
 #define MY_MCU_ESP8266_BAUD_RATE 115200
-#define MY_GEO_LONGITUDE +12.34567
-#define MY_GEO_LATITUDE  +54.32109
+#define MY_MCU_ESP32_BAUD_RATE 115200
+
+
+// Berlin/Germany
+#define MY_GEO_LONGITUDE +13.38
+#define MY_GEO_LATITUDE  +52.53
+
+#define MY_GEO_TZ "CET-1CEST-2,M3.5.0,M10.5.0" // POSIX TZ format
+
 #define MY_GEO_TIMEZONE +1.0
-#define MY_GEO_TZ "CET-1CEST-2,M3.5.0,M10.5.0"
 #define MY_GEO_DST dstEU
+
 #define MY_WIFI_SSID ""
 #define MY_WIFI_PASSWORD ""
 #define MY_APP_CONFIG_PASSWORD ""
@@ -70,13 +77,11 @@ enum verbosity {
 typedef struct {
 	uint32_t fer_centralUnitID, mcu_serialBaud;
 	float geo_longitude, geo_latitude;
-#if !POSIX_TIME
-	float geo_timezone;
-  enum dst geo_dST;
-#else
-	char geo_timezone[64];
-#endif
 
+	float geo_timezone;
+#if !POSIX_TIME
+  enum dst geo_dST;
+#endif
   int32_t app_rtcAdjust;
 	enum receiver app_recv;
 	enum transmitter app_transm;
@@ -90,35 +95,33 @@ typedef struct {
 #endif
 	char app_configPassword[16];
 	char app_expertPassword[16];
-#ifdef ACCESS_GPIO
-	 enum mcu_pin_state gpio[17];
+#ifdef CONFIG_GPIO_SIZE
+	 enum mcu_pin_state gpio[CONFIG_GPIO_SIZE];
+#endif
+#if POSIX_TIME
+  char geo_tz[32];
 #endif
 } config;
 
-
-
-#if 0
-void cfg_fer_centralUnitID(uint32_t *v, bool set);
-void cfg_mcu_serialBaud(uint32_t *v, bool set);
-void cfg_geo_longitude(float *v, bool set);
-void cfg_geo_latitude(float *v, bool set);
-void cfg_geo_timezone(float *v, bool set);
-void cfg_geo_dST(enum dst *v, bool set);
-void cfg_app_rtcAdjust(int32_t *v, bool set);
-void cfg_app_recv(enum receiver *v, bool set);
-void cfg_app_transm(enum transmitter *v, bool set);
-void cfg_app_rtc(enum rtclock *v, bool set);
-void cfg_app_verboseOutput(enum verbosity *v, bool set);
-void cfg_wifi_SSID(char *v, bool set);
-void cfg_wifi_password(char *v, bool set);
-void cfg_app_configPassword(char *v, bool set);
-void cfg_app_expertPassword(char *v, bool set);
-#endif
-
-
 extern config C;
 
-void read_config(void);  // restore C from persistent storage
-void save_config(void);  // save C to persistent storage
+void read_config(uint32_t mask);  // restore C from persistent storage
+void save_config(uint32_t mask);  // save C to persistent storage
+
+#define CONFIG_RECV (1UL << 0)
+#define CONFIG_TRANSM (1UL << 1)
+#define CONFIG_CUID (1UL << 2)
+#define CONFIG_USED_MEMBERS (1UL << 3)
+#define CONFIG_BAUD (1UL << 4)
+#define CONFIG_GPIO (1UL << 5)
+#define CONFIG_VERBOSE (1UL << 6)
+#define CONFIG_WIFI_SSID (1UL << 7)
+#define CONFIG_WIFI_PASSWD (1UL << 8)
+#define CONFIG_CFG_PASSWD (1UL << 9)
+#define CONFIG_LONGITUDE (1UL << 10)
+#define CONFIG_LATITUDE (1UL << 11)
+#define CONFIG_TIZO (1UL << 12)
+#define CONFIG_TZ (1UL << 13)
+#define CONFIG_DST (1UL << 14)
 
 #endif /* CONFIG_H_ */

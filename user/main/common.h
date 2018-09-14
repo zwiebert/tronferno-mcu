@@ -7,6 +7,9 @@
 #ifdef ESP_PLATFORM
 #define MCU_ESP32
 #endif
+
+#else
+#define CONFIG_BLOB 1
 #endif
 
 ////////////////////////
@@ -17,7 +20,8 @@
 #define FER_RECEIVER
 #define USE_NTP
 #define USE_WLAN
-#define ACCESS_GPIO
+#define CONFIG_BLOB 1
+#define CONFIG_GPIO_SIZE 17
 #endif
 #endif
 
@@ -26,7 +30,10 @@
 #define FER_RECEIVER
 #define USE_NTP
 #define USE_WLAN
+#define CONFIG_BLOB 0
 #define ACCESS_GPIO
+#define CONFIG_GPIO_SIZE 40
+#define POSIX_TIME 1
 #endif
 
 ////////////////////////////

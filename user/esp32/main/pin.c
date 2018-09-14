@@ -19,6 +19,7 @@
 
 #include "main/inout.h"
 #include "main/fer.h"
+#include "main/common.h"
 #include "main/config.h"
 
 #define printf ets_uart_printf
@@ -85,7 +86,7 @@ void ICACHE_FLASH_ATTR
 setup_pin(void) {
   int i;
 
-  for (i = 0; i < 17; ++i) {
+  for (i = 0; i < CONFIG_GPIO_SIZE; ++i) {
     mcu_pin_state state = C.gpio[i];
     if (state == PIN_DEFAULT)
       continue;
@@ -183,17 +184,16 @@ const char* ICACHE_FLASH_ATTR mcu_access_pin2(int gpio_number, mcu_pin_state *re
     }
 
   } else if (state == PIN_SET) {
-    GPIO_OUTPUT_SET(gpio_number, 1);
+    gpio_set_level(gpio_number, 1);
 
   } else if (state == PIN_CLEAR) {
-    GPIO_OUTPUT_SET(gpio_number, 0);
+    gpio_set_level(gpio_number, 0);
 
   } else if (state == PIN_TOGGLE) {
-    bool old = GPIO_INPUT_GET(GPIO_ID_PIN(gpio_number));
-    GPIO_OUTPUT_SET(gpio_number, !old);
+    gpio_set_level(gpio_number, !gpio_get_level(gpio_number)); // TODO: works only for GPIO_MODE_INPUT_OUTPUTINPUT_OUTPUT
 
   } else if (state == PIN_READ) {
-    *result = GPIO_INPUT_GET(GPIO_ID_PIN(gpio_number)) ? PIN_SET : PIN_CLEAR;
+    *result = gpio_get_level(GPIO_ID_PIN(gpio_number)) ? PIN_SET : PIN_CLEAR;
 
   } else {
     return "not implemented";

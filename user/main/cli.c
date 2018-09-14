@@ -336,7 +336,7 @@ bool ICACHE_FLASH_ATTR config_receiver(const char *val) {
   } else {
     return false;
   }
-  save_config();
+  save_config(CONFIG_RECV);
   return true;
 }
 
@@ -349,7 +349,7 @@ config_transmitter(const char *val) {
   } else {
     return false;
   }
-  save_config();
+  save_config(CONFIG_TRANSM);
   return true;
 }
 
@@ -400,7 +400,7 @@ bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds) {
     end_time = 0;
     io_puts("U: Central Unit received and stored\n");
     reply_message("cuas=ok", 0);
-    save_config();
+    save_config(CONFIG_CUID);
     cuas_active = false;
     return true;
   }
@@ -471,7 +471,7 @@ process_parmSend(clpar p[], int len) {
     } else if (strcmp(key, "r") == 0) {
       NODEFAULT();
       repeats = atoi(val);
-      if (!(0<= repeats && repeats <= 10)) {
+      if (!(repeats <= 10)) {
         return reply_failure();
       }
     } else if (strcmp(key, "c") == 0) {
@@ -527,7 +527,7 @@ process_parmSend(clpar p[], int len) {
   return 0;
 }
 
-#ifdef ACCESS_GPIO
+#ifdef CONFIG_GPIO_SIZE
 //PIN_DEFAULT=0, PIN_INPUT, PIN_INPUT_PULLUP, PIN_OUTPUT, PIN_ERROR, PIN_READ, PIN_CLEAR, PIN_SET, PIN_TOGGLE
 const char pin_state_args[] = {
     'd', 'i', 'p', 'o', ' ', '?', '0', '1', 't'
@@ -546,6 +546,7 @@ const char help_parmConfig[] PROGMEM =
     "longitude=(DEG|?)\n"
     "latitude=(DEG|?)\n"
     "time-zone=(N|?)       example: config  longitude=+13.23452 latitude=+52.34234 time-zone=+1.0;\n"
+    "tz=(POSIX_TZ|?)       example: config  tz=CET-1CEST-2,M3.5.0,M10.5.0;\n"
     "dst=(eu|0|1|?)      daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
     "verbose=(0..5|?)    set text output verbosity level: 0 for none ... 5 for max)\n"
     "set-pw=password   set a config password. if set every config commands needs the pw option\n"
@@ -553,7 +554,7 @@ const char help_parmConfig[] PROGMEM =
 #if ENABLE_RESTART
     "restart           restart MCU\n"
 #endif
-#ifdef ACCESS_GPIO
+#ifdef CONFIG_GPIO_SIZE
     "gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default\n"
 #endif
 //  "set-expert-password=\n"
@@ -565,7 +566,6 @@ static int ICACHE_FLASH_ATTR
 process_parmConfig(clpar p[], int len) {
   int arg_idx;
   int errors = 0;
-  bool save = false;
   const char *cfgSep = "config ";
 
   bool pw_ok = strlen(C.app_configPassword) == 0;
@@ -590,8 +590,6 @@ process_parmConfig(clpar p[], int len) {
 
 #if ENABLE_RESTART
     } else if (strcmp(key, "restart") == 0) {
-      if (save)
-        save_config();
       mcu_restart();
 #endif
 
@@ -622,14 +620,14 @@ process_parmConfig(clpar p[], int len) {
         }
         FSB_PUT_DEVID(&default_sender, cu);
         C.fer_centralUnitID = cu;
-        save = true;
+	save_config(CONFIG_CUID);
       }
 
 
     } else if (strcmp(key, "gm-used") == 0) {
       uint32_t gmu = strtoul(val, NULL, 16);
       C.fer_usedMembers = gmu;
-      save = true;
+      save_config(CONFIG_USED_MEMBERS);
 
 
     } else if (strcmp(key, "baud") == 0) {
@@ -638,14 +636,13 @@ process_parmConfig(clpar p[], int len) {
       } else {
         uint32_t baud = strtoul(val, NULL, 10);
         C.mcu_serialBaud = baud;
-        save = true;
+        save_config(CONFIG_BAUD);
       }
 
-#ifdef ACCESS_GPIO
+#ifdef CONFIG_GPIO_SIZE
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
-      mcu_pin_state ps, ps_result = 0;
-      bool gpio_func = false;
+      mcu_pin_state ps;
 
       if (!is_gpio_number_usable(gpio_number, true)) {
         reply_message("gpio:error", "gpio number cannot be used");
@@ -691,7 +688,7 @@ process_parmConfig(clpar p[], int len) {
           reply_message("gpio:failure", error);
         } else {
           C.gpio[gpio_number] = ps;
-          save = true;
+	  save_config(CONFIG_GPIO);
         }
       }
 #endif
@@ -703,7 +700,7 @@ process_parmConfig(clpar p[], int len) {
         NODEFAULT();
         enum verbosity level = atoi(val);
         C.app_verboseOutput = level;
-        save = true;
+        save_config(CONFIG_VERBOSE);
       }
 
 
@@ -714,7 +711,7 @@ process_parmConfig(clpar p[], int len) {
       } else {
         if (strlen(val) < sizeof (C.wifi_SSID)) {
           strcpy (C.wifi_SSID, val);
-          save = true;
+          save_config(CONFIG_WIFI_SSID);
         } else {
           reply_failure();
         }
@@ -724,7 +721,7 @@ process_parmConfig(clpar p[], int len) {
     } else if (strcmp(key, "wlan-password") == 0) {
       if (strlen(val) < sizeof (C.wifi_password)) {
         strcpy (C.wifi_password, val);
-        save = true;
+        save_config(CONFIG_WIFI_PASSWD);
       } else {
         reply_failure();
       }
@@ -734,7 +731,7 @@ process_parmConfig(clpar p[], int len) {
     } else if (strcmp(key, "set-pw") == 0) {
       if (strlen(val) < sizeof (C.app_configPassword)) {
         strcpy (C.app_configPassword, val);
-        save = true;
+        save_config(CONFIG_CFG_PASSWD);
       } else {
         reply_failure();
       }
@@ -755,7 +752,7 @@ process_parmConfig(clpar p[], int len) {
         float longitude = stof(val);
         C.geo_longitude = longitude;
         rtc_setup();
-        save = true;
+        save_config(CONFIG_LONGITUDE);
       }
 
 
@@ -766,28 +763,33 @@ process_parmConfig(clpar p[], int len) {
         float latitude = stof(val);
         C.geo_latitude = latitude;
         rtc_setup();
-        save = true;
+        save_config(CONFIG_LATITUDE);
       }
 
 
     } else if (strcmp(key, "time-zone") == 0) {
       if (*val=='?') {
-#if POSIX_TIME
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_puts(C.geo_timezone), (cfgSep = " ");
-#else
+
         io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_timezone, 2), (cfgSep = " ");
-#endif
       } else {
-#if POSIX_TIME
-        strncpy(C.geo_timezone, val, sizeof (C.geo_timezone) -1);
-#else
         C.geo_timezone = stof(val);
-#endif
+
         rtc_setup();
-        save = true;
+        save_config(CONFIG_TZ);
       }
 
+#if POSIX_TIME
+    } else if (strcmp(key, "tz") == 0) {
+      if (*val=='?') {
+        io_puts(cfgSep), io_puts(key), io_puts("="), io_puts(C.geo_tz), (cfgSep = " ");
 
+      } else {
+        strncpy(C.geo_tz, val, sizeof (C.geo_tz) -1);
+
+        rtc_setup();
+        save_config(CONFIG_TZ);
+      }
+#endif
     } else if (strcmp(key, "dst") == 0) {
 #if POSIX_TIME
       if (*val=='?') {
@@ -808,7 +810,7 @@ process_parmConfig(clpar p[], int len) {
           warning_unknown_option(key);
         }
         rtc_setup();
-        save = true;
+        save_config(CONFIG_DST);
 
       }
 #endif
@@ -818,9 +820,6 @@ process_parmConfig(clpar p[], int len) {
       warning_unknown_option(key);
     }
   }
-
-  if (save)
-    save_config();
 
 if (strcmp(cfgSep, " ") == 0)
   io_puts(";\n");
@@ -834,7 +833,7 @@ const char help_parmMcu[] PROGMEM =
 #if ENABLE_SPIFFS
     "spiffs=(format|test)\n"
 #endif
-#ifdef ACCESS_GPIO
+#ifdef CONFIG_GPIO_SIZE
     "gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N\n"
 #endif
     "up-time=?\n"
@@ -880,7 +879,7 @@ process_parmMcu(clpar p[], int len) {
 
 
 
-#ifdef ACCESS_GPIO
+#ifdef CONFIG_GPIO_SIZE
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
       mcu_pin_state ps = 0, ps_result = 0;
@@ -1036,7 +1035,6 @@ process_parmTimer(clpar p[], int len) {
   fer_grp group = fer_grp_Broadcast;
   fer_memb memb = fer_memb_Broadcast;
   uint32_t addr = 0;
-  int wday = -1;
   uint8_t fpr0_flags = 0, fpr0_mask = 0;
   int8_t flag_rtc_only = FLAG_NONE;
 
@@ -1381,7 +1379,7 @@ process_parmHelp(clpar p[], int len) {
   // print help for help command; or help all;
   for (i = 1; i < len; ++i) {
     int k;
-    const char *key = p[i].key, *val = p[i].val;
+    const char *key = p[i].key; //, *val = p[i].val;
     bool keyProcessed = false;
 
     if (strcmp(key, "all") == 0) {

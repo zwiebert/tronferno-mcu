@@ -61,7 +61,7 @@ void ICACHE_FLASH_ATTR auto_adjust_time(time_t rtc_time, time_t ntp_time) {
     interval_days = (ntp_time - last_ntp_time) / (double) ONE_DAY;
     if (abs(adj_ms_per_day = diff_ms / interval_days) > ADJUST_TOLERANCE_MS) {
       C.app_rtcAdjust += adj_ms_per_day;
-      save_config();
+      save_config(~0);
     }
   }
 }

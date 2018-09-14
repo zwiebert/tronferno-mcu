@@ -47,7 +47,6 @@
 #ifdef MCU_ESP32
 #define SAVE_TIMER_DATA_FUN save_timer_data_fs
 #define READ_TIMER_DATA_FUN read_timer_data_fs
-#define POSIX_TIME 1
 #endif
 
 
