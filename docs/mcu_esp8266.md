@@ -1,5 +1,5 @@
 
-### How to build on Linux or Windows and flash to ESP-8266
+### How to build on Linux or Windows and flash to ESP8266
 
 * Prepare Hardware:
   * Esp8266 board connected to your PC-USB.

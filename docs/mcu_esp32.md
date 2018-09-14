@@ -31,5 +31,4 @@
 
 
         make esp32-flash       #writes our firmware program
-    
 
