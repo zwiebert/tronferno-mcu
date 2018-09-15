@@ -22,10 +22,6 @@ rtc_time_source_t rtc_last_time_source;
 
 void set_system_time(time_t timestamp);
 
-#if !POSIX_TIME
-volatile rtc_time_t rtc_clock;
-#define set_system_time(clock) (rtc_clock=(clock))
-#endif
 
 void ICACHE_FLASH_ATTR rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t source) {
   rtc_last_time_source = source;
