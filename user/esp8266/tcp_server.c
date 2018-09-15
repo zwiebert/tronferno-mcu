@@ -14,7 +14,8 @@
 #include "main/rtc.h"
 
 #define TCP_HARD_TIMEOUT  (60 * 10)  // terminate connections to avoid dead connections piling up
-#define SERIAL_ECHO 0
+#define SERIAL_ECHO 1
+#define SERIAL_INPUT 1
 
 #define printf io_printf_fun
 #ifndef DISTRIBUTION
@@ -22,6 +23,10 @@
 #else
 #define D(x)
 #endif
+
+#define DV(x) do { if (C.app_verboseOutput >= vrbDebug) { x; } } while(0)
+#undef DV
+#define DV(x)
 
 static int (*old_io_putc_fun)(char c);
 static int (*old_io_getc_fun)(void);
@@ -39,7 +44,7 @@ static int nmbConnected;
 #define wrap_idx(idx, limit) (idx &= (limit - 1))
 
 // circular buffers
-#define RX_BUFSIZE 256  // power of 2
+#define RX_BUFSIZE 128  // power of 2
 static uint8_t rx_buf[RX_BUFSIZE];
 static uint8_t rx_head = 0, rx_tail = 0;
 #define rxb_isEmpty() (rx_head == rx_tail)
@@ -52,7 +57,7 @@ static bool ICACHE_FLASH_ATTR rxb_pop(uint8_t *res) {
   return true;
 }
 
-#define TX_BUFSIZE 256 // power of 2
+#define TX_BUFSIZE 128 // power of 2
 static uint8_t tx_buf[RX_BUFSIZE];
 static uint8_t tx_head = 0, tx_tail = 0;
 #define txb_isEmpty() (tx_head == tx_tail)
@@ -64,23 +69,35 @@ static bool ICACHE_FLASH_ATTR txb_pop(uint8_t *res) {
   wrap_idx(tx_head, TX_BUFSIZE);
   return true;
 }
+/////////////////////////////////////
+
 
 static int ICACHE_FLASH_ATTR
 tcpSocket_io_getc(void) {
   uint8_t c;
+
+#if SERIAL_INPUT
+  if (old_io_getc_fun) {
+
+    int cc = old_io_getc_fun();
+    if (cc >= 0) {
+      return cc;
+    }
+  }
+#endif
+
 
   if (rxb_pop(&c)) {
 
     if (nmbConnected <= 0) {
       if (rxb_isEmpty()) {
         io_getc_fun = old_io_getc_fun;
-        D(printf("reset io_getc_fun to serial UART\n"));
+        DV(printf("reset io_getc_fun to serial UART\n"));
         rx_head = rx_tail = 0;
       }
     }
+    D(printf("(%c)", c));
     return c;
-  } else if (old_io_getc_fun) {
-    return old_io_getc_fun();
   }
 
   return -1;
@@ -107,12 +124,14 @@ tcpSocket_io_putc(char c) {
   return 0xff & c;
 }
 
+///////////////////////////////////////
+
 static int tx_pending;
 
 static void ICACHE_FLASH_ATTR
 tcps_send_cb(void *arg) {
   --tx_pending;
-  D(printf("%s(%p), tx_pend=%d\n", __func__, arg, tx_pending));
+  DV(printf("%s(%p), tx_pend=%d\n", __func__, arg, tx_pending));
   if (tx_pending < 0)
     tx_pending = 0;
 }
@@ -126,7 +145,7 @@ tcps_tx_loop(void) {
   if (tx_pending && ++pendingCount < 0) {
     tx_pending = 0;
     pendingCount = 0;
-    D(printf("pending unbalanced\n"));
+    DV(printf("pending unbalanced\n"));
   }
 
   if (!tx_pending && tx_head != tx_tail) {
@@ -147,7 +166,7 @@ tcps_tx_loop(void) {
         }
         if (ESPCONN_OK == espconn_send(tcpclient_espconn[i], tx_buf + h, l)) {
           ++tx_pending;
-          D(printf("send success. length=%d\n", (int)l));
+          DV(printf("send success. length=%d\n", (int)l));
         }
       }
     }
@@ -160,10 +179,10 @@ tcps_disconnect_cb(void *arg) {
   int i;
   struct espconn *pesp_conn = arg;
 
-  printf("tcp client disconnected: %d.%d.%d.%d:%d\n", pesp_conn->proto.tcp->remote_ip[0], pesp_conn->proto.tcp->remote_ip[1],
-      pesp_conn->proto.tcp->remote_ip[2], pesp_conn->proto.tcp->remote_ip[3], pesp_conn->proto.tcp->remote_port);
+  DV(printf("tcp client disconnected: %d.%d.%d.%d:%d\n", pesp_conn->proto.tcp->remote_ip[0], pesp_conn->proto.tcp->remote_ip[1],
+      pesp_conn->proto.tcp->remote_ip[2], pesp_conn->proto.tcp->remote_ip[3], pesp_conn->proto.tcp->remote_port));
 
-  D(printf("%s(%p), clients=%d\n", __func__, arg, nmbConnected));
+  DV(printf("%s(%p), clients=%d\n", __func__, arg, nmbConnected));
 
   for (i = 0; i < NMB_CLIENTS; ++i) {
     if (tcpclient_espconn[i] == NULL) {
@@ -174,20 +193,20 @@ tcps_disconnect_cb(void *arg) {
       if (a->remote_port == b->remote_port && 0 == memcmp(a->remote_ip, b->remote_ip, sizeof(a->remote_ip))) {
         tcpclient_espconn[i] = 0;
         --nmbConnected;
-        D(printf("match. connections=%d\n", (int)nmbConnected));
+        DV(printf("match. connections=%d\n", (int)nmbConnected));
         break;
       }
     }
   }
 
   if (i == NMB_CLIENTS) {
-    D(printf("no match\n"));
+    DV(printf("no match\n"));
     return;
   }
 
   if (nmbConnected <= 0) {
     io_putc_fun = old_io_putc_fun;
-    D(printf("reset io_putc_fun to serial UART\n"));
+    DV(printf("reset io_putc_fun to serial UART\n"));
     nmbConnected = 0;
 
     while (tx_head != tx_tail) {
@@ -200,7 +219,7 @@ tcps_disconnect_cb(void *arg) {
 
     if (rxb_isEmpty()) {
       io_getc_fun = old_io_getc_fun;
-      D(printf("reset io_getc_fun to serial UART\n"));
+      DV(printf("reset io_getc_fun to serial UART\n"));
       rx_head = rx_tail = 0;
     }
   }
@@ -221,7 +240,7 @@ static void ICACHE_FLASH_ATTR
 tcps_connect_cb(void *arg) {
   int i;
 
-  D(printf("%s(%p)\n", __func__, arg));
+  DV(printf("%s(%p)\n", __func__, arg));
   struct espconn *pesp_conn = (struct espconn *) arg;
 
   timeout_disconnect_all = run_time(0) + TCP_HARD_TIMEOUT;
@@ -242,8 +261,8 @@ tcps_connect_cb(void *arg) {
     }
   }
 
-  printf("tcp client %d connected: %d.%d.%d.%d:%d\n", nmbConnected, pesp_conn->proto.tcp->remote_ip[0], pesp_conn->proto.tcp->remote_ip[1], pesp_conn->proto.tcp->remote_ip[2],
-      pesp_conn->proto.tcp->remote_ip[3], pesp_conn->proto.tcp->remote_port);
+  DV(printf("tcp client %d connected: %d.%d.%d.%d:%d\n", nmbConnected, pesp_conn->proto.tcp->remote_ip[0], pesp_conn->proto.tcp->remote_ip[1], pesp_conn->proto.tcp->remote_ip[2],
+      pesp_conn->proto.tcp->remote_ip[3], pesp_conn->proto.tcp->remote_port));
 
   io_getc_fun = tcpSocket_io_getc;
   io_putc_fun = tcpSocket_io_putc;
@@ -280,6 +299,7 @@ tcps_loop(void) {
   if (nmbConnected > 0 && timeout_disconnect_all < run_time(NULL)) {
     for (i = 0; i < NMB_CLIENTS; ++i) {
       if (tcpclient_espconn[i] != NULL) {
+        DV(printf("tcps: disconnect client (idx=%d) because of time out\n", i));
         espconn_disconnect(tcpclient_espconn[i]);
         tcpclient_espconn[i] = NULL;
       }
@@ -302,7 +322,7 @@ setup_tcp_server(void) {
   old_io_putc_fun = io_putc_fun;
 
   if (!(tcpserver_espconn = pesp_conn)) {
-    printf("TCP server failure. Out of memory.\n");
+    DV(printf("TCP server failure. Out of memory.\n"));
     return;
   }
 

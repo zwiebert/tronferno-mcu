@@ -435,11 +435,11 @@ static bool ICACHE_FLASH_ATTR asc2memb(const char *s, fer_memb *memb) {
 
 const char help_parmSend[] PROGMEM =
 "a=(0|ID)    hex ID of sender or receiver. 0 (default) uses 'cu' in config\n"
-    "g=[0-7]     group number. 0 (default) addresses all groups\n"
-    "m=[0-7]     group member. 0 (default) addresses all members\n"
-    "c=command   Command to send. One of: up, down, stop, sun-down, sun-inst, set\n"
-    "r=N         Repeated sending for better reception. Send the command 1+N times"
-    "SEP[=0|1]   Switch to enable end-position adjustment. Hold hardware button to adjust end position (esp8266: gpio0/flash button on mini boards)"
+    "g=[0-7]     group number. (default 0)\n"
+    "m=[0-7]     group member number. (default 0)\n"
+    "c=command   commands: up, down, stop, sun-down, sun-inst, set\n"
+    "r=N         repeat command 1+N times"
+    "SEP[=0|1]   Enter end-position adjustment mode (needs hardware button)"
 // "TROT        Toggle rotation direction"
 ;
 
@@ -545,10 +545,14 @@ const char help_parmConfig[] PROGMEM =
 #endif
     "longitude=(DEG|?)\n"
     "latitude=(DEG|?)\n"
-    "time-zone=(N|?)       example: config  longitude=+13.23452 latitude=+52.34234 time-zone=+1.0;\n"
-    "tz=(POSIX_TZ|?)       example: config  tz=CET-1CEST-2,M3.5.0,M10.5.0;\n"
+ #if !POSIX_TIME
+    "time-zone=(N|?)     time zone hour offset for astro and rtc\n"
     "dst=(eu|0|1|?)      daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
-    "verbose=(0..5|?)    set text output verbosity level: 0 for none ... 5 for max)\n"
+#else
+    "time-zone=(N|?)       time offset for astro\n"
+    "tz=(POSIX_TZ|?)       time zone for RTC/NTP. example: config  tz=CET-1CEST-2,M3.5.0,M10.5.0;\n"
+#endif
+    "verbose=(0..5|?)    set text output verbosity level. 0 for none ... 5 for max\n"
     "set-pw=password   set a config password. if set every config commands needs the pw option\n"
     "pw=PW             example: config pw=my_passw dst=eu;\n"
 #if ENABLE_RESTART

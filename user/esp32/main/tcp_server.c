@@ -27,7 +27,9 @@
 #include <errno.h>
 
 #define TCP_HARD_TIMEOUT  (60 * 10)  // terminate connections to avoid dead connections piling up
-#define SERIAL_ECHO 0
+#define SERIAL_ECHO 1
+#define SERIAL_INPUT 1
+#define PUTC_LINE_BUFFER 1
 
 #define printf ets_printf
 #ifndef DISTRIBUTION
@@ -144,7 +146,7 @@ int tcps_create_server() {
   return 0;
 }
 
-#if 1
+#if PUTC_LINE_BUFFER
 #define TCPS_LINE_LEN 120
 static char line_buf[TCPS_LINE_LEN];
 static int line_idx;
@@ -152,8 +154,10 @@ static int line_idx;
 static int tcp_io_putc(char c) {
   uint8_t i;
 
+#if SERIAL_ECHO
   if(old_io_putc_fun)
     old_io_putc_fun(c);
+#endif
 
   if (line_idx < TCPS_LINE_LEN) {
     line_buf[line_idx++] = c;
@@ -167,7 +171,7 @@ static int tcp_io_putc(char c) {
   for (i = 0; i < TCPS_CCONN_MAX; ++i) {
     int idx = (i + 1) & (TCPS_CCONN_MAX - 1);
     if (cconn_is_used(idx)) {
-      if (send(cconn_table[idx].fd, line_buf, line_idx, 0) < 0) {
+      if (send(cconn_table[idx].fd, line_buf, line_idx, 0) < 0) {  // FIXME: handle partially sent data
         tcps_close_cconn(idx);
       }
     }

@@ -24,7 +24,7 @@ static int es_io_putc(char c) {
   return 1;
 }
 
-#define RX_BUFSIZE 256
+#define RX_BUFSIZE 128
 static uint8_t buf[RX_BUFSIZE];
 static uint8_t head = 0, tail = 0;
 
