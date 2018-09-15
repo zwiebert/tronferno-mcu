@@ -168,5 +168,5 @@ reflash : rebuild flash
 
 $(eval $(call compile-objects,$(BUILD_BASE)/,$(SRC_BASE)/))
 
-
+include $(wildcard $(DEP_DIR)/*.d) $(wildcard $(DEP_DIR)/.*.d)
 

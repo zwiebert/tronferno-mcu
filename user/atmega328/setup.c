@@ -17,7 +17,7 @@ void setup_timer(void);
 
 void setup_mcu(void)
 {
-   read_config();
+   read_config(~0);
    
    setup_pin();
 
