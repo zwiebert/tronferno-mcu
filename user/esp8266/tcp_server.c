@@ -14,6 +14,7 @@
 #include "main/rtc.h"
 
 #define TCP_HARD_TIMEOUT  (60 * 10)  // terminate connections to avoid dead connections piling up
+#define PUTC_LINE_BUFFER 1
 #define SERIAL_ECHO 1
 #define SERIAL_INPUT 1
 
@@ -24,9 +25,12 @@
 #define D(x)
 #endif
 
+#if 0
 #define DV(x) do { if (C.app_verboseOutput >= vrbDebug) { x; } } while(0)
+#else
 #undef DV
 #define DV(x)
+#endif
 
 static int (*old_io_putc_fun)(char c);
 static int (*old_io_getc_fun)(void);
@@ -56,7 +60,7 @@ static bool ICACHE_FLASH_ATTR rxb_pop(uint8_t *res) {
   wrap_idx(rx_head, RX_BUFSIZE);
   return true;
 }
-
+#if !PUTC_LINE_BUFFER
 #define TX_BUFSIZE 128 // power of 2
 static uint8_t tx_buf[RX_BUFSIZE];
 static uint8_t tx_head = 0, tx_tail = 0;
@@ -69,6 +73,9 @@ static bool ICACHE_FLASH_ATTR txb_pop(uint8_t *res) {
   wrap_idx(tx_head, TX_BUFSIZE);
   return true;
 }
+#endif
+
+static int tx_pending;
 /////////////////////////////////////
 
 
@@ -102,7 +109,90 @@ tcpSocket_io_getc(void) {
 
   return -1;
 }
+#if PUTC_LINE_BUFFER
+#define TCPS_LINE_LEN 120
+static char line_buf[TCPS_LINE_LEN];
+static int line_idx;
+static bool line_complete;
 
+static int ICACHE_FLASH_ATTR
+write_line(void) {
+  uint8_t i;
+
+  if (line_idx == 0)
+    return -1;
+
+  DV(printf("write line (len=%d) to tcp\n", line_idx));
+
+  for (i = 0; i < NMB_CLIENTS; ++i) {
+    if (tcpclient_espconn[i] == 0)
+      continue;
+
+
+    bool success = false;
+    int result;
+    switch (result = espconn_send(tcpclient_espconn[i], line_buf, line_idx)) {
+
+    case ESPCONN_OK:
+      ++tx_pending;
+      success = true;
+      DV(printf("send success. length=%d (client_idx=%d)\n", (int)line_idx, i));
+      break;
+
+    case ESPCONN_INPROGRESS:
+      DV(printf("tcps: ESPCONN_INPROGRESS\n"));
+     break;
+
+    case ESPCONN_MAXNUM:
+      DV(printf("tcps: ESPCONN_MAXNUM\n"));
+      break;
+
+    case ESPCONN_ABRT:
+    case ESPCONN_RST:
+    case ESPCONN_CLSD:
+    case ESPCONN_CONN:
+      DV(printf("tcps: disconnect client (idx=%d) because of failed send\n", i));
+      espconn_disconnect(tcpclient_espconn[i]);
+      tcpclient_espconn[i] = NULL;
+      --nmbConnected;
+      break;
+    }
+
+    if (!success) {
+     DV(printf("##send failure. length=%d (client_idx=%d) result=%d\n", (int)line_idx, i, result));
+
+    }
+ }
+
+  line_idx = 0;
+  return 1;
+
+}
+
+static int ICACHE_FLASH_ATTR
+tcpSocket_io_putc(char c) {
+  uint8_t i;
+
+#if SERIAL_ECHO
+  if (old_io_putc_fun)
+    old_io_putc_fun(c);
+#endif
+
+  if (line_idx < TCPS_LINE_LEN) {
+    line_buf[line_idx++] = c;
+    if (c != '\n' && (line_idx <= TCPS_LINE_LEN)) {
+      return 1;
+    }
+  }
+
+  if (tx_pending > 0) {
+    DV(printf("tcps tx_pending %d\n", tx_pending));
+    return 1;
+  } else {
+    return write_line();
+  }
+}
+#else
 static int ICACHE_FLASH_ATTR
 tcpSocket_io_putc(char c) {
   uint8_t new_tail = tx_tail + 1;
@@ -123,21 +213,32 @@ tcpSocket_io_putc(char c) {
 
   return 0xff & c;
 }
-
+#endif
 ///////////////////////////////////////
 
-static int tx_pending;
 
+#if !PUTC_LINE_BUFFER
 static void ICACHE_FLASH_ATTR
 tcps_send_cb(void *arg) {
   --tx_pending;
-  DV(printf("%s(%p), tx_pend=%d\n", __func__, arg, tx_pending));
+  (printf("%s(%p), tx_pend=%d\n", __func__, arg, tx_pending));
   if (tx_pending < 0)
     tx_pending = 0;
 }
+#else
+static void ICACHE_FLASH_ATTR
+tcps_send_cb(void *arg) {
+  --tx_pending;
+  (printf("%s(%p), tx_pend=%d\n", __func__, arg, tx_pending));
+  if (tx_pending < 0)
+    tx_pending = 0;
+}
+#endif
+
 
 static void ICACHE_FLASH_ATTR
 tcps_tx_loop(void) {
+#if !PUTC_LINE_BUFFER
   int i;
   static int pendingCount;
 
@@ -172,36 +273,46 @@ tcps_tx_loop(void) {
     }
     tx_head = (l + h) % TX_BUFSIZE;
   }
+#else
+  if (tx_pending <= 0) {
+    write_line();
+  }
+#endif
 }
 
 static void ICACHE_FLASH_ATTR
 tcps_disconnect_cb(void *arg) {
   int i;
   struct espconn *pesp_conn = arg;
+  bool match = false;
 
   DV(printf("tcp client disconnected: %d.%d.%d.%d:%d\n", pesp_conn->proto.tcp->remote_ip[0], pesp_conn->proto.tcp->remote_ip[1],
       pesp_conn->proto.tcp->remote_ip[2], pesp_conn->proto.tcp->remote_ip[3], pesp_conn->proto.tcp->remote_port));
 
   DV(printf("%s(%p), clients=%d\n", __func__, arg, nmbConnected));
 
-  for (i = 0; i < NMB_CLIENTS; ++i) {
-    if (tcpclient_espconn[i] == NULL) {
-      continue;
-    } else {
-      esp_tcp *a = pesp_conn->proto.tcp, *b = tcpclient_espconn[i]->proto.tcp;
+  if (arg) {
+    for (i = 0; i < NMB_CLIENTS; ++i) {
+      if (tcpclient_espconn[i] == NULL) {
+        continue;
+      } else {
+        esp_tcp *a = pesp_conn->proto.tcp, *b = tcpclient_espconn[i]->proto.tcp;
 
-      if (a->remote_port == b->remote_port && 0 == memcmp(a->remote_ip, b->remote_ip, sizeof(a->remote_ip))) {
-        tcpclient_espconn[i] = 0;
-        --nmbConnected;
-        DV(printf("match. connections=%d\n", (int)nmbConnected));
-        break;
+        if (a->remote_port == b->remote_port && 0 == memcmp(a->remote_ip, b->remote_ip, sizeof(a->remote_ip))) {
+          tcpclient_espconn[i] = 0;
+          --nmbConnected;
+          DV(printf("match. connections=%d\n", (int)nmbConnected));
+          match = true;
+          break;
+        }
       }
     }
-  }
 
-  if (i == NMB_CLIENTS) {
-    DV(printf("no match\n"));
-    return;
+    if (!match) {
+      DV(printf("no match\n"));
+      if (nmbConnected > 0)
+        return;
+    }
   }
 
   if (nmbConnected <= 0) {
@@ -209,11 +320,13 @@ tcps_disconnect_cb(void *arg) {
     DV(printf("reset io_putc_fun to serial UART\n"));
     nmbConnected = 0;
 
+#if !PUTC_LINE_BUFFER
     while (tx_head != tx_tail) {
       io_putc(tx_buf[tx_head++]);
       wrap_idx(tx_head, TX_BUFSIZE);
     }
     tx_head = tx_tail = 0;
+#endif
     tx_pending = 0;
     os_bzero(tcpclient_espconn, sizeof tcpclient_espconn);
 
@@ -274,6 +387,7 @@ tcps_connect_cb(void *arg) {
   io_putd(nmbConnected), io_puts(" tcp client(s) connected\n");
 }
 
+#if !PUTC_LINE_BUFFER
 static bool command_processing_done;
 void ICACHE_FLASH_ATTR
 tcps_command_processing_hook(bool done) {
@@ -283,6 +397,7 @@ tcps_command_processing_hook(bool done) {
     command_processing_done = true;
   }
 }
+#endif
 
 void ICACHE_FLASH_ATTR
 tcps_loop(void) {
@@ -290,10 +405,12 @@ tcps_loop(void) {
 
   tcps_tx_loop();
 
+#if !PUTC_LINE_BUFFER
   if (command_processing_done && txb_isEmpty()) {
     tcpc_last_received = 0;
     command_processing_done = false;
   }
+#endif
 
   // cleanup
   if (nmbConnected > 0 && timeout_disconnect_all < run_time(NULL)) {
@@ -305,9 +422,13 @@ tcps_loop(void) {
       }
     }
     nmbConnected = 0;
-    tx_head = tx_tail = 0;
     rx_head = rx_tail = 0;
+#if !PUTC_LINE_BUFFER
+    tx_head = tx_tail = 0;
     tx_pending = 0;
+#endif
+
+
     io_getc_fun = old_io_getc_fun;
     io_putc_fun = old_io_putc_fun;
   }
@@ -317,6 +438,7 @@ void ICACHE_FLASH_ATTR
 setup_tcp_server(void) {
   // create tcp server
   struct espconn *pesp_conn = os_zalloc((uint32 )sizeof(struct espconn));
+  int result = 0;
 
   old_io_getc_fun = io_getc_fun;
   old_io_putc_fun = io_putc_fun;
@@ -333,7 +455,8 @@ setup_tcp_server(void) {
   espconn_regist_connectcb(pesp_conn, tcps_connect_cb);
   espconn_tcp_set_max_con_allow(pesp_conn, NMB_CLIENTS);
 
-  espconn_accept(pesp_conn);
+  result = espconn_accept(pesp_conn);
+  DV(printf("tcps: espconn_accept: %d\n", result));
   espconn_regist_time(pesp_conn, 180, 0);
 
 }

@@ -1420,22 +1420,24 @@ process_parmHelp(clpar p[], int len) {
   return 0;
 }
 
+#if 0
 // called when command processing starts and ends
 static void ICACHE_FLASH_ATTR command_processing_hooks(bool done) {
 #if defined USE_WLAN && defined MCU_ESP8266
   tcps_command_processing_hook(done);
 #endif
 }
+#endif
 
 void ICACHE_FLASH_ATTR cli_loop(void) {
   char *cmdline;
   static bool ready;
   if ((cmdline = get_commandline())) {
-    command_processing_hooks(false);
+   //command_processing_hooks(false);
     io_putlf();
     process_cmdline(cmdline);
     cli_msg_ready();
-    command_processing_hooks(true);
+    //command_processing_hooks(true);
   } else if (!ready) {
     cli_msg_ready();
     ready = true;
