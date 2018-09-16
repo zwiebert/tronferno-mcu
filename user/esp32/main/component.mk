@@ -10,3 +10,8 @@
 #COMPONENT_ADD_INCLUDEDIRS = /home/bertw/proj/mcu/tronferno-mcu/user
 COMPONENT_PRIV_INCLUDEDIRS = ../..
 COMPONENT_SRCDIRS += ../../main
+
+
+ifeq ($(DISTRO),1)
+CPPFLAGS += -DDISTRIBUTION
+endif
