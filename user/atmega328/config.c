@@ -19,7 +19,7 @@ struct ee_config {
 struct ee_config ee_cfg EEMEM = {
 	0,
 	{	MY_FER_CENTRAL_UNIT_ID,
-		MY_MCU_ATMEGA328_BAUD_RATE,
+	  MY_MCU_UART_BAUD_RATE,
 		MY_GEO_LONGITUDE,
 		MY_GEO_LATITUDE,
 		MY_GEO_TIMEZONE,
