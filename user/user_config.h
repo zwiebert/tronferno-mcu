@@ -50,6 +50,11 @@
 #endif
 
 
+#ifdef MCU_ATMEGA328
+#define SAVE_TIMER_DATA_FUN(a,g,m) false
+#define READ_TIMER_DATA_FUN(a,g,m,w) false
+#endif
+
 #define ENABLE_SET_ENDPOS 1
 
 #endif /* USER_CONFIG_H_ */

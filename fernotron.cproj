@@ -92,6 +92,11 @@
   <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
   <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
   <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+  <avrgcc.compiler.symbols.DefSymbols><ListValues>
+  <Value>MCU_ATMEGA328</Value>
+  <Value>AVR</Value>
+  <Value>F_CPU=16000000UL</Value>
+</ListValues></avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.directories.IncludePaths><ListValues><Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.2.132\include</Value><Value>../user</Value></ListValues></avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
   <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
@@ -99,7 +104,6 @@
   <avrgcc.compiler.miscellaneous.OtherFlags>-gdwarf-2 -std=c99</avrgcc.compiler.miscellaneous.OtherFlags>
   <avrgcc.compiler.miscellaneous.DoNotDeleteTemporaryFiles>True</avrgcc.compiler.miscellaneous.DoNotDeleteTemporaryFiles>
   <avrgcc.assembler.general.IncludePaths><ListValues><Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.2.132\include</Value></ListValues></avrgcc.assembler.general.IncludePaths>
-  <avrgcc.compiler.symbols.DefSymbols><ListValues><Value>F_CPU=16000000UL</Value></ListValues></avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.optimization.level>Optimize most (-O3)</avrgcc.compiler.optimization.level>
   <avrgcc.linker.miscellaneous.LinkerFlags>-Wl,-gc-sections</avrgcc.linker.miscellaneous.LinkerFlags>
   <avrgcc.assembler.general.AssemblerFlags>-Wall -gdwarf-2     -std=c99   -ffunction-sections   -save-temps         -DF_CPU=16000000UL -O2 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -Wall -gdwarf-2     -std=c99   -ffunction-sections   -save-temps         -DF_CPU=16000000UL -O2 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums</avrgcc.assembler.general.AssemblerFlags>
@@ -120,6 +124,12 @@
   <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
   <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>False</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
   <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>False</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+  <avrgcc.compiler.symbols.DefSymbols><ListValues>
+  <Value>MCU_ATMEGA328</Value>
+  <Value>AVR</Value>
+  <Value>F_CPU=16000000UL</Value>
+  <Value>DEBUG</Value>
+</ListValues></avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.directories.IncludePaths><ListValues><Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.2.132\include</Value><Value>../user</Value></ListValues></avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.PackStructureMembers>False</avrgcc.compiler.optimization.PackStructureMembers>
   <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>False</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
@@ -127,7 +137,6 @@
   <avrgcc.compiler.miscellaneous.OtherFlags>False</avrgcc.compiler.miscellaneous.OtherFlags>
   <avrgcc.compiler.miscellaneous.DoNotDeleteTemporaryFiles>False</avrgcc.compiler.miscellaneous.DoNotDeleteTemporaryFiles>
   <avrgcc.assembler.general.IncludePaths><ListValues><Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.2.132\include</Value></ListValues></avrgcc.assembler.general.IncludePaths>
-  <avrgcc.compiler.symbols.DefSymbols><ListValues><Value>F_CPU=16000000UL</Value><Value>DEBUG</Value></ListValues></avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.optimization.level>Optimize debugging experience (-Og)</avrgcc.compiler.optimization.level>
 </AvrGcc>
     </ToolchainSettings>
@@ -143,6 +152,15 @@
   <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
   <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
   <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+  <avrgcc.compiler.symbols.DefSymbols><ListValues>
+  <Value>MCU_ATMEGA328</Value>
+  <Value>AVR</Value>
+  <Value>F_CPU=16000000UL</Value>
+  <Value>DEBUG</Value>
+  <Value>DB_SELF_TEST</Value>
+  <Value>AVR_TIME</Value>
+  <Value>DEBUGGER</Value>
+</ListValues></avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.directories.IncludePaths><ListValues><Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.2.132\include</Value><Value>../user</Value></ListValues></avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
   <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
@@ -150,7 +168,6 @@
   <avrgcc.compiler.miscellaneous.OtherFlags>-gdwarf-2 -std=c99</avrgcc.compiler.miscellaneous.OtherFlags>
   <avrgcc.compiler.miscellaneous.DoNotDeleteTemporaryFiles>True</avrgcc.compiler.miscellaneous.DoNotDeleteTemporaryFiles>
   <avrgcc.assembler.general.IncludePaths><ListValues><Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.2.132\include</Value></ListValues></avrgcc.assembler.general.IncludePaths>
-  <avrgcc.compiler.symbols.DefSymbols><ListValues><Value>F_CPU=16000000UL</Value><Value>DEBUG</Value><Value>DB_SELF_TEST</Value><Value>AVR_TIME</Value><Value>AVR</Value><Value>FER_RECEIVER</Value><Value>FER_TRANSMITTER</Value><Value>DEBUGGER</Value></ListValues></avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.optimization.level>Optimize debugging experience (-Og)</avrgcc.compiler.optimization.level>
   <avrgcc.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcc.compiler.optimization.DebugLevel>
   <avrgcc.linker.miscellaneous.LinkerFlags>-Wl,-gc-sections</avrgcc.linker.miscellaneous.LinkerFlags>
@@ -173,6 +190,7 @@
   <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
   <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>False</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
   <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>False</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+  <avrgcc.compiler.symbols.DefSymbols><ListValues><Value>MCU_ATMEGA328</Value><Value>AVR</Value></ListValues></avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.directories.IncludePaths><ListValues><Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.2.132\include</Value><Value>../user</Value></ListValues></avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.PackStructureMembers>False</avrgcc.compiler.optimization.PackStructureMembers>
   <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>False</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
@@ -194,6 +212,15 @@
   <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
   <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
   <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+  <avrgcc.compiler.symbols.DefSymbols><ListValues>
+  <Value>MCU_ATMEGA328</Value>
+  <Value>AVR</Value>
+  <Value>F_CPU=16000000UL</Value>
+  <Value>DB_SHORT</Value>
+  <Value>NO_PRECOND</Value>
+  <Value>NO_POSTCOND</Value>
+  <Value>AVR_TIME</Value>
+</ListValues></avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.directories.IncludePaths><ListValues><Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.2.132\include</Value><Value>../user</Value></ListValues></avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
   <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
@@ -201,7 +228,6 @@
   <avrgcc.compiler.miscellaneous.OtherFlags>-gdwarf-2 -std=c99</avrgcc.compiler.miscellaneous.OtherFlags>
   <avrgcc.compiler.miscellaneous.DoNotDeleteTemporaryFiles>True</avrgcc.compiler.miscellaneous.DoNotDeleteTemporaryFiles>
   <avrgcc.assembler.general.IncludePaths><ListValues><Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.2.132\include</Value></ListValues></avrgcc.assembler.general.IncludePaths>
-  <avrgcc.compiler.symbols.DefSymbols><ListValues><Value>F_CPU=16000000UL</Value><Value>DB_SHORT</Value><Value>NO_PRECOND</Value><Value>NO_POSTCOND</Value><Value>AVR_TIME</Value><Value>AVR</Value><Value>FER_RECEIVER</Value><Value>FER_TRANSMITTER</Value></ListValues></avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.optimization.level>Optimize most (-O3)</avrgcc.compiler.optimization.level>
   <avrgcc.linker.miscellaneous.LinkerFlags>-Wl,-gc-sections</avrgcc.linker.miscellaneous.LinkerFlags>
   <avrgcc.assembler.general.AssemblerFlags>-Wall -gdwarf-2     -std=c99   -ffunction-sections   -save-temps         -DF_CPU=16000000UL -O2 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -Wall -gdwarf-2     -std=c99   -ffunction-sections   -save-temps         -DF_CPU=16000000UL -O2 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums</avrgcc.assembler.general.AssemblerFlags>
@@ -211,6 +237,8 @@
     <CleanTarget>clean</CleanTarget>
     <OutputPath>bin\lean\</OutputPath>
     <PostBuildEvent>avrdude -V -c avrisp2 -p m328p -P com5 -b 115200 -U "flash:w:fernotron.hex:i"
+
+avrdude -V -c avrisp2 -p m328p -P com5 -b 115200 -U "eeprom:w:fernotron.eep:i"
 
 </PostBuildEvent>
   </PropertyGroup>
@@ -255,6 +283,9 @@
     <Compile Include="user\main\astro.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="user\main\boolean.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="user\main\cli.c">
       <SubType>compile</SubType>
     </Compile>
@@ -267,7 +298,19 @@
     <Compile Include="user\main\config.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="user\main\config_spiffs.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\main\config_spiffs.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="user\main\counter.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\main\current_state.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\main\current_state.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="user\main\debug.c">
@@ -294,10 +337,10 @@
     <Compile Include="user\main\fer_prg.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="user\main\fer_receiver.c">
+    <Compile Include="user\main\fer_sender.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="user\main\fer_sender.c">
+    <Compile Include="user\main\fer_transceiver.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="user\main\inout.c">
@@ -312,6 +355,33 @@
     <Compile Include="user\main\rtc.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="user\main\set_endpos.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\main\set_endpos.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\main\spiffs_fs.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\main\storage.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\main\timer_data.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\main\timer_data.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\main\timer_data_fs.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\main\timer_data_fs.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\main\user_config.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="user\main\utils.c">
       <SubType>compile</SubType>
     </Compile>
@@ -319,6 +389,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="user\sensitive\defaults.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\user_config.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

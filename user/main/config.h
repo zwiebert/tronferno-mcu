@@ -34,7 +34,7 @@
 #define MY_MCU_UART_BAUD_RATE CONFIG_MY_MCU_UART_BAUD_RATE
 #else
 #ifdef MCU_ATMEGA328
-#define MY_MCU_UART_BAUD_RATE 19200
+#define MY_MCU_UART_BAUD_RATE 57600
 #else
 #define MY_MCU_UART_BAUD_RATE 115200
 #endif
@@ -178,7 +178,7 @@ typedef struct {
 	enum verbosity app_verboseOutput;
 	uint32_t fer_usedMembers; // each of the nibbles 1-7 stands for a group. nibble 1 == group 1. nibble 0 = number of used Groups (stored for the front-end, not used here on the MCU)
 
-#if 1 //ndef USE_WLAN
+#ifdef USE_WLAN
 	char wifi_SSID[32];
 	char wifi_password[64];
 #endif

@@ -75,7 +75,7 @@ typedef enum {
 #define FER_ADDR_TYPE_CentralUnit   0x80
 #define FER_ADDR_TYPE_Receiver      0x90 // 0x9xxxxx (code written on motor label)
 
-#define FRB_GET_DEVID(data) ((uint32_t)(data[fer_dat_ADDR_2] << 16) | (uint16_t)(data[fer_dat_ADDR_1] << 8) | (data[fer_dat_ADDR_0]))
+#define FRB_GET_DEVID(data) (((uint32_t)(data[fer_dat_ADDR_2]) << 16) | ((uint16_t)(data[fer_dat_ADDR_1]) << 8) | (data[fer_dat_ADDR_0]))
 
 typedef struct {
 	uint8_t data[5];

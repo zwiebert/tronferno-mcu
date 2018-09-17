@@ -50,8 +50,9 @@
 #define IRAM_ATTR
 #endif
 
-#ifdef AVR
+#ifdef MCU_ATMEGA328
 #include <avr/pgmspace.h>
+#define DB_NO_LIGHTS
 #else
 #define PROGMEM
 #endif
