@@ -2,41 +2,7 @@
 #define _common_h
 
 
-
-#ifndef AVR  // FIXME: how to recognize ESP8266 
-#ifdef ESP_PLATFORM
-#define MCU_ESP32
-#endif
-
-#else
-#define CONFIG_BLOB 1
-#endif
-
 ////////////////////////
-// disable features not working on some MCUs
-#ifdef MCU_ESP8266
-#ifndef DEBUG
-#define FER_TRANSMITTER
-#define FER_RECEIVER
-#define USE_NTP
-#define USE_WLAN
-#define CONFIG_BLOB 1
-#define CONFIG_GPIO_SIZE 17
-#endif
-#endif
-
-#ifdef MCU_ESP32
-#define FER_TRANSMITTER
-#define FER_RECEIVER
-#define USE_NTP
-#define USE_WLAN
-#define CONFIG_BLOB 0
-#define ACCESS_GPIO
-#define CONFIG_GPIO_SIZE 40
-#define POSIX_TIME 1
-#endif
-
-////////////////////////////
 // MCU dependent compiler attributes in common code
 #ifdef MCU_ESP8266
 #include "user_interface.h"
@@ -52,7 +18,6 @@
 
 #ifdef MCU_ATMEGA328
 #include <avr/pgmspace.h>
-#define DB_NO_LIGHTS
 #else
 #define PROGMEM
 #endif

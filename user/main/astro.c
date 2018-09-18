@@ -76,6 +76,7 @@ time_to_bcd(uint8_t *bcdMinutes, uint8_t *bcdHours, float time, bool force_even_
   }
 }
 
+#if 1
 static void ICACHE_FLASH_ATTR
 math_write_astro(astro_byte_data dst, int mint_offset)
 { int i, j;
@@ -94,9 +95,9 @@ math_write_astro(astro_byte_data dst, int mint_offset)
       }
     }
 }
-
+#else
 static void ICACHE_FLASH_ATTR
-math_write_astro2(astro_byte_data dst, int mint_offset) {
+math_write_astro(astro_byte_data dst, int mint_offset) {
   int i, j;
   float sunset = 0, last_sunset = -1;
   int day = 355;
@@ -113,7 +114,7 @@ math_write_astro2(astro_byte_data dst, int mint_offset) {
     }
   }
 }
-
+#endif
 /////////////////////////////////////////////////////////////////////////////////////
 
 

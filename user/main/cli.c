@@ -841,6 +841,7 @@ const char help_parmMcu[] PROGMEM =
     "gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N\n"
 #endif
     "up-time=?\n"
+    "version=full\n"
 ;
 
 static int ICACHE_FLASH_ATTR
@@ -933,6 +934,12 @@ process_parmMcu(clpar p[], int len) {
         io_puts(mcuSep), io_puts(key), io_puts("="), io_print_dec_32(run_time(), false), (mcuSep = " ");
       } else {
         reply_message("error:mcu:up-time", "option is read-only");
+      }
+
+    } else if (strcmp(key, "version") == 0) {
+      if (strcmp(val, "full") == 0) {
+        io_puts(mcuSep), io_puts(key), io_puts("=" MCU_TYPE APP_VERSION), (mcuSep = " ");
+
       }
 
 
