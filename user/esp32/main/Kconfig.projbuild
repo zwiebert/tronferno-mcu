@@ -33,7 +33,7 @@ config MY_GEO_TZ
 	
 config MY_GEO_TIMEZONE
 	int "normal (not DST) time zone as hour offset to UTC/GMT"
-	default +1
+	default 1
 	help
 		used to calculate twilight time tabels required by shutters astro function
 

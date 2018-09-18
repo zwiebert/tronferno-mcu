@@ -434,12 +434,12 @@ static bool ICACHE_FLASH_ATTR asc2memb(const char *s, fer_memb *memb) {
 }
 
 const char help_parmSend[] PROGMEM =
-"a=(0|ID)    hex ID of sender or receiver. 0 (default) uses 'cu' in config\n"
-    "g=[0-7]     group number. (default 0)\n"
-    "m=[0-7]     group member number. (default 0)\n"
-    "c=command   commands: up, down, stop, sun-down, sun-inst, set\n"
-    "r=N         repeat command 1+N times"
-    "SEP[=0|1]   Enter end-position adjustment mode (needs hardware button)"
+    "a=(0|ID)  0  hex ID of sender or receiver. 0 uses 'cu' in config\n"
+    "g=[0-7]   0  group number\n"
+    "m=[0-7]   0  group member number\n"
+    "c=(up|down|stop|sun-down|sun-inst|set\n"
+    "r=N       2  repeat command 1+N times"
+    "SEP[=0|1]    Enter end-position adjustment mode (needs hardware button)"
 // "TROT        Toggle rotation direction"
 ;
 
@@ -536,27 +536,27 @@ const char pin_state_args[] = {
 
 const char help_parmConfig[] PROGMEM =
     "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
-    "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID with connected RF receiver\n"
+    "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID using connected RF receiver\n"
     "rtc=(ISO_TIME|?)   set local time with this (or use NTP). example: config rtc=2017-12-31T23:59:59;\n"
-    "baud=(N|?)           serial baud rate (... baud=115200)\n"
+    "baud=(N|?)         serial baud rate (... baud=115200)\n"
 #ifdef USE_WLAN
     "wlan-ssid=(SSID|?)\n"
-    "wlan-password=PW  example: config wlan-ssid=\"1234\" wlan-password=\"abcd\" restart=1;\n"
+    "wlan-password=PW   example: config wlan-ssid=\"1234\" wlan-password=\"abcd\" restart=1;\n"
 #endif
     "longitude=(DEG|?)\n"
     "latitude=(DEG|?)\n"
  #if !POSIX_TIME
-    "time-zone=(N|?)     time zone hour offset for astro and rtc\n"
-    "dst=(eu|0|1|?)      daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
+    "time-zone=(N|?)    time zone hour offset for astro and rtc\n"
+    "dst=(eu|0|1|?)     daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
 #else
-    "time-zone=(N|?)       time offset for astro\n"
-    "tz=(POSIX_TZ|?)       time zone for RTC/NTP. example: config  tz=CET-1CEST-2,M3.5.0,M10.5.0;\n"
+    "time-zone=(N|?)    time offset for astro\n"
+    "tz=(POSIX_TZ|?)    time zone for RTC/NTP. example: config  tz=CET-1CEST-2,M3.5.0,M10.5.0;\n"
 #endif
-    "verbose=(0..5|?)    set text output verbosity level. 0 for none ... 5 for max\n"
-    "set-pw=password   set a config password. if set every config commands needs the pw option\n"
-    "pw=PW             example: config pw=my_passw dst=eu;\n"
+    "verbose=(0..5|?)   set text output verbosity level. 0 for none ... 5 for max\n"
+    "set-pw=password    set a config password. if set every config commands needs the pw option\n"
+    "pw=PW              example: config pw=my_passw dst=eu;\n"
 #if ENABLE_RESTART
-    "restart           restart MCU\n"
+    "restart            restart MCU\n"
 #endif
 #ifdef CONFIG_GPIO_SIZE
     "gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default\n"
@@ -614,7 +614,7 @@ process_parmConfig(clpar p[], int len) {
         io_puts(cfgSep), io_puts(key), io_puts("="), io_print_hex_32(C.fer_centralUnitID, false), (cfgSep = " ");
       } else if (strcmp(val, "auto") == 0) {
         cu_auto_set(60);
-        io_puts("U: Press Stop on the Fernotron central unit (60 seconds remaining)\n");
+        io_puts("U: Press Stop on the Fernotron central unit (60 secs remaining)\n");
         reply_success();
       } else {
         uint32_t cu = (strcmp(val, "auto-old") == 0) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
@@ -1019,7 +1019,7 @@ string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst) {
 #define HAS_FLAG(v) (v >= 0)
 
 const char help_parmTimer[] PROGMEM =
-"daily=T        enables daily timer. T is up/down like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00\n"
+    "daily=T        enables daily timer. T is up/down like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00\n"
     "weekly=TTTTTTT enables weekly timer. T like with 'daily' or '+' to copy the T on the left. (weekly=0730-++++0900-+)\n"
     "astro[=N]      enables astro automatic. N is the offset to civil dusk in minutes. Can be postive or negative.\n"
     "sun-auto       enables sun automatic\n"
@@ -1420,24 +1420,13 @@ process_parmHelp(clpar p[], int len) {
   return 0;
 }
 
-#if 0
-// called when command processing starts and ends
-static void ICACHE_FLASH_ATTR command_processing_hooks(bool done) {
-#if defined USE_WLAN && defined MCU_ESP8266
-  tcps_command_processing_hook(done);
-#endif
-}
-#endif
-
 void ICACHE_FLASH_ATTR cli_loop(void) {
   char *cmdline;
   static bool ready;
   if ((cmdline = get_commandline())) {
-   //command_processing_hooks(false);
     io_putlf();
     process_cmdline(cmdline);
     cli_msg_ready();
-    //command_processing_hooks(true);
   } else if (!ready) {
     cli_msg_ready();
     ready = true;

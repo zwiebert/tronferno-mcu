@@ -42,7 +42,6 @@ struct ee_config ee_cfg EEMEM = {
 struct ee_config tmp;
 
 void read_config(uint32_t mask) {
-	// memcpy(&C, &ee_cfg, sizeof (config));
 	eeprom_read_block(&C, &ee_cfg.c, sizeof(config));
 }
 

@@ -63,9 +63,6 @@ map_out =  $(FW_BASE)/fernotron.map
 
 DEP_DIR := $(BUILD_BASE)/dep
 
-pri:
-	echo $(TIME_OBJ)
-
 # AVR32/GNU C Compiler
 
 AVR_INCLUDE:= -I/usr/lib/avr/include -I./user/time
@@ -118,10 +115,6 @@ endef
 
 # Add inputs and outputs from these tool invocations to the build variables 
 
-$(bld_dir)libtime.a: $(bld_dir) $(TIME_OBJ)
-	$(vecho) "AR $@"
-	$(Q) $(AR) cru $@ $(TIME_OBJ)
-
 
 # All Target
 
@@ -129,6 +122,9 @@ $(bld_dir)libtime.a: $(bld_dir) $(TIME_OBJ)
 
 all: $(OUTPUT_FILE_PATH)
 
+$(bld_dir)libtime.a: $(bld_dir) $(TIME_OBJ)
+	$(vecho) "AR $@"
+	$(Q) $(AR) cru $@ $(TIME_OBJ)
 
 $(BUILD_DIRS):
 	mkdir -p $(foreach dir,$(modules) $(time_modules),$(addprefix $(bld_dir)/,$(dir))) $(DEP_DIR) $(FW_BASE)
@@ -141,8 +137,7 @@ $(OUTPUT_FILE_PATH): $(BUILD_DIRS) $(OBJ) $(bld_dir)libtime.a
 	$(Q) "avr-objcopy" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "$(elf_out)" "$(eep_out)" || exit 0
 	$(Q) "avr-objdump" -h -S "$(elf_out)" > "$(lss_out)"
 	$(Q) "avr-objcopy" -O srec -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures "$(elf_out)" "$(srec_out)"
-	$(Q) "avr-size" "$(elf_out)"
-	$(Q) echo; ls -l $(FW_BASE)/$(project).*
+	$(Q) "avr-size" -C --mcu atmega328p "$(elf_out)"
 
 
 COM := /dev/ttyACM0
