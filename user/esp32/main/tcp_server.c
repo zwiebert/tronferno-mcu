@@ -228,7 +228,7 @@ static int tcp_io_puts(const char *s) {
   return 1;
 }
 
-static int  tcp_io_getc(void) {
+static int  tcp_io_getc2(void) {
   char buf[1];
   int c;
 
@@ -264,7 +264,7 @@ static int  tcp_io_getc(void) {
 }
 
 
-int  tcp_io_read(char *buf, size_t buf_size, bool incomplete) {
+int  tcps_io_read(char *buf, size_t buf_size, bool incomplete) {
   int result;
 
   if (!cconn_is_used(cconn_idx)) {
@@ -292,7 +292,7 @@ int  tcp_io_read(char *buf, size_t buf_size, bool incomplete) {
 }
 
 
-static int  tcp_io_getline(char *buf, size_t buf_size, int bytes_already_received) {
+static int  tcps_io_getline(char *buf, size_t buf_size, int bytes_already_received) {
   int bytes_received;
 
   if (!cconn_is_used(cconn_idx)) {
@@ -317,6 +317,50 @@ static int  tcp_io_getline(char *buf, size_t buf_size, int bytes_already_receive
   return -1;
 }
 
+static int  tcp_io_getc(void) {
+  #define BUF_SIZE 80
+  static char buf[BUF_SIZE];
+  static uint8_t idx, used;
+  int c, res;
+
+  if (old_io_getc_fun && (c = old_io_getc_fun()) >= 0) return c;
+
+  if (used) {
+    if (idx < used) {
+      return buf[idx++];
+    } else {
+      used = idx = 0;
+    }
+  }
+  
+  if (cconn_count == 0)
+    return -1;
+#if 1
+  if (!cconn_is_used(cconn_idx)  && get_next_ccon(true) == 0)
+    return -1;
+#endif
+
+  //DP("getc start");
+  if ((res = recv(cconn_curr.fd, buf, BUF_SIZE, MSG_DONTWAIT)) > 0) {
+    used = res;
+    return buf[idx++];
+  }
+  //DP("getc end");
+
+
+
+  if (errno == EAGAIN || errno == EWOULDBLOCK) {
+    get_next_ccon(true);
+    return -1;
+  }
+
+  perror("tcp_io_getc");
+  tcps_close_current_cconn();
+
+  return -1;
+}
+
+ 
 void
 tcps_loop(void) {
   /** Server run continuously */
