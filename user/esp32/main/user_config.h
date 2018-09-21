@@ -1,6 +1,10 @@
 
 #define MCU_TYPE "esp32"
 
+//extern const char *const build_date;
+#define ISO_BUILD_TIME (__DATE__ __TIME__)
+
+
 #define FER_TRANSMITTER
 #define FER_RECEIVER
 #define USE_NTP

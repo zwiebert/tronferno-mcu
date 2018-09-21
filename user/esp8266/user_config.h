@@ -3,6 +3,8 @@
 
 #define MCU_TYPE "esp8266"
 
+extern const char *const build_time;
+#define ISO_BUILD_TIME build_time
 
 #ifndef DEBUG
 #define FER_TRANSMITTER

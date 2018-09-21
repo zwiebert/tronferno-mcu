@@ -938,9 +938,12 @@ process_parmMcu(clpar p[], int len) {
       }
 
     } else if (strcmp(key, "version") == 0) {
-      if (strcmp(val, "full") == 0) {
-        io_puts(mcuSep), io_puts(key), io_puts("=" MCU_TYPE APP_VERSION), (mcuSep = " ");
+	static const char mcu_type[] PROGMEM = MCU_TYPE;
+	static const char firmware_version[] PROGMEM = APP_VERSION;
 
+	if (strcmp(val, "full") == 0) {
+	  io_puts(mcuSep), io_puts(key), io_puts("="), io_puts_P(mcu_type), io_puts(","), io_puts_P(firmware_version), io_puts(", "),
+	    io_puts(ISO_BUILD_TIME), (mcuSep = " ");
       }
 
 

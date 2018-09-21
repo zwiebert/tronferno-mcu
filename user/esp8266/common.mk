@@ -195,10 +195,12 @@ BUILD_DIRS	+= $(addprefix $(BUILD_BASE)/,$(MODULES))
 SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
+C_VERSION_SRC := $(SRC_BASE)/user/build_date.c
 C_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
 CXX_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 ASM_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
 
+C_VERSION_OBJ   := $(patsubst %.c,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(C_VERSION_SRC)))
 C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(C_SRC)))
 CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(CXX_SRC)))
 ASM_OBJ	    	:= $(patsubst %.S,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(ASM_SRC)))
@@ -261,8 +263,9 @@ endef
 all: checkdirs $(TARGET_OUT) $(SUBMODULES)
 
 $(TARGET_OUT): $(APP_AR) $(GEN_LIBS)
+	$(MAKE) $(C_VERSION_OBJ)
 	$(vecho) "LD $@"
-	$(Q) $(LD) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group  $(LIBS) $(APP_AR) $(EXTRA_AR) -Wl,--end-group -o $@
+	$(Q) $(LD) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group  $(LIBS) $(APP_AR) $(EXTRA_AR) $(C_VERSION_OBJ) -Wl,--end-group -o $@
 	$(vecho) "Run objcopy, please wait..."
 	$(Q) $(OBJCOPY) --only-section .text -O binary $@ eagle.app.v6.text.bin
 	$(Q) $(OBJCOPY) --only-section .data -O binary $@ eagle.app.v6.data.bin
@@ -421,6 +424,10 @@ clean: force
 	$(Q) rm -rf $(BUILD_BASE)/user $(BUILD_BASE)
 	$(Q) rm -rf spiffs/build/*.o  spiffs/build/*.a
 	$(Q) mkdir -p $(DEP_DIR) # FIXME: kludge to allow "make -j" 
+
+
+$(C_VERSION_SRC) : force
+	echo 'const char * const build_time = "'$$(date --iso-8601=seconds)'";' > $(C_VERSION_SRC)
 
 
 $(eval $(call compile-objects,$(BUILD_BASE)/,$(SRC_BASE)/))

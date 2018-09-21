@@ -27,10 +27,12 @@ MODULES = $(modules)
 SRC_DIR		:= $(addprefix $(SRC_BASE)/,$(MODULES))
 BUILD_DIRS	:= $(addprefix $(BUILD_BASE)/,$(MODULES)) $(FW_BASE)
 
+C_VERSION_SRC := $(SRC_BASE)/user/build_date.c
 C_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
 CXX_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 ASM_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
 
+C_VERSION_OBJ   := $(patsubst %.c,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(C_VERSION_SRC)))
 C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(C_SRC)))
 CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(CXX_SRC)))
 ASM_OBJ	    	:= $(patsubst %.S,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(ASM_SRC)))
@@ -118,11 +120,11 @@ endef
 
 # All Target
 
-.PHONY: all clean flash rebuild reflash
+.PHONY: all clean flash rebuild reflash force
 
 all: $(OUTPUT_FILE_PATH)
 
-$(bld_dir)libtime.a: $(bld_dir) $(TIME_OBJ)
+$(bld_dir)libtime.a:  $(TIME_OBJ) | $(bld_dir)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $(TIME_OBJ)
 
@@ -130,9 +132,12 @@ $(BUILD_DIRS):
 	mkdir -p $(foreach dir,$(modules) $(time_modules),$(addprefix $(bld_dir)/,$(dir))) $(DEP_DIR) $(FW_BASE)
 
 
-$(OUTPUT_FILE_PATH): $(BUILD_DIRS) $(OBJ) $(bld_dir)libtime.a
+$(OBJ) : | $(BUILD_DIRS)
+
+$(OUTPUT_FILE_PATH): $(OBJ) $(bld_dir)libtime.a
+	$(MAKE) $(C_VERSION_OBJ)
 	$(vecho) "LD builds $(elf_out)"
-	$(Q) $(QUOTE)avr-gcc$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJ) $(LDFLAGS) $(LIBS) -Wl,-Map="$(map_out)" -Wl,--start-group  -Wl,--end-group -Wl,--gc-sections -mmcu=atmega328p  -B "/home/bertw/avr/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p"  -Wl,-gc-sections  
+	$(Q) $(QUOTE)avr-gcc$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJ) $(C_VERSION_OBJ) $(LDFLAGS) $(LIBS) -Wl,-Map="$(map_out)" -Wl,--start-group  -Wl,--end-group -Wl,--gc-sections -mmcu=atmega328p  -B "/home/bertw/avr/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p"  -Wl,-gc-sections  
 	$(Q) "avr-objcopy" -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures  "$(elf_out)" "$(hex_out)"
 	$(Q) "avr-objcopy" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "$(elf_out)" "$(eep_out)" || exit 0
 	$(Q) "avr-objdump" -h -S "$(elf_out)" > "$(lss_out)"
@@ -160,6 +165,9 @@ rebuild : clean all
 
 reflash : rebuild flash
 
+$(C_VERSION_SRC) : force
+	echo 'const char *const build_time = "'$$(date --iso-8601=seconds)'";' > $(C_VERSION_SRC)
+	echo 'const char *const git_hash = "'$$(git log -n 1 | head -n 1)'";' >> $(C_VERSION_SRC)
 
 $(eval $(call compile-objects,$(BUILD_BASE)/,$(SRC_BASE)/))
 
