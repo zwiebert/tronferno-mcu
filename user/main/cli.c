@@ -107,9 +107,10 @@ get_commandline() {
 
   while ((c = io_getc()) != -1) {
 
-    // handle characters who don't get into the buffer
+    // line ended before ';' terminator received. throw it away
     if (c == '\r' || c == '\n') {
       quoteCount = 0;
+      cmd_buf_idx = 0;
       continue;
     }
 
@@ -122,7 +123,7 @@ get_commandline() {
       continue;
     }
 
-    // count the quotes, so we now if we are inside or outside a quoted word
+    // count the quotes, so we know if we are inside or outside a quoted word
     if (c == '\"') {
       ++quoteCount;
     }
@@ -863,7 +864,7 @@ process_parmMcu(clpar p[], int len) {
           io_putlf();
         }
       } else if (strcmp(val, "cu") == 0) {
-        io_puts("central unit address: ");
+        io_puts("cu=0x");
         io_putl(C.fer_centralUnitID, 16);
         io_putlf();
       }
@@ -1377,6 +1378,8 @@ process_parmHelp(clpar p[], int len) {
   static const char usage[] PROGMEM = "syntax: command option=value ...;\n"
       "commands are: ";
 
+  io_putlf();
+
   // print help for help;
   if (len == 1) {
     io_puts_P(help_parmHelp);
@@ -1431,7 +1434,7 @@ void ICACHE_FLASH_ATTR cli_loop(void) {
   char *cmdline;
   static bool ready;
   if ((cmdline = get_commandline())) {
-    io_putlf();
+    //io_putlf();
     process_cmdline(cmdline);
     cli_msg_ready();
   } else if (!ready) {
