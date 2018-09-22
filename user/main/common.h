@@ -30,8 +30,6 @@ typedef bool logicLevel;
 #define LOW false
 #define HIGH true
 
-//#include "misc/int_macros.h"
-
 #if 0
 #define NO_PRECOND
 #define NO_POSTCOND
