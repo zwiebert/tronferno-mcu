@@ -9,7 +9,7 @@
 
 #COMPONENT_ADD_INCLUDEDIRS = /home/bertw/proj/mcu/tronferno-mcu/user
 COMPONENT_PRIV_INCLUDEDIRS = ../..
-COMPONENT_SRCDIRS += ../../main
+COMPONENT_SRCDIRS += ../../main ../../misc
 
 
 ifeq ($(DISTRO),1)

@@ -21,7 +21,7 @@ endif
 
 project=fernotron
 bld_dir := $(BUILD_BASE)/
-modules := user/main user/atmega328
+modules := user/main user/atmega328 user/misc
 MODULES = $(modules)
 
 SRC_DIR		:= $(addprefix $(SRC_BASE)/,$(MODULES))

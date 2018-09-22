@@ -15,7 +15,7 @@ SPI_SIZE_MAP	= 4
 
 #V=1
 # Basic project settings
-MODULES	=   user/main user/esp8266 user/esp8266/driver
+MODULES	=   user/main user/esp8266 user/esp8266/driver user/misc
 LIBS	= c  gcc hal phy pp net80211 lwip wpa main crypto
 
 
