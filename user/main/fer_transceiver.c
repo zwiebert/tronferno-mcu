@@ -1,9 +1,7 @@
 #include <stdlib.h>
 #include "../user_config.h"
 #include "common.h"
-#include "counter.h"
 #include "fer.h"
-#include "utils.h"
 #include "fer_code.h"
 #include "config.h"
 #include "inout.h"
@@ -86,6 +84,9 @@ static uint16_t  IRAM_ATTR fer_add_word_parity(uint8_t data_byte, int pos) {
 #define dataEdge nEdge
 
 #define MAX_PRG_TICK_COUNT (DATA_CLOCK_TO_TICKS(FER_PRG_FRAME_WIDTH_DCK) * 2) // FIXME
+
+#define ct_incr(ct, limit) (!((++ct >= limit) ? (ct = 0) : 1))
+#define ct_incrementP(ctp, limit) ((++*ctp, *ctp %= limit) == 0)
 
 static int8_t preBits;
 static int8_t input_edge; // Usually 0, but -1 or +1 at the tick where input has changed

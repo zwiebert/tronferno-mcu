@@ -13,7 +13,6 @@
 #include "misc/sun.h"
 #include "misc/bcd.h"
 #include "common.h"
-#include "utils.h"
 #include "rtc.h"
 #include "config.h"
 #include "fer_code.h"

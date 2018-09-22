@@ -1,7 +1,5 @@
 #include "../user_config.h"
 #include "common.h"
-#include "counter.h"
-#include "utils.h"
 #include "rtc.h"
 #include <string.h>
 #include <stdlib.h>

@@ -9,8 +9,6 @@
 
 #include "common.h"
 #include "fer.h"
-#include "counter.h"
-#include "utils.h"
 #include "fer_code.h"
 #include "rtc.h"
 #include "astro.h"

@@ -14,7 +14,6 @@
 #include "inout.h"
 #include "fer.h"
 #include "fer_code.h"
-#include "utils.h"
 #include "rtc.h"
 #include "cli.h"
 #include "config.h"

@@ -1,8 +1,6 @@
 #include "common.h"
 #include "fer.h"
-#include "counter.h"
 #include "inout.h"
-#include "utils.h"
 #include "config.h"
 #include <string.h>
 
