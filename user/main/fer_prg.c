@@ -15,6 +15,7 @@
 #include "rtc.h"
 #include "astro.h"
 #include "config.h"
+#include "misc/bcd.h"
 
 
 #if 0

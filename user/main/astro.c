@@ -11,12 +11,14 @@
 
 #include "astro.h"
 #include "misc/sun.h"
+#include "misc/bcd.h"
 #include "common.h"
 #include "utils.h"
 #include "rtc.h"
 #include "config.h"
 #include "fer_code.h"
 #include "fer.h"
+
 
 
 #define float double

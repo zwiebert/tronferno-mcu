@@ -13,6 +13,7 @@
 
 #include "all.h"
 #include "set_endpos.h"
+#include "misc/bcd.h"
 
 #if defined  MCU_ESP8266 || defined MCU_ESP32
 #include "timer_data.h"
