@@ -5,6 +5,7 @@
 
 #include "common.h"
 #include "inout.h"
+#include "misc/int_macros.h"
 
 int (*io_putc_fun)(char c);
 int (*io_getc_fun)(void);

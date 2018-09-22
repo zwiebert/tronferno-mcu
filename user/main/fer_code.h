@@ -4,6 +4,7 @@
 
 #include "common.h"
 #include "boolean.h"
+#include "misc/int_macros.h"
 
 // indexes of data[5]
 typedef enum {
