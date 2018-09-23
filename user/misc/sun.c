@@ -20,23 +20,23 @@
  * horizon - horizon (in rad) to calculate twilight
  */
 void ICACHE_FLASH_ATTR
-calc_sunrise_sunset(float *sunrise, float *sunset, float timezone, float day_of_year, float longitude_deg, float latitude_deg, float horizon) {
+calc_sunrise_sunset(double *sunrise, double *sunset, double timezone, double day_of_year, double longitude_deg, double latitude_deg, double horizon) {
 
-  float latitude = M_PI * latitude_deg / 180;
+  double latitude = M_PI * latitude_deg / 180;
 
-  float declination_of_sun = 0.4095 * sin(0.016906 * (day_of_year - 80.086));
-  float time_diff = 12 * acos((sin(horizon) - sin(latitude) * sin(declination_of_sun)) / (cos(latitude) * cos(declination_of_sun))) / M_PI;
-  float equation_of_time = -0.171 * sin(0.0337 * day_of_year + 0.465) - 0.1299 * sin(0.01787 * day_of_year - 0.168);
+  double declination_of_sun = 0.4095 * sin(0.016906 * (day_of_year - 80.086));
+  double time_diff = 12 * acos((sin(horizon) - sin(latitude) * sin(declination_of_sun)) / (cos(latitude) * cos(declination_of_sun))) / M_PI;
+  double equation_of_time = -0.171 * sin(0.0337 * day_of_year + 0.465) - 0.1299 * sin(0.01787 * day_of_year - 0.168);
 
   if (sunrise) {
-    float sunrise_moz = (12 - time_diff - equation_of_time);
-    float sunrise_gmt = sunrise_moz - longitude_deg / 15;
+    double sunrise_moz = (12 - time_diff - equation_of_time);
+    double sunrise_gmt = sunrise_moz - longitude_deg / 15;
     *sunrise = sunrise_gmt + timezone;
   }
 
   if (sunset) {
-    float sunset_moz = (12 + time_diff - equation_of_time);
-    float sunset_gmt = sunset_moz - longitude_deg / 15;
+    double sunset_moz = (12 + time_diff - equation_of_time);
+    double sunset_gmt = sunset_moz - longitude_deg / 15;
     *sunset = sunset_gmt + timezone;
   }
 }
