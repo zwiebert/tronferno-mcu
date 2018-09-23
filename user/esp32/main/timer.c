@@ -20,7 +20,7 @@
 
 
 
-void ICACHE_FLASH_ATTR mcu_delay_us(uint16_t us) {
+void mcu_delay_us(uint16_t us) {
   ets_delay_us(us);
 }
 
@@ -42,7 +42,7 @@ void timer1_start() {
       ESP_ERROR_CHECK(esp_timer_start_periodic(timer1_handle, TICK_PERIOD_US));
 }
 
-void ICACHE_FLASH_ATTR
+void
 timer1Stop(void) {
   ESP_ERROR_CHECK(esp_timer_stop(timer1_handle));
 
@@ -159,7 +159,7 @@ static void IRAM_ATTR timer1_handler(void *args) {
 
 }
 
-void ICACHE_FLASH_ATTR setup_timer(void) {
+void setup_timer(void) {
   timer1_start();
 }
 

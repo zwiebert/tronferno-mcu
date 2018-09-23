@@ -25,7 +25,7 @@
 
 // WIFI Station ////////////////////////////////////////
 
-void ICACHE_FLASH_ATTR
+void
 user_set_station_config(void) {
   esp_err_t esp_err;
 
@@ -53,7 +53,7 @@ void wst_reconnect(void) {
 
 #endif
 
-void ICACHE_FLASH_ATTR
+void
 setup_wifistation(void) {
   wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
   ESP_ERROR_CHECK( esp_wifi_init(&cfg) );

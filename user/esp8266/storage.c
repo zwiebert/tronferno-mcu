@@ -5,20 +5,12 @@
  *      Author: bertw
  */
 
-
-/*
- * timer_data_spiffs.c
- *
- *  Created on: 08.09.2018
- *      Author: bertw
- */
-#include "../user_config.h"
+#include "user_config.h"
 #if ENABLE_SPIFFS
 
 
 #include "main/all.h"
 #include "main/config.h"
-#include "user_config.h"
 #include "spiffs.h"
 #include "main/storage.h"
 #include "main/debug.h"

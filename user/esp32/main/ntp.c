@@ -43,7 +43,7 @@
 
 static time_t last_ntp_time;
 
-void ICACHE_FLASH_ATTR setup_ntp(void) {
+void setup_ntp(void) {
   static int once;
   if (once == 0) {
     once = 1;
@@ -58,12 +58,12 @@ void ICACHE_FLASH_ATTR setup_ntp(void) {
 #define ADJUST_TOLERANCE_MS 100    // allow tolerance to avoid burning out persistent storage
 
 
-bool ICACHE_FLASH_ATTR ntp_set_system_time(void) {
+bool ntp_set_system_time(void) {
 
   return false;
 }
 
-bool ICACHE_FLASH_ATTR ntp_update_system_time(unsigned interval_seconds) {
+bool ntp_update_system_time(unsigned interval_seconds) {
   if (last_ntp_time == 0 || time(NULL) >= last_ntp_time + interval_seconds) {
     ntp_set_system_time();
     return true;

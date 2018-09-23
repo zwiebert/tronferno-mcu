@@ -52,7 +52,7 @@ config C = {
 
 #if CONFIG_BLOB
 
-void ICACHE_FLASH_ATTR read_config(uint32_t mask) {
+void read_config(uint32_t mask) {
   esp_err_t err = 0;
   nvs_handle my_handle;
   size_t len;
@@ -64,7 +64,7 @@ void ICACHE_FLASH_ATTR read_config(uint32_t mask) {
 
 }
 
-void ICACHE_FLASH_ATTR save_config(uint32_t mask) {
+void save_config(uint32_t mask) {
   esp_err_t err = 0;
   nvs_handle my_handle;
 
@@ -77,7 +77,7 @@ void ICACHE_FLASH_ATTR save_config(uint32_t mask) {
 
 #else
 
-void ICACHE_FLASH_ATTR read_config(uint32_t mask) {
+void read_config(uint32_t mask) {
   esp_err_t err = 0;
   nvs_handle handle;
   size_t len;

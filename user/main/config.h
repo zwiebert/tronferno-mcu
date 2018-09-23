@@ -197,6 +197,7 @@ extern config C;
 void read_config(uint32_t mask);  // restore C from persistent storage
 void save_config(uint32_t mask);  // save C to persistent storage
 
+#define CONFIG_ALL (~0UL)
 #define CONFIG_RECV (1UL << 0)
 #define CONFIG_TRANSM (1UL << 1)
 #define CONFIG_CUID (1UL << 2)
