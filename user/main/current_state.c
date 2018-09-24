@@ -19,8 +19,8 @@
 #define GRP_MAX 7
 #define MBR_MAX 7
 
-enum pos { POS_0 = 0, POS_100, POS_SIZE };
-static const uint8_t pos_map[POS_SIZE] = {0, 100};
+enum pos { POS_0, POS_50, POS_100, POS_SIZE };
+static const uint8_t pos_map[POS_SIZE] = {0, 50, 100};
 
 static gm_bitmask_t positions[POS_SIZE];
 
@@ -78,6 +78,8 @@ set_shutter_state(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd) {
     position = 100;
   else if (cmd == fer_cmd_DOWN)
     position = 0;
+  else if (cmd == fer_cmd_SunDOWN)
+    position = 50;
 
   if (0 <= position && position <= 100) {
     io_puts("U:position: a="), io_print_hex_32(a, false),
@@ -123,15 +125,26 @@ print_shutter_positions() {
   uint8_t p, g;
 
     for (p=0; p < POS_SIZE; ++p) {
-      io_puts("U:position:"),
-	io_puts(" p="), io_putd(pos_map[p]),
-	io_puts(" mm=");
-      for (g=0; g < 8; ++g) {
-	io_putx8(positions[p][g]);
-	if (g < 7)
-	  io_putc(',');
+      
+      for (g=1; g < 8; ++g) {
+	// don't print a position with no members
+	if (positions[p][g] == 0)
+	  continue;
+
+	// found a member - now print;
+	
+	io_puts("U:position:"),
+	  io_puts(" p="), io_putd(pos_map[p]),
+	  io_puts(" mm=");
+	for (g=0; g < 8; ++g) {
+	  io_putx8(positions[p][g]);
+	  if (g < 7)
+	    io_putc(',');
+	}
+	io_puts(";\n");
+	
+	break; // printing done, got to next position
       }
-      io_puts(";\n");
     }
     return 0;
 }
