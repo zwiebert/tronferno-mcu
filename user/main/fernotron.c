@@ -40,10 +40,10 @@ loop(void) {
       cu_auto_set(0);
       io_puts("R:"), fmsg_print(rxmsg, MessageReceived);
       { //TODO: improve shutter states
-      //  fer_sender_basic *fsb = &last_received_sender;
-       // set_shutter_state(FSB_GET_DEVID(fsb), FSB_GET_GRP(fsb), FSB_GET_MEMB(fsb), FSB_GET_CMD(fsb));
-        set_shutter_state(FRB_GET_DEVID(rxmsg->cmd), FRB_GET_GRP(rxmsg->cmd), FRB_GET_MEMB(rxmsg->cmd), FRB_GET_CMD(rxmsg->cmd));
 
+	uint8_t g = FRB_GET_GRP(rxmsg->cmd);
+	uint8_t m = FRB_GET_MEMB(rxmsg->cmd);
+        set_shutter_state(FRB_GET_DEVID(rxmsg->cmd), g, m, FRB_GET_CMD(rxmsg->cmd));
       }
 
       break;

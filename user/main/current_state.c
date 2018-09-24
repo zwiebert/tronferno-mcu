@@ -41,7 +41,7 @@ get_state(uint32_t a, int g, int m) {
 static int ICACHE_FLASH_ATTR
 set_state(uint32_t a, int g, int m, int position) {
   uint8_t p, gi, mi;
-
+  DT(ets_printf("%s: %d, %d, %d\n", __func__, g, m, position));
   precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
   precond(0 <= position && position <= 100);
 
@@ -61,28 +61,19 @@ set_state(uint32_t a, int g, int m, int position) {
 
 
 int ICACHE_FLASH_ATTR
-get_shutter_state(uint32_t a, fer_grp g, fer_memb m) {
-  if (0 < m && m < 8)
-    return -1;
-  else if (m > 7 )
-    m -= 7;
-  if (m > 7)
-    return -1;
+get_shutter_state(uint32_t a, uint8_t g, uint8_t m) {
+  precond(g <= 7 && m <= 7);
 
   return get_state(a, g, m);
 }
 
 int ICACHE_FLASH_ATTR
-set_shutter_state(uint32_t a, fer_grp g, fer_memb m, fer_cmd cmd) {
+set_shutter_state(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd) {
   int position = -1;
-
-  if (0 < m && m < 8)
-    return -1;
-  else if (m > 7)
-    m -= 7;
-  if (m > 7)
-    return -1;
-
+  precond(g <= 7 && m <= 7);
+  
+  DT(ets_printf("%s: %d, %d, %d\n", __func__, (int)g, (int)m, (int)cmd));
+  
   if (cmd == fer_cmd_UP)
     position = 100;
   else if (cmd == fer_cmd_DOWN)

@@ -494,7 +494,9 @@ process_parmSend(clpar p[], int len) {
   }
 
   if (read_state) {
-    io_puts("current state: "), io_print_dec_16(get_shutter_state(addr, group, memb), false), io_puts("\n");
+    uint8_t g = group;
+    uint8_t m = memb == 0 ? 0 : memb - 7;
+    io_puts("current state: "), io_print_dec_16(get_shutter_state(addr, g, m), false), io_puts("\n");
   } else {
     fer_sender_basic *fsb = get_sender_by_addr(addr);
     if (!fsb) {
@@ -508,6 +510,8 @@ process_parmSend(clpar p[], int len) {
     if (FSB_ADDR_IS_CENTRAL(fsb)) {
       FSB_PUT_GRP(fsb, group);
       FSB_PUT_MEMB(fsb, memb);  // only set this on central unit!
+      //assert(group == FSB_GET_GRP(fsb));
+      //assert(memb == FSB_GET_MEMB(fsb));
     }
 
     if (set_end_pos >= 0) { // enable hardware buttons to set end position
@@ -521,7 +525,9 @@ process_parmSend(clpar p[], int len) {
       fer_update_tglNibble(fsb);
       fsb->repeats = repeats;
       if(reply(fer_send_msg(fsb, MSG_TYPE_PLAIN))) {
-        set_shutter_state(FSB_GET_DEVID(fsb), FSB_GET_GRP(fsb), FSB_GET_MEMB(fsb), FSB_GET_CMD(fsb));
+	uint8_t g = group;
+	uint8_t m = memb == 0 ? 0 : memb - 7;
+        set_shutter_state(FSB_GET_DEVID(fsb), g, m, FSB_GET_CMD(fsb));
       }
     } else {
       reply_failure();
