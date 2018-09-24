@@ -92,6 +92,18 @@ io_printf(const char *fmt, ...)
 }
 #endif
 
+void ICACHE_FLASH_ATTR
+io_putx8(uint8_t n) {
+  char s[3];
+  if (n & 0xf0) {
+    itoa(n, s, 16);
+  } else {
+    s[0] = '0';
+    itoa(n, s+1, 16);
+  }
+  io_puts(s);
+}
+
 
 
 void ICACHE_FLASH_ATTR

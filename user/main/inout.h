@@ -35,6 +35,9 @@ void io_putn(int n, int radix);
 void io_putl(int32_t n, int radix);
 void io_putd(int n);
 void io_putld(int32_t n);
+void io_putx8(uint8_t n);
+
+
 
 void printBCD(uint8_t bcd);
 void print_array_8(const uint8_t *src, int len);
