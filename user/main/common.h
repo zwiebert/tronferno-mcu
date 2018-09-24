@@ -30,7 +30,7 @@ typedef bool logicLevel;
 #define LOW false
 #define HIGH true
 
-#if 0
+#ifdef DISTRIBUTION
 #define NO_PRECOND
 #define NO_POSTCOND
 #endif

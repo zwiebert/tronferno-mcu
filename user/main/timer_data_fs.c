@@ -77,7 +77,15 @@ bool ICACHE_FLASH_ATTR save_timer_data_fs(timer_data_t *p, uint8_t g, uint8_t m)
 }
 
 bool ICACHE_FLASH_ATTR read_timer_data_fs(timer_data_t *p, uint8_t *g, uint8_t *m, bool wildcard) {
-  bool result = read_data2(p, gm_to_file_name(*g, *m));
+  bool result;
+
+#if 0 // FIXME: let it crash, to find programming errors?
+  if (g > 7 || m > 7) {
+    return false;
+  }
+#endif
+
+  result = read_data2(p, gm_to_file_name(*g, *m));
 
   if (!result && wildcard) {
     if ((result = read_data2(p, gm_to_file_name(*g, 0)))) {

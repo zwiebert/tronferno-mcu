@@ -12,6 +12,7 @@
 
 #include "all.h"
 #include "set_endpos.h"
+#include "timer_state.h"
 
 extern fer_sender_basic default_sender;
 extern fer_sender_basic last_received_sender;
@@ -28,6 +29,8 @@ loop(void) {
 #endif
 
   cli_loop();
+
+  timer_state_loop();
 
 #ifdef FER_RECEIVER
   if (MessageReceived != MSG_TYPE_NONE) {

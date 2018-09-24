@@ -15,12 +15,16 @@ bool rtc_get_by_string(char *dst);
 
 time_t rtc_timezone_in_secs();
 
-int8_t get_weekDay();
+int8_t get_weekDay(void);
+int16_t get_yearDay(void);
+int get_dst(void);
+int16_t rtc_get_next_minute(void); // get next minute_of_day or -1 until next minute begins
 
 void rtc_setup(void);
 
 #define MSEC_PER_SEC 1000
 #define MINT_PER_HOUR  60
+#define MINT_PER_DAY  (60 * 24)
 #define SECS_PER_MINT  60
 #define HOUR_PER_DAY   24
 #define MONT_PER_YEAR  12

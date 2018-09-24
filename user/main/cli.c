@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "../user_config.h"
 #include "current_state.h"
+#include "timer_state.h"
 
 #include "all.h"
 #include "set_endpos.h"
@@ -883,8 +884,39 @@ process_parmMcu(clpar p[], int len) {
         spiffs_test();
       }
 #endif
+    } else if (strcmp(key, "tm") == 0) {
 
+      if (strlen(val) == 2) {
+	uint8_t g = val[0] - '0';
+	uint8_t m = val[1] - '0';
+	timer_minutes_t tm;
+	if (get_timer_minutes(&tm, &g, &m, true)) {
+	  int i;
+	  for (i=0; i < SIZE_MINTS; ++i) {
+	    io_putd(tm.minutes[i]), io_putlf();
+	  }
+	}
+      }
 
+    } else if (strcmp(key, "te") == 0) {
+      int i;
+
+      timer_event_t teu, ted;
+      get_next_timer_event(&teu, &ted);
+      io_putd(teu.next_event), io_putlf();
+      for (i=0; i < 8; ++i) {
+	io_print_hex_8(teu.matching_members[i], true);
+      }
+      io_putlf();
+
+      io_putd(ted.next_event), io_putlf();
+      for (i=0; i < 8; ++i) {
+	io_print_hex_8(ted.matching_members[i], true);
+      }
+      io_putlf();
+
+    } else if (strcmp(key, "cs") == 0) {
+      print_shutter_positions();
 
 #ifdef CONFIG_GPIO_SIZE
     } else if (strncmp(key, "gpio", 4) == 0) {
@@ -1058,7 +1090,7 @@ process_parmTimer(clpar p[], int len) {
   const char *weeklyVal = 0, *dailyVal = 0;
   uint8_t mn = 0;
   uint8_t rs = 0;
-  timer_data_t td = { 20000, 0, "", "" };
+  timer_data_t td = td_initializer;
 #endif
   // init data
   for (i = 0; i + 1 < sizeof(weekly_data) / sizeof(weekly_data[0]); i += 2) {

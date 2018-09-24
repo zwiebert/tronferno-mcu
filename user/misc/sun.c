@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "main/common.h"
-
+#include "main/debug.h"
 
 
 
@@ -32,11 +32,17 @@ calc_sunrise_sunset(double *sunrise, double *sunset, double timezone, double day
     double sunrise_moz = (12 - time_diff - equation_of_time);
     double sunrise_gmt = sunrise_moz - longitude_deg / 15;
     *sunrise = sunrise_gmt + timezone;
+    if (*sunrise > 24.0) *sunrise -= 24.0;
+    else if (*sunrise < 0.0) *sunrise += 24.0;
   }
 
   if (sunset) {
     double sunset_moz = (12 + time_diff - equation_of_time);
     double sunset_gmt = sunset_moz - longitude_deg / 15;
     *sunset = sunset_gmt + timezone;
+    if (*sunset > 24.0) *sunset -= 24.0;
+    else if (*sunset < 0.0) *sunset += 24.0;
   }
+  postcond (!sunrise || (0.0 <=  *sunrise && *sunrise <= 24.0));
+  postcond (!sunset || (0.0 <=  *sunset && *sunset <= 24.0));
 }

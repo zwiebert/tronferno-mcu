@@ -21,7 +21,6 @@
 #define GET_HIGH_BYTE(src) (((src)>>8)&0x00ff)
 
 #define GET_BIT(var,pos) ((var) & (1<<(pos)))
-
 #define SET_BIT(var,pos) ((var) |= (1 << (pos)))
 #define CLR_BIT(var,pos) ((var) &= ~((1) << (pos)))
 #define PUT_BIT(var,pos, val) ((val) ? SET_BIT(var,pos) : CLR_BIT(var,pos))

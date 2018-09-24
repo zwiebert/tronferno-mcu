@@ -35,6 +35,8 @@ typedef struct {
 bool save_timer_data(timer_data_t *p, uint8_t group, uint8_t member);
 bool read_timer_data(timer_data_t *p, uint8_t *group, uint8_t *member, bool wildcard);
 
+extern bool timer_data_changed; // set by sabe_timer_data - cleared by code reading it
+
 
 
 #endif /* USER_MAIN_TIMER_DATA_H_ */

@@ -1,24 +1,61 @@
 #include "current_state.h"
 #include "main/inout.h"
+#include "misc/int_macros.h"
+#include "debug.h"
+
+#ifndef DISTRIBUTION
+#define DB_INFO 0
+#define DT(x)
+#define D(x)
+#else
+#define DB_INFO 0
+#define DT(x)
+#define D(x)
+#endif
 
 
-uint8_t groups[7];
+#define GRP_COUNT 7
+#define MBR_COUNT 7
+#define GRP_MAX 7
+#define MBR_MAX 7
+
+enum pos { POS_0 = 0, POS_100, POS_SIZE };
+static const uint8_t pos_map[POS_SIZE] = {0, 100};
+
+static gm_bitmask_t positions[POS_SIZE];
 
 static int ICACHE_FLASH_ATTR
-set_state(uint32_t a, int g, int m, int state) {
-  if (1 <= g && g <= 7 && 1 <= m && m <= 7) {
-    if (state >= 0) {
-      bool s = state != 0;
-      if (s)
-        groups[g - 1] |= (1 << (m - 1));
-      else
-        groups[g - 1] &= ~(1 << (m - 1));
+get_state(uint32_t a, int g, int m) {
+  uint8_t p;
 
-    } else {
-      return (groups[g - 1] & (1 << (m - 1))) ? 100 : 0;
-    }
+  precond(1 <= g && g <= 7 && 1 <= m && m <= 7);
+
+  for (p=0; p < POS_SIZE; ++p) {
+    if (GET_BIT(positions[p][g], m))
+      return pos_map[p];
   }
-  return -1;
+  return 0;
+}
+
+
+static int ICACHE_FLASH_ATTR
+set_state(uint32_t a, int g, int m, int position) {
+  uint8_t p, gi, mi;
+
+  precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
+  precond(0 <= position && position <= 100);
+
+    for (gi = 1; gi <= GRP_MAX; ++gi) {
+      for (mi = 1; mi <= MBR_MAX; ++mi) {
+
+	if (g == 0 || gi == g)
+	  for (p=0; p < POS_SIZE; ++p) {
+	    if (m == 0 || mi == m)
+	      PUT_BIT(positions[p][gi], mi, (pos_map[p] == position));
+	  }
+      }
+    }
+    return 0;
 }
 
 
@@ -32,7 +69,7 @@ get_shutter_state(uint32_t a, fer_grp g, fer_memb m) {
   if (m > 7)
     return -1;
 
-  return set_state(a, g, m, -1);
+  return get_state(a, g, m);
 }
 
 int ICACHE_FLASH_ATTR
@@ -52,8 +89,58 @@ set_shutter_state(uint32_t a, fer_grp g, fer_memb m, fer_cmd cmd) {
     position = 0;
 
   if (0 <= position && position <= 100) {
-    io_puts("U:position: a="), io_print_hex_32(a, false), io_puts(" g="), io_putd(g), io_puts(" m="), io_putd(m), io_puts(" p="), io_putd(position), io_puts(";\n");
+    io_puts("U:position: a="), io_print_hex_32(a, false),
+      io_puts(" g="), io_putd(g),
+      io_puts(" m="), io_putd(m),
+      io_puts(" p="), io_putd(position), io_puts(";\n");
   }
 
-  return set_state(a, g, m, position);
+  if (position < 0)
+    return -1;
+  else
+    return set_state(a, g, m, position);
+}
+
+
+int ICACHE_FLASH_ATTR
+modify_shutter_positions(gm_bitmask_t mm, uint8_t p) {
+  uint8_t g, m;
+
+  for (g=1; g <= GRP_MAX; ++g) {
+    for (m=1; m <= MBR_MAX; ++m) {
+      if (GET_BIT(mm[g], m)) {
+	set_state(0, g, m, p);
+      }
+    }
+  }
+
+  io_puts("U:position:"),
+    io_puts(" p="), io_putd(p),
+    io_puts(" mm=");
+  for (g=0; g < 8; ++g) {
+    io_putx8(mm[g]);
+    if (g < 7)
+      io_putc(',');
+  }
+  io_puts(";\n");
+
+  return 0;
+}
+
+int ICACHE_FLASH_ATTR
+print_shutter_positions() {
+  uint8_t p, g;
+
+    for (p=0; p < POS_SIZE; ++p) {
+      io_puts("U:position:"),
+	io_puts(" p="), io_putd(pos_map[p]),
+	io_puts(" mm=");
+      for (g=0; g < 8; ++g) {
+	io_putx8(positions[p][g]);
+	if (g < 7)
+	  io_putc(',');
+      }
+      io_puts(";\n");
+    }
+    return 0;
 }

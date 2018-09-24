@@ -45,18 +45,19 @@ void db_test_all_indicators(uint8_t nmb_flashs);
 #endif
 
 
-#ifdef NO_PRECOND
+#if defined NO_PRECOND || defined DISTRIBUTION
 #define precond(x)
 #else
-#define precond(x)  ((x) ? (void)0 : abort_precond("", __LINE__))
+#define precond(x)  assert(x)
 #endif
 
 
-#ifdef NO_POSTCOND
+#if defined NO_POSTCOND  || defined DISTRIBUTION
 #define postcond(x)
 #else
-#define postcond(x) ((x) ? (void)0 : abort_postcond("", __LINE__))
+#define postcond(x) assert(x)
 #endif
+
 
 
 

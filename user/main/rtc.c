@@ -41,6 +41,34 @@ get_weekDay() {
   return tm->tm_wday;
 }
 
+int16_t ICACHE_FLASH_ATTR
+get_yearDay() {
+  time_t timer = time(NULL);
+  struct tm *tm = localtime(&timer);
+  return tm->tm_yday + 1;
+}
+
+int ICACHE_FLASH_ATTR
+get_dst() {
+  time_t timer = time(NULL);
+  struct tm *tm = localtime(&timer);
+  return tm->tm_isdst ? 1 : 0;
+}
+
+int16_t ICACHE_FLASH_ATTR
+rtc_get_next_minute() {
+  static int last_minute;
+
+  time_t timer = time(NULL);
+  struct tm *tm = localtime(&timer);
+  if (last_minute == tm->tm_min)
+    return -1;
+
+  last_minute = tm->tm_min;
+  return (int16_t)tm->tm_hour * 60 + tm->tm_min;
+}
+
+
 // 0123456789012345678
 //"YYYY-MM-DDThh:mm:ss"
 bool ICACHE_FLASH_ATTR
