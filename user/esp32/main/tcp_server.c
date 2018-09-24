@@ -53,8 +53,9 @@ static int (*old_io_getc_fun)(void);
 
 #define MY_PORT   7777
 #define MAX_BUF   1024
+#define tcp_io_getc_buf tcp_io_getc
 
-static void modify_io_fun(void);
+static void modify_io_fun(bool add_connection);
 
 static int sockfd;
 static struct sockaddr_in self;
@@ -92,7 +93,7 @@ static tcps_cconn *tcps_add_cconn(int fd) {
   tcps_cconn *cc = get_next_ccon(false);
   ++cconn_count;
   cc->fd = fd;
-  modify_io_fun();
+  modify_io_fun(true);
   return cc;
 }
 
@@ -101,7 +102,7 @@ static void tcps_close_cconn(int idx) {
   cconn_table[idx].fd = -1;
   --cconn_count;
   printf("tcps: disconnected. %d client(s) still connected\n", cconn_count);
-  modify_io_fun();
+  modify_io_fun(false);
 }
 
 
@@ -228,7 +229,7 @@ static int tcp_io_puts(const char *s) {
   return 1;
 }
 
-static int  tcp_io_getc2(void) {
+static int  tcp_io_getc_unbuf(void) {
   char buf[1];
   int c;
 
@@ -317,7 +318,7 @@ static int  tcps_io_getline(char *buf, size_t buf_size, int bytes_already_receiv
   return -1;
 }
 
-static int  tcp_io_getc(void) {
+static int  tcp_io_getc_buf(void) {
   #define BUF_SIZE 80
   static char buf[BUF_SIZE];
   static uint8_t idx, used;
@@ -377,10 +378,11 @@ tcps_loop(void) {
       printf("%s:%d connected (%d clients)\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), cconn_count);
     }
   }
+
 }
 
-static void modify_io_fun() {
-  if (cconn_count == 1) {
+static void modify_io_fun(bool add_connection) {
+  if (add_connection && cconn_count == 1) {
     // fist connection opened
     printf("modify io to tcp\n");
     old_io_getc_fun = io_getc_fun;
@@ -407,8 +409,6 @@ setup_tcp_server(void) {
   if (tcps_create_server() == 0) {
     printf("tcp server created\n");
   }
-
-
 
 
 }
