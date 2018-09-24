@@ -23,6 +23,8 @@
 #include "user_config.h"
 #include "main/config.h"
 
+#define D(x) 
+
 #define CFG_NAMESPACE "Tronferno"
 #define CFG_KEY "global.C"
 
@@ -86,60 +88,61 @@ void read_config(uint32_t mask) {
 
     if (mask & CONFIG_RECV) {
       int8_t temp;
-      if (ESP_OK == nvs_get_i8(handle, "CONFIG_RECEIVER", &temp))
+      if (ESP_OK == nvs_get_i8(handle, "C_RECEIVER", &temp))
         C.app_recv = temp;
     }
 
     if (mask & CONFIG_TRANSM) {
       int8_t temp;
-      if (ESP_OK == nvs_get_i8(handle, "CONFIG_TRANSM", &temp))
+      if (ESP_OK == nvs_get_i8(handle, "C_TRANSM", &temp))
         C.app_transm = temp;
     }
 
     if (mask & CONFIG_VERBOSE) {
       int8_t temp;
-      if (ESP_OK == nvs_get_i8(handle, "CONFIG_VERBOSE", &temp))
+      if (ESP_OK == nvs_get_i8(handle, "C_VERBOSE", &temp))
         C.app_verboseOutput = temp;
     }
 
     if (mask & CONFIG_CUID) {
-      nvs_get_u32(handle, "CONFIG_CUID", &C.fer_centralUnitID);
+      nvs_get_u32(handle, "C_CUID", &C.fer_centralUnitID);
     }
 
     if (mask & CONFIG_BAUD) {
-      nvs_get_u32(handle, "CONFIG_BAUD", &C.mcu_serialBaud);
+      nvs_get_u32(handle, "C_BAUD", &C.mcu_serialBaud);
     }
 
     if (mask & CONFIG_WIFI_SSID) {
-      (len = sizeof C.wifi_SSID), nvs_get_str(handle, "CONFIG_WIFI_SSID", C.wifi_SSID, &len);
+      (len = sizeof C.wifi_SSID), err = nvs_get_str(handle, "C_WIFI_SSID", C.wifi_SSID, &len);
+      D(ets_printf("read wifi-ssid err=%x\n", err));
     }
 
     if (mask & CONFIG_WIFI_PASSWD) {
-      (len = sizeof C.wifi_password), nvs_get_str(handle, "CONFIG_WIFI_PASSWD", C.wifi_password, &len);
+      (len = sizeof C.wifi_password), nvs_get_str(handle, "C_WIFI_PASSWD", C.wifi_password, &len);
     }
 
     if (mask & CONFIG_CFG_PASSWD) {
-      (len = sizeof C.app_configPassword), nvs_get_str(handle, "CONFIG_CFG_PASSWD", C.app_configPassword, &len);
+      (len = sizeof C.app_configPassword), nvs_get_str(handle, "C_CFG_PASSWD", C.app_configPassword, &len);
     }
 
     if (mask & CONFIG_LONGITUDE) {
-      (len = sizeof C.geo_longitude), nvs_get_blob(handle, "CONFIG_LONGITUDE", &C.geo_longitude, &len);
+      (len = sizeof C.geo_longitude), nvs_get_blob(handle, "C_LONGITUDE", &C.geo_longitude, &len);
     }
 
     if (mask & CONFIG_LATITUDE) {
-      (len = sizeof C.geo_longitude), nvs_get_blob(handle, "CONFIG_LATITUDE", &C.geo_latitude, &len);
+      (len = sizeof C.geo_longitude), nvs_get_blob(handle, "C_LATITUDE", &C.geo_latitude, &len);
     }
 
     if (mask & CONFIG_TIZO) {
-      (len = sizeof C.geo_timezone), nvs_get_blob(handle, "CONFIG_TIZO", &C.geo_timezone, &len);
+      (len = sizeof C.geo_timezone), nvs_get_blob(handle, "C_TIZO", &C.geo_timezone, &len);
     }
 
     if (mask & CONFIG_TZ) {
-      (len = sizeof C.geo_tz), nvs_get_str(handle, "CONFIG_TZ", C.geo_tz, &len);
+      (len = sizeof C.geo_tz), nvs_get_str(handle, "C_TZ", C.geo_tz, &len);
     }
 
     if (mask & CONFIG_GPIO) {
-      (len = sizeof C.gpio), nvs_get_blob(handle, "CONFIG_GPIO", &C.gpio, &len);
+      (len = sizeof C.gpio), nvs_get_blob(handle, "C_GPIO", &C.gpio, &len);
     }
 
     nvs_close(handle);
@@ -154,60 +157,63 @@ void save_config(uint32_t mask) {
   if ((err = nvs_open(CFG_NAMESPACE, NVS_READWRITE, &handle)) == ESP_OK) {
 
     if (mask & CONFIG_RECV) {
-      nvs_set_i8(handle, "CONFIG_RECEIVER", C.app_recv);
+      nvs_set_i8(handle, "C_RECEIVER", C.app_recv);
     }
 
     if (mask & CONFIG_TRANSM) {
-      nvs_set_i8(handle, "CONFIG_TRANSM", C.app_transm);
+      nvs_set_i8(handle, "C_TRANSM", C.app_transm);
     }
 
     if (mask & CONFIG_VERBOSE) {
-       nvs_set_i8(handle, "CONFIG_VERBOSE", C.app_verboseOutput);
+       nvs_set_i8(handle, "C_VERBOSE", C.app_verboseOutput);
      }
 
      if (mask & CONFIG_CUID) {
-      nvs_set_u32(handle, "CONFIG_CUID", C.fer_centralUnitID);
+      nvs_set_u32(handle, "C_CUID", C.fer_centralUnitID);
     }
 
     if (mask & CONFIG_BAUD) {
-      nvs_set_u32(handle, "CONFIG_BAUD", C.mcu_serialBaud);
+      nvs_set_u32(handle, "C_BAUD", C.mcu_serialBaud);
     }
 
     if (mask & CONFIG_WIFI_SSID) {
-      nvs_set_str(handle, "CONFIG_WIFI_SSID", C.wifi_SSID);
+      err = nvs_set_str(handle, "C_WIFI_SSID", C.wifi_SSID);
+      D(ets_printf("config: wifi_ssid err=%x\n", err));
     }
 
     if (mask & CONFIG_WIFI_PASSWD) {
-      nvs_set_str(handle, "CONFIG_WIFI_PASSWD", C.wifi_password);
+      nvs_set_str(handle, "C_WIFI_PASSWD", C.wifi_password);
     }
 
     if (mask & CONFIG_CFG_PASSWD) {
-      nvs_set_str(handle, "CONFIG_CFG_PASSWD", C.app_configPassword);
+      nvs_set_str(handle, "C_CFG_PASSWD", C.app_configPassword);
     }
 
    if (mask & CONFIG_LONGITUDE) {
-      nvs_set_blob(handle, "CONFIG_LONGITUDE", &C.geo_longitude, sizeof C.geo_longitude);
+      nvs_set_blob(handle, "C_LONGITUDE", &C.geo_longitude, sizeof C.geo_longitude);
     }
 
     if (mask & CONFIG_LATITUDE) {
-      nvs_set_blob(handle, "CONFIG_LATITUDE", &C.geo_latitude, sizeof C.geo_latitude);
+      nvs_set_blob(handle, "C_LATITUDE", &C.geo_latitude, sizeof C.geo_latitude);
     }
 
     if (mask & CONFIG_TIZO) {
-      nvs_set_blob(handle, "CONFIG_TIZO", &C.geo_timezone, sizeof C.geo_timezone);
+      nvs_set_blob(handle, "C_TIZO", &C.geo_timezone, sizeof C.geo_timezone);
     }
 
     if (mask & CONFIG_TZ) {
-      nvs_set_str(handle, "CONFIG_TZ", C.geo_tz);
+      nvs_set_str(handle, "C_TZ", C.geo_tz);
     }
 
     if (mask & CONFIG_GPIO) {
-       nvs_set_blob(handle, "CONFIG_GPIO", &C.gpio, sizeof C.gpio);
+       nvs_set_blob(handle, "C_GPIO", &C.gpio, sizeof C.gpio);
      }
 
 
     nvs_commit(handle);
     nvs_close(handle);
+  } else {
+    D(ets_printf("error: cannot open config in nvs (err=%x)\n", err));
   }
 }
 
