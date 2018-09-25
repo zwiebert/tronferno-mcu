@@ -29,18 +29,17 @@
 
 #define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
-#define NODEFAULT() if (val==0) return reply_failure()
 //fer_sender_basic senders[10];
 fer_sender_basic default_sender;
 fer_sender_basic last_received_sender;
 uint16_t msgid;
 
 int ENR; // error number
-static void ICACHE_FLASH_ATTR print_enr(void) {
+/*static*/ void ICACHE_FLASH_ATTR print_enr(void) {
   io_puts("enr: "), io_putd(ENR), io_putlf();
 }
 
-static void ICACHE_FLASH_ATTR msg_print(const char *msg, const char *tag) {
+/*static*/ void ICACHE_FLASH_ATTR msg_print(const char *msg, const char *tag) {
   if (msg)
     io_puts(msg);
   if (msgid) {
@@ -58,11 +57,11 @@ void ICACHE_FLASH_ATTR warning_unknown_option(const char *key) {
   msg_print("warning", "unknown-option"), io_puts(key), io_putc('\n');
 }
 
-static void ICACHE_FLASH_ATTR reply_print(const char *tag) {
+/*static*/ void ICACHE_FLASH_ATTR reply_print(const char *tag) {
   msg_print("reply", tag);
 }
 
-static void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
+/*static*/ void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
   reply_print(tag);
   if (msg)
     io_puts(msg);
@@ -165,15 +164,11 @@ get_commandline() {
   cont: return result;
 }
 
-typedef struct {
-  char *key;
-  char *val;
-} clpar;
 
 #define MAX_PAR 10
 clpar par[MAX_PAR];
 
-static char * ICACHE_FLASH_ATTR
+/*static*/ char * ICACHE_FLASH_ATTR
 skip_leading_whitespace(char *s) {
   while (*s == ' ')
     *s++ = '\0';
@@ -181,14 +176,14 @@ skip_leading_whitespace(char *s) {
   return s;
 }
 
-static char * ICACHE_FLASH_ATTR
+/*static*/ char * ICACHE_FLASH_ATTR
 find_next_space_eq_eol(char *s) {
   while (*s != '\0' && *s != ' ' && *s != '=') {
     s++;
   }
   return s;
 }
-static char * ICACHE_FLASH_ATTR
+/*static*/ char * ICACHE_FLASH_ATTR
 find_next_whitespace_or_eol(char *s) {
   while (*s != '\0' && *s != ' ' && *s != '=') {
     s++;
@@ -411,7 +406,7 @@ bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds) {
   return false;
 }
 
-static bool ICACHE_FLASH_ATTR asc2group(const char *s, fer_grp *grp) {
+bool ICACHE_FLASH_ATTR asc2group(const char *s, fer_grp *grp) {
   if (s) {
     int g = atoi(s);
     if (0 <= g && g <= 7) {
@@ -424,7 +419,7 @@ static bool ICACHE_FLASH_ATTR asc2group(const char *s, fer_grp *grp) {
   return (fer_grp) atoi(s);
 }
 
-static bool ICACHE_FLASH_ATTR asc2memb(const char *s, fer_memb *memb) {
+bool ICACHE_FLASH_ATTR asc2memb(const char *s, fer_memb *memb) {
   if (s) {
 
     int m = atoi(s);
@@ -436,586 +431,7 @@ static bool ICACHE_FLASH_ATTR asc2memb(const char *s, fer_memb *memb) {
   return false;
 }
 
-const char help_parmSend[] PROGMEM =
-    "a=(0|ID)  0  hex ID of sender or receiver. 0 uses 'cu' in config\n"
-    "g=[0-7]   0  group number\n"
-    "m=[0-7]   0  group member number\n"
-    "c=(up|down|stop|sun-down|sun-inst|set\n"
-    "r=N       2  repeat command 1+N times"
-    "SEP[=0|1]    Enter end-position adjustment mode (needs hardware button)"
-// "TROT        Toggle rotation direction"
-;
 
-static int ICACHE_FLASH_ATTR
-process_parmSend(clpar p[], int len) {
-  int arg_idx;
-
-  uint32_t addr = 0;
-  fer_grp group = fer_grp_Broadcast;
-  fer_memb memb = fer_memb_Broadcast;
-  fer_cmd cmd = fer_cmd_None;
-  int set_end_pos = -1;
-  uint8_t repeats = FSB_PLAIN_REPEATS;
-  bool read_state = false;
-
-  for (arg_idx = 1; arg_idx < len; ++arg_idx) {
-    const char *key = p[arg_idx].key, *val = p[arg_idx].val;
-
-    if (key == NULL) {
-      return -1;
-    } else if (strcmp(key, "a") == 0) {
-      addr = val ? strtol(val, NULL, 16) : 0;
-    } else if (strcmp(key, "g") == 0) {
-      if (!asc2group(val, &group))
-        return reply_failure();
-    } else if (strcmp(key, "m") == 0) {
-      if (!asc2memb(val, &memb))
-        return reply_failure();
-    } else if (strcmp(key, "r") == 0) {
-      NODEFAULT();
-      repeats = atoi(val);
-      if (!(repeats <= 10)) {
-        return reply_failure();
-      }
-    } else if (strcmp(key, "c") == 0) {
-      NODEFAULT();
-      if (*val == '?') {
-        read_state = true;
-      } else if (!cli_parm_to_ferCMD(val, &cmd)) {
-        return reply_failure();
-      }
-    } else if (strcmp(key, "SEP") == 0) {
-      set_end_pos = asc2bool(val);
-      if (set_end_pos != 1)
-      set_end_pos = 0;  // force disable
-    } else {
-      warning_unknown_option(key);
-    }
-  }
-
-  if (read_state) {
-    uint8_t g = group;
-    uint8_t m = memb == 0 ? 0 : memb - 7;
-    io_puts("current state: "), io_print_dec_16(get_shutter_state(addr, g, m), false), io_puts("\n");
-  } else {
-    fer_sender_basic *fsb = get_sender_by_addr(addr);
-    if (!fsb) {
-      static fer_sender_basic fsb_direct; // FIXME: or was senders[0] meant for this?
-      fsb = &fsb_direct;
-      if (FSB_GET_DEVID(fsb) != addr) {
-        fer_init_sender(fsb, addr);
-      }
-    }
-
-    if (FSB_ADDR_IS_CENTRAL(fsb)) {
-      FSB_PUT_GRP(fsb, group);
-      FSB_PUT_MEMB(fsb, memb);  // only set this on central unit!
-      //assert(group == FSB_GET_GRP(fsb));
-      //assert(memb == FSB_GET_MEMB(fsb));
-    }
-
-    if (set_end_pos >= 0) { // enable hardware buttons to set end position
-      FSB_PUT_CMD(fsb, cmd);
-      if (set_end_pos)
-        sep_enable(fsb);
-      else
-        sep_disable();
-    } else if (cmd != fer_cmd_None) {
-      FSB_PUT_CMD(fsb, cmd);
-      fer_update_tglNibble(fsb);
-      fsb->repeats = repeats;
-      if(reply(fer_send_msg(fsb, MSG_TYPE_PLAIN))) {
-	uint8_t g = group;
-	uint8_t m = memb == 0 ? 0 : memb - 7;
-        set_shutter_state(FSB_GET_DEVID(fsb), g, m, FSB_GET_CMD(fsb));
-      }
-    } else {
-      reply_failure();
-    }
-  }
-  return 0;
-}
-
-#ifdef CONFIG_GPIO_SIZE
-//PIN_DEFAULT=0, PIN_INPUT, PIN_INPUT_PULLUP, PIN_OUTPUT, PIN_ERROR, PIN_READ, PIN_CLEAR, PIN_SET, PIN_TOGGLE
-const char pin_state_args[] = {
-    'd', 'i', 'p', 'o', ' ', '?', '0', '1', 't'
-};
-#endif
-
-const char help_parmConfig[] PROGMEM =
-    "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
-    "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID using connected RF receiver\n"
-    "rtc=(ISO_TIME|?)   set local time with this (or use NTP). example: config rtc=2017-12-31T23:59:59;\n"
-    "baud=(N|?)         serial baud rate (... baud=115200)\n"
-#ifdef USE_WLAN
-    "wlan-ssid=(SSID|?)\n"
-    "wlan-password=PW   example: config wlan-ssid=\"1234\" wlan-password=\"abcd\" restart=1;\n"
-#endif
-    "longitude=(DEG|?)\n"
-    "latitude=(DEG|?)\n"
- #if !POSIX_TIME
-    "time-zone=(N|?)    time zone hour offset for astro and rtc\n"
-    "dst=(eu|0|1|?)     daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
-#else
-    "time-zone=(N|?)    time offset for astro\n"
-    "tz=(POSIX_TZ|?)    time zone for RTC/NTP. example: config  tz=CET-1CEST-2,M3.5.0,M10.5.0;\n"
-#endif
-    "verbose=(0..5|?)   set text output verbosity level. 0 for none ... 5 for max\n"
-    "set-pw=password    set a config password. if set every config commands needs the pw option\n"
-    "pw=PW              example: config pw=my_passw dst=eu;\n"
-#if ENABLE_RESTART
-    "restart            restart MCU\n"
-#endif
-#ifdef CONFIG_GPIO_SIZE
-    "gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default\n"
-#endif
-//  "set-expert-password=\n"
-;
-#define slf "\n"
-#define cfg "config "
-
-static int ICACHE_FLASH_ATTR
-process_parmConfig(clpar p[], int len) {
-  int arg_idx;
-  int errors = 0;
-  const char *cfgSep = "config ";
-
-  bool pw_ok = strlen(C.app_configPassword) == 0;
-
-  for (arg_idx = 1; arg_idx < len; ++arg_idx) {
-    const char *key = p[arg_idx].key, *val = p[arg_idx].val;
-
-    if (key == NULL || val == NULL) {  // don't allow any default values in config
-      return reply_failure();   } else if (strcmp(key, "pw") == 0) {
-      if (val && strcmp(C.app_configPassword, val) == 0) {
-        pw_ok = true;
-        io_puts("password ok\n");
-
-      } else {
-        io_puts("wrong config password\n");
-        return reply_failure();
-      }
-    } else if (!pw_ok) {
-      io_puts("missing config password\n");
-      return reply_failure();
-
-
-#if ENABLE_RESTART
-    } else if (strcmp(key, "restart") == 0) {
-      mcu_restart();
-#endif
-
-
-    } else if (strcmp(key, "rtc") == 0) {
-      if (*val == '?') {
-        char buf[20];
-        if (rtc_get_by_string(buf)) {
-          io_puts(cfgSep), io_puts(key), io_puts("="), io_puts(buf), (cfgSep = " ");
-        }
-      } else {
-        reply(val ? rtc_set_by_string(val) : false);
-      }
-
-
-    } else if (strcmp(key, "cu") == 0) {
-      if (*val == '?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_hex_32(C.fer_centralUnitID, false), (cfgSep = " ");
-      } else if (strcmp(val, "auto") == 0) {
-        cu_auto_set(60);
-        io_puts("U: Press Stop on the Fernotron central unit (60 secs remaining)\n");
-        reply_success();
-      } else {
-        uint32_t cu = (strcmp(val, "auto-old") == 0) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
-
-        if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
-          return reply_failure();
-        }
-        FSB_PUT_DEVID(&default_sender, cu);
-        C.fer_centralUnitID = cu;
-	save_config(CONFIG_CUID);
-      }
-
-
-    } else if (strcmp(key, "gm-used") == 0) {
-      uint32_t gmu = strtoul(val, NULL, 16);
-      C.fer_usedMembers = gmu;
-      save_config(CONFIG_USED_MEMBERS);
-
-
-    } else if (strcmp(key, "baud") == 0) {
-      if (*val == '?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_dec_32(C.mcu_serialBaud, false), (cfgSep = " ");
-      } else {
-        uint32_t baud = strtoul(val, NULL, 10);
-        C.mcu_serialBaud = baud;
-        save_config(CONFIG_BAUD);
-      }
-
-#ifdef CONFIG_GPIO_SIZE
-    } else if (strncmp(key, "gpio", 4) == 0) {
-      int gpio_number = atoi(key + 4);
-      mcu_pin_state ps;
-
-      if (!is_gpio_number_usable(gpio_number, true)) {
-        reply_message("gpio:error", "gpio number cannot be used");
-        ++errors;
-
-      } else if (*val == '?') {
-        io_puts(cfgSep), io_puts(key), io_putc('='), io_putc(pin_state_args[C.gpio[gpio_number]]), (cfgSep = " ");
-
-      } else {
-        const char *error = NULL;
-
-        for (ps = 0; ps < sizeof pin_state_args; ++ps) {
-          if (pin_state_args[ps] == *val) {
-            break;
-          }
-        }
-
-        switch (ps) {
-
-        case PIN_DEFAULT:
-          break;
-
-        case PIN_CLEAR:
-        case PIN_SET:
-        case PIN_OUTPUT:
-          error = mcu_access_pin(gpio_number, NULL, PIN_OUTPUT);
-          if (!error && ps != PIN_OUTPUT) {
-            error = mcu_access_pin(gpio_number, NULL, ps);
-          }
-          break;
-
-        case PIN_INPUT:
-        case PIN_INPUT_PULLUP:
-          error = mcu_access_pin(gpio_number, NULL, ps);
-          break;
-
-        default:
-          error = "unknown gpio config";
-          ++errors;
-        }
-
-        if (error) {
-          reply_message("gpio:failure", error);
-        } else {
-          C.gpio[gpio_number] = ps;
-	  save_config(CONFIG_GPIO);
-        }
-      }
-#endif
-
-    } else if (strcmp(key, "verbose") == 0) {
-      if (*val == '?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_putd(C.app_verboseOutput), (cfgSep = " ");
-      } else {
-        NODEFAULT();
-        enum verbosity level = atoi(val);
-        C.app_verboseOutput = level;
-        save_config(CONFIG_VERBOSE);
-      }
-
-
-#ifdef USE_WLAN
-    } else if (strcmp(key, "wlan-ssid") == 0) {
-      if (*val=='?') {
-        io_puts(cfgSep), io_puts(key), io_puts("=\""), io_puts(C.wifi_SSID), io_puts("\""), (cfgSep = " ");
-      } else {
-        if (strlen(val) < sizeof (C.wifi_SSID)) {
-          strcpy (C.wifi_SSID, val);
-          save_config(CONFIG_WIFI_SSID);
-        } else {
-          reply_failure();
-        }
-      }
-
-
-    } else if (strcmp(key, "wlan-password") == 0) {
-      if (strlen(val) < sizeof (C.wifi_password)) {
-        strcpy (C.wifi_password, val);
-        save_config(CONFIG_WIFI_PASSWD);
-      } else {
-        reply_failure();
-      }
-#endif // USE_WLAN
-
-
-    } else if (strcmp(key, "set-pw") == 0) {
-      if (strlen(val) < sizeof (C.app_configPassword)) {
-        strcpy (C.app_configPassword, val);
-        save_config(CONFIG_CFG_PASSWD);
-      } else {
-        reply_failure();
-      }
-
-
-    } else if (strcmp(key, "receiver") == 0) {
-      reply(config_receiver(val));
-
-
-    } else if (strcmp(key, "transmitter") == 0) {
-      reply(config_transmitter(val));
-
-
-    } else if (strcmp(key, "longitude") == 0) {
-      if (*val=='?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_longitude, 5), (cfgSep = " ");
-      } else {
-        float longitude = stof(val);
-        C.geo_longitude = longitude;
-        rtc_setup();
-        save_config(CONFIG_LONGITUDE);
-      }
-
-
-    } else if (strcmp(key, "latitude") == 0) {
-      if (*val=='?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_latitude, 5), (cfgSep = " ");
-      } else {
-        float latitude = stof(val);
-        C.geo_latitude = latitude;
-        rtc_setup();
-        save_config(CONFIG_LATITUDE);
-      }
-
-
-    } else if (strcmp(key, "time-zone") == 0) {
-      if (*val=='?') {
-
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_timezone, 2), (cfgSep = " ");
-      } else {
-        C.geo_timezone = stof(val);
-
-        rtc_setup();
-        save_config(CONFIG_TZ);
-      }
-
-#if POSIX_TIME
-    } else if (strcmp(key, "tz") == 0) {
-      if (*val=='?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_puts(C.geo_tz), (cfgSep = " ");
-
-      } else {
-        strncpy(C.geo_tz, val, sizeof (C.geo_tz) -1);
-
-        rtc_setup();
-        save_config(CONFIG_TZ);
-      }
-#endif
-    } else if (strcmp(key, "dst") == 0) {
-#if POSIX_TIME
-      if (*val=='?') {
-        io_puts(cfgSep), io_puts("dst=0"), (cfgSep = " ");
-      }
-#else
-      if (*val=='?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_puts((C.geo_dST == dstEU ? "eu": (C.geo_dST == dstNone ? "0" : "1"))), (cfgSep = " ");
-      } else {
-
-        if (strcmp(val, "eu") == 0) {
-          C.geo_dST = dstEU;
-        } else if (strcmp(val, "0") == 0) {
-          C.geo_dST = dstNone;
-        } else if (strcmp(val, "1") == 0) {
-          C.geo_dST = dstAlways;
-        } else {
-          warning_unknown_option(key);
-        }
-        rtc_setup();
-        save_config(CONFIG_DST);
-
-      }
-#endif
-
-    } else {
-      ++errors;
-      warning_unknown_option(key);
-    }
-  }
-
-if (strcmp(cfgSep, " ") == 0)
-  io_puts(";\n");
-
-  reply(errors==0);
-  return 0;
-}
-
-const char help_parmMcu[] PROGMEM =
-"print=(rtc|cu|reset-info)\n"
-#if ENABLE_SPIFFS
-    "spiffs=(format|test)\n"
-#endif
-#ifdef CONFIG_GPIO_SIZE
-    "gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N\n"
-#endif
-    "up-time=?\n"
-    "version=full\n"
-;
-
-static int ICACHE_FLASH_ATTR
-process_parmMcu(clpar p[], int len) {
-  int arg_idx;
-  const char *mcuSep = "mcu ";
-
-  for (arg_idx = 1; arg_idx < len; ++arg_idx) {
-    const char *key = p[arg_idx].key, *val = p[arg_idx].val;
-
-    if (key == NULL || val == NULL) {
-      return -1;
-    } else if (strcmp(key, "print") == 0) {
-
-      if (strcmp(val, "rtc") == 0) {
-        char buf[20];
-        if (rtc_get_by_string(buf)) {
-          io_puts(buf);
-          io_putlf();
-        }
-      } else if (strcmp(val, "cu") == 0) {
-        io_puts("cu=0x");
-        io_putl(C.fer_centralUnitID, 16);
-        io_putlf();
-      }
-#ifdef MCU_ESP8266
-      if (strcmp(val, "reset-info") == 0) {
-        print_reset_info();
-      }
-#endif
-#if ENABLE_SPIFFS
-    } else if (strcmp(key, "spiffs") == 0) {
-
-      if (strcmp(val, "format") == 0) {
-        spiffs_format_fs(fs_A);
-      } else if (strcmp(val, "test") == 0) {
-        spiffs_test();
-      }
-#endif
-    } else if (strcmp(key, "tm") == 0) {
-
-      if (strlen(val) == 2) {
-	uint8_t g = val[0] - '0';
-	uint8_t m = val[1] - '0';
-	timer_minutes_t tm;
-	if (get_timer_minutes(&tm, &g, &m, true)) {
-	  int i;
-	  for (i=0; i < SIZE_MINTS; ++i) {
-	    io_putd(tm.minutes[i]), io_putlf();
-	  }
-	}
-      }
-
-    } else if (strcmp(key, "te") == 0) {
-      int i;
-
-      timer_event_t teu, ted;
-      get_next_timer_event(&teu, &ted);
-      io_putd(teu.next_event), io_putlf();
-      for (i=0; i < 8; ++i) {
-	io_print_hex_8(teu.matching_members[i], true);
-      }
-      io_putlf();
-
-      io_putd(ted.next_event), io_putlf();
-      for (i=0; i < 8; ++i) {
-	io_print_hex_8(ted.matching_members[i], true);
-      }
-      io_putlf();
-
-    } else if (strcmp(key, "cs") == 0) {
-      print_shutter_positions();
-
-#ifdef CONFIG_GPIO_SIZE
-    } else if (strncmp(key, "gpio", 4) == 0) {
-      int gpio_number = atoi(key + 4);
-      mcu_pin_state ps = 0, ps_result = 0;
-
-      if (!is_gpio_number_usable(gpio_number, true)) {
-        reply_message("gpio:error", "gpio number cannot be used");
-        return -1;
-      } else {
-
-        const char *error = NULL;
-
-        for (ps = 0; ps < sizeof pin_state_args; ++ps) {
-          if (pin_state_args[ps] == *val) {
-            break;
-          }
-        }
-
-        switch (ps) {
-
-        case PIN_CLEAR:
-        case PIN_SET:
-        case PIN_TOGGLE:
-          error = mcu_access_pin(gpio_number, NULL, ps);
-          break;
-
-        case PIN_READ:
-          error = mcu_access_pin(gpio_number, &ps_result, ps);
-          if (!error) {
-            io_puts(mcuSep), io_puts(key), io_puts((ps_result == PIN_SET ? "=1" : "=0")), (mcuSep = " ");
-          }
-          break;
-
-        default:
-          error = "invalid command";
-
-        }
-
-        if (error) {
-          reply_message("gpio:failure", error);
-          return -1;
-        }
-      }
-#endif
-
-    } else if (strcmp(key, "up-time") == 0) {
-      if (*val=='?') {
-        io_puts(mcuSep), io_puts(key), io_puts("="), io_print_dec_32(run_time(), false), (mcuSep = " ");
-      } else {
-        reply_message("error:mcu:up-time", "option is read-only");
-      }
-
-    } else if (strcmp(key, "version") == 0) {
-	static const char mcu_type[] PROGMEM = MCU_TYPE;
-	static const char firmware_version[] PROGMEM = APP_VERSION;
-
-	if (strcmp(val, "full") == 0) {
-	  io_puts(mcuSep), io_puts(key), io_puts("="), io_puts_P(mcu_type), io_puts(","), io_puts_P(firmware_version), io_puts(", "),
-	    io_puts(ISO_BUILD_TIME), (mcuSep = " ");
-      }
-
-
-    } else {
-      warning_unknown_option(key);
-    }
-
-  }
-
-  if (strcmp(mcuSep, " ") == 0)
-    io_puts(";\n");
-
-  return 0;
-}
-
-enum {
-  TIMER_KEY_WEEKLY, TIMER_KEY_DAILY, TIMER_KEY_ASTRO, TIMER_KEY_RTC_ONLY, TIMER_KEY_FLAG_RANDOM, TIMER_KEY_FLAG_SUN_AUTO
-};
-
-const char * const timer_keys[] = { "weekly", "daily", "astro", "rtc-only", "random", "sun-auto" };
-
-#if ENABLE_TIMER_WDAY_KEYS
-const char *const timer_wdays[] = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"};
-
-int asc2wday(const char *s) {
-  int i;
-  for (i=0; i < (sizeof (timer_wdays) / sizeof (timer_wdays[0])); ++i) {
-    if (strcmp(s, timer_wdays[i]) == 0)
-    return i;
-  }
-  return -1;
-}
-#endif
 
 bool ICACHE_FLASH_ATTR
 string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst) {
@@ -1062,222 +478,6 @@ string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst) {
   return i == size_dst;
 }
 
-#define FLAG_NONE -2
-#define FLAG_ERROR -1
-#define FLAG_FALSE 0
-#define FLAG_TRUE 1
-#define HAS_FLAG(v) (v >= 0)
-
-const char help_parmTimer[] PROGMEM =
-    "daily=T        enables daily timer. T is up/down like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00\n"
-    "weekly=TTTTTTT enables weekly timer. T like with 'daily' or '+' to copy the T on the left. (weekly=0730-++++0900-+)\n"
-    "astro[=N]      enables astro automatic. N is the offset to civil dusk in minutes. Can be postive or negative.\n"
-    "sun-auto       enables sun automatic\n"
-    "random         enables random automatic. shutter opens and closes at random times.\n"
-    "rtc-only       don't change timers. only update internal real time clock\n"
-    "a, g and m:    like in send command\n"
-    "rs=(0|1|2)     read back saved timer data. if set to 2, return any data matching g and m e.g. m=0 (any member) instead of m=2\n";
-
-static int ICACHE_FLASH_ATTR
-process_parmTimer(clpar p[], int len) {
-  int i;
-  bool has_daily = false, has_weekly = false, has_astro = false;
-  int16_t astro_offset = 0;
-  uint8_t weekly_data[FPR_TIMER_STAMP_WIDTH * 7];
-  uint8_t daily_data[FPR_TIMER_STAMP_WIDTH];
-  fer_sender_basic *fsb = &default_sender;
-  fer_grp group = fer_grp_Broadcast;
-  fer_memb memb = fer_memb_Broadcast;
-  uint32_t addr = 0;
-  uint8_t fpr0_flags = 0, fpr0_mask = 0;
-  int8_t flag_rtc_only = FLAG_NONE;
-
-#if ENABLE_RSTD
-  const char *weeklyVal = 0, *dailyVal = 0;
-  uint8_t mn = 0;
-  uint8_t rs = 0;
-  timer_data_t td = td_initializer;
-#endif
-  // init data
-  for (i = 0; i + 1 < sizeof(weekly_data) / sizeof(weekly_data[0]); i += 2) {
-    weekly_data[i] = 0xff;
-    weekly_data[i + 1] = 0x0f;
-  }
-  for (i = 0; i + 1 < sizeof(daily_data) / sizeof(daily_data[0]); i += 2) {
-    daily_data[i] = 0xff;
-    daily_data[i + 1] = 0x0f;
-  }
-
-  for (i = 1; i < len; ++i) {
-    const char *key = p[i].key, *val = p[i].val;
-
-    if (key == NULL) {
-      return -1;
-    } else if (strcmp(key, timer_keys[TIMER_KEY_WEEKLY]) == 0) {
-      NODEFAULT();
-      has_weekly = string2bcdArray(val, weekly_data, sizeof weekly_data);
-#if ENABLE_RSTD
-      weeklyVal = val;
-#endif
-    } else if (strcmp(key, timer_keys[TIMER_KEY_DAILY]) == 0) {
-      NODEFAULT();
-      has_daily = string2bcdArray(val, daily_data, sizeof daily_data);
-#if ENABLE_RSTD
-      dailyVal = val;
-#endif
-    } else if (strcmp(key, timer_keys[TIMER_KEY_ASTRO]) == 0) {
-      astro_offset = val ? atoi(val) : 0;
-      has_astro = true;
-    } else if (strcmp(key, timer_keys[TIMER_KEY_FLAG_RANDOM]) == 0) {
-      int flag = asc2bool(val);
-      if (flag >= 0) {
-        fpr0_mask |= (1 << flag_Random);
-        if (flag)
-        fpr0_flags |= (1 << flag_Random);
-        else
-        fpr0_flags &= ~(1 << flag_Random);
-      }
-    } else if (strcmp(key, timer_keys[TIMER_KEY_FLAG_SUN_AUTO]) == 0) {
-      int flag = asc2bool(val);
-      if (flag >= 0) {
-        fpr0_mask |= (1 << flag_SunAuto);
-        if (flag)
-        fpr0_flags |= (1 << flag_SunAuto);
-        else
-        fpr0_flags &= ~(1 << flag_SunAuto);
-      }
-
-    } else if (strcmp(key, timer_keys[TIMER_KEY_RTC_ONLY]) == 0) {
-      flag_rtc_only = asc2bool(val);
-    } else if (strcmp(key, "a") == 0) {
-      addr = val ? strtol(val, NULL, 16) : 0;
-    } else if (strcmp(key, "g") == 0) {
-      if (!asc2group(val, &group))
-      return reply_failure();
-    } else if (strcmp(key, "m") == 0) {
-      if (!asc2memb(val, &memb))
-      return reply_failure();
-#if ENABLE_RSTD
-      mn = memb ? (memb - 7) : 0;
-    } else if (strcmp(key, "rs") == 0) {
-      NODEFAULT();
-      rs = atoi(val);
-#endif
-#if ENABLE_TIMER_WDAY_KEYS
-    } else if ((wday = asc2wday(key)) >= 0) {
-      NODEFAULTS();
-      io_puts(val), io_putlf();
-      has_weekly = string2bcdArray(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
-#endif
-    } else {
-      if (strcmp(key, "rs") == 0) {
-        reply_failure();
-        return -1;
-      }
-      warning_unknown_option(key);
-    }
-  }
-
-#if ENABLE_RSTD
-  if (rs) {
-    uint8_t g = group, m = mn;
-
-    reply_print("rs=data");
-    if (read_timer_data(&td, &g, &m, rs == 2)) {
-      io_puts("timer");
-      io_puts(" g="), io_putd(g);
-      io_puts(" m="), io_putd(m);
-      if (td_is_daily(&td)) {
-        io_puts(" daily="), io_puts(td.daily);
-      }
-      if (td_is_weekly(&td)) {
-        io_puts(" weekly="), io_puts(td.weekly);
-      }
-      if (td_is_astro(&td)) {
-        io_puts(" astro="), io_putd(td.astro);
-      }
-      if (td_is_random(&td)) {
-        io_puts(" random=1");
-      }
-      if (td_is_sun_auto(&td)) {
-        io_puts(" sun-auto=1");
-      }
-
-      io_puts(";\n");
-      reply_success();
-    } else {
-      io_puts("none\n");
-    }
-    return 0;
-  }
-#endif
-
-  if (addr != 0) {
-    fsb = get_sender_by_addr(addr);
-    if (!fsb) {
-      static fer_sender_basic fsb_direct; // FIXME: or was senders[0] meant for this?
-      fsb = &fsb_direct;
-      if (FSB_GET_DEVID(fsb) != addr) {
-        fer_init_sender(fsb, addr);
-      }
-    }
-  }
-
-  if (FSB_ADDR_IS_CENTRAL(fsb)) {
-    FSB_PUT_GRP(fsb, group);
-    FSB_PUT_MEMB(fsb, memb);
-  }
-
-  FSB_PUT_CMD(fsb, fer_cmd_Program);
-  FSB_TOGGLE(fsb);
-
-  if (recv_lockBuffer(true)) {
-    fmsg_init_data(txmsg);
-    if (flag_rtc_only == FLAG_TRUE) {
-      fmsg_write_rtc(txmsg, true);
-      fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask); // the flags are ignored for RTC-only frames, even for non-broadcast
-    } else {
-      if (has_weekly)
-        fmsg_write_wtimer(txmsg, weekly_data);
-      if (has_daily)
-        fmsg_write_dtimer(txmsg, daily_data);
-      if (has_astro)
-        fmsg_write_astro(txmsg, astro_offset);
-      fmsg_write_rtc(txmsg, false);
-      fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask);
-      fmsg_write_lastline(txmsg, fsb);
-    }
-
-    if (reply(fer_send_msg(fsb, (flag_rtc_only == FLAG_TRUE) ? MSG_TYPE_RTC : MSG_TYPE_TIMER))) {
-#if ENABLE_RSTD
-      if (FSB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE) {  // FIXME: or better test for default cu?
-        if (has_astro) {
-          td.astro = astro_offset;
-        }
-        td.bf = fpr0_flags;
-        if (has_weekly) {
-          strncpy(td.weekly, weeklyVal, sizeof(td.weekly) - 1);
-        }
-
-        if (has_daily) {
-          strncpy(td.daily, dailyVal, sizeof(td.daily) - 1);
-        }
-
-        if (save_timer_data(&td, group, mn)) {
-          reply_message("rs", "saved");
-        } else {
-          reply_message("bug", "rs not saved");
-          print_enr();
-        }
-      }
-#endif
-    }
-
-    recv_lockBuffer(false);
-  }
-  return 0;
-}
-
 #if ENABLE_EXPERT
 
 struct c_map const ec_map[] = {
@@ -1295,7 +495,7 @@ struct c_map const ec_map[] = {
 
 #define create_expert_key() ("a(42)")  // FIXME: create random key
 #define test_expert_key(k) (k == 84)
-static int ICACHE_FLASH_ATTR
+/*static*/ int ICACHE_FLASH_ATTR
 process_parmExpert(clpar p[], int len) {
   int i;
 // FIXME: function body copied from parmSend ... now modifiy it
@@ -1367,7 +567,7 @@ process_parmExpert(clpar p[], int len) {
 }
 #endif
 
-static int process_parmHelp(clpar p[], int len);
+/*static*/ int process_parmHelp(clpar p[], int len);
 
 const char help_None[] PROGMEM = "none";
 
@@ -1413,7 +613,7 @@ process_cmdline(char *line) {
   }
 }
 
-static int ICACHE_FLASH_ATTR
+/*static*/ int ICACHE_FLASH_ATTR
 process_parmHelp(clpar p[], int len) {
   int i;
 
