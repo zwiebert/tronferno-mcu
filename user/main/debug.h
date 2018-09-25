@@ -3,6 +3,12 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#ifdef MCU_ESP8266
+// FIXME: don't want link an entire libc just for assert()
+#define assert(x)
+#else
+#include <assert.h>
+#endif
 
 #ifdef MCU_ESP32
 #include <rom/ets_sys.h>
