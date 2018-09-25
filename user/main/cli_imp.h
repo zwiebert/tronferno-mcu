@@ -23,6 +23,7 @@ extern const char help_None[] PROGMEM;
 
 extern fer_sender_basic default_sender, last_received_sender;
 extern uint16_t msgid;
+extern clpar par[];
 
 #define NODEFAULT() if (val==0) return reply_failure()
 
