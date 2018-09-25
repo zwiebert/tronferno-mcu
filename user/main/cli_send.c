@@ -9,6 +9,7 @@
 #include "all.h"
 #include "set_endpos.h"
 #include "misc/bcd.h"
+#include "cli_imp.h"
 
 #define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 

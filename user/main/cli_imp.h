@@ -22,6 +22,7 @@ extern const char help_parmHelp[] PROGMEM;
 extern const char help_None[] PROGMEM;
 
 extern fer_sender_basic default_sender, last_received_sender;
+extern uint16_t msgid;
 
 #define NODEFAULT() if (val==0) return reply_failure()
 
@@ -42,7 +43,6 @@ extern fer_sender_basic default_sender, last_received_sender;
 /* cli.c */
 void warning_unknown_option(const char *key);
 void cli_msg_ready(void);
-float stof(const char *s);
 char *get_commandline(void);
 int asc2bool(const char *s);
 int parse_commandline(char *cl);

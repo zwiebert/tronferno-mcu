@@ -9,6 +9,7 @@
 #include "all.h"
 #include "set_endpos.h"
 #include "misc/bcd.h"
+#include "cli_imp.h"
 
 
 const char help_parmMcu[] PROGMEM =

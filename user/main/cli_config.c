@@ -7,6 +7,8 @@
 #include "all.h"
 #include "set_endpos.h"
 #include "misc/bcd.h"
+#include "cli_imp.h"
+#include "misc/stof.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 
@@ -313,4 +315,41 @@ if (strcmp(cfgSep, " ") == 0)
 
   reply(errors==0);
   return 0;
+}
+
+
+bool cuas_active;
+bool ICACHE_FLASH_ATTR cu_auto_set(unsigned init_seconds) {
+  static time_t end_time;
+  static uint16_t cuas_msgid;
+
+  if (init_seconds > 0) {
+    end_time = run_time(NULL) + init_seconds;
+    last_received_sender.data[0] = 0;
+    cuas_msgid = msgid;
+    cuas_active = true;
+  } else if (end_time == 0) {
+
+  } else if (end_time < run_time(NULL)) {
+    uint16_t global_msgid = msgid;
+    end_time = 0;
+    io_puts("U: Nothing received\n");
+    msgid = cuas_msgid;
+    reply_message("cuas=time-out", 0);
+    msgid = global_msgid;
+    cuas_active = false;
+  } else if (FSB_ADDR_IS_CENTRAL(&last_received_sender)) {
+    uint32_t cu = FSB_GET_DEVID(&last_received_sender);
+
+    FSB_PUT_DEVID(&default_sender, cu);
+    C.fer_centralUnitID = cu;
+    end_time = 0;
+    io_puts("U: Central Unit received and stored\n");
+    reply_message("cuas=ok", 0);
+    save_config(CONFIG_CUID);
+    cuas_active = false;
+    return true;
+  }
+
+  return false;
 }
