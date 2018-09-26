@@ -350,7 +350,7 @@ struct {
     { "expert", process_parmExpert, help_None},
 #endif
 #ifdef USE_PAIRINGS
-    { "pair", process_parmPair, help_None},
+    { "pair", process_parmPair, help_parmPair},
 #endif
   };
 

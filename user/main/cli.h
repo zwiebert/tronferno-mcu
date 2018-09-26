@@ -19,5 +19,9 @@ void cli_loop(void);
 
 extern fer_sender_basic senders[10];
 
+
+bool cu_auto_set(unsigned init_seconds);
+bool pair_auto_set(unsigned init_seconds);
+
 #endif /* CLI_H_ */
 

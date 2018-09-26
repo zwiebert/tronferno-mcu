@@ -18,6 +18,7 @@ extern const char help_parmSend[] PROGMEM;
 extern const char help_parmTimer[] PROGMEM;
 extern const char help_parmConfig[] PROGMEM;
 extern const char help_parmMcu[] PROGMEM;
+extern const char help_parmPair[] PROGMEM;
 extern const char help_parmHelp[] PROGMEM;
 extern const char help_None[] PROGMEM;
 

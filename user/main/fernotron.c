@@ -12,11 +12,11 @@
 #include "all.h"
 #include "set_endpos.h"
 #include "timer_state.h"
+#include "cli.h"
 
 extern fer_sender_basic default_sender;
 extern fer_sender_basic last_received_sender;
 
-bool  cu_auto_set(unsigned init_seconds);
 bool  ntp_update_system_time(unsigned interval_seconds);
 
 void ICACHE_FLASH_ATTR
@@ -37,6 +37,9 @@ loop(void) {
     case MSG_TYPE_PLAIN:
       memcpy(&last_received_sender.data, rxmsg->cmd, 5);
       cu_auto_set(0);
+#ifdef USE_PAIRINGS
+      pair_auto_set(0);
+#endif
       io_puts("R:"), fmsg_print(rxmsg, MessageReceived);
       { //TODO: improve shutter states
 
