@@ -22,7 +22,8 @@
 #define D(x)
 #endif
 
-static bool timer_to_minutes(minutes_t *result, const char *ts) {
+static bool ICACHE_FLASH_ATTR
+timer_to_minutes(minutes_t *result, const char *ts) {
   char buf[3];
   DT(ets_printf("%s: ts=%s\n", __FUNCTION__, ts));
 

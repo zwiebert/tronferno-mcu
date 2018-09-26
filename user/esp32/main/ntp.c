@@ -41,8 +41,6 @@
 
 #define printf ets_printf
 
-static time_t last_ntp_time;
-
 void setup_ntp(void) {
   static int once;
   if (once == 0) {
@@ -52,22 +50,4 @@ void setup_ntp(void) {
     sntp_init();
 
   }
-}
-
-#define NO_ADJUST_UNTIL (SECS_PER_HOUR) // if ntp is updated too often, don't adjust to avoid wrong values and burning out persistent storage
-#define ADJUST_TOLERANCE_MS 100    // allow tolerance to avoid burning out persistent storage
-
-
-bool ntp_set_system_time(void) {
-
-  return false;
-}
-
-bool ntp_update_system_time(unsigned interval_seconds) {
-  if (last_ntp_time == 0 || time(NULL) >= last_ntp_time + interval_seconds) {
-    ntp_set_system_time();
-    return true;
-  }
-  return false;
-
 }

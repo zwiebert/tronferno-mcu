@@ -1,6 +1,8 @@
 #include "current_state.h"
 #include "main/inout.h"
 #include "misc/int_macros.h"
+#include "main/config.h"
+#include "pairings.h"
 #include "debug.h"
 
 #ifndef DISTRIBUTION
@@ -67,12 +69,28 @@ get_shutter_state(uint32_t a, uint8_t g, uint8_t m) {
   return get_state(a, g, m);
 }
 
+
 int ICACHE_FLASH_ATTR
 set_shutter_state(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd) {
   int position = -1;
   precond(g <= 7 && m <= 7);
   
   DT(ets_printf("%s: %d, %d, %d\n", __func__, (int)g, (int)m, (int)cmd));
+#ifdef USE_PAIRINGS
+  if (!(a == 0 || a == C.fer_centralUnitID)) {
+    gm_bitmask_t gm;
+    if (read_pairings(&gm, a))
+      for (g=1; g <= GRP_MAX; ++g) {
+	for (m=1; m <= MBR_MAX; ++m) {
+	  if (GET_BIT(gm[g], m)) {
+	    // recursion for each paired g/m
+	    set_shutter_state(0, g, m, cmd);
+	  }
+	}
+      }
+    return 0;
+  }
+#endif
   
   if (cmd == fer_cmd_UP)
     position = 100;

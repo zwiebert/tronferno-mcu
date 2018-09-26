@@ -349,6 +349,9 @@ struct {
 #if ENABLE_EXPERT
     { "expert", process_parmExpert, help_None},
 #endif
+#ifdef USE_PAIRINGS
+    { "pair", process_parmPair, help_None},
+#endif
   };
 
 int ICACHE_FLASH_ATTR

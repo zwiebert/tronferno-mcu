@@ -5,7 +5,7 @@
 
 
 
-// implementation interface for  cli_xxx.c files
+// implementation interface for  cli*.c files
 extern const char pin_state_args[];
 
 
@@ -33,14 +33,12 @@ extern clpar par[];
 /*static*/ void msg_print(const char *msg, const char *tag);
 /*static*/ void reply_print(const char *tag);
 /*static*/ void reply_message(const char *tag, const char *msg);
-/*static*/ char *skip_leading_whitespace(char *s);
-/*static*/ char *find_next_space_eq_eol(char *s);
-/*static*/ char *find_next_whitespace_or_eol(char *s);
-/*static*/ int process_parmSend(clpar p[], int len);
-/*static*/ int process_parmConfig(clpar p[], int len);
-/*static*/ int process_parmMcu(clpar p[], int len);
-/*static*/ int process_parmTimer(clpar p[], int len);
-/*static*/ int process_parmHelp(clpar p[], int len);
+int process_parmSend(clpar p[], int len);
+int process_parmConfig(clpar p[], int len);
+int process_parmMcu(clpar p[], int len);
+int process_parmTimer(clpar p[], int len);
+int process_parmHelp(clpar p[], int len);
+int process_parmPair(clpar p[], int len);
 /* cli.c */
 void warning_unknown_option(const char *key);
 void cli_msg_ready(void);

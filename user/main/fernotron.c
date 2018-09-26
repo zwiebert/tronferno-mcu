@@ -1,4 +1,3 @@
-/* -*- compile-command: "/cygdrive/e/WinAVR-20100110/utils/bin/make.exe -C default  all && bash -c ./__flash.sh"; -*- */
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
@@ -63,7 +62,7 @@ loop(void) {
   }
 #endif
 
-#ifdef USE_NTP
+#if defined USE_NTP && defined MCU_ESP8266
   ntp_update_system_time(SECS_PER_DAY);
 #endif
 }
