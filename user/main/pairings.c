@@ -15,13 +15,11 @@
 #include "shutter_state.h"
 
 #ifndef DISTRIBUTION
-#define DB_INFO 0
-#define DT(x)
 #define D(x) x
 #define DP(x) (ets_printf("db: %s\n", x))
 #define DL (ets_printf("db:line: %d\n", (int) __LINE__))
 #else
-#define DB_INFO 0
+#define D(x)
 #define DP(x)
 #define DL
 #endif
