@@ -42,10 +42,15 @@ loop(void) {
 #endif
       io_puts("R:"), fmsg_print(rxmsg, MessageReceived);
       { //TODO: improve shutter states
-
-	uint8_t g = FRB_GET_GRP(rxmsg->cmd);
-	uint8_t m = FRB_GET_MEMB(rxmsg->cmd);
-        set_shutter_state(FRB_GET_DEVID(rxmsg->cmd), g, m, FRB_GET_CMD(rxmsg->cmd));
+	uint8_t g=0, m=0;
+	
+	if (FRB_ADDR_IS_CENTRAL(rxmsg->cmd)) {
+	  g = FRB_GET_GRP(rxmsg->cmd);
+	  m = FRB_GET_MEMB(rxmsg->cmd);
+	  if (m)
+	    m -= 7;
+	}	
+	set_shutter_state(FRB_GET_DEVID(rxmsg->cmd), g, m, FRB_GET_CMD(rxmsg->cmd));
       }
 
       break;
