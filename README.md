@@ -19,7 +19,7 @@ Please note, a super-regeneration receiver may block the frequency by transmitti
 
 ### How to build and flash
 
-See documentation in [docs](https://github.com/zwiebert/tronferno-mcu/blob/master/docs/CLI.md)/mcu_*.md
+See documentation in [docs](https://github.com/zwiebert/tronferno-mcu/blob/master/docs/)/mcu_*.md
     
       
 ### Recent Changes
