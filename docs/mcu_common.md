@@ -24,7 +24,7 @@ Follow the MCU specific documentation (like doc/mcu_esp8266.md).
      
 
 
-* try to send commands from serial port terminal or TCP termminal.  RF Transmitter 443Mhz should be connected:
+* try to send commands from serial port terminal or TCP terminal.  RF Transmitter 443Mhz should be connected:
 ```
      send g=1 m=1 c=down;    (would close the shutter number 1 in group 1   
      send c=up;              (would open all shutters from all groups)
@@ -49,4 +49,4 @@ In case you no longer have a working Fernotron central unit. You would start fro
         send a=9xxxxx c=set;   where xxxxx is the hexadecimal code. Set the 9 in front of it
         send a=9xxxxx c=up;    ... or send other commands using that code
     ```
- * or you could sniff out the address of a simple hand sender and sent your commands using that address. Or make up such address and add your made up address via "set" to as many shutters you like. The shutter can memorize a few of these adresses.
+ * or you could sniff out the address of a simple hand sender and sent your commands using that address. Or make up such address and add your made up address via "set" to as many shutters you like. The shutter can memorize a few of these addresses.

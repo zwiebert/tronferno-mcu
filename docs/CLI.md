@@ -64,13 +64,13 @@ Data to connect to a WLAN
 
 #### restart
 
-* restart  - Restarts the MCU. Should be the last option in a command line obviuosly.
+* restart  - Restarts the MCU. Should be the last option in a command line obviously.
    
             config wlan-password=MyNewPassword restart=1;
 
 #### Geographical and time related options.
 
-These options  are used to calculate times for the "astro-automatic" built in to receivers. Astro closes the shutter at civil dusk. The user can define a offset time (like 10 mintutes before civil dusk).
+These options  are used to calculate times for the "astro-automatic" built in to receivers. Astro closes the shutter at civil dusk. The user can define a offset time (like 10 minutes before civil dusk).
 
 * longitude=(DEG|?)
 * latitude=(DEG|?)
@@ -106,7 +106,7 @@ Send a plain command message via RF to the receivers. Receiver can be a shutter 
   
 #### addressing options
 
-* a=(id|0) - the adress field of a command usually contains the ID of the sender, or sometimes the receiver
+* a=(id|0) - the address field of a command usually contains the ID of the sender, or sometimes the receiver
   * id - 6 digit hex ID of sender or receiver
   * 0 - use internally stored central unit ID set by config cu. (default)
         
@@ -125,7 +125,7 @@ Send a plain command message via RF to the receivers. Receiver can be a shutter 
   * stop - shutter stop, (in set mode: add/remove sender from receiver)
   * sun-inst - defines current shutter position as sun-position
   * sun-down - moves shutter down to predefined sun-position
-  * set - switch receiver to set-mode (like pressing pyhsical set button)
+  * set - switch receiver to set-mode (like pressing physical set button)
   
          send g=2 m=3 c=up;     shutter 3 of group 2 goes up
 		 send c=down;           all shutters go down
@@ -155,11 +155,11 @@ You can hold down the button several time until you are satisfied with the new e
        
 ### timer command
 
-The timer command sends a message via RF to the receivers.  Such a message consists of a plain message like in send, additional RTC data and a big block with timer data, wich needs 5 seconds to be transmitted.
+The timer command sends a message via RF to the receivers.  Such a message consists of a plain message like in send, additional RTC data and a big block with timer data, which needs 5 seconds to be transmitted.
 
-Except for rtc-only, all timer options should be send together by a single command line. They are all transmitted together in a monolithic data block.  So even if you just want to change the daily timer, a full data block containing weekly timer and astro timer data is send. All options ommitted will be set to their default value "disabled."
+Except for rtc-only, all timer options should be send together by a single command line. They are all transmitted together in a monolithic data block.  So even if you just want to change the daily timer, a full data block containing weekly timer and astro timer data is send. All options omitted will be set to their default value "disabled."
 
-We cannot read any data from the receivers anyway, so to be able to tell a user which timer data is currently stored in a receiver, the only way is to memorize it elsewhere (in the MCU would be best, I'm working on it).  Because of this, the original central unit 2411 will not know about any timers or options set by our MCU and vice versa. All timer commands will also set the RTC of the receiver.  So the RTC of the MCU should set to the correct time, which is usally done by NTP. If NTP is not available it needs to be set by the user or the front-end (GUI).
+We cannot read any data from the receivers anyway, so to be able to tell a user which timer data is currently stored in a receiver, the only way is to memorize it elsewhere (in the MCU would be best, I'm working on it).  Because of this, the original central unit 2411 will not know about any timers or options set by our MCU and vice versa. All timer commands will also set the RTC of the receiver.  So the RTC of the MCU should set to the correct time, which is usually done by NTP. If NTP is not available it needs to be set by the user or the front-end (GUI).
 ```
    timer sun-auto astro ...;     set all options on a single command line
    timer sun-auto;                 this enables sun automatic
@@ -169,13 +169,13 @@ We cannot read any data from the receivers anyway, so to be able to tell a user 
 
 * Options are: a, g, m,  daily, weekly, astro, sun-auto, random, rtc-only
    
-#### adressing options
+#### addressing options
 
-* The addressing optoins a, g, m  are identical to the send option.
+* The addressing options a, g, m  are identical to the send option.
       
 #### timer options
 
-Eeach receiver has four built-in timers: daily, weekly, astro, random. Remember that ommited timers are disabled.
+Each receiver has four built-in timers: daily, weekly, astro, random. Remember that omitted timers are disabled.
 
        `timer astro=-15;       will set the astro timer and disables all other timers and options`
        `timer astro=-15 daily=0600- sun-auto=1;  sets astro, daily, sun-automatic  and disables all others`
@@ -188,12 +188,12 @@ Eeach receiver has four built-in timers: daily, weekly, astro, random. Remember 
         timer daily=-2000;      not up,   down 20:00
 
 
-* weekly=TTTTTTT - sets a timer for each week day. week days are from left to right: monday, tuesday, wednesday, thursday, friday, saturday, sunday
-  * T - Each T is a 8 digit time string like described above with daily option.  A plus sign repeats the previous T.  So you can copy the values from monday to tuesday and so on.
+* weekly=TTTTTTT - sets a timer for each week day. week days are from left to right: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+  * T - Each T is a 8 digit time string like described above with daily option.  A plus sign repeats the previous T.  So you can copy the values from Monday to Tuesday and so on.
 
-       `timer weekly=0730-++++0900-+;    up monday-friday at 07:30, and saturday-sunday at 09:00`
+       `timer weekly=0730-++++0900-+;    up Monday-Friday at 07:30, and Saturday-Sunday at 09:00`
 
-* astro=N  Sets the astro timer. The time of civil dusk for each day of the year is calcualated by geographical config settings. The shutter will then close at that time. Note: There is no automatic for open at dawn built into the receivers. Its only for closing.
+* astro=N  Sets the astro timer. The time of civil dusk for each day of the year is calculated by geographical config settings. The shutter will then close at that time. Note: There is no automatic for open at dawn built into the receivers. Its only for closing.
   * N - time offset in minutes.  Negative number make the shutter closing earlier.
 
         `timer astro=-30;    closes shutter thirty minutes before civil dusk`
@@ -203,18 +203,18 @@ Eeach receiver has four built-in timers: daily, weekly, astro, random. Remember 
 
 The mcu stores timer commands, so it can print out the timer configuration of each receiver. It overwrites older commands by newer commands and older explicit addressed commands by newer wild-card commands:
 
-* rs=(0|1|2) -   rs=1 will match the exacly group and member. rs=2 will also return matching wild-cards.
+* rs=(0|1|2) -   rs=1 will match the exactly group and member. rs=2 will also return matching wild-cards.
 
          timer g=2 m=3 rs=1;   returns only the timer command saved for g=2 and m=2
 		 timer g=2 m=3 rs=2;   may return also the timer command saved for g=2 m=0,  g=0 m=0, g=0 m=2
 
 #### on/off options
 
-* random=(1|0)   enable a random timer.  To avoid the 'abandoned house' look and scare thiefs away.
+* random=(1|0)   enable a random timer.  To avoid the 'abandoned house' look and scare burglars away.
 * sun-auto=(1|0) enable sun automatic.  If enabled, the shutter will react to sun-down messages. Otherwise they will be ignored.
 
 #### rtc-only
-* rtc-only=(1|0)  Send only RTC data and ommit the entire timer data. Will only affect the RTC in the receiver, not any timer data.
+* rtc-only=(1|0)  Send only RTC data and leave out the entire timer data. Will only affect the RTC in the receiver, not any timer data.
 
         timer rtc-only;    updates internal RTC of the receiver(s)
 	    timer rtc-only sun-auto daily=0500-;   sun-auto and daily options have no effect
@@ -236,7 +236,7 @@ The built-in RTC of a shutter keeps track of day time, day of month, month of ye
   Common options are accepted by all commands.
   
   
-* mid=N   N is supposed to be an ID number. It will be part of the reply messages (reply@N: ...). The front-end should use this to check which reply belongs to wich command.
+* mid=N   N is supposed to be an ID number. It will be part of the reply messages (reply@N: ...). The front-end should use this to check which reply belongs to which command.
 
 
 ### mcu command
@@ -245,11 +245,11 @@ The built-in RTC of a shutter keeps track of day time, day of month, month of ye
 
 *  gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N
 
-   Before using this command, configue the pin via "config gpioN"  once (it will survive reboots).
+   Before using this command, configure the pin via "config gpioN"  once (it will survive reboots).
 
    Examples:
 
-     config gpio12=0 gpio13=p;    configure gpio12 as output and gpio13 as input with pullup resistor (configuration will survive reboots)
+     config gpio12=0 gpio13=p;    configure gpio12 as output and gpio13 as input with pull-up resistor (configuration will survive reboots)
      mcu gpio12=t gpio13=?;      toggle gpio12 output pin and read gpio13 input pin
 
 * print=(rtc|reset-info)    prints some information: rtc: current real time clock. reset-info: MCU reset info (to find out why and where the firmware has crashed) 

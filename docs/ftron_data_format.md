@@ -14,10 +14,10 @@ Basics
 
 Fernotron works uni-directional:
 
-A controller device transmitts a message on 443 MHz and all receiving devices listen and filter out the messages addressed to them, or the group they belong to. They cannot acknowledge to the sender, that they received the data.  They can only give feedback to the user itself, by moving the shutter a bit when they have succesfully received a command which not involves moving the shutter directly.
+A controller device transmits a message on 443 MHz and all receiving devices listen and filter out the messages addressed to them, or the group they belong to. They cannot acknowledge to the sender, that they received the data.  They can only give feedback to the user itself, by moving the shutter a bit when they have succesfully received a command which not involves moving the shutter directly.
 
 
-Each device has an unique ID. On motors this ID is usually printed on the motor itself and on some sticker on the cable. That ID can be used to access the motor without having to press the pyhsical set button, which may not easy accessible.
+Each device has an unique ID. On motors this ID is usually printed on the motor itself and on some sticker on the cable. That ID can be used to access the motor without having to press the physical set button, which may not easy accessible.
 
 Controller devices like 2411 or 2431 have an ID too, but its not printed on anywhere. They can be only seen by looking at the messages they send.
 
@@ -27,7 +27,7 @@ Each message has a single address field.  This address can contain a Sender ID (
 A receiver will listen to all addresses which are equal to its own receiver ID. Because the IDs are supposed to unique, all other receivers will ignore these messages.
 
 
-Additionally, each receiver keeps a list in its persistent memory, containing sender IDs he also will listen to.  If you ativate the set function on a receiver and send a "stop" message around from a controller, the ID in that message address field will be added (or removed) from that list.  In case of sent by the central unit (2411), the receiver will also memorize the group and member number (which are also part of the message).
+Additionally, each receiver keeps a list in its persistent memory, containing sender IDs he also will listen to.  If you activate the set function on a receiver and send a "stop" message around from a controller, the ID in that message address field will be added (or removed) from that list.  In case of sent by the central unit (2411), the receiver will also memorize the group and member number (which are also part of the message).
 
 
 Message "Envelope"
@@ -35,14 +35,14 @@ Message "Envelope"
 
 Simple messages like up/down/stop are are encoded into 5 bytes.  If you counted 6 bytes in log output ... yes its really 6, but the 6th contains just a check-sum of that 5 bytes. You may have looked at the data, which actually is sent via 443 MHz, and it looks much more than just 6 bytes ... ok, there really are 12 words of 10bit. The lower 8bit of each word pair is identical to one of the 6 bytes  (word 0/1 = byte 0, word 2/3 = byte 1, ...  word 10/11 = byte 6). The 2 extra bit in each word contain bit parity and indicate if a word is odd or even-numbered.  ... so its really only 5 data bytes. These contain all the addressing info:
 ```
- bytes 0,1,2: this is the adressfield which contains the 3 byte device ID
+ bytes 0,1,2: this is the address-field which contains the 3 byte device ID
  byte 3 high nibble: A counter which may increment with each button press
  byte 3 low nibble: member number (or type of sender if not sent by central unit)
- byte 4 high nibble: group nunber
+ byte 4 high nibble: group number
  (byte 4 low  nibble: used for message content)
 ```
 
-Explaining Group and Member nunber
+Explaining Group and Member number
 ==================================
 The central unit uses group/member numbers to control shutters independently. The central unit 2411 lets you configure 7 groups each having up to 7 members.  You can assign multiple motors to a single Group/Member combo, but not one motor to multiple Group/Member combinations.  So group=1/member=1 could address all windows in a room if you want. But group=1/member=1 and group=2/member=1 can never address the same motor.
 
@@ -52,7 +52,7 @@ Explaining the Device ID
 
 * 3-byte Device ID, There are different kind of IDs. The kind is encoded in the first nibble (4 bit)  of the ID:  plain-sender: 0x1, sun-sensor: 0x2, central-unit=0x8, receiver=0x9.
 
-   * ID of a receiver (9xxxx):  A motor has a designated 5 digit hex code number. This number is printed on the motor itself and on the cable-sticker. 5 digts are 5 nibbles or 2.5 bytes, not 3.  Prefix these 2.5 bytes with number 9. This will be the Device ID of the Receiver.  If, for example, your orignal 2411 central unit gets destroyed, you need to press the set button of a motor to pair it to your new 2411. Or you can add that code into your new 2411 and send the "press the button" command via RF to that motor.
+   * ID of a receiver (9xxxx):  A motor has a designated 5 digit hex code number. This number is printed on the motor itself and on the cable-sticker. 5 digits are 5 nibbles or 2.5 bytes, not 3.  Prefix these 2.5 bytes with number 9. This will be the Device ID of the Receiver.  If, for example, your original 2411 central unit gets destroyed, you need to press the set button of a motor to pair it to your new 2411. Or you can add that code into your new 2411 and send the "press the button" command via RF to that motor.
 
    * ID of central unit (8xxxx). Its not printed out anywhere, because there is no need to know it, when using the original hardware.
 
@@ -68,13 +68,13 @@ Explaining the Device ID
    Group=1 and member= 0 targets all members of group 1. Other possible combinations:  group=0 member=0 (all)  group=0 member=1 (not so useful, but it works).
 
 
-  * ID of sun-sensor (9xxxx):  Each motor can store one sun-sensor ID in its memory. All motors which stored that ID will listen to the commands containing that ID. So one sun-sensor can control multiple motors, but one motor can not contolled by multiple sun-sensors.
+  * ID of sun-sensor (9xxxx):  Each motor can store one sun-sensor ID in its memory. All motors which stored that ID will listen to the commands containing that ID. So one sun-sensor can control multiple motors, but one motor can not controlled by multiple sun-sensors.
 
 
   * ID of a plain sender (1xxxx).  Each motor can store *multiple* plain senders and will listen to commands containing one of these IDs.  Like with sun-sensor, multiple motors can be controlled by one plain sender, because you can add its ID to as many motors you want.  But unlike sun-sensor, you can also have multiple plain senders each controlling the same motor. This makes them very versatile:  One plain sender could glued to the window frame and controls just the shutter on this  window. Another one could be glued near the door frame, and control the shutters on all the windows in a room.  Another one could control the entire floor, or even  the entire house.
 
 
-Eexplaining the Counter
+Explaining the Counter
 =======================
 
 A nibble counted up with each button press. Zero is skipped: ...a,b,c,d,e,f,1,2,3...
@@ -83,7 +83,7 @@ When pressing a button, a message is sent not only once, but will be repeated as
 
 So the receiver could identify and disregard duplicates because the counter stays the same.  The counter acts like a message ID.
 
-Unlike the other buttons, holding down the stop button on a 2411 increments the counter for each repeat. So each 'Stop' message is not a duplicate but an original. So stop will never be disreagarded.
+Unlike the other buttons, holding down the stop button on a 2411 increments the counter for each repeat. So each 'Stop' message is not a duplicate but an original. So stop will never be disregarded.
 
 
 
@@ -103,13 +103,13 @@ message timer rtc-data  timer-data extra ; 4.5 + 0.5 + 8 + (8*16) + 8 bytes
 
 How its transmitted
 ===================
-The checksum is added to the 5 byte command and  6th byte is added containing a checksum of the 5 byte command.  These 6 bytes are made into 12 bytes by doubling each byte. So byte 0 becomes byte 0 and 1 ... and byte 5 becomes byte 10 and byte 11.  Then 8bit bytes are extended to 10 bit words.  Bits 0-7 still contain the data byte. Bit 8 is 0 for even words (0, 2, 4 .. 10) and 1 for odd words (1, 3, 5 .. 11).  Bit 9 is for bit parity (so each word has even nummber of 1 and 0 bits).
+The checksum is added to the 5 byte command and  6th byte is added containing a checksum of the 5 byte command.  These 6 bytes are made into 12 bytes by doubling each byte. So byte 0 becomes byte 0 and 1 ... and byte 5 becomes byte 10 and byte 11.  Then 8bit bytes are extended to 10 bit words.  Bits 0-7 still contain the data byte. Bit 8 is 0 for even words (0, 2, 4 .. 10) and 1 for odd words (1, 3, 5 .. 11).  Bit 9 is for bit parity (so each word has even number of 1 and 0 bits).
 
-The 12 words will be send with a pause between each word. This pause its called stop bit in my code. Its like a normal bit with the negative wave extend for the duration of 2 normal bits. Theres also the preamble which starts every transmission.
+The 12 words will be send with a pause between each word. This pause its called stop bit in my code. Its like a normal bit with the negative wave extend for the duration of 2 normal bits. There is also the preamble which starts every transmission.
 
-When setting up the builint RTC and timers in the motor, the data words containing time and timer data are just appended.
+When setting up the built-in RTC and timers in the motor, the data words containing time and timer data are just appended.
 
-So the number of sent words goes from 12 (plain commmand) to 30 (+ RTC data) up to 336 (+ Timer data).  It takes 5 seconds to transmit 336 words.
+So the number of sent words goes from 12 (plain command) to 30 (+ RTC data) up to 336 (+ Timer data).  It takes 5 seconds to transmit 336 words.
 
 
 The bits are modulated by the timing the carrier is switched on and off.   Short-on/long-off means the bit is set (1).  Long-on/short-off means the bit is clear (0).
@@ -121,7 +121,7 @@ Back to the Bytes
 
 Now lets look at all the bytes inside a timer message. Its organized in lines. Each line ends with a checksum, except the very last one, which seems to be special.
 
-It starts with a plain 5-byte message plus checksum. Its followed by 8-byte RTC data plus checksum.  A checksum counts *all* bytes which come before it, including the bytes of previous data lines with their checksums included too.  After that are 16 lines containing timer data for weekly, daily and astro timer. The purpose of the very last line I don't fully understand.
+It starts with a plain 5-byte message plus checksum. Its followed by 8-byte RTC data plus checksum.  A checksum counts *all* bytes which come before it, including the bytes of previous data lines with their checksums included too.  After that are 16 lines containing timer data for weekly, daily and astro (civil dusk) timer. The purpose of the very last line I don't fully understand.
 
 ###### First the byte data. See below for more details.
 
@@ -181,11 +181,11 @@ upMM  upHH  doMM  doHH  upMM  upHH  doMM  doHH
 
 ```
 --- plain 5 byte  message -----
-p.0-2  Addressfield - 3 byte ID of sender or receiver
+p.0-2  address-field - 3 byte ID of sender or receiver
 p.3.h  C  - 4bit counter which usually increases by button pressing
 p.3.l  M  - 4bit Member number of group for central unit or kind of sender
 p.4.h  G  - 4bit Group number
-p.4.l  c  - 4bit action comannd like up, down, ...
+p.4.l  c  - 4bit action command like up, down, ...
 p.5    CS - 8bit checksum (sum of all bytes which come before)
 
 --- 8 byte data line number 0. RTC data
@@ -203,30 +203,30 @@ d.0.7.7  BF.7 - sun automatic
 d.0.8    checksum
 
 --- 8 byte data lines 1-4: weekly and daily timers
-d.1.0 - d.1.3 - weekly timer for sunday:
+d.1.0 - d.1.3 - weekly timer for Sunday:
 d.1.0    upMM - 8bit up-time minutes in BCD  (or ff if disabled)
 d.1.1    upHH - 8bit up-time hours in BCD    (or 0f if disabled)
 d.1.2    doMM - 8bit down-time minutes in BCD (or ff if disabled)
 d.1.3    doHH - 8bit down-time hours in BCD (or 0f if disabeld)
-d.1.4 - d.1.7 - weekly timer for monday
+d.1.4 - d.1.7 - weekly timer for Monday
 d.1.8    CS  - checksum
-d.2.0 - d.2.3 - weekly timer for tuesday
-d.2.4 - d.2.7 - weekly timer for wednesday
+d.2.0 - d.2.3 - weekly timer for Tuesday
+d.2.4 - d.2.7 - weekly timer for Wednesday
 d.2.8    CS
-d.3.0 - d.3.3 - weekly timer for thursday
-d.3.4 - d.3.7 - weekly timer for friday
+d.3.0 - d.3.3 - weekly timer for Thursday
+d.3.4 - d.3.7 - weekly timer for Friday
 d.3.8    CS
 d.4.0 - d.4.3 - weekly timer for Saturday
 d.4.4 - d.4.7 - daily timer
 d.4.8    CS
 
 --- 8 byte data lines 5-16: astro timer
-... the astro timer  table contais 48 precalculated civil dusk + user offset times over half a year.
+... the astro timer  table contains 48 pre-calculated civil dusk + user offset times over half a year.
 ... the receiver will interpolate in between values
 d.5.0    8bit down-time minutes in BCD (or ff if disabled)
-d.5.1    8bit down-time hours in BCD (or 0f if disabeld)
+d.5.1    8bit down-time hours in BCD (or 0f if disabled)
 d.5.2    8bit down-time minutes in BCD (or ff if disabled)
-d.5.3    8bit down-time hours in BCD (or 0f if disabeld)
+d.5.3    8bit down-time hours in BCD (or 0f if disabled)
 ...
 d.5.8  checksum
 ...
@@ -238,7 +238,7 @@ d.16.8 checksum
 
 --- 8 byte data line 17: no idea
 d.17.0     ???
-d.17.1-3 - adressfield - 3 byte ID containing sender or receiver ID 
+d.17.1-3 - address-field - 3 byte ID containing sender or receiver ID 
 d.17.4     ???
 d.17.5     ???
 d.17.6     ???

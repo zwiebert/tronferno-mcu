@@ -5,15 +5,15 @@
   * ESP32 board connected to your PC-USB.
   * RF receiver connected to esp-GPIO number 17
   * RF transmitter connected to esp-GPIO number 22
-  * Endposition-Button connected to esp-GPIO number (TODO)
+  * End-position-Button connected to esp-GPIO number (TODO)
 
 
 * Install esp-idf and set IDF_PATH environment variable (usually "~/esp/esp-idf")
 
-*open a shell in subdirectory user/esp32:
- * run: make menuconfig  (configure MCU, if needed)
- * make flash        (flash MCU)
- * make monitor      (FIXME: this terminal has no local echo!)
+* open a shell in sub-directory user/esp32:
+  * run: make menuconfig  (configure MCU, if needed)
+  * make flash        (flash MCU)
+  * make monitor      (FIXME: this terminal has no local echo!)
 
 * optional: pre-configure your private data in new file user/sensitive/defaults.h which should contain:
 ```

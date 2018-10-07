@@ -11,7 +11,7 @@ MCU firmware to control Fernotron devices via CLI . Can run on micro controller 
  - 443 MHz RF receiver (like RXB6)
 
 RF receiver is optional.  It can be used to sniff the ID of your original central unit (usually a one time thing). It can also receive commands of other receivers, to keep track if a shutter may currently be opened or closed.
-Please note, a super-regeneration receiver may block the frequency by transmitting noise occasionally. This is the reason you should not place some 433Mhz receiver devices (like some power outlets) near your 433Mhz shutter.  If you want to leave the receiver connected, use a super-heterodyne receiver like the RXB6. 
+Please note, a super-regeneration receiver may block the frequency by transmitting noise occasionally. This is the reason you should not place some 433 MHz receiver devices (like some power outlets) near your 433 MHz shutter.  If you want to leave the receiver connected, use a super-heterodyne receiver like the RXB6. 
 
 
 ### Download pre-built binary images to flash
@@ -37,10 +37,9 @@ See documentation in [docs](https://github.com/zwiebert/tronferno-mcu/blob/maste
  * 2011: First version for ATmega168. Limited to plain commands (up/down/etc). Audacity and Emacs-Lisp was used to analyze data.
 
 ### Related Projects
-Its all too complicated and totally useless?
   * [GUI for Android](https://github.com/zwiebert/tronferno-andro). It kinda works already.
   * FHEM module [10_Tronferno.pm](https://github.com/zwiebert/tronferno-fhem) to send plain commands via TronfernoMcu-IODev (TCP or USB) to tronferno-mcu
-  * FHEM module [10_Fernotron.pm](https://github.com/zwiebert/tronferno-fhem) to send plain commands via SIGNALduino-IODev to Fernotron devices.
+  * FHEM module [10_Fernotron.pm](https://github.com/zwiebert/tronferno-fhem) to send plain commands via SIGNALduino-IODev to Fernotron devices. No need for tronferno-mcu hardware.
  
   
 ### Project Author
