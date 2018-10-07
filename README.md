@@ -7,7 +7,7 @@ MCU firmware to control Fernotron devices via CLI . Can run on micro controller 
 
 ### Hardware Requirements
  - MCU board
- - 443MHz RF transmitter (like FS1000A)
+ - 443 MHz RF transmitter (like FS1000A)
  - 443 MHz RF receiver (like RXB6)
 
 RF receiver is optional.  It can be used to sniff the ID of your original central unit (usually a one time thing). It can also receive commands of other receivers, to keep track if a shutter may currently be opened or closed.
