@@ -18,7 +18,7 @@ When using a terminal, local echo should be enabled, so you can see what you typ
 
 ## Commands
 
-Commands are help, config, send, timer, mcu
+Commands are help, config, send, timer, mcu, pair
 
 
 ### help command
@@ -252,4 +252,20 @@ The built-in RTC of a shutter keeps track of day time, day of month, month of ye
      config gpio12=0 gpio13=p;    configure gpio12 as output and gpio13 as input with pullup resistor (configuration will survive reboots)
      mcu gpio12=t gpio13=?;      toggle gpio12 output pin and read gpio13 input pin
 
-* print=(rtc|reset-info)    prints some information: rtc: current real time clock. reset-info: MCU reset info (to find out why and where the firmware has crashed)
+* print=(rtc|reset-info)    prints some information: rtc: current real time clock. reset-info: MCU reset info (to find out why and where the firmware has crashed) 
+
+
+### pair command (experimental state)
+
+ currently its used to pair a shutter specified by g/m parameter to a controller specified by a parameter. Commands received by a paired controller will modify the tracked status of the paired g/m and generate status change messages for it.
+
+not fully implemented yet: to pair input and output pins to g/m. So a shutter can be controlled by output pins for up/down. And an up/down/stop switch at the pins can generate up/down/stop commands.
+
+  *a=(?|ID) 0  controller to pair. '?' starts auto-scan
+  *g=[0-7]   0  group number
+  *m=[0-7]   0  group member number
+  *gpoutN=(up|down|switch)   
+  *gpinN=(up|down|stop|rain|toggle)
+  *c=(pair|unpair|read)
+
+
