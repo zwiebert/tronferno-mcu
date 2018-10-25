@@ -1,9 +1,7 @@
-#include "pairings.h"
+#include "main/pairings.h"
 #include "user_config.h"
-#include "all.h"
-
-
-#ifdef MCU_ESP32
+#include "main/all.h"
+#include "main/shutter_state.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -12,7 +10,7 @@
 #include "esp_system.h"
 #include "nvs_flash.h"
 #include "nvs.h"
-#include "shutter_state.h"
+
 
 #ifndef DISTRIBUTION
 #define D(x) x
@@ -30,7 +28,7 @@
 extern char *itoa(int val, char *s, int radix);
 extern char *ltoa(long val, char *s, int radix);
   
-bool
+static bool
 read_controller(gm_bitmask_t *gm, const char *key)
 {
   esp_err_t err;
@@ -51,7 +49,7 @@ read_controller(gm_bitmask_t *gm, const char *key)
   return result;
 }
 
-bool
+static bool
 add_rm_controller(const char *key, uint8_t g, uint8_t m, bool remove)
 {
   esp_err_t err;
@@ -61,29 +59,29 @@ add_rm_controller(const char *key, uint8_t g, uint8_t m, bool remove)
 
   D(ets_printf("%s: key=\"%s\", g=%d, m=%d, remove=%d\n", __func__, key, (int)g, (int)m, (int)remove));
   precond (key && 1 <= g && g <= 7 && 1 <= m && m <= 7);
-  
+
   err = nvs_open(CFG_NAMESPACE, NVS_READWRITE, &handle);
   if (err == ESP_OK) {
     gm_bitmask_t gm;
     (len = sizeof gm), (err = nvs_get_blob(handle, key, &gm, &len));
     if (err == ESP_OK || err == ESP_ERR_NVS_NOT_FOUND) {
       if (err == ESP_ERR_NVS_NOT_FOUND) {
-	memset(gm, 0, sizeof gm);
+        memset(gm, 0, sizeof gm);
       }
       PUT_BIT(gm[g], m, !remove);
 
       bool not_empty = false;
       for (g=0; g <= 7; ++g)
-	if (gm[g] != 0) {
-	  not_empty = true;
-	  break;
-	}
+      if (gm[g] != 0) {
+        not_empty = true;
+        break;
+      }
       if ((not_empty && (err = nvs_set_blob(handle, key, &gm, sizeof gm)) == ESP_OK)
-	  || (!not_empty && (ESP_OK == (err = nvs_erase_key(handle, key)))))
-	{
-	  result = true;
-  	  nvs_commit(handle);
-	}
+          || (!not_empty && (ESP_OK == (err = nvs_erase_key(handle, key)))))
+      {
+        result = true;
+        nvs_commit(handle);
+      }
     }
     nvs_close(handle);
   }
@@ -92,7 +90,7 @@ add_rm_controller(const char *key, uint8_t g, uint8_t m, bool remove)
 }
 
 
-bool ICACHE_FLASH_ATTR
+bool
 pair_controller(uint32_t controller, uint8_t g, uint8_t m, bool unpair) {
   D(ets_printf("%s: g=%d, m=%d, unpair=%d\n", __func__, (int)g, (int)m, (int)unpair));
   precond ((controller & 0xff000000) == 0);
@@ -105,7 +103,7 @@ pair_controller(uint32_t controller, uint8_t g, uint8_t m, bool unpair) {
   return add_rm_controller(key, g, m, unpair);
 }
 
-bool ICACHE_FLASH_ATTR
+bool
 read_pairings(gm_bitmask_t *gm, uint32_t controller) {
   precond (gm && (controller & 0xff000000) == 0);
 
@@ -115,4 +113,4 @@ read_pairings(gm_bitmask_t *gm, uint32_t controller) {
   return read_controller(gm, key);
 }
 
-#endif
+

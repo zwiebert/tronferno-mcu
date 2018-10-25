@@ -27,27 +27,6 @@ void mcu_delay_us(uint16_t us) {
 static void timer1_handler(void *args);
 
 
-#if 0
-
-esp_timer_handle_t timer1_handle;
-
-void timer1_start() {
-      const esp_timer_create_args_t periodic_timer_args = {
-              .callback = &timer1_handler,
-              /* name is optional, but may help identify the timer when debugging */
-              .name = "timer1"
-      };
-
-      ESP_ERROR_CHECK(esp_timer_create(&periodic_timer_args, &timer1_handle));
-      ESP_ERROR_CHECK(esp_timer_start_periodic(timer1_handle, TICK_PERIOD_US));
-}
-
-void
-timer1Stop(void) {
-  ESP_ERROR_CHECK(esp_timer_stop(timer1_handle));
-
-}
-#else
 
 #include <stdio.h>
 #include "esp_types.h"
@@ -104,7 +83,7 @@ void timer1_start() {
   example_tgtimer0_timer_init(TIMER_1, true, 0.000001 * TICK_PERIOD_US);
 }
 
-#endif
+
 //////////////////////////////////////////////////////////////////////////
 
 static void IRAM_ATTR timer1_handler(void *args) {
@@ -137,13 +116,12 @@ static void IRAM_ATTR timer1_handler(void *args) {
   }
 #endif
 
-  if (rtcAvrTime == C.app_rtc) {
+  {
     static uint32_t rtc_ticks;
 
     if (rtc_ticks-- == 0) {
       rtc_ticks = TICK_FREQ_HZ + MS_TO_TICKS(C.app_rtcAdjust);
-      rtc_tick()
-      ;
+      rtc_tick();
     }
   }
 

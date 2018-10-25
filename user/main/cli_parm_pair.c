@@ -29,9 +29,11 @@ static uint8_t pras_g, pras_m, pras_c;
 
 
 const char help_parmPair[] PROGMEM =
-  "a=(?|ID|) 0  controller to pair. '?' starts auto-scan\n"
+  "a=(?|ID) 0  controller to pair. '?' starts auto-scan\n"
   "g=[0-7]   0  group number\n"
   "m=[0-7]   0  group member number\n"
+  "gpoutN=(up|down|switch)   \n"
+  "gpinN=(up|down|stop|rain|toggle)\n"
   "c=(pair|unpair|read)\n"
   ;
 
@@ -73,6 +75,10 @@ process_parmPair(clpar p[], int len) {
       } else if (strcmp(val, "read") == 0) {
 	read = true;
 	c = PC_read;
+      } else if (strncmp(key, "gpin", 4) == 0) {
+	int gpio_number = atoi(key + 4);
+      } else if (strncmp(key, "gpout", 5) == 0) {
+	int gpio_number = atoi(key + 5);
       } 
     } else {
       reply_failure();
