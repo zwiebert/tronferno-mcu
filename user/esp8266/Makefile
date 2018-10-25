@@ -24,12 +24,15 @@ LIBS	= c  gcc hal phy pp net80211 lwip wpa main crypto
 
 ## libm, libmirom
 LIBM_A := $(HOME)/esp/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/sysroot/lib/libm.a
+LIBMIROM_A := $(BUILD_BASE)/libmirom.a
 LIBS += mirom
+GEN_LIBS += libmirom
+
 ifeq ($(WINDOWS),1)
 #GEN_LIBS +=
 #CPPFLAGS += -DFER_RECEIVER_MINIMAL
 else
-GEN_LIBS += $(LIBMIROM_A)
+GEN_LIBS += $(LIB)
 endif
 
 $(LIBMIROM_A) : $(LIBM_A)

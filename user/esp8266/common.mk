@@ -265,7 +265,7 @@ all: checkdirs $(TARGET_OUT) $(SUBMODULES)
 $(TARGET_OUT): $(APP_AR) $(GEN_LIBS)
 	$(MAKE) $(C_VERSION_OBJ)
 	$(vecho) "LD $@"
-	$(Q) $(LD) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group  $(LIBS) $(APP_AR) $(EXTRA_AR) $(C_VERSION_OBJ) -Wl,--end-group -o $@
+	$(Q) $(LD) -L$(SDK_LIBDIR) -L$(BUILD_BASE) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group  $(LIBS) $(APP_AR) $(EXTRA_AR) $(C_VERSION_OBJ) -Wl,--end-group -o $@
 	$(vecho) "Run objcopy, please wait..."
 	$(Q) $(OBJCOPY) --only-section .text -O binary $@ eagle.app.v6.text.bin
 	$(Q) $(OBJCOPY) --only-section .data -O binary $@ eagle.app.v6.data.bin
