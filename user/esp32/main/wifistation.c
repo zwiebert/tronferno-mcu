@@ -1,13 +1,18 @@
 #include "freertos/FreeRTOS.h"
+#include "freertos/event_groups.h"
 #include "esp_wifi.h"
 #include "esp_system.h"
 #include "esp_event.h"
 #include "esp_event_loop.h"
+#include "esp_log.h"
 #include "nvs_flash.h"
 #include "driver/gpio.h"
 #include "string.h"
 
 #include "rom/uart.h"
+
+#include "lwip/err.h"
+#include "lwip/sys.h"
 
 #include "main/common.h"
 #include "main/config.h"
@@ -24,6 +29,14 @@
 
 
 // WIFI Station ////////////////////////////////////////
+
+/* FreeRTOS event group to signal when we are connected*/
+static EventGroupHandle_t s_wifi_event_group;
+
+/* The event group allows multiple bits for each event, but we only care about one event
+ * - are we connected to the AP with an IP? */
+const int WIFI_CONNECTED_BIT = BIT0;
+
 
 void
 user_set_station_config(void) {
@@ -52,10 +65,52 @@ void wst_reconnect(void) {
 }
 
 #endif
+static int s_retry_num = 0;
+const char *TAG = "wifistation";
+
+//#define RETRY_RECONNECT (s_retry_num < 255)
+#define RETRY_RECONNECT (1)
+
+
+static esp_err_t event_handler(void *ctx, system_event_t *event) {
+
+  switch (event->event_id) {
+
+  case SYSTEM_EVENT_STA_START:
+    esp_wifi_connect();
+    break;
+
+  case SYSTEM_EVENT_STA_GOT_IP:
+    ESP_LOGI(TAG, "got ip:%s", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
+    s_retry_num = 0;
+    xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+    break;
+
+  case SYSTEM_EVENT_STA_DISCONNECTED: {
+    if (RETRY_RECONNECT) {
+      esp_wifi_connect();
+      xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+      s_retry_num++;
+     // ESP_LOGI(TAG, "retry to connect to the AP");
+    }
+    break;
+  }
+
+  default:
+    break;
+  }
+  return ESP_OK;
+}
 
 void
 setup_wifistation(void) {
   wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+
+  s_wifi_event_group = xEventGroupCreate();
+
+  tcpip_adapter_init();
+  ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
+
   ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
   ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
   ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );

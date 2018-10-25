@@ -22,12 +22,6 @@ void setup_timer(void);
 void setup_ntp(void);
 void setup_storage(void);
 
-esp_err_t event_handler(void *ctx, system_event_t *event)
-{
-    return ESP_OK;
-}
-
-
 static int es_io_putc(char c) {
   putchar(c);
   return 1;
@@ -49,11 +43,6 @@ mcu_init() {
   }
   ESP_ERROR_CHECK( err );
 
-  tcpip_adapter_init();
-  ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
-
-
-
   io_putc_fun = es_io_putc;
   io_getc_fun = es_io_getc;
   io_printf_fun = ets_printf;
@@ -67,29 +56,16 @@ mcu_init() {
   io_puts("\r\n\r\n");
 
   //setup_notImplemented();
+  setup_pin();
+  setup_wifistation();
 #ifdef USE_NTP
   setup_ntp();
 #endif
-  setup_pin();
-  setup_wifistation();
   setup_tcp_server();
   //setup_udp();
   setup_timer();
   setup_storage();
   main_setup();
-
-  //system_os_task(user_procTask, user_procTaskPrio, user_procTaskQueue, user_procTaskQueueLen);
-  //system_os_post(user_procTaskPrio, 0, 0);
-#if 0
-  system_os_task(io_procTask, io_procTaskPrio, io_procTaskQueue, io_procTaskQueueLen);
-  system_os_post(io_procTaskPrio, 0, 0 );
-#endif
-
-  //setup_timer();
-
-#ifdef DEBUG
-  //gdbstub_init();
-#endif
 }
 
 void app_main(void) {
