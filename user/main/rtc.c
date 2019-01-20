@@ -86,8 +86,7 @@ rtc_get_by_string(char *s) {
 
 }
 
-bool ICACHE_FLASH_ATTR
-rtc_set_by_string(const char *dateTimeString) {
+time_t ICACHE_FLASH_ATTR time_iso2time(const char *dateTimeString) {
   if (strlen(dateTimeString) == 19) {
     char s[20], *token;
 
@@ -109,17 +108,23 @@ rtc_set_by_string(const char *dateTimeString) {
                 t.tm_sec = atoi(token);
                 t.tm_isdst = -1;
                 time_t timestamp = mktime(&t);
-                if (timestamp > 0) {
-
-                  rtc_set_system_time(timestamp, RTC_SRC_CLI); //FIXME: use real rtc_src
-                  return true;
-                }
+                return timestamp;
               }
             }
           }
         }
       }
     }
+  }
+  return -1;
+}
+
+bool ICACHE_FLASH_ATTR
+rtc_set_by_string(const char *dateTimeString) {
+  time_t timestamp = time_iso2time(dateTimeString);
+  if (timestamp > 0) {
+    rtc_set_system_time(timestamp, RTC_SRC_CLI); //FIXME: use real rtc_src
+    return true;
   }
   return false;
 }

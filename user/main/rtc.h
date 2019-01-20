@@ -12,6 +12,7 @@ void rtc_secTick(void);
 //YYYY-MM-DDThh-mm-ss
 bool rtc_set_by_string(const char *dateTimeString);
 bool rtc_get_by_string(char *dst);
+time_t time_iso2time(const char *dateTimeString);
 
 time_t rtc_timezone_in_secs();
 
