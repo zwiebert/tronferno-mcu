@@ -33,12 +33,23 @@ time_to_bcd(uint8_t *bcdMinutes, uint8_t *bcdHours, float time, bool force_even_
 
   fractional = modf(time, &integral);
 
+  uint8_t hours = (uint8_t) integral;
+  uint8_t minutes = (uint8_t) (fractional * 60);
+
+  if (force_even_minutes && minutes == 59) {
+    ++hours;
+    minutes = 0;
+  }
+
+
   if (bcdHours) {
-    *bcdHours = dec2bcd_special((uint8_t) integral);
+    *bcdHours = dec2bcd_special(hours);
   }
+
   if (bcdMinutes) {
-    *bcdMinutes = dec2bcd_special((force_even_minutes ? ~1 : ~0) & (1+(uint8_t) (fractional * 60)));
+    *bcdMinutes = dec2bcd_special((force_even_minutes ? ~1 : ~0) & (1+(uint8_t) minutes));
   }
+
 }
 
 #if 1
