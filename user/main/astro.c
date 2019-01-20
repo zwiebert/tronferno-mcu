@@ -51,17 +51,17 @@ time_to_bcd(uint8_t *bcdMinutes, uint8_t *bcdHours, double time, bool force_even
 #if 1
 
 /*
- *  calcuate civil dusk for configured geo location and fill in astro table ready to send to Fernotron receiver
+ *  Calculate civil dusk for configured location on earth and fill in "astro"/dusk table ready to send to Fernotron receiver
  *
  *
- *  unfortunally there is a problem because of how the table is interpreted by the motor:
+ *  there is a problem because of how the table is interpreted by the motor:
  *
  *  the table contains only half a year. one entry for span of usually 4 days.
  *
  *  these spans are shared for both half years.
- *  unfortunally the shared dates are not always matching in times for sunrise/sunset.
+ *  Unfortunately the shared dates are not always matching in times for sunrise/sunset.
  *
- *  e.g. the entry for the span january 14..17 is shared with november 26..29, which differs by 20 minutes at the place where I live.
+ *  e.g. the entry for the span January 14..17 is shared with November 26..29, which differs by 20 minutes at the place where I live.
  *  This function calculates the average for each values to prevent the error from becoming too big.
  *
  *
@@ -203,9 +203,6 @@ const uint8_t ad_plz_10[12][8]  = {
 
 /*
  * table found by trying every entry.
- * (the motor seems not to inperpolate in-between values like I expected)
- *  the entry for 12/24 is used by 12/24..27)
- *
  * the problem: the table is only half a year long and the
  * days which share the same entry does not really have the same
  * time for sunset according to the formula and tables on the internet.
