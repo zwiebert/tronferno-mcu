@@ -3,6 +3,7 @@
 #define FER_H
 
 #include "fer_code.h"
+#include <time.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // timing/sizes for RF modulation
@@ -172,7 +173,7 @@ bool fer_send_msg(fer_sender_basic *fsb, fmsg_type msgType);
 void fmsg_create_checksums(struct fer_msg *m, fmsg_type t);
 bool fmsg_verify_checksums(const struct fer_msg *m, fmsg_type t);
 void fmsg_init_data(fer_msg *msg);
-void fmsg_write_rtc(fer_msg *msg, bool rtc_only);
+void fmsg_write_rtc(fer_msg *msg, time_t rtc, bool rtc_only);
 void fmsg_write_flags(fer_msg *msg, uint8_t flags, uint8_t mask);
 void fmsg_write_wtimer(fer_msg *msg, const uint8_t *wtimer_data);
 void fmsg_write_dtimer(fer_msg *msg, const uint8_t *dtimer_data);

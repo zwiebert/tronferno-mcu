@@ -59,10 +59,11 @@ const char help_parmTimer[] PROGMEM =
     "sun-auto       enables sun automatic\n"
     "random         enables random automatic. shutter opens and closes at random times.\n"
     "rtc-only       don't change timers. only update internal real time clock\n"
+    "rtc=ISO_TIME   you may provide your own time instead of current MCU/NTP time to update internal clock\n"
     "a, g and m:    like in send command\n"
     "rs=(0|1|2)     read back saved timer data. if set to 2, return any data matching g and m e.g. m=0 (any member) instead of m=2\n";
 
-/*static*/ int ICACHE_FLASH_ATTR
+int ICACHE_FLASH_ATTR
 process_parmTimer(clpar p[], int len) {
   int i;
   bool has_daily = false, has_weekly = false, has_astro = false;
@@ -75,6 +76,7 @@ process_parmTimer(clpar p[], int len) {
   uint32_t addr = 0;
   uint8_t fpr0_flags = 0, fpr0_mask = 0;
   int8_t flag_rtc_only = FLAG_NONE;
+  time_t timer = time(NULL);
 
 #if ENABLE_RSTD
   const char *weeklyVal = 0, *dailyVal = 0;
@@ -141,6 +143,11 @@ process_parmTimer(clpar p[], int len) {
     } else if (strcmp(key, "m") == 0) {
       if (!asc2memb(val, &memb))
       return reply_failure();
+    } else if (strcmp(key, "rtc") == 0) {
+      time_t t = time_iso2time(val);
+      if (t >= 0) {
+        timer = t;
+      }
 #if ENABLE_RSTD
       mn = memb ? (memb - 7) : 0;
     } else if (strcmp(key, "rs") == 0) {
@@ -218,7 +225,7 @@ process_parmTimer(clpar p[], int len) {
   if (recv_lockBuffer(true)) {
     fmsg_init_data(txmsg);
     if (flag_rtc_only == FLAG_TRUE) {
-      fmsg_write_rtc(txmsg, true);
+      fmsg_write_rtc(txmsg, timer, true);
       fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask); // the flags are ignored for RTC-only frames, even for non-broadcast
     } else {
       if (has_weekly)
@@ -227,7 +234,7 @@ process_parmTimer(clpar p[], int len) {
         fmsg_write_dtimer(txmsg, daily_data);
       if (has_astro)
         fmsg_write_astro(txmsg, astro_offset);
-      fmsg_write_rtc(txmsg, false);
+      fmsg_write_rtc(txmsg, timer, false);
       fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask);
       fmsg_write_lastline(txmsg, fsb);
     }

@@ -167,9 +167,9 @@ static void ICACHE_FLASH_ATTR write_dtimer(uint8_t d[FPR_TIMER_STAMP_WIDTH], con
 
 
 
-static void ICACHE_FLASH_ATTR write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only) {
-	time_t timer = time(NULL);
-	struct tm *t = localtime(&timer);
+static void ICACHE_FLASH_ATTR write_rtc(uint8_t d[FPR_RTC_WIDTH], time_t rtc, bool rtc_only) {
+	//time_t timer = time(NULL);
+	struct tm *t = localtime(&rtc);
 
 
 	d[fpr0_RTC_secs] = dec2bcd(t->tm_sec);
@@ -243,8 +243,8 @@ void ICACHE_FLASH_ATTR fmsg_init_data(struct fer_msg *m) {
 	memset(m->rtc, 0, FPR_RTC_WIDTH);
 	disable_timer(m->wdtimer, FPR_TIMER_HEIGHT + FPR_ASTRO_HEIGHT);
 }
-void ICACHE_FLASH_ATTR fmsg_write_rtc(fer_msg *msg, bool rtc_only) {
-   write_rtc(msg->rtc, rtc_only);
+void ICACHE_FLASH_ATTR fmsg_write_rtc(fer_msg *msg, time_t rtc, bool rtc_only) {
+   write_rtc(msg->rtc, rtc, rtc_only);
 }
 void ICACHE_FLASH_ATTR fmsg_write_flags(fer_msg *msg, uint8_t flags, uint8_t mask) {
   write_flags(msg->rtc, flags, mask);
