@@ -213,11 +213,16 @@ The mcu stores timer commands, so it can print out the timer configuration of ea
 * random=(1|0)   enable a random timer.  To avoid the 'abandoned house' look and scare burglars away.
 * sun-auto=(1|0) enable sun automatic.  If enabled, the shutter will react to sun-down messages. Otherwise they will be ignored.
 
-#### rtc-only
+#### rtc-only, rtc
 * rtc-only=(1|0)  Send only RTC data and leave out the entire timer data. Will only affect the RTC in the receiver, not any timer data.
 
         timer rtc-only;    updates internal RTC of the receiver(s)
 	    timer rtc-only sun-auto daily=0500-;   sun-auto and daily options have no effect
+
+* rtc=ISO_TIME   you may provide your own time instead of current MCU/NTP time to update internal clock
+
+        timer g=2 m=1 astro=0 rtc=2019-01-20T11:59:00;   set astro timer and use providet time to set motor-internal RTC
+	    
 		
 	   
 Each timer command has RTC data and will update the internal RTC of the receivers addressed by a timer command. This rtc-only option is mainly used after power loss of a shutter; to synchronize the times of all shutters; when daylight time changes.
