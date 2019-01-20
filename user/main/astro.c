@@ -19,16 +19,12 @@
 #include "fer.h"
 
 
-
-#define float double
-
-
 /*
  *
  * force_even_minutes  - if true, no odd number will be outputted in dstMinutes
  */
 static void ICACHE_FLASH_ATTR
-time_to_bcd(uint8_t *bcdMinutes, uint8_t *bcdHours, float time, bool force_even_minutes) {
+time_to_bcd(uint8_t *bcdMinutes, uint8_t *bcdHours, double time, bool force_even_minutes) {
   double integral, fractional;
 
   fractional = modf(time, &integral);
@@ -53,43 +49,89 @@ time_to_bcd(uint8_t *bcdMinutes, uint8_t *bcdHours, float time, bool force_even_
 }
 
 #if 1
-static void ICACHE_FLASH_ATTR
-math_write_astro(astro_byte_data dst, int mint_offset)
-{ int i, j;
-  float sunset = 0, day = 355, last_sunset = -1;
 
-    for (i=0; i < FPR_ASTRO_HEIGHT; ++i) {
-      for (j=0; j < 4; ++j, (day -= 3.8046875)) {
-        calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + (mint_offset / 60.0f), day, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
-        if (sunset < last_sunset) {
-          sunset = last_sunset;
-        } else {
-          last_sunset = sunset;
-        }
-
-        time_to_bcd(&dst[i][j*2],&dst[i][j*2+1], sunset, true);
-      }
-    }
-}
-#else
+/*
+ *  calcuate civil dusk for configured geo location and fill in astro table ready to send to Fernotron receiver
+ *
+ *
+ *  unfortunally there is a problem because of how the table is interpreted by the motor:
+ *
+ *  the table contains only half a year. one entry for span of usually 4 days.
+ *
+ *  these spans are shared for both half years.
+ *  unfortunally the shared dates are not always matching in times for sunrise/sunset.
+ *
+ *  e.g. the entry for the span january 14..17 is shared with november 26..29, which differs by 20 minutes at the place where I live.
+ *  This function calculates the median for each values to prevent the error from becoming too big.
+ *
+ *
+ */
 static void ICACHE_FLASH_ATTR
 math_write_astro(astro_byte_data dst, int mint_offset) {
   int i, j;
-  float sunset = 0, last_sunset = -1;
-  int day = 355;
+  double dusk = 0, duskf = 0, duskr = 0, last_dusk = -1;
+  int dayf, dayr;
+
+  dayf = dayr = 354;
 
   for (i = 0; i < FPR_ASTRO_HEIGHT; ++i) {
-    for (j = 0; j < 4; ++j, (day -= 4)) {
-      calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + (mint_offset / 60.0f), day, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
-      if (sunset < last_sunset) {
-        sunset = last_sunset;
+    for (j = 0; j < 4; ++j) {
+      calc_sunrise_sunset(NULL, &duskf, C.geo_timezone + (mint_offset / 60.0f), dayf, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+      calc_sunrise_sunset(NULL, &duskr, C.geo_timezone + (mint_offset / 60.0f), dayr, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+
+      dusk = (duskf + duskr) / 2;
+
+      if (dusk < last_dusk) {
+        dusk = last_dusk;
       } else {
-        last_sunset = sunset;
+        last_dusk = dusk;
       }
-      time_to_bcd(&dst[i][j * 2], &dst[i][j * 2 + 1], sunset, true);
+      time_to_bcd(&dst[i][j * 2], &dst[i][j * 2 + 1], dusk, true);
+
+      dayf += 4;
+      if (dayf > 365)
+        dayf = 2;
+      dayr -= 4;
     }
   }
 }
+
+#else
+
+// experimental code
+
+static int get_yday(int mon, int day)
+{
+    static const int days[13] = {
+        0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334,
+    };
+    return days[mon] + day;
+}
+
+
+static void ICACHE_FLASH_ATTR
+math_write_astro(astro_byte_data dst, int mint_offset) {
+  int i, j, month, mday;
+  double sunset = 17.0;
+
+  month = 12;
+  mday = 20;
+
+  for (i = 0; i < FPR_ASTRO_HEIGHT; ++i) {
+    for (j = 0; j < 4; ++j) {
+      calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + (mint_offset / 60.0f), get_yday(month, mday), C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+
+      time_to_bcd(&dst[i][j * 2], &dst[i][j * 2 + 1], sunset, true);
+
+      mday -= 4;
+      if (mday < 2) {
+        month -= 1;
+        mday = (month == 9 || month == 6) ? 28 : 30;
+      }
+    }
+  }
+}
+
 #endif
 /////////////////////////////////////////////////////////////////////////////////////
 
@@ -107,7 +149,7 @@ uint8_t data[12][8];
 bool ICACHE_FLASH_ATTR
 testModule_astro()
 {
-  float rise, set;
+  double rise, set;
   uint16_t doy = 172;
   calc_sunrise_sunset(&rise, &set, C.timezone, doy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
   
@@ -158,5 +200,85 @@ const uint8_t ad_plz_10[12][8]  = {
 
 // berlin actual civil dusk: 16:33 ... 21:23 (GMT + 1)
 // berlin fernotron table:  16:34 ... 21:20
+
+/*
+ * table found by trying every entry.
+ * (the motor seems not to inperpolate in-between values like I expected)
+ *  the entry for 12/24 is used by 12/24..27)
+ *
+ * the problem: the table is only half a year long and the
+ * days which share the same entry does not really have the same
+ * time for sunset according to the formula and tables on the internet.
+ *
+ * e.g.
+ *
+ *  civil dusk in my town on:
+ * january 14: 17:00
+ * november 26:  16:40
+ *
+ * a difference by 20 minutes, but these share the same table entry
+ *
+ *
+ *
+ *
+ * start values when counting days backwards
+ * month: start-value
+ * 12: 20
+ * 11: 30
+ * 10: 30
+ * 09: 28
+ * 08: 30
+ * 07: 30
+ * 06: 28
+ *
+12/20  12/24  12/28  01/02  // dates from 12/20..23 ... 06/20..23 forward
+17:00, 17:06, 17:12, 17:18, // (generated test times. unimportant)
+12/20  12/16  12/12  12/08  // dates from 12/23..20 ... 06/27..24 backward
+
+01/06  01/10  01/14  01/18
+17:24, 17:30, 17:36, 17:42,
+12/04  11/30  11/26  11/22
+
+01/22  01/26  01/30  02/04
+17:48, 17:54, 18:00, 18:06,
+11/18  11/14  11/10  11/06
+
+02/08  02/12  02/16  02/20
+18:12, 18:18, 18:24, 18:30,
+11/02  10/30  10/26  10/22
+
+02/24  02/28  03/04  03/08
+18:36, 18:42, 18:48, 18:54,
+10/18  10/14  10/10  10/06
+
+03/12  03/16  03/20  03/24
+1f:00, 1f:06, 1f:12, 1f:18,
+10/02  09/28  09/24  09/20
+
+03/28         04/04  04/08   --- skipped entry
+1f:24, 1f:30, 1f:36, 1f:42,
+09/16  09/12  09/08  09/04
+
+04/12  04/16  04/20  04/24
+1f:48, 1f:54, 20:00, 20:06,
+08/30  08/26  08/22  08/18
+
+04/28  05/02  05/06  05/10
+20:12, 20:18, 20:24, 20:30,
+08/14  08/10  08/06  08/02   ---- 07/30 ---> 08/02
+
+05/14  05/18  05/22  05/26
+20:36, 20:42, 20:48, 20:54,
+07/30  07/26  07/22  07/18
+
+05/30  06/04  06/08  06/12
+21:00, 21:06, 21:12, 21:18,
+07/14  07/10  07/06  07/02
+
+06/16  06/20
+21:24, 21:30, 21:36, 21:42,
+06/28  06/24
+
+ */
 
 
