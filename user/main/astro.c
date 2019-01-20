@@ -62,7 +62,7 @@ time_to_bcd(uint8_t *bcdMinutes, uint8_t *bcdHours, double time, bool force_even
  *  unfortunally the shared dates are not always matching in times for sunrise/sunset.
  *
  *  e.g. the entry for the span january 14..17 is shared with november 26..29, which differs by 20 minutes at the place where I live.
- *  This function calculates the median for each values to prevent the error from becoming too big.
+ *  This function calculates the average for each values to prevent the error from becoming too big.
  *
  *
  */
