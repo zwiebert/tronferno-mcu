@@ -24,23 +24,20 @@
 #define ENABLE_RSTD 0
 #endif
 
-#define ENABLE_EXPERT 0 // work in progress
 #define ENABLE_RESTART 1 // allow software reset
 #define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
-
 #define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
-//fer_sender_basic senders[10];
 fer_sender_basic default_sender;
 fer_sender_basic last_received_sender;
 uint16_t msgid;
 
 int ENR; // error number
-/*static*/ void ICACHE_FLASH_ATTR print_enr(void) {
+void ICACHE_FLASH_ATTR print_enr(void) {
   io_puts("enr: "), io_putd(ENR), io_putlf();
 }
 
-/*static*/ void ICACHE_FLASH_ATTR msg_print(const char *msg, const char *tag) {
+void ICACHE_FLASH_ATTR msg_print(const char *msg, const char *tag) {
   if (msg)
     io_puts(msg);
   if (msgid) {
@@ -58,11 +55,11 @@ void ICACHE_FLASH_ATTR warning_unknown_option(const char *key) {
   msg_print("warning", "unknown-option"), io_puts(key), io_putc('\n');
 }
 
-/*static*/ void ICACHE_FLASH_ATTR reply_print(const char *tag) {
+void ICACHE_FLASH_ATTR reply_print(const char *tag) {
   msg_print("reply", tag);
 }
 
-/*static*/ void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
+void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
   reply_print(tag);
   if (msg)
     io_puts(msg);
@@ -244,96 +241,8 @@ string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst) {
   return i == size_dst;
 }
 
-#if ENABLE_EXPERT
 
-struct c_map const ec_map[] = {
-  { "down", fer_cmd_DOWN},
-  { "up", fer_cmd_UP},
-  { "stop", fer_cmd_STOP},
-  { "sun-down", fer_cmd_SunDOWN},
-  { "sun-up", fer_cmd_SunUP},
-  { "sun-inst", fer_cmd_SunINST},
-//		{"sun-test", fer_cmd_Program},
-  { "set", fer_cmd_SET},
-  { "end-pos-down", fer_cmd_EndPosDOWN},  // dangerous, could damage shutter
-  { "end-pos-up", fer_cmd_EndPosUP},      // dangerous, could damage shutter
-};
-
-#define create_expert_key() ("a(42)")  // FIXME: create random key
-#define test_expert_key(k) (k == 84)
-/*static*/ int ICACHE_FLASH_ATTR
-process_parmExpert(clpar p[], int len) {
-  int i;
-// FIXME: function body copied from parmSend ... now modifiy it
-
-  bool reply_exp_key = false, match_exp_key = false;
-  uint32_t exp_key = 0;
-  uint32_t addr = 0;
-  fer_grp group = fer_grp_Broadcast;
-  fer_memb memb = fer_memb_Broadcast;
-  fer_cmd cmd = fer_cmd_None;
-
-  for (i = 1; i < len; ++i) {
-    const char *key = p[i].key, *val = p[i].val;
-
-    if (key == NULL || val == NULL) {
-      return -1;
-    } else if (strcmp(key, "req-exp-key") == 0) {
-      reply_exp_key = asc2bool(val);
-    } else if (strcmp(key, "exp-key") == 0) {
-      match_exp_key = test_expert_key(strtol(val, NULL, 0));
-    } else if (strcmp(key, "a") == 0) {
-      addr = strtol(val, NULL, 16);
-    } else if (strcmp(key, "g") == 0) {
-      group = asc2group(val);
-    } else if (strcmp(key, "m") == 0) {
-      memb = asc2memb(val);
-    } else if (strcmp(key, "c") == 0) {
-      cmd = cli_parm_to_ferCMD(val);
-    } else {
-      reply_failure(); // unknown parameter
-      return -1;
-    }
-  }
-
-  if (reply_exp_key) {
-    io_puts("reply: key="), io_puts(create_expert_key()), io_putlf();
-    reply_success();
-    return 0;
-  } else if (!match_exp_key) {
-    reply_failure();
-    return -1;
-  } else {
-    io_puts("dbg: key matched\n");
-  }
-
-  fer_sender_basic *fsb = get_sender_by_addr(addr);
-  if (!fsb) {
-    static fer_sender_basic fsb_direct; // FIXME: or was senders[0] meant for this?
-    fsb = &fsb_direct;
-    if (FSB_GET_DEVID(fsb) != addr) {
-      fer_init_sender(fsb, addr);
-    }
-  }
-
-  if (FSB_ADDR_IS_CENTRAL(fsb)) {
-    FSB_PUT_GRP(fsb, group);
-    FSB_PUT_MEMB(fsb, memb);  // only set this on central unit!
-  }
-
-  if (cmd != fer_cmd_None) {
-    FSB_PUT_CMD(fsb, cmd);
-    fer_update_tglNibble(fsb);
-    reply(fer_send_cmd(fsb));
-  } else {
-    reply_failure();
-  }
-
-  return 0;
-}
-#endif
-
-/*static*/ int process_parmHelp(clpar p[], int len);
+int process_parmHelp(clpar p[], int len);
 
 const char help_None[] PROGMEM = "none";
 
@@ -382,7 +291,7 @@ process_cmdline(char *line) {
   }
 }
 
-/*static*/ int ICACHE_FLASH_ATTR
+int ICACHE_FLASH_ATTR
 process_parmHelp(clpar p[], int len) {
   int i;
 

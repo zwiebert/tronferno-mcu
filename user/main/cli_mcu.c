@@ -24,7 +24,7 @@ const char help_parmMcu[] PROGMEM =
     "version=full\n"
 ;
 
-/*static*/ int ICACHE_FLASH_ATTR
+int ICACHE_FLASH_ATTR
 process_parmMcu(clpar p[], int len) {
   int arg_idx;
   const char *mcuSep = "mcu ";

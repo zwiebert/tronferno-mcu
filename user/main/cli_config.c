@@ -51,7 +51,7 @@ const char help_parmConfig[] PROGMEM =
 #define slf "\n"
 #define cfg "config "
 
-/*static*/ int ICACHE_FLASH_ATTR
+int ICACHE_FLASH_ATTR
 process_parmConfig(clpar p[], int len) {
   int arg_idx;
   int errors = 0;

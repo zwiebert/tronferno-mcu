@@ -30,10 +30,10 @@ extern clpar par[];
 
 
 /* cli.c */
-/*static*/ void print_enr(void);
-/*static*/ void msg_print(const char *msg, const char *tag);
-/*static*/ void reply_print(const char *tag);
-/*static*/ void reply_message(const char *tag, const char *msg);
+void print_enr(void);
+void msg_print(const char *msg, const char *tag);
+void reply_print(const char *tag);
+void reply_message(const char *tag, const char *msg);
 int process_parmSend(clpar p[], int len);
 int process_parmConfig(clpar p[], int len);
 int process_parmMcu(clpar p[], int len);

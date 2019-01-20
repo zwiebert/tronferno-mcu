@@ -23,13 +23,13 @@ typedef enum {
 	fer_cmd_UP,     // run motor 'up'
 	fer_cmd_DOWN,   // run motor 'down'
 	fer_cmd_SunDOWN,  // run motor 'down' until sun position is reached (works only if sun auto is enabled)
-	fer_cmd_SunUP,   // run motor 'up' (should work only after SunDOWN (or if not below sun pos?))
-	fer_cmd_SunINST,  // set current position als sun position
+	fer_cmd_SunUP,   // run motor 'up' (run motor up if both prior command was SunDOWN and motor position is above or equal sun-position)
+	fer_cmd_SunINST,  // set current position as sun position
 	fer_cmd_EndPosUP, // move motor 'up' until 'stop' is sent (the position at stop is saved as end position)
 	fer_cmd_EndPosDOWN, // move motor 'down' until 'stop' is sent (the position at 'stop' is saved as end position)
 	fer_cmd_ChangeRotationDirection, // toggles motor rotation direction (used to match up/down commands with real shutter movement)
 	fer_cmd_0xc,
-	fer_cmd_SET,   // atcivates set function to add or remove a controller
+	fer_cmd_SET,   // activates set function to add or remove a controller
 	fer_cmd_0xe,
 	fer_cmd_Program // RTC/TImer data (or Sun-Test if dat_MEMB=fer_memb_SUN)
 } fer_cmd;
@@ -133,7 +133,7 @@ enum fpr0_FlagBitsValues { // FIXME: there may be more flag bits in use. try to 
 	flag_4,  // ???
 	flag_5,  // ???
 	flag_6,  // ???
-	flag_SunAuto  // automatic sunsensor. if off the sun-down command does not work. (ignored at rtc-only frames)
+	flag_SunAuto  // enable automatic sun-sensor. if off the sun-down command does not work. (ignored at rtc-only frames)
 };
 
 // frames 1 - 4: timer  
@@ -243,11 +243,11 @@ extern uint8_t bcd2dec(uint8_t bcd);
 #define FPR_RTC_BYTE_CT    3 // nmb of bytes in data (6 for SS:MM:HH)
 
 #define FPR_ASTRO_START_ROW   5 // astro data start at this row in frame
-#define FPR_ASTRO_WIDTH       8 // nmb of bytes used for astro data each row (8 or 9???)
+#define FPR_ASTRO_WIDTH       8 // nmb of bytes used for astro data each row
 #define FPR_ASTRO_HEIGHT     12 // nmb of rows used for astro data
 
 #define FPR_TIMER_START_ROW     1 // timer data start at this row in frame
-#define FPR_TIMER_WIDTH         8 // nmb of bytes used for timer data each row (8 or 9???)
+#define FPR_TIMER_WIDTH         8 // nmb of bytes used for timer data each row
 #define FPR_TIMER_STAMP_WIDTH   4 // nmb of bytes used for a time stamp (4 bytes for up MM:HH down MM:HH)
 #define FPR_TIMER_HEIGHT        4 // nmb of rows used for timer data
 
@@ -285,17 +285,17 @@ extern uint8_t bcd2dec(uint8_t bcd);
 
 void fer_init_sender(fer_sender_basic *fsb, uint32_t devID);
 void fer_init_plain(fer_sender_basic *fsb, uint8_t a2, uint8_t a1, uint8_t a0);
-void fer_init_sunSensor(fer_sender_basic *fsb, uint8_t a2, uint8_t a1,
-		uint8_t a0);
+void fer_init_sunSensor(fer_sender_basic *fsb, uint8_t a2, uint8_t a1, uint8_t a0);
 void fer_update_tglNibble(fer_sender_basic *fsb);
 
-// like macros above but extract from raw send-data array (2 words per byte with parity)
+// extract data from word data array (two 10bit-words per byte with parity)
 #define FRW_GET_CMD(data)          (GET_LOW_NIBBLE((data)[fer_dat_GRP_and_CMD * 2]))
 #define FRW_GET_MEMB(data)         (GET_LOW_NIBBLE((data)[fer_dat_TGL_and_MEMB * 2]))
 #define FRW_GET_GRP(data)          (GET_HIGH_NIBBLE((data)[fer_dat_GRP_and_CMD * 2]))
 #define FRW_MODEL_IS_CENTRAL(data)  (((data)[fer_dat_ADDR_2 * 2] & 0xff)  == FER_ADDR_TYPE_CentralUnit)
 #define FRW_GET_FPR0_IS_RTC_ONLY(data) ((GET_HIGH_NIBBLE((data)[fpr0_RTC_wday * 2]) & 0x8) != 0)
 
+// extract data from data byte array
 #define FRB_GET_CMD(data)          (GET_LOW_NIBBLE((data)[fer_dat_GRP_and_CMD]))
 #define FRB_GET_MEMB(data)         (GET_LOW_NIBBLE((data)[fer_dat_TGL_and_MEMB]))
 #define FRB_GET_GRP(data)          (GET_HIGH_NIBBLE((data)[fer_dat_GRP_and_CMD]))
