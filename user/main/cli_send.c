@@ -19,8 +19,9 @@ const char help_parmSend[] PROGMEM =
     "a=(0|ID)  0  hex ID of sender or receiver. 0 uses 'cu' in config\n"
     "g=[0-7]   0  group number\n"
     "m=[0-7]   0  group member number\n"
-    "c=(up|down|stop|sun-down|sun-inst|set\n"
-    "r=N       2  repeat command 1+N times"
+    "c=(up|down|stop|sun-down|sun-inst|set|?)\n"
+   // "p=(?|100|0)"
+    "r=N       2  repeat command 1+N times\n"
     "SEP[=0|1]    Enter end-position adjustment mode (needs hardware button)"
 // "TROT        Toggle rotation direction"
 ;
@@ -36,6 +37,8 @@ process_parmSend(clpar p[], int len) {
   int set_end_pos = -1;
   uint8_t repeats = FSB_PLAIN_REPEATS;
   bool read_state = false;
+  bool do_send = false;
+
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -56,7 +59,14 @@ process_parmSend(clpar p[], int len) {
       if (!(repeats <= 10)) {
         return reply_failure();
       }
-    } else if (strcmp(key, "c") == 0) {
+   } else if (strcmp(key, "p") == 0) {
+     NODEFAULT();
+     if (*val == '?') {
+       read_state = true;
+     } else {
+       return reply_failure();
+     }
+   } else if (strcmp(key, "c") == 0) {
       NODEFAULT();
       if (*val == '?') {
         read_state = true;
@@ -75,7 +85,15 @@ process_parmSend(clpar p[], int len) {
   if (read_state) {
     uint8_t g = group;
     uint8_t m = memb == 0 ? 0 : memb - 7;
-    io_puts("current state: "), io_print_dec_16(get_shutter_state(addr, g, m), false), io_puts("\n");
+    if (g != 0 && m != 0) {
+      int pos = get_shutter_state(addr, g, m);
+      if (pos >= 0) {
+        io_puts("A:position:"), io_puts(" g="), io_putd(g), io_puts(" m="), io_putd(m),
+            io_puts(" p="), io_putd(pos), io_puts(";\n");
+      }
+    } else {
+      reply_failure();
+    }
   } else {
     fer_sender_basic *fsb = get_sender_by_addr(addr);
     if (!fsb) {

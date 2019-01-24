@@ -24,6 +24,7 @@
 enum pos { POS_0, POS_50, POS_100, POS_SIZE };
 static const uint8_t pos_map[POS_SIZE] = {0, 50, 100};
 
+
 static gm_bitmask_t positions[POS_SIZE];
 
 static int ICACHE_FLASH_ATTR
@@ -36,7 +37,7 @@ get_state(uint32_t a, int g, int m) {
     if (GET_BIT(positions[p][g], m))
       return pos_map[p];
   }
-  return 0;
+  return -1;
 }
 
 
@@ -142,27 +143,30 @@ int ICACHE_FLASH_ATTR
 print_shutter_positions() {
   uint8_t p, g;
 
-    for (p=0; p < POS_SIZE; ++p) {
-      
-      for (g=1; g < 8; ++g) {
-	// don't print a position with no members
-	if (positions[p][g] == 0)
-	  continue;
+  io_puts("U:position:start;\n");
+  for (p = 0; p < POS_SIZE; ++p) {
+    for (g = 1; g < 8; ++g) {
+      // don't print a position with no members
+      if (positions[p][g] == 0)
+        continue;
 
-	// found a member - now print;
-	
-	io_puts("U:position:"),
-	  io_puts(" p="), io_putd(pos_map[p]),
-	  io_puts(" mm=");
-	for (g=0; g < 8; ++g) {
-	  io_putx8(positions[p][g]);
-	  if (g < 7)
-	    io_putc(',');
-	}
-	io_puts(";\n");
-	
-	break; // printing done, got to next position
+      // found a member - now print;
+
+      io_puts("U:position:"), io_puts(" p="), io_putd(pos_map[p]), io_puts(" mm=");
+      for (g = 0; g < 8; ++g) {
+        io_putx8(positions[p][g]);
+        if (g < 7)
+          io_putc(',');
       }
+      io_puts(";\n");
+
+      break; // printing done, got to next position
     }
-    return 0;
+  }
+  io_puts("U:position:end;\n");
+  return 0;
+
 }
+
+
+

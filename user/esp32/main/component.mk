@@ -12,8 +12,11 @@ COMPONENT_PRIV_INCLUDEDIRS = ../..
 COMPONENT_SRCDIRS += ../../main ../../misc
 
 
+ifdef DISTRO
 ifeq ($(DISTRO),1)
 CPPFLAGS += -DDISTRIBUTION
 endif
+endif
 
 CPPFLAGS += -DMCU_ESP32
+
