@@ -135,9 +135,9 @@ Send a plain command message via RF to the receivers. Receiver can be a shutter 
 #### option SEP for setting end position
 
   * WARNING: the shutter can be damaged by moving the end position beyond the physical possible limit.
-  * WARNING: make sure, to address a single shutter only (g=1 m=1 can address more than motor).
+  * WARNING: make sure, to address a single shutter only (note: something like "g=1 m=1" can address more than one motor).
   * WARNING: Its best to use this with motor codes (IDs starting with 9). They will never address more than one motor.
-  * WARNING: Would be best to have an additional controller handy to send a stop signal to the shutter, in cases our MCU loses power or crashes.
+  * WARNING: Would be best if you have an additional controller handy to send a stop signal to the shutter, in case something goes wrong (power loss, etc) while adjusting.
 
 By adding the SEP option to c=up or c=down, the set-end-position-mode is entered.  In this mode you hold a hardware button to move the shutter in the direction you have specified with c=up/down.
 If you release the button, the shutter position will be saved as the new end position for that direction.
