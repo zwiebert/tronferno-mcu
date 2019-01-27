@@ -139,17 +139,19 @@ process_parmTimer(clpar p[], int len) {
       addr = val ? strtol(val, NULL, 16) : 0;
     } else if (strcmp(key, "g") == 0) {
       if (!asc2group(val, &group))
-      return reply_failure();
+        return reply_failure();
     } else if (strcmp(key, "m") == 0) {
       if (!asc2memb(val, &memb))
-      return reply_failure();
+        return reply_failure();
+#if ENABLE_RSTD
+      mn = memb ? (memb - 7) : 0;
+#endif
     } else if (strcmp(key, "rtc") == 0) {
       time_t t = time_iso2time(val);
       if (t >= 0) {
         timer = t;
       }
 #if ENABLE_RSTD
-      mn = memb ? (memb - 7) : 0;
     } else if (strcmp(key, "rs") == 0) {
       NODEFAULT();
       rs = atoi(val);

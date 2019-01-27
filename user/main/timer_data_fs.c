@@ -51,6 +51,7 @@ static bool ICACHE_FLASH_ATTR read_data2(timer_data_t *p, const char *file_name)
 
 static int ICACHE_FLASH_ATTR delete_shadowded_files(uint8_t group, uint8_t memb) {
   int g, m, result = 0;
+  DB2(printf("delete shadowed files(group=%d, memb=%d)\n", (int)group, (int)memb));
   for (g = 0; g <= 7; ++g) {
     for (m = 0; m <= 7; ++m) {
       if ((group == 0 || group == g) && (memb == 0 || memb == m)) {
