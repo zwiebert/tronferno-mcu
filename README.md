@@ -1,6 +1,14 @@
 # tronferno-mcu
 
-MCU firmware to control Fernotron devices via CLI . Can run on micro controller ESP32, ESP8266. (ATMEGA328P is still there, but currently the generated firmware is to large).
+MCU firmware to control Fernotron devices like shutter motors the way the original 2411 central unit does.  It has a command line user interface which can be fully accessed via USB terminal program. See below for Related Projects for an (optional) App for Android. There is also an FHEM module. 
+
+Supported MCUs:
+
+* ESP32: works best
+* ESP8266: works, but has more bugs and less features
+* ATMEGA328P: much less features ... and still the current version no longer fits into its small flash-ROM. (See the Makefile variable ATMEGA328_CO of the binary project for the last working git tag. The binary image there is built with it and works)
+
+
 
 #### This project is Experimental Software. It may contain bugs and errors. Use at your own risk.
 
@@ -33,7 +41,7 @@ See documentation in [docs](https://github.com/zwiebert/tronferno-mcu/blob/maste
 ### History
  * 2018: Moving to ESP32 for better TCP stability and more RAM.
  * 2017: Moving to ESP8266 for builtin WiFi and more RAM. 
- * 2017: Moved to ATmega328p for more FLASH-ROM. Added programming of built-in timers.
+ * 2017: Moved to ATmega328p for more FLASH-ROM. Added programming of built-in timer after figuring out all these checksums.
  * 2011: First version for ATmega168. Limited to plain commands (up/down/etc). Audacity and Emacs-Lisp was used to analyze data.
 
 ### Related Projects
