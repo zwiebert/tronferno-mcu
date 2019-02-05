@@ -101,13 +101,13 @@ process_parmTimer(clpar p[], int len) {
       return -1;
     } else if (strcmp(key, timer_keys[TIMER_KEY_WEEKLY]) == 0) {
       NODEFAULT();
-      has_weekly = string2bcdArray(val, weekly_data, sizeof weekly_data);
+      has_weekly = timerString2bcd(val, weekly_data, sizeof weekly_data);
 #if ENABLE_RSTD
       weeklyVal = val;
 #endif
     } else if (strcmp(key, timer_keys[TIMER_KEY_DAILY]) == 0) {
       NODEFAULT();
-      has_daily = string2bcdArray(val, daily_data, sizeof daily_data);
+      has_daily = timerString2bcd(val, daily_data, sizeof daily_data);
 #if ENABLE_RSTD
       dailyVal = val;
 #endif
@@ -160,7 +160,7 @@ process_parmTimer(clpar p[], int len) {
     } else if ((wday = asc2wday(key)) >= 0) {
       NODEFAULTS();
       io_puts(val), io_putlf();
-      has_weekly = string2bcdArray(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
+      has_weekly = timerString2bcd(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
 #endif
     } else {
       if (strcmp(key, "rs") == 0) {

@@ -13,6 +13,7 @@
 #ifdef MCU_ESP32
 #include <rom/ets_sys.h>
 #define db_puts(s) ets_printf("%s\n",s)
+#define db_printf ets_printf
 #endif
 
 void abort_precond(const char *msg, int line);
@@ -76,6 +77,20 @@ void db_test_all_indicators(uint8_t nmb_flashs);
 #endif
 #ifndef dbg_trace
 #define dbg_trace()   dbg_printf("trace: %s()\n", __func__)
+#endif
+
+#ifndef DISTRIBUTION
+#define dbg_dbd(x) do { if (C.app_verboseOutput >= vrbDebug) { x; } } while(0)
+#else
+#define dbg_dbd(x)
+#endif
+
+#define if_verbose_do(x) do { if (C.app_verboseOutput >= vrbDebug) { x; } } while(0)
+
+#if defined db_printf && ! defined DISTRIBUTION
+#define dbg_vpf(x) do { if (C.app_verboseOutput >= vrbDebug) { x; } } while(0)
+#else
+#define dbg_vpf(x)
 #endif
 
 

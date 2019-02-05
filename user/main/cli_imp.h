@@ -56,7 +56,7 @@ fer_sender_basic *get_sender_by_addr(long addr);
 bool cu_auto_set(unsigned init_seconds);
 bool asc2group(const char *s, fer_grp *grp);
 bool asc2memb(const char *s, fer_memb *memb);
-bool string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst);
+bool timerString2bcd(const char *src, uint8_t *dst, uint16_t size_dst);
 int process_parm(clpar p[], int len);
 void process_cmdline(char *line);
 void cli_loop(void);

@@ -197,7 +197,7 @@ bool ICACHE_FLASH_ATTR asc2memb(const char *s, fer_memb *memb) {
 
 
 bool ICACHE_FLASH_ATTR
-string2bcdArray(const char *src, uint8_t *dst, uint16_t size_dst) {
+timerString2bcd(const char *src, uint8_t *dst, uint16_t size_dst) {
   char buf[3];
   int i;
 
@@ -283,6 +283,7 @@ process_parm(clpar p[], int len) {
 
 void ICACHE_FLASH_ATTR
 process_cmdline(char *line) {
+  dbg_vpf(db_printf("process_cmdline: %s\n", line));
   int n = parse_commandline(line);
   if (n < 0) {
     reply_failure();
