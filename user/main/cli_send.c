@@ -92,7 +92,7 @@ process_parmSend(clpar p[], int len) {
             io_puts(" p="), io_putd(pos), io_puts(";\n");
       }
     } else {
-      reply_failure();
+      print_shutter_positions();
     }
   } else {
     fer_sender_basic *fsb = get_sender_by_addr(addr);
