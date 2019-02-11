@@ -23,9 +23,11 @@ fers_loop() {
     return false;
 
   if (send_fsb.repeats > 0) {
+#ifdef XXX_TOGGLE_STOP_REPEATS  // disabled because it blocks the receiver instead of making sure the stop is received
     if (FSB_GET_CMD(&send_fsb) == fer_cmd_STOP) {
       fer_update_tglNibble(&send_fsb);
     }
+#endif
     fer_send_msg(0, MSG_TYPE_PLAIN);
 
   }
