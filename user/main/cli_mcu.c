@@ -61,6 +61,7 @@ process_parmMcu(clpar p[], int len) {
         spiffs_test();
       }
 #endif
+#ifndef MCU_ATMEGA328
     } else if (strcmp(key, "tm") == 0) {
 
       if (strlen(val) == 2) {
@@ -68,10 +69,18 @@ process_parmMcu(clpar p[], int len) {
 	uint8_t m = val[1] - '0';
 	timer_minutes_t tm;
 	if (get_timer_minutes(&tm, &g, &m, true)) {
+#if 0
 	  int i;
 	  for (i=0; i < SIZE_MINTS; ++i) {
 	    io_putd(tm.minutes[i]), io_putlf();
 	  }
+#else
+	  io_puts("astro-down="), io_putd(tm.minutes[0]), io_putlf();
+	  io_puts("daily-up="), io_putd(tm.minutes[1]), io_putlf();
+	  io_puts("daily-down="), io_putd(tm.minutes[2]), io_putlf();
+	  io_puts("weekly-up="), io_putd(tm.minutes[3]), io_putlf();
+	  io_puts("weekly-down="), io_putd(tm.minutes[4]), io_putlf();
+#endif
 	}
       }
 
@@ -94,7 +103,7 @@ process_parmMcu(clpar p[], int len) {
 
     } else if (strcmp(key, "cs") == 0) {
       print_shutter_positions();
-
+#endif /* not MCU_ATMEGA328 */
 #ifdef CONFIG_GPIO_SIZE
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
