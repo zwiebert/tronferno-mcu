@@ -34,25 +34,28 @@ loop(void) {
 #ifdef FER_RECEIVER
   if (MessageReceived != MSG_TYPE_NONE) {
     switch (MessageReceived) {
-    case MSG_TYPE_PLAIN:
-      memcpy(&last_received_sender.data, rxmsg->cmd, 5);
-      cu_auto_set(0);
+      case MSG_TYPE_PLAIN: {
+        bool isDouble = (0 == memcmp(&last_received_sender.data, rxmsg->cmd, 5));
+        memcpy(&last_received_sender.data, rxmsg->cmd, 5);
+        cu_auto_set(0);
 #ifdef USE_PAIRINGS
-      pair_auto_set(0);
+        pair_auto_set(0);
 #endif
-      io_puts("R:"), fmsg_print(rxmsg, MessageReceived);
-      { //TODO: improve shutter states
-	uint8_t g=0, m=0;
-	
-	if (FRB_ADDR_IS_CENTRAL(rxmsg->cmd)) {
-	  g = FRB_GET_GRP(rxmsg->cmd);
-	  m = FRB_GET_MEMB(rxmsg->cmd);
-	  if (m)
-	    m -= 7;
-	}	
-	set_shutter_state(FRB_GET_DEVID(rxmsg->cmd), g, m, FRB_GET_CMD(rxmsg->cmd));
-      }
+        io_puts("R:"), fmsg_print(rxmsg, MessageReceived);
+        io_puts(isDouble ? "c:" : "C:"), fmsg_print_as_cmdline(rxmsg, MessageReceived);
 
+        { //TODO: improve shutter states
+          uint8_t g=0, m=0;
+
+          if (FRB_ADDR_IS_CENTRAL(rxmsg->cmd)) {
+            g = FRB_GET_GRP(rxmsg->cmd);
+            m = FRB_GET_MEMB(rxmsg->cmd);
+            if (m)
+            m -= 7;
+          }
+          set_shutter_state(FRB_GET_DEVID(rxmsg->cmd), g, m, FRB_GET_CMD(rxmsg->cmd));
+        }
+      }
       break;
 #ifndef	FER_RECEIVER_MINIMAL
     case MSG_TYPE_RTC:

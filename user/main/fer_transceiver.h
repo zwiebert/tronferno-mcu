@@ -12,7 +12,7 @@ extern volatile bool has_cmdReceived;
 extern volatile bool has_prgReceived;
 extern volatile uint8_t MessageReceived;
 
-bool recv_lockBuffer(bool enableLock);  // blocks receiver access to shared buffer
+bool recv_lockBuffer(bool enableLock);  // blocks receiver access to shared buffer when transmitting
 void frx_clear(void); // call it after received data buffers has been processed by main thread
 
 #endif /* USER_MAIN_FER_TRANSCEIVER_H_ */

@@ -6,6 +6,8 @@
  */ 
 
 #include "all.h"
+#include "fer_frame.h"
+#include "fer_code.h"
 
 void ICACHE_FLASH_ATTR
 frb_printPacket(const uint8_t *dg) {
@@ -105,29 +107,64 @@ void ICACHE_FLASH_ATTR fmsg_print(const fer_msg *msg, fmsg_type t) {
 }
 
 void ICACHE_FLASH_ATTR fmsg_print_as_cmdline(const fer_msg *msg, fmsg_type t) {
+  const fer_sender_basic *fsb = (fer_sender_basic*) msg;
 
   if (t != MSG_TYPE_PLAIN)
     return; // ignore long messages for now
 
+  fer_cmd c = FSB_GET_CMD(fsb);
+  uint32_t id = FSB_GET_DEVID(fsb);
 
-  frb_printPacket(msg->cmd);
+  const char *cs = NULL;
 
-#ifndef FER_RECEIVER_MINIMAL
-  if (t == MSG_TYPE_RTC || t == MSG_TYPE_TIMER) {
-    int i, used_lines;
-    fmsg_data prg = fmsg_get_data(msg);
-
-    used_lines = t == MSG_TYPE_RTC ? FER_RTC_PACK_CT : FER_PRG_PACK_CT;
-    if (C.app_verboseOutput >= vrbDebug) {
-      for (i = 0; i < used_lines; ++i) {
-        print_array_8(prg[i], FER_PRG_BYTE_CT);
-      }
-    } else {
-      fpr_printPrgPacketInfo(prg, used_lines == 1);
+  if (FSB_ADDR_IS_PLAIN(fsb) || FSB_ADDR_IS_CENTRAL(fsb)) {
+    switch (c) {
+    case fer_cmd_DOWN:
+      cs = "down";
+      break;
+    case fer_cmd_UP:
+      cs = "up";
+      break;
+    case fer_cmd_STOP:
+      cs = "stop";
+      break;
+    default:
+      cs = NULL;
+      break;
     }
-
+  } else if (FSB_ADDR_IS_SUNSENS(fsb)) {
+    switch (c) {
+    case fer_cmd_SunDOWN:
+      cs = "sun-down";
+      break;
+    case fer_cmd_SunUP:
+      cs = "sun-up";
+      break;
+    case fer_cmd_SunINST:
+      cs = "sun-pos";
+      break;    default:
+      cs = NULL;
+      break;
+    }
   }
-#endif
+
+  if (!cs)
+    return; // unsupported command
+
+  io_puts("a="), io_print_hex(id, false);
+  if (FSB_ADDR_IS_CENTRAL(fsb)) {
+    uint8_t g = FSB_GET_GRP(fsb);
+    uint8_t m = FSB_GET_MEMB(fsb);
+    if (g != 0) {
+      io_puts(" g="), io_putd(g);
+      if (m != 0) {
+        m -= 7;
+        io_puts(" m="), io_putd(m);
+      }
+    }
+  }
+  io_puts( " c="), io_puts(cs);
+  io_puts(";\n");
 }
 
 

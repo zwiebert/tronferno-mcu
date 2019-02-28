@@ -149,6 +149,15 @@ io_print_hex_32(uint32_t n, bool comma) {
   if (comma)
     io_puts(", ");
 }
+
+void ICACHE_FLASH_ATTR
+io_print_hex(uint32_t n, bool prefix) {
+  char s[10];
+  ltoa(n, s, 16);
+  if (prefix)
+    io_puts("0x");
+  io_puts(s);
+}
       
 void ICACHE_FLASH_ATTR
 io_print_dec_32(int32_t n, bool comma) {

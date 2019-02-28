@@ -24,6 +24,7 @@ int io_printf(const char *fmt, ...);
 void io_print_hex_8(uint8_t n, bool comma);
 void io_print_hex_16(uint16_t n, bool comma);
 void io_print_hex_32(uint32_t n, bool comma);
+void io_print_hex(uint32_t n, bool prefix);
 
 void io_print_dec_8(int8_t n, bool comma);
 void io_print_dec_16(int16_t n, bool comma);
