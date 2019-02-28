@@ -81,30 +81,26 @@ get_timer_minutes_2(timer_minutes_t *timi, uint8_t *group, uint8_t *member, bool
     minutes_t up_mints = MINUTES_DISABLED, down_mints = MINUTES_DISABLED;
     p = td.weekly;
     D(ets_printf("weekly:<%s>\n", p));
-    for (i=0; i < 7 /* week */; ++i) {
-      if (*p == '+') {
-	++p;
-	continue;
-      }
 
+    for (i = 0; i < 7 /* week */; ++i) {
       if (i == 0 || *p != '+') {
+        if (timer_to_minutes(&up_mints, p))
+          p += 4;
+        else
+          ++p;
 
-	if (timer_to_minutes(&up_mints, p))
-	  p += 4;
-	else
-	  ++p;
-
-	if (timer_to_minutes(&down_mints, p))
-	  p += 4;
-	else
-	  ++p;
-
+        if (timer_to_minutes(&down_mints, p))
+          p += 4;
+        else
+          ++p;
+      } else if (*p == '+') {
+        ++p;
       }
 
       if (i == weekday) {
-	timi->minutes[WEEKLY_UP_MINTS] = up_mints;
-	timi->minutes[WEEKLY_DOWN_MINTS] = down_mints;
-	break;
+        timi->minutes[WEEKLY_UP_MINTS] = up_mints;
+        timi->minutes[WEEKLY_DOWN_MINTS] = down_mints;
+        break;
       }
     }
   }
