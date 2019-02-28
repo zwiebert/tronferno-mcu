@@ -104,3 +104,30 @@ void ICACHE_FLASH_ATTR fmsg_print(const fer_msg *msg, fmsg_type t) {
 #endif
 }
 
+void ICACHE_FLASH_ATTR fmsg_print_as_cmdline(const fer_msg *msg, fmsg_type t) {
+
+  if (t != MSG_TYPE_PLAIN)
+    return; // ignore long messages for now
+
+
+  frb_printPacket(msg->cmd);
+
+#ifndef FER_RECEIVER_MINIMAL
+  if (t == MSG_TYPE_RTC || t == MSG_TYPE_TIMER) {
+    int i, used_lines;
+    fmsg_data prg = fmsg_get_data(msg);
+
+    used_lines = t == MSG_TYPE_RTC ? FER_RTC_PACK_CT : FER_PRG_PACK_CT;
+    if (C.app_verboseOutput >= vrbDebug) {
+      for (i = 0; i < used_lines; ++i) {
+        print_array_8(prg[i], FER_PRG_BYTE_CT);
+      }
+    } else {
+      fpr_printPrgPacketInfo(prg, used_lines == 1);
+    }
+
+  }
+#endif
+}
+
+
