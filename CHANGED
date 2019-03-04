@@ -1,0 +1,8 @@
+#tronferno-mcu history
+
+- 2019-03-04
+  -feature: new timer option f (mens flags) to allow:
+            * modify timers
+            * disable/enable all automatic movement
+            * read back timer data (makes rs option obsolete)
+  -change: atmega328p no loger compiles (I want to get rid of ifdefs)
