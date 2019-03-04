@@ -14,13 +14,13 @@ typedef struct {
   char *val;
 } clpar;
 
-extern const char help_parmSend[] PROGMEM;
-extern const char help_parmTimer[] PROGMEM;
-extern const char help_parmConfig[] PROGMEM;
-extern const char help_parmMcu[] PROGMEM;
-extern const char help_parmPair[] PROGMEM;
-extern const char help_parmHelp[] PROGMEM;
-extern const char help_None[] PROGMEM;
+extern const char help_parmSend[] ;
+extern const char help_parmTimer[] ;
+extern const char help_parmConfig[] ;
+extern const char help_parmMcu[] ;
+extern const char help_parmPair[] ;
+extern const char help_parmHelp[] ;
+extern const char help_None[] ;
 
 extern fer_sender_basic default_sender, last_received_sender;
 extern uint16_t msgid;

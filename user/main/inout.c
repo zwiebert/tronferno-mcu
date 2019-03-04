@@ -11,11 +11,8 @@ int (*io_putc_fun)(char c);
 int (*io_getc_fun)(void);
 int (*io_printf_fun)(const char *fmt, ...);
 
-#ifndef AVR
 extern char *itoa(int val, char *s, int radix);
 extern char *ltoa(long val, char *s, int radix);
-#endif
-
 
 int ICACHE_FLASH_ATTR io_putc(char c) { return (io_putc_fun == 0) ? -1 : io_putc_fun(c); }
 int ICACHE_FLASH_ATTR io_getc(void)   { return (io_getc_fun == 0) ? -1 : io_getc_fun(); }
@@ -37,60 +34,6 @@ int ICACHE_FLASH_ATTR io_puts(const char *s) {
   }
   return 0;
 }
-
-#ifdef AVR
-int ICACHE_FLASH_ATTR io_puts_P(const char *s) {
-	for(;;) {
-		char c = pgm_read_byte(s++);
-		if (c == '\0')
-		break;
-		io_putc(c);
-	}
-	return 0;
-}
-#endif
-
-#ifdef AVR
-int ICACHE_FLASH_ATTR
-io_printf(const char *fmt, ...)
-{
-#if 1
-	  va_list argp;
-	  int result = -1;
-
-	  if (io_printf_fun != NULL) {
-	  va_start(argp, fmt);
-	  result = io_printf_fun(fmt, argp);
-	  va_end(argp);
-	  }
-	  return result;
-#elif 0
-  int result;
-  char *buf;
-  size_t buf_size;
-
-  buf_size = MAX(90, MIN(40, strlen(fmt) * 2));
-  buf = __builtin_alloca(buf_size);
-
-  postcond(40 <=  buf_size && buf_size <= 90);
-
-  if (!buf)
-    return -1;
-
-  va_list argp;
-  va_start(argp, fmt);
-  result = vsnprintf(buf, buf_size, fmt, argp);
-  va_end(argp);
-  if (result > 0) {
-    io_puts(buf);
-  }
-
-  return result;
-#else
-  return -1;
-#endif
-}
-#endif
 
 void ICACHE_FLASH_ATTR
 io_putx8(uint8_t n) {

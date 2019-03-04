@@ -12,7 +12,7 @@
 #include "cli_imp.h"
 
 
-const char help_parmMcu[] PROGMEM =
+const char help_parmMcu[]  =
 "print=(rtc|cu|reset-info)\n"
 #if ENABLE_SPIFFS
     "spiffs=(format|test)\n"
@@ -61,7 +61,7 @@ process_parmMcu(clpar p[], int len) {
         spiffs_test();
       }
 #endif
-#ifndef MCU_ATMEGA328
+
     } else if (strcmp(key, "tm") == 0) {
 
       if (strlen(val) == 2) {
@@ -103,7 +103,6 @@ process_parmMcu(clpar p[], int len) {
 
     } else if (strcmp(key, "cs") == 0) {
       print_shutter_positions();
-#endif /* not MCU_ATMEGA328 */
 #ifdef CONFIG_GPIO_SIZE
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
@@ -156,11 +155,11 @@ process_parmMcu(clpar p[], int len) {
       }
 
     } else if (strcmp(key, "version") == 0) {
-	static const char mcu_type[] PROGMEM = MCU_TYPE;
-	static const char firmware_version[] PROGMEM = APP_VERSION;
+	static const char mcu_type[]  = MCU_TYPE;
+	static const char firmware_version[]  = APP_VERSION;
 
 	if (strcmp(val, "full") == 0) {
-	  io_puts(mcuSep), io_puts(key), io_puts("="), io_puts_P(mcu_type), io_puts(","), io_puts_P(firmware_version), io_puts(", "),
+	  io_puts(mcuSep), io_puts(key), io_puts("="), io_puts(mcu_type), io_puts(","), io_puts(firmware_version), io_puts(", "),
 	    io_puts(ISO_BUILD_TIME), (mcuSep = " ");
       }
 

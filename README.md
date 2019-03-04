@@ -6,9 +6,7 @@ Supported MCUs:
 
 * ESP32: works best
 * ESP8266: works, but has more bugs and less features
-* ATMEGA328P: much less features ... and still the current version no longer fits into its small flash-ROM. (See the Makefile variable ATMEGA328_CO of the binary project for the last working git tag. The binary image there is built with it and works)
-
-
+* ATMEGA328P: Was supported until git hash 80043d2e0bd5bd94be9053207e2fcf5aea391c71 (compiles, but too big) and e29af9767c6492f66b1fe99637737d14fd82d5b9 (compiles and runs).
 
 #### This project is Experimental Software. It may contain bugs and errors. Use at your own risk.
 

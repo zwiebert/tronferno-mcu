@@ -5,15 +5,13 @@
 #include "main/timer_data_fs.h"
 
 
-#define APP_VERSION "0.5.1"
+#define APP_VERSION "0.6.1"
 
 // ESP8266 configuration
 #if defined MCU_ESP8266
 #include "esp8266/user_config.h"
 #elif defined MCU_ESP32
 #include "esp32/main/user_config.h"
-#elif defined  MCU_ATMEGA328
-#include "atmega328/user_config.h"
 #endif
 
 #define ENABLE_SET_ENDPOS 1

@@ -19,7 +19,7 @@
 const char pin_state_args[] = "dipo ?01t";
 #endif
 
-const char help_parmConfig[] PROGMEM =
+const char help_parmConfig[]  =
     "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
     "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID using connected RF receiver\n"
     "rtc=(ISO_TIME|?)   set local time with this (or use NTP). example: config rtc=2017-12-31T23:59:59;\n"

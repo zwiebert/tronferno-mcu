@@ -239,9 +239,9 @@ timerString2bcd(const char *src, uint8_t *dst, uint16_t size_dst) {
 
 int process_parmHelp(clpar p[], int len);
 
-const char help_None[] PROGMEM = "none";
+const char help_None[]  = "none";
 
-const char help_parmHelp[] PROGMEM =
+const char help_parmHelp[]  =
 "type 'help command;'  or 'help all;'\ncommands are: ";
 
 struct {
@@ -291,14 +291,14 @@ int ICACHE_FLASH_ATTR
 process_parmHelp(clpar p[], int len) {
   int i;
 
-  static const char usage[] PROGMEM = "syntax: command option=value ...;\n"
+  static const char usage[]  = "syntax: command option=value ...;\n"
       "commands are: ";
 
   io_putlf();
 
   // print help for help;
   if (len == 1) {
-    io_puts_P(help_parmHelp);
+    io_puts(help_parmHelp);
     for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
       io_puts(parm_handlers[i].parm), io_puts(", ");
     }
@@ -313,7 +313,7 @@ process_parmHelp(clpar p[], int len) {
     bool keyProcessed = false;
 
     if (strcmp(key, "all") == 0) {
-      io_puts_P(usage);
+      io_puts(usage);
       for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
         io_puts(parm_handlers[i].parm), io_puts(", ");
       }
@@ -321,14 +321,14 @@ process_parmHelp(clpar p[], int len) {
 
       for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
         io_puts(parm_handlers[i].parm), io_puts(" options:\n");
-        io_puts_P(parm_handlers[i].help), io_putlf();
+        io_puts(parm_handlers[i].help), io_putlf();
       }
 
     } else {
 
       for (k = 0; k < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++k) {
         if (strcmp(parm_handlers[k].parm, key) == 0) {
-          io_puts_P(parm_handlers[k].help), io_putlf();
+          io_puts(parm_handlers[k].help), io_putlf();
           keyProcessed = true;
           break;
         }

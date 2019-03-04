@@ -39,10 +39,7 @@ typedef enum { RTC_SRC_NONE, RTC_SRC_NTP, RTC_SRC_CLI } rtc_time_source_t;
 
 bool ntp_set_system_time(void);
 
-
-#ifdef AVR
-#define rtc_tick() system_tick()
-#elif POSIX_TIME
+#if POSIX_TIME
 #define rtc_tick() do { ++run_time_secs; } while (0)
 #else
 extern volatile time_t __system_time;
@@ -51,7 +48,6 @@ extern volatile time_t __system_time;
 
 void rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t source);
 rtc_time_t rtc_time(void);
-
 
 extern rtc_time_source_t rtc_last_time_source;
 

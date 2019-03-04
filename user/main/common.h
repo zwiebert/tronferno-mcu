@@ -16,11 +16,6 @@
 #define IRAM_ATTR
 #endif
 
-#ifdef MCU_ATMEGA328
-#include <avr/pgmspace.h>
-#else
-#define PROGMEM
-#endif
 ////////////////////////
 
 #include <stdint.h>

@@ -28,7 +28,7 @@ static uint8_t pras_g, pras_m, pras_c;
 #define PRAS_TIMEOUT 15
 
 
-const char help_parmPair[] PROGMEM =
+const char help_parmPair[]  =
   "a=(?|ID) 0  controller to pair. '?' starts auto-scan\n"
   "g=[0-7]   0  group number\n"
   "m=[0-7]   0  group member number\n"

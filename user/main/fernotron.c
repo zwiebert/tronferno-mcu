@@ -86,35 +86,35 @@ print_startup_info(void) {
 #define cfg "config "
 #define slf ";\n"
 
-static const char msg_slf[] PROGMEM = ";\n";
+static const char msg_slf[]  = ";\n";
 
-static const char msg_starting[] PROGMEM = "\n\n" "Tronferno-MCU starting ...\n" "build-date: " __DATE__ " " __TIME__ "\n\n";
-static const char msg_hint[] PROGMEM = "\n(hint: type help; to get a command list)\n";
+static const char msg_starting[]  = "\n\n" "Tronferno-MCU starting ...\n" "build-date: " __DATE__ " " __TIME__ "\n\n";
+static const char msg_hint[]  = "\n(hint: type help; to get a command list)\n";
 
-static const char msg_cu[] PROGMEM = cfg "cu=";
-static const char msg_baud[] PROGMEM = " baud=";
+static const char msg_cu[]  = cfg "cu=";
+static const char msg_baud[]  = " baud=";
 
-static const char msg_longitude[] PROGMEM = cfg "longitude=";
-static const char msg_latitude[] PROGMEM = " latitude=";
-static const char msg_timezone[] PROGMEM = " time-zone=";
+static const char msg_longitude[]  = cfg "longitude=";
+static const char msg_latitude[]  = " latitude=";
+static const char msg_timezone[]  = " time-zone=";
 
   if (C.app_verboseOutput >= vrbNone) {
-    io_puts_P(msg_starting);
-    io_puts_P(msg_cu), io_print_hex_32(C.fer_centralUnitID, false),
-    io_puts_P(msg_baud), io_print_dec_32(C.mcu_serialBaud, false), io_puts_P(msg_slf);
+    io_puts(msg_starting);
+    io_puts(msg_cu), io_print_hex_32(C.fer_centralUnitID, false),
+    io_puts(msg_baud), io_print_dec_32(C.mcu_serialBaud, false), io_puts(msg_slf);
 
-    io_puts_P(msg_longitude), io_print_float(C.geo_longitude, 5),
-    io_puts_P(msg_latitude), io_print_float(C.geo_latitude, 5),
-    io_puts_P(msg_timezone),io_print_float(C.geo_timezone, 2),
+    io_puts(msg_longitude), io_print_float(C.geo_longitude, 5),
+    io_puts(msg_latitude), io_print_float(C.geo_latitude, 5),
+    io_puts(msg_timezone),io_print_float(C.geo_timezone, 2),
 #if  POSIX_TIME
         io_puts(" tz="), io_puts(C.geo_tz),
 #endif
-        io_puts_P(msg_slf);
+        io_puts(msg_slf);
 
 #ifdef USE_WLAN
-    io_puts(cfg "wlan-ssid=\""), io_puts(C.wifi_SSID), io_puts("\" wlan-password="), io_puts((C.wifi_password[0] == '\0') ? "\"\""slf : "\"***********\"" slf);
+    io_puts(cfg "wlan-ssid=\""), io_puts(C.wifi_SSID), io_putlf();
 #endif
-    io_puts_P(msg_hint);
+    io_puts(msg_hint);
   }
 }
 

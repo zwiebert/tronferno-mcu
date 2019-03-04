@@ -48,7 +48,7 @@ int asc2wday(const char *s) {
 #define FLAG_TRUE 1
 #define HAS_FLAG(v) (v >= 0)
 
-const char help_parmTimer[] PROGMEM =
+const char help_parmTimer[]  =
     "daily=T        enables daily timer. T is up/down like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00\n"
     "weekly=TTTTTTT enables weekly timer. T like with 'daily' or '+' to copy the T on the left. (weekly=0730-++++0900-+)\n"
     "astro[=N]      enables astro automatic. N is the offset to civil dusk in minutes. Can be postive or negative.\n"
