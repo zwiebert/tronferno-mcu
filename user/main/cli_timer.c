@@ -10,14 +10,10 @@
 #include "set_endpos.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
-
-
-#if defined  MCU_ESP8266 || defined MCU_ESP32
 #include "timer_data.h"
+
+
 #define ENABLE_RSTD 1
-#else
-#define ENABLE_RSTD 0
-#endif
 
 #define ENABLE_EXPERT 0 // work in progress
 #define ENABLE_RESTART 1 // allow software reset
@@ -61,7 +57,15 @@ const char help_parmTimer[] PROGMEM =
     "rtc-only       don't change timers. only update internal real time clock\n"
     "rtc=ISO_TIME   you may provide your own time instead of current MCU/NTP time to update internal clock\n"
     "a, g and m:    like in send command\n"
-    "rs=(0|1|2)     read back saved timer data. if set to 2, return any data matching g and m e.g. m=0 (any member) instead of m=2\n";
+    "f=X...     one or more flag characters to enable or disable things:\n"
+    "  r   read back saved timer data for g/m.\n"
+    "  R   like 'r' but returns matching group timers\n"
+    "  m   modify existing timer data\n"
+    "  a   disable automatic movement (no timers, sun-auto)\n"
+    "  A   enable automatic movement (restore timers, sun-auto)\n"
+    ;
+
+//obsolete    "rs=(0|1|2)     read back saved timer data. if set to 2, return any data matching g and m e.g. m=0 (any member) instead of m=2\n";
 
 int ICACHE_FLASH_ATTR
 process_parmTimer(clpar p[], int len) {
@@ -77,13 +81,14 @@ process_parmTimer(clpar p[], int len) {
   uint8_t fpr0_flags = 0, fpr0_mask = 0;
   int8_t flag_rtc_only = FLAG_NONE;
   time_t timer = time(NULL);
+  bool f_modify = false;
+  bool f_disableAuto = false;
+  bool f_enableAuto = false;
 
-#if ENABLE_RSTD
   const char *weeklyVal = 0, *dailyVal = 0;
   uint8_t mn = 0;
   uint8_t rs = 0;
   timer_data_t td = td_initializer;
-#endif
   // init data
   for (i = 0; i + 1 < sizeof(weekly_data) / sizeof(weekly_data[0]); i += 2) {
     weekly_data[i] = 0xff;
@@ -101,16 +106,10 @@ process_parmTimer(clpar p[], int len) {
       return -1;
     } else if (strcmp(key, timer_keys[TIMER_KEY_WEEKLY]) == 0) {
       NODEFAULT();
-      has_weekly = timerString2bcd(val, weekly_data, sizeof weekly_data);
-#if ENABLE_RSTD
-      weeklyVal = val;
-#endif
+      has_weekly = timerString2bcd((weeklyVal = val), weekly_data, sizeof weekly_data);
     } else if (strcmp(key, timer_keys[TIMER_KEY_DAILY]) == 0) {
       NODEFAULT();
-      has_daily = timerString2bcd(val, daily_data, sizeof daily_data);
-#if ENABLE_RSTD
-      dailyVal = val;
-#endif
+      has_daily = timerString2bcd((dailyVal = val), daily_data, sizeof daily_data);
     } else if (strcmp(key, timer_keys[TIMER_KEY_ASTRO]) == 0) {
       astro_offset = val ? atoi(val) : 0;
       has_astro = true;
@@ -143,19 +142,27 @@ process_parmTimer(clpar p[], int len) {
     } else if (strcmp(key, "m") == 0) {
       if (!asc2memb(val, &memb))
         return reply_failure();
-#if ENABLE_RSTD
+
       mn = memb ? (memb - 7) : 0;
-#endif
     } else if (strcmp(key, "rtc") == 0) {
       time_t t = time_iso2time(val);
       if (t >= 0) {
         timer = t;
       }
-#if ENABLE_RSTD
-    } else if (strcmp(key, "rs") == 0) {
+    } else if (strcmp(key, "rs") == 0) { // obsolete
       NODEFAULT();
       rs = atoi(val);
-#endif
+    } else if (strcmp(key, "f") == 0) {
+      const char *p = val;
+      NODEFAULT();
+      while (*p)
+        switch (*p++) {
+        case 'r': rs = 1; break;
+        case 'R': rs = 2; break;
+        case 'm': f_modify = true; break;
+        case 'a': f_disableAuto = true; break;
+        case 'A': f_enableAuto = true; break;
+      }
 #if ENABLE_TIMER_WDAY_KEYS
     } else if ((wday = asc2wday(key)) >= 0) {
       NODEFAULTS();
@@ -171,7 +178,6 @@ process_parmTimer(clpar p[], int len) {
     }
   }
 
-#if ENABLE_RSTD
   if (rs) {
     uint8_t g = group, m = mn;
 
@@ -202,9 +208,35 @@ process_parmTimer(clpar p[], int len) {
       io_puts("none\n");
     }
     return 0;
-  }
-#endif
 
+    // use (parts of) previously saved data
+  } else if (f_modify || f_enableAuto) {
+    uint8_t g = group, m = mn;
+
+    if (read_timer_data(&td, &g, &m, true)) {
+      if (!has_daily && td_is_daily(&td)) {
+        has_daily = timerString2bcd(dailyVal = td.daily, daily_data, sizeof daily_data);
+      }
+      if (!has_weekly && td_is_weekly(&td)) {
+        has_weekly = timerString2bcd(weeklyVal = td.weekly, weekly_data, sizeof weekly_data);
+      }
+      if (!has_astro && td_is_astro(&td)) {
+        astro_offset = td.astro;
+        has_astro = true;
+      }
+      if (0 == GET_BIT(fpr0_mask, flag_Random)) {
+        PUT_BIT(fpr0_flags, flag_Random, td_is_random(&td));
+        SET_BIT(fpr0_mask, flag_Random);
+      }
+
+      if (0 == GET_BIT(fpr0_mask, flag_SunAuto)) {
+        PUT_BIT(fpr0_flags, flag_SunAuto, td_is_sun_auto(&td));
+        SET_BIT(fpr0_mask, flag_SunAuto);
+      }
+    }
+  }
+
+  // use fsb other than default
   if (addr != 0) {
     fsb = get_sender_by_addr(addr);
     if (!fsb) {
@@ -216,6 +248,7 @@ process_parmTimer(clpar p[], int len) {
     }
   }
 
+  // g, m
   if (FSB_ADDR_IS_CENTRAL(fsb)) {
     FSB_PUT_GRP(fsb, group);
     FSB_PUT_MEMB(fsb, memb);
@@ -224,26 +257,28 @@ process_parmTimer(clpar p[], int len) {
   FSB_PUT_CMD(fsb, fer_cmd_Program);
   FSB_TOGGLE(fsb);
 
+  // copy data to send buffer
   if (recv_lockBuffer(true)) {
     fmsg_init_data(txmsg);
     if (flag_rtc_only == FLAG_TRUE) {
       fmsg_write_rtc(txmsg, timer, true);
       fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask); // the flags are ignored for RTC-only frames, even for non-broadcast
     } else {
-      if (has_weekly)
+      if (has_weekly && !f_disableAuto)
         fmsg_write_wtimer(txmsg, weekly_data);
-      if (has_daily)
+      if (has_daily && !f_disableAuto)
         fmsg_write_dtimer(txmsg, daily_data);
-      if (has_astro)
+      if (has_astro && !f_disableAuto)
         fmsg_write_astro(txmsg, astro_offset);
       fmsg_write_rtc(txmsg, timer, false);
-      fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask);
+      if (!f_disableAuto)
+        fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask);
       fmsg_write_lastline(txmsg, fsb);
     }
 
+    // save timer data
     if (reply(fer_send_msg(fsb, (flag_rtc_only == FLAG_TRUE) ? MSG_TYPE_RTC : MSG_TYPE_TIMER))) {
-#if ENABLE_RSTD
-      if (FSB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE) {  // FIXME: or better test for default cu?
+      if (!f_disableAuto && FSB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE) {  // FIXME: or better test for default cu?
         if (has_astro) {
           td.astro = astro_offset;
         }
@@ -263,7 +298,6 @@ process_parmTimer(clpar p[], int len) {
           print_enr();
         }
       }
-#endif
     }
 
     recv_lockBuffer(false);

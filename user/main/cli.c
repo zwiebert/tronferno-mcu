@@ -17,12 +17,7 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 
-#if defined  MCU_ESP8266 || defined MCU_ESP32
 #include "timer_data.h"
-#define ENABLE_RSTD 1
-#else
-#define ENABLE_RSTD 0
-#endif
 
 #define ENABLE_RESTART 1 // allow software reset
 #define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
