@@ -116,8 +116,10 @@ void ICACHE_FLASH_ATTR fmsg_print_as_cmdline(const fer_msg *msg, fmsg_type t) {
   uint32_t id = FSB_GET_DEVID(fsb);
 
   const char *cs = NULL;
+  const char *fdt = NULL;
 
-  if (FSB_ADDR_IS_PLAIN(fsb) || FSB_ADDR_IS_CENTRAL(fsb)) {
+  if ((FSB_ADDR_IS_PLAIN(fsb) && (fdt = "plain"))
+      || (FSB_ADDR_IS_CENTRAL(fsb) && (fdt = "central"))) {
     switch (c) {
     case fer_cmd_DOWN:
       cs = "down";
@@ -132,7 +134,7 @@ void ICACHE_FLASH_ATTR fmsg_print_as_cmdline(const fer_msg *msg, fmsg_type t) {
       cs = NULL;
       break;
     }
-  } else if (FSB_ADDR_IS_SUNSENS(fsb)) {
+  } else if (FSB_ADDR_IS_SUNSENS(fsb) && (fdt = "sun")) {
     switch (c) {
     case fer_cmd_SunDOWN:
       cs = "sun-down";
@@ -151,7 +153,8 @@ void ICACHE_FLASH_ATTR fmsg_print_as_cmdline(const fer_msg *msg, fmsg_type t) {
   if (!cs)
     return; // unsupported command
 
-  io_puts("a="), io_print_hex(id, false);
+  io_puts("type="), io_puts(fdt),
+  io_puts(" a="), io_print_hex(id, false);
   if (FSB_ADDR_IS_CENTRAL(fsb)) {
     uint8_t g = FSB_GET_GRP(fsb);
     uint8_t m = FSB_GET_MEMB(fsb);
