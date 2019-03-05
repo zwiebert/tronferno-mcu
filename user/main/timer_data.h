@@ -22,8 +22,16 @@ typedef struct {
 #define td_is_astro(td) ((td)->astro < 20000)
 #define td_is_daily(td) ((td)->daily[0] != '\0')
 #define td_is_weekly(td) ((td)->weekly[0] != '\0')
-#define td_is_random(td) ((td)->bf & (1 << flag_Random))
-#define td_is_sun_auto(td) ((td)->bf & (1 << flag_SunAuto))
+
+#define td_is_random(td)        (GET_BIT((td)->bf, flag_Random))
+#define td_put_random(td, on)   (PUT_BIT((td)->bf, flag_Random, (on)))
+
+#define td_is_sun_auto(td)      (GET_BIT((td)->bf, flag_SunAuto))
+#define td_put_sun_auto(td, on) (PUT_BIT((td)->bf, flag_SunAuto, (on)))
+
+// FIXME: don't misuse bf for this
+#define td_is_manual(td)      (GET_BIT((td)->bf, flag_4))
+#define td_put_manual(td, on) (PUT_BIT((td)->bf, flag_4, (on)))
 
 
 // save and read timer data on flash memory

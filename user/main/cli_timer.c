@@ -57,12 +57,17 @@ const char help_parmTimer[]  =
     "rtc-only       don't change timers. only update internal real time clock\n"
     "rtc=ISO_TIME   you may provide your own time instead of current MCU/NTP time to update internal clock\n"
     "a, g and m:    like in send command\n"
-    "f=X...     one or more flag characters to enable or disable things:\n"
-    "  r   read back saved timer data for g/m.\n"
-    "  R   like 'r' but returns matching group timers\n"
-    "  m   modify existing timer data\n"
-    "  a   disable automatic movement (no timers, sun-auto)\n"
-    "  A   enable automatic movement (restore timers, sun-auto)\n"
+    "f=X...     one or more flag characters to enable or disable things (experimental. may still change):\n"
+    "  i   read back saved timer data for g/m.\n"
+    "  I   like 'i' but returns matching group timers\n"
+    "  k   keep and use existing saved timer data if not overwritten by options\n"
+    "  u   don't actually send data now\n"
+    "  a   disable automatic movement (no timers, sun-auto). Usually used with 'm'\n"
+    "  A   enable automatic movement (restore timers, sun-auto). Usually used with 'm'\n"
+    "  s   disables sun automatic\n"
+    "  S   enables sun automatic\n"
+    "  r   disables random timer\n"
+    "  R   enables random timer\n"
     ;
 
 //obsolete    "rs=(0|1|2)     read back saved timer data. if set to 2, return any data matching g and m e.g. m=0 (any member) instead of m=2\n";
@@ -84,6 +89,10 @@ process_parmTimer(clpar p[], int len) {
   bool f_modify = false;
   bool f_disableAuto = false;
   bool f_enableAuto = false;
+  bool f_no_send = false;
+  bool send_ok = false;
+
+  static gm_bitmask_t manual_bits;
 
   const char *weeklyVal = 0, *dailyVal = 0;
   uint8_t mn = 0;
@@ -116,20 +125,14 @@ process_parmTimer(clpar p[], int len) {
     } else if (strcmp(key, timer_keys[TIMER_KEY_FLAG_RANDOM]) == 0) {
       int flag = asc2bool(val);
       if (flag >= 0) {
-        fpr0_mask |= (1 << flag_Random);
-        if (flag)
-        fpr0_flags |= (1 << flag_Random);
-        else
-        fpr0_flags &= ~(1 << flag_Random);
+        SET_BIT(fpr0_mask, flag_Random);
+        PUT_BIT(fpr0_flags, flag_Random, flag);
       }
     } else if (strcmp(key, timer_keys[TIMER_KEY_FLAG_SUN_AUTO]) == 0) {
       int flag = asc2bool(val);
       if (flag >= 0) {
-        fpr0_mask |= (1 << flag_SunAuto);
-        if (flag)
-        fpr0_flags |= (1 << flag_SunAuto);
-        else
-        fpr0_flags &= ~(1 << flag_SunAuto);
+        SET_BIT(fpr0_mask, flag_SunAuto);
+        PUT_BIT(fpr0_flags, flag_SunAuto, flag);
       }
 
     } else if (strcmp(key, timer_keys[TIMER_KEY_RTC_ONLY]) == 0) {
@@ -155,13 +158,19 @@ process_parmTimer(clpar p[], int len) {
     } else if (strcmp(key, "f") == 0) {
       const char *p = val;
       NODEFAULT();
-      while (*p)
+      while (*p) {
         switch (*p++) {
-        case 'r': rs = 1; break;
-        case 'R': rs = 2; break;
-        case 'm': f_modify = true; break;
-        case 'a': f_disableAuto = true; break;
-        case 'A': f_enableAuto = true; break;
+          case 'i': rs = 1; break;
+          case 'I': rs = 2; break;
+          case 'k': f_modify = true; break;
+          case 'a': f_disableAuto = true; break;
+          case 'A': f_enableAuto = true; break;
+          case 'r':
+          case 'R': SET_BIT(fpr0_mask, flag_Random); PUT_BIT(fpr0_flags, flag_Random, p[-1] == 'R'); break;
+          case 's':
+          case 'S': SET_BIT(fpr0_mask, flag_SunAuto); PUT_BIT(fpr0_flags, flag_SunAuto, p[-1] == 'S'); break;
+          case 'u': f_no_send = true; break;
+        }
       }
 #if ENABLE_TIMER_WDAY_KEYS
     } else if ((wday = asc2wday(key)) >= 0) {
@@ -178,6 +187,19 @@ process_parmTimer(clpar p[], int len) {
     }
   }
 
+  bool is_timer_frame = (FSB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE);
+  bool f_manual = false;
+
+  if (is_timer_frame) {
+    read_gm_bitmask("MANU", &manual_bits, 1);
+    if (f_enableAuto || f_disableAuto) {
+      uint8_t g = group, m = mn;
+      PUT_BIT(manual_bits[g], m, f_disableAuto);
+      save_gm_bitmask("MANU", &manual_bits, 1);
+    }
+    f_manual = GET_BIT(manual_bits[group], mn);
+  }
+
   if (rs) {
     uint8_t g = group, m = mn;
 
@@ -186,6 +208,9 @@ process_parmTimer(clpar p[], int len) {
       io_puts("timer");
       io_puts(" g="), io_putd(g);
       io_puts(" m="), io_putd(m);
+      if (f_manual) {
+        io_puts(" f=a");
+      }
       if (td_is_daily(&td)) {
         io_puts(" daily="), io_puts(td.daily);
       }
@@ -213,6 +238,7 @@ process_parmTimer(clpar p[], int len) {
   } else if (f_modify || f_enableAuto) {
     uint8_t g = group, m = mn;
 
+    // fill in missing parts from stored timer data
     if (read_timer_data(&td, &g, &m, true)) {
       if (!has_daily && td_is_daily(&td)) {
         has_daily = timerString2bcd(dailyVal = td.daily, daily_data, sizeof daily_data);
@@ -235,6 +261,11 @@ process_parmTimer(clpar p[], int len) {
       }
     }
   }
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // create send buffer from all data
 
   // use fsb other than default
   if (addr != 0) {
@@ -264,41 +295,47 @@ process_parmTimer(clpar p[], int len) {
       fmsg_write_rtc(txmsg, timer, true);
       fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask); // the flags are ignored for RTC-only frames, even for non-broadcast
     } else {
-      if (has_weekly && !f_disableAuto)
+      if (has_weekly && !f_manual)
         fmsg_write_wtimer(txmsg, weekly_data);
-      if (has_daily && !f_disableAuto)
+      if (has_daily && !f_manual)
         fmsg_write_dtimer(txmsg, daily_data);
-      if (has_astro && !f_disableAuto)
+      if (has_astro && !f_manual)
         fmsg_write_astro(txmsg, astro_offset);
       fmsg_write_rtc(txmsg, timer, false);
-      if (!f_disableAuto)
+      if (!f_manual)
         fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask);
       fmsg_write_lastline(txmsg, fsb);
     }
 
+    // send buffer
+    if (!f_no_send) {
+      send_ok = fer_send_msg(fsb, (flag_rtc_only == FLAG_TRUE) ? MSG_TYPE_RTC : MSG_TYPE_TIMER);
+      reply(send_ok);
+    }
+
+
     // save timer data
-    if (reply(fer_send_msg(fsb, (flag_rtc_only == FLAG_TRUE) ? MSG_TYPE_RTC : MSG_TYPE_TIMER))) {
-      if (!f_disableAuto && FSB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE) {  // FIXME: or better test for default cu?
-        if (has_astro) {
-          td.astro = astro_offset;
-        }
-        td.bf = fpr0_flags;
-        if (has_weekly) {
-          strncpy(td.weekly, weeklyVal, sizeof(td.weekly) - 1);
-        }
+    if (is_timer_frame){  // FIXME: or better test for default cu?
+      if (has_astro) {
+        td.astro = astro_offset;
+      }
+      td.bf = fpr0_flags;
+      if (has_weekly) {
+        strncpy(td.weekly, weeklyVal, sizeof(td.weekly) - 1);
+      }
 
-        if (has_daily) {
-          strncpy(td.daily, dailyVal, sizeof(td.daily) - 1);
-        }
+      if (has_daily) {
+        strncpy(td.daily, dailyVal, sizeof(td.daily) - 1);
+      }
 
-        if (save_timer_data(&td, group, mn)) {
-          reply_message("rs", "saved");
-        } else {
-          reply_message("bug", "rs not saved");
-          print_enr();
-        }
+      if (save_timer_data(&td, group, mn)) {
+        reply_message("rs", "saved");
+      } else {
+        reply_message("bug", "rs not saved");
+        print_enr();
       }
     }
+
 
     recv_lockBuffer(false);
   }

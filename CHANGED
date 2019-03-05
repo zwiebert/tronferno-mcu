@@ -1,5 +1,8 @@
 #tronferno-mcu history
-
+- 2019-03-04
+  -feature: more timer flags
+            * enable/disable sun-auto, random
+  -feature: persistent auto/manual state for each g/m (only esp32 for now. needs work to handle entire groups)
 - 2019-03-04
   -feature: new timer option f (mens flags) to allow:
             * modify timers
