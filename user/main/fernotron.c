@@ -83,37 +83,11 @@ loop(void) {
 
 void ICACHE_FLASH_ATTR
 print_startup_info(void) {
-#define cfg "config "
-#define slf ";\n"
-
-static const char msg_slf[]  = ";\n";
-
-static const char msg_starting[]  = "\n\n" "Tronferno-MCU starting ...\n" "build-date: " __DATE__ " " __TIME__ "\n\n";
-static const char msg_hint[]  = "\n(hint: type help; to get a command list)\n";
-
-static const char msg_cu[]  = cfg "cu=";
-static const char msg_baud[]  = " baud=";
-
-static const char msg_longitude[]  = cfg "longitude=";
-static const char msg_latitude[]  = " latitude=";
-static const char msg_timezone[]  = " time-zone=";
+  static const char msg_starting[] = "\n\n" "tf: info: start: tronferno-mcu\n" "tf: info: build-date: " __DATE__ " " __TIME__ "\n";
+  static const char msg_hint[] = "tf: hint: type 'help;' to get a command list\n";
 
   if (C.app_verboseOutput >= vrbNone) {
     io_puts(msg_starting);
-    io_puts(msg_cu), io_print_hex_32(C.fer_centralUnitID, false),
-    io_puts(msg_baud), io_print_dec_32(C.mcu_serialBaud, false), io_puts(msg_slf);
-
-    io_puts(msg_longitude), io_print_float(C.geo_longitude, 5),
-    io_puts(msg_latitude), io_print_float(C.geo_latitude, 5),
-    io_puts(msg_timezone),io_print_float(C.geo_timezone, 2),
-#if  POSIX_TIME
-        io_puts(" tz="), io_puts(C.geo_tz),
-#endif
-        io_puts(msg_slf);
-
-#ifdef USE_WLAN
-    io_puts(cfg "wlan-ssid=\""), io_puts(C.wifi_SSID), io_putlf();
-#endif
     io_puts(msg_hint);
   }
 }
