@@ -62,8 +62,8 @@ const char help_parmTimer[]  =
     "  I   like 'i' but returns matching group timers\n"
     "  k   keep and use existing saved timer data if not overwritten by options\n"
     "  u   don't actually send data now\n"
-    "  a   disable automatic movement (no timers, sun-auto). Usually used with 'm'\n"
-    "  A   enable automatic movement (restore timers, sun-auto). Usually used with 'm'\n"
+    "  M   disable automatic movement (no timers, sun-auto). Usually used with 'm'\n"
+    "  m   enable automatic movement (restore timers, sun-auto). Usually used with 'm'\n"
     "  s   disables sun automatic\n"
     "  S   enables sun automatic\n"
     "  r   disables random timer\n"
@@ -91,6 +91,7 @@ process_parmTimer(clpar p[], int len) {
   bool f_enableAuto = false;
   bool f_no_send = false;
   bool send_ok = false;
+  char buf[20];
 
   static gm_bitmask_t manual_bits;
 
@@ -163,8 +164,8 @@ process_parmTimer(clpar p[], int len) {
           case 'i': rs = 1; break;
           case 'I': rs = 2; break;
           case 'k': f_modify = true; break;
-          case 'a': f_disableAuto = true; break;
-          case 'A': f_enableAuto = true; break;
+          case 'M': f_disableAuto = true; break;
+          case 'm': f_enableAuto = true; break;
           case 'r':
           case 'R': SET_BIT(fpr0_mask, flag_Random); PUT_BIT(fpr0_flags, flag_Random, p[-1] == 'R'); break;
           case 's':
@@ -203,39 +204,45 @@ process_parmTimer(clpar p[], int len) {
   if (rs) {
     uint8_t g = group, m = mn;
 
-    reply_print("rs=data");
+    cli_out_timer_reply_entry(NULL, NULL, 1);
+
     if (read_timer_data(&td, &g, &m, rs == 2)) {
-      io_puts("timer");
-      io_puts(" g="), io_putd(g);
-      io_puts(" m="), io_putd(m);
-      if (f_manual) {
-        io_puts(" f=a");
-      }
+
+      cli_out_timer_reply_entry("g", itoa(g, buf, 10), 0);
+      cli_out_timer_reply_entry("m", itoa(m, buf, 10), 0);
+
+      char *p = buf;
+      *p++ = f_manual ? 'M' : 'm';
+      *p++ = td_is_random(&td) ? 'R' : 'r';
+      *p++ = td_is_sun_auto(&td) ? 'S' : 's';
+      *p++ = td_is_astro(&td) ? 'A' : 'a';
+      *p++ = td_is_daily(&td) ? 'D' : 'd';
+      *p++ = td_is_weekly(&td) ? 'W' : 'w';
+      *p++ = '\0';
+      cli_out_timer_reply_entry("f", buf, 0);
+
       if (td_is_daily(&td)) {
-        io_puts(" daily="), io_puts(td.daily);
+        cli_out_timer_reply_entry("daily", td.daily, 0);
       }
       if (td_is_weekly(&td)) {
-        io_puts(" weekly="), io_puts(td.weekly);
+        cli_out_timer_reply_entry("weekly", td.weekly, 0);
       }
       if (td_is_astro(&td)) {
-        io_puts(" astro="), io_putd(td.astro);
+        cli_out_timer_reply_entry("astro", itoa(td.astro, buf, 10), 0);
       }
       if (td_is_random(&td)) {
-        io_puts(" random=1");
+        cli_out_timer_reply_entry("random", "1", 0);
       }
       if (td_is_sun_auto(&td)) {
-        io_puts(" sun-auto=1");
+        cli_out_timer_reply_entry("sun-auto", "1", 0);
       }
-
-      io_puts(";\n");
-      reply_success();
-    } else {
-      io_puts("none\n");
     }
-    return 0;
+    cli_out_timer_reply_entry(NULL, NULL, -1);
 
-    // use (parts of) previously saved data
-  } else if (f_modify || f_enableAuto) {
+  }
+
+  // use (parts of) previously saved data
+   if (f_modify || f_enableAuto) {
     uint8_t g = group, m = mn;
 
     // fill in missing parts from stored timer data

@@ -27,6 +27,91 @@ fer_sender_basic default_sender;
 fer_sender_basic last_received_sender;
 uint16_t msgid;
 
+void ICACHE_FLASH_ATTR cli_out_top_tag(void) {
+    io_puts("tf: ");
+}
+
+void ICACHE_FLASH_ATTR cli_out_reply_tag(void) {
+  if (msgid) {
+    io_puts("reply="), io_putd(msgid), io_puts(": ");
+  } else {
+    io_puts("reply: ");
+  }
+}
+
+void ICACHE_FLASH_ATTR cli_out_timer_tag(void) {
+    io_puts("timer: ");
+}
+
+void ICACHE_FLASH_ATTR cli_out_config_tag(void) {
+    io_puts("config: ");
+}
+
+void ICACHE_FLASH_ATTR cli_out_send_tag(void) {
+    io_puts("send: ");
+}
+
+
+void ICACHE_FLASH_ATTR cli_out_start_timer_reply(void) {
+  cli_out_top_tag();
+  cli_out_reply_tag();
+  cli_out_timer_tag();
+}
+
+
+void ICACHE_FLASH_ATTR cli_out_start_config_reply(void) {
+  cli_out_top_tag();
+  cli_out_reply_tag();
+  cli_out_config_tag();
+}
+
+void ICACHE_FLASH_ATTR cli_out_start_config_bc(void) {
+  cli_out_top_tag();
+  //cli_out_reply_tag();
+  cli_out_config_tag();
+}
+
+typedef void (*void_fun_ptr)(void);
+const int OUT_MAX_LEN = 80;
+
+void ICACHE_FLASH_ATTR cli_out_entry(void_fun_ptr tag, const char *key, const char *val, int len) {
+  static int length;
+  if (len == -1) {
+    if (length) {
+      puts(";\n");
+      length = 0;
+    }
+  } else {
+    if (key)
+      len += strlen(key) + 1;
+    if (val)
+      len += strlen(val);
+
+    if ((length + len) > OUT_MAX_LEN && length > 0) {
+      io_puts(";\n");
+      length = 0;
+    }
+    if (length == 0) {
+      tag();
+    }
+    length += len;
+    if (key) {
+      io_putc(' '), io_puts(key), io_putc('=');
+    }
+    if (val) {
+      io_puts(val);
+    }
+  }
+}
+
+void ICACHE_FLASH_ATTR cli_out_timer_reply_entry(const char *key, const char *val, int len) {
+  cli_out_entry(cli_out_start_timer_reply, key, val, len);
+}
+
+void ICACHE_FLASH_ATTR cli_out_config_reply_entry(const char *key, const char *val, int len) {
+  cli_out_entry(cli_out_start_config_reply, key, val, len);
+}
+
 int ENR; // error number
 void ICACHE_FLASH_ATTR print_enr(void) {
   io_puts("enr: "), io_putd(ENR), io_putlf();
@@ -64,6 +149,9 @@ void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
 void ICACHE_FLASH_ATTR cli_msg_ready(void) {
   io_puts("\nready:\n");
 }
+
+
+
 
 
 

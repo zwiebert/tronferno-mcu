@@ -55,7 +55,7 @@ int ICACHE_FLASH_ATTR
 process_parmConfig(clpar p[], int len) {
   int arg_idx;
   int errors = 0;
-  const char *cfgSep = "config ";
+  char buf[30]; // buffer for number to string conversion
 
   bool pw_ok = strlen(C.app_configPassword) == 0;
 
@@ -85,9 +85,8 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (strcmp(key, "rtc") == 0) {
       if (*val == '?') {
-        char buf[20];
         if (rtc_get_by_string(buf)) {
-          io_puts(cfgSep), io_puts(key), io_puts("="), io_puts(buf), (cfgSep = " ");
+          cli_out_config_reply_entry(key, buf, 0);
         }
       } else {
         reply(val ? rtc_set_by_string(val) : false);
@@ -96,7 +95,7 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (strcmp(key, "cu") == 0) {
       if (*val == '?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_hex_32(C.fer_centralUnitID, false), (cfgSep = " ");
+        cli_out_config_reply_entry(key, ltoa(C.fer_centralUnitID, buf, 16), 0);
       } else if (strcmp(val, "auto") == 0) {
         cu_auto_set(60);
         io_puts("U: Press Stop on the Fernotron central unit (60 secs remaining)\n");
@@ -121,7 +120,7 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (strcmp(key, "baud") == 0) {
       if (*val == '?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_dec_32(C.mcu_serialBaud, false), (cfgSep = " ");
+        cli_out_config_reply_entry(key, ltoa(C.mcu_serialBaud, buf, 10), 0);
       } else {
         uint32_t baud = strtoul(val, NULL, 10);
         C.mcu_serialBaud = baud;
@@ -138,7 +137,8 @@ process_parmConfig(clpar p[], int len) {
         ++errors;
 
       } else if (*val == '?') {
-        io_puts(cfgSep), io_puts(key), io_putc('='), io_putc(pin_state_args[C.gpio[gpio_number]]), (cfgSep = " ");
+        buf[0] = pin_state_args[C.gpio[gpio_number]]; buf[1] = '\0';
+        cli_out_config_reply_entry(key, buf, 0);
 
       } else {
         const char *error = NULL;
@@ -184,7 +184,7 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (strcmp(key, "verbose") == 0) {
       if (*val == '?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_putd(C.app_verboseOutput), (cfgSep = " ");
+        cli_out_config_reply_entry(key, ltoa(C.app_verboseOutput, buf, 10), 0);
       } else {
         NODEFAULT();
         enum verbosity level = atoi(val);
@@ -196,7 +196,7 @@ process_parmConfig(clpar p[], int len) {
 #ifdef USE_WLAN
     } else if (strcmp(key, "wlan-ssid") == 0) {
       if (*val=='?') {
-        io_puts(cfgSep), io_puts(key), io_puts("=\""), io_puts(C.wifi_SSID), io_puts("\""), (cfgSep = " ");
+        cli_out_config_reply_entry(key, C.wifi_SSID, 0);
       } else {
         if (strlen(val) < sizeof (C.wifi_SSID)) {
           strcpy (C.wifi_SSID, val);
@@ -236,7 +236,7 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (strcmp(key, "longitude") == 0) {
       if (*val=='?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_longitude, 5), (cfgSep = " ");
+        cli_out_config_reply_entry(key, NULL, 8), io_print_float(C.geo_longitude, 5);
       } else {
         float longitude = stof(val);
         C.geo_longitude = longitude;
@@ -247,7 +247,7 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (strcmp(key, "latitude") == 0) {
       if (*val=='?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_latitude, 5), (cfgSep = " ");
+        cli_out_config_reply_entry(key, NULL, 8), io_print_float(C.geo_latitude, 5);
       } else {
         float latitude = stof(val);
         C.geo_latitude = latitude;
@@ -258,8 +258,7 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (strcmp(key, "time-zone") == 0) {
       if (*val=='?') {
-
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_print_float(C.geo_timezone, 2), (cfgSep = " ");
+        cli_out_config_reply_entry(key, NULL, 8), io_print_float(C.geo_timezone, 5);
       } else {
         C.geo_timezone = stof(val);
 
@@ -270,7 +269,7 @@ process_parmConfig(clpar p[], int len) {
 #if POSIX_TIME
     } else if (strcmp(key, "tz") == 0) {
       if (*val=='?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_puts(C.geo_tz), (cfgSep = " ");
+        cli_out_config_reply_entry(key, C.geo_tz, 0);
 
       } else {
         strncpy(C.geo_tz, val, sizeof (C.geo_tz) -1);
@@ -282,11 +281,12 @@ process_parmConfig(clpar p[], int len) {
     } else if (strcmp(key, "dst") == 0) {
 #if POSIX_TIME
       if (*val=='?') {
-        io_puts(cfgSep), io_puts("dst=0"), (cfgSep = " ");
+        cli_out_config_reply_entry(key, "0", 0);
       }
 #else
       if (*val=='?') {
-        io_puts(cfgSep), io_puts(key), io_puts("="), io_puts((C.geo_dST == dstEU ? "eu": (C.geo_dST == dstNone ? "0" : "1"))), (cfgSep = " ");
+        const char *dst = (C.geo_dST == dstEU ? "eu": (C.geo_dST == dstNone ? "0" : "1"));
+        cli_out_config_reply_entry(key, dst, 0);
       } else {
 
         if (strcmp(val, "eu") == 0) {
@@ -310,8 +310,8 @@ process_parmConfig(clpar p[], int len) {
     }
   }
 
-if (strcmp(cfgSep, " ") == 0)
-  io_puts(";\n");
+  cli_out_config_reply_entry(NULL, NULL, -1);
+
 
   reply(errors==0);
   return 0;

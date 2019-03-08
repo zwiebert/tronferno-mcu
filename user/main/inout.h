@@ -9,6 +9,9 @@
 #include <stdbool.h>
 #endif
 
+extern char *itoa(int val, char *s, int radix);
+extern char *ltoa(long val, char *s, int radix);
+
 extern int (*io_putc_fun)(char c);
 extern int (*io_getc_fun)(void);
 extern int (*io_printf_fun)(const char *fmt, ...);

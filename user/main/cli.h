@@ -23,5 +23,8 @@ extern fer_sender_basic senders[10];
 bool cu_auto_set(unsigned init_seconds);
 bool pair_auto_set(unsigned init_seconds);
 
+void cli_out_timer_reply_entry(const char *key, const char *val, int len);
+void cli_out_config_reply_entry(const char *key, const char *val, int len);
+
 #endif /* CLI_H_ */
 
