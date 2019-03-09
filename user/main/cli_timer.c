@@ -135,6 +135,8 @@ process_parmTimer(clpar p[], int len) {
     } else if (strcmp(key, "rs") == 0) { // obsolete
       NODEFAULT();
       rs = atoi(val);
+      f_no_send = true;
+      f_modify = true;
     } else if (strcmp(key, "f") == 0) {
       const char *p = val;
       NODEFAULT();
@@ -180,47 +182,6 @@ process_parmTimer(clpar p[], int len) {
     f_manual = GET_BIT(manual_bits[group], mn);
   }
 
-  if (rs) {
-    uint8_t g = group, m = mn;
-
-    cli_out_timer_reply_entry(NULL, NULL, 1);
-
-    if (read_timer_data(&td, &g, &m, rs == 2)) {
-
-      cli_out_timer_reply_entry("g", itoa(g, buf, 10), 0);
-      cli_out_timer_reply_entry("m", itoa(m, buf, 10), 0);
-
-      char *p = buf;
-      *p++ = f_manual ? 'M' : 'm';
-      *p++ = td_is_random(&td) ? 'R' : 'r';
-      *p++ = td_is_sun_auto(&td) ? 'S' : 's';
-      *p++ = td_is_astro(&td) ? 'A' : 'a';
-      *p++ = td_is_daily(&td) ? 'D' : 'd';
-      *p++ = td_is_weekly(&td) ? 'W' : 'w';
-      *p++ = '\0';
-      cli_out_timer_reply_entry("f", buf, 0);
-
-      if (td_is_daily(&td)) {
-        cli_out_timer_reply_entry("daily", td.daily, 0);
-      }
-      if (td_is_weekly(&td)) {
-        cli_out_timer_reply_entry("weekly", td.weekly, 0);
-      }
-      if (td_is_astro(&td)) {
-        cli_out_timer_reply_entry("astro", itoa(td.astro, buf, 10), 0);
-      }
-
-      if (td_is_random(&td)) {
-        cli_out_timer_reply_entry("random", "1", 0);
-      }
-      if (td_is_sun_auto(&td)) {
-        cli_out_timer_reply_entry("sun-auto", "1", 0);
-      }
-
-    }
-    cli_out_timer_reply_entry(NULL, NULL, -1);
-
-  }
 
   // use (parts of) previously saved data
    if (f_modify || f_enableAuto) {
@@ -302,6 +263,7 @@ process_parmTimer(clpar p[], int len) {
     }
 
 
+
     // save timer data
     if (is_timer_frame){  // FIXME: or better test for default cu?
       if (has_astro) {
@@ -322,6 +284,48 @@ process_parmTimer(clpar p[], int len) {
         reply_message("bug", "rs not saved");
         print_enr();
       }
+    }
+
+    // print saved timer data
+    if (rs) {
+      uint8_t g = group, m = mn;
+
+      cli_out_timer_reply_entry(NULL, NULL, 1);
+
+      if (read_timer_data(&td, &g, &m, rs == 2)) {
+
+        cli_out_timer_reply_entry("g", itoa(g, buf, 10), 0);
+        cli_out_timer_reply_entry("m", itoa(m, buf, 10), 0);
+
+        char *p = buf;
+        *p++ = f_manual ? 'M' : 'm';
+        *p++ = td_is_random(&td) ? 'R' : 'r';
+        *p++ = td_is_sun_auto(&td) ? 'S' : 's';
+        *p++ = td_is_astro(&td) ? 'A' : 'a';
+        *p++ = td_is_daily(&td) ? 'D' : 'd';
+        *p++ = td_is_weekly(&td) ? 'W' : 'w';
+        *p++ = '\0';
+        cli_out_timer_reply_entry("f", buf, 0);
+
+        if (td_is_daily(&td)) {
+          cli_out_timer_reply_entry("daily", td.daily, 0);
+        }
+        if (td_is_weekly(&td)) {
+          cli_out_timer_reply_entry("weekly", td.weekly, 0);
+        }
+        if (td_is_astro(&td)) {
+          cli_out_timer_reply_entry("astro", itoa(td.astro, buf, 10), 0);
+        }
+
+        if (td_is_random(&td)) {
+          cli_out_timer_reply_entry("random", "1", 0);
+        }
+        if (td_is_sun_auto(&td)) {
+          cli_out_timer_reply_entry("sun-auto", "1", 0);
+        }
+
+      }
+      cli_out_timer_reply_entry(NULL, NULL, -1);
     }
 
 
