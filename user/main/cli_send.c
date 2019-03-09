@@ -16,7 +16,7 @@
 
 
 const char help_parmSend[]  =
-    "a=(0|ID)  0  hex ID of sender or receiver. 0 uses 'cu' in config\n"
+    "a=(0|ID)  0  hex ID of sender or receiver.\n"
     "g=[0-7]   0  group number\n"
     "m=[0-7]   0  group member number\n"
     "c=(up|down|stop|sun-down|sun-inst|set|?)\n"

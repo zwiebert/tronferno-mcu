@@ -27,7 +27,8 @@ const char help_parmMcu[]  =
 int ICACHE_FLASH_ATTR
 process_parmMcu(clpar p[], int len) {
   int arg_idx;
-  const char *mcuSep = "mcu ";
+  char buf[24];
+
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -35,18 +36,6 @@ process_parmMcu(clpar p[], int len) {
     if (key == NULL || val == NULL) {
       return -1;
     } else if (strcmp(key, "print") == 0) {
-
-      if (strcmp(val, "rtc") == 0) {
-        char buf[20];
-        if (rtc_get_by_string(buf)) {
-          io_puts(buf);
-          io_putlf();
-        }
-      } else if (strcmp(val, "cu") == 0) {
-        io_puts("cu=0x");
-        io_putl(C.fer_centralUnitID, 16);
-        io_putlf();
-      }
 #ifdef MCU_ESP8266
       if (strcmp(val, "reset-info") == 0) {
         print_reset_info();
@@ -131,7 +120,7 @@ process_parmMcu(clpar p[], int len) {
         case PIN_READ:
           error = mcu_access_pin(gpio_number, &ps_result, ps);
           if (!error) {
-            io_puts(mcuSep), io_puts(key), io_puts((ps_result == PIN_SET ? "=1" : "=0")), (mcuSep = " ");
+            cli_out_mcu_reply_entry(key, (ps_result == PIN_SET ? "1" : "0"), 0);
           }
           break;
 
@@ -149,20 +138,23 @@ process_parmMcu(clpar p[], int len) {
 
     } else if (strcmp(key, "up-time") == 0) {
       if (*val=='?') {
-        io_puts(mcuSep), io_puts(key), io_puts("="), io_print_dec_32(run_time(), false), (mcuSep = " ");
+        cli_out_mcu_reply_entry(key, ltoa(run_time(), buf, 10), 0);
       } else {
         reply_message("error:mcu:up-time", "option is read-only");
       }
 
     } else if (strcmp(key, "version") == 0) {
-	static const char mcu_type[]  = MCU_TYPE;
-	static const char firmware_version[]  = APP_VERSION;
 
-	if (strcmp(val, "full") == 0) {
-	  io_puts(mcuSep), io_puts(key), io_puts("="), io_puts(mcu_type), io_puts(","), io_puts(firmware_version), io_puts(", "),
-	    io_puts(ISO_BUILD_TIME), (mcuSep = " ");
-      }
+      cli_out_mcu_reply_entry("chip", MCU_TYPE, 0);
 
+      cli_out_mcu_reply_entry("firmware", strcat(strcpy (buf, "tronferno-mcu-"), APP_VERSION), 0);
+
+      char *p = strcpy(buf, ISO_BUILD_TIME);
+      do
+        if (*p == ' ')
+          *p = '-';
+      while (*++p);
+      cli_out_mcu_reply_entry("build-time", buf, 0);
 
     } else {
       warning_unknown_option(key);
@@ -170,8 +162,7 @@ process_parmMcu(clpar p[], int len) {
 
   }
 
-  if (strcmp(mcuSep, " ") == 0)
-    io_puts(";\n");
+  cli_out_mcu_reply_entry(NULL, NULL, -1);
 
   return 0;
 }

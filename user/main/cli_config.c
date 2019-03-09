@@ -21,23 +21,23 @@ const char pin_state_args[] = "dipo ?01t";
 
 const char help_parmConfig[]  =
     "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
-    "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID using connected RF receiver\n"
-    "rtc=(ISO_TIME|?)   set local time with this (or use NTP). example: config rtc=2017-12-31T23:59:59;\n"
-    "baud=(N|?)         serial baud rate (... baud=115200)\n"
+    "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID\n"
+    "rtc=(ISO_TIME|?)   set local time it NTP is not working.;\n"
+    "baud=(N|?)         serial baud rate\n"
 #ifdef USE_WLAN
     "wlan-ssid=(SSID|?)\n"
-    "wlan-password=PW   example: config wlan-ssid=\"1234\" wlan-password=\"abcd\" restart=1;\n"
+    "wlan-password=PW\n"
 #endif
     "longitude=(DEG|?)\n"
     "latitude=(DEG|?)\n"
  #if !POSIX_TIME
-    "time-zone=(N|?)    time zone hour offset for astro and rtc\n"
-    "dst=(eu|0|1|?)     daylight saving time: automatic: eu=europe. manually: 0=off, 1=on\n"
+    "time-zone=(N|?)    time zone hour offset\n"
+    "dst=(eu|0|1|?)     daylight saving time\n"
 #else
     "time-zone=(N|?)    time offset for astro\n"
-    "tz=(POSIX_TZ|?)    time zone for RTC/NTP. example: config  tz=CET-1CEST-2,M3.5.0,M10.5.0;\n"
+    "tz=(POSIX_TZ|?)    time zone for RTC/NTP\n"
 #endif
-    "verbose=(0..5|?)   set text output verbosity level. 0 for none ... 5 for max\n"
+    "verbose=(0..5|?)   diagnose output verbosity level\n"
     "set-pw=password    set a config password. if set every config commands needs the pw option\n"
     "pw=PW              example: config pw=my_passw dst=eu;\n"
 #if ENABLE_RESTART
@@ -55,7 +55,7 @@ int ICACHE_FLASH_ATTR
 process_parmConfig(clpar p[], int len) {
   int arg_idx;
   int errors = 0;
-  char buf[30]; // buffer for number to string conversion
+  char buf[16]; // buffer for number to string conversion
 
   bool pw_ok = strlen(C.app_configPassword) == 0;
 

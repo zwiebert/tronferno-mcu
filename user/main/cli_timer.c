@@ -12,12 +12,10 @@
 #include "cli_imp.h"
 #include "timer_data.h"
 
-
 #define ENABLE_RSTD 1
 
 #define ENABLE_EXPERT 0 // work in progress
 #define ENABLE_RESTART 1 // allow software reset
-#define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
 
 #define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
@@ -28,20 +26,6 @@ enum {
 
 const char * const timer_keys[] = { "weekly", "daily", "astro", "rtc-only", "random", "sun-auto" };
 
-#if ENABLE_TIMER_WDAY_KEYS
-const char *const timer_wdays[] = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"};
-
-int asc2wday(const char *s) {
-  int i;
-  for (i=0; i < (sizeof (timer_wdays) / sizeof (timer_wdays[0])); ++i) {
-    if (strcmp(s, timer_wdays[i]) == 0)
-    return i;
-  }
-  return -1;
-}
-#endif
-
-
 #define FLAG_NONE -2
 #define FLAG_ERROR -1
 #define FLAG_FALSE 0
@@ -49,28 +33,23 @@ int asc2wday(const char *s) {
 #define HAS_FLAG(v) (v >= 0)
 
 const char help_parmTimer[]  =
-    "daily=T        enables daily timer. T is up/down like 0730- or 07302000 or -2000  for up 07:30 and/or down 20:00\n"
-    "weekly=TTTTTTT enables weekly timer. T like with 'daily' or '+' to copy the T on the left. (weekly=0730-++++0900-+)\n"
-    "astro[=N]      enables astro automatic. N is the offset to civil dusk in minutes. Can be postive or negative.\n"
-    "sun-auto       enables sun automatic\n"
-    "random         enables random automatic. shutter opens and closes at random times.\n"
-    "rtc-only       don't change timers. only update internal real time clock\n"
-    "rtc=ISO_TIME   you may provide your own time instead of current MCU/NTP time to update internal clock\n"
+    "daily=T        set daily timer\n"
+    "weekly=TTTTTTT set weekly timer\n"
+    "astro[=N]      enables civil dusk timer +- minutes offset\n"
+    "sun-auto       enables sun sensor\n"
+    "random         enables random timer\n"
+    "rtc-only       send no timers but update receiver's real time clock\n"
+    "rtc=ISO_TIME   provide your own time\n"
     "a, g and m:    like in send command\n"
-    "f=X...     one or more flag characters to enable or disable things (experimental. may still change):\n"
-    "  i   read back saved timer data for g/m.\n"
+    "f=X...  flags (x|X means: x: enable, X: disable):\n"
+    "  i   print saved timer information\n"
     "  I   like 'i' but returns matching group timers\n"
-    "  k   keep and use existing saved timer data if not overwritten by options\n"
+    "  k   keep and merge with existing saved timer\n"
     "  u   don't actually send data now\n"
-    "  M   disable automatic movement (no timers, sun-auto). Usually used with 'm'\n"
-    "  m   enable automatic movement (restore timers, sun-auto). Usually used with 'm'\n"
-    "  s   disables sun automatic\n"
-    "  S   enables sun automatic\n"
-    "  r   disables random timer\n"
-    "  R   enables random timer\n"
+    "  m|M manual mode (no automatic movement)\n"
+    "  s|S sun automatic\n"
+    "  r|R random timer\n"
     ;
-
-//obsolete    "rs=(0|1|2)     read back saved timer data. if set to 2, return any data matching g and m e.g. m=0 (any member) instead of m=2\n";
 
 int ICACHE_FLASH_ATTR
 process_parmTimer(clpar p[], int len) {
@@ -91,7 +70,7 @@ process_parmTimer(clpar p[], int len) {
   bool f_enableAuto = false;
   bool f_no_send = false;
   bool send_ok = false;
-  char buf[20];
+  char buf[16];
 
   static gm_bitmask_t manual_bits;
 
@@ -230,12 +209,14 @@ process_parmTimer(clpar p[], int len) {
       if (td_is_astro(&td)) {
         cli_out_timer_reply_entry("astro", itoa(td.astro, buf, 10), 0);
       }
+
       if (td_is_random(&td)) {
         cli_out_timer_reply_entry("random", "1", 0);
       }
       if (td_is_sun_auto(&td)) {
         cli_out_timer_reply_entry("sun-auto", "1", 0);
       }
+
     }
     cli_out_timer_reply_entry(NULL, NULL, -1);
 

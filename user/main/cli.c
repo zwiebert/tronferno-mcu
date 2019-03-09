@@ -6,8 +6,6 @@
  */
 #include <stdint.h>
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "../user_config.h"
 #include "current_state.h"
 #include "timer_state.h"
@@ -27,11 +25,12 @@ fer_sender_basic default_sender;
 fer_sender_basic last_received_sender;
 uint16_t msgid;
 
-void ICACHE_FLASH_ATTR cli_out_top_tag(void) {
+
+static void ICACHE_FLASH_ATTR cli_out_top_tag(void) {
     io_puts("tf: ");
 }
 
-void ICACHE_FLASH_ATTR cli_out_reply_tag(void) {
+static void ICACHE_FLASH_ATTR cli_out_reply_tag(void) {
   if (msgid) {
     io_puts("reply="), io_putd(msgid), io_puts(": ");
   } else {
@@ -39,33 +38,44 @@ void ICACHE_FLASH_ATTR cli_out_reply_tag(void) {
   }
 }
 
-void ICACHE_FLASH_ATTR cli_out_timer_tag(void) {
+static void ICACHE_FLASH_ATTR cli_out_timer_tag(void) {
     io_puts("timer: ");
 }
 
-void ICACHE_FLASH_ATTR cli_out_config_tag(void) {
-    io_puts("config: ");
+static void ICACHE_FLASH_ATTR cli_out_config_tag(void) {
+    io_puts("config:");
 }
 
-void ICACHE_FLASH_ATTR cli_out_send_tag(void) {
-    io_puts("send: ");
+static void ICACHE_FLASH_ATTR cli_out_send_tag(void) {
+    io_puts("send:");
+}
+
+static void ICACHE_FLASH_ATTR cli_out_mcu_tag(void) {
+    io_puts("mcu:");
 }
 
 
-void ICACHE_FLASH_ATTR cli_out_start_timer_reply(void) {
+
+static void ICACHE_FLASH_ATTR cli_out_start_timer_reply(void) {
   cli_out_top_tag();
   cli_out_reply_tag();
   cli_out_timer_tag();
 }
 
 
-void ICACHE_FLASH_ATTR cli_out_start_config_reply(void) {
+static void ICACHE_FLASH_ATTR cli_out_start_config_reply(void) {
   cli_out_top_tag();
   cli_out_reply_tag();
   cli_out_config_tag();
 }
 
-void ICACHE_FLASH_ATTR cli_out_start_config_bc(void) {
+static void ICACHE_FLASH_ATTR cli_out_start_mcu_reply(void) {
+  cli_out_top_tag();
+  cli_out_reply_tag();
+  cli_out_mcu_tag();
+}
+
+static void ICACHE_FLASH_ATTR cli_out_start_config_bc(void) {
   cli_out_top_tag();
   //cli_out_reply_tag();
   cli_out_config_tag();
@@ -74,11 +84,11 @@ void ICACHE_FLASH_ATTR cli_out_start_config_bc(void) {
 typedef void (*void_fun_ptr)(void);
 const int OUT_MAX_LEN = 80;
 
-void ICACHE_FLASH_ATTR cli_out_entry(void_fun_ptr tag, const char *key, const char *val, int len) {
+static void ICACHE_FLASH_ATTR cli_out_entry(void_fun_ptr tag, const char *key, const char *val, int len) {
   static int length;
   if (len == -1) {
     if (length) {
-      puts(";\n");
+      io_puts(";\n");
       length = 0;
     }
   } else {
@@ -110,6 +120,10 @@ void ICACHE_FLASH_ATTR cli_out_timer_reply_entry(const char *key, const char *va
 
 void ICACHE_FLASH_ATTR cli_out_config_reply_entry(const char *key, const char *val, int len) {
   cli_out_entry(cli_out_start_config_reply, key, val, len);
+}
+
+void ICACHE_FLASH_ATTR cli_out_mcu_reply_entry(const char *key, const char *val, int len) {
+  cli_out_entry(cli_out_start_mcu_reply, key, val, len);
 }
 
 int ENR; // error number

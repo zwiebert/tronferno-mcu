@@ -43,10 +43,14 @@ void wst_reconnect(void) {
   //wifi_station_connect();
 }
 
+void wifi_event_handler_cb (System_Event_t *event) {
+
+}
 
 
 void ICACHE_FLASH_ATTR
 setup_wifistation(void) {
   wifi_set_opmode(STATION_MODE);
   user_set_station_config();
+  wifi_set_event_handler_cb(wifi_event_handler_cb);
 }
