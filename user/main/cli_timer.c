@@ -51,6 +51,48 @@ const char help_parmTimer[]  =
     "  r|R random timer\n"
     ;
 
+
+static void cli_timer_print_timer_data(uint8_t g, uint8_t m, bool wildcard, bool f_manual, char *buf) {
+  timer_data_t tdr;
+
+  cli_out_timer_reply_entry(NULL, NULL, 1);
+
+  if (read_timer_data(&tdr, &g, &m, wildcard)) {
+
+    cli_out_timer_reply_entry("g", itoa(g, buf, 10), 0);
+    cli_out_timer_reply_entry("m", itoa(m, buf, 10), 0);
+
+    char *p = buf;
+    *p++ = f_manual ? 'M' : 'm';
+    *p++ = td_is_random(&tdr) ? 'R' : 'r';
+    *p++ = td_is_sun_auto(&tdr) ? 'S' : 's';
+    *p++ = td_is_astro(&tdr) ? 'A' : 'a';
+    *p++ = td_is_daily(&tdr) ? 'D' : 'd';
+    *p++ = td_is_weekly(&tdr) ? 'W' : 'w';
+    *p++ = '\0';
+    cli_out_timer_reply_entry("f", buf, 0);
+
+    if (td_is_daily(&tdr)) {
+      cli_out_timer_reply_entry("daily", tdr.daily, 0);
+    }
+    if (td_is_weekly(&tdr)) {
+      cli_out_timer_reply_entry("weekly", tdr.weekly, 0);
+    }
+    if (td_is_astro(&tdr)) {
+      cli_out_timer_reply_entry("astro", itoa(tdr.astro, buf, 10), 0);
+    }
+
+    if (td_is_random(&tdr)) {
+      cli_out_timer_reply_entry("random", "1", 0);
+    }
+    if (td_is_sun_auto(&tdr)) {
+      cli_out_timer_reply_entry("sun-auto", "1", 0);
+    }
+
+  }
+  cli_out_timer_reply_entry(NULL, NULL, -1);
+}
+
 int ICACHE_FLASH_ATTR
 process_parmTimer(clpar p[], int len) {
   int i;
@@ -301,49 +343,10 @@ process_parmTimer(clpar p[], int len) {
     }
   }
 
-  // print saved timer data
-  if (rs) {
-    uint8_t g = group, m = mn;
-
-    cli_out_timer_reply_entry(NULL, NULL, 1);
-
-    if (read_timer_data(&tdr, &g, &m, rs == 2)) {
-
-      cli_out_timer_reply_entry("g", itoa(g, buf, 10), 0);
-      cli_out_timer_reply_entry("m", itoa(m, buf, 10), 0);
-
-      char *p = buf;
-      *p++ = f_manual ? 'M' : 'm';
-      *p++ = td_is_random(&tdr) ? 'R' : 'r';
-      *p++ = td_is_sun_auto(&tdr) ? 'S' : 's';
-      *p++ = td_is_astro(&tdr) ? 'A' : 'a';
-      *p++ = td_is_daily(&tdr) ? 'D' : 'd';
-      *p++ = td_is_weekly(&tdr) ? 'W' : 'w';
-      *p++ = '\0';
-      cli_out_timer_reply_entry("f", buf, 0);
-
-      if (td_is_daily(&tdr)) {
-        cli_out_timer_reply_entry("daily", tdr.daily, 0);
-      }
-      if (td_is_weekly(&tdr)) {
-        cli_out_timer_reply_entry("weekly", tdr.weekly, 0);
-      }
-      if (td_is_astro(&tdr)) {
-        cli_out_timer_reply_entry("astro", itoa(tdr.astro, buf, 10), 0);
-      }
-
-      if (td_is_random(&tdr)) {
-        cli_out_timer_reply_entry("random", "1", 0);
-      }
-      if (td_is_sun_auto(&tdr)) {
-        cli_out_timer_reply_entry("sun-auto", "1", 0);
-      }
-
-    }
-    cli_out_timer_reply_entry(NULL, NULL, -1);
-  }
-
-
+  if (rs)
+    cli_timer_print_timer_data(group, mn, (rs == 2), f_manual, buf);
 
   return 0;
 }
+
+
