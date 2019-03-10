@@ -195,7 +195,7 @@ process_parmTimer(clpar p[], int len) {
   if (f_disableDaily)
     f_enableDaily = false;
 
-  f_modified = f_enableAstro || f_disableAstro || f_enableDaily || f_disableDaily || f_enableWeekly || f_disableWeekly || GET_BIT(fpr0_mask, flag_Random) || GET_BIT(fpr0_mask, flag_SunAuto);
+  f_modified = !f_modify || f_enableAstro || f_disableAstro || f_enableDaily || f_disableDaily || f_enableWeekly || f_disableWeekly || GET_BIT(fpr0_mask, flag_Random) || GET_BIT(fpr0_mask, flag_SunAuto);
 
 
   // use (parts of) previously saved data
