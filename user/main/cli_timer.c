@@ -155,9 +155,9 @@ process_parmTimer(clpar p[], int len) {
           case 'S': SET_BIT(fpr0_mask, flag_SunAuto); PUT_BIT(fpr0_flags, flag_SunAuto, p[-1] == 'S'); break;
           case 'u': f_no_send = true; break;
           // disable timers and override any implicit enabling by value
-          case 'd': f_disableDaily = true; f_enableDaily = false; break;
-          case 'w': f_disableWeekly = true; f_enableWeekly = false; break;
-          case 'a': f_disableAstro = true; f_enableAstro = false; break;
+          case 'd': f_disableDaily = true; break;
+          case 'w': f_disableWeekly = true; break;
+          case 'a': f_disableAstro = true; break;
         }
       }
 #if ENABLE_TIMER_WDAY_KEYS
@@ -188,7 +188,15 @@ process_parmTimer(clpar p[], int len) {
     f_manual = GET_BIT(manual_bits[group], mn);
   }
 
+  if (f_disableWeekly)
+      f_enableWeekly = false;
+  if (f_disableAstro)
+      f_enableAstro =false;
+  if (f_disableDaily)
+    f_enableDaily = false;
+
   f_modified = f_enableAstro || f_disableAstro || f_enableDaily || f_disableDaily || f_enableWeekly || f_disableWeekly || GET_BIT(fpr0_mask, flag_Random) || GET_BIT(fpr0_mask, flag_SunAuto);
+
 
   // use (parts of) previously saved data
    if (f_modified && (f_modify || f_disableManu)) {
