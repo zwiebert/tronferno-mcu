@@ -54,7 +54,8 @@ const char help_parmTimer[]  =
 int ICACHE_FLASH_ATTR
 process_parmTimer(clpar p[], int len) {
   int i;
-  bool has_daily = false, has_weekly = false, has_astro = false;
+  bool f_disableWeekly = false, f_disableDaily = false, f_disableAstro = false, f_disableManu = false;
+  bool f_enableWeekly = false, f_enableDaily = false, f_enableAstro = false, f_enableManu = false;
   int16_t astro_offset = 0;
   uint8_t weekly_data[FPR_TIMER_STAMP_WIDTH * 7];
   uint8_t daily_data[FPR_TIMER_STAMP_WIDTH];
@@ -66,10 +67,11 @@ process_parmTimer(clpar p[], int len) {
   int8_t flag_rtc_only = FLAG_NONE;
   time_t timer = time(NULL);
   bool f_modify = false;
-  bool f_disableAuto = false;
-  bool f_enableAuto = false;
   bool f_no_send = false;
   bool send_ok = false;
+  bool f_modified = false;
+  timer_data_t tdr;
+
   char buf[16];
 
   static gm_bitmask_t manual_bits;
@@ -77,7 +79,7 @@ process_parmTimer(clpar p[], int len) {
   const char *weeklyVal = 0, *dailyVal = 0;
   uint8_t mn = 0;
   uint8_t rs = 0;
-  timer_data_t td = td_initializer;
+
   // init data
   for (i = 0; i + 1 < sizeof(weekly_data) / sizeof(weekly_data[0]); i += 2) {
     weekly_data[i] = 0xff;
@@ -95,13 +97,13 @@ process_parmTimer(clpar p[], int len) {
       return -1;
     } else if (strcmp(key, timer_keys[TIMER_KEY_WEEKLY]) == 0) {
       NODEFAULT();
-      has_weekly = timerString2bcd((weeklyVal = val), weekly_data, sizeof weekly_data);
+      f_enableWeekly = timerString2bcd((weeklyVal = val), weekly_data, sizeof weekly_data);
     } else if (strcmp(key, timer_keys[TIMER_KEY_DAILY]) == 0) {
       NODEFAULT();
-      has_daily = timerString2bcd((dailyVal = val), daily_data, sizeof daily_data);
+      f_enableDaily = timerString2bcd((dailyVal = val), daily_data, sizeof daily_data);
     } else if (strcmp(key, timer_keys[TIMER_KEY_ASTRO]) == 0) {
       astro_offset = val ? atoi(val) : 0;
-      has_astro = true;
+      f_enableAstro = true;
     } else if (strcmp(key, timer_keys[TIMER_KEY_FLAG_RANDOM]) == 0) {
       int flag = asc2bool(val);
       if (flag >= 0) {
@@ -145,20 +147,23 @@ process_parmTimer(clpar p[], int len) {
           case 'i': rs = 1; break;
           case 'I': rs = 2; break;
           case 'k': f_modify = true; break;
-          case 'M': f_disableAuto = true; break;
-          case 'm': f_enableAuto = true; break;
+          case 'M': f_enableManu = true; break;
+          case 'm': f_disableManu = true; break;
           case 'r':
           case 'R': SET_BIT(fpr0_mask, flag_Random); PUT_BIT(fpr0_flags, flag_Random, p[-1] == 'R'); break;
           case 's':
           case 'S': SET_BIT(fpr0_mask, flag_SunAuto); PUT_BIT(fpr0_flags, flag_SunAuto, p[-1] == 'S'); break;
           case 'u': f_no_send = true; break;
+          case 'd': f_disableDaily = true; break;
+          case 'w': f_disableWeekly = true; break;
+          case 'a': f_disableAstro = true; break;
         }
       }
 #if ENABLE_TIMER_WDAY_KEYS
     } else if ((wday = asc2wday(key)) >= 0) {
       NODEFAULTS();
       io_puts(val), io_putlf();
-      has_weekly = timerString2bcd(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
+      f_enableWeekly = timerString2bcd(val, &weekly_data[FPR_TIMER_STAMP_WIDTH * wday], FPR_TIMER_STAMP_WIDTH);
 #endif
     } else {
       if (strcmp(key, "rs") == 0) {
@@ -174,44 +179,45 @@ process_parmTimer(clpar p[], int len) {
 
   if (is_timer_frame) {
     read_gm_bitmask("MANU", &manual_bits, 1);
-    if (f_enableAuto || f_disableAuto) {
+    if (f_disableManu || f_enableManu) {
       uint8_t g = group, m = mn;
-      PUT_BIT(manual_bits[g], m, f_disableAuto);
+      PUT_BIT(manual_bits[g], m, f_enableManu);
       save_gm_bitmask("MANU", &manual_bits, 1);
     }
     f_manual = GET_BIT(manual_bits[group], mn);
   }
 
+  f_modified = f_enableAstro || f_disableAstro || f_enableDaily || f_disableDaily || f_enableWeekly || f_disableWeekly || GET_BIT(fpr0_mask, flag_Random) || GET_BIT(fpr0_mask, flag_SunAuto);
 
   // use (parts of) previously saved data
-   if (f_modify || f_enableAuto) {
+   if (f_modified && (f_modify || f_disableManu)) {
     uint8_t g = group, m = mn;
 
     // fill in missing parts from stored timer data
-    if (read_timer_data(&td, &g, &m, true)) {
-      if (!has_daily && td_is_daily(&td)) {
-        has_daily = timerString2bcd(dailyVal = td.daily, daily_data, sizeof daily_data);
+    if (read_timer_data(&tdr, &g, &m, true)) {
+      if (!f_disableDaily && !f_enableDaily && td_is_daily(&tdr)) {
+        f_enableDaily = timerString2bcd(dailyVal = tdr.daily, daily_data, sizeof daily_data);
       }
-      if (!has_weekly && td_is_weekly(&td)) {
-        has_weekly = timerString2bcd(weeklyVal = td.weekly, weekly_data, sizeof weekly_data);
+      if (!f_disableWeekly && !f_enableWeekly && td_is_weekly(&tdr)) {
+        f_enableWeekly = timerString2bcd(weeklyVal = tdr.weekly, weekly_data, sizeof weekly_data);
       }
-      if (!has_astro && td_is_astro(&td)) {
-        astro_offset = td.astro;
-        has_astro = true;
+      if (!f_disableAstro && !f_enableAstro && td_is_astro(&tdr)) {
+        astro_offset = tdr.astro;
+        f_enableAstro = true;
       }
       if (0 == GET_BIT(fpr0_mask, flag_Random)) {
-        PUT_BIT(fpr0_flags, flag_Random, td_is_random(&td));
+        PUT_BIT(fpr0_flags, flag_Random, td_is_random(&tdr));
         SET_BIT(fpr0_mask, flag_Random);
       }
 
       if (0 == GET_BIT(fpr0_mask, flag_SunAuto)) {
-        PUT_BIT(fpr0_flags, flag_SunAuto, td_is_sun_auto(&td));
+        PUT_BIT(fpr0_flags, flag_SunAuto, td_is_sun_auto(&tdr));
         SET_BIT(fpr0_mask, flag_SunAuto);
       }
     }
   }
 
-
+   db_printf("dailyVal=%s,%d, weeklyVal=%s,%d\n", dailyVal, f_enableDaily, weeklyVal, f_enableWeekly);
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   // create send buffer from all data
@@ -238,17 +244,17 @@ process_parmTimer(clpar p[], int len) {
   FSB_TOGGLE(fsb);
 
   // copy data to send buffer
-  if (recv_lockBuffer(true)) {
+  if (!f_no_send && recv_lockBuffer(true)) {
     fmsg_init_data(txmsg);
     if (flag_rtc_only == FLAG_TRUE) {
       fmsg_write_rtc(txmsg, timer, true);
       fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask); // the flags are ignored for RTC-only frames, even for non-broadcast
     } else {
-      if (has_weekly && !f_manual)
+      if (!f_disableWeekly && f_enableWeekly && !f_manual)
         fmsg_write_wtimer(txmsg, weekly_data);
-      if (has_daily && !f_manual)
+      if (!f_disableDaily && f_enableDaily && !f_manual)
         fmsg_write_dtimer(txmsg, daily_data);
-      if (has_astro && !f_manual)
+      if (!f_disableAstro && f_enableAstro && !f_manual)
         fmsg_write_astro(txmsg, astro_offset);
       fmsg_write_rtc(txmsg, timer, false);
       if (!f_manual)
@@ -257,79 +263,80 @@ process_parmTimer(clpar p[], int len) {
     }
 
     // send buffer
-    if (!f_no_send) {
-      send_ok = fer_send_msg(fsb, (flag_rtc_only == FLAG_TRUE) ? MSG_TYPE_RTC : MSG_TYPE_TIMER);
-      reply(send_ok);
-    }
 
-
-
-    // save timer data
-    if (is_timer_frame){  // FIXME: or better test for default cu?
-      if (has_astro) {
-        td.astro = astro_offset;
-      }
-      td.bf = fpr0_flags;
-      if (has_weekly) {
-        strncpy(td.weekly, weeklyVal, sizeof(td.weekly) - 1);
-      }
-
-      if (has_daily) {
-        strncpy(td.daily, dailyVal, sizeof(td.daily) - 1);
-      }
-
-      if (save_timer_data(&td, group, mn)) {
-        reply_message("rs", "saved");
-      } else {
-        reply_message("bug", "rs not saved");
-        print_enr();
-      }
-    }
-
-    // print saved timer data
-    if (rs) {
-      uint8_t g = group, m = mn;
-
-      cli_out_timer_reply_entry(NULL, NULL, 1);
-
-      if (read_timer_data(&td, &g, &m, rs == 2)) {
-
-        cli_out_timer_reply_entry("g", itoa(g, buf, 10), 0);
-        cli_out_timer_reply_entry("m", itoa(m, buf, 10), 0);
-
-        char *p = buf;
-        *p++ = f_manual ? 'M' : 'm';
-        *p++ = td_is_random(&td) ? 'R' : 'r';
-        *p++ = td_is_sun_auto(&td) ? 'S' : 's';
-        *p++ = td_is_astro(&td) ? 'A' : 'a';
-        *p++ = td_is_daily(&td) ? 'D' : 'd';
-        *p++ = td_is_weekly(&td) ? 'W' : 'w';
-        *p++ = '\0';
-        cli_out_timer_reply_entry("f", buf, 0);
-
-        if (td_is_daily(&td)) {
-          cli_out_timer_reply_entry("daily", td.daily, 0);
-        }
-        if (td_is_weekly(&td)) {
-          cli_out_timer_reply_entry("weekly", td.weekly, 0);
-        }
-        if (td_is_astro(&td)) {
-          cli_out_timer_reply_entry("astro", itoa(td.astro, buf, 10), 0);
-        }
-
-        if (td_is_random(&td)) {
-          cli_out_timer_reply_entry("random", "1", 0);
-        }
-        if (td_is_sun_auto(&td)) {
-          cli_out_timer_reply_entry("sun-auto", "1", 0);
-        }
-
-      }
-      cli_out_timer_reply_entry(NULL, NULL, -1);
-    }
-
+    send_ok = fer_send_msg(fsb, (flag_rtc_only == FLAG_TRUE) ? MSG_TYPE_RTC : MSG_TYPE_TIMER);
+    reply(send_ok);
 
     recv_lockBuffer(false);
   }
+
+  // save timer data
+  if (is_timer_frame && f_modified) {  // FIXME: or better test for default cu?
+    timer_data_t tds = td_initializer;
+    if (f_enableAstro) {
+      tds.astro = astro_offset;
+    }
+    tds.bf = fpr0_flags;
+    if (f_enableWeekly) {
+      strncpy(tds.weekly, weeklyVal, sizeof(tds.weekly) - 1);
+    }
+
+    if (f_enableDaily) {
+      strncpy(tds.daily, dailyVal, sizeof(tds.daily) - 1);
+      db_printf("save dailyVal=%s", dailyVal);
+    }
+
+    if (save_timer_data(&tds, group, mn)) {
+      reply_message("rs", "saved");
+    } else {
+      reply_message("bug", "rs not saved");
+      print_enr();
+    }
+  }
+
+  // print saved timer data
+  if (rs) {
+    uint8_t g = group, m = mn;
+
+    cli_out_timer_reply_entry(NULL, NULL, 1);
+
+    if (read_timer_data(&tdr, &g, &m, rs == 2)) {
+
+      cli_out_timer_reply_entry("g", itoa(g, buf, 10), 0);
+      cli_out_timer_reply_entry("m", itoa(m, buf, 10), 0);
+
+      char *p = buf;
+      *p++ = f_manual ? 'M' : 'm';
+      *p++ = td_is_random(&tdr) ? 'R' : 'r';
+      *p++ = td_is_sun_auto(&tdr) ? 'S' : 's';
+      *p++ = td_is_astro(&tdr) ? 'A' : 'a';
+      *p++ = td_is_daily(&tdr) ? 'D' : 'd';
+      *p++ = td_is_weekly(&tdr) ? 'W' : 'w';
+      *p++ = '\0';
+      cli_out_timer_reply_entry("f", buf, 0);
+
+      if (td_is_daily(&tdr)) {
+        cli_out_timer_reply_entry("daily", tdr.daily, 0);
+      }
+      if (td_is_weekly(&tdr)) {
+        cli_out_timer_reply_entry("weekly", tdr.weekly, 0);
+      }
+      if (td_is_astro(&tdr)) {
+        cli_out_timer_reply_entry("astro", itoa(tdr.astro, buf, 10), 0);
+      }
+
+      if (td_is_random(&tdr)) {
+        cli_out_timer_reply_entry("random", "1", 0);
+      }
+      if (td_is_sun_auto(&tdr)) {
+        cli_out_timer_reply_entry("sun-auto", "1", 0);
+      }
+
+    }
+    cli_out_timer_reply_entry(NULL, NULL, -1);
+  }
+
+
+
   return 0;
 }
