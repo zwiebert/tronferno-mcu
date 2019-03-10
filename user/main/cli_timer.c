@@ -154,9 +154,10 @@ process_parmTimer(clpar p[], int len) {
           case 's':
           case 'S': SET_BIT(fpr0_mask, flag_SunAuto); PUT_BIT(fpr0_flags, flag_SunAuto, p[-1] == 'S'); break;
           case 'u': f_no_send = true; break;
-          case 'd': f_disableDaily = true; break;
-          case 'w': f_disableWeekly = true; break;
-          case 'a': f_disableAstro = true; break;
+          // disable timers and override any implicit enabling by value
+          case 'd': f_disableDaily = true; f_enableDaily = false; break;
+          case 'w': f_disableWeekly = true; f_enableWeekly = false; break;
+          case 'a': f_disableAstro = true; f_enableAstro = false; break;
         }
       }
 #if ENABLE_TIMER_WDAY_KEYS
