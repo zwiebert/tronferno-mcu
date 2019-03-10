@@ -98,6 +98,8 @@ process_parmTimer(clpar p[], int len) {
   int i;
   bool f_disableWeekly = false, f_disableDaily = false, f_disableAstro = false, f_disableManu = false;
   bool f_enableWeekly = false, f_enableDaily = false, f_enableAstro = false, f_enableManu = false;
+  bool f_changedManu = false;
+
   int16_t astro_offset = 0;
   uint8_t weekly_data[FPR_TIMER_STAMP_WIDTH * 7];
   uint8_t daily_data[FPR_TIMER_STAMP_WIDTH];
@@ -222,12 +224,13 @@ process_parmTimer(clpar p[], int len) {
 
   if (is_timer_frame) {
     read_gm_bitmask("MANU", &manual_bits, 1);
+    bool f_old_manual = GET_BIT(manual_bits[group], mn);
     if (f_disableManu || f_enableManu) {
-      uint8_t g = group, m = mn;
-      PUT_BIT(manual_bits[g], m, f_enableManu);
+      PUT_BIT(manual_bits[group], mn, f_enableManu);
       save_gm_bitmask("MANU", &manual_bits, 1);
     }
     f_manual = GET_BIT(manual_bits[group], mn);
+    f_changedManu = f_old_manual != f_manual;
   }
 
   if (f_disableWeekly)
@@ -241,7 +244,7 @@ process_parmTimer(clpar p[], int len) {
 
 
   // use (parts of) previously saved data
-   if (f_modified && (f_modify || f_disableManu)) {
+   if (f_modified && (f_modify || (f_changedManu && f_disableManu))) {
     uint8_t g = group, m = mn;
 
     // fill in missing parts from stored timer data
