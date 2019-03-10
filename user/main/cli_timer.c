@@ -217,7 +217,6 @@ process_parmTimer(clpar p[], int len) {
     }
   }
 
-   db_printf("dailyVal=%s,%d, weeklyVal=%s,%d\n", dailyVal, f_enableDaily, weeklyVal, f_enableWeekly);
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   // create send buffer from all data
@@ -283,7 +282,6 @@ process_parmTimer(clpar p[], int len) {
 
     if (f_enableDaily) {
       strncpy(tds.daily, dailyVal, sizeof(tds.daily) - 1);
-      db_printf("save dailyVal=%s", dailyVal);
     }
 
     if (save_timer_data(&tds, group, mn)) {
