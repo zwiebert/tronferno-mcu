@@ -219,7 +219,7 @@ process_parmTimer(clpar p[], int len) {
     }
   }
 
-  bool is_timer_frame = (FSB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE);
+  bool is_timer_frame = (FSB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE); // FIXME: better test for default cu?
   bool f_manual = false;
 
   if (is_timer_frame) {
@@ -242,9 +242,15 @@ process_parmTimer(clpar p[], int len) {
 
   f_modified = !f_modify || f_enableAstro || f_disableAstro || f_enableDaily || f_disableDaily || f_enableWeekly || f_disableWeekly || GET_BIT(fpr0_mask, flag_Random) || GET_BIT(fpr0_mask, flag_SunAuto);
 
+  bool no_read_save_td = (!f_modified && !f_disableManu); // when not modified read/save would do nothing. but wee need to read when disabling manual mode
+  bool need_reload_td = !no_read_save_td && is_timer_frame && f_modify; // load when modify existing data
+  bool need_save_td   = !no_read_save_td && is_timer_frame && f_modified; // save when data was modified
+  bool copy_automatics = !f_manual;  // in manual mode don't write some data to send-buffer
+
+  //db_printf("wasteful=%d, loading=%d, saving=%d\n modified=%d, modify=%d, manual=%d\n", no_read_save_td, need_reload_td, need_save_td, f_modified, f_modify, f_manual);
 
   // use (parts of) previously saved data
-   if (f_modified && (f_modify || (f_changedManu && f_disableManu))) {
+   if (need_reload_td) {
     uint8_t g = group, m = mn;
 
     // fill in missing parts from stored timer data
@@ -303,20 +309,20 @@ process_parmTimer(clpar p[], int len) {
       fmsg_write_rtc(txmsg, timer, true);
       fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask); // the flags are ignored for RTC-only frames, even for non-broadcast
     } else {
-      if (!f_disableWeekly && f_enableWeekly && !f_manual)
-        fmsg_write_wtimer(txmsg, weekly_data);
-      if (!f_disableDaily && f_enableDaily && !f_manual)
-        fmsg_write_dtimer(txmsg, daily_data);
-      if (!f_disableAstro && f_enableAstro && !f_manual)
-        fmsg_write_astro(txmsg, astro_offset);
-      fmsg_write_rtc(txmsg, timer, false);
-      if (!f_manual)
+      if (copy_automatics) {
+        if (!f_disableWeekly && f_enableWeekly)
+          fmsg_write_wtimer(txmsg, weekly_data);
+        if (!f_disableDaily && f_enableDaily)
+          fmsg_write_dtimer(txmsg, daily_data);
+        if (!f_disableAstro && f_enableAstro)
+          fmsg_write_astro(txmsg, astro_offset);
+        fmsg_write_rtc(txmsg, timer, false);
         fmsg_write_flags(txmsg, fpr0_flags, fpr0_mask);
+      }
       fmsg_write_lastline(txmsg, fsb);
     }
 
     // send buffer
-
     send_ok = fer_send_msg(fsb, (flag_rtc_only == FLAG_TRUE) ? MSG_TYPE_RTC : MSG_TYPE_TIMER);
     reply(send_ok);
 
@@ -324,7 +330,7 @@ process_parmTimer(clpar p[], int len) {
   }
 
   // save timer data
-  if (is_timer_frame && f_modified) {  // FIXME: or better test for default cu?
+  if (need_save_td) {
     timer_data_t tds = td_initializer;
     if (f_enableAstro) {
       tds.astro = astro_offset;
