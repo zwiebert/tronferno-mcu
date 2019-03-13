@@ -41,7 +41,7 @@ const char help_parmTimer[]  =
     "rtc-only       send no timers but update receiver's real time clock\n"
     "rtc=ISO_TIME   provide your own time\n"
     "a, g and m:    like in send command\n"
-    "f=X...  flags (x|X means: x: enable, X: disable):\n"
+    "f=X...  flags (x|X means: x: disable, X: enable):\n"
     "  i   print saved timer information\n"
     "  I   like 'i' but returns matching group timers\n"
     "  k   keep and merge with existing saved timer\n"
