@@ -242,7 +242,7 @@ process_parmTimer(clpar p[], int len) {
 
   f_modified = !f_modify || f_enableAstro || f_disableAstro || f_enableDaily || f_disableDaily || f_enableWeekly || f_disableWeekly || GET_BIT(fpr0_mask, flag_Random) || GET_BIT(fpr0_mask, flag_SunAuto);
 
-  bool no_read_save_td = (!f_modified && !f_disableManu); // when not modified read/save would do nothing. but wee need to read when disabling manual mode
+  bool no_read_save_td = (!f_modified && !f_disableManu) && !(f_modify && !f_no_send); // when not modified read/save would do nothing. but wee need to read when disabling manual mode
   bool need_reload_td = !no_read_save_td && is_timer_frame && f_modify; // load when modify existing data
   bool need_save_td   = !no_read_save_td && is_timer_frame && f_modified; // save when data was modified
   bool copy_automatics = !f_manual;  // in manual mode don't write some data to send-buffer
