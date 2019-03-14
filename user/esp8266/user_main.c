@@ -12,12 +12,13 @@
 #include <ets_sys.h>
 #include <osapi.h>
 #include <gpio.h>
+
+#include "../userio/inout.h"
 #include "driver/uart.h"
 
 #include "user_config.h"
 
 #include "main/common.h"
-#include "main/inout.h"
 #include "config/config.h"
 
 #define printf ets_uart_printf

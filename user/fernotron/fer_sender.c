@@ -1,8 +1,8 @@
 #include "main/common.h"
 #include "fernotron/fer.h"
-#include "main/inout.h"
 #include "config/config.h"
 #include <string.h>
+#include "../userio/inout.h"
 
 volatile bool is_sendMsgPending;
 volatile uint16_t wordsToSend;

@@ -8,7 +8,7 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#include "main/inout.h"
+#include "../userio/inout.h"
 #include "user_config.h"
 
 #if !defined MCU_ESP8266

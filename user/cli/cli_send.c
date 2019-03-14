@@ -3,25 +3,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../userio/inout.h"
 #include "user_config.h"
-#include "main/inout.h"
 #include "positions/current_state.h"
 #include "automatic/timer_state.h"
 #include "fernotron/fer.h"
 #include "setup/set_endpos.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
+#include "userio/status_output.h"
 
 #define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
-
-
 
 const char help_parmSend[]  =
     "a=(0|ID)  0  hex ID of sender or receiver.\n"
     "g=[0-7]   0  group number\n"
     "m=[0-7]   0  group member number\n"
     "c=(up|down|stop|sun-down|sun-inst|set|?)\n"
-   // "p=(?|100|0)"
+    "p=?          get current position\n"
     "r=N       2  repeat command 1+N times\n"
     "SEP[=0|1]    Enter end-position adjustment mode (needs hardware button)"
 // "TROT        Toggle rotation direction"
@@ -38,7 +37,6 @@ process_parmSend(clpar p[], int len) {
   int set_end_pos = -1;
   uint8_t repeats = FSB_PLAIN_REPEATS;
   bool read_state = false;
-  bool do_send = false;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -88,7 +86,8 @@ process_parmSend(clpar p[], int len) {
     if (g != 0 && m != 0) {
       int pos = get_shutter_state(addr, g, m);
       if (pos >= 0) {
-        io_puts("A:position:"), io_puts(" g="), io_putd(g), io_puts(" m="), io_putd(m), io_puts(" p="), io_putd(pos), io_puts(";\n");
+        so_arg_gmp_t gmp = {g, m, pos};
+        so_output_message(SO_POS_PRINT_GMP, &gmp);
       }
     } else {
       print_shutter_positions();
@@ -105,9 +104,7 @@ process_parmSend(clpar p[], int len) {
 
     if (FSB_ADDR_IS_CENTRAL(fsb)) {
       FSB_PUT_GRP(fsb, group);
-      FSB_PUT_MEMB(fsb, memb);  // only set this on central unit!
-      //assert(group == FSB_GET_GRP(fsb));
-      //assert(memb == FSB_GET_MEMB(fsb));
+      FSB_PUT_MEMB(fsb, memb);
     }
 
     if (set_end_pos >= 0) { // enable hardware buttons to set end position

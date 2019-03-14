@@ -8,10 +8,10 @@
 
 #ifndef ALL_H_
 #define ALL_H_
+#include "../userio/inout.h"
 #include "user_config.h"
 
 #include "main/common.h"
-#include "main/inout.h"
 #include "fernotron/fer.h"
 #include "fernotron/fer_code.h"
 #include "main/rtc.h"

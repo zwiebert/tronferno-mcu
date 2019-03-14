@@ -10,7 +10,8 @@
 #include "setup/set_endpos.h"
 #include "misc/bcd.h"
 #include "main/pairings.h"
-#include "main/status_output.h"
+
+#include "../userio/status_output.h"
 
 #if defined DISTRIBUTION || 0
 #define D(x) x

@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "../userio/status_output.h"
 #include "user_config.h"
 #include "positions/current_state.h"
 #include "automatic/timer_state.h"
@@ -11,7 +13,6 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "automatic/timer_data.h"
-#include "main/status_output.h"
 
 #define ENABLE_RSTD 1
 

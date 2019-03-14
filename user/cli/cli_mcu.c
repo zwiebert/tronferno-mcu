@@ -2,15 +2,16 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "../userio/inout.h"
+#include "../userio/status_output.h"
 #include "user_config.h"
 #include "positions/current_state.h"
 #include "automatic/timer_state.h"
-#include "main/inout.h"
 #include "setup/set_endpos.h"
 #include "misc/bcd.h"
 #include "main/rtc.h"
 #include "cli_imp.h"
-#include "main/status_output.h"
 
 const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #if ENABLE_SPIFFS

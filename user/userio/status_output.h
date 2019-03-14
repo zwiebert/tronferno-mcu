@@ -9,7 +9,8 @@
 #define USER_MAIN_STATUS_OUTPUT_H_
 
 #include <stdint.h>
-//#include <stdbool.h>
+#include <stdbool.h>
+#include "positions/shutter_state.h"
 
 typedef enum {
   SO_NONE,
@@ -27,8 +28,9 @@ typedef enum {
   SO_CFGPASSWD_OK, SO_CFGPASSWD_WRONG, SO_CFGPASSWD_MISSING,
 
   SO_TIMER_EVENT_PRINT,
-
   SO_TIMER_PRINT,
+
+  SO_POS_begin, SO_POS_PRINT_GMP, SO_POS_PRINT, SO_POS_PRINT_MMP, SO_POS_end,
 
 
 } so_msg_t;
@@ -36,6 +38,16 @@ typedef enum {
 typedef struct {
   uint8_t g, m;
 } so_arg_gm_t;
+
+typedef struct {
+  uint8_t *mm; //gm_bitmask_t *
+  uint8_t p;
+} so_arg_mmp_t;
+
+typedef struct {
+  uint8_t g, m, p;
+} so_arg_gmp_t;
+
 
 void so_output_message(so_msg_t mt, void *arg);
 

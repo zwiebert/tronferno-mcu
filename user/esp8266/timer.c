@@ -11,9 +11,10 @@
 #include <ets_sys.h>
 #include <osapi.h>
 #include <gpio.h>
+
+#include "../userio/inout.h"
 #include "driver/uart.h"
 
-#include "main/inout.h"
 #include "fernotron/fer.h"
 #include "config/config.h"
 #include "main/rtc.h"

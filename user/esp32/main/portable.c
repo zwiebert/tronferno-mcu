@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "main/inout.h"
+#include "../../userio/inout.h"
 
 char *
 itoa(int val, char *s, int radix) {

@@ -21,9 +21,10 @@
 #include <ets_sys.h>
 #include <osapi.h>
 #include <gpio.h>
+
+#include "../userio/inout.h"
 #include "driver/uart.h"
 
-#include "main/inout.h"
 
 char * ICACHE_FLASH_ATTR
 itoa(int val, char *s, int radix) {

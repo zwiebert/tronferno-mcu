@@ -14,12 +14,12 @@
 #include "driver/uart.h"
 #include <mem.h>
 
-#include "main/inout.h"
 #include "fernotron/fer.h"
 #include "config/config.h"
 #include "main/rtc.h"
 #include "config/config.h"
 #include <sntp.h>
+#include "../userio/inout.h"
 
 extern int ets_uart_printf(const char *fmt, ...);
 #define printf ets_uart_printf

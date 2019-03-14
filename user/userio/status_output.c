@@ -4,11 +4,13 @@
  *  Created on: 13.03.2019
  *      Author: bertw
  */
-#include <string.h>
 #include "status_output.h"
+
+#include <string.h>
+
+#include "userio/inout.h"
 #include "cli/cli_imp.h" // FIXME?
 #include "main/pairings.h"
-#include "main/inout.h"
 #include "config/config.h"
 #include "main/rtc.h"
 #include "positions/shutter_state.h"
@@ -16,6 +18,7 @@
 
 static void so_print_timer_event_minutes(uint8_t g, uint8_t m);
 static void so_print_timer(uint8_t g, uint8_t m, bool wildcard);
+static void so_print_gmbitmask(gm_bitmask_t mm);
 
 void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   static uint16_t pras_msgid, cuas_msgid;
@@ -153,6 +156,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     }
     break;
 
+    /////////////////////////////////////////////////////////////////////////////////
   case SO_TIMER_EVENT_PRINT: {
     so_arg_gm_t *a = arg;
     so_print_timer_event_minutes(a->g, a->m);
@@ -164,6 +168,33 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     so_print_timer(a->g, a->m, true);
   }
     break;
+
+    /////////////////////////////////////////////////////////////////////////////////
+
+
+  case SO_POS_PRINT_GMP: {
+    so_arg_gmp_t *a = arg;
+    io_puts("A:position:");
+    io_puts(" g="), io_putd(a->g);
+    io_puts(" m="), io_putd(a->m);
+    io_puts(" p="), io_putd(a->p), io_puts(";\n");
+  }
+    break;
+
+  case SO_POS_PRINT_MMP: {
+    so_arg_mmp_t *a = arg;
+    io_puts("U:position:"), io_puts(" p="), io_putd(a->p), io_puts(" mm="), so_print_gmbitmask(a->mm), io_puts(";\n");
+  }
+    break;
+
+  case SO_POS_begin:
+    io_puts("U:position:start;\n");
+    break;
+
+  case SO_POS_end:
+    io_puts("U:position:end;\n");
+    break;
+
   default:
     break;
   }
@@ -232,4 +263,14 @@ static void ICACHE_FLASH_ATTR so_print_timer(uint8_t g, uint8_t m, bool wildcard
 
   }
   cli_out_timer_reply_entry(NULL, NULL, -1);
+}
+
+static void ICACHE_FLASH_ATTR so_print_gmbitmask(gm_bitmask_t mm) {
+  uint8_t g;
+
+  for (g = 0; g < 8; ++g) {
+    io_putx8(mm[g]);
+    if (g < 7)
+      io_putc(',');
+  }
 }

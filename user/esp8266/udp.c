@@ -9,8 +9,9 @@
 
 #include "driver/uart.h"
 #include "config/config.h"
-#include "main/inout.h"
 #include "time.h"
+
+#include "../userio/inout.h"
 #include "main/rtc.h"
 
 #define printf io_printf_fun

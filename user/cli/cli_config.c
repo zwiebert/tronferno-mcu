@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../main/cuid_auto_set.h"
+#include "../userio/status_output.h"
+#include "main/cuid_auto_set.h"
 #include "user_config.h"
 #include "config/config.h"
 #include "main/rtc.h"
@@ -11,7 +12,6 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "misc/stof.h"
-#include "main/status_output.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 

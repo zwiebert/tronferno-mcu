@@ -8,12 +8,12 @@
 #include "driver/gpio.h"
 #include "string.h"
 
+#include "../../userio/inout.h"
 #include "../main/pin.h"
 #include "../main/wifistation.h"
 #include "main/common.h"
 #include "config/config.h"
 #include "fernotron/fer.h"
-#include "main/inout.h"
 
 
 

@@ -11,9 +11,10 @@
 #include "esp_timer.h"
 
 #include "esp_sleep.h"
+
+#include "../../userio/inout.h"
 #include "sdkconfig.h"
 
-#include "main/inout.h"
 #include "fernotron/fer.h"
 #include "config/config.h"
 #include "main/rtc.h"

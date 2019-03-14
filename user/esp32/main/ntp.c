@@ -28,9 +28,10 @@
 #include "lwip/err.h"
 #include "lwip/apps/sntp.h"
 #include "time.h"
+
+#include "../../userio/inout.h"
 #include "main/rtc.h"
 
-#include "main/inout.h"
 #include "config/config.h"
 #include "main/rtc.h"
 #include "config/config.h"

@@ -15,7 +15,7 @@ SPI_SIZE_MAP	= 4
 
 #V=1
 # Basic project settings
-MODULES	=   user/main user/cli user/fernotron user/esp8266 user/esp8266/driver user/misc user/automatic user/positions user/setup user/config
+MODULES	=   user/main user/cli user/fernotron user/esp8266 user/esp8266/driver user/misc user/automatic user/positions user/setup user/config user/userio
 LIBS	= c  gcc hal phy pp net80211 lwip wpa main crypto
 
 

@@ -11,7 +11,7 @@
 #include "fernotron/fer.h"
 #include "fernotron/fer_code.h"
 #include "main/rtc.h"
-#include "main/astro.h"
+#include "automatic/astro.h"
 #include "config/config.h"
 #include "misc/bcd.h"
 

@@ -11,6 +11,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "../userio/status_output.h"
 #include "user_config.h"
 
 #include "main/all.h"
@@ -18,7 +20,6 @@
 #include "misc/bcd.h"
 #include "cli/cli_imp.h"
 #include "misc/stof.h"
-#include "main/status_output.h"
 
 
 static bool cuas_active;

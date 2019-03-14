@@ -16,8 +16,8 @@
 #include "driver/gpio.h"
 #include "string.h"
 
+#include "../../userio/inout.h"
 
-#include "main/inout.h"
 #include "fernotron/fer.h"
 #include "main/common.h"
 #include "config/config.h"

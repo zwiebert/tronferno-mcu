@@ -8,8 +8,6 @@
 
 #include "time.h"
 #include "main/rtc.h"
-#include "main/inout.h"
-
 #include <string.h>
 
 #include "freertos/FreeRTOS.h"
@@ -25,6 +23,7 @@
 #include "lwip/sockets.h"
 #include "lwip/netdb.h"
 #include <errno.h>
+#include "../../userio/inout.h"
 
 #define TCP_HARD_TIMEOUT  (60 * 10)  // terminate connections to avoid dead connections piling up
 #define SERIAL_ECHO 1

@@ -1,10 +1,11 @@
+#include "../userio/inout.h"
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "main/common.h"
-#include "inout.h"
 #include "misc/int_macros.h"
 
 int (*io_putc_fun)(char c);

@@ -14,10 +14,10 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
+#include "../../userio/inout.h"
 #include "main/common.h"
 #include "config/config.h"
 #include "fernotron/fer.h"
-#include "main/inout.h"
 
 #define printf io_printf_fun
 #ifndef DISTRIBUTION

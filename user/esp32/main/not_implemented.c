@@ -6,10 +6,11 @@
  */
 
 
-#include "main/inout.h"
 #include "fernotron/fer.h"
 #include "config/config.h"
 #include <time.h>
+
+#include "../../userio/inout.h"
 #include "config/config.h"
 
 
