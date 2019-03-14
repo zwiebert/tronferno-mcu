@@ -7,6 +7,7 @@
 #include "main/rtc.h"
 #include "stdbool.h"
 #include "userio/inout.h"
+#include "userio/status_output.h"
 
 
 //////////////////////////////////////////////////////////////////
@@ -41,16 +42,9 @@ static time_t end_time;
 #define TIMEOUT_SET() (end_time = run_time(NULL) + TIMEOUT_SECS)
 #define IS_TIMEOUT_REACHED() (end_time < run_time(NULL) || (end_time > (run_time(NULL) + TIMEOUT_SECS + 1)))
 
-/*
- if (init_seconds > 0) {
- end_time = run_time(NULL) + init_seconds;
- last_received_sender.data[0] = 0;
- cuas_msgid = msgid;
- */
+#define D(x)
 
-#define D(x) x
-
-#if 0
+#ifdef SEP_TWO_BUTTONS
 #define BUTT_DOWN (mcu_get_buttonDownPin())
 #define BUTT_UP (mcu_get_buttonUpPin())
 #else
@@ -98,7 +92,7 @@ void ICACHE_FLASH_ATTR
 sep_disable(void) {
   if (sep_buttons_enabled) {
     sep_send_stop();  // don't remove this line
-    D(io_puts("sep disable\n"));
+    so_output_message(SO_SEP_DISABLE, 0);
     up_pressed = down_pressed = false;
     sep_buttons_enabled = false;
     recv_lockBuffer(false);
@@ -111,7 +105,7 @@ sep_enable(fer_sender_basic *fsb) {
     sep_disable();
     return false;
   } else if (IS_BUTTON_PRESSED()) {
-    io_puts("error: hardware button is pressed\n");
+    so_output_message(SO_SEP_BUTTON_PRESSED_ERROR, 0);
     return false;
   } else {
 
@@ -129,8 +123,7 @@ sep_enable(fer_sender_basic *fsb) {
     } else {
       return false;
     }
-
-    D(io_puts("sep enable\n"));
+    so_output_message(SO_SEP_ENABLE, 0);
     sep_fsb = *fsb;
     sep_buttons_enabled = true;
     recv_lockBuffer(true);

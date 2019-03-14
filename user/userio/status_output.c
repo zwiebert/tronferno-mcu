@@ -20,9 +20,12 @@
 #include "misc/int_macros.h"
 #include "userio/inout.h"
 
+#define D(x)
+
 static void so_print_timer_event_minutes(uint8_t g, uint8_t m);
 static void so_print_timer(uint8_t g, uint8_t m, bool wildcard);
 static void so_print_gmbitmask(gm_bitmask_t mm);
+static void so_print_startup_info(void);
 
 void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   static uint16_t pras_msgid, cuas_msgid;
@@ -30,6 +33,20 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   int i;
 
   switch (mt) {
+  case SO_FW_START_MSG_PRINT:
+    so_print_startup_info();
+    break;
+
+    /////////////////////////////////////////////////////////////////////////////////
+  case SO_SEP_ENABLE:
+    D(io_puts("sep enable\n"));
+    break;
+  case SO_SEP_DISABLE:
+    D(io_puts("sep disable\n"));
+    break;
+  case SO_SEP_BUTTON_PRESSED_ERROR:
+    io_puts("error: hardware button is pressed\n");
+    break;
 
   /////////////////////////////////////////////////////////////////////////////////
   case SO_CFG_all: {
@@ -283,3 +300,15 @@ static void ICACHE_FLASH_ATTR so_print_gmbitmask(gm_bitmask_t mm) {
       io_putc(',');
   }
 }
+
+static void ICACHE_FLASH_ATTR
+so_print_startup_info(void) {
+  static const char msg_starting[] = "\n\n" "tf: info: start: tronferno-mcu\n" "tf: info: build-date: " __DATE__ " " __TIME__ "\n";
+  static const char msg_hint[] = "tf: hint: type 'help;' to get a command list\n";
+
+  if (C.app_verboseOutput >= vrbNone) {
+    io_puts(msg_starting);
+    io_puts(msg_hint);
+  }
+}
+

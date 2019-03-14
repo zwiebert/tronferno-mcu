@@ -11,9 +11,9 @@
 #include "setup/set_endpos.h"
 #include "stdbool.h"
 #include "user_config.h"
-#include "userio/inout.h"
 #include "main/pairings.h"
 #include "positions/current_state.h"
+#include "userio/status_output.h"
 
 extern fer_sender_basic default_sender;
 extern fer_sender_basic last_received_sender;
@@ -83,19 +83,6 @@ loop(void) {
 }
 
 
-
-
-void ICACHE_FLASH_ATTR
-print_startup_info(void) {
-  static const char msg_starting[] = "\n\n" "tf: info: start: tronferno-mcu\n" "tf: info: build-date: " __DATE__ " " __TIME__ "\n";
-  static const char msg_hint[] = "tf: hint: type 'help;' to get a command list\n";
-
-  if (C.app_verboseOutput >= vrbNone) {
-    io_puts(msg_starting);
-    io_puts(msg_hint);
-  }
-}
-
 int ICACHE_FLASH_ATTR
 main_setup() {
 
@@ -105,7 +92,7 @@ main_setup() {
   test_modules();
 #endif
 
-  print_startup_info();
+  so_output_message(SO_FW_START_MSG_PRINT, 0);
   db_test_all_indicators(3);
 
   dbg_trace();
