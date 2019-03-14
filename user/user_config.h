@@ -2,7 +2,7 @@
 #ifndef USER_CONFIG_H_
 #define USER_CONFIG_H_
 #include "main/common.h"
-#include "main/timer_data_fs.h"
+#include "automatic/timer_data_fs.h"
 
 
 #define APP_VERSION "0.6.1"

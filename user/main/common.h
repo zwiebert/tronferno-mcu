@@ -30,9 +30,14 @@ typedef bool logicLevel;
 #define NO_POSTCOND
 #endif
 
-#include "debug.h"
+#include "main/debug.h"
 
 void mcu_delay_us(uint16_t us);
 void mcu_restart(void);
+
+
+// fernotron.c
+void loop(void);
+int main_setup(void);
 
 #endif // _common_h

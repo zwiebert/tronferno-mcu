@@ -1,7 +1,7 @@
 #include "main/pairings.h"
 #include "user_config.h"
 #include "main/all.h"
-#include "main/shutter_state.h"
+#include "positions/shutter_state.h"
 
 #include <stdio.h>
 #include <string.h>

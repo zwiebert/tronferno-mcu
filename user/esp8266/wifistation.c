@@ -8,7 +8,7 @@
 #include <mem.h>
 
 #include "driver/uart.h"
-#include "main/config.h"
+#include "config/config.h"
 #include "main/inout.h"
 #include "time.h"
 #include "main/rtc.h"

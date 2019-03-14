@@ -15,7 +15,7 @@ SPI_SIZE_MAP	= 4
 
 #V=1
 # Basic project settings
-MODULES	=   user/main user/esp8266 user/esp8266/driver user/misc
+MODULES	=   user/main user/cli user/fernotron user/esp8266 user/esp8266/driver user/misc user/automatic user/positions user/setup user/config
 LIBS	= c  gcc hal phy pp net80211 lwip wpa main crypto
 
 
@@ -67,8 +67,8 @@ $(SPIFFS_A) : $(SPIFFS_OBJ)
 
 
 ## time.a, timeirom.a
-TIME_SRC_DIR := $(SRC_BASE)/user/time
-TIME_BUILD_DIR := $(BUILD_BASE)/user/time
+TIME_SRC_DIR := $(SRC_BASE)/user/lib/time
+TIME_BUILD_DIR := $(BUILD_BASE)/user/lib/time
 
 BUILD_DIRS += $(TIME_BUILD_DIR)
 TIME_A := $(TIME_BUILD_DIR)/time.a
@@ -80,7 +80,7 @@ TIME_OBJ := $(patsubst %.c,$(TIME_BUILD_DIR)/%.o,$(subst $(TIME_SRC_DIR)/,,$(TIM
 TIME_OBJ += $(patsubst %.S,$(TIME_BUILD_DIR)/%.o,$(subst $(TIME_SRC_DIR)/,,$(TIME_ASM_SRC)))
 
 EXTRA_AR += $(TIMEIROM_A) 
-#EXTRA_INCDIR +=
+EXTRA_INCDIR += $(TIME_SRC_DIR)
 GEN_LIBS += $(TIMEIROM_A)
 
 $(TIME_A) : $(TIME_OBJ)
@@ -88,36 +88,8 @@ $(TIME_A) : $(TIME_OBJ)
 	$(Q) $(AR) cru $@ $^
 ## end time.a
 
-
-## gdbstub.a
-ifeq ("$(DEBUG)","1")
-GDBSTUB_BUILD_DIR := $(BUILD_BASE)/esp-gdbstub
-BUILD_DIRS += $(GDBSTUB_BUILD_DIR)
-GDBSTUB_A := $(GDBSTUB_BUILD_DIR)/gdbstub.a
-GDBSTUBIROM_A := $(GDBSTUB_BUILD_DIR)/gdbstubirom.a
-
-CPPFLAGS += -DDEBUG -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 
-CFLAGS +=  -Og -ggdb
-LDFLAGS += -ggdb
-SUBMODULES += esp-gdbstub
-
-GDBSTUB_SRC := $(wildcard esp-gdbstub/*.[c|S])
-GDBSTUB_OBJ := $(patsubst %.S,$(BUILD_BASE)/%.o,$(patsubst %.c,$(BUILD_BASE)/%.o,$(GDBSTUB_SRC)))
-
-EXTRA_AR += $(GDBSTUB_A) 
-#EXTRA_INCDIR +=
-GEN_LIBS += $(GDBSTUB_A)
-
-$(GDBSTUB_A) : $(GDBSTUB_OBJ)
-	$(vecho) "AR $@"
-	$(Q) $(AR) cru $@ $^
-endif
-## end gdbstub.a
-
-
-
 # fetch submodule #FIXME:
-spiffs/src esp-gdbstub:
+spiffs/src:
 	git submodule update --init --recursive
 
 ## make irom archive (move functions from RAM to Flash-ROM on ESP8266)

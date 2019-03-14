@@ -21,7 +21,7 @@
 #include "nvs.h"
 
 #include "user_config.h"
-#include "main/config.h"
+#include "config/config.h"
 
 #define D(x) 
 

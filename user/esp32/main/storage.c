@@ -24,7 +24,7 @@
 
 
 #include "main/all.h"
-#include "main/config.h"
+#include "config/config.h"
 #include "user_config.h"
 #include "main/storage.h"
 #include "main/debug.h"

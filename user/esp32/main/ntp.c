@@ -31,10 +31,9 @@
 #include "main/rtc.h"
 
 #include "main/inout.h"
-#include "main/fer.h"
-#include "main/config.h"
+#include "config/config.h"
 #include "main/rtc.h"
-#include "main/config.h"
+#include "config/config.h"
 
 
 //#include <sntp.h>

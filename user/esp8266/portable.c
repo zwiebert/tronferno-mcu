@@ -8,7 +8,7 @@
 //typedef unsigned char bool;
 #include <c_types.h>
 
-#include "esp_missing_includes.h"
+
 
 #include <mem.h>
 

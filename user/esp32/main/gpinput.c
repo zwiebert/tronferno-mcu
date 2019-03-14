@@ -1,9 +1,3 @@
-#include "user_config.h"
-#include "main/all.h"
-#include "main/gpinput.h"
-
-#include "main/shutter_state.h"
-
 #include <stdio.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"
@@ -12,6 +6,11 @@
 #include "nvs_flash.h"
 #include "nvs.h"
 #include "driver/gpio.h"
+
+#include "user_config.h"
+#include "main/gpinput.h"
+#include "positions/shutter_state.h"
+#include "main/debug.h"
 
 
 #ifndef DISTRIBUTION

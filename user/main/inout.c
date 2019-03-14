@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "common.h"
+#include "main/common.h"
 #include "inout.h"
 #include "misc/int_macros.h"
 

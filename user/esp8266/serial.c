@@ -15,7 +15,7 @@
 
 #include "main/inout.h"
 
-#include "esp_missing_includes.h"
+
 
 extern int ets_uart_printf(const char *fmt, ...);
 

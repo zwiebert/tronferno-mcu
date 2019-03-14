@@ -19,11 +19,11 @@
 #include <osapi.h>
 #include <mem.h>
 
-#include "main/config.h"
-#include "esp_missing_includes.h"
+#include "config/config.h"
+
 
 #include "data_flash2.h"
-#include "../user_config.h"
+#include "user_config.h"
 
 #define TEST_THIS_MODULE 0
 #define LEAN_MODULE 1

@@ -14,8 +14,8 @@
 #include "sdkconfig.h"
 
 #include "main/inout.h"
-#include "main/fer.h"
-#include "main/config.h"
+#include "fernotron/fer.h"
+#include "config/config.h"
 #include "main/rtc.h"
 
 

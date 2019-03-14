@@ -1,8 +1,6 @@
 #ifndef ESP32_USER_CONFIG_H_
 #define ESP32_USER_CONFIG_H_
 
-#include "../../user_config.h"
-
 #define MCU_TYPE "esp32"
 
 //extern const char *const build_date;

@@ -2,12 +2,8 @@
 #define _inout_h
 
 #include <stdint.h>
-#ifdef MCU_ESP8266
-#include <c_types.h>
-#endif
-#ifndef true
 #include <stdbool.h>
-#endif
+
 
 extern char *itoa(int val, char *s, int radix);
 extern char *ltoa(long val, char *s, int radix);

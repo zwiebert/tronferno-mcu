@@ -7,10 +7,10 @@
 
 
 #include "main/inout.h"
-#include "main/fer.h"
-#include "main/config.h"
+#include "fernotron/fer.h"
+#include "config/config.h"
 #include <time.h>
-#include "main/config.h"
+#include "config/config.h"
 
 
 #define printf ets_uart_printf

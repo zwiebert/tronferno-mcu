@@ -10,7 +10,7 @@
 
 
 #include "main/all.h"
-#include "main/config.h"
+#include "config/config.h"
 #include "spiffs.h"
 #include "main/storage.h"
 #include "main/debug.h"

@@ -15,13 +15,10 @@
 #include <mem.h>
 
 #include "main/inout.h"
-#include "main/fer.h"
-#include "main/config.h"
+#include "fernotron/fer.h"
+#include "config/config.h"
 #include "main/rtc.h"
-#include "main/config.h"
-
-#include "esp_missing_includes.h"
-
+#include "config/config.h"
 #include <sntp.h>
 
 extern int ets_uart_printf(const char *fmt, ...);

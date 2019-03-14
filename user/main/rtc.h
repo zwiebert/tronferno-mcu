@@ -1,7 +1,7 @@
 #ifndef RTC_H_
 #define RTC_H_
 
-#include "../user_config.h"
+#include "user_config.h"
 #include <time.h>
 
 volatile time_t run_time_secs;

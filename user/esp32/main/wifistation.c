@@ -15,8 +15,8 @@
 #include "lwip/sys.h"
 
 #include "main/common.h"
-#include "main/config.h"
-#include "main/fer.h"
+#include "config/config.h"
+#include "fernotron/fer.h"
 #include "main/inout.h"
 
 #define printf io_printf_fun

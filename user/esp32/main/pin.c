@@ -18,9 +18,9 @@
 
 
 #include "main/inout.h"
-#include "main/fer.h"
+#include "fernotron/fer.h"
 #include "main/common.h"
-#include "main/config.h"
+#include "config/config.h"
 
 #define printf ets_uart_printf
 

@@ -3,16 +3,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../user_config.h"
-#include "common.h"
-#include "current_state.h"
+#include "user_config.h"
+#include "main/common.h"
+#include "positions/current_state.h"
 
-#include "rtc.h"
+#include "main/rtc.h"
 
-#include "all.h"
-#include "set_endpos.h"
-#include "timer_state.h"
-#include "cli.h"
+#include "main/all.h"
+#include "setup/set_endpos.h"
+#include "automatic/timer_state.h"
+#include "cli/cli.h"
+#include "cuid_auto_set.h"
+#include "main/pairings.h"
 
 extern fer_sender_basic default_sender;
 extern fer_sender_basic last_received_sender;
@@ -30,6 +32,10 @@ loop(void) {
   cli_loop();
 
   timer_state_loop();
+  cu_auto_set_check_timeout();
+#ifdef USE_PAIRINGS
+        pair_auto_set_check_timeout();
+#endif
 
 #ifdef FER_RECEIVER
   if (MessageReceived != MSG_TYPE_NONE) {
@@ -37,13 +43,12 @@ loop(void) {
       case MSG_TYPE_PLAIN: {
         bool isDouble = (0 == memcmp(&last_received_sender.data, rxmsg->cmd, 5));
         memcpy(&last_received_sender.data, rxmsg->cmd, 5);
-        cu_auto_set(0);
-#ifdef USE_PAIRINGS
-        pair_auto_set(0);
-#endif
         io_puts("R:"), fmsg_print(rxmsg, MessageReceived);
         io_puts(isDouble ? "c:" : "C:"), fmsg_print_as_cmdline(rxmsg, MessageReceived);
-
+        cu_auto_set_check(&last_received_sender);
+#ifdef USE_PAIRINGS
+        pair_auto_set_check(&last_received_sender);
+#endif
         { //TODO: improve shutter states
           uint8_t g=0, m=0;
 

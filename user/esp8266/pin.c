@@ -13,10 +13,10 @@
 #include "driver/uart.h"
 
 #include "main/inout.h"
-#include "main/fer.h"
-#include "main/config.h"
+#include "fernotron/fer.h"
+#include "config/config.h"
 
-#include "esp_missing_includes.h"
+
 #define printf ets_uart_printf
 
 #define RFOUT_GPIO 4

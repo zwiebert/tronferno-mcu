@@ -1,4 +1,5 @@
 #include "freertos/FreeRTOS.h"
+#include "main/all.h"
 #include "esp_wifi.h"
 #include "esp_system.h"
 #include "esp_event.h"
@@ -10,8 +11,8 @@
 #include "../main/pin.h"
 #include "../main/wifistation.h"
 #include "main/common.h"
-#include "main/config.h"
-#include "main/fer.h"
+#include "config/config.h"
+#include "fernotron/fer.h"
 #include "main/inout.h"
 
 

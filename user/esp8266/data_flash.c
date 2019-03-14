@@ -22,9 +22,9 @@
 #include <osapi.h>
 #include <mem.h>
 
-#include "main/config.h"
-#include "esp_missing_includes.h"
-#include "../user_config.h"
+#include "config/config.h"
+
+#include "user_config.h"
 
 #define LEAN_MODULE 1
 

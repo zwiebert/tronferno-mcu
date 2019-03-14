@@ -8,16 +8,16 @@
 
 #ifndef ALL_H_
 #define ALL_H_
-#include "../user_config.h"
+#include "user_config.h"
 
-#include "common.h"
-#include "inout.h"
-#include "fer.h"
-#include "fer_code.h"
-#include "rtc.h"
-#include "cli.h"
-#include "config.h"
-#include "spiffs_fs.h"
+#include "main/common.h"
+#include "main/inout.h"
+#include "fernotron/fer.h"
+#include "fernotron/fer_code.h"
+#include "main/rtc.h"
+#include "cli/cli.h"
+#include "config/config.h"
+#include "main/spiffs_fs.h"
 
 
 #endif /* ALL_H_ */

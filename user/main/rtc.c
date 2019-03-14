@@ -1,20 +1,11 @@
-#include "../user_config.h"
-#include "common.h"
-#include "rtc.h"
+#include "user_config.h"
+#include "main/common.h"
+#include "main/rtc.h"
 #include <string.h>
 #include <stdlib.h>
-#if defined AVR_TIME
 #include <time.h>
-#elif  defined MCU_ESP32
-#include <time.h>
-#define ONE_HOUR 3600
-#define ONE_DAY 86400
-#else
-#include "time/time.h"
-#endif
-
-#include "config.h"
-#include "common.h"
+#include "config/config.h"
+#include "main/common.h"
 
 rtc_time_source_t rtc_last_time_source;
 
@@ -129,27 +120,6 @@ rtc_set_by_string(const char *dateTimeString) {
   return false;
 }
 
-#ifdef AVR_TIME
-//#include <util/eu_dst.h>
-#if 0
-#include <util/usa_dst.h>
-
-#else // FIXME: DST
-int16_t ICACHE_FLASH_ATTR
-usa_dst(const time_t *timer, int32_t * z) {
-  uint32_t t = *timer;
-  if ((uint8_t) (t >> 24) >= 194)
-  t -= 3029443200U;
-  t = (t + 655513200) / 604800 * 28;
-  if ((uint16_t) (t % 1461) < 856)
-  return 3600;
-  else
-  return 0;
-}
-#endif
-
-#endif
-
 int16_t ICACHE_FLASH_ATTR
 eu_dst(const time_t *timer, int32_t * z) {
   uint32_t t = *timer;
@@ -191,12 +161,6 @@ rtc_setup() {
   case dstEU:
     set_dst(eu_dst);
     break;
-
-#ifdef AVR_TIME
-    case dstUS:
-    set_dst(usa_dst);
-    break;
-#endif
 
   case dstAlways:
      set_dst(always_dst);

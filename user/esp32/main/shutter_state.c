@@ -16,8 +16,8 @@
 #define CFG_NAMESPACE "Tronferno"
 
 #include "user_config.h"
-#include "main/config.h"
-#include "main/shutter_state.h"
+#include "config/config.h"
+#include "positions/shutter_state.h"
 
 #define NB_SIZE 30
 #define NB_PFX "GMBM_"

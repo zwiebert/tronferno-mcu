@@ -9,9 +9,9 @@
 #ifndef ASTRO_H_
 #define ASTRO_H_
 
-#include "common.h"
-#include "fer_code.h"
-#include "fer.h"
+#include "main/common.h"
+#include "fernotron/fer_code.h"
+#include "fernotron/fer.h"
 
 
 

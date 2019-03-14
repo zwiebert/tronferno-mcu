@@ -12,11 +12,11 @@
 #include "astro.h"
 #include "misc/sun.h"
 #include "misc/bcd.h"
-#include "common.h"
-#include "rtc.h"
-#include "config.h"
-#include "fer_code.h"
-#include "fer.h"
+#include "main/common.h"
+#include "main/rtc.h"
+#include "config/config.h"
+#include "fernotron/fer_code.h"
+#include "fernotron/fer.h"
 
 
 /*

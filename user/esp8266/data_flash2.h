@@ -10,7 +10,7 @@
 #ifndef USER_ESP8266_DATA_FLASH2_H_
 #define USER_ESP8266_DATA_FLASH2_H_
 
-#include "main/timer_data.h"
+#include "automatic/timer_data.h"
 ////////////////////////////////////////////////////////////////////////////////////////
 // configuration start
 //

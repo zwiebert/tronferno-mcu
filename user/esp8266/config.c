@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 #include "user_config.h"
-#include "main/config.h"
+#include "config/config.h"
 
 
 #include "data_flash.h"

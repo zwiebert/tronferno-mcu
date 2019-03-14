@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "debug.h"
+#include "main/debug.h"
 
 bool test_modules(void)
 {

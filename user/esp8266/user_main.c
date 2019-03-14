@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "esp_missing_includes.h"
+
 
 #include "user_interface.h"
 #include <os_type.h>
@@ -14,14 +14,11 @@
 #include <gpio.h>
 #include "driver/uart.h"
 
-#include "../user_config.h"
+#include "user_config.h"
 
 #include "main/common.h"
 #include "main/inout.h"
-#include "main/config.h"
-#ifdef DEBUG
-#include <../../esp-gdbstub/gdbstub.h>
-#endif
+#include "config/config.h"
 
 #define printf ets_uart_printf
 
@@ -32,7 +29,6 @@ extern void setup_timer(void);
 extern void setup_serial(uint32_t baudrate);
 extern void setup_notImplemented(void);
 extern void setup_pin(void);
-void main_setup(void);
 void setup_wifistation(void);
 void setup_dataFlash(void);
 void setup_dataFlash2(void);
@@ -47,7 +43,7 @@ static os_event_t user_procTaskQueue[user_procTaskQueueLen];
 // io task
 #define io_procTaskPrio     0
 #define io_procTaskQueueLen 1
-static os_event_t io_procTaskQueue[io_procTaskQueueLen];
+
 
 static void ICACHE_FLASH_ATTR
 user_procTask(os_event_t *events) {
@@ -58,12 +54,6 @@ user_procTask(os_event_t *events) {
   system_os_post(user_procTaskPrio, 0, 0);
 }
 
-static void ICACHE_FLASH_ATTR
-io_procTask(os_event_t *events) {
-  tcps_loop();
-  ets_delay_us(1000);
-  system_os_post(io_procTaskPrio, 0, 0);
-}
 
 void ICACHE_FLASH_ATTR
 print_reset_info() {
@@ -179,21 +169,10 @@ user_init() {
 
   system_os_task(user_procTask, user_procTaskPrio, user_procTaskQueue, user_procTaskQueueLen);
   system_os_post(user_procTaskPrio, 0, 0);
-#if 0
-  system_os_task(io_procTask, io_procTaskPrio, io_procTaskQueue, io_procTaskQueueLen);
-  system_os_post(io_procTaskPrio, 0, 0 );
-#endif
 
   setup_timer();
 
   setup_dataFlash2();
-
-
-#ifdef DEBUG
-  gdbstub_init();
-#endif
-  // system_set_os_print(1);
-  //system_print_meminfo();
 
 }
 
