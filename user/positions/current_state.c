@@ -1,9 +1,9 @@
 #include "positions/current_state.h"
 
-#include "misc/int_macros.h"
-#include "config/config.h"
-#include "main/pairings.h"
+#include <stdint.h>
+
 #include "main/debug.h"
+#include "misc/int_macros.h"
 #include "userio/status_output.h"
 
 #ifndef DISTRIBUTION

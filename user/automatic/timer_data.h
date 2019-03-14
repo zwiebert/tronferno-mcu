@@ -8,7 +8,8 @@
 #ifndef USER_MAIN_TIMER_DATA_H_
 #define USER_MAIN_TIMER_DATA_H_
 
-#include "fernotron/fer_code.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 typedef struct {
   int16_t astro;      // minute offset of civil dusk, or 20000 for disables astro
@@ -16,6 +17,11 @@ typedef struct {
   char daily[8+1];    // ASCII string of one daily timer
   char weekly[7*8+1]; // ASCII string of seven weekly timers
 } timer_data_t;
+
+
+#include "fernotron/fer_code.h"
+
+
 
 #define td_initializer { 20000, 0, "", "" }
 #define td_is_astro(td) ((td)->astro < 20000)

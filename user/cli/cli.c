@@ -7,10 +7,11 @@
 #include <stdint.h>
 #include <string.h>
 #include "user_config.h"
+#include "config/config.h"
 #include "positions/current_state.h"
 #include "automatic/timer_state.h"
 
-#include "main/all.h"
+
 #include "setup/set_endpos.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"

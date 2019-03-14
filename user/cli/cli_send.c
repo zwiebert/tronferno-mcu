@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../userio/inout.h"
+#include "userio/inout.h"
 #include "user_config.h"
 #include "positions/current_state.h"
 #include "automatic/timer_state.h"

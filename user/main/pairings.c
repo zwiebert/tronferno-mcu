@@ -6,11 +6,11 @@
 #include "positions/current_state.h"
 #include "automatic/timer_state.h"
 #include "cli/cli.h"
-#include "main/all.h"
+
 #include "setup/set_endpos.h"
 #include "misc/bcd.h"
 #include "main/pairings.h"
-
+#include "main/rtc.h"
 #include "../userio/status_output.h"
 
 #if defined DISTRIBUTION || 0

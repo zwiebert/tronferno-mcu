@@ -1,11 +1,12 @@
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+
+#include "fernotron/fer_code.h"
+#include "fernotron/fer_frame.h"
+#include "fernotron/fer_sender.h"
+#include "fernotron/fer_transceiver.h"
 #include "main/common.h"
 #include "main/rtc.h"
-#include "main/all.h"
-#include "fernotron/fer.h"
+#include "stdbool.h"
+#include "userio/inout.h"
 
 
 //////////////////////////////////////////////////////////////////

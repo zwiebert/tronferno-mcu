@@ -1,7 +1,8 @@
 #ifndef USER_MAIN_TIMER_STATE_H_
 #define USER_MAIN_TIMER_STATE_H_
 
-#include "fernotron/fer_code.h" // for wdays
+#include <stdint.h>
+#include <stdbool.h>
 #include "positions/shutter_state.h"
 
 enum { ASTRO_MINTS,

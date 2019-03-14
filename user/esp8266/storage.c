@@ -9,7 +9,7 @@
 #if ENABLE_SPIFFS
 
 
-#include "main/all.h"
+
 #include "config/config.h"
 #include "spiffs.h"
 #include "main/storage.h"

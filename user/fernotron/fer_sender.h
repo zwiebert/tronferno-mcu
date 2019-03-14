@@ -8,6 +8,10 @@
 #ifndef USER_MAIN_FER_SENDER_H_
 #define USER_MAIN_FER_SENDER_H_
 
+#include "stdbool.h"
+#include "fer_code.h"
+#include "fer_frame.h"
+
 // true while sending in progress
 extern volatile bool is_sendMsgPending;
 

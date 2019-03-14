@@ -12,14 +12,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../userio/status_output.h"
-#include "user_config.h"
+#include "cli/cli.h"
+#include "config/config.h"
+#include "fernotron/fer_code.h"
+#include "main/common.h"
+#include "userio/status_output.h"
+#include "main/rtc.h"
 
-#include "main/all.h"
-#include "setup/set_endpos.h"
-#include "misc/bcd.h"
-#include "cli/cli_imp.h"
-#include "misc/stof.h"
 
 
 static bool cuas_active;

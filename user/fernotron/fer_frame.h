@@ -8,6 +8,10 @@
 #ifndef USER_MAIN_FER_FRAME_H_
 #define USER_MAIN_FER_FRAME_H_
 
+#include "fer_frame.h"
+
+#include <stdint.h>
+#include "fer_code.h"
 #include "fer_timings.h"
 
 typedef enum {

@@ -32,6 +32,8 @@ typedef enum {
 
   SO_POS_begin, SO_POS_PRINT_GMP, SO_POS_PRINT, SO_POS_PRINT_MMP, SO_POS_end,
 
+  SO_PAIR_PRINT_AMM,
+
 
 } so_msg_t;
 
@@ -48,6 +50,10 @@ typedef struct {
   uint8_t g, m, p;
 } so_arg_gmp_t;
 
+typedef struct {
+  uint32_t a;
+  uint8_t *mm; //gm_bitmask_t *
+} so_arg_amm_t;
 
 void so_output_message(so_msg_t mt, void *arg);
 

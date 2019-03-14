@@ -5,9 +5,20 @@
  *  Author: bertw
  */ 
 
-#include "main/all.h"
-#include "fer_frame.h"
+
+
+#include <stdint.h>
+
+#include "config/config.h"
+#include "fernotron/fer.h"
 #include "fernotron/fer_code.h"
+#include "fernotron/fer_frame.h"
+#include "fernotron/fer_timings.h"
+#include "main/common.h"
+#include "main/debug.h"
+#include "misc/int_macros.h"
+#include "stdbool.h"
+#include "userio/inout.h"
 
 void ICACHE_FLASH_ATTR
 frb_printPacket(const uint8_t *dg) {

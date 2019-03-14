@@ -1,20 +1,19 @@
-#include <stdint.h>
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "user_config.h"
-#include "main/common.h"
-#include "positions/current_state.h"
-
-#include "main/rtc.h"
-
-#include "main/all.h"
-#include "setup/set_endpos.h"
 #include "automatic/timer_state.h"
 #include "cli/cli.h"
-#include "cuid_auto_set.h"
+#include "config/config.h"
+#include "fernotron/fer_code.h"
+#include "fernotron/fer_sender.h"
+#include "main/common.h"
+#include "main/cuid_auto_set.h"
+#include "main/debug.h"
+#include "main/rtc.h"
+#include "setup/set_endpos.h"
+#include "stdbool.h"
+#include "user_config.h"
+#include "userio/inout.h"
 #include "main/pairings.h"
+#include "positions/current_state.h"
 
 extern fer_sender_basic default_sender;
 extern fer_sender_basic last_received_sender;

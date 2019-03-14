@@ -11,7 +11,7 @@
 
 #include "config_spiffs.h"
 
-#include "main/all.h"
+
 
 
 #include "config/config.h"

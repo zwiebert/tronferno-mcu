@@ -4,17 +4,21 @@
  *  Created on: 13.03.2019
  *      Author: bertw
  */
-#include "status_output.h"
+#include "automatic/timer_data.h"
+#include "userio/status_output.h"
 
 #include <string.h>
+#include <stdint.h>
 
-#include "userio/inout.h"
-#include "cli/cli_imp.h" // FIXME?
-#include "main/pairings.h"
-#include "config/config.h"
-#include "main/rtc.h"
-#include "positions/shutter_state.h"
+
 #include "automatic/timer_state.h"
+#include "cli/cli_imp.h" // FIXME?
+#include "config/config.h"
+#include "main/common.h"
+#include "main/pairings.h"
+#include "main/rtc.h"
+#include "misc/int_macros.h"
+#include "userio/inout.h"
 
 static void so_print_timer_event_minutes(uint8_t g, uint8_t m);
 static void so_print_timer(uint8_t g, uint8_t m, bool wildcard);
@@ -194,6 +198,11 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_POS_end:
     io_puts("U:position:end;\n");
     break;
+
+  case SO_PAIR_PRINT_AMM: {
+    so_arg_amm_t *a = arg;
+    io_puts("pair a="), so_print_gmbitmask(a->mm), io_puts(";\n");
+  }
 
   default:
     break;
