@@ -222,6 +222,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   }
 
   default:
+    io_puts("error:so_output_message() unhandled message: "), io_putd(mt), io_putlf();
     break;
   }
 

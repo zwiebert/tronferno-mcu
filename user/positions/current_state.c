@@ -44,7 +44,7 @@ get_state(uint32_t a, int g, int m) {
 static int ICACHE_FLASH_ATTR
 set_state(uint32_t a, int g, int m, int position) {
   uint8_t p, gi, mi;
-  DT(ets_printf("%s: %d, %d, %d\n", __func__, g, m, position));
+  DT(ets_printf("%s: a=%lx, g=%d, m=%d, position=%d\n", __func__, a, g, m, position));
   precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
   precond(0 <= position && position <= 100);
 
@@ -73,7 +73,7 @@ set_shutter_state(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd) {
   int position = -1;
   precond(g <= 7 && m <= 7);
 
-  DT(ets_printf("%s: %d, %d, %d\n", __func__, (int)g, (int)m, (int)cmd));
+  DT(ets_printf("%s: a=%lx, g=%d, m=%d, cmd=%d\n", __func__, a, (int)g, (int)m, (int)cmd));
 #ifdef USE_PAIRINGS
   if (!(a == 0 || a == C.fer_centralUnitID)) {
     gm_bitmask_t gm;
@@ -98,8 +98,10 @@ set_shutter_state(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd) {
     position = 50;
 
   if (0 <= position && position <= 100) {
-    so_arg_gmp_t gmp = { g, m, position };
-    so_output_message(SO_POS_PRINT, &gmp);
+    if (a == 0 || a == C.fer_centralUnitID) {
+      so_arg_gmp_t gmp = { g, m, position };
+      so_output_message(SO_POS_PRINT_GMP, &gmp);  // FIXME: better use bit mask?
+    }
   }
 
   if (position < 0)
