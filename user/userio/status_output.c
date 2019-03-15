@@ -4,12 +4,12 @@
  *  Created on: 13.03.2019
  *      Author: bertw
  */
+#include "user_config.h"
+
 #include "automatic/timer_data.h"
 #include "userio/status_output.h"
 
 #include <string.h>
-#include <stdint.h>
-
 
 #include "automatic/timer_state.h"
 #include "cli/cli_imp.h" // FIXME?

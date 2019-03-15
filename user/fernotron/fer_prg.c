@@ -6,8 +6,8 @@
  */
 
 #include <string.h>
+#include "user_config.h"
 
-#include "main/common.h"
 #include "fernotron/fer.h"
 #include "fernotron/fer_code.h"
 #include "main/rtc.h"

@@ -9,7 +9,6 @@
 #define CONFIG_H_
 
 #include "../userio/inout.h"
-#include "user_config.h"
 
 #if !defined MCU_ESP8266
 #if __has_include("../sensitive/defaults.h")

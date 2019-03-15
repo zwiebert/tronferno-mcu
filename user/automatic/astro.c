@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "user_config.h"
+
 
 #include "astro.h"
 #include "misc/sun.h"

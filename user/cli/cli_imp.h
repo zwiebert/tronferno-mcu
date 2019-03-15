@@ -1,6 +1,5 @@
 #ifndef cli_imp_h_
 #define cli_imp_h_
-
 #include "cli.h"
 
 

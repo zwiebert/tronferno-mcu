@@ -4,14 +4,14 @@
  * Created: 24.08.2017 21:45:48
  *  Author: bertw
  */
-#include <stdint.h>
-#include <string.h>
 #include "user_config.h"
+
+
+#include <string.h>
+
 #include "config/config.h"
 #include "positions/current_state.h"
 #include "automatic/timer_state.h"
-
-
 #include "setup/set_endpos.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"

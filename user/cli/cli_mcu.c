@@ -1,10 +1,10 @@
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "user_config.h"
 
-#include "../userio/inout.h"
-#include "../userio/status_output.h"
+#include <string.h>
+
+
+#include "userio/inout.h"
+#include "userio/status_output.h"
 #include "user_config.h"
 #include "positions/current_state.h"
 #include "automatic/timer_state.h"

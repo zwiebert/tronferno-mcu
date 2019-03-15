@@ -1,11 +1,10 @@
+#include "user_config.h"
 
 #include "fernotron/fer_code.h"
 #include "fernotron/fer_frame.h"
 #include "fernotron/fer_sender.h"
 #include "fernotron/fer_transceiver.h"
-#include "main/common.h"
 #include "main/rtc.h"
-#include "stdbool.h"
 #include "userio/inout.h"
 #include "userio/status_output.h"
 

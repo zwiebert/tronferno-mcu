@@ -1,3 +1,4 @@
+#include "user_config.h"
 #include "string.h"
 #include "cli_imp.h"
 

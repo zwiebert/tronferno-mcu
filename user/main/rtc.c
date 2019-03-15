@@ -1,8 +1,9 @@
-#include "user_config.h"
-#include "main/common.h"
-#include "main/rtc.h"
 #include <string.h>
-#include <stdlib.h>
+#include "user_config.h"
+
+#include "main/rtc.h"
+
+
 #include <time.h>
 #include "config/config.h"
 #include "main/common.h"

@@ -4,13 +4,10 @@
  *  Created on: 13.03.2019
  *      Author: bertw
  */
+#include <string.h>
+#include "user_config.h"
 
 #include "cuid_auto_set.h"
-
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "cli/cli.h"
 #include "config/config.h"

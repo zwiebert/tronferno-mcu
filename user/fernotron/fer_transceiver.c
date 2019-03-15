@@ -1,5 +1,7 @@
 #include <stdlib.h>
 
+#include "user_config.h"
+
 #include "../userio/inout.h"
 #include "user_config.h"
 #include "main/common.h"

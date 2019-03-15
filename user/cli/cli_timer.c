@@ -1,4 +1,5 @@
-#include <stdint.h>
+#include "user_config.h"
+
 #include <string.h>
 
 #include "../userio/status_output.h"

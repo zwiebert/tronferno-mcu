@@ -1,10 +1,11 @@
+#include "user_config.h"
+
 #include "positions/current_state.h"
-
-#include <stdint.h>
-
+#include "config/config.h"
 #include "main/debug.h"
 #include "misc/int_macros.h"
 #include "userio/status_output.h"
+#include "main/pairings.h"
 
 #ifndef DISTRIBUTION
 #define DB_INFO 0

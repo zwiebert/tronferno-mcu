@@ -1,8 +1,8 @@
 #ifndef DEBUG_H_
 #define DEBUG_H_
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "user_config.h"
+
 #ifdef MCU_ESP8266
 // FIXME: don't want link an entire libc just for assert()
 #define assert(x)

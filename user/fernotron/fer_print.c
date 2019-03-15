@@ -8,6 +8,7 @@
 
 
 #include <stdint.h>
+#include "user_config.h"
 
 #include "config/config.h"
 #include "fernotron/fer.h"

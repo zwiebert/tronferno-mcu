@@ -1,9 +1,11 @@
+#include <stdlib.h>
+#include <string.h>
+
+#include "user_config.h"
+
 #include "automatic/timer_state.h"
 #include "positions/current_state.h"
 #include "timer_data.h"
-
-#include <stdlib.h>
-#include <string.h>
 #include "main/rtc.h"
 #include "misc/sun.h"
 #include "config/config.h"

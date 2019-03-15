@@ -1,6 +1,5 @@
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
+#include "user_config.h"
+
 #include <string.h>
 
 #include "cli/cli_imp.h"

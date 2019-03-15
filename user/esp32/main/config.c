@@ -12,15 +12,13 @@
  *  Created on: 16.09.2017
  *      Author: bertw
  */
+#include "user_config.h"
 
-#include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "nvs_flash.h"
 #include "nvs.h"
-
-#include "user_config.h"
 #include "config/config.h"
 
 #define D(x) 

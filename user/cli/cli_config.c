@@ -1,7 +1,5 @@
-#include <stdint.h>
+#include "user_config.h"
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "../userio/status_output.h"
 #include "main/cuid_auto_set.h"

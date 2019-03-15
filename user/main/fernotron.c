@@ -1,16 +1,17 @@
 #include <string.h>
+
+#include "user_config.h"
+
+
 #include "automatic/timer_state.h"
 #include "cli/cli.h"
 #include "config/config.h"
 #include "fernotron/fer_code.h"
 #include "fernotron/fer_sender.h"
-#include "main/common.h"
 #include "main/cuid_auto_set.h"
 #include "main/debug.h"
 #include "main/rtc.h"
 #include "setup/set_endpos.h"
-#include "stdbool.h"
-#include "user_config.h"
 #include "main/pairings.h"
 #include "positions/current_state.h"
 #include "userio/status_output.h"
