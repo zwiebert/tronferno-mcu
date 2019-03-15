@@ -195,7 +195,7 @@ BUILD_DIRS	+= $(addprefix $(BUILD_BASE)/,$(MODULES))
 SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
-C_VERSION_SRC := $(SRC_BASE)/user/build_date.c
+C_VERSION_SRC := $(SRC_BASE)/src/build_date.c
 C_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
 CXX_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 ASM_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
@@ -214,7 +214,7 @@ TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
 
 LD_SCRIPT	:= $(addprefix -T$(SDK_BASE)/$(SDK_LDDIR)/,$(LD_SCRIPT))
 
-INCDIR		:= -Iuser -I$(SRC_BASE)/user/time -I$(SRC_BASE)/user # $(addprefix -I,$(SRC_DIR))
+INCDIR		:= -Isrc -I$(SRC_BASE)/src/time -I$(SRC_BASE)/src # $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 #MODULE_INCDIR	:= $(foreach sdir,$(SRC_DIR),$(addprefix -I,$(sdir)))
 
@@ -226,7 +226,7 @@ ifneq ("$(D)","1")
 CFLAGS += -Os -g -O2
 endif
 
-ifneq ($(wildcard $(SRC_BASE)/user/sensitive/defaults.h),)
+ifneq ($(wildcard $(SRC_BASE)/src/sensitive/defaults.h),)
 CPPFLAGS += -DHAVE_USER_DEFAULTS
 endif
 
@@ -421,7 +421,7 @@ clean: force
 	$(Q) rm -rf $(BUILD_DIRS)
 	$(Q) rm -rf $(DEP_DIR)
 	$(Q) rm -rf $(FW_BASE)
-	$(Q) rm -rf $(BUILD_BASE)/user $(BUILD_BASE)
+	$(Q) rm -rf $(BUILD_BASE)/src $(BUILD_BASE)
 	$(Q) rm -rf spiffs/build/*.o  spiffs/build/*.a
 	$(Q) mkdir -p $(DEP_DIR) # FIXME: kludge to allow "make -j" 
 

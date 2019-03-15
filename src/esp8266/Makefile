@@ -2,7 +2,7 @@ SRC_BASE ?= ../..
 CPPFLAGS += -DMCU_ESP8266
 
 # Main settings includes
-include	 $(SRC_BASE)/user/esp8266/settings.mk
+include	 $(SRC_BASE)/src/esp8266/settings.mk
 
 # Individual project settings (Optional)
 #BOOT		= new
@@ -15,7 +15,7 @@ SPI_SIZE_MAP	= 4
 
 #V=1
 # Basic project settings
-MODULES	=   user/main user/cli user/fernotron user/esp8266 user/esp8266/driver user/misc user/automatic user/positions user/setup user/config user/userio user/debug user/storage
+MODULES	=   src/main src/cli src/fernotron src/esp8266 src/esp8266/driver src/misc src/automatic src/positions src/setup src/config src/userio src/debug src/storage
 LIBS	= c  gcc hal phy pp net80211 lwip wpa main crypto
 
 
@@ -52,7 +52,7 @@ SPIFFS_SRC := $(wildcard $(SPIFFS_SRC_DIR)/*.c)
 SPIFFS_OBJ := $(patsubst %.c,$(SPIFFS_BUILD_DIR)/%.o,$(subst $(SPIFFS_SRC_DIR)/,,$(SPIFFS_SRC)))
 
 EXTRA_AR += $(SPIFFSIROM_A) 
-EXTRA_INCDIR += $(SRC_BASE)/spiffs/src  $(SRC_BASE)/user/esp8266
+EXTRA_INCDIR += $(SRC_BASE)/spiffs/src  $(SRC_BASE)/src/esp8266
 GEN_LIBS += $(SPIFFSIROM_A)
 CPPFLAGS += -DCONFIG_BUILD_SPIFFS
 SUBMODULES += spiffs/src
@@ -67,8 +67,8 @@ $(SPIFFS_A) : $(SPIFFS_OBJ)
 
 
 ## time.a, timeirom.a
-TIME_SRC_DIR := $(SRC_BASE)/user/lib/time
-TIME_BUILD_DIR := $(BUILD_BASE)/user/lib/time
+TIME_SRC_DIR := $(SRC_BASE)/src/lib/time
+TIME_BUILD_DIR := $(BUILD_BASE)/src/lib/time
 
 BUILD_DIRS += $(TIME_BUILD_DIR)
 TIME_A := $(TIME_BUILD_DIR)/time.a
@@ -97,7 +97,7 @@ spiffs/src:
 	$(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal $(<) $(@);
 
 
-include $(SRC_BASE)/user/esp8266/common.mk
+include $(SRC_BASE)/src/esp8266/common.mk
 
 
 libmirom: $(LIBMIROM_A)
