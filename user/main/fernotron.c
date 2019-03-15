@@ -9,7 +9,7 @@
 #include "fernotron/fer_code.h"
 #include "fernotron/fer_sender.h"
 #include "main/cuid_auto_set.h"
-#include "main/debug.h"
+#include "debug/debug.h"
 #include "main/rtc.h"
 #include "setup/set_endpos.h"
 #include "main/pairings.h"

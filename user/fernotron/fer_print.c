@@ -16,7 +16,7 @@
 #include "fernotron/fer_frame.h"
 #include "fernotron/fer_timings.h"
 #include "main/common.h"
-#include "main/debug.h"
+#include "debug/debug.h"
 #include "misc/int_macros.h"
 #include "stdbool.h"
 #include "userio/inout.h"

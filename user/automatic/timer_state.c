@@ -9,7 +9,7 @@
 #include "main/rtc.h"
 #include "misc/sun.h"
 #include "config/config.h"
-#include "main/debug.h"
+#include "debug/debug.h"
 #include "misc/int_macros.h"
 #include "time.h"
 

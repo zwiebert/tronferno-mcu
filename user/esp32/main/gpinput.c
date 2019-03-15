@@ -12,7 +12,7 @@
 #include "user_config.h"
 #include "main/gpinput.h"
 #include "positions/shutter_state.h"
-#include "main/debug.h"
+#include "debug/debug.h"
 
 
 #ifndef DISTRIBUTION

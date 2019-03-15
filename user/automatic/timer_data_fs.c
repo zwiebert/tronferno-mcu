@@ -10,7 +10,7 @@
 
 
 #include "config/config.h"
-#include "main/storage.h"
+#include "storage/storage.h"
 
 #define TEST_THIS_MODULE 0
 

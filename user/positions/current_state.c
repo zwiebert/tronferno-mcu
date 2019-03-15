@@ -2,7 +2,7 @@
 
 #include "positions/current_state.h"
 #include "config/config.h"
-#include "main/debug.h"
+#include "debug/debug.h"
 #include "misc/int_macros.h"
 #include "userio/status_output.h"
 #include "main/pairings.h"

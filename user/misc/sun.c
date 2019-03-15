@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "main/common.h"
-#include "main/debug.h"
+#include "debug/debug.h"
 
 
 

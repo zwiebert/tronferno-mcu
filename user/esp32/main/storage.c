@@ -26,8 +26,8 @@
 
 #include "config/config.h"
 #include "user_config.h"
-#include "main/storage.h"
-#include "main/debug.h"
+#include "storage/storage.h"
+#include "debug/debug.h"
 
 #define TEST_THIS_MODULE 0
 
