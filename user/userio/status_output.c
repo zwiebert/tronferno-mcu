@@ -58,31 +58,35 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_CFG_TIMEZONE:
     cli_out_config_reply_entry("time-zone", NULL, 8), io_print_float(C.geo_timezone, 5);
     break;
-
   case SO_CFG_VERBOSE:
     cli_out_config_reply_entry("verbose", ltoa(C.app_verboseOutput, buf, 10), 0);
     break;
-#if POSIX_TIME
     case SO_CFG_TZ:
-    cli_out_config_reply_entry("tz", C.geo_tz, 0);
+#if POSIX_TIME
+      cli_out_config_reply_entry("tz", C.geo_tz, 0);
+#endif
     break;
-#else
-  case SO_CFG_DST: {
+  case SO_CFG_DST:
+#if !POSIX_TIME
+  {
     const char *dst = (C.geo_dST == dstEU ? "eu" : (C.geo_dST == dstNone ? "0" : "1"));
     cli_out_config_reply_entry("dst", dst, 0);
   }
-    break;
 #endif
+    break;
+
+
+    case SO_CFG_GPIO_PIN:
 #ifdef CONFIG_GPIO_SIZE
-    case SO_CFG_GPIO_PIN: {
+      {
       int gpio_number = *(int *)arg;
       char key[10] = "gpio";
       strcat(key, itoa(gpio_number, buf, 10));
       buf[0] = pin_state_args[C.gpio[gpio_number]]; buf[1] = '\0';
       cli_out_config_reply_entry(key, buf, 0);
     }
-    break;
 #endif
+    break;
 
   case SO_CFG_begin:
     break;
@@ -196,7 +200,9 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     break;
 
   default:
-    io_puts("error:so_output_message() unhandled message: "), io_putd(mt), io_putlf();
+#ifndef DISTRIBUTION
+    io_puts("internal_error:so_output_message() unhandled message: "), io_putd(mt), io_putlf();
+#endif
     break;
   }
 
