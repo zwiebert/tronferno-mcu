@@ -13,6 +13,7 @@
 
 // user interface
 char *get_commandline(void);
+char *set_commandline(const char *src, uint8_t len); // copy src  (e.g. from mqtt event) to writable buffer
 void process_cmdline(char *line);
 void cli_loop(void);
 

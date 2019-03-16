@@ -29,6 +29,11 @@ const char help_parmConfig[]  =
     "wlan-ssid=(SSID|?)\n"
     "wlan-password=PW\n"
 #endif
+#ifdef USE_MQTT
+     "mqtt-url=BROKER_URL (e.g. mqtt://192.168.1.42:7777)\n"
+     "mqtt-user=USER_NAME\n"
+     "mqtt-password=USER_PASSWORD\n"
+#endif
     "longitude=(DEG|?)\n"
     "latitude=(DEG|?)\n"
  #if !POSIX_TIME
@@ -215,6 +220,33 @@ process_parmConfig(clpar p[], int len) {
       }
 #endif // USE_WLAN
 
+    } else if (strcmp(key, "mqtt-password") == 0) {
+      if (strlen(val) < sizeof (C.mqtt_password)) {
+        strcpy (C.mqtt_password, val);
+        save_config(CONFIG_MQTT_PASSWD);
+      } else {
+        reply_failure();
+      }
+
+    } else if (strcmp(key, "mqtt-user") == 0) {
+      if (strlen(val) < sizeof (C.mqtt_user)) {
+        strcpy (C.mqtt_user, val);
+        save_config(CONFIG_MQTT_USER);
+      } else {
+        reply_failure();
+      }
+
+    } else if (strcmp(key, "mqtt-url") == 0) {
+      if (*val=='?') {
+     //TODO:   so_output_message(SO_CFG_WLAN_SSID, NULL);
+      } else {
+        if (strlen(val) < sizeof (C.mqtt_url)) {
+          strcpy (C.mqtt_url, val);
+          save_config(CONFIG_MQTT_URL);
+        } else {
+          reply_failure();
+        }
+      }
 
     } else if (strcmp(key, "set-pw") == 0) {
       if (strlen(val) < sizeof (C.app_configPassword)) {

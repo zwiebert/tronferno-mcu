@@ -2,12 +2,12 @@
 #include "userio/inout.h"
 #include "cli_imp.h"
 
+char cmd_buf[CMD_BUF_SIZE];
 
 char * ICACHE_FLASH_ATTR
 get_commandline() {
   char *result = NULL;
-#define CMD_BUF_SIZE 128
-  static char cmd_buf[CMD_BUF_SIZE];
+
   static int cmd_buf_idx;
   static bool error;
   int c;

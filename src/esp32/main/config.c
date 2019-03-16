@@ -48,6 +48,11 @@ config C = {
   { 0, },
 #endif
   MY_GEO_TZ,
+#ifdef USE_MQTT
+  MY_MQTT_URL,
+  MY_MQTT_USER,
+  MY_MQTT_PASSWORD,
+#endif
 };
 
 #if CONFIG_BLOB
@@ -143,6 +148,16 @@ void read_config(uint32_t mask) {
       (len = sizeof C.gpio), nvs_get_blob(handle, "C_GPIO", &C.gpio, &len);
     }
 
+    if (mask & CONFIG_MQTT_URL) {
+      (len = sizeof C.mqtt_url), nvs_get_str(handle, "C_MQTT_URL", C.mqtt_url, &len);
+    }
+    if (mask & CONFIG_MQTT_USER) {
+      (len = sizeof C.mqtt_user), nvs_get_str(handle, "C_MQTT_USER", C.mqtt_user, &len);
+    }
+    if (mask & CONFIG_MQTT_PASSWD) {
+      (len = sizeof C.mqtt_password), nvs_get_str(handle, "C_MQTT_PASSWD", C.mqtt_password, &len);
+    }
+
     nvs_close(handle);
   }
 
@@ -151,6 +166,7 @@ void read_config(uint32_t mask) {
 void save_config(uint32_t mask) {
   esp_err_t err = 0;
   nvs_handle handle;
+  size_t len;
   
   if ((err = nvs_open(CFG_NAMESPACE, NVS_READWRITE, &handle)) == ESP_OK) {
 
@@ -207,6 +223,15 @@ void save_config(uint32_t mask) {
        nvs_set_blob(handle, "C_GPIO", &C.gpio, sizeof C.gpio);
      }
 
+    if (mask & CONFIG_MQTT_URL) {
+      nvs_set_str(handle, "C_MQTT_URL", C.mqtt_url);
+    }
+    if (mask & CONFIG_MQTT_USER) {
+      nvs_set_str(handle, "C_MQTT_USER", C.mqtt_user);
+    }
+    if (mask & CONFIG_MQTT_PASSWD) {
+      nvs_set_str(handle, "C_MQTT_PASSWD", C.mqtt_password);
+    }
 
     nvs_commit(handle);
     nvs_close(handle);

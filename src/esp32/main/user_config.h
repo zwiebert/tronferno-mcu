@@ -11,6 +11,7 @@
 #define FER_RECEIVER
 #define USE_NTP
 #define USE_WLAN
+#define USE_MQTT
 #define CONFIG_BLOB 0
 #define ACCESS_GPIO
 #define CONFIG_GPIO_SIZE 40

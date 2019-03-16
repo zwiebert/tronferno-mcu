@@ -10,6 +10,8 @@
 
 #include "../userio/inout.h"
 
+#define USE_MQTT //FIXME!!!!!!!!!!!
+
 #if !defined MCU_ESP8266
 #if __has_include("../sensitive/defaults.h")
 #define HAVE_USER_DEFAULTS
@@ -113,6 +115,30 @@
 #endif
 #endif
 
+#ifndef MY_MQTT_URL
+#ifdef CONFIG_MY_MQTT_URL
+#define MY_MQTT_URL CONFIG_MY_MQTT_URL
+#else
+#define MY_MQTT_URL ""
+#endif
+#endif
+
+#ifndef MY_MQTT_USER
+#ifdef CONFIG_MY_MQTT_USER
+#define MY_MQTT_USER CONFIG_MY_MQTT_USER
+#else
+#define MY_MQTT_USER ""
+#endif
+#endif
+
+#ifndef MY_MQTT_PASSWORD
+#ifdef CONFIG_MY_MQTT_PASSWORD
+#define MY_MQTT_PASSWORD CONFIG_MY_MQTT_PASSWORD
+#else
+#define MY_MQTT_PASSWORD ""
+#endif
+#endif
+
 
 /*
  esp-idf: kconfig does not support float numbers...
@@ -189,6 +215,11 @@ typedef struct {
 #if POSIX_TIME
   char geo_tz[32];
 #endif
+#ifdef USE_MQTT
+  char mqtt_url[64];
+  char mqtt_user[16];
+  char mqtt_password[16];
+#endif
 } config;
 
 extern config C;
@@ -212,5 +243,7 @@ void save_config(uint32_t mask);  // save C to persistent storage
 #define CONFIG_TIZO (1UL << 12)
 #define CONFIG_TZ (1UL << 13)
 #define CONFIG_DST (1UL << 14)
-
+#define CONFIG_MQTT_URL (1UL << 15)
+#define CONFIG_MQTT_USER (1UL << 16)
+#define CONFIG_MQTT_PASSWD (1UL << 17)
 #endif /* CONFIG_H_ */
