@@ -70,6 +70,21 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_CFG_WLAN_SSID:
     cli_out_config_reply_entry("wlan-ssid", C.wifi_SSID, 0);
     break;
+  case SO_CFG_WLAN_PASSWORD:
+    cli_out_config_reply_entry("wlan-password", "", 0);
+    break;
+  case SO_CFG_MQTT_ENABLE:
+    cli_out_config_reply_entry("mqtt-enable", C.mqtt_enable ? "1" : "0", 0);
+    break;
+  case SO_CFG_MQTT_URL:
+    cli_out_config_reply_entry("mqtt-url", C.mqtt_url, 0);
+    break;
+  case SO_CFG_MQTT_USER:
+    cli_out_config_reply_entry("mqtt-user", C.mqtt_user, 0);
+    break;
+  case SO_CFG_MQTT_PASSWORD:
+    cli_out_config_reply_entry("mqtt-password", "", 0);
+    break;
   case SO_CFG_LONGITUDE:
     cli_out_config_reply_entry("longitude", NULL, 8), io_print_float(C.geo_longitude, 5);
     break;
@@ -80,7 +95,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     cli_out_config_reply_entry("time-zone", NULL, 8), io_print_float(C.geo_timezone, 5);
     break;
   case SO_CFG_VERBOSE:
-    cli_out_config_reply_entry("verbose", ltoa(C.app_verboseOutput, buf, 10), 0);
+    cli_out_config_reply_entry("verbose", itoa(C.app_verboseOutput, buf, 10), 0);
     break;
     case SO_CFG_TZ:
 #if POSIX_TIME

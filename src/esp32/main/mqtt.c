@@ -102,22 +102,37 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event) {
   return ESP_OK;
 }
 
-static void mqtt_app_start(void)
-{
-    esp_mqtt_client_config_t mqtt_cfg = {
-        .uri = C.mqtt_url,
-      //  .host = CONFIG_MQTT_HOST,
-      //  .port = CONFIG_MQTT_PORT,
-        .event_handle = mqtt_event_handler,
-        .username = C.mqtt_user,
-        .password = C.mqtt_password,
-        .client_id = CONFIG_MQTT_CLIENT_ID,
-        // .user_context = (void *)your_context
-    };
+static esp_mqtt_client_handle_t client;
 
+static void io_mqtt_create_client(void) {
+  esp_mqtt_client_config_t mqtt_cfg = {
+      .uri = C.mqtt_url,
+  //  .host = CONFIG_MQTT_HOST,
+  //  .port = CONFIG_MQTT_PORT,
+      .event_handle = mqtt_event_handler,
+      .username = C.mqtt_user,
+      .password = C.mqtt_password,
+      .client_id = CONFIG_MQTT_CLIENT_ID,
+  // .user_context = (void *)your_context
+      };
 
-    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
-    esp_mqtt_client_start(client);
+    client = esp_mqtt_client_init(&mqtt_cfg);
+
+}
+
+void io_mqtt_create_and_start(void) {
+  if (client)
+    io_mqtt_stop_and_destroy();
+  io_mqtt_create_client();
+  esp_mqtt_client_start(client);
+}
+
+void io_mqtt_stop_and_destroy(void) {
+  if (client) {
+    esp_mqtt_client_stop(client);
+    esp_mqtt_client_destroy(client);
+    client = 0;
+  }
 }
 
 void setup_mqtt(void) {
@@ -132,5 +147,6 @@ void setup_mqtt(void) {
   esp_log_level_set("TRANSPORT_SSL", ESP_LOG_VERBOSE);
   esp_log_level_set("TRANSPORT", ESP_LOG_VERBOSE);
   esp_log_level_set("OUTBOX", ESP_LOG_VERBOSE);
-  mqtt_app_start();
+  if (C.mqtt_enable)
+    io_mqtt_create_and_start();
 }

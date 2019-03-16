@@ -10,6 +10,7 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "misc/stof.h"
+#include "userio/mqtt.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 
@@ -30,9 +31,10 @@ const char help_parmConfig[]  =
     "wlan-password=PW\n"
 #endif
 #ifdef USE_MQTT
-     "mqtt-url=BROKER_URL (e.g. mqtt://192.168.1.42:7777)\n"
-     "mqtt-user=USER_NAME\n"
-     "mqtt-password=USER_PASSWORD\n"
+     "mqtt-enable=(0|1) enable MQTT\n"
+     "mqtt-url=URL      broker/server URL (e.g. mqtt://192.168.1.42:7777)\n"
+     "mqtt-user=NAME    user name on server\n"
+     "mqtt-password=PW  user password on server\n"
 #endif
     "longitude=(DEG|?)\n"
     "latitude=(DEG|?)\n"
@@ -212,16 +214,30 @@ process_parmConfig(clpar p[], int len) {
 
 
     } else if (strcmp(key, "wlan-password") == 0) {
-      if (strlen(val) < sizeof (C.wifi_password)) {
+      if (strcmp(val, "?") == 0) {
+        so_output_message(SO_CFG_WLAN_PASSWORD, NULL);
+      } else if (strlen(val) < sizeof (C.wifi_password)) {
         strcpy (C.wifi_password, val);
         save_config(CONFIG_WIFI_PASSWD);
       } else {
         reply_failure();
       }
 #endif // USE_WLAN
-
+    } else if (strcmp(key, "mqtt-enable") == 0) {
+      if (*val=='?') {
+        so_output_message(SO_CFG_MQTT_ENABLE, NULL);
+      } else {
+        C.mqtt_enable = (*val == '1') ? 1 : 0;
+        if (C.mqtt_enable)
+        io_mqtt_create_and_start();
+        else
+        io_mqtt_stop_and_destroy();
+        save_config(CONFIG_MQTT_ENABLE);
+      }
     } else if (strcmp(key, "mqtt-password") == 0) {
-      if (strlen(val) < sizeof (C.mqtt_password)) {
+      if (strcmp(val, "?") == 0) {
+        so_output_message(SO_CFG_MQTT_PASSWORD, NULL);
+      } else if (strlen(val) < sizeof (C.mqtt_password)) {
         strcpy (C.mqtt_password, val);
         save_config(CONFIG_MQTT_PASSWD);
       } else {
@@ -229,7 +245,9 @@ process_parmConfig(clpar p[], int len) {
       }
 
     } else if (strcmp(key, "mqtt-user") == 0) {
-      if (strlen(val) < sizeof (C.mqtt_user)) {
+      if (strcmp(val, "?") == 0) {
+        so_output_message(SO_CFG_MQTT_USER, NULL);
+      } else if (strlen(val) < sizeof (C.mqtt_user)) {
         strcpy (C.mqtt_user, val);
         save_config(CONFIG_MQTT_USER);
       } else {
@@ -238,7 +256,7 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (strcmp(key, "mqtt-url") == 0) {
       if (*val=='?') {
-     //TODO:   so_output_message(SO_CFG_WLAN_SSID, NULL);
+        so_output_message(SO_CFG_MQTT_URL, NULL);
       } else {
         if (strlen(val) < sizeof (C.mqtt_url)) {
           strcpy (C.mqtt_url, val);

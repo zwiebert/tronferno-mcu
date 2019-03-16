@@ -52,6 +52,7 @@ config C = {
   MY_MQTT_URL,
   MY_MQTT_USER,
   MY_MQTT_PASSWORD,
+  MY_MQTT_ENABLE,
 #endif
 };
 
@@ -157,6 +158,11 @@ void read_config(uint32_t mask) {
     if (mask & CONFIG_MQTT_PASSWD) {
       (len = sizeof C.mqtt_password), nvs_get_str(handle, "C_MQTT_PASSWD", C.mqtt_password, &len);
     }
+    if (mask & CONFIG_MQTT_ENABLE) {
+      int8_t temp;
+      if (ESP_OK == nvs_get_i8(handle, "C_MQTT_ENABLE", &temp))
+        C.mqtt_enable = temp;
+    }
 
     nvs_close(handle);
   }
@@ -179,10 +185,10 @@ void save_config(uint32_t mask) {
     }
 
     if (mask & CONFIG_VERBOSE) {
-       nvs_set_i8(handle, "C_VERBOSE", C.app_verboseOutput);
-     }
+      nvs_set_i8(handle, "C_VERBOSE", C.app_verboseOutput);
+    }
 
-     if (mask & CONFIG_CUID) {
+    if (mask & CONFIG_CUID) {
       nvs_set_u32(handle, "C_CUID", C.fer_centralUnitID);
     }
 
@@ -231,6 +237,9 @@ void save_config(uint32_t mask) {
     }
     if (mask & CONFIG_MQTT_PASSWD) {
       nvs_set_str(handle, "C_MQTT_PASSWD", C.mqtt_password);
+    }
+    if (mask & CONFIG_MQTT_ENABLE) {
+      nvs_set_i8(handle, "C_MQTT_ENABLE", C.mqtt_enable);
     }
 
     nvs_commit(handle);

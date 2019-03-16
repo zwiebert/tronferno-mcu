@@ -113,6 +113,14 @@
 #endif
 #endif
 
+#ifndef MY_MQTT_ENABLE
+#ifdef CONFIG_MY_MQTT_ENABLE
+#define MY_MQTT_ENABLE CONFIG_MY_MQTT_ENABLE
+#else
+#define MY_MQTT_ENABLE 0
+#endif
+#endif
+
 #ifndef MY_MQTT_URL
 #ifdef CONFIG_MY_MQTT_URL
 #define MY_MQTT_URL CONFIG_MY_MQTT_URL
@@ -216,7 +224,8 @@ typedef struct {
 #ifdef USE_MQTT
   char mqtt_url[64];
   char mqtt_user[16];
-  char mqtt_password[16];
+  char mqtt_password[31];
+  int8_t mqtt_enable;
 #endif
 } config;
 
@@ -244,4 +253,5 @@ void save_config(uint32_t mask);  // save C to persistent storage
 #define CONFIG_MQTT_URL (1UL << 15)
 #define CONFIG_MQTT_USER (1UL << 16)
 #define CONFIG_MQTT_PASSWD (1UL << 17)
+#define CONFIG_MQTT_ENABLE (1UL << 18)
 #endif /* CONFIG_H_ */
