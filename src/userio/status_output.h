@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include "positions/shutter_state.h"
 
+
 typedef enum {
   SO_NONE,
 
@@ -24,8 +25,9 @@ typedef enum {
   SO_PRAS_START_LISTENING, SO_PRAS_STOP_LISTENING, SO_PRAS_TIMEOUT, SO_PRAS_DONE,
 
   SO_CFG_all, SO_CFG_begin,
-  SO_CFG_CU, SO_CFG_BAUD, SO_CFG_RTC, SO_CFG_WLAN_SSID, SO_CFG_LONGITUDE, SO_CFG_LATITUDE,
+  SO_CFG_CU, SO_CFG_BAUD, SO_CFG_RTC, SO_CFG_WLAN_SSID, SO_CFG_WLAN_PASSWORD, SO_CFG_LONGITUDE, SO_CFG_LATITUDE,
   SO_CFG_TIMEZONE, SO_CFG_DST, SO_CFG_TZ, SO_CFG_VERBOSE,
+  SO_CFG_MQTT_ENABLE, SO_CFG_MQTT_URL, SO_CFG_MQTT_USER, SO_CFG_MQTT_PASSWORD,
   SO_CFG_end, // values between begin/end will be used for 'all=?'
   SO_CFG_GPIO_PIN,
 
@@ -60,5 +62,6 @@ typedef struct {
 } so_arg_amm_t;
 
 void so_output_message(so_msg_t mt, void *arg);
+so_msg_t so_parse_config_key(const char *k);
 
 #endif /* USER_MAIN_STATUS_OUTPUT_H_ */

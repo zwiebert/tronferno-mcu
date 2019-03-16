@@ -4,7 +4,7 @@
  *  Created on: 16.09.2017
  *      Author: bertw
  */
-#include "user_config.h"
+#include <user_config.h>
 #include "config/config.h"
 
 
@@ -16,7 +16,7 @@ config C = {
 	MY_MCU_UART_BAUD_RATE,
 	MY_GEO_LONGITUDE,
 	MY_GEO_LATITUDE,
-#if POSIX_TIME
+#ifdef POSIX_TIME
 	MY_GEO_TZ,
 #else
 	MY_GEO_TIMEZONE,

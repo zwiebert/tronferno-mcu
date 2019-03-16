@@ -113,6 +113,38 @@
 #endif
 #endif
 
+#ifndef MY_MQTT_ENABLE
+#ifdef CONFIG_MY_MQTT_ENABLE
+#define MY_MQTT_ENABLE CONFIG_MY_MQTT_ENABLE
+#else
+#define MY_MQTT_ENABLE 0
+#endif
+#endif
+
+#ifndef MY_MQTT_URL
+#ifdef CONFIG_MY_MQTT_URL
+#define MY_MQTT_URL CONFIG_MY_MQTT_URL
+#else
+#define MY_MQTT_URL ""
+#endif
+#endif
+
+#ifndef MY_MQTT_USER
+#ifdef CONFIG_MY_MQTT_USER
+#define MY_MQTT_USER CONFIG_MY_MQTT_USER
+#else
+#define MY_MQTT_USER ""
+#endif
+#endif
+
+#ifndef MY_MQTT_PASSWORD
+#ifdef CONFIG_MY_MQTT_PASSWORD
+#define MY_MQTT_PASSWORD CONFIG_MY_MQTT_PASSWORD
+#else
+#define MY_MQTT_PASSWORD ""
+#endif
+#endif
+
 
 /*
  esp-idf: kconfig does not support float numbers...
@@ -167,7 +199,7 @@ typedef struct {
 	float geo_longitude, geo_latitude;
 
 	float geo_timezone;
-#if !POSIX_TIME
+#ifdef MDR_TIME
   enum dst geo_dST;
 #endif
   int32_t app_rtcAdjust;
@@ -186,8 +218,14 @@ typedef struct {
 #ifdef CONFIG_GPIO_SIZE
 	 enum mcu_pin_state gpio[CONFIG_GPIO_SIZE];
 #endif
-#if POSIX_TIME
+#ifdef POSIX_TIME
   char geo_tz[32];
+#endif
+#ifdef USE_MQTT
+  char mqtt_url[64];
+  char mqtt_user[16];
+  char mqtt_password[31];
+  int8_t mqtt_enable;
 #endif
 } config;
 
@@ -212,5 +250,8 @@ void save_config(uint32_t mask);  // save C to persistent storage
 #define CONFIG_TIZO (1UL << 12)
 #define CONFIG_TZ (1UL << 13)
 #define CONFIG_DST (1UL << 14)
-
+#define CONFIG_MQTT_URL (1UL << 15)
+#define CONFIG_MQTT_USER (1UL << 16)
+#define CONFIG_MQTT_PASSWD (1UL << 17)
+#define CONFIG_MQTT_ENABLE (1UL << 18)
 #endif /* CONFIG_H_ */

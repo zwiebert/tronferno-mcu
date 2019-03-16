@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-
+#include "../../user_config.h"
 
 #include "user_interface.h"
 #include <os_type.h>
@@ -16,7 +16,7 @@
 #include "../userio/inout.h"
 #include "driver/uart.h"
 
-#include "user_config.h"
+
 
 #include "main/common.h"
 #include "config/config.h"

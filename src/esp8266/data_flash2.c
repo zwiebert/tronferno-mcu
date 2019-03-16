@@ -12,6 +12,7 @@
  *      Author: bertw
  */
 
+#include <user_config.h>
 #include "user_interface.h"
 #include <os_type.h>
 #include <ets_sys.h>
@@ -19,11 +20,8 @@
 #include <osapi.h>
 #include <mem.h>
 
-#include "config/config.h"
-
-
 #include "data_flash2.h"
-#include "user_config.h"
+
 
 #define TEST_THIS_MODULE 0
 #define LEAN_MODULE 1

@@ -39,7 +39,7 @@ typedef enum { RTC_SRC_NONE, RTC_SRC_NTP, RTC_SRC_CLI } rtc_time_source_t;
 
 bool ntp_set_system_time(void);
 
-#if POSIX_TIME
+#ifdef POSIX_TIME
 #define rtc_tick() do { ++run_time_secs; } while (0)
 #else
 extern volatile time_t __system_time;

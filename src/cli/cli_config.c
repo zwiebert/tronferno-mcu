@@ -10,6 +10,7 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "misc/stof.h"
+#include "userio/mqtt.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 
@@ -29,12 +30,19 @@ const char help_parmConfig[]  =
     "wlan-ssid=(SSID|?)\n"
     "wlan-password=PW\n"
 #endif
+#ifdef USE_MQTT
+     "mqtt-enable=(0|1) enable MQTT\n"
+     "mqtt-url=URL      broker/server URL (e.g. mqtt://192.168.1.42:7777)\n"
+     "mqtt-user=NAME    user name on server\n"
+     "mqtt-password=PW  user password on server\n"
+#endif
     "longitude=(DEG|?)\n"
     "latitude=(DEG|?)\n"
- #if !POSIX_TIME
+ #ifdef MDR_TIME
     "time-zone=(N|?)    time zone hour offset\n"
     "dst=(eu|0|1|?)     daylight saving time\n"
-#else
+#endif
+#ifdef POSIX_TIME
     "tz=(POSIX_TZ|?)    time zone for RTC/NTP\n"
 #endif
     "verbose=(0..5|?)   diagnose output verbosity level\n"
@@ -43,18 +51,17 @@ const char help_parmConfig[]  =
 #if ENABLE_RESTART
     "restart            restart MCU\n"
 #endif
-#ifdef CONFIG_GPIO_SIZE
+#ifdef ACCESS_GPIO
     "gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default\n"
 #endif
 //  "set-expert-password=\n"
 ;
-#define slf "\n"
-#define cfg "config "
 
 int ICACHE_FLASH_ATTR
 process_parmConfig(clpar p[], int len) {
   int arg_idx;
   int errors = 0;
+  so_msg_t so_key = SO_NONE;
 
   so_output_message(SO_CFG_begin, NULL);
 
@@ -87,31 +94,162 @@ process_parmConfig(clpar p[], int len) {
       if (*val == '?') {
         so_output_message(SO_CFG_all, NULL);
       }
-    } else if (strcmp(key, "rtc") == 0) {
-      if (*val == '?') {
-        so_output_message(SO_CFG_RTC, NULL);
-      } else {
-        reply(val ? rtc_set_by_string(val) : false);
-      }
+    } else if (SO_NONE != (so_key = so_parse_config_key(key))) {
+      if (0 == strcmp("?", val)) {
+        so_output_message(so_key, NULL);
+      } else
+        switch (so_key) {
 
-
-    } else if (strcmp(key, "cu") == 0) {
-      if (*val == '?') {
-        so_output_message(SO_CFG_CU, NULL);
-      } else if (strcmp(val, "auto") == 0) {
-        cu_auto_set(msgid, 60);
-        reply_success();
-      } else {
-        uint32_t cu = (strcmp(val, "auto-old") == 0) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
-
-        if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
-          return reply_failure();
+        case SO_CFG_RTC: {
+          reply(val ? rtc_set_by_string(val) : false);
         }
-        FSB_PUT_DEVID(&default_sender, cu);
-        C.fer_centralUnitID = cu;
-	save_config(CONFIG_CUID);
-      }
+          break;
 
+        case SO_CFG_CU: {
+          if (strcmp(val, "auto") == 0) {
+            cu_auto_set(msgid, 60);
+            reply_success();
+          } else {
+            uint32_t cu = (strcmp(val, "auto-old") == 0) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
+
+            if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
+              return reply_failure();
+            }
+            FSB_PUT_DEVID(&default_sender, cu);
+            C.fer_centralUnitID = cu;
+            save_config(CONFIG_CUID);
+          }
+
+        }
+          break;
+
+        case SO_CFG_BAUD: {
+          uint32_t baud = strtoul(val, NULL, 10);
+          C.mcu_serialBaud = baud;
+          save_config(CONFIG_BAUD);
+        }
+          break;
+
+        case SO_CFG_VERBOSE: {
+          NODEFAULT();
+          enum verbosity level = atoi(val);
+          C.app_verboseOutput = level;
+          save_config(CONFIG_VERBOSE);
+        }
+        break;
+#ifdef USE_WLAN
+        case SO_CFG_WLAN_SSID: {
+          if (strlen(val) < sizeof (C.wifi_SSID)) {
+            strcpy (C.wifi_SSID, val);
+            save_config(CONFIG_WIFI_SSID);
+          } else {
+            reply_failure();
+          }
+        }
+        break;
+
+        case SO_CFG_WLAN_PASSWORD: {
+          if (strlen(val) < sizeof (C.wifi_password)) {
+            strcpy (C.wifi_password, val);
+            save_config(CONFIG_WIFI_PASSWD);
+          } else {
+            reply_failure();
+          }
+        }
+        break;
+#endif // USE_WLAN
+
+#ifdef USE_MQTT
+        case SO_CFG_MQTT_ENABLE: {
+          C.mqtt_enable = (*val == '1') ? 1 : 0;
+          io_mqtt_enable(C.mqtt_enable);
+          save_config(CONFIG_MQTT_ENABLE);
+        }
+        break;
+
+        case SO_CFG_MQTT_PASSWORD: {
+          if (strlen(val) < sizeof (C.mqtt_password)) {
+            strcpy (C.mqtt_password, val);
+            save_config(CONFIG_MQTT_PASSWD);
+          } else {
+            reply_failure();
+          }
+
+        }
+        break;
+
+        case SO_CFG_MQTT_USER: {
+          if (strlen(val) < sizeof (C.mqtt_user)) {
+            strcpy (C.mqtt_user, val);
+            save_config(CONFIG_MQTT_USER);
+          } else {
+            reply_failure();
+          }
+        }
+        break;
+
+        case SO_CFG_MQTT_URL: {
+          if (strlen(val) < sizeof (C.mqtt_url)) {
+            strcpy (C.mqtt_url, val);
+            save_config(CONFIG_MQTT_URL);
+          } else {
+            reply_failure();
+          }
+        }
+        break;
+#endif //USE_MQTT
+        case SO_CFG_LONGITUDE: {
+          float longitude = stof(val);
+          C.geo_longitude = longitude;
+          rtc_setup();
+          save_config(CONFIG_LONGITUDE);
+        }
+        break;
+
+        case SO_CFG_LATITUDE: {
+          float latitude = stof(val);
+          C.geo_latitude = latitude;
+          rtc_setup();
+          save_config(CONFIG_LATITUDE);
+        }
+        break;
+
+        case SO_CFG_TIMEZONE: {
+          C.geo_timezone = stof(val);
+          rtc_setup();
+          save_config(CONFIG_TIZO);
+        }
+        break;
+
+        case SO_CFG_TZ: {
+#ifdef POSIX_TIME
+          strncpy(C.geo_tz, val, sizeof (C.geo_tz) -1);
+          rtc_setup();
+          save_config(CONFIG_TZ);
+#endif
+        }
+        break;
+
+        case SO_CFG_DST: {
+#ifdef MDR_TIME
+          if (strcmp(val, "eu") == 0) {
+            C.geo_dST = dstEU;
+          } else if (strcmp(val, "0") == 0) {
+            C.geo_dST = dstNone;
+          } else if (strcmp(val, "1") == 0) {
+            C.geo_dST = dstAlways;
+          } else {
+            warning_unknown_option(key);
+          }
+          rtc_setup();
+          save_config(CONFIG_DST);
+#endif
+        }
+        break;
+
+        default:
+        break;
+      }
 
     } else if (strcmp(key, "gm-used") == 0) {
       uint32_t gmu = strtoul(val, NULL, 16);
@@ -119,16 +257,7 @@ process_parmConfig(clpar p[], int len) {
       save_config(CONFIG_USED_MEMBERS);
 
 
-    } else if (strcmp(key, "baud") == 0) {
-      if (*val == '?') {
-        so_output_message(SO_CFG_BAUD, NULL);
-      } else {
-        uint32_t baud = strtoul(val, NULL, 10);
-        C.mcu_serialBaud = baud;
-        save_config(CONFIG_BAUD);
-      }
-
-#ifdef CONFIG_GPIO_SIZE
+#ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
       mcu_pin_state ps;
@@ -181,41 +310,6 @@ process_parmConfig(clpar p[], int len) {
       }
 #endif
 
-    } else if (strcmp(key, "verbose") == 0) {
-      if (*val == '?') {
-        so_output_message(SO_CFG_VERBOSE, NULL);
-      } else {
-        NODEFAULT();
-        enum verbosity level = atoi(val);
-        C.app_verboseOutput = level;
-        save_config(CONFIG_VERBOSE);
-      }
-
-
-#ifdef USE_WLAN
-    } else if (strcmp(key, "wlan-ssid") == 0) {
-      if (*val=='?') {
-        so_output_message(SO_CFG_WLAN_SSID, NULL);
-      } else {
-        if (strlen(val) < sizeof (C.wifi_SSID)) {
-          strcpy (C.wifi_SSID, val);
-          save_config(CONFIG_WIFI_SSID);
-        } else {
-          reply_failure();
-        }
-      }
-
-
-    } else if (strcmp(key, "wlan-password") == 0) {
-      if (strlen(val) < sizeof (C.wifi_password)) {
-        strcpy (C.wifi_password, val);
-        save_config(CONFIG_WIFI_PASSWD);
-      } else {
-        reply_failure();
-      }
-#endif // USE_WLAN
-
-
     } else if (strcmp(key, "set-pw") == 0) {
       if (strlen(val) < sizeof (C.app_configPassword)) {
         strcpy (C.app_configPassword, val);
@@ -224,82 +318,11 @@ process_parmConfig(clpar p[], int len) {
         reply_failure();
       }
 
-
     } else if (strcmp(key, "receiver") == 0) {
       reply(config_receiver(val));
 
-
     } else if (strcmp(key, "transmitter") == 0) {
       reply(config_transmitter(val));
-
-
-    } else if (strcmp(key, "longitude") == 0) {
-      if (*val=='?') {
-        so_output_message(SO_CFG_LONGITUDE, NULL);
-      } else {
-        float longitude = stof(val);
-        C.geo_longitude = longitude;
-        rtc_setup();
-        save_config(CONFIG_LONGITUDE);
-      }
-
-
-    } else if (strcmp(key, "latitude") == 0) {
-      if (*val=='?') {
-        so_output_message(SO_CFG_LONGITUDE, NULL);
-      } else {
-        float latitude = stof(val);
-        C.geo_latitude = latitude;
-        rtc_setup();
-        save_config(CONFIG_LATITUDE);
-      }
-
-
-    } else if (strcmp(key, "time-zone") == 0) {
-      if (*val=='?') {
-        so_output_message(SO_CFG_TIMEZONE, NULL);
-      } else {
-        C.geo_timezone = stof(val);
-
-        rtc_setup();
-        save_config(CONFIG_TZ);
-      }
-
-#if POSIX_TIME
-    } else if (strcmp(key, "tz") == 0) {
-      if (*val=='?') {
-        so_output_message(SO_CFG_TZ, NULL);
-      } else {
-        strncpy(C.geo_tz, val, sizeof (C.geo_tz) -1);
-
-        rtc_setup();
-        save_config(CONFIG_TZ);
-      }
-#endif
-    } else if (strcmp(key, "dst") == 0) {
-#if POSIX_TIME
-      if (*val=='?') {
-
-      }
-#else
-      if (*val=='?') {
-        so_output_message(SO_CFG_DST, NULL);
-      } else {
-
-        if (strcmp(val, "eu") == 0) {
-          C.geo_dST = dstEU;
-        } else if (strcmp(val, "0") == 0) {
-          C.geo_dST = dstNone;
-        } else if (strcmp(val, "1") == 0) {
-          C.geo_dST = dstAlways;
-        } else {
-          warning_unknown_option(key);
-        }
-        rtc_setup();
-        save_config(CONFIG_DST);
-
-      }
-#endif
 
     } else {
       ++errors;
@@ -307,10 +330,7 @@ process_parmConfig(clpar p[], int len) {
     }
   }
 
-
-
   so_output_message(SO_CFG_end, NULL);
   reply(errors==0);
   return 0;
 }
-

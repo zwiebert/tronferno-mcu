@@ -48,9 +48,15 @@ config C = {
   { 0, },
 #endif
   MY_GEO_TZ,
+#ifdef USE_MQTT
+  MY_MQTT_URL,
+  MY_MQTT_USER,
+  MY_MQTT_PASSWORD,
+  MY_MQTT_ENABLE,
+#endif
 };
 
-#if CONFIG_BLOB
+#ifdef CONFIG_BLOB
 
 void read_config(uint32_t mask) {
   esp_err_t err = 0;
@@ -143,6 +149,21 @@ void read_config(uint32_t mask) {
       (len = sizeof C.gpio), nvs_get_blob(handle, "C_GPIO", &C.gpio, &len);
     }
 
+    if (mask & CONFIG_MQTT_URL) {
+      (len = sizeof C.mqtt_url), nvs_get_str(handle, "C_MQTT_URL", C.mqtt_url, &len);
+    }
+    if (mask & CONFIG_MQTT_USER) {
+      (len = sizeof C.mqtt_user), nvs_get_str(handle, "C_MQTT_USER", C.mqtt_user, &len);
+    }
+    if (mask & CONFIG_MQTT_PASSWD) {
+      (len = sizeof C.mqtt_password), nvs_get_str(handle, "C_MQTT_PASSWD", C.mqtt_password, &len);
+    }
+    if (mask & CONFIG_MQTT_ENABLE) {
+      int8_t temp;
+      if (ESP_OK == nvs_get_i8(handle, "C_MQTT_ENABLE", &temp))
+        C.mqtt_enable = temp;
+    }
+
     nvs_close(handle);
   }
 
@@ -151,6 +172,7 @@ void read_config(uint32_t mask) {
 void save_config(uint32_t mask) {
   esp_err_t err = 0;
   nvs_handle handle;
+  size_t len;
   
   if ((err = nvs_open(CFG_NAMESPACE, NVS_READWRITE, &handle)) == ESP_OK) {
 
@@ -163,10 +185,10 @@ void save_config(uint32_t mask) {
     }
 
     if (mask & CONFIG_VERBOSE) {
-       nvs_set_i8(handle, "C_VERBOSE", C.app_verboseOutput);
-     }
+      nvs_set_i8(handle, "C_VERBOSE", C.app_verboseOutput);
+    }
 
-     if (mask & CONFIG_CUID) {
+    if (mask & CONFIG_CUID) {
       nvs_set_u32(handle, "C_CUID", C.fer_centralUnitID);
     }
 
@@ -207,6 +229,18 @@ void save_config(uint32_t mask) {
        nvs_set_blob(handle, "C_GPIO", &C.gpio, sizeof C.gpio);
      }
 
+    if (mask & CONFIG_MQTT_URL) {
+      nvs_set_str(handle, "C_MQTT_URL", C.mqtt_url);
+    }
+    if (mask & CONFIG_MQTT_USER) {
+      nvs_set_str(handle, "C_MQTT_USER", C.mqtt_user);
+    }
+    if (mask & CONFIG_MQTT_PASSWD) {
+      nvs_set_str(handle, "C_MQTT_PASSWD", C.mqtt_password);
+    }
+    if (mask & CONFIG_MQTT_ENABLE) {
+      nvs_set_i8(handle, "C_MQTT_ENABLE", C.mqtt_enable);
+    }
 
     nvs_commit(handle);
     nvs_close(handle);

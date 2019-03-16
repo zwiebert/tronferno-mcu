@@ -1,3 +1,4 @@
+#include "../../user_config.h"
 #include "freertos/FreeRTOS.h"
 
 #include "esp_wifi.h"
@@ -11,7 +12,6 @@
 #include "../../userio/inout.h"
 #include "../main/pin.h"
 #include "../main/wifistation.h"
-#include "main/common.h"
 #include "config/config.h"
 #include "fernotron/fer.h"
 
@@ -22,6 +22,7 @@ void tcps_loop(void);
 void setup_timer(void);
 void setup_ntp(void);
 void setup_storage(void);
+void setup_mqtt(void);
 
 static int es_io_putc(char c) {
   putchar(c);
@@ -63,10 +64,14 @@ mcu_init() {
   setup_ntp();
 #endif
   setup_tcp_server();
+#ifdef USE_MQTT
+  setup_mqtt();
+#endif
   //setup_udp();
   setup_timer();
   setup_storage();
   main_setup();
+
 }
 
 void app_main(void) {

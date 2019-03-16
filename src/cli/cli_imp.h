@@ -3,6 +3,8 @@
 #include "cli.h"
 
 
+#define CMD_BUF_SIZE 128
+extern char cmd_buf[CMD_BUF_SIZE];
 
 // implementation interface for  cli*.c files
 extern const char pin_state_args[];
