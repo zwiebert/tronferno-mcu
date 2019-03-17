@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "user_config.h"
+#include <user_config.h>
 #include "config/config.h"
 #include "positions/shutter_state.h"
 

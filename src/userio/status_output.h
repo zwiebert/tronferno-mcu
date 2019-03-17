@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include "positions/shutter_state.h"
 
+
 typedef enum {
   SO_NONE,
 
@@ -61,5 +62,6 @@ typedef struct {
 } so_arg_amm_t;
 
 void so_output_message(so_msg_t mt, void *arg);
+so_msg_t so_parse_config_key(const char *k);
 
 #endif /* USER_MAIN_STATUS_OUTPUT_H_ */

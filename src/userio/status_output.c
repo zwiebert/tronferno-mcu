@@ -22,6 +22,27 @@
 
 #define D(x)
 
+const char * const cfg_keys[] = {
+    "cu", "baud", "rtc", "wlan-ssid", "wlan-password", "longitude", "latitude",
+    "timezone", "dst", "tz", "verbose",
+    "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password"
+};
+
+so_msg_t ICACHE_FLASH_ATTR
+so_parse_config_key(const char *k) {
+  int i;
+  for (i = 0; i < (sizeof cfg_keys / sizeof cfg_keys[0]); ++i) {
+    if (0 == strcmp(k, cfg_keys[i]))
+      return i + SO_CFG_begin + 1;
+  }
+  return SO_NONE;
+}
+
+static const char *
+gk(so_msg_t so_key) {
+  return cfg_keys[so_key - (SO_CFG_begin + 1)];
+}
+
 static void so_print_timer_event_minutes(uint8_t g, uint8_t m);
 static void so_print_timer(uint8_t g, uint8_t m, bool wildcard);
 static void so_print_gmbitmask(gm_bitmask_t mm);
@@ -57,63 +78,72 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_CFG_BAUD:
-    cli_out_config_reply_entry("baud", ltoa(C.mcu_serialBaud, buf, 10), 0);
+    cli_out_config_reply_entry(gk(mt), ltoa(C.mcu_serialBaud, buf, 10), 0);
     break;
   case SO_CFG_RTC:
     if (rtc_get_by_string(buf)) {
-      cli_out_config_reply_entry("rtc", buf, 0);
+      cli_out_config_reply_entry(gk(mt), buf, 0);
     }
     break;
   case SO_CFG_CU:
-    cli_out_config_reply_entry("cu", ltoa(C.fer_centralUnitID, buf, 16), 0);
+    cli_out_config_reply_entry(gk(mt), ltoa(C.fer_centralUnitID, buf, 16), 0);
     break;
   case SO_CFG_WLAN_SSID:
-    cli_out_config_reply_entry("wlan-ssid", C.wifi_SSID, 0);
+    cli_out_config_reply_entry(gk(mt), C.wifi_SSID, 0);
     break;
   case SO_CFG_WLAN_PASSWORD:
-    cli_out_config_reply_entry("wlan-password", "", 0);
+    cli_out_config_reply_entry(gk(mt), "", 0);
     break;
+
   case SO_CFG_MQTT_ENABLE:
-    cli_out_config_reply_entry("mqtt-enable", C.mqtt_enable ? "1" : "0", 0);
+#ifdef USE_MQTT
+    cli_out_config_reply_entry(gk(mt), C.mqtt_enable ? "1" : "0", 0);
+#endif
     break;
   case SO_CFG_MQTT_URL:
-    cli_out_config_reply_entry("mqtt-url", C.mqtt_url, 0);
+#ifdef USE_MQTT
+    cli_out_config_reply_entry(gk(mt), C.mqtt_url, 0);
+#endif
     break;
   case SO_CFG_MQTT_USER:
-    cli_out_config_reply_entry("mqtt-user", C.mqtt_user, 0);
+#ifdef USE_MQTT
+    cli_out_config_reply_entry(gk(mt), C.mqtt_user, 0);
+#endif
     break;
   case SO_CFG_MQTT_PASSWORD:
-    cli_out_config_reply_entry("mqtt-password", "", 0);
+#ifdef USE_MQTT
+    cli_out_config_reply_entry(gk(mt), "", 0);
+#endif
     break;
   case SO_CFG_LONGITUDE:
-    cli_out_config_reply_entry("longitude", NULL, 8), io_print_float(C.geo_longitude, 5);
+    cli_out_config_reply_entry(gk(mt), NULL, 8), io_print_float(C.geo_longitude, 5);
     break;
   case SO_CFG_LATITUDE:
-    cli_out_config_reply_entry("latitude", NULL, 8), io_print_float(C.geo_latitude, 5);
+    cli_out_config_reply_entry(gk(mt), NULL, 8), io_print_float(C.geo_latitude, 5);
     break;
   case SO_CFG_TIMEZONE:
-    cli_out_config_reply_entry("time-zone", NULL, 8), io_print_float(C.geo_timezone, 5);
+    cli_out_config_reply_entry(gk(mt), NULL, 8), io_print_float(C.geo_timezone, 5);
     break;
   case SO_CFG_VERBOSE:
-    cli_out_config_reply_entry("verbose", itoa(C.app_verboseOutput, buf, 10), 0);
+    cli_out_config_reply_entry(gk(mt), itoa(C.app_verboseOutput, buf, 10), 0);
     break;
     case SO_CFG_TZ:
-#if POSIX_TIME
-      cli_out_config_reply_entry("tz", C.geo_tz, 0);
+#ifdef POSIX_TIME
+      cli_out_config_reply_entry(gk(mt), C.geo_tz, 0);
 #endif
     break;
   case SO_CFG_DST:
-#if !POSIX_TIME
+#ifdef MDR_TIME
   {
     const char *dst = (C.geo_dST == dstEU ? "eu" : (C.geo_dST == dstNone ? "0" : "1"));
-    cli_out_config_reply_entry("dst", dst, 0);
+    cli_out_config_reply_entry(gk(mt), dst, 0);
   }
 #endif
     break;
 
 
     case SO_CFG_GPIO_PIN:
-#ifdef CONFIG_GPIO_SIZE
+#ifdef ACCESS_GPIO
       {
       int gpio_number = *(int *)arg;
       char key[10] = "gpio";

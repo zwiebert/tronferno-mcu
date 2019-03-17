@@ -199,7 +199,7 @@ typedef struct {
 	float geo_longitude, geo_latitude;
 
 	float geo_timezone;
-#if !POSIX_TIME
+#ifdef MDR_TIME
   enum dst geo_dST;
 #endif
   int32_t app_rtcAdjust;
@@ -218,7 +218,7 @@ typedef struct {
 #ifdef CONFIG_GPIO_SIZE
 	 enum mcu_pin_state gpio[CONFIG_GPIO_SIZE];
 #endif
-#if POSIX_TIME
+#ifdef POSIX_TIME
   char geo_tz[32];
 #endif
 #ifdef USE_MQTT

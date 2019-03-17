@@ -56,7 +56,7 @@ config C = {
 #endif
 };
 
-#if CONFIG_BLOB
+#ifdef CONFIG_BLOB
 
 void read_config(uint32_t mask) {
   esp_err_t err = 0;

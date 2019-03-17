@@ -12,7 +12,7 @@
  *  Created on: 16.09.2017
  *      Author: bertw
  */
-
+#include <user_config.h>
 #include "data_flash.h"
 
 #include "user_interface.h"
@@ -23,8 +23,6 @@
 #include <mem.h>
 
 #include "config/config.h"
-
-#include "user_config.h"
 
 #define LEAN_MODULE 1
 

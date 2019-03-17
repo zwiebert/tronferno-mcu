@@ -1,4 +1,7 @@
-#ifndef esp8266_user_config_h
+#ifdef esp8266_user_config_h
+#error should only inlcuded by root user_config.h
+#endif
+
 #define esp8266_user_config_h
 
 #define MCU_TYPE "esp8266"
@@ -6,21 +9,20 @@
 extern const char *const build_time;
 #define ISO_BUILD_TIME build_time
 
-#ifndef DEBUG
-#define FER_TRANSMITTER
-#define FER_RECEIVER
-#define USE_NTP
-#define USE_WLAN
-#define CONFIG_BLOB 1
-#define CONFIG_GPIO_SIZE 17
+#ifdef DEBUG
+#undef FER_TRANSMITTER
+#undef FER_RECEIVER
+#undef USE_NTP
+#undef USE_WLAN
 #endif
 
-#define CONFIG_BLOB 1
+#undef USE_MQTT
+#undef USE_PAIRINGS
 
-
+#define CONFIG_GPIO_SIZE 17
 // SPIFFS is currently unused
 #define ENABLE_SPIFFS 0
-#define POSIX_TIME 0
+#undef POSIX_TIME
 
 #if ENABLE_SPIFFS
 #define SAVE_TIMER_DATA_FUN save_timer_data_fs
@@ -51,4 +53,4 @@ extern const char *const build_time;
 #define C_SPIFFS_FLASH_ADDR  (C_DATA2_FLASH_ADDR + C_DATA2_FLASH_SIZE)
 #define C_SPIFFS_FLASH_SIZE   0x80000 // 128 sectors (500KB)
 
-#endif
+

@@ -7,6 +7,7 @@
 #include "user_config.h"
 #include "timer_data.h"
 #include "esp8266/data_flash2.h"
+#include "automatic/timer_data_fs.h"
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 bool timer_data_changed;

@@ -15,7 +15,7 @@ void set_system_time(time_t timestamp);
 
 void ICACHE_FLASH_ATTR rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t source) {
   rtc_last_time_source = source;
-#if POSIX_TIME
+#ifdef POSIX_TIME
   //FIXME: not implemented yet
 #else
   set_system_time(stamp);
@@ -68,7 +68,7 @@ rtc_get_by_string(char *s) {
   time_t timer = time(NULL);
   struct tm t;
   localtime_r(&timer, &t);
-#if POSIX_TIME
+#ifdef POSIX_TIME
   strftime(s, 20, "%FT%H:%M:%S", &t);
 #else
   isotime_r(&t, s);
@@ -148,7 +148,7 @@ time_t rtc_timezone_in_secs() {
 void ICACHE_FLASH_ATTR
 rtc_setup() {
 
-#if POSIX_TIME
+#ifdef POSIX_TIME
   setenv("TZ", C.geo_tz, 1);
   tzset();
 
