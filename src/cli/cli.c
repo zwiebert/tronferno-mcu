@@ -87,7 +87,7 @@ const int OUT_MAX_LEN = 80;
 
 static void ICACHE_FLASH_ATTR cli_out_entry(void_fun_ptr tag, const char *key, const char *val, int len) {
   static int length;
-  if (len == -1) {
+  if (!key || len == -1) {
     if (length) {
       io_puts(";\n");
       length = 0;

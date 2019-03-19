@@ -31,10 +31,11 @@
 
 static const char *TAG = "MQTT_EXAMPLE";
 
-
+#ifdef DISTRIBUTION
 #define CONFIG_MQTT_CLIENT_ID "tronferno42"
-
-#define TOPIC_CLI "tfmcu/cli"
+#else
+#define CONFIG_MQTT_CLIENT_ID "tfdbg"
+#endif
 
 
 
@@ -46,51 +47,34 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event) {
   switch (event->event_id) {
   case MQTT_EVENT_CONNECTED:
     ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-    msg_id = esp_mqtt_client_publish(client, "/topic/qos1", "data_3", 0, 1, 0);
-    ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
-
-    msg_id = esp_mqtt_client_subscribe(client, TOPIC_CLI, 0);
-
-    msg_id = esp_mqtt_client_subscribe(client, "/topic/qos0", 0);
-    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
-    msg_id = esp_mqtt_client_subscribe(client, "/topic/qos1", 1);
-    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
-    msg_id = esp_mqtt_client_unsubscribe(client, "/topic/qos1");
-    ESP_LOGI(TAG, "sent unsubscribe successful, msg_id=%d", msg_id);
+    io_mqtt_connected();
     break;
+    
   case MQTT_EVENT_DISCONNECTED:
     ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
     break;
 
   case MQTT_EVENT_SUBSCRIBED:
     ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
-    msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
-    ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
+    io_mqtt_subscribed(event->topic, event->topic_len);
     break;
+
   case MQTT_EVENT_UNSUBSCRIBED:
-    ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
+    ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);   io_mqtt_unsubscribed(event->topic, event->topic_len);
+    
     break;
   case MQTT_EVENT_PUBLISHED:
     ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
+    io_mqtt_published(event->msg_id);
     break;
+    
   case MQTT_EVENT_DATA:
     ESP_LOGI(TAG, "MQTT_EVENT_DATA");
     printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
     printf("DATA=%.*s\r\n", event->data_len, event->data);
-    printf("tlen=%d, dlen=%d, clilen=%d\n", event->topic_len, event->data_len, strlen(TOPIC_CLI));
-    if (strlen(TOPIC_CLI) == event->topic_len && 0 == strncmp(event->topic, TOPIC_CLI, event->topic_len)) {
-      printf("---2---\n");
-      if (strncmp(event->data, "cli ", 4) == 0) {
-        char *line;
-        printf("---2---\n");
-        if ((line = set_commandline(event->data + 4, event->data_len - 4))) {
-          printf("---3---\n");
-          process_cmdline(line);
-        }
-      }
-    }
+    
+    io_mqtt_received(event->topic, event->topic_len, event->data, event->data_len);
+ 
     break;
   case MQTT_EVENT_ERROR:
     ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
@@ -103,6 +87,18 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event) {
 }
 
 static esp_mqtt_client_handle_t client;
+
+void io_mqtt_subscribe(const char *topic, int qos) {
+  int msg_id = esp_mqtt_client_subscribe(client, topic, qos);
+}
+
+void io_mqtt_unsubscribe(const char *topic) {
+  int msg_id = esp_mqtt_client_unsubscribe(client, topic);
+}
+
+void io_mqtt_publish(const char *topic, const char *data) {
+   int msg_id = esp_mqtt_client_publish(client, topic, data, 0, 1, 0);
+}
 
 static void io_mqtt_create_client(void) {
   esp_mqtt_client_config_t mqtt_cfg = {
@@ -134,6 +130,7 @@ void io_mqtt_stop_and_destroy(void) {
     client = 0;
   }
 }
+
 
 void setup_mqtt(void) {
   ets_printf("\n\n----#####################################----------\n\n");

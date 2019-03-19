@@ -10,6 +10,7 @@
 #include "userio/status_output.h"
 
 #include <string.h>
+#include <stdio.h>
 
 #include "automatic/timer_state.h"
 #include "cli/cli_imp.h" // FIXME?
@@ -19,6 +20,7 @@
 #include "main/rtc.h"
 #include "misc/int_macros.h"
 #include "userio/inout.h"
+#include "userio/mqtt.h"
 
 #define D(x)
 
@@ -27,6 +29,30 @@ const char * const cfg_keys[] = {
     "timezone", "dst", "tz", "verbose",
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password"
 };
+
+char *ICACHE_FLASH_ATTR ftoa(float f, char *buf, int n) {
+  int i;
+  int32_t mult;
+  uint32_t rop;
+  int16_t lop = (int16_t) f;
+  char *s = buf;
+
+  itoa(lop, s, 10);
+  strcat(s, ".");
+  s += strlen(s);
+
+  f -= lop;
+
+  mult = (lop < 0) ? -1 : 1;
+
+  for (i = 0; i < n; ++i)
+    mult *= 10;
+
+  rop = (uint32_t) (f * mult);
+  ltoa(rop, s, 10);
+
+  return buf;
+}
 
 so_msg_t ICACHE_FLASH_ATTR
 so_parse_config_key(const char *k) {
@@ -40,8 +66,78 @@ so_parse_config_key(const char *k) {
 
 static const char *
 gk(so_msg_t so_key) {
-  return cfg_keys[so_key - (SO_CFG_begin + 1)];
+  if (SO_CFG_begin < so_key && so_key < SO_CFG_end)
+    return cfg_keys[so_key - (SO_CFG_begin + 1)];
+  return NULL;
 }
+
+char *json_buf = cmd_buf;
+#define JSON_BUF_SIZE CMD_BUF_SIZE
+int json_idx;
+
+void so_json_config_reply(const char *key, const char *val, bool is_number) {
+  ets_printf("so_json(): %s, %s, %d\n", key, val, is_number);
+  if (key == 0 || (json_idx + strlen(key) + strlen(val) + 6) > JSON_BUF_SIZE) {
+    if (json_idx > 0) {
+      strcpy(json_buf + json_idx, " } }");
+      io_mqtt_publish("tfmcu/config_out", json_buf);
+      io_puts(json_buf), io_putlf();
+    }
+    json_idx = 0;
+    return;
+  }
+
+  if (json_idx == 0) {
+    strcpy(json_buf, "{ \"name\": \"tfmcu\", \"config\": { ");
+    json_idx = strlen(json_buf);
+  }
+
+  const char *quote = is_number ? "" : "\"";
+  sprintf(json_buf + json_idx, "\"%s\": %s%s%s,", key, quote, val, quote);
+  json_idx += strlen(json_buf+json_idx);
+}
+
+void so_out_config_reply_entry2(const char *key, const char *val) {
+  cli_out_config_reply_entry(key, val, 0);
+}
+
+void so_out_config_reply_entry(so_msg_t key, const char *val) {
+  so_out_config_reply_entry2(gk(key), val);
+}
+
+void so_out_config_reply_entry_s(so_msg_t key, const char *val) {
+  so_out_config_reply_entry2(gk(key), val);
+  so_json_config_reply(gk(key), val, false);
+}
+
+void so_out_config_reply_entry_d(so_msg_t key, int val) {
+  char buf[20];
+  itoa(val, buf, 10);
+  so_out_config_reply_entry2(gk(key), buf);
+  so_json_config_reply(gk(key), buf, true);
+}
+
+void so_out_config_reply_entry_l(so_msg_t key, int val) {
+  char buf[20];
+  ltoa(val, buf, 10);
+  so_out_config_reply_entry2(gk(key), buf);
+  so_json_config_reply(gk(key), buf, true);
+}
+
+void so_out_config_reply_entry_lx(so_msg_t key, int val) {
+  char buf[20];
+  ltoa(val, buf, 16);
+  so_out_config_reply_entry2(gk(key), buf);
+  so_json_config_reply(gk(key), buf, false); //no hex in jason. use string
+}
+
+void so_out_config_reply_entry_f(so_msg_t key, float val, int n) {
+  char buf[20];
+  ftoa(val, buf, 5);
+  so_out_config_reply_entry2(gk(key), buf);
+  so_json_config_reply(gk(key), buf, true);
+}
+
 
 static void so_print_timer_event_minutes(uint8_t g, uint8_t m);
 static void so_print_timer(uint8_t g, uint8_t m, bool wildcard);
@@ -78,65 +174,65 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_CFG_BAUD:
-    cli_out_config_reply_entry(gk(mt), ltoa(C.mcu_serialBaud, buf, 10), 0);
+    so_out_config_reply_entry_l(mt, C.mcu_serialBaud);
     break;
   case SO_CFG_RTC:
     if (rtc_get_by_string(buf)) {
-      cli_out_config_reply_entry(gk(mt), buf, 0);
+      so_out_config_reply_entry(mt, buf);
     }
     break;
   case SO_CFG_CU:
-    cli_out_config_reply_entry(gk(mt), ltoa(C.fer_centralUnitID, buf, 16), 0);
+    so_out_config_reply_entry_lx(mt, C.fer_centralUnitID);
     break;
   case SO_CFG_WLAN_SSID:
-    cli_out_config_reply_entry(gk(mt), C.wifi_SSID, 0);
+    so_out_config_reply_entry(mt, C.wifi_SSID);
     break;
   case SO_CFG_WLAN_PASSWORD:
-    cli_out_config_reply_entry(gk(mt), "", 0);
+    so_out_config_reply_entry(mt, "");
     break;
 
   case SO_CFG_MQTT_ENABLE:
 #ifdef USE_MQTT
-    cli_out_config_reply_entry(gk(mt), C.mqtt_enable ? "1" : "0", 0);
+    so_out_config_reply_entry_d(mt, C.mqtt_enable ? 1 : 0);
 #endif
     break;
   case SO_CFG_MQTT_URL:
 #ifdef USE_MQTT
-    cli_out_config_reply_entry(gk(mt), C.mqtt_url, 0);
+    so_out_config_reply_entry_s(mt, C.mqtt_url);
 #endif
     break;
   case SO_CFG_MQTT_USER:
 #ifdef USE_MQTT
-    cli_out_config_reply_entry(gk(mt), C.mqtt_user, 0);
+    so_out_config_reply_entry_s(mt, C.mqtt_user);
 #endif
     break;
   case SO_CFG_MQTT_PASSWORD:
 #ifdef USE_MQTT
-    cli_out_config_reply_entry(gk(mt), "", 0);
+    so_out_config_reply_entry_s(mt, "");
 #endif
     break;
   case SO_CFG_LONGITUDE:
-    cli_out_config_reply_entry(gk(mt), NULL, 8), io_print_float(C.geo_longitude, 5);
+    so_out_config_reply_entry_f(mt, C.geo_longitude, 5);
     break;
   case SO_CFG_LATITUDE:
-    cli_out_config_reply_entry(gk(mt), NULL, 8), io_print_float(C.geo_latitude, 5);
+    so_out_config_reply_entry_f(mt, C.geo_latitude, 5);
     break;
   case SO_CFG_TIMEZONE:
-    cli_out_config_reply_entry(gk(mt), NULL, 8), io_print_float(C.geo_timezone, 5);
+    so_out_config_reply_entry_f(mt, C.geo_timezone, 5);
     break;
   case SO_CFG_VERBOSE:
-    cli_out_config_reply_entry(gk(mt), itoa(C.app_verboseOutput, buf, 10), 0);
+    so_out_config_reply_entry_d(mt, C.app_verboseOutput);
     break;
     case SO_CFG_TZ:
 #ifdef POSIX_TIME
-      cli_out_config_reply_entry(gk(mt), C.geo_tz, 0);
+      so_out_config_reply_entry_s(mt, C.geo_tz);
 #endif
     break;
   case SO_CFG_DST:
 #ifdef MDR_TIME
   {
     const char *dst = (C.geo_dST == dstEU ? "eu" : (C.geo_dST == dstNone ? "0" : "1"));
-    cli_out_config_reply_entry(gk(mt), dst, 0);
+    so_out_config_reply_entry_s(mt, dst);
   }
 #endif
     break;
@@ -149,7 +245,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
       char key[10] = "gpio";
       strcat(key, itoa(gpio_number, buf, 10));
       buf[0] = pin_state_args[C.gpio[gpio_number]]; buf[1] = '\0';
-      cli_out_config_reply_entry(key, buf, 0);
+      so_out_config_reply_entry2(key, buf);
     }
 #endif
     break;
@@ -158,7 +254,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_CFG_end:
-    cli_out_config_reply_entry(NULL, NULL, -1);
+    so_out_config_reply_entry_s(SO_NONE, NULL);
     break;
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -269,6 +365,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     so_arg_amm_t *a = arg;
     io_puts("pair a="), so_print_gmbitmask(a->mm), io_puts(";\n");
   }
+    break;
 
   default:
 #ifndef DISTRIBUTION

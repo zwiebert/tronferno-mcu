@@ -41,7 +41,8 @@ const char help_parmConfig[]  =
  #ifdef MDR_TIME
     "time-zone=(N|?)    time zone hour offset\n"
     "dst=(eu|0|1|?)     daylight saving time\n"
-#else
+#endif
+#ifdef POSIX_TIME
     "tz=(POSIX_TZ|?)    time zone for RTC/NTP\n"
 #endif
     "verbose=(0..5|?)   diagnose output verbosity level\n"
@@ -50,7 +51,7 @@ const char help_parmConfig[]  =
 #if ENABLE_RESTART
     "restart            restart MCU\n"
 #endif
-#ifdef CONFIG_GPIO_SIZE
+#ifdef ACCESS_GPIO
     "gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default\n"
 #endif
 //  "set-expert-password=\n"
