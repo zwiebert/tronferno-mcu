@@ -76,6 +76,7 @@ char *json_buf = cmd_buf;
 int json_idx;
 
 void so_json_config_reply(const char *key, const char *val, bool is_number) {
+#ifdef USE_MQTT
   ets_printf("so_json(): %s, %s, %d\n", key, val, is_number);
   if (key == 0 || (json_idx + strlen(key) + strlen(val) + 6) > JSON_BUF_SIZE) {
     if (json_idx > 0) {
@@ -95,6 +96,7 @@ void so_json_config_reply(const char *key, const char *val, bool is_number) {
   const char *quote = is_number ? "" : "\"";
   sprintf(json_buf + json_idx, "\"%s\": %s%s%s,", key, quote, val, quote);
   json_idx += strlen(json_buf+json_idx);
+#endif
 }
 
 void so_out_config_reply_entry2(const char *key, const char *val) {
