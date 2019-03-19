@@ -167,10 +167,7 @@ process_parmConfig(clpar p[], int len) {
 #ifdef USE_MQTT
         case SO_CFG_MQTT_ENABLE: {
           C.mqtt_enable = (*val == '1') ? 1 : 0;
-          if (C.mqtt_enable)
-          io_mqtt_create_and_start();
-          else
-          io_mqtt_stop_and_destroy();
+          io_mqtt_enable(C.mqtt_enable);
           save_config(CONFIG_MQTT_ENABLE);
         }
         break;

@@ -8,6 +8,14 @@
 
 #include "automatic/timer_data.h"
 #include "userio/status_output.h"
+#ifdef USE_MQTT
+#include "userio/status_json.h"
+#define so_jco (s_json_config_out != 0)
+#else
+#define so_json_config_reply(a,b,c)
+#define so_jco false
+#endif
+#define so_jto so_jco
 
 #include <string.h>
 #include <stdio.h>
@@ -21,6 +29,7 @@
 #include "misc/int_macros.h"
 #include "userio/inout.h"
 #include "userio/mqtt.h"
+#include "userio/status_json.h"
 
 #define D(x)
 
@@ -29,6 +38,9 @@ const char * const cfg_keys[] = {
     "timezone", "dst", "tz", "verbose",
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password"
 };
+
+#define so_cco true
+#define so_cto true
 
 char *ICACHE_FLASH_ATTR ftoa(float f, char *buf, int n) {
   int i;
@@ -71,73 +83,45 @@ gk(so_msg_t so_key) {
   return NULL;
 }
 
-char *json_buf = cmd_buf;
-#define JSON_BUF_SIZE CMD_BUF_SIZE
-int json_idx;
-
-void so_json_config_reply(const char *key, const char *val, bool is_number) {
-#ifdef USE_MQTT
-  ets_printf("so_json(): %s, %s, %d\n", key, val, is_number);
-  if (key == 0 || (json_idx + strlen(key) + strlen(val) + 6) > JSON_BUF_SIZE) {
-    if (json_idx > 0) {
-      strcpy(json_buf + json_idx, " } }");
-      io_mqtt_publish("tfmcu/config_out", json_buf);
-      io_puts(json_buf), io_putlf();
-    }
-    json_idx = 0;
-    return;
-  }
-
-  if (json_idx == 0) {
-    strcpy(json_buf, "{ \"name\": \"tfmcu\", \"config\": { ");
-    json_idx = strlen(json_buf);
-  }
-
-  const char *quote = is_number ? "" : "\"";
-  sprintf(json_buf + json_idx, "\"%s\": %s%s%s,", key, quote, val, quote);
-  json_idx += strlen(json_buf+json_idx);
-#endif
-}
-
 void so_out_config_reply_entry2(const char *key, const char *val) {
-  cli_out_config_reply_entry(key, val, 0);
+  if (so_cco) cli_out_config_reply_entry(key, val, 0);
 }
 
 void so_out_config_reply_entry(so_msg_t key, const char *val) {
-  so_out_config_reply_entry2(gk(key), val);
+  if (so_cco) so_out_config_reply_entry2(gk(key), val);
 }
 
 void so_out_config_reply_entry_s(so_msg_t key, const char *val) {
-  so_out_config_reply_entry2(gk(key), val);
-  so_json_config_reply(gk(key), val, false);
+  if (so_cco) so_out_config_reply_entry2(gk(key), val);
+  if (so_jco) so_json_config_reply(gk(key), val, false);
 }
 
 void so_out_config_reply_entry_d(so_msg_t key, int val) {
   char buf[20];
   itoa(val, buf, 10);
-  so_out_config_reply_entry2(gk(key), buf);
-  so_json_config_reply(gk(key), buf, true);
+  if (so_cco) so_out_config_reply_entry2(gk(key), buf);
+  if (so_jco) so_json_config_reply(gk(key), buf, true);
 }
 
 void so_out_config_reply_entry_l(so_msg_t key, int val) {
   char buf[20];
   ltoa(val, buf, 10);
-  so_out_config_reply_entry2(gk(key), buf);
-  so_json_config_reply(gk(key), buf, true);
+  if (so_cco) so_out_config_reply_entry2(gk(key), buf);
+  if (so_jco) so_json_config_reply(gk(key), buf, true);
 }
 
 void so_out_config_reply_entry_lx(so_msg_t key, int val) {
   char buf[20];
   ltoa(val, buf, 16);
-  so_out_config_reply_entry2(gk(key), buf);
-  so_json_config_reply(gk(key), buf, false); //no hex in jason. use string
+  if (so_cco) so_out_config_reply_entry2(gk(key), buf);
+  if (so_jco) so_json_config_reply(gk(key), buf, false); //no hex in jason. use string
 }
 
 void so_out_config_reply_entry_f(so_msg_t key, float val, int n) {
   char buf[20];
   ftoa(val, buf, 5);
-  so_out_config_reply_entry2(gk(key), buf);
-  so_json_config_reply(gk(key), buf, true);
+  if (so_cco) so_out_config_reply_entry2(gk(key), buf);
+  if (so_jco) so_json_config_reply(gk(key), buf, true);
 }
 
 
@@ -334,6 +318,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_TIMER_PRINT: {
     so_arg_gm_t *a = arg;
     so_print_timer(a->g, a->m, true);
+    if (so_jto) io_mqtt_publish("tfmcu/timer_out", sj_timer2json(a->g, a->m));
   }
     break;
 
@@ -404,12 +389,12 @@ static void ICACHE_FLASH_ATTR so_print_timer(uint8_t g, uint8_t m, bool wildcard
   // read_gm_bitmask("MANU", &manual_bits, 1); //FIXME: not needed
   bool f_manual = GET_BIT(manual_bits[g], m);
 
-  cli_out_timer_reply_entry(NULL, NULL, 1);
+  if (so_cto) cli_out_timer_reply_entry(NULL, NULL, 1);
 
   if (read_timer_data(&tdr, &g, &m, wildcard)) {
 
-    cli_out_timer_reply_entry("g", itoa(g, buf, 10), 0);
-    cli_out_timer_reply_entry("m", itoa(m, buf, 10), 0);
+    if (so_cto) cli_out_timer_reply_entry("g", itoa(g, buf, 10), 0);
+    if (so_cto) cli_out_timer_reply_entry("m", itoa(m, buf, 10), 0);
 
     char *p = buf;
     *p++ = f_manual ? 'M' : 'm';
@@ -419,27 +404,27 @@ static void ICACHE_FLASH_ATTR so_print_timer(uint8_t g, uint8_t m, bool wildcard
     *p++ = td_is_daily(&tdr) ? 'D' : 'd';
     *p++ = td_is_weekly(&tdr) ? 'W' : 'w';
     *p++ = '\0';
-    cli_out_timer_reply_entry("f", buf, 0);
+    if (so_cto) cli_out_timer_reply_entry("f", buf, 0);
 
     if (td_is_daily(&tdr)) {
-      cli_out_timer_reply_entry("daily", tdr.daily, 0);
+      if (so_cto) cli_out_timer_reply_entry("daily", tdr.daily, 0);
     }
     if (td_is_weekly(&tdr)) {
-      cli_out_timer_reply_entry("weekly", tdr.weekly, 0);
+      if (so_cto) cli_out_timer_reply_entry("weekly", tdr.weekly, 0);
     }
     if (td_is_astro(&tdr)) {
-      cli_out_timer_reply_entry("astro", itoa(tdr.astro, buf, 10), 0);
+      if (so_cto) cli_out_timer_reply_entry("astro", itoa(tdr.astro, buf, 10), 0);
     }
 
     if (td_is_random(&tdr)) {
-      cli_out_timer_reply_entry("random", "1", 0);
+      if (so_cto) cli_out_timer_reply_entry("random", "1", 0);
     }
     if (td_is_sun_auto(&tdr)) {
-      cli_out_timer_reply_entry("sun-auto", "1", 0);
+      if (so_cto) cli_out_timer_reply_entry("sun-auto", "1", 0);
     }
 
   }
-  cli_out_timer_reply_entry(NULL, NULL, -1);
+  if (so_cto) cli_out_timer_reply_entry(NULL, NULL, -1);
 }
 
 static void ICACHE_FLASH_ATTR so_print_gmbitmask(gm_bitmask_t mm) {

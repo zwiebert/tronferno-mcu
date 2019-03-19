@@ -97,6 +97,7 @@ void io_mqtt_unsubscribe(const char *topic) {
 }
 
 void io_mqtt_publish(const char *topic, const char *data) {
+  ESP_LOGI(TAG, "MQTT_PUBLISH, topic=%s, data=%s", topic, data);
    int msg_id = esp_mqtt_client_publish(client, topic, data, 0, 1, 0);
 }
 
@@ -145,5 +146,5 @@ void setup_mqtt(void) {
   esp_log_level_set("TRANSPORT", ESP_LOG_VERBOSE);
   esp_log_level_set("OUTBOX", ESP_LOG_VERBOSE);
   if (C.mqtt_enable)
-    io_mqtt_create_and_start();
+    io_mqtt_enable(true);
 }

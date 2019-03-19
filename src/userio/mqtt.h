@@ -8,6 +8,10 @@
 #ifndef SRC_USERIO_MQTT_H_
 #define SRC_USERIO_MQTT_H_
 
+#include <stdbool.h>
+
+void io_mqtt_enable(bool enable);
+
 // interface which has to be implemented by mcu specific code
 void io_mqtt_create_and_start(void);
 void io_mqtt_stop_and_destroy(void);
