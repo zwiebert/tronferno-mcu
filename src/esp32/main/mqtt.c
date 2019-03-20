@@ -145,6 +145,11 @@ void setup_mqtt(void) {
   esp_log_level_set("TRANSPORT_SSL", ESP_LOG_VERBOSE);
   esp_log_level_set("TRANSPORT", ESP_LOG_VERBOSE);
   esp_log_level_set("OUTBOX", ESP_LOG_VERBOSE);
-  if (C.mqtt_enable)
+  if (C.mqtt_enable) {
+    C.mqtt_enable = 0; //FIXME: kludge to avoid endless reboots when url parsing exception
+    save_config(CONFIG_MQTT_ENABLE);
     io_mqtt_enable(true);
+    C.mqtt_enable = 1;
+    save_config(CONFIG_MQTT_ENABLE);
+  }
 }
