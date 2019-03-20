@@ -201,10 +201,11 @@ struct c_map {
   fer_cmd fc;
 };
 
-struct c_map const fc_map[] = { { "down", fer_cmd_DOWN }, { "up", fer_cmd_UP }, { "stop", fer_cmd_STOP }, { "sun-down", fer_cmd_SunDOWN }, { "sun-up",
-    fer_cmd_SunUP }, { "sun-inst", fer_cmd_SunINST },
-//		{"sun-test", fer_cmd_Program},
-    { "set", fer_cmd_SET }, };
+struct c_map const fc_map[] = { { "down", fer_cmd_DOWN }, { "up", fer_cmd_UP },
+                                { "stop", fer_cmd_STOP }, { "sun-down", fer_cmd_SunDOWN },
+                                { "sun-up", fer_cmd_SunUP }, { "sun-inst", fer_cmd_SunINST },
+                                //		{"sun-test", fer_cmd_Program},
+                                { "set", fer_cmd_SET }, };
 
 bool ICACHE_FLASH_ATTR
 cli_parm_to_ferCMD(const char *token, fer_cmd *cmd) {
@@ -360,13 +361,18 @@ struct {
   const char *parm;
   int (*process_parmX)(clpar p[], int len);
   const char *help;
-} parm_handlers[] = { { "send", process_parmSend, help_parmSend }, { "config", process_parmConfig, help_parmConfig }, { "mcu", process_parmMcu, help_parmMcu },
-    { "timer", process_parmTimer, help_parmTimer }, { "help", process_parmHelp, help_parmHelp },
+} parm_handlers[] = { { "send", process_parmSend, help_parmSend },
+                      { "cmd", process_parmSend, help_parmSend }, // alias
+                      { "config", process_parmConfig, help_parmConfig },
+                      { "mcu", process_parmMcu, help_parmMcu },
+                      { "timer", process_parmTimer, help_parmTimer },
+                      { "auto", process_parmTimer, help_parmTimer }, // alias
+                      { "help", process_parmHelp, help_parmHelp },
 #if ENABLE_EXPERT
-    { "expert", process_parmExpert, help_None},
+                      { "expert", process_parmExpert, help_None},
 #endif
 #ifdef USE_PAIRINGS
-    { "pair", process_parmPair, help_parmPair},
+                      { "pair", process_parmPair, help_parmPair},
 #endif
   };
 
@@ -483,4 +489,3 @@ testModule_cli()
   return n != -1;
 }
 #endif
-

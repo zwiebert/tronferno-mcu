@@ -56,11 +56,6 @@ const char help_parmConfig[]  =
 #endif
 //  "set-expert-password=\n"
 ;
-#define slf "\n"
-#define cfg "config "
-
-
-
 
 int ICACHE_FLASH_ATTR
 process_parmConfig(clpar p[], int len) {
@@ -315,7 +310,6 @@ process_parmConfig(clpar p[], int len) {
       }
 #endif
 
-
     } else if (strcmp(key, "set-pw") == 0) {
       if (strlen(val) < sizeof (C.app_configPassword)) {
         strcpy (C.app_configPassword, val);
@@ -324,15 +318,11 @@ process_parmConfig(clpar p[], int len) {
         reply_failure();
       }
 
-
     } else if (strcmp(key, "receiver") == 0) {
       reply(config_receiver(val));
 
-
     } else if (strcmp(key, "transmitter") == 0) {
       reply(config_transmitter(val));
-
-
 
     } else {
       ++errors;
@@ -340,10 +330,7 @@ process_parmConfig(clpar p[], int len) {
     }
   }
 
-
-
   so_output_message(SO_CFG_end, NULL);
   reply(errors==0);
   return 0;
 }
-

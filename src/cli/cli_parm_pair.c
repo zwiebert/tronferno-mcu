@@ -10,8 +10,6 @@
 #include "userio/status_output.h"
 
 
-
-
 #if defined DISTRIBUTION || 0
 #define D(x) x
 #define DP(x) (ets_printf("db: %s\n", x))
@@ -100,4 +98,3 @@ process_parmPair(clpar p[], int len) {
   }
   return 0;
 }
-

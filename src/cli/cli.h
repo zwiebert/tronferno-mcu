@@ -3,7 +3,7 @@
  *
  * Created: 24.08.2017 21:46:06
  *  Author: bertw
- */ 
+ */
 
 
 #ifndef CLI_H_
@@ -21,4 +21,3 @@ extern fer_sender_basic senders[10];
 extern fer_sender_basic default_sender, last_received_sender;
 
 #endif /* CLI_H_ */
-

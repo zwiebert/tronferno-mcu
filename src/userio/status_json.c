@@ -29,8 +29,8 @@
 
 void (*s_json_config_out)(const char *s);
 
-char *json_buf = cmd_buf;
-#define JSON_BUF_SIZE CMD_BUF_SIZE
+#define JSON_BUF_SIZE 128
+char json_buf[JSON_BUF_SIZE];
 int json_idx;
 
 void so_json_config_reply(const char *key, const char *val, bool is_number) {
@@ -73,29 +73,33 @@ static void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, uint8_t dst_size, uin
       *p++ = td_is_daily(&tdr) ? 'D' : 'd';
       *p++ = td_is_weekly(&tdr) ? 'W' : 'w';
       *p++ = '\0';
+#ifdef SJ_AUTO_VERBOSE
+      sprintf(dp, "{ \"name\": \"automatic\", \"auto%d%d\" :{ \"f\": \"%s\", \"random\": %d, \"sun-auto\": %d, \"manual\": %d",
+              g, m, flags, (td_is_random(&tdr)), (td_is_sun_auto(&tdr)), f_manual);
+#else
+      sprintf(dp, "{ \"name\": \"automatic\", \"auto%d%d\" :{ \"f\": \"%s\"",
+              g, m, flags);
+#endif
 
-      sprintf(dp, "{ \"name\": \"automatic\", \"auto%d%d\" :{ \"f\": \"%s\", \"random\": %d, \"sun-auto\": %d, \"manual\": %d", g, m, flags, (td_is_random(&tdr)), (td_is_sun_auto(&tdr)), f_manual);
       dp += strlen(dp);
     }
 
     if (td_is_daily(&tdr)) {
-      strcat(dp, ", \"daily\": "), strcat(dp, tdr.daily);
+      sprintf(dp, ", \"daily\": \"%s\"", tdr.daily);
       dp += strlen(dp);
     }
     if (td_is_weekly(&tdr)) {
-      strcat(dp, ", \"weekly\": "), strcat(dp, tdr.weekly);
+      sprintf(dp, ", \"weekly\": \"%s\"", tdr.weekly);
       dp += strlen(dp);
     }
+
     if (td_is_astro(&tdr)) {
-      strcat(dp, ", \"astro\": ");
-      dp += strlen(dp);
-      itoa(tdr.astro, dp, 10);
+      sprintf(dp, ", \"astro\": %d", tdr.astro);
       dp += strlen(dp);
     }
 
     strcat(dp, " } }");
   }
-
 }
 
 const char *ICACHE_FLASH_ATTR sj_timer2json(uint8_t g, uint8_t m) {
