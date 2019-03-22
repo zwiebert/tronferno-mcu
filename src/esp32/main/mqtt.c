@@ -134,17 +134,19 @@ void io_mqtt_stop_and_destroy(void) {
 
 
 void setup_mqtt(void) {
-  ets_printf("\n\n----#####################################----------\n\n");
-  ESP_LOGI(TAG, "[APP] Startup..");
-  ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
-  ESP_LOGI(TAG, "[APP] IDF version: %s", esp_get_idf_version());
+  if (C.app_verboseOutput > 5) {
+    ets_printf("\n\n----#####################################----------\n\n");
+    ESP_LOGI(TAG, "[APP] Startup..");
+    ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
+    ESP_LOGI(TAG, "[APP] IDF version: %s", esp_get_idf_version());
 
-  esp_log_level_set("*", ESP_LOG_INFO);
-  esp_log_level_set("MQTT_CLIENT", ESP_LOG_VERBOSE);
-  esp_log_level_set("TRANSPORT_TCP", ESP_LOG_VERBOSE);
-  esp_log_level_set("TRANSPORT_SSL", ESP_LOG_VERBOSE);
-  esp_log_level_set("TRANSPORT", ESP_LOG_VERBOSE);
-  esp_log_level_set("OUTBOX", ESP_LOG_VERBOSE);
+    esp_log_level_set("*", ESP_LOG_INFO);
+    esp_log_level_set("MQTT_CLIENT", ESP_LOG_VERBOSE);
+    esp_log_level_set("TRANSPORT_TCP", ESP_LOG_VERBOSE);
+    esp_log_level_set("TRANSPORT_SSL", ESP_LOG_VERBOSE);
+    esp_log_level_set("TRANSPORT", ESP_LOG_VERBOSE);
+    esp_log_level_set("OUTBOX", ESP_LOG_VERBOSE);
+  }
   if (C.mqtt_enable) {
     C.mqtt_enable = 0; //FIXME: kludge to avoid endless reboots when url parsing exception
     save_config(CONFIG_MQTT_ENABLE);
