@@ -40,6 +40,8 @@ typedef enum {
 
   SO_PAIR_PRINT_AMM,
 
+  SO_INET_PRINT_ADDRESS,
+
 
 } so_msg_t;
 

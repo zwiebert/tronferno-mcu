@@ -14,11 +14,11 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-#include "../../userio/inout.h"
+#include "userio/ipnet.h"
+#include "userio/inout.h"
 #include "main/common.h"
 #include "config/config.h"
 #include "fernotron/fer.h"
-#include "main/wifi.h"
 
 #define printf io_printf_fun
 #ifndef DISTRIBUTION
@@ -87,12 +87,12 @@ static esp_err_t event_handler(void *ctx, system_event_t *event) {
     ESP_LOGI(TAG, "got ip:%s", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
     s_retry_num = 0;
     xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
-    wifi_connected();
+    ipnet_connected();
     break;
 
 
   case SYSTEM_EVENT_STA_DISCONNECTED:
-  wifi_disconnected();
+  ipnet_disconnected();
   {
     if (RETRY_RECONNECT) {
       ip4_address.addr = 0;
@@ -111,7 +111,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event) {
 }
 
 void
-wifi_ip_address_as_string(char *buf, unsigned buf_len) {
+ipnet_addr_as_string(char *buf, unsigned buf_len) {
   ip4addr_ntoa_r(&ip4_address, buf, buf_len);
 }
 

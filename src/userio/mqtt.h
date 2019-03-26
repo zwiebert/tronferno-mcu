@@ -21,6 +21,7 @@ void io_mqtt_publish(const char *topic, const char *data);
 
 // interface implemented in ./mqtt.c which will be called by mcu specific code
 void io_mqtt_connected ();
+void io_mqtt_disconnected ();
 void io_mqtt_received(const char *topic, int topic_len, const char *data, int data_len);
 void io_mqtt_subscribed(const char *topic, int topic_len);
 void io_mqtt_unsubscribed(const char *topic, int topic_len);
