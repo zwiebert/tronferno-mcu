@@ -62,7 +62,11 @@ process_parmSend(clpar p[], int len) {
       if (*val == '?') {
         read_state = true;
       } else {
-        return reply_failure();
+        switch(atoi(val)) {
+          case 100: cmd = fer_cmd_UP; break;
+          case 0: cmd = fer_cmd_DOWN; break;
+          default: return reply_failure(); break;
+        }
       }
     } else if (strcmp(key, "c") == 0) {
       NODEFAULT();
