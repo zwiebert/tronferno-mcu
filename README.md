@@ -1,58 +1,67 @@
 # tronferno-mcu
 
-MCU firmware to control Fernotron devices like shutter motors the way the original 2411 central unit does.  It has a command line user interface which can be fully accessed via USB terminal program. See below for Related Projects for an (optional) App for Android. There is also an FHEM module. 
+  Tronferno is a firmware to turn an ESP32 MCU board into an hardware
+  dongle to control Fernotron devices (usually shutters).
 
-Supported MCUs:
+  It aims to provide all functionality of the original programming
+  central 2411, but it also can do just plain up/down/stop commands,
+  if you want just that.
 
-* ESP32: works best
-* ESP8266: works, but has more bugs and less features
-* ATMEGA328P: Was supported until git hash 80043d2e0bd5bd94be9053207e2fcf5aea391c71 (compiles, but too big) and e29af9767c6492f66b1fe99637737d14fd82d5b9 (compiles and runs).
+  * Command interfaces: USB, TCP, MQTT
 
-#### This project is Experimental Software. It may contain bugs and errors. Use at your own risk.
+  * Supported by FHEM home server via specific module for USB
+    connection
 
+  * Can be integrated into homer servers via its MQTT interface
 
-### Hardware Requirements
- - MCU board
- - 443 MHz RF transmitter (like FS1000A)
- - 443 MHz RF receiver (like RXB6)
-
-RF receiver is optional.  It can be used to sniff the ID of your original central unit (usually a one time thing). It can also receive commands of other receivers, to keep track if a shutter may currently be opened or closed.
-Please note, a super-regeneration receiver may block the frequency by transmitting noise occasionally. This is the reason you should not place some 433 MHz receiver devices (like some power outlets) near your 433 MHz shutter.  If you want to leave the receiver connected, use a super-heterodyne receiver like the RXB6. 
+  * Android App available
 
 
-### Download pre-built binary images to flash
-   * go to the separate github repository [zwiebert/tronferno-mcu-bin](https://github.com/zwiebert/tronferno-mcu-bin)
+## Required Hardware
 
-### How to build and flash
+  * 443 MHz RF transmitter (like FS1000A) to send commands.
 
-See documentation in [docs](https://github.com/zwiebert/tronferno-mcu/blob/master/docs/)/mcu_*.md
-    
-      
-### Recent Changes
+  * 443 MHz RF receiver (like RXB6) to receive commands.
 
- * 2018-09: try to guess current open/close-status of shutters  
- * 2018-09: esp32 support added
+  * ESP32, 4MB FLASH. (current main hardware for further development)
 
-### Problems
- * The function of some bytes in the last line of the timer programming data is still unknown to me. 
+    * or: ESP8266, 4MB FLASH. (deprecated, no MQTT support for now(?))
+
+    * or: ATMEGA328. (outdated firmware with limited features. No WLAN.)
+      * firmware compiles (but too big to load) with: git checkout 80043d2e0bd5bd94be9053207e2fcf5aea391c71
+      * firware compiles and runs fine with: git checkout e29af9767c6492f66b1fe99637737d14fd82d5b9
+
+
+(Please note, a super-regeneration receiver can disturb other
+receivers. This is the reason you should not place some 433 MHz
+receiver devices (like power plugs) near your 433 MHz shutter. A
+super-heterodyne receiver, like the RXB6, does noth do this.)
+
+
+## Related Repositories
+
+ * [tronferno-mcu-bin](https://github.com/zwiebert/tronferno-mcu-bin): all firmware binaries, tools and docs for end users
+
+ * tronferno-mcu: this repository. THe source distribution for developers
+
+ * [tronferno-fhem](https://github.com/zwiebert/tronferno-fhem): Perl module for integration into home server FHEM
+
+ * [tronferno-andro](https://github.com/zwiebert/tronferno-andro): Android App
+
+
+### Documentation
+
+  * [CLI reference manual](https://github.com/zwiebert/tronferno-mcu/blob/master/docs/CLI.md) in the docs folder.
+
+  * Buld/Flash information: [docs](https://github.com/zwiebert/tronferno-mcu/blob/master/docs/)/mcu_*.md
+
 
 ### History
- * 2018: Moving to ESP32 for better TCP stability and more RAM.
- * 2017: Moving to ESP8266 for builtin WiFi and more RAM. 
- * 2017: Moved to ATmega328p for more FLASH-ROM. Added programming of built-in timer after figuring out all these checksums.
- * 2011: First version for ATmega168. Limited to plain commands (up/down/etc). Audacity and Emacs-Lisp was used to analyze data.
+ * 2018: Moving to ESP32
+ * 2017: Moving to ESP8266
+ * 2017: Moved to ATmega328p. Support for timer programming.
+ * 2011: First version on ATmega168. Limited to plain commands up/down/stop/...
 
-### Related Projects
-  * [GUI for Android](https://github.com/zwiebert/tronferno-andro). It kinda works already.
-  * FHEM module [10_Tronferno.pm](https://github.com/zwiebert/tronferno-fhem) to send plain commands via TronfernoMcu-IODev (TCP or USB) to tronferno-mcu
-  * FHEM module [10_Fernotron.pm](https://github.com/zwiebert/tronferno-fhem) to send plain commands via SIGNALduino-IODev to Fernotron devices. No need for tronferno-mcu hardware.
- 
-  
 ### Project Author
 
 Bert Winkelmann <tf.zwiebert@online.de>
-
-### All CLI commands
-
-Look at the [CLI manual](https://github.com/zwiebert/tronferno-mcu/blob/master/docs/CLI.md) in the docs folder.
-
