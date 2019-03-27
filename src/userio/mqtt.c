@@ -53,6 +53,10 @@ void io_mqtt_connected () {
   io_mqtt_publish(TOPIC_STATUS, "connected"); // for autocreate (ok???)
 }
 
+// implementation interface
+void io_mqtt_disconnected () {
+}
+
 void io_mqtt_subscribed(const char *topic, int topic_len) {
 
 }

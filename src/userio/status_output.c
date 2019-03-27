@@ -30,6 +30,7 @@
 #include "userio/inout.h"
 #include "userio/mqtt.h"
 #include "userio/status_json.h"
+#include "userio/ipnet.h"
 
 #define D(x)
 
@@ -353,6 +354,13 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     io_puts("pair a="), so_print_gmbitmask(a->mm), io_puts(";\n");
   }
     break;
+
+
+  case SO_INET_PRINT_ADDRESS: {
+    char buf[20];
+    ipnet_addr_as_string(buf, 20);
+    io_puts("tf: ipaddr: "), io_puts(buf), io_puts(";\n");
+  }
 
   default:
 #ifndef DISTRIBUTION

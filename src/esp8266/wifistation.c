@@ -48,6 +48,11 @@ void wifi_event_handler_cb (System_Event_t *event) {
 
 }
 
+void
+ipnet_addr_as_string(char *buf, unsigned buf_len) {
+  strncpy(buf, "not implemented", buf_len);
+}
+
 
 void ICACHE_FLASH_ATTR
 setup_wifistation(void) {
