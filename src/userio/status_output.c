@@ -361,6 +361,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     ipnet_addr_as_string(buf, 20);
     io_puts("tf: ipaddr: "), io_puts(buf), io_puts(";\n");
   }
+  break;
 
   default:
 #ifndef DISTRIBUTION
