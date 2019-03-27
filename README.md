@@ -19,9 +19,9 @@
 
 ## Required Hardware
 
-  * 443 MHz RF transmitter (like FS1000A) to send commands.
+  * 433 MHz RF transmitter (like FS1000A) to send commands.
 
-  * 443 MHz RF receiver (like RXB6) to receive commands.
+  * 433 MHz RF receiver (like RXB6) to receive commands.
 
   * ESP32, 4MB FLASH. (current main hardware for further development)
 
@@ -33,9 +33,8 @@
 
 
 (Please note, a super-regeneration receiver can disturb other
-receivers. This is the reason you should not place some 433 MHz
-receiver devices (like power plugs) near your 433 MHz shutter. A
-super-heterodyne receiver, like the RXB6, does noth do this.)
+receivers. This is the reason you should not place some 433 MHz power plugs near your 433 MHz shutter. A
+super-heterodyne receiver, like the RXB6, does not have this issue)
 
 
 ## Related Repositories
