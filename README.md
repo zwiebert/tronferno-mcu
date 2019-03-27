@@ -39,9 +39,9 @@ super-heterodyne receiver, like the RXB6, does not have this issue)
 
 ## Related Repositories
 
- * [tronferno-mcu-bin](https://github.com/zwiebert/tronferno-mcu-bin): all firmware binaries, tools and docs for end users
+ * [tronferno-mcu-bin](https://github.com/zwiebert/tronferno-mcu-bin): Firmware binaries, tools and docs for end users
 
- * tronferno-mcu: this repository. THe source distribution for developers
+ * [tronferno-mcu](https://github.com/zwiebert/tronferno-mcu) Source distribution for developers
 
  * [tronferno-fhem](https://github.com/zwiebert/tronferno-fhem): Perl module for integration into home server FHEM
 
