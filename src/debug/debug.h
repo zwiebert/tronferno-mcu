@@ -11,7 +11,7 @@
 #endif
 
 #ifdef MCU_ESP32
-#include <rom/ets_sys.h>
+#include <esp32/rom/ets_sys.h>
 #define db_puts(s) ets_printf("%s\n",s)
 #define db_printf ets_printf
 #endif
