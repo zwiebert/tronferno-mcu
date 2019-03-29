@@ -1,17 +1,59 @@
 var base = '';
 var base = 'http://10.0.0.20'; //dev-delete-line//
 
+var gmu = [0,1,2,3,4,5,6,7];
+var gu = [0,1,2,3,4,5,6,7];
+var gu_idx = 0;
+
 var cfg_out = {};
 
 function config_item2(name,value) {
-    return '<label class="config-label">'+name+'<input class="config-input" type="text" id="cfg.'+name+'" name="'+name+'" value="'+value+'"></label>';
+    return '<label class="config-label">'+name+'<input class="config-input" type="text" id="cfg_'+name+'" name="'+name+'" value="'+value+'"></label>';
 }
 
 
 function config_item(name,value) {
-    return '<td><label class="config-label">'+name+'</label></td><td><input class="config-input" type="text" id="cfg.'+name+'" name="'+name+'" value="'+value+'"></td>';
+    return '<td><label class="config-label">'+name+'</label></td><td><input class="config-input" type="text" id="cfg_'+name+'" name="'+name+'" value="'+value+'"></td>';
 }
 
+function gmuUnpack() {
+    let val = document.getElementById("cfg_gm-used").value; //HEX string! not a number!
+    while(val.length < 8)
+        val = "0"+val;
+    console.log("val: "+val);
+    
+    let g=1;
+    gmu = [0];
+    gu = [0];
+    for(let i=6; i >= 0; --i,++g) {
+        let id = "gmu"+(g.toString());
+        let mct = parseInt(val[i], 16);
+        if (mct)
+            gu.push(g);
+        gmu.push(mct);
+        document.getElementById(id).value = val[i];
+    }
+    console.log(gmu);
+    console.log(gu);
+}
+
+function gmuPack() {
+    let val = "";
+    
+    let written = false; // to skip leading zeros
+    for(let i=7; i >= 1; --i) {
+        let id = "gmu"+(i.toString());
+        let mct = document.getElementById(id).value;
+        if (mct != '0' || written) {
+            val+= mct;
+            written = true;
+        }
+    }
+    let x =  document.getElementById("cfg_gm-used").value;
+    val += x[x.length-1]; // push back unused lowest nibble
+    
+    document.getElementById("cfg_gm-used").value = val;
+}
 
 function json2cli(data) {
     result = "";
@@ -24,7 +66,7 @@ function json2cli(data) {
 
 function jsonUpdateHtml(cfg) {
     Object.keys(cfg).forEach (function (key, idx) {
-        document.getElementById('cfg.'+key).value = cfg[key];
+        document.getElementById('cfg_'+key).value = cfg[key];
     });
 }
 
@@ -55,8 +97,9 @@ function inputConfig2mcu() {
     var cfg = tfmcu.config;
     var new_cfg = {}
     var has_changed = false;
+    gmuPack();
     Object.keys(cfg).forEach (function (key, idx) {
-        var new_val = document.getElementById('cfg.'+key).value;
+        var new_val = document.getElementById('cfg_'+key).value;
         var old_val = cfg[key];
         if (new_val != old_val) {
             new_cfg[key] = new_val;
@@ -77,9 +120,13 @@ function inputConfig2mcu() {
 
 function cInputSend2mcu(c) {
     var tfmcu = {name:"tfmcu"};
+    let g = document.getElementById('sgi').value;
+    let m = document.getElementById('smi').value;
+    if (g=="A") g = 0;
+    if (m=="A") m = 0;
     var send = {
-        g: document.getElementById('send-g').value,
-        m: document.getElementById('send-m').value,
+        g: g,
+        m: m,
         c: c,
     };
     tfmcu['send'] = send;
@@ -98,7 +145,7 @@ function inputConfigReset() {
     var tfmcu = JSON.parse(sessionStorage.getItem("tfmcu.config"));
     var cfg = tfmcu.config;
     Object.keys(cfg).forEach (function (key, idx) {
-        var new_val = document.getElementById('cfg.'+key).value = cfg[key];
+        var new_val = document.getElementById('cfg_'+key).value = cfg[key];
     });
 }
 
@@ -106,12 +153,9 @@ function json2html(cfg) {
     // document.writeln('<!DOCTYPE html><meta charset="UTF-8"><script src="hp.js"></script>');
     var html = "<h3>MCU Configuration</h3><table>"
     Object.keys(cfg).forEach (function (key, idx) {
-        html += '<tr>'+config_item(key, cfg[key])+'</tr>'+"\n";
+        html += '<tr id="cfg_'+key+'_tr">'+config_item(key, cfg[key])+'</tr>'+"\n";
     });
     html +='</table>'
-    html += '<button type="button" onclick="fetch_json(true)">Reload</button>';
-    html += '<button type="button" onclick="inputConfigReset()">Reset</button>';
-    html += '<button type="button" onclick="inputConfig2mcu()">Save</button>';
     return html;
 }
 
@@ -136,8 +180,60 @@ function fetch_json(u=false) {
                       } else {
                           document.getElementById("config-div").innerHTML = json2html(cfg);
                       }
+                      gmuUnpack();
                       sessionStorage.setItem("tfmcu.config", JSON.stringify(json));
                   });
               }
           });
 }
+
+function getGuIdx() {
+    let val = document.getElementById("sgi").value;   
+    if (val == "A")
+        val = 0;
+
+    for(let i=0; i < gu.length; ++i)
+        if (gu[i] == val)
+            return i;
+    return 0;
+}
+
+function gPressed() {
+    let val = document.getElementById("sgi").value;   
+    if (val == "A")
+        val = 0;
+
+    gu_idx = getGuIdx(); //FIXME
+
+    ++gu_idx;
+    if (gu_idx >= gu.length)
+        gu_idx = 0;
+    
+    val = gu[gu_idx];
+
+    if (val == 0)
+        val = "A";
+    document.getElementById("sgi").value = val;
+    if (val == 1)
+        document.getElementById("smi").value = 1;       
+}
+
+
+function mPressed() {
+    let val = document.getElementById("smi").value;   
+    if (val == "A")
+        val = 0;
+
+    ++val;
+    gu_idx = getGuIdx(); //FIXME
+    let g  = gu[gu_idx];
+                
+    if (val > gmu[g])
+        val = 0;
+
+    if (val == 0)
+        val = "A";
+    document.getElementById("smi").value = val;
+}
+
+

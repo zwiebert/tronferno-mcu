@@ -36,7 +36,7 @@
 const char * const cfg_keys[] = {
     "cu", "baud", "rtc", "wlan-ssid", "wlan-password", "longitude", "latitude",
     "timezone", "dst", "tz", "verbose",
-    "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password"
+    "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password", "gm-used",
 };
 
 bool out_cli = true;
@@ -238,6 +238,10 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
 #endif
     break;
 
+  case SO_CFG_GM_USED: {
+    so_out_config_reply_entry_lx(mt, C.fer_usedMembers);
+  }
+    break;
 
     case SO_CFG_GPIO_PIN:
 #ifdef ACCESS_GPIO

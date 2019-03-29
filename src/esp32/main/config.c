@@ -80,8 +80,8 @@ void save_config(uint32_t mask) {
     nvs_close(my_handle);
   }
 }
-
-#else
+#endif
+#ifdef CONFIG_DICT
 
 void read_config(uint32_t mask) {
   esp_err_t err = 0;
@@ -110,6 +110,10 @@ void read_config(uint32_t mask) {
 
     if (mask & CONFIG_CUID) {
       nvs_get_u32(handle, "C_CUID", &C.fer_centralUnitID);
+    }
+
+    if (mask & CONFIG_USED_MEMBERS) {
+      nvs_get_u32(handle, "C_GMU", &C.fer_usedMembers);
     }
 
     if (mask & CONFIG_BAUD) {
@@ -190,6 +194,10 @@ void save_config(uint32_t mask) {
 
     if (mask & CONFIG_CUID) {
       nvs_set_u32(handle, "C_CUID", C.fer_centralUnitID);
+    }
+
+    if (mask & CONFIG_USED_MEMBERS) {
+      nvs_set_u32(handle, "C_GMU", C.fer_usedMembers);
     }
 
     if (mask & CONFIG_BAUD) {
