@@ -1,8 +1,11 @@
 #include "user_config.h"
 #include "string.h"
 #include "cli_imp.h"
+#include <ctype.h>
+#include "debug/debug.h"
+#include <stdlib.h>
 
-#define MAX_PAR 10
+
 clpar par[MAX_PAR];
 
 static char * ICACHE_FLASH_ATTR

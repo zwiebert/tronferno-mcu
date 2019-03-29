@@ -12,12 +12,21 @@
 
 void io_mqtt_enable(bool enable);
 
+#ifdef USE_MQTT
 // interface which has to be implemented by mcu specific code
 void io_mqtt_create_and_start(void);
 void io_mqtt_stop_and_destroy(void);
 void io_mqtt_subscribe(const char *topic, int qos);
 void io_mqtt_unsubscribe(const char *topic);
 void io_mqtt_publish(const char *topic, const char *data);
+#else
+#define io_mqtt_create_and_start()
+#define io_mqtt_stop_and_destroy()
+#define io_mqtt_subscribe(topic, qos)
+#define io_mqtt_unsubscribe(topic)
+#define io_mqtt_publish(topic, data)
+#endif
+
 
 // interface implemented in ./mqtt.c which will be called by mcu specific code
 void io_mqtt_connected ();

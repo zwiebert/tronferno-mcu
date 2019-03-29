@@ -395,7 +395,7 @@ process_parm(clpar p[], int len) {
 }
 
 void ICACHE_FLASH_ATTR
-process_cmdline(char *line) {
+cli_process_cmdline(char *line) {
   dbg_vpf(db_printf("process_cmdline: %s\n", line));
   int n = parse_commandline(line);
   if (n < 0) {
@@ -469,7 +469,7 @@ void ICACHE_FLASH_ATTR cli_loop(void) {
   static bool ready;
   if ((cmdline = get_commandline())) {
     //io_putlf();
-    process_cmdline(cmdline);
+    cli_process_cmdline(cmdline);
     cli_msg_ready();
   } else if (!ready) {
     cli_msg_ready();

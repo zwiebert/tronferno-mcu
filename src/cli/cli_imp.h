@@ -14,6 +14,8 @@ typedef struct {
   char *key;
   char *val;
 } clpar;
+#define MAX_PAR 20
+extern clpar par[MAX_PAR];
 
 extern const char help_parmSend[] ;
 extern const char help_parmTimer[] ;
@@ -25,7 +27,7 @@ extern const char help_None[] ;
 
 extern fer_sender_basic default_sender, last_received_sender;
 extern uint16_t msgid;
-extern clpar par[];
+
 
 #define NODEFAULT() if (val==0) return reply_failure()
 
@@ -62,7 +64,7 @@ bool asc2group(const char *s, fer_grp *grp);
 bool asc2memb(const char *s, fer_memb *memb);
 bool timerString2bcd(const char *src, uint8_t *dst, uint16_t size_dst);
 int process_parm(clpar p[], int len);
-void process_cmdline(char *line);
+void cli_process_cmdline(char *line);
 void cli_loop(void);
 
 #endif

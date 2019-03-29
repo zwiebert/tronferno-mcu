@@ -12,6 +12,7 @@
 #define USE_NTP
 #define USE_WLAN
 #define USE_MQTT
+#define USE_HTTP
 #define CONFIG_BLOB
 #define ACCESS_GPIO
 #define POSIX_TIME 1

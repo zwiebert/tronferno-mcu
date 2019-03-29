@@ -6,6 +6,8 @@
  */
 
 #include "user_config.h"
+#ifdef USE_MQTT
+
 #include "./mqtt.h"
 #include <string.h>
 #include "cli/cli.h"
@@ -65,17 +67,17 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
     if (strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
       char *line;
       if ((line = set_commandline(data + TAG_CLI_LEN, data_len - TAG_CLI_LEN))) {
-        process_cmdline(line);
+        cli_process_cmdline(line);
       }
     } else if ((0 == strncmp(data, TAG_SEND, TAG_SEND_LEN)) || (0 == strncmp(data, TAG_CONFIG, TAG_CONFIG_LEN))
         || (0 == strncmp(data, TAG_TIMER, TAG_TIMER_LEN))) {
       char *line;
       if ((line = set_commandline(data, data_len))) {
-        process_cmdline(line);
+        cli_process_cmdline(line);
       }
     }
   }
 }
 
-
+#endif // USE_MQTT
 
