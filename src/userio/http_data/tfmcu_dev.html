@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+  <head>
+    <script type="text/javascript" src="tfmcu_dev.js"></script>
+    <style>
+      .config { background-color: #bbf; }
+      .config-label { padding: 30px; }
+      .config-input { margin-left: 2em;
+                      alignment: right;
+                    }
+      .send { background-color: #bfb; }
+      .sb {width: 10em; margin: 2px; }
+    </style>
+  </head>
+  <body>
+
+    <div class="send">
+      <h3>Send Fernotron Command</h3>
+      <table>
+        <tr>
+          <td><label>Group</label></td>
+          <td><label>Member</label></td>
+        </tr>
+      <tr>
+      <td><input id="send-g" style="width:2em;" type = "text" name = "g" value="2"></td>
+      <td><input id="send-m" style="width:2em;" type = "text" name = "m" value="2"></td>
+      </tr>
+      </table>
+      <button class="sb" type="button" onclick="cInputSend2mcu('up')">Up</button><br>
+      <button class="sb" type="button" onclick="cInputSend2mcu('stop')">Stop</button><br>
+      <button class="sb" type="button" onclick="cInputSend2mcu('down')">Down</button><br>
+    </div>
+<p>
+      <div class="config" id="config-div">
+
+      </div>
+      <button type="button" onclick="mcuRestart()">Restart MCU</button><br>
+      <script>
+        fetch_json();
+      </script>
+
+  </body>
+</html>
