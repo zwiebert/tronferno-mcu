@@ -8,9 +8,8 @@
 
 #include "automatic/timer_data.h"
 #include "userio/status_output.h"
-#ifdef USE_MQTT
+#if defined USE_MQTT || defined USE_HTTP
 #include "userio/status_json.h"
-#define so_jco (s_json_config_out != 0)
 #else
 #define so_json_config_reply(a,b,c)
 #define so_jco false
@@ -40,8 +39,12 @@ const char * const cfg_keys[] = {
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password"
 };
 
-#define so_cco true
-#define so_cto true
+bool out_cli = true;
+bool out_js = true;
+
+#define so_cco out_cli
+#define so_cto so_cco
+#define so_jco out_js
 
 char *ICACHE_FLASH_ATTR ftoa(float f, char *buf, int n) {
   int i;
@@ -154,6 +157,17 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
 
   /////////////////////////////////////////////////////////////////////////////////
   case SO_CFG_all: {
+    if (arg) {
+      const char *f;
+      bool old_out_js = out_js, old_out_cli = out_cli;
+      out_js = out_cli = false;
+      for (f=arg; *f; ++f)
+        switch(*f) {
+        case 'j': out_js = true; break;
+        case 'c': out_cli = true; break;
+        }
+      out_js = old_out_js; out_cli = old_out_cli;
+    }
     for (i = SO_CFG_begin; i <= SO_CFG_end; ++i) {
       so_output_message(i, NULL);
     }
@@ -172,10 +186,10 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     so_out_config_reply_entry_lx(mt, C.fer_centralUnitID);
     break;
   case SO_CFG_WLAN_SSID:
-    so_out_config_reply_entry(mt, C.wifi_SSID);
+    so_out_config_reply_entry_s(mt, C.wifi_SSID);
     break;
   case SO_CFG_WLAN_PASSWORD:
-    so_out_config_reply_entry(mt, "");
+    so_out_config_reply_entry_s(mt, "");
     break;
 
   case SO_CFG_MQTT_ENABLE:
@@ -319,6 +333,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_TIMER_PRINT: {
     so_arg_gm_t *a = arg;
     so_print_timer(a->g, a->m, true);
+
     if (so_jto) io_mqtt_publish("tfmcu/timer_out", sj_timer2json(a->g, a->m));
   }
     break;

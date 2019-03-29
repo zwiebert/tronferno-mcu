@@ -33,29 +33,54 @@ void (*s_json_config_out)(const char *s);
 char json_buf[JSON_BUF_SIZE];
 int json_idx;
 
+char *ext_buf;
+uint16_t ext_buf_size;
+
+#define BUF (ext_buf ? ext_buf : json_buf)
+#define BUF_SIZE (ext_buf ? ext_buf_size : JSON_BUF_SIZE)
+#define USE_CALLBACK (!ext_buf && s_json_config_out)
+#define DO_CALLBACK() s_json_config_out(BUF);
+
 void so_json_config_reply(const char *key, const char *val, bool is_number) {
   D(ets_printf("so_json(): %s, %s, %d\n", key, val, is_number));
-  if (key == 0 || (json_idx + strlen(key) + strlen(val) + 6) > JSON_BUF_SIZE) {
+
+  if (key == 0 || ((json_idx + strlen(key) + strlen(val) + 6)) > BUF_SIZE) {
+    D(ets_printf("json buffer overflow: idx=%u, buf_size=%u\n", json_idx, BUF_SIZE));
     if (json_idx > 0) {
-      strcpy(json_buf + json_idx, " } }");
-      if (s_json_config_out)
-        s_json_config_out(json_buf);
+      if (BUF[json_idx - 1] == ',') { // remove trailing comma...
+        --json_idx;
+      }
+      strcpy(BUF + json_idx, "}}");
+      if (USE_CALLBACK)
+        DO_CALLBACK();
     }
     json_idx = 0;
     return;
   }
 
   if (json_idx == 0) {
-    strcpy(json_buf, "{ \"name\": \"tfmcu\", \"config\": { ");
-    json_idx = strlen(json_buf);
+    strcpy(BUF, "{\"name\":\"tfmcu\",\"config\":{");
+    json_idx = strlen(BUF);
   }
 
   const char *quote = is_number ? "" : "\"";
-  sprintf(json_buf + json_idx, "\"%s\": %s%s%s,", key, quote, val, quote);
-  json_idx += strlen(json_buf+json_idx);
+  sprintf(BUF + json_idx, "\"%s\":%s%s%s,", key, quote, val, quote);
+  json_idx += strlen(BUF+json_idx);
+  D(ets_printf("json_idx: %u, buf: %s\n", json_idx, BUF));
 }
 
-static void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, uint8_t dst_size, uint8_t g, uint8_t m, bool wildcard) {
+int sj_config2json_buf(char *dst, uint16_t dst_size, so_msg_t key) {
+  *dst='\0';
+  ext_buf = dst;
+  ext_buf_size = dst_size;
+  json_idx = 0;
+  so_output_message(SO_CFG_all, "j");
+  ext_buf = 0;
+  ext_buf_size = 0;
+  return strlen(dst); //XXX
+}
+
+void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, uint8_t dst_size, uint8_t g, uint8_t m, bool wildcard) {
   timer_data_t tdr;
   extern gm_bitmask_t manual_bits; //FIXME
   // read_gm_bitmask("MANU", &manual_bits, 1); //FIXME: not needed
