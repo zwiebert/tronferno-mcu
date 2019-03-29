@@ -101,7 +101,7 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
     } else {
       return;  // wrong topic format in wildcard
     }
-    process_cmdline(line);
+    cli_process_cmdline(line);
 
   } else if (topic_endsWith(topic, topic_len, TOPIC_CMD_END)) {
     char *line = set_commandline("x", 1);
@@ -117,7 +117,7 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
     } else {
       return;  // wrong topic format in wildcard
     }
-    process_cmdline(line);
+    cli_process_cmdline(line);
 
   } else if (strlen(TOPIC_CLI) == topic_len && 0 == strncmp(topic, TOPIC_CLI, topic_len)) {
     if (strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
