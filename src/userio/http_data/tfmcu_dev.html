@@ -11,6 +11,7 @@
                     }
       .send { background-color: #bfb; }
       .sb {width: 10em; margin: 2px; }
+      #cfg_gm-used_tr { display: none; }
     </style>
   </head>
   <body>
@@ -22,10 +23,14 @@
           <td><label>Group</label></td>
           <td><label>Member</label></td>
         </tr>
-      <tr>
-      <td><input id="send-g" style="width:2em;" type = "text" name = "g" value="2"></td>
-      <td><input id="send-m" style="width:2em;" type = "text" name = "m" value="2"></td>
-      </tr>
+        <tr>
+          <td><input id="sgi" style="width:2em;" type = "text" name = "g" value="2"></td>
+          <td><input id="smi" style="width:2em;" type = "text" name = "m" value="2"></td>
+        </tr>
+        <tr>
+          <td><button id="sgb" type="button" onclick="gPressed()">G</button></td>
+          <td><button id="smb" type="button" onclick="mPressed()">E</button></td>
+        </tr>
       </table>
       <button class="sb" type="button" onclick="cInputSend2mcu('up')">Up</button><br>
       <button class="sb" type="button" onclick="cInputSend2mcu('stop')">Stop</button><br>
@@ -33,8 +38,38 @@
     </div>
 <p>
       <div class="config" id="config-div">
-
+        <!-- configuration widgets. javascript output goes here -->
       </div>
+      <div class="config">
+        <table>
+          <tr>
+            <td><label class="config-label">Groups</label></td>
+          <td><label>1</label></td>
+          <td><label>2</label></td>
+          <td><label>3</label></td>
+          <td><label>4</label></td>
+          <td><label>5</label></td>
+          <td><label>6</label></td>
+          <td><label>7</label></td>
+          </tr>
+          <tr>
+            <td><label class="config-label">Members</label></td>
+            <td><input id="gmu1" style="width:2em;" type ="text" value="7"></td>
+            <td><input id="gmu2" style="width:2em;" type ="text" value="7"></td>
+            <td><input id="gmu3" style="width:2em;" type ="text" value="7"></td>
+            <td><input id="gmu4" style="width:2em;" type ="text" value="7"></td>
+            <td><input id="gmu5" style="width:2em;" type ="text" value="7"></td>
+            <td><input id="gmu6" style="width:2em;" type ="text" value="7"></td>
+            <td><input id="gmu7" style="width:2em;" type ="text" value="7"></td>
+          </tr>
+        </table>
+
+
+        <button type="button" onclick="fetch_json(true)">Reload</button>
+        <button type="button" onclick="inputConfigReset()">Reset</button>
+        <button type="button" onclick="inputConfig2mcu()">Save</button>
+      </div>
+      
       <button type="button" onclick="mcuRestart()">Restart MCU</button><br>
       <script>
         fetch_json();

@@ -14,6 +14,7 @@
 #define USE_MQTT
 #define USE_HTTP
 #define CONFIG_BLOB
+#define CONFIG_DICT
 #define ACCESS_GPIO
 #define POSIX_TIME 1
 #define MDR_TIME

@@ -247,14 +247,18 @@ process_parmConfig(clpar p[], int len) {
         }
         break;
 
+
+        case SO_CFG_GM_USED: {
+           uint32_t gmu = strtoul(val, NULL, 16);
+           C.fer_usedMembers = gmu;
+           save_config(CONFIG_USED_MEMBERS);
+        }
+
         default:
         break;
       }
 
-    } else if (strcmp(key, "gm-used") == 0) {
-      uint32_t gmu = strtoul(val, NULL, 16);
-      C.fer_usedMembers = gmu;
-      save_config(CONFIG_USED_MEMBERS);
+
 
 
 #ifdef ACCESS_GPIO
