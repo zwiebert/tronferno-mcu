@@ -9,7 +9,7 @@
 
 #COMPONENT_ADD_INCLUDEDIRS = /home/bertw/proj/mcu/tronferno-mcu/user
 COMPONENT_PRIV_INCLUDEDIRS = ../..
-COMPONENT_SRCDIRS += ../../main ../../misc ../../cli ../../fernotron ../../automatic ../../positions ../../setup ../../config ../../userio ../../debug ../../storage
+COMPONENT_SRCDIRS += ../../main ../../misc ../../cli ../../fernotron ../../automatic ../../positions ../../setup ../../config ../../userio ../../debug ../../storage ../../userio/http_data
 
 
 ifdef DISTRO
@@ -20,3 +20,4 @@ endif
 
 CPPFLAGS += -DMCU_ESP32
 
+#COMPONENT_DEPENDS += ../../userio/http_data

@@ -115,7 +115,8 @@ esp_err_t get_handler_js(httpd_req_t *req) {
   return ESP_OK;
 }
 
-#include "userio/http_data/tfmcu_js.h"
+extern const char tfmcu_js[];
+
 httpd_uri_t uri_tfmcu_js = {
     .uri       = "/tfmcu.js",
     .method    = HTTP_GET,
@@ -133,7 +134,8 @@ esp_err_t get_handler_html(httpd_req_t *req) {
   return ESP_OK;
 }
 
-#include "userio/http_data/tfmcu_html.h"
+extern const char tfmcu_html[];
+
 httpd_uri_t uri_tfmcu_html = {
     .uri       = "/",
     .method    = HTTP_GET,
