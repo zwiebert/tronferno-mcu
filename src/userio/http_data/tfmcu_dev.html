@@ -4,18 +4,24 @@
   <head>
     <script type="text/javascript" src="tfmcu_dev.js"></script>
     <style>
-      #configdiv { background-color: #bbf; width: 100vw; display: inline-block; }
+      #configdiv { background-color: #bbf; }
       .config-label { padding: 30px; }
-      .config-input { margin-left: 2em;
-                      alignment: right;
-                    }
-      #senddiv { background-color: #bfb; width:100vw; display: inline-block; }
-      #autodiv { background-color: #fbb; width:100vw; display: inline-block; }
+      .config-input { margin-left: 2em; alignment: right; }
+      #senddiv { background-color: #bfb; }
+      #autodiv { background-color: #fbb; }
       .sb {width: 5em; margin: 2px; }
       #cfg_gm-used_tr, #tf_tr { display: none; }
       #ssb { font-size: 60%;  font-stretch: ultra-condensed; height: 4em; border-radius: 100% }
       #sub, #sdb { font-size: 125%; border-radius: 100% }
       #sgb, #smb { border-radius: 40%; }
+      #senddiv, #autodiv, #configdiv { width:90vw;  margin: 10px;}
+      @keyframes blink {
+	0% { opacity: 1; }
+	50% { opacity: 1; }
+	50.01% { opacity: 0; }
+	100% { opacity: 0; }
+}
+      
     </style>
   </head>
   <body>
@@ -56,8 +62,6 @@
       </table>
     </div>
 
-    <br><br>
-    
     <div id="autodiv" class="auto">
       <h3>Automatic</h3>
       <table>
@@ -102,10 +106,10 @@
       <script>autoFetch();</script>
     </div>
 
-    <br><br>
-
     <div id="configdiv">
-    <div  class="config" id="config-div">
+      <h3>MCU Configuration</h3>
+      <div  class="config" id="config-div">
+        <p><strong style="animation: blink .75s linear infinite;">...try to load configuration data from MCU...</strong></p>
       <!-- configuration widgets. javascript output goes here -->
     </div>
     <script>

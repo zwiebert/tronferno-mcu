@@ -36,7 +36,7 @@ function handle_json_reply(json) {
             document.getElementById('tsci').checked = f.indexOf("S") >= 0;
             document.getElementById('tmci').checked = f.indexOf("M") >= 0;
         }
-
+ 
     }
 }
 
@@ -191,7 +191,7 @@ function inputConfigReset() {
 
 function json2html(cfg) {
     // document.writeln('<!DOCTYPE html><meta charset="UTF-8"><script src="hp.js"></script>');
-    var html = "<h3>MCU Configuration</h3><table>"
+    var html ="<table>"
     Object.keys(cfg).forEach (function (key, idx) {
         html += '<tr id="cfg_'+key+'_tr">'+config_item(key, cfg[key])+'</tr>'+"\n";
     });

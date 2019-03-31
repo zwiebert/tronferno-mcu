@@ -37,7 +37,7 @@ static const char *TAG = "MQTT_EXAMPLE";
 #define CONFIG_MQTT_CLIENT_ID "tfdbg"
 #endif
 
-
+static bool is_connected;
 
 
 static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event) {
@@ -46,12 +46,14 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event) {
   // your_context_t *context = event->context;
   switch (event->event_id) {
   case MQTT_EVENT_CONNECTED:
+    is_connected = true;
     ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
     io_mqtt_connected();
     break;
     
   case MQTT_EVENT_DISCONNECTED:
     ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
+    is_connected = false;
     io_mqtt_disconnected();
     break;
 
@@ -89,15 +91,25 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event) {
 
 static esp_mqtt_client_handle_t client;
 
+
 void io_mqtt_subscribe(const char *topic, int qos) {
+  if (!client || !is_connected)
+    return;
+
   int msg_id = esp_mqtt_client_subscribe(client, topic, qos);
 }
 
 void io_mqtt_unsubscribe(const char *topic) {
+  if (!client || !is_connected)
+    return;
+
   int msg_id = esp_mqtt_client_unsubscribe(client, topic);
 }
 
 void io_mqtt_publish(const char *topic, const char *data) {
+  if (!client || !is_connected)
+    return;
+
   ESP_LOGI(TAG, "MQTT_PUBLISH, topic=%s, data=%s", topic, data);
    int msg_id = esp_mqtt_client_publish(client, topic, data, 0, 1, 0);
 }
@@ -130,6 +142,7 @@ void io_mqtt_stop_and_destroy(void) {
     esp_mqtt_client_stop(client);
     esp_mqtt_client_destroy(client);
     client = 0;
+    is_connected = false;
   }
 }
 
