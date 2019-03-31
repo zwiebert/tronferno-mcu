@@ -9,10 +9,13 @@
 #ifdef USE_MQTT
 
 #include "./mqtt.h"
+#include "./mqtt_imp.h"
+
 #include <string.h>
 #include <stdio.h>
 #include "cli/cli.h"
 #include "userio/status_json.h"
+#include "userio/status_output.h"
 
 #define TOPIC_ROOT "tfmcu/"
 #define TOPIC_CLI TOPIC_ROOT "cli"
@@ -33,8 +36,17 @@
 #define TAG_TIMER "timer "
 #define TAG_TIMER_LEN (sizeof(TAG_TIMER) - 1)
 
-static void io_mqtt_publish_config(const char *s)  {
+void io_mqtt_publish_config(const char *s)  {
   io_mqtt_publish("tfmcu/config_out", s);
+}
+
+void io_mqtt_publish_gmp(const so_arg_gmp_t *gmp) {
+  char topic[64], data[16];
+
+  snprintf(topic, 64, "%s%u%u/pct_out", TOPIC_ROOT, gmp->g, gmp->m);
+  snprintf(data, 16, "%u", gmp->p);
+
+  io_mqtt_publish(topic, data);
 }
 
 void io_mqtt_enable(bool enable) {
