@@ -7,6 +7,38 @@ var gu_idx = 0;
 
 var cfg_out = {};
 
+function handle_json_reply(json) {
+    console.log("reply-json: "+JSON.stringify(json));
+    let g = document.getElementById('sgi').value.toString();
+    let m = document.getElementById('smi').value.toString();
+
+    if ("position" in json) {
+        document.getElementById('spi').value = json.position.p;                        
+    }
+    if ("config" in json) {
+        jsonUpdateHtml(json.config);
+    }
+    let auto_name = "auto"+g+m;
+    console.log(auto_name);
+    if (auto_name in json) {
+        let auto = json[auto_name];
+        document.getElementById('tfti').value = ("f" in auto) ? auto.f : "";
+        document.getElementById('tdti').value = ("daily" in auto) ? auto.daily : "";
+        document.getElementById('tati').value = ("astro" in auto) ? auto.astro : "";
+        document.getElementById('twti').value = ("weekly" in auto) ? auto.weekly : "";
+
+        if ("f" in auto) {
+            let f = auto.f;
+            document.getElementById('tdci').checked = f.indexOf("D") >= 0;
+            document.getElementById('twci').checked = f.indexOf("W") >= 0;
+            document.getElementById('taci').checked = f.indexOf("A") >= 0;
+            document.getElementById('trci').checked = f.indexOf("R") >= 0;
+            document.getElementById('tsci').checked = f.indexOf("S") >= 0;
+        }
+
+    }
+}
+
 function config_item2(name,value) {
     return '<label class="config-label">'+name+'<input class="config-input" type="text" id="cfg_'+name+'" name="'+name+'" value="'+value+'"></label>';
 }
@@ -84,7 +116,14 @@ function postData(url = '', data = {}) {
         referrer: "no-referrer", // no-referrer, *client
         body: JSON.stringify(data), // body data type must match "Content-Type" header
     })
-    .then(response => response.json()); // parses JSON response into native Javascript objects 
+        .then(response => {
+            if(response.ok) {
+                response.json().then(json => {
+                    handle_json_reply(json);
+
+                });
+            }
+        });
 }
 
 function mcuRestart() {
@@ -173,7 +212,6 @@ function fetch_json(u=false) {
           ).then(response => {
               if(response.ok) {
                   response.json().then(json => {
-                      //document.writeln("ok"+JSON.stringify(json));
                       var cfg = json.config;
                       if (u) {
                           jsonUpdateHtml(cfg);
@@ -215,7 +253,9 @@ function gPressed() {
         val = "A";
     document.getElementById("sgi").value = val;
     if (val == 1)
-        document.getElementById("smi").value = 1;       
+        document.getElementById("smi").value = 1;
+
+    autoFetch();
 }
 
 
@@ -234,6 +274,62 @@ function mPressed() {
     if (val == 0)
         val = "A";
     document.getElementById("smi").value = val;
+    autoFetch();
 }
 
+function autoClear() {
+    document.getElementById('tfti').value = "";
+    document.getElementById('tdti').value = ""; 
+    document.getElementById('tati').value = ""; 
+    document.getElementById('twti').value = ""; 
+    document.getElementById('tdci').checked = false;
+    document.getElementById('twci').checked = false;
+    document.getElementById('taci').checked = false;
+    document.getElementById('trci').checked = false;
+    document.getElementById('tsci').checked = false;
+}
 
+function autoFetch() {
+    autoClear();
+    
+    var tfmcu = {name:"tfmcu"};
+    let g = document.getElementById('sgi').value.toString();
+    let m = document.getElementById('smi').value.toString();
+
+    tfmcu.timer = {
+        g: g,
+        m: m,
+        f: "uki",
+    };
+    
+    var url = base+'/cmd.json';
+    postData(url, tfmcu);
+}
+
+function testPressed() {
+    var tfmcu = {name:"tfmcu"};
+    var xtfmcu = {};
+    let g = document.getElementById('sgi').value.toString();
+    let m = document.getElementById('smi').value.toString();
+
+    xtfmcu.send = {
+        g: "2",
+        m: "2",
+        p: "?",
+    };
+
+    tfmcu.timer = {
+        g: g,
+        m: m,
+        f: "uki",
+    };
+    
+    xtfmcu.config = {
+        all: "?"
+    };
+    
+    console.log(JSON.stringify(tfmcu));
+    var url = base+'/cmd.json';
+    console.log("url: "+url);
+    postData(url, tfmcu);
+}
