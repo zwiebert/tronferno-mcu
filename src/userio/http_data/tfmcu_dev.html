@@ -69,12 +69,12 @@
         <tr>
           <td><label>daily</label></td>
           <td><input id="tdci" type = "checkbox" value=""></td>
-          <td><input id="tdti" style="width:5em;" type = "text" name = "g" value=""></td>
+          <td><input id="tdti" style="width:8em;" type = "text" name = "g" value=""></td>
         </tr>
         <tr>
           <td><label>weekly</label></td>
           <td><input id="twci" type = "checkbox" value=""></td>
-          <td><input id="twti" style="width:5em;" type = "text" name = "g" value=""></td>
+          <td><input id="twti" style="width:50vw;" type = "text" name = "g" value=""></td>
         </tr>
         <tr>
           <td><label>astro</label></td>
@@ -89,10 +89,15 @@
           <td><label>sun</label></td>
           <td><input id="tsci" type = "checkbox" value=""></td>
         </tr>
+        <tr>
+          <td><label>manual</label></td>
+          <td><input id="tmci" type = "checkbox" value=""></td>
+        </tr>
       </table>
 
       <br>
       <button class="sb" type="button" onclick="autoFetch()">Reload</button>
+      <button class="sb" type="button" onclick="autoSave()">Save</button>
 
       <script>autoFetch();</script>
     </div>

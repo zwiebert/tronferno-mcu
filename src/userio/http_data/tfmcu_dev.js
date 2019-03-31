@@ -34,6 +34,7 @@ function handle_json_reply(json) {
             document.getElementById('taci').checked = f.indexOf("A") >= 0;
             document.getElementById('trci').checked = f.indexOf("R") >= 0;
             document.getElementById('tsci').checked = f.indexOf("S") >= 0;
+            document.getElementById('tmci').checked = f.indexOf("M") >= 0;
         }
 
     }
@@ -277,6 +278,55 @@ function mPressed() {
     autoFetch();
 }
 
+function autoInput2G() {
+    let gs = document.getElementById('sgi').value;
+    let g = gs === 'A' ? 0 : Number.parseInt(gs);
+    return g;
+}
+function autoInput2M() {
+    let ms = document.getElementById('smi').value;
+    let m = ms === 'A' ? 0 : Number.parseInt(ms);
+    return m;
+}
+
+function autoSave() {
+    let url = base+'/cmd.json';
+    let tfmcu = { name: "tfmcu", timer: { }};
+    let auto = tfmcu.timer;
+    let has_daily = false, has_weekly = false, has_astro = false;
+    
+    auto.g = autoInput2G();
+    auto.m = autoInput2M();
+
+    let f = "i";
+    f += document.getElementById('tmci').checked ? "M" : "m";
+    f += (has_daily = document.getElementById('tdci').checked) ? "D" : "d";
+    f += (has_weekly = document.getElementById('twci').checked) ? "W" : "w";
+    f += (has_astro = document.getElementById('taci').checked) ? "A" : "a";
+    f += document.getElementById('trci').checked ? "R" : "r";
+    f += document.getElementById('tsci').checked ? "S" : "s";
+    auto.f = f;
+
+    if (has_daily) {
+        let val =  document.getElementById('tdti').value;
+        auto.daily = val;
+    }
+
+    if (has_weekly) {
+        let val =  document.getElementById('twti').value;
+        auto.weekly = val;
+    }
+
+    if (has_astro) {
+        let val =  document.getElementById('tati').value;
+        auto.astro = val ? Number.parseInt(val) : 0;
+    }
+    
+    console.log(JSON.stringify(tfmcu));
+    postData(url, tfmcu);
+    
+}
+
 function autoClear() {
     document.getElementById('tfti').value = "";
     document.getElementById('tdti').value = ""; 
@@ -287,12 +337,13 @@ function autoClear() {
     document.getElementById('taci').checked = false;
     document.getElementById('trci').checked = false;
     document.getElementById('tsci').checked = false;
+    document.getElementById('tmci').checked = false;
 }
 
 function autoFetch() {
     autoClear();
     
-    var tfmcu = {name:"tfmcu"};
+    let tfmcu = {name:"tfmcu"};
     let g = document.getElementById('sgi').value.toString();
     let m = document.getElementById('smi').value.toString();
 
@@ -302,7 +353,7 @@ function autoFetch() {
         f: "uki",
     };
     
-    var url = base+'/cmd.json';
+    let url = base+'/cmd.json';
     postData(url, tfmcu);
 }
 
