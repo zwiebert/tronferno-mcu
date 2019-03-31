@@ -53,16 +53,18 @@ esp_err_t post_handler_json(httpd_req_t *req) {
     return ESP_FAIL;
   }
 
-  // apply JSON command object
-  hts_query(HQT_NONE, buf, ret);
+  {
+    uint16_t json_size = 512;
+    char *json = malloc(json_size);
+    if (json) {
+      sj_set_buf(json, json_size);  // reply json will now be created in our buffer
+      hts_query(HQT_NONE, buf, ret); // parse and process received command
 
-  { // send back configuration in JSON (???)
-    uint16_t js_size = 512;
-    char *js = malloc(js_size);
-    if (js) {
-      if (sj_config2json_buf(js, js_size, SO_CFG_all) >= 0)
-        httpd_resp_sendstr(req, js);
-      free(js);
+      httpd_resp_set_type(req, "application/json");
+      httpd_resp_sendstr(req, *json ? json : "{\"name\":\"tfmcu\"}"); // respond with reply json or empty object json
+
+      sj_set_buf(0, 0); // unregister our jsone buffer
+      free(json);
     }
   }
 

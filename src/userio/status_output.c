@@ -351,7 +351,9 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     io_puts(" g="), io_putd(a->g);
     io_puts(" m="), io_putd(a->m);
     io_puts(" p="), io_putd(a->p), io_puts(";\n");
+    sj_gmp2json(a);
   }
+
     break;
 
   case SO_POS_PRINT_MMP: {

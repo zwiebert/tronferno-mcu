@@ -26,6 +26,9 @@
 #include "userio/mqtt.h"
 
 #define D(x)
+#ifdef MCU_ESP8266
+#define sprintf(...) (-1)  //FIXME: or should we use it?
+#endif
 
 void (*s_json_config_out)(const char *s);
 
@@ -40,6 +43,18 @@ uint16_t ext_buf_size;
 #define BUF_SIZE (ext_buf ? ext_buf_size : JSON_BUF_SIZE)
 #define USE_CALLBACK (!ext_buf && s_json_config_out)
 #define DO_CALLBACK() s_json_config_out(BUF);
+
+void sj_set_buf(char *dst, uint16_t dst_size) {
+  if (dst) {
+    *dst = '\0';
+    ext_buf = dst;
+    ext_buf_size = dst_size;
+    json_idx = 0;
+  } else {
+    ext_buf = 0;
+    ext_buf_size = 0;
+  }
+}
 
 void so_json_config_reply(const char *key, const char *val, bool is_number) {
   D(ets_printf("so_json(): %s, %s, %d\n", key, val, is_number));
@@ -70,17 +85,15 @@ void so_json_config_reply(const char *key, const char *val, bool is_number) {
 }
 
 int sj_config2json_buf(char *dst, uint16_t dst_size, so_msg_t key) {
-  *dst='\0';
-  ext_buf = dst;
-  ext_buf_size = dst_size;
-  json_idx = 0;
+
+  sj_set_buf(dst,dst_size);
   so_output_message(SO_CFG_all, "j");
-  ext_buf = 0;
-  ext_buf_size = 0;
+  sj_set_buf(0,0);
+
   return strlen(dst); //XXX
 }
 
-void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, uint8_t dst_size, uint8_t g, uint8_t m, bool wildcard) {
+void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, uint16_t dst_size, uint8_t g, uint8_t m, bool wildcard) {
   timer_data_t tdr;
   extern gm_bitmask_t manual_bits; //FIXME
   // read_gm_bitmask("MANU", &manual_bits, 1); //FIXME: not needed
@@ -128,6 +141,17 @@ void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, uint8_t dst_size, uint8_t g,
 }
 
 const char *ICACHE_FLASH_ATTR sj_timer2json(uint8_t g, uint8_t m) {
-  sj_timer2json_buf(json_buf, JSON_BUF_SIZE, g, m, true);
+  sj_timer2json_buf(BUF, BUF_SIZE, g, m, true);
   return json_buf;
 }
+
+char *sj_gmp2json_buf(char *dst, uint16_t dst_size, so_arg_gmp_t *gmp) {
+  sprintf(dst, "{ \"name\": \"tfmcu\", \"position\" :{ \"g\":%u, \"m\":%u, \"p\":%u }}", gmp->g, gmp->m, gmp->p);
+  return dst;
+}
+
+const char *sj_gmp2json(so_arg_gmp_t *gmp) {
+  return sj_gmp2json_buf(BUF, BUF_SIZE, gmp);
+}
+
+
