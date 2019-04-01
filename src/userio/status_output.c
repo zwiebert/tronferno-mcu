@@ -36,7 +36,9 @@
 const char * const cfg_keys[] = {
     "cu", "baud", "rtc", "wlan-ssid", "wlan-password", "longitude", "latitude",
     "timezone", "dst", "tz", "verbose",
-    "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password", "gm-used",
+    "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password",
+    "http-enable", "http-user", "http-password",
+    "gm-used",
 };
 
 bool out_cli = true;
@@ -192,26 +194,44 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     so_out_config_reply_entry_s(mt, "");
     break;
 
-  case SO_CFG_MQTT_ENABLE:
 #ifdef USE_MQTT
+  case SO_CFG_MQTT_ENABLE:
     so_out_config_reply_entry_d(mt, C.mqtt_enable ? 1 : 0);
-#endif
     break;
   case SO_CFG_MQTT_URL:
-#ifdef USE_MQTT
     so_out_config_reply_entry_s(mt, C.mqtt_url);
-#endif
     break;
   case SO_CFG_MQTT_USER:
-#ifdef USE_MQTT
     so_out_config_reply_entry_s(mt, C.mqtt_user);
-#endif
     break;
   case SO_CFG_MQTT_PASSWORD:
-#ifdef USE_MQTT
     so_out_config_reply_entry_s(mt, "");
-#endif
     break;
+#else
+  case SO_CFG_MQTT_ENABLE:
+  case SO_CFG_MQTT_URL:
+  case SO_CFG_MQTT_USER:
+  case SO_CFG_MQTT_PASSWORD:
+    break;
+#endif
+
+#ifdef USE_HTTP
+  case SO_CFG_HTTP_ENABLE:
+    so_out_config_reply_entry_d(mt, C.http_enable ? 1 : 0);
+    break;
+  case SO_CFG_HTTP_USER:
+    so_out_config_reply_entry_s(mt, C.http_user);
+    break;
+  case SO_CFG_HTTP_PASSWORD:
+    so_out_config_reply_entry_s(mt, "");
+    break;
+#else
+  case SO_CFG_HTTP_ENABLE:
+  case SO_CFG_HTTP_USER:
+  case SO_CFG_HTTP_PASSWORD:
+    break;
+#endif
+
   case SO_CFG_LONGITUDE:
     so_out_config_reply_entry_f(mt, C.geo_longitude, 5);
     break;

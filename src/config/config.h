@@ -8,6 +8,7 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+
 #include "../userio/inout.h"
 
 #if !defined MCU_ESP8266
@@ -145,6 +146,29 @@
 #endif
 #endif
 
+#ifndef MY_HTTP_ENABLE
+#ifdef CONFIG_MY_HTTP_ENABLE
+#define MY_HTTP_ENABLE CONFIG_MY_HTTP_ENABLE
+#else
+#define MY_HTTP_ENABLE 0
+#endif
+#endif
+
+#ifndef MY_HTTP_USER
+#ifdef CONFIG_MY_HTTP_USER
+#define MY_HTTP_USER CONFIG_MY_HTTP_USER
+#else
+#define MY_HTTP_USER ""
+#endif
+#endif
+
+#ifndef MY_HTTP_PASSWORD
+#ifdef CONFIG_MY_HTTP_PASSWORD
+#define MY_HTTP_PASSWORD CONFIG_MY_HTTP_PASSWORD
+#else
+#define MY_HTTP_PASSWORD ""
+#endif
+#endif
 
 /*
  esp-idf: kconfig does not support float numbers...
@@ -158,21 +182,11 @@ config MY_GEO_LATITUDE
 
  */
 
-
-
-
-
-
-
-
-
-
 #ifndef MY_FER_GM_USE
 #define MY_FER_GM_USE 0x77777777
 #endif
 
-
-#include "main/common.h"
+#include "user_config.h"
 
 enum dst {
 	dstNone, dstEU, dstUS, dstAlways,
@@ -215,7 +229,7 @@ typedef struct {
 #endif
 	char app_configPassword[16];
 	char app_expertPassword[16];
-#ifdef CONFIG_GPIO_SIZE
+#ifdef ACCESS_GPIO
 	 enum mcu_pin_state gpio[CONFIG_GPIO_SIZE];
 #endif
 #ifdef POSIX_TIME
@@ -226,6 +240,11 @@ typedef struct {
   char mqtt_user[16];
   char mqtt_password[31];
   int8_t mqtt_enable;
+#endif
+#ifdef USE_HTTP
+  char http_user[16];
+  char http_password[31];
+  int8_t http_enable;
 #endif
 } config;
 
@@ -254,4 +273,9 @@ void save_config(uint32_t mask);  // save C to persistent storage
 #define CONFIG_MQTT_USER (1UL << 16)
 #define CONFIG_MQTT_PASSWD (1UL << 17)
 #define CONFIG_MQTT_ENABLE (1UL << 18)
+#define CONFIG_HTTP_USER (1UL << 19)
+#define CONFIG_HTTP_PASSWD (1UL << 20)
+#define CONFIG_HTTP_ENABLE (1UL << 21)
+
 #endif /* CONFIG_H_ */
+

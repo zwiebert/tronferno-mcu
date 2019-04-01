@@ -11,6 +11,7 @@
 #include "cli_imp.h"
 #include "misc/stof.h"
 #include "userio/mqtt.h"
+#include "userio/http_server.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 
@@ -35,6 +36,11 @@ const char help_parmConfig[]  =
      "mqtt-url=URL      broker/server URL (e.g. mqtt://192.168.1.42:7777)\n"
      "mqtt-user=NAME    user name on server\n"
      "mqtt-password=PW  user password on server\n"
+#endif
+#ifdef USE_HTTP
+     "http-enable=(0|1) enable HTTP\n"
+     "http-user=NAME    user name on server\n"
+     "http-password=PW  user password on server\n"
 #endif
     "longitude=(DEG|?)\n"
     "latitude=(DEG|?)\n"
@@ -198,6 +204,37 @@ process_parmConfig(clpar p[], int len) {
         }
         break;
 #endif //USE_MQTT
+
+#ifdef USE_HTTP
+        case SO_CFG_HTTP_ENABLE: {
+          C.http_enable = (*val == '1') ? 1 : 0;
+          hts_enable_http_server(C.http_enable);
+          save_config(CONFIG_HTTP_ENABLE);
+        }
+        break;
+
+        case SO_CFG_HTTP_PASSWORD: {
+          if (strlen(val) < sizeof (C.http_password)) {
+            strcpy (C.http_password, val);
+            save_config(CONFIG_HTTP_PASSWD);
+          } else {
+            reply_failure();
+          }
+
+        }
+        break;
+
+        case SO_CFG_HTTP_USER: {
+          if (strlen(val) < sizeof (C.http_user)) {
+            strcpy (C.http_user, val);
+            save_config(CONFIG_HTTP_USER);
+          } else {
+            reply_failure();
+          }
+        }
+        break;
+#endif //USE_HTTP
+
         case SO_CFG_LONGITUDE: {
           float longitude = stof(val);
           C.geo_longitude = longitude;

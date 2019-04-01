@@ -27,32 +27,37 @@
 #define CFG_KEY "global.C"
 
 config C = {
-  MY_FER_CENTRAL_UNIT_ID,
-  MY_MCU_UART_BAUD_RATE,
-  MY_GEO_LONGITUDE,
-  MY_GEO_LATITUDE,
-  MY_GEO_TIMEZONE,
+  .fer_centralUnitID = MY_FER_CENTRAL_UNIT_ID,
+  .mcu_serialBaud = MY_MCU_UART_BAUD_RATE,
+  .geo_longitude = MY_GEO_LONGITUDE,
+  .geo_latitude = MY_GEO_LATITUDE,
+  .geo_timezone = MY_GEO_TIMEZONE,
   0, // app_rtcAdjust
   recvTick, // recv
   transmTick,// transm
   rtcAvrTime,//rtc
   vrbNone,  //verboseOutput
-  MY_FER_GM_USE,
+  .fer_usedMembers = MY_FER_GM_USE,
 #ifdef USE_WLAN
-  MY_WIFI_SSID,
-  MY_WIFI_PASSWORD,
+  .wifi_SSID = MY_WIFI_SSID,
+  .wifi_password = MY_WIFI_PASSWORD,
 #endif
-  MY_APP_CONFIG_PASSWORD,
-  MY_APP_EXPERT_PASSWORD,
+  .app_configPassword = MY_APP_CONFIG_PASSWORD,
+  .app_expertPassword = MY_APP_EXPERT_PASSWORD,
 #ifdef ACCESS_GPIO
-  { 0, },
+  .gpio =  { 0, },
 #endif
   MY_GEO_TZ,
 #ifdef USE_MQTT
-  MY_MQTT_URL,
-  MY_MQTT_USER,
-  MY_MQTT_PASSWORD,
+  .mqtt_url = MY_MQTT_URL,
+  .mqtt_user = MY_MQTT_USER,
+  .mqtt_password = MY_MQTT_PASSWORD,
   MY_MQTT_ENABLE,
+#endif
+#ifdef USE_HTTP
+  .http_user = MY_HTTP_USER,
+  .http_password = MY_HTTP_PASSWORD,
+  .http_enable = MY_HTTP_ENABLE,
 #endif
 };
 
@@ -152,7 +157,7 @@ void read_config(uint32_t mask) {
     if (mask & CONFIG_GPIO) {
       (len = sizeof C.gpio), nvs_get_blob(handle, "C_GPIO", &C.gpio, &len);
     }
-
+#ifdef USE_MQTT
     if (mask & CONFIG_MQTT_URL) {
       (len = sizeof C.mqtt_url), nvs_get_str(handle, "C_MQTT_URL", C.mqtt_url, &len);
     }
@@ -167,6 +172,20 @@ void read_config(uint32_t mask) {
       if (ESP_OK == nvs_get_i8(handle, "C_MQTT_ENABLE", &temp))
         C.mqtt_enable = temp;
     }
+#endif
+#ifdef USE_HTTP
+    if (mask & CONFIG_HTTP_USER) {
+      (len = sizeof C.http_user), nvs_get_str(handle, "C_HTTP_USER", C.http_user, &len);
+    }
+    if (mask & CONFIG_HTTP_PASSWD) {
+      (len = sizeof C.http_password), nvs_get_str(handle, "C_HTTP_PASSWD", C.http_password, &len);
+    }
+    if (mask & CONFIG_HTTP_ENABLE) {
+      int8_t temp;
+      if (ESP_OK == nvs_get_i8(handle, "C_HTTP_ENABLE", &temp))
+        C.http_enable = temp;
+    }
+#endif
 
     nvs_close(handle);
   }
@@ -236,7 +255,7 @@ void save_config(uint32_t mask) {
     if (mask & CONFIG_GPIO) {
        nvs_set_blob(handle, "C_GPIO", &C.gpio, sizeof C.gpio);
      }
-
+#ifdef USE_MQTT
     if (mask & CONFIG_MQTT_URL) {
       nvs_set_str(handle, "C_MQTT_URL", C.mqtt_url);
     }
@@ -249,7 +268,18 @@ void save_config(uint32_t mask) {
     if (mask & CONFIG_MQTT_ENABLE) {
       nvs_set_i8(handle, "C_MQTT_ENABLE", C.mqtt_enable);
     }
-
+#endif
+#ifdef USE_HTTP
+    if (mask & CONFIG_HTTP_USER) {
+      nvs_set_str(handle, "C_HTTP_USER", C.http_user);
+    }
+    if (mask & CONFIG_HTTP_PASSWD) {
+      nvs_set_str(handle, "C_HTTP_PASSWD", C.http_password);
+    }
+    if (mask & CONFIG_HTTP_ENABLE) {
+      nvs_set_i8(handle, "C_HTTP_ENABLE", C.http_enable);
+    }
+#endif
     nvs_commit(handle);
     nvs_close(handle);
   } else {

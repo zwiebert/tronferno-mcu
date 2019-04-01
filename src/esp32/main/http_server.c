@@ -176,13 +176,15 @@ void stop_webserver(httpd_handle_t server)
 
 static httpd_handle_t server;
 
-void hts_start_server() {
-  server = start_webserver();
-}
+void hts_enable_http_server(bool enable) {
+  if (enable && !server) {
+    server = start_webserver();
+  }
 
-void hts_stop_server() {
-  stop_webserver(server);
-  server = NULL;
+  if (!enable && server) {
+    stop_webserver(server);
+    server = NULL;
+  }
 }
 
 
