@@ -21,6 +21,7 @@
 #include <esp_system.h>
 #include <nvs_flash.h>
 #include <sys/param.h>
+#include <crypto/base64.h>
 
 #include <esp_http_server.h>
 
@@ -28,6 +29,7 @@
 #include "userio/http_server.h"
 #include "userio/status_output.h"
 #include "userio/status_json.h"
+#include "config/config.h"
 
 /* A simple example that demonstrates how to create GET and POST
  * handlers for the web server.
@@ -42,12 +44,70 @@
 
 static const char *TAG="APP";
 
+///////////////////////////Authorization//////////////////////
+#define HTTP_USER C.http_user
+#define HTTP_USER_LEN (strlen(HTTP_USER))
+#define HTTP_PW C.http_password
+#define HTTP_PW_LEN  (strlen(HTTP_PW))
 
+static bool compare_up(const char *up, size_t up_len) {
+
+  if (HTTP_USER_LEN + 1 + HTTP_PW_LEN != up_len)
+    return false;
+
+  return strncmp(HTTP_USER, up, HTTP_USER_LEN) == 0 && strncmp(HTTP_PW, up + (up_len - HTTP_PW_LEN), HTTP_PW_LEN) == 0;
+}
+
+static bool test_authorization(httpd_req_t *req) {
+  bool login_ok = false;
+  char *login = 0;
+  char *up = 0;
+  size_t up_len;
+
+  size_t login_len = httpd_req_get_hdr_value_len(req, "Authorization");
+  if (login_len && (login = malloc(login_len + 1))) {
+    esp_err_t err = httpd_req_get_hdr_value_str(req, "Authorization", login, login_len + 1);
+    if (err == ESP_OK && ((up = (char*) base64_decode((unsigned char*) login + 6, login_len - 6, &up_len)))) {
+      ets_printf("up_len=%u:<%s>\n", up_len, up);
+      login_ok = compare_up(up, up_len);
+      free(up);
+    }
+
+    free(login);
+  }
+
+  return login_ok;
+}
+
+static bool is_access_allowed(httpd_req_t *req) {
+  return (*HTTP_USER == '\0' && *HTTP_PW == '\0') || test_authorization(req);
+}
+
+static void reqest_authorization(httpd_req_t *req) {
+  httpd_resp_set_status(req, "401 Unauthorized");
+  httpd_resp_set_type(req, "text/html");
+  httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"tronferno-mcu.all\"");
+  httpd_resp_sendstr(req, "<p>please login</p>");
+}
+
+static bool check_access_allowed(httpd_req_t *req) {
+  if (!is_access_allowed(req)) {
+    reqest_authorization(req);
+   return false;
+  }
+  return true;
+}
+
+///////////////////////////////////////////////////////////////
 
 /* An HTTP POST handler */
 esp_err_t post_handler_json(httpd_req_t *req) {
   char buf[100];
   int ret, remaining = req->content_len;
+
+  if (!check_access_allowed(req))
+    return ESP_OK;
+
 
   if ((ret = httpd_req_recv(req, buf, MIN(remaining, sizeof(buf)))) <= 0) {
     return ESP_FAIL;
@@ -82,7 +142,8 @@ httpd_uri_t echo = {
 // /config.json
 esp_err_t get_handler_config_json(httpd_req_t *req) {
 
-  /* Set some custom headers */
+  if (!check_access_allowed(req))
+    return ESP_OK;
 
   httpd_resp_set_type(req, "application/json");
 
@@ -110,6 +171,8 @@ httpd_uri_t config_json = {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // get .js
 esp_err_t get_handler_js(httpd_req_t *req) {
+  if (!check_access_allowed(req))
+    return ESP_OK;
 
   httpd_resp_set_type(req, "text/javascript");
   httpd_resp_sendstr(req, (const char*) req->user_ctx);
@@ -130,6 +193,9 @@ httpd_uri_t uri_tfmcu_js = {
 // get .js
 esp_err_t get_handler_html(httpd_req_t *req) {
 
+  if (!check_access_allowed(req))
+    return ESP_OK;
+
   httpd_resp_set_type(req, "text/html");
   httpd_resp_sendstr(req, (const char*) req->user_ctx);
 
@@ -146,6 +212,21 @@ httpd_uri_t uri_tfmcu_html = {
 };
 
 
+esp_err_t get_handler_test(httpd_req_t *req) {
+
+  if (!check_access_allowed(req))
+    return ESP_OK;
+
+  httpd_resp_set_type(req, "text/html");
+  httpd_resp_sendstr(req, "<p>login ok</p>");
+
+  return ESP_OK;
+}
+
+extern const char tfmcu_test[];
+
+httpd_uri_t uri_tfmcu_test = { .uri = "/test", .method = HTTP_GET, .handler = get_handler_test, .user_ctx = NULL, };
+
 
 httpd_handle_t start_webserver(void)
 {
@@ -161,6 +242,7 @@ httpd_handle_t start_webserver(void)
         httpd_register_uri_handler(server, &config_json);
         httpd_register_uri_handler(server, &uri_tfmcu_js);
         httpd_register_uri_handler(server, &uri_tfmcu_html);
+        httpd_register_uri_handler(server, &uri_tfmcu_test);
         return server;
     }
 

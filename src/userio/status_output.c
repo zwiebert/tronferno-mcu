@@ -205,7 +205,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     so_out_config_reply_entry_s(mt, C.mqtt_user);
     break;
   case SO_CFG_MQTT_PASSWORD:
-    so_out_config_reply_entry_s(mt, "");
+    so_out_config_reply_entry_s(mt, *C.mqtt_password ? "*" : "");
     break;
 #else
   case SO_CFG_MQTT_ENABLE:
@@ -223,7 +223,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     so_out_config_reply_entry_s(mt, C.http_user);
     break;
   case SO_CFG_HTTP_PASSWORD:
-    so_out_config_reply_entry_s(mt, "");
+    so_out_config_reply_entry_s(mt, *C.http_password ? "*" : "");
     break;
 #else
   case SO_CFG_HTTP_ENABLE:
