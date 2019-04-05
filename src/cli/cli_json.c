@@ -207,9 +207,9 @@ cli_process_json(char *json) {
 
 #else
 
-char json[] =
-"{ \"name\": \"tfmcu\", \"config\": { \"cu\": \"801234\",\"baud\": 115200,\"longitude\": 13.5,\"latitude\": 52.6,\"timezone\": 1.0,\"tz\": \"\",\"verbose\": 5,\"mqtt-enable\": 1,\"mqtt-url\": \"mqtt://192.168.1.42:7777\",\"mqtt-user\": \"mqusr\",\"mqtt-password\": \"mqpw\" } }";
+//char json[] = "{ \"name\": \"tfmcu\", \"config\": { \"cu\": \"801234\",\"baud\": 115200,\"longitude\": 13.5,\"latitude\": 52.6,\"timezone\": 1.0,\"tz\": \"\",\"verbose\": 5,\"mqtt-enable\": 1,\"mqtt-url\": \"mqtt://192.168.1.42:7777\",\"mqtt-user\": \"mqusr\",\"mqtt-password\": \"mqpw\" } }";
 
+char json[] = "{\"name\":\"tfmcu\",\"timer\":{\"g\":1,\"m\":0,\"f\":\"imDwArs\",\"daily\":\"0700\",\"astro\":0}}";
 int main() {
   char *name;
   char *cmd_obj = json_get_command_object(json, &name);
@@ -226,4 +226,3 @@ int main() {
   return 0;
 }
 #endif
-

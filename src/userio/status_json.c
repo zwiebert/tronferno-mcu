@@ -98,8 +98,9 @@ void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, uint16_t dst_size, uint8_t g
   extern gm_bitmask_t manual_bits; //FIXME
   // read_gm_bitmask("MANU", &manual_bits, 1); //FIXME: not needed
   bool f_manual = GET_BIT(manual_bits[g], m);
+  uint8_t g_res = g, m_res = m;
 
-  if (read_timer_data(&tdr, &g, &m, wildcard)) {
+  if (read_timer_data(&tdr, &g_res, &m_res, wildcard)) {
     char *dp = dst;
     {
       char flags[10], *p = flags;

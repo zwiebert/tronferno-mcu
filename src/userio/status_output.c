@@ -435,13 +435,15 @@ static void ICACHE_FLASH_ATTR so_print_timer_event_minutes(uint8_t g, uint8_t m)
 static void ICACHE_FLASH_ATTR so_print_timer(uint8_t g, uint8_t m, bool wildcard) {
   timer_data_t tdr;
   char buf[10];
+  uint8_t g_res = g, m_res = m;
   extern gm_bitmask_t manual_bits; //FIXME
   // read_gm_bitmask("MANU", &manual_bits, 1); //FIXME: not needed
   bool f_manual = GET_BIT(manual_bits[g], m);
 
   if (so_cto) cli_out_timer_reply_entry(NULL, NULL, 1);
 
-  if (read_timer_data(&tdr, &g, &m, wildcard)) {
+  if (read_timer_data(&tdr, &g_res, &m_res, wildcard)) {
+
 
     if (so_cto) cli_out_timer_reply_entry("g", itoa(g, buf, 10), 0);
     if (so_cto) cli_out_timer_reply_entry("m", itoa(m, buf, 10), 0);
