@@ -3,64 +3,118 @@
 <html>
   <head>
     <script type="text/javascript" src="tfmcu_dev.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", onContentLoaded);
+      console.log("hallo");
+    </script>
+
     <style>
-      #configdiv { background-color: #bbf; }
+      #senddiv {
+      background-color: #eee;
+      grid-area: cmd;
+      display: grid;
+      width: 100%;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: repeat(6, 1fr);
+      grid-template-areas:
+      "header header header"
+      "gi pi mi"
+      "gb pl mb"
+      ".  ub ."
+      ".  sb ."
+      ".  db .";
+      justify-items: center;
+      align-items: center;
+      grid-gap=2px;
+      }
+      #configdiv { background-color: #eee; grid-area: config; }
+      #autodiv { background-color: #eee; grid-area: auto;}
+      #cfg_gm-used_tr, #tf_tr { display: none; }
+
       .config-label { padding: 30px; }
       .config-input { margin-left: 2em; alignment: right; }
-      #senddiv { background-color: #bfb; }
-      #autodiv { background-color: #fbb; }
       .sb {width: 5em; margin: 2px; }
-      #cfg_gm-used_tr, #tf_tr { display: none; }
+
+      #sgb, #smb { border-radius: 40%; }
+      #sgi, #spi, #smi { width: 2em; height: 2em; }
+      #sgb, #smb { width: 2em; height: 2em; }
+
       #ssb { font-size: 60%;  font-stretch: ultra-condensed; height: 4em; border-radius: 100% }
       #sub, #sdb { font-size: 125%; border-radius: 100% }
-      #sgb, #smb { border-radius: 40%; }
-      #senddiv, #autodiv, #configdiv { width:90vw;  margin: 10px;}
+
+      #sgi { grid-area: gi; }
+      #sgb { grid-area: gb; }
+      #spi { grid-area: pi; }
+      #spl { grid-area: pl; }
+      #smi { grid-area: mi; }
+      #smb { grid-area: mb; }
+      #sub { grid-area: ub; }
+      #ssb { grid-area: sb; }
+      #sdb { grid-area: db; }
+
+      h3 { text-align: center; grid-area: header; }
+
+      .container {
+      width: 100%;
+      display: grid;
+      background: LightGray;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+      "cmd"
+      "auto"
+      "config";
+      grid-gap: 2px;
+
+      justify-items: stretch;
+      }
+
+      @media (min-width: 15cm) {
+      .container {
+      width: 100%;
+      display: grid;
+      background: LightGray;
+      grid-template-columns: auto 1fr;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+      "cmd auto"
+      "config config";
+      grid-gap: 10px;
+
+      justify-items: stretch;
+
+      }
+      }
+
       @keyframes blink {
-	0% { opacity: 1; }
-	50% { opacity: 1; }
-	50.01% { opacity: 0; }
-	100% { opacity: 0; }
+      0% { opacity: 1; }
+      50% { opacity: 1; }
+      50.01% { opacity: 0; }
+      100% { opacity: 0; }
+      }
+
 }
-      
+
     </style>
   </head>
   <body>
+    <div  class="container">
 
-    <div id="senddiv" class="send">
-      <h3>Fernotron Command</h3>
-      <table style="text-align:center;">
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td><input id="sgi" style="width:2em;" type = "text" name = "g" value="2"></td>
-          <td><input id="spi" style="width:2em;" type = "text" name = "p" value="100"></td>
-          <td><input id="smi" style="width:2em;" type = "text" name = "m" value="2"></td>
-        </tr>
-        <tr>
-          <td><button id="sgb" type="button" onclick="gPressed()">G</button></td>
-          <td><label>Position</label></td>
-          <td><button id="smb" type="button" onclick="mPressed()">E</button></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td><button id="sub" class="sb" type="button" onclick="cInputSend2mcu('up')">&#x25b2;</button></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td><button id="ssb" class="sb" type="button" onclick="cInputSend2mcu('stop')">STOP</button></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td><button id="sdb" class="sb" type="button" onclick="cInputSend2mcu('down')">&#x25bc;</button></td>
-          <td></td>
-        </tr>
-      </table>
-    </div>
+
+      <div id="senddiv" class="send">
+        <h3>Fernotron Command</h3>
+
+        <input id="sgi" type = "text" name = "g" value="2">
+        <input id="spi" type = "text" name = "p" value="100">
+        <input id="smi" type = "text" name = "m" value="2">
+       <br>
+        <button id="sgb" type="button">G</button>
+        <label  id="spl">Position</label>
+        <button id="smb" type="button">E</button>
+        <br><button id="sub" class="sb" type="button">&#x25b2;</button>
+        <br><button id="ssb" class="sb" type="button">STOP</button>
+        <br><button id="sdb" class="sb" type="button">&#x25bc;</button>
+      </div>
 
     <div id="autodiv" class="auto">
       <h3>Automatic</h3>
@@ -100,21 +154,18 @@
       </table>
 
       <br>
-      <button class="sb" type="button" onclick="autoFetch()">Reload</button>
-      <button class="sb" type="button" onclick="autoSave()">Save</button>
+      <button id="arlb" class="sb" type="button">Reload</button>
+      <button id="asvb" class="sb" type="button"">Save</button>
 
       <script>autoFetch();</script>
     </div>
-
     <div id="configdiv">
       <h3>MCU Configuration</h3>
       <div  class="config" id="config-div">
-        <p><strong style="animation: blink .75s linear infinite;">...try to load configuration data from MCU...</strong></p>
+        <p><strong style="animation: blink .75s linear 4;">...try to load configuration data from MCU...</strong></p>
       <!-- configuration widgets. javascript output goes here -->
     </div>
-    <script>
-      fetch_json(); <!--populate div above-->
-    </script>
+
       <table>
         <tr>
           <td><label class="config-label">Groups</label></td>
@@ -139,16 +190,16 @@
       </table>
 
 <br>
-      <button type="button" onclick="fetch_json(true)">Reload</button>
-      <button type="button" onclick="inputConfigReset()">Reset</button>
-      <button type="button" onclick="inputConfig2mcu()">Save</button>
+      <button id="crlb" type="button">Reload</button>
+      <button id="crtb" type="button">Reset</button>
+      <button id="csvb" type="button">Save</button>
       <br><br>
-    <button type="button" onclick="mcuRestart()">Restart MCU</button><br>
+    <button id="mrtb" type="button">Restart MCU</button><br>
     </div>
-    
+
 <!--
          <br><br> <button class="sb" type="button" onclick="testPressed()">Test</button>
--->
-    
+         -->
+    </div>
   </body>
 </html>

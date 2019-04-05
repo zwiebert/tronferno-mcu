@@ -13,7 +13,7 @@ function handle_json_reply(json) {
     let m = document.getElementById('smi').value.toString();
 
     if ("position" in json) {
-        document.getElementById('spi').value = json.position.p;                        
+        document.getElementById('spi').value = json.position.p;
     }
     if ("config" in json) {
         jsonUpdateHtml(json.config);
@@ -36,7 +36,7 @@ function handle_json_reply(json) {
             document.getElementById('tsci').checked = f.indexOf("S") >= 0;
             document.getElementById('tmci').checked = f.indexOf("M") >= 0;
         }
- 
+
     }
 }
 
@@ -54,7 +54,7 @@ function gmuUnpack() {
     while(val.length < 8)
         val = "0"+val;
     console.log("val: "+val);
-    
+
     let g=1;
     gmu = [0];
     gu = [0];
@@ -72,7 +72,7 @@ function gmuUnpack() {
 
 function gmuPack() {
     let val = "";
-    
+
     let written = false; // to skip leading zeros
     for(let i=7; i >= 1; --i) {
         let id = "gmu"+(i.toString());
@@ -84,7 +84,7 @@ function gmuPack() {
     }
     let x =  document.getElementById("cfg_gm-used").value;
     val += x[x.length-1]; // push back unused lowest nibble
-    
+
     document.getElementById("cfg_gm-used").value = val;
 }
 
@@ -227,7 +227,7 @@ function fetch_json(u=false) {
 }
 
 function getGuIdx() {
-    let val = document.getElementById("sgi").value;   
+    let val = document.getElementById("sgi").value;
     if (val == "A")
         val = 0;
 
@@ -238,7 +238,7 @@ function getGuIdx() {
 }
 
 function gPressed() {
-    let val = document.getElementById("sgi").value;   
+    let val = document.getElementById("sgi").value;
     if (val == "A")
         val = 0;
 
@@ -247,7 +247,7 @@ function gPressed() {
     ++gu_idx;
     if (gu_idx >= gu.length)
         gu_idx = 0;
-    
+
     val = gu[gu_idx];
 
     if (val == 0)
@@ -261,14 +261,14 @@ function gPressed() {
 
 
 function mPressed() {
-    let val = document.getElementById("smi").value;   
+    let val = document.getElementById("smi").value;
     if (val == "A")
         val = 0;
 
     ++val;
     gu_idx = getGuIdx(); //FIXME
     let g  = gu[gu_idx];
-                
+
     if (val > gmu[g])
         val = 0;
 
@@ -294,7 +294,7 @@ function autoSave() {
     let tfmcu = { name: "tfmcu", timer: { }};
     let auto = tfmcu.timer;
     let has_daily = false, has_weekly = false, has_astro = false;
-    
+
     auto.g = autoInput2G();
     auto.m = autoInput2M();
 
@@ -321,17 +321,17 @@ function autoSave() {
         let val =  document.getElementById('tati').value;
         auto.astro = val ? Number.parseInt(val) : 0;
     }
-    
+
     console.log(JSON.stringify(tfmcu));
     postData(url, tfmcu);
-    
+
 }
 
 function autoClear() {
     document.getElementById('tfti').value = "";
-    document.getElementById('tdti').value = ""; 
-    document.getElementById('tati').value = ""; 
-    document.getElementById('twti').value = ""; 
+    document.getElementById('tdti').value = "";
+    document.getElementById('tati').value = "";
+    document.getElementById('twti').value = "";
     document.getElementById('tdci').checked = false;
     document.getElementById('twci').checked = false;
     document.getElementById('taci').checked = false;
@@ -342,7 +342,7 @@ function autoClear() {
 
 function autoFetch() {
     autoClear();
-    
+
     let tfmcu = {name:"tfmcu"};
     let g = document.getElementById('sgi').value.toString();
     let m = document.getElementById('smi').value.toString();
@@ -352,7 +352,7 @@ function autoFetch() {
         m: m,
         f: "uki",
     };
-    
+
     let url = base+'/cmd.json';
     postData(url, tfmcu);
 }
@@ -374,13 +374,34 @@ function testPressed() {
         m: m,
         f: "uki",
     };
-    
+
     xtfmcu.config = {
         all: "?"
     };
-    
+
     console.log(JSON.stringify(tfmcu));
     var url = base+'/cmd.json';
     console.log("url: "+url);
     postData(url, tfmcu);
+}
+
+function onContentLoaded() {
+    console.log("loaded");
+    fetch_json(false);
+
+    document.getElementById("sgb").onclick = gPressed;
+    document.getElementById("smb").onclick = mPressed;
+    document.getElementById("sub").onclick = () => cInputSend2mcu('up');
+    document.getElementById("ssb").onclick = () => cInputSend2mcu('stop');
+    document.getElementById("sdb").onclick = () => cInputSend2mcu('down');
+
+    document.getElementById("arlb").onclick = autoFetch;
+    document.getElementById("asvb").onclick = autoSave;
+
+    document.getElementById("crtb").onclick = inputConfigReset;
+    document.getElementById("csvb").onclick = inputConfig2mcu;
+    document.getElementById("crlb").onclick = () => fetch_json(true);
+
+    document.getElementById("mrtb").onclick = mcuRestart;
+
 }

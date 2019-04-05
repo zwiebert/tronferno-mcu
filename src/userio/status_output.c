@@ -191,7 +191,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     so_out_config_reply_entry_s(mt, C.wifi_SSID);
     break;
   case SO_CFG_WLAN_PASSWORD:
-    so_out_config_reply_entry_s(mt, "");
+    so_out_config_reply_entry_s(mt, *C.wifi_password ? "*" : "");
     break;
 
 #ifdef USE_MQTT
