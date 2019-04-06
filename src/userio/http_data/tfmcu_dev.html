@@ -9,6 +9,41 @@
     </script>
 
     <style>
+
+      * { font-size:100%; }
+
+      .container {
+      width: 100%;
+      display: grid;
+      background: LightGray;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+      "cmd"
+      "auto"
+      "config";
+      grid-gap: 2px;
+      justify-items: stretch;
+      }
+
+      @media (min-resolution:220dpi) {
+          .container {
+              font-size: 200%;
+          }
+      }
+
+      @media (min-width: 500px) and (max-resolution:150dpi) {
+      .container {
+      grid-template-columns: auto 1fr;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+      "cmd auto"
+      "config config";
+      grid-gap: 10px;
+
+      }
+      }
+
       #senddiv {
       background-color: #eee;
       grid-area: cmd;
@@ -55,40 +90,9 @@
       h3 { text-align: center;
       margin-top: 0px;
       background-color: hsl(220, 60%, 60%); color: white;
-      grid-area: header; justify-self: stretch;
+      grid-area: header; justify-self: stretch; align-self: start;
       }
 
-      .container {
-      width: 100%;
-      display: grid;
-      background: LightGray;
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto;
-      grid-template-areas:
-      "cmd"
-      "auto"
-      "config";
-      grid-gap: 2px;
-
-      justify-items: stretch;
-      }
-
-      @media (min-width: 15cm) {
-      .container {
-      width: 100%;
-      display: grid;
-      background: LightGray;
-      grid-template-columns: auto 1fr;
-      grid-template-rows: auto auto;
-      grid-template-areas:
-      "cmd auto"
-      "config config";
-      grid-gap: 10px;
-
-      justify-items: stretch;
-
-      }
-      }
 
       @keyframes blink {
       0% { opacity: 1; }
