@@ -24,15 +24,26 @@
       "config";
       grid-gap: 2px;
       justify-items: stretch;
+      font-size: 270%;
+
       }
 
-      @media (min-resolution:220dpi) {
-          .container {
-              font-size: 200%;
-          }
+      .cb {
+        width: 1em;
+        height: 1em;
       }
 
-      @media (min-width: 500px) and (max-resolution:150dpi) {
+      input:focus {
+      font-size: 100%;
+      }
+
+      @media only screen and (max-resolution: 96dpi )  {
+      .container {
+      font-size: 200%;
+      }
+      }
+
+      @media (min-width: 1000px) {
       .container {
       grid-template-columns: auto 1fr;
       grid-template-rows: auto auto;
@@ -40,6 +51,7 @@
       "cmd auto"
       "config config";
       grid-gap: 10px;
+      font-size: 100%;
 
       }
       }
@@ -71,7 +83,7 @@
       .sb {width: 5em; margin: 2px; }
 
       #sgb, #smb { border-radius: 40%; }
-      #sgi, #spi, #smi { width: 2em; height: 2em; }
+      #sgi, #spi, #smi { width: 2em; height: 2em; text-align: center; }
       #sgb, #smb { width: 2em; height: 2em; }
 
       #ssb { font-size: 60%;  font-stretch: ultra-condensed; height: 4em; border-radius: 100% }
@@ -134,30 +146,30 @@
         </tr>
         <tr>
           <td><label>daily</label></td>
-          <td><input id="tdci" type = "checkbox" value=""></td>
+          <td><input id="tdci" class="cb" type = "checkbox" value=""></td>
           <td><input id="tdti" style="width:8em;" type = "text" name = "g" value=""></td>
         </tr>
         <tr>
           <td><label>weekly</label></td>
-          <td><input id="twci" type = "checkbox" value=""></td>
+          <td><input id="twci" class="cb" type = "checkbox" value=""></td>
           <td><input id="twti" style="width:50vw;" type = "text" name = "g" value=""></td>
         </tr>
         <tr>
           <td><label>astro</label></td>
-          <td><input id="taci" type = "checkbox" value=""></td>
+          <td><input id="taci" class="cb" type = "checkbox" value=""></td>
           <td><input id="tati" style="width:5em;" type = "text" name = "g" value=""></td>
         </tr>
         <tr>
           <td><label>random</label></td>
-          <td><input id="trci" type = "checkbox" value=""></td>
+          <td><input id="trci" class="cb" type = "checkbox" value=""></td>
         </tr>
         <tr>
           <td><label>sun</label></td>
-          <td><input id="tsci" type = "checkbox" value=""></td>
+          <td><input id="tsci" class="cb" type = "checkbox" value=""></td>
         </tr>
         <tr>
           <td><label>manual</label></td>
-          <td><input id="tmci" type = "checkbox" value=""></td>
+          <td><input id="tmci" class="cb" type = "checkbox" value=""></td>
         </tr>
       </table>
 
