@@ -9,6 +9,53 @@
     </script>
 
     <style>
+
+      * { font-size:100%; }
+
+      .container {
+      width: 100%;
+      display: grid;
+      background: LightGray;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+      "cmd"
+      "auto"
+      "config";
+      grid-gap: 2px;
+      justify-items: stretch;
+      font-size: 270%;
+
+      }
+
+      .cb {
+        width: 1em;
+        height: 1em;
+      }
+
+      input:focus {
+      font-size: 100%;
+      }
+
+      @media only screen and (max-resolution: 96dpi )  {
+      .container {
+      font-size: 200%;
+      }
+      }
+
+      @media (min-width: 1000px) {
+      .container {
+      grid-template-columns: auto 1fr;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+      "cmd auto"
+      "config config";
+      grid-gap: 10px;
+      font-size: 100%;
+
+      }
+      }
+
       #senddiv {
       background-color: #eee;
       grid-area: cmd;
@@ -36,7 +83,7 @@
       .sb {width: 5em; margin: 2px; }
 
       #sgb, #smb { border-radius: 40%; }
-      #sgi, #spi, #smi { width: 2em; height: 2em; }
+      #sgi, #spi, #smi { width: 2em; height: 2em; text-align: center; }
       #sgb, #smb { width: 2em; height: 2em; }
 
       #ssb { font-size: 60%;  font-stretch: ultra-condensed; height: 4em; border-radius: 100% }
@@ -55,40 +102,9 @@
       h3 { text-align: center;
       margin-top: 0px;
       background-color: hsl(220, 60%, 60%); color: white;
-      grid-area: header; justify-self: stretch;
+      grid-area: header; justify-self: stretch; align-self: start;
       }
 
-      .container {
-      width: 100%;
-      display: grid;
-      background: LightGray;
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto;
-      grid-template-areas:
-      "cmd"
-      "auto"
-      "config";
-      grid-gap: 2px;
-
-      justify-items: stretch;
-      }
-
-      @media (min-width: 15cm) {
-      .container {
-      width: 100%;
-      display: grid;
-      background: LightGray;
-      grid-template-columns: auto 1fr;
-      grid-template-rows: auto auto;
-      grid-template-areas:
-      "cmd auto"
-      "config config";
-      grid-gap: 10px;
-
-      justify-items: stretch;
-
-      }
-      }
 
       @keyframes blink {
       0% { opacity: 1; }
@@ -130,30 +146,30 @@
         </tr>
         <tr>
           <td><label>daily</label></td>
-          <td><input id="tdci" type = "checkbox" value=""></td>
+          <td><input id="tdci" class="cb" type = "checkbox" value=""></td>
           <td><input id="tdti" style="width:8em;" type = "text" name = "g" value=""></td>
         </tr>
         <tr>
           <td><label>weekly</label></td>
-          <td><input id="twci" type = "checkbox" value=""></td>
+          <td><input id="twci" class="cb" type = "checkbox" value=""></td>
           <td><input id="twti" style="width:50vw;" type = "text" name = "g" value=""></td>
         </tr>
         <tr>
           <td><label>astro</label></td>
-          <td><input id="taci" type = "checkbox" value=""></td>
+          <td><input id="taci" class="cb" type = "checkbox" value=""></td>
           <td><input id="tati" style="width:5em;" type = "text" name = "g" value=""></td>
         </tr>
         <tr>
           <td><label>random</label></td>
-          <td><input id="trci" type = "checkbox" value=""></td>
+          <td><input id="trci" class="cb" type = "checkbox" value=""></td>
         </tr>
         <tr>
           <td><label>sun</label></td>
-          <td><input id="tsci" type = "checkbox" value=""></td>
+          <td><input id="tsci" class="cb" type = "checkbox" value=""></td>
         </tr>
         <tr>
           <td><label>manual</label></td>
-          <td><input id="tmci" type = "checkbox" value=""></td>
+          <td><input id="tmci" class="cb" type = "checkbox" value=""></td>
         </tr>
       </table>
 
