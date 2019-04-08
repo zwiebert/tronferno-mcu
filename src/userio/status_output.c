@@ -159,20 +159,32 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
 
   /////////////////////////////////////////////////////////////////////////////////
   case SO_CFG_all: {
+    bool old_out_js = out_js, old_out_cli = out_cli;
+    char *json_buf = NULL;
+
     if (arg) {
       const char *f;
-      bool old_out_js = out_js, old_out_cli = out_cli;
+
       out_js = out_cli = false;
-      for (f=arg; *f; ++f)
-        switch(*f) {
-        case 'j': out_js = true; break;
-        case 'c': out_cli = true; break;
+      for (f = arg; *f; ++f)
+        switch (*f) {
+        case 'j':
+          out_js = true;
+          break;
+        case 'c':
+          out_cli = true;
+          break;
         }
-      out_js = old_out_js; out_cli = old_out_cli;
+
     }
-    for (i = SO_CFG_begin; i <= SO_CFG_end; ++i) {
-      so_output_message(i, NULL);
+    if (!out_js || ((json_buf = malloc(256)))) {
+      for (i = SO_CFG_begin; i <= SO_CFG_end; ++i) {
+        so_output_message(i, NULL);
+      }
+      free(json_buf);
     }
+    out_js = old_out_js;
+    out_cli = old_out_cli;
   }
     break;
 
