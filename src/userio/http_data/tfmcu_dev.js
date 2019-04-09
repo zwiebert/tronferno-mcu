@@ -40,13 +40,16 @@ function handle_json_reply(json) {
     }
 }
 
-function config_item2(name,value) {
-    return '<label class="config-label">'+name+'<input class="config-input" type="text" id="cfg_'+name+'" name="'+name+'" value="'+value+'"></label>';
-}
-
-
 function config_item(name,value) {
-    return '<td><label class="config-label">'+name+'</label></td><td><input class="config-input" type="text" id="cfg_'+name+'" name="'+name+'" value="'+value+'"></td>';
+    if (name.endsWith("-enable")) {
+        console.log("value: "+value);
+        return '<td><label class="config-label">'+name+'</label></td><td><input class="config-input cb" type="checkbox" id="cfg_'
+            +name+'" name="'+name +'"' + (value ? " checked" : "") +'></td>';
+    } else {
+        return '<td><label class="config-label">'+name+'</label></td><td><input class="config-input" type="text" id="cfg_'
+            +name+'" name="'+name+'" value="'+value+'"></td>';
+    }
+
 }
 
 function gmuUnpack() {
@@ -88,18 +91,16 @@ function gmuPack() {
     document.getElementById("cfg_gm-used").value = val;
 }
 
-function json2cli(data) {
-    result = "";
-    Object.keys(data).forEach (function (key, idx) {
-        val = data[key];
-        result = result+" "+key+"="+val;
-    });
-    return result;
-}
-
 function jsonUpdateHtml(cfg) {
     Object.keys(cfg).forEach (function (key, idx) {
-        document.getElementById('cfg_'+key).value = cfg[key];
+        let el = document.getElementById('cfg_'+key);
+        switch(el.type) {
+        case 'checkbox':
+            el.checked = cfg[key] != 0;
+            break;
+        default:
+            el.value = cfg[key]
+        }
     });
 }
 
@@ -121,7 +122,6 @@ function postData(url = '', data = {}) {
             if(response.ok) {
                 response.json().then(json => {
                     handle_json_reply(json);
-
                 });
             }
         });
@@ -139,8 +139,16 @@ function inputConfig2mcu() {
     var has_changed = false;
     gmuPack();
     Object.keys(cfg).forEach (function (key, idx) {
-        var new_val = document.getElementById('cfg_'+key).value;
-        var old_val = cfg[key];
+        let new_val = 0;
+        let el = document.getElementById('cfg_'+key);
+        switch(el.type) {
+        case 'checkbox':
+            new_val = el.checked ? 1 : 0;
+            break;
+        default:
+            new_val = el.value;
+        }
+        let old_val = cfg[key];
         if (new_val != old_val) {
             new_cfg[key] = new_val;
             has_changed = true;
@@ -149,12 +157,12 @@ function inputConfig2mcu() {
     });
 
     if (has_changed) {
+        new_cfg.all = "?";
         tfmcu.config = new_cfg;
         console.log(JSON.stringify(tfmcu));
         var url = base+'/cmd.json';
         console.log("url: "+url);
         postData(url, tfmcu);
-        fetch_json(true);
     }
 }
 
@@ -190,7 +198,6 @@ function inputConfigReset() {
 }
 
 function json2html(cfg) {
-    // document.writeln('<!DOCTYPE html><meta charset="UTF-8"><script src="hp.js"></script>');
     var html ="<table>"
     Object.keys(cfg).forEach (function (key, idx) {
         html += '<tr id="cfg_'+key+'_tr">'+config_item(key, cfg[key])+'</tr>'+"\n";
@@ -386,7 +393,6 @@ function testPressed() {
 }
 
 function onContentLoaded() {
-    console.log("loaded");
     fetch_json(false);
 
     document.getElementById("sgb").onclick = gPressed;
