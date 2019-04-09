@@ -20,7 +20,7 @@ function handle_json_reply(obj) {
     }
     if ("config" in obj) {
         jsonUpdateHtml(obj.config);
-        sessionStorage.setItem("tfmcu.config", JSON.stringify(obj));
+        tfmcu_config = obj;
     }
     let auto_name = "auto"+g+m;
     console.log(auto_name);
@@ -98,6 +98,8 @@ function gmuPack() {
 function jsonUpdateHtml(cfg) {
     Object.keys(cfg).forEach (function (key, idx) {
         let el = document.getElementById('cfg_'+key);
+        console.log("key: "+key);
+
         switch(el.type) {
         case 'checkbox':
             el.checked = cfg[key] != 0;
@@ -137,7 +139,7 @@ function mcuRestart() {
     postData(url, json);
 }
 function inputConfig2mcu() {
-    var tfmcu = JSON.parse(sessionStorage.getItem("tfmcu.config"));
+    let tfmcu = Object.assign({},tfmcu_config);
     var cfg = tfmcu.config;
     var new_cfg = {}
     var has_changed = false;
@@ -145,6 +147,8 @@ function inputConfig2mcu() {
     Object.keys(cfg).forEach (function (key, idx) {
         let new_val = 0;
         let el = document.getElementById('cfg_'+key);
+        console.log("key: "+key);
+
         switch(el.type) {
         case 'checkbox':
             new_val = el.checked ? 1 : 0;
@@ -163,6 +167,7 @@ function inputConfig2mcu() {
     if (has_changed) {
         new_cfg.all = "?";
         tfmcu.config = new_cfg;
+
         console.log(JSON.stringify(tfmcu));
         var url = base+'/cmd.json';
         console.log("url: "+url);
@@ -194,8 +199,7 @@ function inputSend2mcu() {
 
 
 function inputConfigReset() {
-    var tfmcu = JSON.parse(sessionStorage.getItem("tfmcu.config"));
-    var cfg = tfmcu.config;
+    let cfg = tfmcu_config.config;
     Object.keys(cfg).forEach (function (key, idx) {
         var new_val = document.getElementById('cfg_'+key).value = cfg[key];
     });
@@ -223,15 +227,15 @@ function fetch_json(u=false) {
     },
           ).then(response => {
               if(response.ok) {
-                  response.json().then(json => {
-                      var cfg = json.config;
+                  response.json().then(obj => {
+                      var cfg = obj.config;
                       if (u) {
                           jsonUpdateHtml(cfg);
                       } else {
                           document.getElementById("config-div").innerHTML = json2html(cfg);
                       }
                       gmuUnpack();
-                      sessionStorage.setItem("tfmcu.config", JSON.stringify(json));
+                      tfmcu_config = obj;
                   });
               }
           });
