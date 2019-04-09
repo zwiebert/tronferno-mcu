@@ -7,21 +7,25 @@ var gu_idx = 0;
 
 var cfg_out = {};
 
-function handle_json_reply(json) {
-    console.log("reply-json: "+JSON.stringify(json));
+var tfmcu_config = {};
+
+function handle_json_reply(obj) {
+    console.log("reply-json: "+JSON.stringify(obj));
+
     let g = document.getElementById('sgi').value.toString();
     let m = document.getElementById('smi').value.toString();
 
-    if ("position" in json) {
-        document.getElementById('spi').value = json.position.p;
+    if ("position" in obj) {
+        document.getElementById('spi').value = obj.position.p;
     }
-    if ("config" in json) {
-        jsonUpdateHtml(json.config);
+    if ("config" in obj) {
+        jsonUpdateHtml(obj.config);
+        sessionStorage.setItem("tfmcu.config", JSON.stringify(obj));
     }
     let auto_name = "auto"+g+m;
     console.log(auto_name);
-    if (auto_name in json) {
-        let auto = json[auto_name];
+    if (auto_name in obj) {
+        let auto = obj[auto_name];
         document.getElementById('tfti').value = ("f" in auto) ? auto.f : "";
         document.getElementById('tdti').value = ("daily" in auto) ? auto.daily : "";
         document.getElementById('tati').value = ("astro" in auto) ? auto.astro : "";
