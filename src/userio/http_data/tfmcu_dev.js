@@ -467,6 +467,7 @@ function tabMakeVisibleByIdx(idx) {
 function onContentLoaded() {
     app_state = new AppState();
     app_state.load();
+    configFetch(); //FIXME: needed here for group/member numbers
 
     document.getElementById("sgb").onclick = gPressed;
     document.getElementById("smb").onclick = mPressed;
