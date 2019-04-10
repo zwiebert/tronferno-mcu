@@ -214,8 +214,6 @@ function json2html(cfg) {
     return html;
 }
 
-
-
 function fetch_json(u=false) {
     var url = base+'/config.json';
     var result = {name: "error"};
@@ -411,21 +409,6 @@ function readBackTabState() {
 
 function readBackState() {
     readBackTabState();
-}
-
-function tabMakeVisibleByIdx2(idx) {
-    for (let i = 0; i < tabButtons.length; ++i) {
-        let content = document.getElementById(tabContents[i]);
-        let button = document.getElementById(tabButtons[i]);
-
-        if (i == idx) {
-            content.style.display = "";
-            button.style.backgroundColor = "hsl(220, 60%, 60%)";
-        } else {
-            content.style.display = "none";
-            button.style.backgroundColor = "#eee";
-        }
-    }
 }
 
 function tabMakeVisibleByIdx(idx) {

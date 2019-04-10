@@ -49,10 +49,8 @@
       }
 
       .container {
-      width: 100%;
       border: 1px solid #ccc;
       background-color: #eee;
-
       font-size: 270%;
       }
 
@@ -64,6 +62,29 @@
       input:focus {
       font-size: 100%;
       }
+
+
+      #senddiv {
+      background-color: #eee;
+      display: grid;
+      width: 100%;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: repeat(6, 1fr);
+      grid-template-areas:
+      "gi pi mi"
+      "gb pl mb"
+      ".  ub ."
+      ".  sb ."
+      ".  db ."
+      ;
+      justify-items: center;
+      align-items: center;
+      grid-gap=2px;
+      }
+
+      #configdiv { background-color: #eee;  }
+
+      #autodiv { background-color: #eee; }
 
       @media only screen and (max-resolution: 96dpi )  {
       .container, .tab button {
@@ -78,34 +99,12 @@
       .tab button {
       font-size: 100%;
       }
-      }
-
       #senddiv {
-      background-color: #eee;
-      grid-area: cmd;
-      display: grid;
-      width: 100%;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: repeat(6, 1fr);
-      grid-template-areas:
-      "header header header"
-      "gi pi mi"
-      "gb pl mb"
-      ".  ub ."
-      ".  sb ."
-      ".  db ."
-      ;
-      justify-items: center;
-      align-items: center;
-      grid-gap=2px;
+      width: 500px;
+      }
       }
 
-      #configdiv { background-color: #eee; grid-area: config; }
-      #autodiv { background-color: #eee; grid-area: auto;}
-      #cfg_gm-used_tr, #tf_tr { display: none; }
 
-      .conf-table label { padding: 5px; width: 40vw; margin-right: 1em;}
-      .conf-table .text { width: 100%; }
 
       .sb {width: 5em; margin: 2px; }
 
@@ -126,6 +125,11 @@
       #ssb { grid-area: sb; }
       #sdb { grid-area: db; }
 
+      .conf-table label { padding: 5px; width: 45vw; margin-right: 1em;}
+      .conf-table .text { width: 100%; }
+      #cfg_gm-used_tr, #tf_tr { display: none; }
+
+
       h3 {
       display: none;
       text-align: center;
@@ -142,7 +146,7 @@
       100% { opacity: 0; }
       }
 
-       /* Style the tab */
+
 
     </style>
   </head>
@@ -159,7 +163,6 @@
 
 
       <div id="senddiv" class="send">
-        <h3>Command</h3>
 
         <input id="sgi" type = "text" name = "g" value="A">
         <input id="spi" type = "text" name = "p" value="100">
