@@ -5,15 +5,64 @@ var gmu = [0,1,2,3,4,5,6,7];
 var gu = [0,1,2,3,4,5,6,7];
 var gu_idx = 0;
 
-var cfg_out = {};
-
 var tfmcu_config = {};
+let config_fetched = false;
+
+
+class AppState {
+
+    constructor() {
+        this.mG = Number.parseInt((localStorage.getItem("group") || "0"), 10);
+        this.mM = Number.parseInt((localStorage.getItem("member") || "0"), 10);
+        this.mTabIdx = Number.parseInt((localStorage.getItem("tab_index") || "0"), 10);
+    }
+
+    get tabIdx() {
+        return this.mTabIdx;
+    }
+
+    set tabIdx(value) {
+        this.mTabIdx = value;
+        localStorage.setItem("tab_index", value.toString());
+        tabMakeVisibleByIdx(value);
+    }
+
+    get g() {
+        return this.mG;
+    }
+
+    set g(value) {
+        this.mG = value;
+        localStorage.setItem("group", value.toString());
+        document.getElementById("sgi").value = value ? value : "A";
+    }
+
+    get m() {
+        return this.mM;
+    }
+
+    set m(value) {
+        this.mM = value;
+        localStorage.setItem("member", value.toString());
+        document.getElementById("smi").value = value ? value : "A";
+    }
+
+    load() {
+        tabMakeVisibleByIdx(this.tabIdx);
+        this.g = this.mG;
+        this.m = this.mM;
+        this.tabIdx = this.mTabIdx;
+    }
+
+}
+
+let app_state;
 
 function handle_json_reply(obj) {
     console.log("reply-json: "+JSON.stringify(obj));
 
-    let g = document.getElementById('sgi').value.toString();
-    let m = document.getElementById('smi').value.toString();
+    let g = app_state.g.toString();
+    let m = app_state.m.toString();
 
     if ("position" in obj) {
         document.getElementById('spi').value = obj.position.p;
@@ -47,11 +96,13 @@ function handle_json_reply(obj) {
 function config_item(name,value) {
     if (name.endsWith("-enable")) {
         console.log("value: "+value);
-        return '<td><label class="config-label">'+name+'</label></td><td><input class="config-input cb" type="checkbox" id="cfg_'
-            +name+'" name="'+name +'"' + (value ? " checked" : "") +'></td>';
+        return '<td><label class="config-label">'+name+
+            '</label></td><td><input class="config-input cb" type="checkbox" id="cfg_'+name+
+            '" name="'+name +'"' + (value ? " checked" : "") +'></td>';
     } else {
-        return '<td><label class="config-label">'+name+'</label></td><td><input class="config-input text" type="text" id="cfg_'
-            +name+'" name="'+name+'" value="'+value+'"></td>';
+        return '<td><label class="config-label">'+name+
+            '</label></td><td><input class="config-input text" type="text" id="cfg_'+name+
+            '" name="'+name+'" value="'+value+'"></td>';
     }
 
 }
@@ -105,7 +156,7 @@ function jsonUpdateHtml(cfg) {
             el.checked = cfg[key] != 0;
             break;
         default:
-            el.value = cfg[key]
+            el.value = cfg[key];
         }
     });
 }
@@ -141,7 +192,7 @@ function mcuRestart() {
 function inputConfig2mcu() {
     let tfmcu = Object.assign({},tfmcu_config);
     var cfg = tfmcu.config;
-    var new_cfg = {}
+    var new_cfg = {};
     var has_changed = false;
     gmuPack();
     Object.keys(cfg).forEach (function (key, idx) {
@@ -177,16 +228,15 @@ function inputConfig2mcu() {
 
 function cInputSend2mcu(c) {
     var tfmcu = {name:"tfmcu"};
-    let g = document.getElementById('sgi').value;
-    let m = document.getElementById('smi').value;
-    if (g=="A") g = 0;
-    if (m=="A") m = 0;
+    let g = app_state.g.toString();
+    let m = app_state.m.toString();
+
     var send = {
         g: g,
         m: m,
         c: c,
     };
-    tfmcu['send'] = send;
+    tfmcu.send = send;
     console.log(JSON.stringify(tfmcu));
     var url = base+'/cmd.json';
     console.log("url: "+url);
@@ -206,15 +256,17 @@ function inputConfigReset() {
 }
 
 function json2html(cfg) {
-    var html ="<table class=\"conf-table\";\">"
+    var html ="<table class=\"conf-table\";\">";
     Object.keys(cfg).forEach (function (key, idx) {
         html += '<tr id="cfg_'+key+'_tr">'+config_item(key, cfg[key])+'</tr>'+"\n";
     });
-    html +='</table>'
+    html +='</table>';
     return html;
 }
 
-function fetch_json(u=false) {
+function configFetch() {
+    let u = config_fetched;
+    config_fetched = true;
     var url = base+'/config.json';
     var result = {name: "error"};
     fetch (url, {
@@ -222,27 +274,24 @@ function fetch_json(u=false) {
         headers: {
             Accept: 'application/json'
         },
-    },
-          ).then(response => {
-              if(response.ok) {
-                  response.json().then(obj => {
-                      var cfg = obj.config;
-                      if (u) {
-                          jsonUpdateHtml(cfg);
-                      } else {
-                          document.getElementById("config-div").innerHTML = json2html(cfg);
-                      }
-                      gmuUnpack();
-                      tfmcu_config = obj;
-                  });
-              }
-          });
+    }).then(response => {
+        if(response.ok) {
+            response.json().then(obj => {
+                var cfg = obj.config;
+                if (u) {
+                    jsonUpdateHtml(cfg);
+                } else {
+                    document.getElementById("config-div").innerHTML = json2html(cfg);
+                }
+                gmuUnpack();
+                tfmcu_config = obj;
+            });
+        }
+    });
 }
 
 function getGuIdx() {
-    let val = document.getElementById("sgi").value;
-    if (val == "A")
-        val = 0;
+    let val = app_state.g;
 
     for(let i=0; i < gu.length; ++i)
         if (gu[i] == val)
@@ -251,9 +300,7 @@ function getGuIdx() {
 }
 
 function gPressed() {
-    let val = document.getElementById("sgi").value;
-    if (val == "A")
-        val = 0;
+    let val = app_state.g;
 
     gu_idx = getGuIdx(); //FIXME
 
@@ -263,20 +310,16 @@ function gPressed() {
 
     val = gu[gu_idx];
 
-    if (val == 0)
-        val = "A";
-    document.getElementById("sgi").value = val;
+    app_state.g = val;
     if (val == 1)
-        document.getElementById("smi").value = 1;
+        app_state.m = 1;
 
     autoFetch();
 }
 
 
 function mPressed() {
-    let val = document.getElementById("smi").value;
-    if (val == "A")
-        val = 0;
+    let val = app_state.m;
 
     ++val;
     gu_idx = getGuIdx(); //FIXME
@@ -285,21 +328,8 @@ function mPressed() {
     if (val > gmu[g])
         val = 0;
 
-    if (val == 0)
-        val = "A";
-    document.getElementById("smi").value = val;
+    app_state.m = val;
     autoFetch();
-}
-
-function autoInput2G() {
-    let gs = document.getElementById('sgi').value;
-    let g = gs === 'A' ? 0 : Number.parseInt(gs);
-    return g;
-}
-function autoInput2M() {
-    let ms = document.getElementById('smi').value;
-    let m = ms === 'A' ? 0 : Number.parseInt(ms);
-    return m;
 }
 
 function autoSave() {
@@ -308,8 +338,8 @@ function autoSave() {
     let auto = tfmcu.timer;
     let has_daily = false, has_weekly = false, has_astro = false;
 
-    auto.g = autoInput2G();
-    auto.m = autoInput2M();
+    auto.g = app_state.g;
+    auto.m = app_state.m;
 
     let f = "i";
     f += document.getElementById('tmci').checked ? "M" : "m";
@@ -357,8 +387,8 @@ function autoFetch() {
     autoClear();
 
     let tfmcu = {name:"tfmcu"};
-    let g = document.getElementById('sgi').value.toString();
-    let m = document.getElementById('smi').value.toString();
+    let g = app_state.g;
+    let m = app_state.m;
 
     tfmcu.timer = {
         g: g,
@@ -373,8 +403,8 @@ function autoFetch() {
 function testPressed() {
     var tfmcu = {name:"tfmcu"};
     var xtfmcu = {};
-    let g = document.getElementById('sgi').value.toString();
-    let m = document.getElementById('smi').value.toString();
+    let g = app_state.g;
+    let m = app_state.m;
 
     xtfmcu.send = {
         g: "2",
@@ -398,18 +428,7 @@ function testPressed() {
     postData(url, tfmcu);
 }
 
-let tabContents = ["senddiv", "autodiv", "configdiv"];
 let tabButtons = ["stb", "atb", "ctb"];
-
-
-function readBackTabState() {
-    let idx =  Number.parseInt((localStorage.getItem("tab_index") || "0"), 10);
-    tabMakeVisibleByIdx(idx);
-}
-
-function readBackState() {
-    readBackTabState();
-}
 
 function tabMakeVisibleByIdx(idx) {
     let sendCont =  document.getElementById("senddiv");
@@ -434,18 +453,20 @@ function tabMakeVisibleByIdx(idx) {
         sendCont.style.display = SHOW;
         autoCont.style.display = SHOW;
         confCont.style.display = NONE;
+        autoFetch();
         break;
     case 2:
         sendCont.style.display = NONE;
         autoCont.style.display = NONE;
         confCont.style.display = SHOW;
+        configFetch();
         break;
     }
-    localStorage.setItem("tab_index", idx.toString());
 }
 
 function onContentLoaded() {
-    fetch_json(false);
+    app_state = new AppState();
+    app_state.load();
 
     document.getElementById("sgb").onclick = gPressed;
     document.getElementById("smb").onclick = mPressed;
@@ -457,13 +478,17 @@ function onContentLoaded() {
     document.getElementById("asvb").onclick = autoSave;
 
     document.getElementById("csvb").onclick = inputConfig2mcu;
-    document.getElementById("crlb").onclick = () => fetch_json(true);
+    document.getElementById("crlb").onclick = () => configFetch();
 
     document.getElementById("mrtb").onclick = mcuRestart;
 
-    document.getElementById("stb").onclick = () => tabMakeVisibleByIdx(0);
-    document.getElementById("atb").onclick = () => tabMakeVisibleByIdx(1);
-    document.getElementById("ctb").onclick = () => tabMakeVisibleByIdx(2);
-
-    readBackState();
+    document.getElementById("stb").onclick = () => app_state.tabIdx = 0;
+    document.getElementById("atb").onclick = () => app_state.tabIdx = 1;
+    document.getElementById("ctb").onclick = () => app_state.tabIdx = 2;
 }
+
+/*
+Local Variables:
+compile-command: "jshint tfmcu_dev.js"
+End:
+*/
