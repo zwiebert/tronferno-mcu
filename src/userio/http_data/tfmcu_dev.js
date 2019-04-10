@@ -50,7 +50,7 @@ function config_item(name,value) {
         return '<td><label class="config-label">'+name+'</label></td><td><input class="config-input cb" type="checkbox" id="cfg_'
             +name+'" name="'+name +'"' + (value ? " checked" : "") +'></td>';
     } else {
-        return '<td><label class="config-label">'+name+'</label></td><td><input class="config-input" type="text" id="cfg_'
+        return '<td><label class="config-label">'+name+'</label></td><td><input class="config-input text" type="text" id="cfg_'
             +name+'" name="'+name+'" value="'+value+'"></td>';
     }
 
@@ -206,7 +206,7 @@ function inputConfigReset() {
 }
 
 function json2html(cfg) {
-    var html ="<table>"
+    var html ="<table class=\"conf-table\";\">"
     Object.keys(cfg).forEach (function (key, idx) {
         html += '<tr id="cfg_'+key+'_tr">'+config_item(key, cfg[key])+'</tr>'+"\n";
     });
@@ -400,6 +400,67 @@ function testPressed() {
     postData(url, tfmcu);
 }
 
+let tabContents = ["senddiv", "autodiv", "configdiv"];
+let tabButtons = ["stb", "atb", "ctb"];
+
+
+function readBackTabState() {
+    let idx =  Number.parseInt((localStorage.getItem("tab_index") || "0"), 10);
+    tabMakeVisibleByIdx(idx);
+}
+
+function readBackState() {
+    readBackTabState();
+}
+
+function tabMakeVisibleByIdx2(idx) {
+    for (let i = 0; i < tabButtons.length; ++i) {
+        let content = document.getElementById(tabContents[i]);
+        let button = document.getElementById(tabButtons[i]);
+
+        if (i == idx) {
+            content.style.display = "";
+            button.style.backgroundColor = "hsl(220, 60%, 60%)";
+        } else {
+            content.style.display = "none";
+            button.style.backgroundColor = "#eee";
+        }
+    }
+}
+
+function tabMakeVisibleByIdx(idx) {
+    let sendCont =  document.getElementById("senddiv");
+    let autoCont =  document.getElementById("autodiv");
+    let confCont =  document.getElementById("configdiv");
+    const NONE = "none";
+    const SHOW = "";
+    const BGC1 = "hsl(220, 60%, 60%)";
+    const BGC0 = "#eee";
+
+    for (let i = 0; i < tabButtons.length; ++i) {
+        document.getElementById(tabButtons[i]).style.backgroundColor = (i === idx ? BGC1 : BGC0);
+    }
+
+    switch(idx) {
+    case 0:
+        sendCont.style.display = SHOW;
+        autoCont.style.display = NONE;
+        confCont.style.display = NONE;
+        break;
+    case 1:
+        sendCont.style.display = SHOW;
+        autoCont.style.display = SHOW;
+        confCont.style.display = NONE;
+        break;
+    case 2:
+        sendCont.style.display = NONE;
+        autoCont.style.display = NONE;
+        confCont.style.display = SHOW;
+        break;
+    }
+    localStorage.setItem("tab_index", idx.toString());
+}
+
 function onContentLoaded() {
     fetch_json(false);
 
@@ -412,10 +473,14 @@ function onContentLoaded() {
     document.getElementById("arlb").onclick = autoFetch;
     document.getElementById("asvb").onclick = autoSave;
 
-    document.getElementById("crtb").onclick = inputConfigReset;
     document.getElementById("csvb").onclick = inputConfig2mcu;
     document.getElementById("crlb").onclick = () => fetch_json(true);
 
     document.getElementById("mrtb").onclick = mcuRestart;
 
+    document.getElementById("stb").onclick = () => tabMakeVisibleByIdx(0);
+    document.getElementById("atb").onclick = () => tabMakeVisibleByIdx(1);
+    document.getElementById("ctb").onclick = () => tabMakeVisibleByIdx(2);
+
+    readBackState();
 }

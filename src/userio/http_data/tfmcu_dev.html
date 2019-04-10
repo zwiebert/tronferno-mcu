@@ -11,20 +11,49 @@
 
       * { font-size:100%; }
 
-      .container {
-      width: 100%;
-      display: grid;
-      background: LightGray;
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto;
-      grid-template-areas:
-      "cmd"
-      "auto"
-      "config";
-      grid-gap: 2px;
-      justify-items: stretch;
+      .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+      }
+
+      /* Style the buttons that are used to open the tab content */
+      .tab button {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      transition: 0.3s;
       font-size: 270%;
 
+      }
+
+      /* Change background color of buttons on hover */
+      .tab button:hover {
+      background-color: #ddd;
+      }
+
+      /* Create an active/current tablink class */
+      .tab button.active {
+      background-color: #ccc;
+      }
+
+      /* Style the tab content */
+      .tabcontent {
+      displayXX: none;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-top: none;
+      }
+
+      .container {
+      width: 100%;
+      border: 1px solid #ccc;
+      background-color: #eee;
+
+      font-size: 270%;
       }
 
       .cb {
@@ -37,21 +66,17 @@
       }
 
       @media only screen and (max-resolution: 96dpi )  {
-      .container {
+      .container, .tab button {
       font-size: 200%;
       }
       }
 
       @media (min-width: 1000px) {
       .container {
-      grid-template-columns: auto 1fr;
-      grid-template-rows: auto auto;
-      grid-template-areas:
-      "cmd auto"
-      "config config";
-      grid-gap: 10px;
       font-size: 100%;
-
+      }
+      .tab button {
+      font-size: 100%;
       }
       }
 
@@ -68,17 +93,20 @@
       "gb pl mb"
       ".  ub ."
       ".  sb ."
-      ".  db .";
+      ".  db ."
+      ;
       justify-items: center;
       align-items: center;
       grid-gap=2px;
       }
+
       #configdiv { background-color: #eee; grid-area: config; }
       #autodiv { background-color: #eee; grid-area: auto;}
       #cfg_gm-used_tr, #tf_tr { display: none; }
 
-      .config-label { padding: 30px; }
-      .config-input { margin-left: 2em; alignment: right; }
+      .conf-table label { padding: 5px; width: 40vw; margin-right: 1em;}
+      .conf-table .text { width: 100%; }
+
       .sb {width: 5em; margin: 2px; }
 
       #sgb, #smb { border-radius: 40%; }
@@ -98,7 +126,9 @@
       #ssb { grid-area: sb; }
       #sdb { grid-area: db; }
 
-      h3 { text-align: center;
+      h3 {
+      display: none;
+      text-align: center;
       margin-top: 0px;
       background-color: hsl(220, 60%, 60%); color: white;
       grid-area: header; justify-self: stretch; align-self: start;
@@ -112,12 +142,20 @@
       100% { opacity: 0; }
       }
 
-}
+       /* Style the tab */
 
     </style>
   </head>
   <body>
-    <div  class="container">
+
+          <!-- Tab links -->
+<div class="tab">
+  <button class="tablinks" id="stb">Command</button>
+  <button class="tablinks" id="atb">Automatic</button>
+  <button class="tablinks" id="ctb">Configuration</button>
+</div>
+
+    <div  class="container tabcontent">
 
 
       <div id="senddiv" class="send">
@@ -126,7 +164,7 @@
         <input id="sgi" type = "text" name = "g" value="A">
         <input id="spi" type = "text" name = "p" value="100">
         <input id="smi" type = "text" name = "m" value="A">
-       <br>
+        <br>
         <button id="sgb" type="button">G</button>
         <label  id="spl">Position</label>
         <button id="smb" type="button">E</button>
@@ -174,7 +212,7 @@
 
       <br>
       <button id="arlb" class="sb" type="button">Reload</button>
-      <button id="asvb" class="sb" type="button"">Save</button>
+      <button id="asvb" class="sb" type="button">Save</button>
 
       <script>autoFetch();</script>
     </div>
@@ -210,7 +248,6 @@
 
 <br>
       <button id="crlb" type="button">Reload</button>
-      <button id="crtb" type="button">Reset</button>
       <button id="csvb" type="button">Save</button>
       <br><br>
     <button id="mrtb" type="button">Restart MCU</button><br>
