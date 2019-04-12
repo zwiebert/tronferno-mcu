@@ -468,9 +468,13 @@ void ICACHE_FLASH_ATTR cli_loop(void) {
   char *cmdline;
   static bool ready;
   if ((cmdline = get_commandline())) {
-    //io_putlf();
-    cli_process_cmdline(cmdline);
-    cli_msg_ready();
+    if (cmdline[0] == '{') {
+     cli_process_json(cmdline);
+    } else {
+      io_putlf();
+      cli_process_cmdline(cmdline);
+      cli_msg_ready();
+    }
   } else if (!ready) {
     cli_msg_ready();
     ready = true;
