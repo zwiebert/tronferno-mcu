@@ -47,41 +47,33 @@ class AppState {
         document.getElementById("smi").value = value ? value : "A";
     }
 
-    load() {
-        tabMakeVisibleByIdx(this.tabIdx);
-        this.g = this.mG;
-        this.m = this.mM;
-        this.tabIdx = this.mTabIdx;
-    }
+    handleMcuData(obj) {
+        console.log("reply-json: "+JSON.stringify(obj));
 
-}
+        if ("config" in obj) {
+            if (config_fetched) {
+                updateHtmlByConfigData(obj.config);
+            } else {
+                config_fetched = true;
+                document.getElementById("config-div").innerHTML = buildHtmlByConfigData(obj.config);
+            }
+            tfmcu_config = obj;
+            gmuUnpack();
+        }
 
-let app_state;
+        if ("position" in obj) {
+            document.getElementById('spi').value = obj.position.p;
+        }
 
-function handle_json_reply(obj) {
-    console.log("reply-json: "+JSON.stringify(obj));
+        let auto_name = "auto" + this.g.toString() + this.m.toString();
+        if (auto_name in obj) {
+            let auto = obj[auto_name];
+            document.getElementById('tfti').value = ("f" in auto) ? auto.f : "";
+            document.getElementById('tdti').value = ("daily" in auto) ? auto.daily : "";
+            document.getElementById('tati').value = ("astro" in auto) ? auto.astro : "";
+            document.getElementById('twti').value = ("weekly" in auto) ? auto.weekly : "";
 
-    let g = app_state.g.toString();
-    let m = app_state.m.toString();
-
-    if ("position" in obj) {
-        document.getElementById('spi').value = obj.position.p;
-    }
-    if ("config" in obj) {
-        jsonUpdateHtml(obj.config);
-        tfmcu_config = obj;
-    }
-    let auto_name = "auto"+g+m;
-    console.log(auto_name);
-    if (auto_name in obj) {
-        let auto = obj[auto_name];
-        document.getElementById('tfti').value = ("f" in auto) ? auto.f : "";
-        document.getElementById('tdti').value = ("daily" in auto) ? auto.daily : "";
-        document.getElementById('tati').value = ("astro" in auto) ? auto.astro : "";
-        document.getElementById('twti').value = ("weekly" in auto) ? auto.weekly : "";
-
-        if ("f" in auto) {
-            let f = auto.f;
+            let f = ("f" in auto) ? auto.f : "";
             document.getElementById('tdci').checked = f.indexOf("D") >= 0;
             document.getElementById('twci').checked = f.indexOf("W") >= 0;
             document.getElementById('taci').checked = f.indexOf("A") >= 0;
@@ -89,11 +81,54 @@ function handle_json_reply(obj) {
             document.getElementById('tsci').checked = f.indexOf("S") >= 0;
             document.getElementById('tmci').checked = f.indexOf("M") >= 0;
         }
+    }
+
+
+    tfmcuConfigFetch() {
+        var url = base+'/config.json';
+        fetch (url, {
+            method: 'get',
+            headers: {
+                Accept: 'application/json'
+            },
+        }).then(response => {
+            if(response.ok) {
+                response.json().then(obj => this.handleMcuData(obj));
+            }
+        });
+    }
+
+
+    autoFetch() {
+       clearAutomatic();
+
+        let tfmcu = {name:"tfmcu"};
+
+        tfmcu.timer = {
+            g: this.g,
+            m: this.m,
+            f: "uki",
+        };
+
+        let url = base+'/cmd.json';
+        postData(url, tfmcu);
+    }
+
+    load() {
+        tabMakeVisibleByIdx(this.tabIdx);
+        this.g = this.mG;
+        this.m = this.mM;
+        this.tabIdx = this.mTabIdx;
+        this.tfmcuConfigFetch(); //FIXME: needed here for group/member numbers
 
     }
+
 }
 
-function config_item(name,value) {
+let app_state;
+
+
+function buildConfigTableRowHtml(name,value) {
     if (name.endsWith("-enable")) {
         console.log("value: "+value);
         return '<td><label class="config-label">'+name+
@@ -146,10 +181,18 @@ function gmuPack() {
     document.getElementById("cfg_gm-used").value = val;
 }
 
-function jsonUpdateHtml(cfg) {
+function buildHtmlByConfigData(cfg) {
+    var html ="<table class=\"conf-table\";\">";
+    Object.keys(cfg).forEach (function (key, idx) {
+        html += '<tr id="cfg_'+key+'_tr">'+buildConfigTableRowHtml(key, cfg[key])+'</tr>'+"\n";
+    });
+    html +='</table>';
+    return html;
+}
+
+function updateHtmlByConfigData(cfg) {
     Object.keys(cfg).forEach (function (key, idx) {
         let el = document.getElementById('cfg_'+key);
-        console.log("key: "+key);
 
         switch(el.type) {
         case 'checkbox':
@@ -178,7 +221,7 @@ function postData(url = '', data = {}) {
         .then(response => {
             if(response.ok) {
                 response.json().then(json => {
-                    handle_json_reply(json);
+                    app_state.handleMcuData(json);
                 });
             }
         });
@@ -189,7 +232,8 @@ function mcuRestart() {
     var url = base+'/cmd.json';
     postData(url, json);
 }
-function inputConfig2mcu() {
+
+function postConfig() {
     let tfmcu = Object.assign({},tfmcu_config);
     var cfg = tfmcu.config;
     var new_cfg = {};
@@ -248,48 +292,6 @@ function inputSend2mcu() {
 }
 
 
-function inputConfigReset() {
-    let cfg = tfmcu_config.config;
-    Object.keys(cfg).forEach (function (key, idx) {
-        var new_val = document.getElementById('cfg_'+key).value = cfg[key];
-    });
-}
-
-function json2html(cfg) {
-    var html ="<table class=\"conf-table\";\">";
-    Object.keys(cfg).forEach (function (key, idx) {
-        html += '<tr id="cfg_'+key+'_tr">'+config_item(key, cfg[key])+'</tr>'+"\n";
-    });
-    html +='</table>';
-    return html;
-}
-
-function configFetch() {
-    let u = config_fetched;
-    config_fetched = true;
-    var url = base+'/config.json';
-    var result = {name: "error"};
-    fetch (url, {
-        method: 'get',
-        headers: {
-            Accept: 'application/json'
-        },
-    }).then(response => {
-        if(response.ok) {
-            response.json().then(obj => {
-                var cfg = obj.config;
-                if (u) {
-                    jsonUpdateHtml(cfg);
-                } else {
-                    document.getElementById("config-div").innerHTML = json2html(cfg);
-                }
-                gmuUnpack();
-                tfmcu_config = obj;
-            });
-        }
-    });
-}
-
 function getGuIdx() {
     let val = app_state.g;
 
@@ -314,7 +316,7 @@ function gPressed() {
     if (val == 1)
         app_state.m = 1;
 
-    autoFetch();
+    app_state.autoFetch();
 }
 
 
@@ -329,10 +331,10 @@ function mPressed() {
         val = 0;
 
     app_state.m = val;
-    autoFetch();
+    app_state.autoFetch();
 }
 
-function autoSave() {
+function postAutomatic() {
     let url = base+'/cmd.json';
     let tfmcu = { name: "tfmcu", timer: { }};
     let auto = tfmcu.timer;
@@ -350,27 +352,16 @@ function autoSave() {
     f += document.getElementById('tsci').checked ? "S" : "s";
     auto.f = f;
 
-    if (has_daily) {
-        let val =  document.getElementById('tdti').value;
-        auto.daily = val;
-    }
-
-    if (has_weekly) {
-        let val =  document.getElementById('twti').value;
-        auto.weekly = val;
-    }
-
-    if (has_astro) {
-        let val =  document.getElementById('tati').value;
-        auto.astro = val ? Number.parseInt(val) : 0;
-    }
+    document.getElementById('tdti').value = has_daily ? val : "";
+    document.getElementById('twti').value = has_weekly ? val : "";
+    document.getElementById('tati').value = has_astro ? (val ? Number.parseInt(val) : 0) : "";
 
     console.log(JSON.stringify(tfmcu));
     postData(url, tfmcu);
 
 }
 
-function autoClear() {
+function clearAutomatic() {
     document.getElementById('tfti').value = "";
     document.getElementById('tdti').value = "";
     document.getElementById('tati').value = "";
@@ -381,51 +372,6 @@ function autoClear() {
     document.getElementById('trci').checked = false;
     document.getElementById('tsci').checked = false;
     document.getElementById('tmci').checked = false;
-}
-
-function autoFetch() {
-    autoClear();
-
-    let tfmcu = {name:"tfmcu"};
-    let g = app_state.g;
-    let m = app_state.m;
-
-    tfmcu.timer = {
-        g: g,
-        m: m,
-        f: "uki",
-    };
-
-    let url = base+'/cmd.json';
-    postData(url, tfmcu);
-}
-
-function testPressed() {
-    var tfmcu = {name:"tfmcu"};
-    var xtfmcu = {};
-    let g = app_state.g;
-    let m = app_state.m;
-
-    xtfmcu.send = {
-        g: "2",
-        m: "2",
-        p: "?",
-    };
-
-    tfmcu.timer = {
-        g: g,
-        m: m,
-        f: "uki",
-    };
-
-    xtfmcu.config = {
-        all: "?"
-    };
-
-    console.log(JSON.stringify(tfmcu));
-    var url = base+'/cmd.json';
-    console.log("url: "+url);
-    postData(url, tfmcu);
 }
 
 let tabButtons = ["stb", "atb", "ctb"];
@@ -453,13 +399,13 @@ function tabMakeVisibleByIdx(idx) {
         sendCont.style.display = SHOW;
         autoCont.style.display = SHOW;
         confCont.style.display = NONE;
-        autoFetch();
+        app_state.autoFetch();
         break;
     case 2:
         sendCont.style.display = NONE;
         autoCont.style.display = NONE;
         confCont.style.display = SHOW;
-        configFetch();
+        app_state.tfmcuConfigFetch();
         break;
     }
 }
@@ -467,7 +413,6 @@ function tabMakeVisibleByIdx(idx) {
 function onContentLoaded() {
     app_state = new AppState();
     app_state.load();
-    configFetch(); //FIXME: needed here for group/member numbers
 
     document.getElementById("sgb").onclick = gPressed;
     document.getElementById("smb").onclick = mPressed;
@@ -475,11 +420,11 @@ function onContentLoaded() {
     document.getElementById("ssb").onclick = () => cInputSend2mcu('stop');
     document.getElementById("sdb").onclick = () => cInputSend2mcu('down');
 
-    document.getElementById("arlb").onclick = autoFetch;
-    document.getElementById("asvb").onclick = autoSave;
+    document.getElementById("arlb").onclick = app_state.autoFetch;
+    document.getElementById("asvb").onclick = postAutomatic;
 
-    document.getElementById("csvb").onclick = inputConfig2mcu;
-    document.getElementById("crlb").onclick = () => configFetch();
+    document.getElementById("csvb").onclick = postConfig;
+    document.getElementById("crlb").onclick = () => app_state.tfmcuConfigFetch();
 
     document.getElementById("mrtb").onclick = mcuRestart;
 
