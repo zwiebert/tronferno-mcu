@@ -33,6 +33,8 @@
 
 #define D(x)
 
+uint8_t so_target;
+
 //key strings used for parsing and printing config commands by CLI/HTTP/MQTT
 //keys must be in same order as their SO_CFG_xxx counterparts in so_msg_t
 const char * const cfg_keys[] = {
@@ -373,8 +375,9 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_TIMER_PRINT: {
     so_arg_gm_t *a = arg;
     so_print_timer(a->g, a->m, true);
-
-    if (so_jto) io_mqtt_publish("tfmcu/timer_out", sj_timer2json(a->g, a->m));
+#ifdef USE_MQTT
+    io_mqtt_publish("tfmcu/timer_out", sj_timer2json(a->g, a->m));
+#endif
   }
     break;
 
@@ -388,7 +391,9 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     io_puts(" m="), io_putd(a->m);
     io_puts(" p="), io_putd(a->p), io_puts(";\n");
     sj_gmp2json(a);
+#ifdef USE_MQTT
     io_mqtt_publish_gmp(a);
+#endif
   }
     break;
 

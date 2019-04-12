@@ -15,7 +15,7 @@
 #include "setup/set_endpos.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
-
+#include "userio/status_output.h"
 #include "automatic/timer_data.h"
 
 #define ENABLE_RESTART 1 // allow software reset
@@ -87,6 +87,7 @@ const int OUT_MAX_LEN = 80;
 
 static void ICACHE_FLASH_ATTR cli_out_entry(void_fun_ptr tag, const char *key, const char *val, int len) {
   static int length;
+
   if (!key || len == -1) {
     if (length) {
       io_puts(";\n");
@@ -116,14 +117,20 @@ static void ICACHE_FLASH_ATTR cli_out_entry(void_fun_ptr tag, const char *key, c
 }
 
 void ICACHE_FLASH_ATTR cli_out_timer_reply_entry(const char *key, const char *val, int len) {
+  if (!so_tgt_test(SO_TGT_CLI))
+    return;
   cli_out_entry(cli_out_start_timer_reply, key, val, len);
 }
 
 void ICACHE_FLASH_ATTR cli_out_config_reply_entry(const char *key, const char *val, int len) {
+  if (!so_tgt_test(SO_TGT_CLI))
+    return;
   cli_out_entry(cli_out_start_config_reply, key, val, len);
 }
 
 void ICACHE_FLASH_ATTR cli_out_mcu_reply_entry(const char *key, const char *val, int len) {
+  if (!so_tgt_test(SO_TGT_CLI))
+    return;
   cli_out_entry(cli_out_start_mcu_reply, key, val, len);
 }
 
@@ -133,6 +140,8 @@ void ICACHE_FLASH_ATTR print_enr(void) {
 }
 
 void ICACHE_FLASH_ATTR msg_print(const char *msg, const char *tag) {
+  if (!so_tgt_test(SO_TGT_CLI))
+    return;
   if (msg)
     io_puts(msg);
   if (msgid) {
@@ -147,14 +156,20 @@ void ICACHE_FLASH_ATTR msg_print(const char *msg, const char *tag) {
 }
 
 void ICACHE_FLASH_ATTR warning_unknown_option(const char *key) {
+  if (!so_tgt_test(SO_TGT_CLI))
+    return;
   msg_print("warning", "unknown-option"), io_puts(key), io_putc('\n');
 }
 
 void ICACHE_FLASH_ATTR reply_print(const char *tag) {
+  if (!so_tgt_test(SO_TGT_CLI))
+    return;
   msg_print("reply", tag);
 }
 
 void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
+  if (!so_tgt_test(SO_TGT_CLI))
+    return;
   reply_print(tag);
   if (msg)
     io_puts(msg);
@@ -162,11 +177,16 @@ void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
 }
 
 void ICACHE_FLASH_ATTR cli_msg_ready(void) {
+  if (!so_tgt_test(SO_TGT_CLI))
+    return;
   io_puts("\nready:\n");
 }
 
 void ICACHE_FLASH_ATTR reply_id_message(uint16_t id, const char *tag, const char *msg) {
   uint16_t old_id = msgid;
+  if (!so_tgt_test(SO_TGT_CLI))
+    return;
+
   msgid = id;
   reply_print(tag);
   if (msg)
@@ -468,6 +488,7 @@ void ICACHE_FLASH_ATTR cli_loop(void) {
   char *cmdline;
   static bool ready;
   if ((cmdline = get_commandline())) {
+    so_tgt_set(SO_TGT_CLI);
     if (cmdline[0] == '{') {
      cli_process_json(cmdline);
     } else {
@@ -475,6 +496,7 @@ void ICACHE_FLASH_ATTR cli_loop(void) {
       cli_process_cmdline(cmdline);
       cli_msg_ready();
     }
+    so_tgt_default();
   } else if (!ready) {
     cli_msg_ready();
     ready = true;

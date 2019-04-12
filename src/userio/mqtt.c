@@ -37,7 +37,8 @@
 #define TAG_TIMER_LEN (sizeof(TAG_TIMER) - 1)
 
 void io_mqtt_publish_config(const char *s)  {
-  io_mqtt_publish("tfmcu/config_out", s);
+  if (so_tgt_test(SO_TGT_MQTT)) //FIXME: implement this better
+    io_mqtt_publish("tfmcu/config_out", s);
 }
 
 void io_mqtt_publish_gmp(const so_arg_gmp_t *gmp) {
@@ -99,6 +100,8 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
     return; // all topics start with this
   }
 
+  so_tgt_set(SO_TGT_MQTT);
+
   if (topic_endsWith(topic, topic_len, TOPIC_PCT_END)) {
     char *line = set_commandline("x", 1);
     const char *addr = topic + (sizeof TOPIC_ROOT - 1);
@@ -145,6 +148,8 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
       }
     }
   }
+
+  so_tgt_default();
 }
 
 #endif // USE_MQTT

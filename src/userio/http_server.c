@@ -9,6 +9,7 @@
 #include "http_server.h"
 #include <string.h>
 #include "cli/cli.h"
+#include "userio/status_output.h"
 
 #define CMD_TAG "cmd="
 #define CMD_TAG_LEN (sizeof CMD_TAG - 1)
@@ -33,13 +34,15 @@ static bool isJson(const char *s, int s_len) {
   return false;
 }
 
-void hts_query_json(char *qstr) {
+static void hts_query_json(char *qstr) {
   cli_process_json(qstr);
 }
 
 void hts_query(hts_query_t qtype, const char *qstr, int qstr_len) {
   char *buf, *p;
 #define cmd_len 20 // FIXME
+
+  so_tgt_set(SO_TGT_HTTP);
 
   if (isJson(qstr, qstr_len)) {
     if ((buf = malloc(qstr_len + 1))) {
@@ -80,6 +83,8 @@ void hts_query(hts_query_t qtype, const char *qstr, int qstr_len) {
     cli_process_cmdline(buf);
     free(buf);
   }
+
+  so_tgt_default();
 }
 #endif
 

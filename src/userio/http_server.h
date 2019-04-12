@@ -13,7 +13,7 @@
 typedef enum { HQT_NONE, } hts_query_t;
 
 void hts_query(hts_query_t qtype, const char *qstr, int qstr_len);
-void hts_query_json(char *qstr);
+//void hts_query_json(char *qstr);
 
 
 // interface which has to be implemented by mcu specific code

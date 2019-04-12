@@ -70,8 +70,12 @@ void so_json_config_reply(const char *key, const char *val, bool is_number) {
         DO_CALLBACK();
     }
     json_idx = 0;
-    return;
+    if (key == 0)
+      return; // ...if done then exit
+    //...if overflow then continue
   }
+
+
 
   if (json_idx == 0) {
     strcpy(BUF, "{\"name\":\"tfmcu\",\"config\":{");
@@ -113,10 +117,10 @@ void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, uint16_t dst_size, uint8_t g
       *p++ = td_is_weekly(&tdr) ? 'W' : 'w';
       *p++ = '\0';
 #ifdef SJ_AUTO_VERBOSE
-      sprintf(dp, "{ \"name\": \"automatic\", \"auto%d%d\" :{ \"f\": \"%s\", \"random\": %d, \"sun-auto\": %d, \"manual\": %d",
+      sprintf(dp, "{\"name\":\"automatic\",\"auto%d%d\":{\"f\":\"%s\",\"random\": %d,\"sun-auto\":%d,\"manual\":%d",
               g, m, flags, (td_is_random(&tdr)), (td_is_sun_auto(&tdr)), f_manual);
 #else
-      sprintf(dp, "{ \"name\": \"automatic\", \"auto%d%d\" :{ \"f\": \"%s\"",
+      sprintf(dp, "{\"name\":\"automatic\",\"auto%d%d\":{\"f\":\"%s\"",
               g, m, flags);
 #endif
 
@@ -147,7 +151,7 @@ const char *ICACHE_FLASH_ATTR sj_timer2json(uint8_t g, uint8_t m) {
 }
 
 char *sj_gmp2json_buf(char *dst, uint16_t dst_size, so_arg_gmp_t *gmp) {
-  sprintf(dst, "{ \"name\": \"tfmcu\", \"position\" :{ \"g\":%u, \"m\":%u, \"p\":%u }}", gmp->g, gmp->m, gmp->p);
+  sprintf(dst, "{\"name\":\"tfmcu\",\"position\":{\"g\":%u,\"m\":%u,\"p\":%u}}", gmp->g, gmp->m, gmp->p);
   return dst;
 }
 

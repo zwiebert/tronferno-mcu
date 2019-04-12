@@ -37,7 +37,7 @@ static const char *TAG = "MQTT_EXAMPLE";
 #define D(x)
 #else
 #define CONFIG_MQTT_CLIENT_ID "tfdbg"
-#define D(x)
+#define D(x) x
 #endif
 
 static bool is_connected;
@@ -77,8 +77,8 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event) {
     
   case MQTT_EVENT_DATA:
     D(ESP_LOGI(TAG, "MQTT_EVENT_DATA"));
-    printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-    printf("DATA=%.*s\r\n", event->data_len, event->data);
+    D(printf("TOPIC=%.*s\r\n", event->topic_len, event->topic));
+    D(printf("DATA=%.*s\r\n", event->data_len, event->data));
     
     io_mqtt_received(event->topic, event->topic_len, event->data, event->data_len);
  
@@ -112,6 +112,8 @@ void io_mqtt_unsubscribe(const char *topic) {
 
 void io_mqtt_publish(const char *topic, const char *data) {
   if (!client || !is_connected)
+    return;
+  if (!so_tgt_test(SO_TGT_MQTT))
     return;
 
   D(ESP_LOGI(TAG, "MQTT_PUBLISH, topic=%s, data=%s", topic, data));
