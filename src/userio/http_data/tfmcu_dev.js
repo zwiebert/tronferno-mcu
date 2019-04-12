@@ -8,7 +8,6 @@ var gu_idx = 0;
 var tfmcu_config = {};
 let config_fetched = false;
 
-
 class AppState {
 
     constructor() {
@@ -47,7 +46,7 @@ class AppState {
         document.getElementById("smi").value = value ? value : "A";
     }
 
-    handleMcuData(obj) {
+    handleFetchedData(obj) {
         console.log("reply-json: "+JSON.stringify(obj));
 
         if ("config" in obj) {
@@ -84,7 +83,7 @@ class AppState {
     }
 
 
-    tfmcuConfigFetch() {
+    fetchConfig() {
         var url = base+'/config.json';
         fetch (url, {
             method: 'get',
@@ -93,13 +92,13 @@ class AppState {
             },
         }).then(response => {
             if(response.ok) {
-                response.json().then(obj => this.handleMcuData(obj));
+                response.json().then(obj => this.handleFetchedData(obj));
             }
         });
     }
 
 
-    autoFetch() {
+    fetchAutomatic() {
        clearAutomatic();
 
         let tfmcu = {name:"tfmcu"};
@@ -119,7 +118,7 @@ class AppState {
         this.g = this.mG;
         this.m = this.mM;
         this.tabIdx = this.mTabIdx;
-        this.tfmcuConfigFetch(); //FIXME: needed here for group/member numbers
+        this.fetchConfig(); //FIXME: needed here for group/member numbers
 
     }
 
@@ -205,7 +204,8 @@ function updateHtmlByConfigData(cfg) {
 }
 
 function postData(url = '', data = {}) {
-  // Default options are marked with *
+    // Default options are marked with *
+    console.log("post-json: "+JSON.stringify(data));
     return fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         //mode: "cors", // no-cors, cors, *same-origin
@@ -221,13 +221,13 @@ function postData(url = '', data = {}) {
         .then(response => {
             if(response.ok) {
                 response.json().then(json => {
-                    app_state.handleMcuData(json);
+                    app_state.handleFetchedData(json);
                 });
             }
         });
 }
 
-function mcuRestart() {
+function postMcuRestart() {
     var json = { name:"tfmcu", config: { restart:"1" } };
     var url = base+'/cmd.json';
     postData(url, json);
@@ -270,7 +270,7 @@ function postConfig() {
     }
 }
 
-function cInputSend2mcu(c) {
+function postSendCommand(c=document.getElementById('send-c').value) {
     var tfmcu = {name:"tfmcu"};
     let g = app_state.g.toString();
     let m = app_state.m.toString();
@@ -287,10 +287,6 @@ function cInputSend2mcu(c) {
     postData(url, tfmcu);
 }
 
-function inputSend2mcu() {
-    cInputSend2mcu(document.getElementById('send-c').value);
-}
-
 
 function getGuIdx() {
     let val = app_state.g;
@@ -301,7 +297,7 @@ function getGuIdx() {
     return 0;
 }
 
-function gPressed() {
+function onGPressed() {
     let val = app_state.g;
 
     gu_idx = getGuIdx(); //FIXME
@@ -316,11 +312,11 @@ function gPressed() {
     if (val == 1)
         app_state.m = 1;
 
-    app_state.autoFetch();
+    app_state.fetchAutomatic();
 }
 
 
-function mPressed() {
+function onMPressed() {
     let val = app_state.m;
 
     ++val;
@@ -331,7 +327,7 @@ function mPressed() {
         val = 0;
 
     app_state.m = val;
-    app_state.autoFetch();
+    app_state.fetchAutomatic();
 }
 
 function postAutomatic() {
@@ -399,13 +395,13 @@ function tabMakeVisibleByIdx(idx) {
         sendCont.style.display = SHOW;
         autoCont.style.display = SHOW;
         confCont.style.display = NONE;
-        app_state.autoFetch();
+        app_state.fetchAutomatic();
         break;
     case 2:
         sendCont.style.display = NONE;
         autoCont.style.display = NONE;
         confCont.style.display = SHOW;
-        app_state.tfmcuConfigFetch();
+        app_state.fetchConfig();
         break;
     }
 }
@@ -414,19 +410,19 @@ function onContentLoaded() {
     app_state = new AppState();
     app_state.load();
 
-    document.getElementById("sgb").onclick = gPressed;
-    document.getElementById("smb").onclick = mPressed;
-    document.getElementById("sub").onclick = () => cInputSend2mcu('up');
-    document.getElementById("ssb").onclick = () => cInputSend2mcu('stop');
-    document.getElementById("sdb").onclick = () => cInputSend2mcu('down');
+    document.getElementById("sgb").onclick = () => onGPressed();
+    document.getElementById("smb").onclick = () => onMPressed();
+    document.getElementById("sub").onclick = () => postSendCommand('up');
+    document.getElementById("ssb").onclick = () => postSendCommand('stop');
+    document.getElementById("sdb").onclick = () => postSendCommand('down');
 
-    document.getElementById("arlb").onclick = app_state.autoFetch;
-    document.getElementById("asvb").onclick = postAutomatic;
+    document.getElementById("arlb").onclick = () => app_state.fetchAutomatic();
+    document.getElementById("asvb").onclick = () => postAutomatic();
 
-    document.getElementById("csvb").onclick = postConfig;
-    document.getElementById("crlb").onclick = () => app_state.tfmcuConfigFetch();
+    document.getElementById("csvb").onclick = () => ostConfig();
+    document.getElementById("crlb").onclick = () => app_state.fetchConfig();
 
-    document.getElementById("mrtb").onclick = mcuRestart;
+    document.getElementById("mrtb").onclick = () => postMcuRestart();
 
     document.getElementById("stb").onclick = () => app_state.tabIdx = 0;
     document.getElementById("atb").onclick = () => app_state.tabIdx = 1;
