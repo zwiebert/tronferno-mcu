@@ -33,6 +33,8 @@
 
 #define D(x)
 
+//key strings used for parsing and printing config commands by CLI/HTTP/MQTT
+//keys must be in same order as their SO_CFG_xxx counterparts in so_msg_t
 const char * const cfg_keys[] = {
     "cu", "baud", "rtc", "wlan-ssid", "wlan-password", "longitude", "latitude",
     "timezone", "dst", "tz", "verbose",
@@ -72,6 +74,7 @@ char *ICACHE_FLASH_ATTR ftoa(float f, char *buf, int n) {
   return buf;
 }
 
+// get the so_msg_t for a config key string (or SO_NONE)
 so_msg_t ICACHE_FLASH_ATTR
 so_parse_config_key(const char *k) {
   int i;
@@ -82,6 +85,7 @@ so_parse_config_key(const char *k) {
   return SO_NONE;
 }
 
+// get config key string for a so_msgt_t (or NULL)
 static const char *
 gk(so_msg_t so_key) {
   if (SO_CFG_begin < so_key && so_key < SO_CFG_end)
