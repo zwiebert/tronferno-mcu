@@ -14,6 +14,10 @@ config MY_WIFI_PASSWORD
 
 		Can be left blank if the network has no security set.
 
+config MY_MQTT_ENABLE
+    bool "Enable MQTT client"
+    default n
+
 config MY_MQTT_URL
     string "URL of MQTT Server to connect"
 	default ""
@@ -24,6 +28,18 @@ config MY_MQTT_USER
 
 config MY_MQTT_PASSWORD
     string "Password for MQTT Server connect"
+	default ""
+
+config MY_HTTP_ENABLE
+    bool "Enable HTTP server"
+    default n
+
+config MY_HTTP_USER
+    string "Optional User Name for HTTP Server Login"
+	default ""
+
+config MY_HTTP_PASSWORD
+    string "Optional Password for HTTP Server Login"
 	default ""
 
 config MY_FER_CENTRAL_UNIT_ID
