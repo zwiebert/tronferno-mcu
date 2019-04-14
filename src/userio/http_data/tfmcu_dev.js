@@ -14,6 +14,7 @@ class AppState {
         this.mG = Number.parseInt((localStorage.getItem("group") || "0"), 10);
         this.mM = Number.parseInt((localStorage.getItem("member") || "0"), 10);
         this.mTabIdx = Number.parseInt((localStorage.getItem("tab_index") || "0"), 10);
+        this.mAuto = {link:{}, auto:{}};
     }
 
     get tabIdx() {
@@ -30,10 +31,21 @@ class AppState {
         return this.mG;
     }
 
+    getAutoName() { return  "auto" + this.g.toString() + this.m.toString(); }
+    getAutoObj() { let key = this.getAutoName(); return (key in this.mAuto.auto) ? this.mAuto.auto[key] : {}; }
+    linkAutoObj() { this.mAuto.link = this.getAutoObj(); }
+    gmChanged() {
+        this.linkAutoObj();
+        this.updateAutomaticHtml();
+        console.log(JSON.stringify(this));
+        this.fetchAutomatic();
+    }
+
     set g(value) {
         this.mG = value;
         localStorage.setItem("group", value.toString());
         document.getElementById("sgi").value = value ? value : "A";
+        this.gmChanged();
     }
 
     get m() {
@@ -44,6 +56,46 @@ class AppState {
         this.mM = value;
         localStorage.setItem("member", value.toString());
         document.getElementById("smi").value = value ? value : "A";
+        this.gmChanged();
+    }
+
+    get auto() {
+        return this.mAuto.link;
+    }
+
+    set auto(obj) {
+        this.mAuto.auto[this.getAutoName()] = obj;
+        this.linkAutoObj();
+        this.updateAutomaticHtml();
+    }
+
+    updateAutomaticHtml() {
+        let auto = this.auto;
+        document.getElementById('tfti').value = ("f" in auto) ? auto.f : "";
+
+        document.getElementById('tati').value = ("astro" in auto) ? auto.astro : "";
+        document.getElementById('twti').value = ("weekly" in auto) ? auto.weekly : "";
+
+        let f = ("f" in auto) ? auto.f : "";
+        document.getElementById('tdci').checked = f.indexOf("D") >= 0;
+        document.getElementById('twci').checked = f.indexOf("W") >= 0;
+        document.getElementById('taci').checked = f.indexOf("A") >= 0;
+        document.getElementById('trci').checked = f.indexOf("R") >= 0;
+        document.getElementById('tsci').checked = f.indexOf("S") >= 0;
+        document.getElementById('tmci').checked = f.indexOf("M") >= 0;
+
+        let up_elem = document.getElementById('tduti');
+        let down_elem = document.getElementById('tddti');
+        up_elem.value = "";
+        down_elem.value = "";
+
+        if ("daily" in auto) {
+            console.log("------");
+            let d = auto.daily;
+            let l = auto.daily.length;
+            up_elem.value = d.startsWith("-") ? "" : d.substring(0,2)+":"+d.substring(2,4);
+            down_elem.value = d.endsWith("-") ? "" : d.substring(l-4,l-2)+":"+d.substring(l-2);
+        }
     }
 
     handleFetchedData(obj) {
@@ -64,21 +116,8 @@ class AppState {
             document.getElementById('spi').value = obj.position.p;
         }
 
-        let auto_name = "auto" + this.g.toString() + this.m.toString();
-        if (auto_name in obj) {
-            let auto = obj[auto_name];
-            document.getElementById('tfti').value = ("f" in auto) ? auto.f : "";
-            document.getElementById('tdti').value = ("daily" in auto) ? auto.daily : "";
-            document.getElementById('tati').value = ("astro" in auto) ? auto.astro : "";
-            document.getElementById('twti').value = ("weekly" in auto) ? auto.weekly : "";
-
-            let f = ("f" in auto) ? auto.f : "";
-            document.getElementById('tdci').checked = f.indexOf("D") >= 0;
-            document.getElementById('twci').checked = f.indexOf("W") >= 0;
-            document.getElementById('taci').checked = f.indexOf("A") >= 0;
-            document.getElementById('trci').checked = f.indexOf("R") >= 0;
-            document.getElementById('tsci').checked = f.indexOf("S") >= 0;
-            document.getElementById('tmci').checked = f.indexOf("M") >= 0;
+        if (this.getAutoName() in obj) {
+            this.auto = obj[this.getAutoName()];
         }
     }
 
@@ -99,9 +138,8 @@ class AppState {
 
 
     fetchAutomatic() {
-       clearAutomatic();
 
-        let tfmcu = {name:"tfmcu"};
+        let tfmcu = {to:"tfmcu"};
 
         tfmcu.timer = {
             g: this.g,
@@ -228,7 +266,7 @@ function postData(url = '', data = {}) {
 }
 
 function postMcuRestart() {
-    var json = { name:"tfmcu", config: { restart:"1" } };
+    var json = { to:"tfmcu", config: { restart:"1" } };
     var url = base+'/cmd.json';
     postData(url, json);
 }
@@ -271,7 +309,7 @@ function postConfig() {
 }
 
 function postSendCommand(c=document.getElementById('send-c').value) {
-    var tfmcu = {name:"tfmcu"};
+    var tfmcu = {to:"tfmcu"};
     let g = app_state.g.toString();
     let m = app_state.m.toString();
 
@@ -311,8 +349,6 @@ function onGPressed() {
     app_state.g = val;
     if (val == 1)
         app_state.m = 1;
-
-    app_state.fetchAutomatic();
 }
 
 
@@ -327,12 +363,11 @@ function onMPressed() {
         val = 0;
 
     app_state.m = val;
-    app_state.fetchAutomatic();
 }
 
 function postAutomatic() {
     let url = base+'/cmd.json';
-    let tfmcu = { name: "tfmcu", timer: { }};
+    let tfmcu = { to:"tfmcu", timer: { }};
     let auto = tfmcu.timer;
     let has_daily = false, has_weekly = false, has_astro = false;
 
@@ -348,9 +383,19 @@ function postAutomatic() {
     f += document.getElementById('tsci').checked ? "S" : "s";
     auto.f = f;
 
-    document.getElementById('tdti').value = has_daily ? val : "";
-    document.getElementById('twti').value = has_weekly ? val : "";
-    document.getElementById('tati').value = has_astro ? (val ? Number.parseInt(val) : 0) : "";
+    if (has_weekly)
+        auto.weekly = document.getElementById('twti').value;
+    if (has_astro)
+        auto.astro = document.getElementById('tati').value;
+    if (has_daily) {
+        let tdu = document.getElementById('tduti').value;
+        let tdd = document.getElementById('tddti').value;
+        let td = tdu.length !== 5 ? "-" : tdu.substring(0,2) + tdu.substring(3,5);
+        td +=  tdd.length !== 5 ? "-" : tdd.substring(0,2) + tdd.substring(3,5);
+        auto.daily = td;
+    }
+
+
 
     console.log(JSON.stringify(tfmcu));
     postData(url, tfmcu);
@@ -359,7 +404,8 @@ function postAutomatic() {
 
 function clearAutomatic() {
     document.getElementById('tfti').value = "";
-    document.getElementById('tdti').value = "";
+    document.getElementById('tduti').value = "";
+    document.getElementById('tddti').value = "";
     document.getElementById('tati').value = "";
     document.getElementById('twti').value = "";
     document.getElementById('tdci').checked = false;
@@ -419,7 +465,7 @@ function onContentLoaded() {
     document.getElementById("arlb").onclick = () => app_state.fetchAutomatic();
     document.getElementById("asvb").onclick = () => postAutomatic();
 
-    document.getElementById("csvb").onclick = () => ostConfig();
+    document.getElementById("csvb").onclick = () => postConfig();
     document.getElementById("crlb").onclick = () => app_state.fetchConfig();
 
     document.getElementById("mrtb").onclick = () => postMcuRestart();

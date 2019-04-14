@@ -110,7 +110,7 @@
       .sb {width: 5em; margin: 2px; }
 
       #sgb, #smb { border-radius: 40%; }
-      #sgi, #spi, #smi { width: 2em; height: 2em; text-align: center; }
+      #sgi, #spi, #smi { width: 2.5em; height: 2em; text-align: center; }
       #sgb, #smb { width: 2em; height: 2em; }
 
       #ssb { font-size: 60%;  font-stretch: ultra-condensed; height: 4em; border-radius: 100% }
@@ -140,6 +140,7 @@
       }
 
 
+
       @keyframes blink {
       0% { opacity: 1; }
       50% { opacity: 1; }
@@ -166,7 +167,7 @@
       <div id="senddiv" class="send">
 
         <input id="sgi" type = "text" name = "g" value="A">
-        <input id="spi" type = "text" name = "p" value="100">
+        <input id="spi" type = "number" min="0" max="100" name = "p" value="100">
         <input id="smi" type = "text" name = "m" value="A">
         <br>
         <button id="sgb" type="button">G</button>
@@ -188,7 +189,7 @@
         <tr>
           <td><label>daily</label></td>
           <td><input id="tdci" class="cb" type = "checkbox" value=""></td>
-          <td><input id="tdti" style="width:8em;" type = "text" name = "g" value=""></td>
+          <td> &#x25b2;<input id="tduti" type="time" value=""> &#x25bc;<input id="tddti" type="time" value=""></td>
         </tr>
         <tr>
           <td><label>weekly</label></td>
@@ -198,7 +199,7 @@
         <tr>
           <td><label>astro</label></td>
           <td><input id="taci" class="cb" type = "checkbox" value=""></td>
-          <td><input id="tati" style="width:5em;" type = "text" name = "g" value=""></td>
+          <td><input id="tati" style="width:5em;" type = "number" min="-90" max="90" name = "g" value=""></td>
         </tr>
         <tr>
           <td><label>random</label></td>
@@ -225,7 +226,7 @@
       <!-- configuration widgets. javascript output goes here -->
     </div>
 
-      <table>
+      <table id="gmu-table">
         <tr>
           <td><label class="config-label">Groups</label></td>
           <td><label>1</label></td>
@@ -238,13 +239,13 @@
         </tr>
         <tr>
           <td><label class="config-label">Members</label></td>
-          <td><input id="gmu1" style="width:2em;" type ="text" value="7"></td>
-          <td><input id="gmu2" style="width:2em;" type ="text" value="7"></td>
-          <td><input id="gmu3" style="width:2em;" type ="text" value="7"></td>
-          <td><input id="gmu4" style="width:2em;" type ="text" value="7"></td>
-          <td><input id="gmu5" style="width:2em;" type ="text" value="7"></td>
-          <td><input id="gmu6" style="width:2em;" type ="text" value="7"></td>
-          <td><input id="gmu7" style="width:2em;" type ="text" value="7"></td>
+          <td><input id="gmu1" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+          <td><input id="gmu2" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+          <td><input id="gmu3" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+          <td><input id="gmu4" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+          <td><input id="gmu5" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+          <td><input id="gmu6" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+          <td><input id="gmu7" style="width:2em;" type="number" min="0" max="7" value="7"></td>
         </tr>
       </table>
 
