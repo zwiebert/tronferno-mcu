@@ -67,4 +67,6 @@ int process_parm(clpar p[], int len);
 void cli_process_cmdline(char *line);
 void cli_loop(void);
 
+void cli_print_json(const char *json); //FIXME
+
 #endif

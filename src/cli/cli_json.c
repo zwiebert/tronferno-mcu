@@ -13,6 +13,7 @@
 #include <ctype.h>
 #include "debug/debug.h"
 #include <stdlib.h>
+#include "userio/status_output.h"
 
 #else
 #include <string.h>
@@ -205,11 +206,17 @@ cli_process_json(char *json) {
   }
 }
 
+void ICACHE_FLASH_ATTR
+cli_print_json(const char *json) {
+  if (so_tgt_test_cli_json())
+    io_puts(json), io_putlf();
+}
+
 #else
 
-//char json[] = "{ \"name\": \"tfmcu\", \"config\": { \"cu\": \"801234\",\"baud\": 115200,\"longitude\": 13.5,\"latitude\": 52.6,\"timezone\": 1.0,\"tz\": \"\",\"verbose\": 5,\"mqtt-enable\": 1,\"mqtt-url\": \"mqtt://192.168.1.42:7777\",\"mqtt-user\": \"mqusr\",\"mqtt-password\": \"mqpw\" } }";
+//char json[] = "{ \"to\": \"tfmcu\", \"config\": { \"cu\": \"801234\",\"baud\": 115200,\"longitude\": 13.5,\"latitude\": 52.6,\"timezone\": 1.0,\"tz\": \"\",\"verbose\": 5,\"mqtt-enable\": 1,\"mqtt-url\": \"mqtt://192.168.1.42:7777\",\"mqtt-user\": \"mqusr\",\"mqtt-password\": \"mqpw\" } }";
 
-char json[] = "{\"name\":\"tfmcu\",\"timer\":{\"g\":1,\"m\":0,\"f\":\"imDwArs\",\"daily\":\"0700\",\"astro\":0}}";
+char json[] = "{\"to\":\"tfmcu\",\"timer\":{\"g\":1,\"m\":0,\"f\":\"imDwArs\",\"daily\":\"0700\",\"astro\":0}}";
 int main() {
   char *name;
   char *cmd_obj = json_get_command_object(json, &name);

@@ -8,7 +8,7 @@
 
 #include "automatic/timer_data.h"
 #include "userio/status_output.h"
-#if defined USE_MQTT || defined USE_HTTP
+#ifdef USE_JSON
 #include "userio/status_json.h"
 #else
 #define so_json_config_reply(a,b,c)
@@ -138,7 +138,8 @@ void so_out_config_reply_entry_f(so_msg_t key, float val, int n) {
 
 
 static void so_print_timer_event_minutes(uint8_t g, uint8_t m);
-static void so_print_timer(uint8_t g, uint8_t m, bool wildcard);
+static void so_print_timer_as_text(uint8_t g, uint8_t m, bool wildcard);
+static void so_print_timer(uint8_t g, uint8_t m);
 static void so_print_gmbitmask(gm_bitmask_t mm);
 static void so_print_startup_info(void);
 
@@ -374,10 +375,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
 
   case SO_TIMER_PRINT: {
     so_arg_gm_t *a = arg;
-    so_print_timer(a->g, a->m, true);
-#ifdef USE_MQTT
-    io_mqtt_publish("tfmcu/timer_out", sj_timer2json(a->g, a->m));
-#endif
+    so_print_timer(a->g, a->m);
   }
     break;
 
@@ -453,7 +451,9 @@ static void ICACHE_FLASH_ATTR so_print_timer_event_minutes(uint8_t g, uint8_t m)
   }
 }
 
-static void ICACHE_FLASH_ATTR so_print_timer(uint8_t g, uint8_t m, bool wildcard) {
+
+
+static void ICACHE_FLASH_ATTR so_print_timer_as_text(uint8_t g, uint8_t m, bool wildcard) {
   timer_data_t tdr;
   char buf[10];
   uint8_t g_res = g, m_res = m;
@@ -498,6 +498,26 @@ static void ICACHE_FLASH_ATTR so_print_timer(uint8_t g, uint8_t m, bool wildcard
 
   }
   if (so_cto) cli_out_timer_reply_entry(NULL, NULL, -1);
+}
+
+static void ICACHE_FLASH_ATTR so_print_timer(uint8_t g, uint8_t m) {
+
+  if (so_tgt_test_cli_text())
+    so_print_timer_as_text(g, m, true);
+
+#ifdef USE_JSON
+  if (so_tgt_test_cli_json() || so_tgt_test(SO_TGT_MQTT|SO_TGT_HTTP)) {
+    const char *json = sj_timer2json(g, m);
+
+#ifdef USE_MQTT
+    if (so_tgt_test(SO_TGT_MQTT))
+      io_mqtt_publish("tfmcu/timer_out", json);
+#endif
+    cli_print_json(json);
+  }
+#endif
+
+
 }
 
 static void ICACHE_FLASH_ATTR so_print_gmbitmask(gm_bitmask_t mm) {

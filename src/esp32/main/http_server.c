@@ -1,20 +1,3 @@
-/*
- * http_server.c
- *
- *  Created on: 26.03.2019
- *      Author: bertw
- */
-
-
-/* Simple HTTP Server Example
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
-
 #include <esp_wifi.h>
 #include <esp_event_loop.h>
 #include <esp_log.h>
@@ -31,16 +14,6 @@
 #include "userio/status_json.h"
 #include "config/config.h"
 
-/* A simple example that demonstrates how to create GET and POST
- * handlers for the web server.
- * The examples use simple WiFi configuration that you can set via
- * 'make menuconfig'.
- * If you'd rather not, just change the below entries to strings
- * with the config you want -
- * ie. #define EXAMPLE_WIFI_SSID "mywifissid"
-*/
-#define EXAMPLE_WIFI_SSID CONFIG_WIFI_SSID
-#define EXAMPLE_WIFI_PASS CONFIG_WIFI_PASSWORD
 
 static const char *TAG="APP";
 
@@ -121,7 +94,7 @@ esp_err_t post_handler_json(httpd_req_t *req) {
       hts_query(HQT_NONE, buf, ret); // parse and process received command
 
       httpd_resp_set_type(req, "application/json");
-      httpd_resp_sendstr(req, *json ? json : "{\"name\":\"tfmcu\"}"); // respond with reply json or empty object json
+      httpd_resp_sendstr(req, *json ? json : "{\"from\":\"tfmcu\"}"); // respond with reply json or empty object json
 
       sj_set_buf(0, 0); // unregister our jsone buffer
       free(json);
@@ -232,7 +205,7 @@ httpd_handle_t start_webserver(void)
 {
     httpd_handle_t server = NULL;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    config.max_open_sockets = 4;
+    config.max_open_sockets = 6;
 
     // Start the httpd server
     ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);

@@ -68,6 +68,7 @@ void so_json_config_reply(const char *key, const char *val, bool is_number) {
       strcpy(BUF + json_idx, "}}");
       if (USE_CALLBACK)
         DO_CALLBACK();
+      cli_print_json(BUF);
     }
     json_idx = 0;
     if (key == 0)
@@ -78,7 +79,7 @@ void so_json_config_reply(const char *key, const char *val, bool is_number) {
 
 
   if (json_idx == 0) {
-    strcpy(BUF, "{\"name\":\"tfmcu\",\"config\":{");
+    strcpy(BUF, "{\"from\":\"tfmcu\",\"config\":{");
     json_idx = strlen(BUF);
   }
 
@@ -117,10 +118,10 @@ void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, uint16_t dst_size, uint8_t g
       *p++ = td_is_weekly(&tdr) ? 'W' : 'w';
       *p++ = '\0';
 #ifdef SJ_AUTO_VERBOSE
-      sprintf(dp, "{\"name\":\"automatic\",\"auto%d%d\":{\"f\":\"%s\",\"random\": %d,\"sun-auto\":%d,\"manual\":%d",
+      sprintf(dp, "{\"from\":\"tfmcu\",\"auto%d%d\":{\"f\":\"%s\",\"random\": %d,\"sun-auto\":%d,\"manual\":%d",
               g, m, flags, (td_is_random(&tdr)), (td_is_sun_auto(&tdr)), f_manual);
 #else
-      sprintf(dp, "{\"name\":\"automatic\",\"auto%d%d\":{\"f\":\"%s\"",
+      sprintf(dp, "{\"from\":\"tfmcu\",\"auto%d%d\":{\"f\":\"%s\"",
               g, m, flags);
 #endif
 
@@ -128,20 +129,20 @@ void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, uint16_t dst_size, uint8_t g
     }
 
     if (td_is_daily(&tdr)) {
-      sprintf(dp, ", \"daily\": \"%s\"", tdr.daily);
+      sprintf(dp, ",\"daily\":\"%s\"", tdr.daily);
       dp += strlen(dp);
     }
     if (td_is_weekly(&tdr)) {
-      sprintf(dp, ", \"weekly\": \"%s\"", tdr.weekly);
+      sprintf(dp, ",\"weekly\":\"%s\"", tdr.weekly);
       dp += strlen(dp);
     }
 
     if (td_is_astro(&tdr)) {
-      sprintf(dp, ", \"astro\": %d", tdr.astro);
+      sprintf(dp, ",\"astro\":%d", tdr.astro);
       dp += strlen(dp);
     }
 
-    strcat(dp, " } }");
+    strcat(dp, "}}");
   }
 }
 
@@ -151,7 +152,7 @@ const char *ICACHE_FLASH_ATTR sj_timer2json(uint8_t g, uint8_t m) {
 }
 
 char *sj_gmp2json_buf(char *dst, uint16_t dst_size, so_arg_gmp_t *gmp) {
-  sprintf(dst, "{\"name\":\"tfmcu\",\"position\":{\"g\":%u,\"m\":%u,\"p\":%u}}", gmp->g, gmp->m, gmp->p);
+  sprintf(dst, "{\"from\":\"tfmcu\",\"position\":{\"g\":%u,\"m\":%u,\"p\":%u}}", gmp->g, gmp->m, gmp->p);
   return dst;
 }
 

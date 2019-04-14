@@ -20,15 +20,26 @@ typedef enum {
   SO_TGT_CLI = (SO_TGT_CLI_USB|SO_TGT_CLI_TCP),
   SO_TGT_HTTP = (1<<2),
   SO_TGT_MQTT = (1<<3),
-  SO_TGT_ANY = ~0
+  SO_TGT_ANY = (~0)
 } so_target_bits;
 
 extern uint8_t so_target;
 
 #define so_tgt_set(bitmask) (so_target = (bitmask))
-#define so_tgt_test(bitmask) (so_target & (bitmask))
 #define so_tgt_default() (so_tgt_set(SO_TGT_ANY))
+#define so_tgt_test(bitmask) (so_target & (bitmask))
 
+#ifndef DISTRIBUTION
+//#define DEV_CLI_JSON
+#endif
+
+#ifdef DEV_CLI_JSON
+#define so_tgt_test_cli_json() ((so_target & SO_TGT_CLI))
+#define so_tgt_test_cli_text() false
+#else
+#define so_tgt_test_cli_text() ((so_target & SO_TGT_CLI))
+#define so_tgt_test_cli_json() false
+#endif
 
 typedef enum {
   SO_NONE,

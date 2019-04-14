@@ -117,19 +117,19 @@ static void ICACHE_FLASH_ATTR cli_out_entry(void_fun_ptr tag, const char *key, c
 }
 
 void ICACHE_FLASH_ATTR cli_out_timer_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test(SO_TGT_CLI))
+  if (!so_tgt_test_cli_text())
     return;
   cli_out_entry(cli_out_start_timer_reply, key, val, len);
 }
 
 void ICACHE_FLASH_ATTR cli_out_config_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test(SO_TGT_CLI))
+  if (!so_tgt_test_cli_text())
     return;
   cli_out_entry(cli_out_start_config_reply, key, val, len);
 }
 
 void ICACHE_FLASH_ATTR cli_out_mcu_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test(SO_TGT_CLI))
+  if (!so_tgt_test_cli_text())
     return;
   cli_out_entry(cli_out_start_mcu_reply, key, val, len);
 }
@@ -140,7 +140,7 @@ void ICACHE_FLASH_ATTR print_enr(void) {
 }
 
 void ICACHE_FLASH_ATTR msg_print(const char *msg, const char *tag) {
-  if (!so_tgt_test(SO_TGT_CLI))
+  if (!so_tgt_test_cli_text())
     return;
   if (msg)
     io_puts(msg);
@@ -156,19 +156,19 @@ void ICACHE_FLASH_ATTR msg_print(const char *msg, const char *tag) {
 }
 
 void ICACHE_FLASH_ATTR warning_unknown_option(const char *key) {
-  if (!so_tgt_test(SO_TGT_CLI))
+  if (!so_tgt_test_cli_text())
     return;
   msg_print("warning", "unknown-option"), io_puts(key), io_putc('\n');
 }
 
 void ICACHE_FLASH_ATTR reply_print(const char *tag) {
-  if (!so_tgt_test(SO_TGT_CLI))
+  if (!so_tgt_test_cli_text())
     return;
   msg_print("reply", tag);
 }
 
 void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
-  if (!so_tgt_test(SO_TGT_CLI))
+  if (!so_tgt_test_cli_text())
     return;
   reply_print(tag);
   if (msg)
@@ -177,14 +177,14 @@ void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
 }
 
 void ICACHE_FLASH_ATTR cli_msg_ready(void) {
-  if (!so_tgt_test(SO_TGT_CLI))
+  if (!so_tgt_test_cli_text())
     return;
   io_puts("\nready:\n");
 }
 
 void ICACHE_FLASH_ATTR reply_id_message(uint16_t id, const char *tag, const char *msg) {
   uint16_t old_id = msgid;
-  if (!so_tgt_test(SO_TGT_CLI))
+  if (!so_tgt_test_cli_text())
     return;
 
   msgid = id;
