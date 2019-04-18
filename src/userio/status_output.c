@@ -201,7 +201,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     break;
   case SO_CFG_RTC:
     if (rtc_get_by_string(buf)) {
-      so_out_config_reply_entry(mt, buf);
+      so_out_config_reply_entry_s(mt, buf);
     }
     break;
   case SO_CFG_CU:
