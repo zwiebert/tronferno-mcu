@@ -98,6 +98,14 @@
 #endif
 #endif
 
+#ifndef MY_NTP_SERVER
+#ifdef CONFIG_MY_NTP_SERVER
+#define MY_NTP_SERVER CONFIG_MY_NTP_SERVER
+#else
+#define MY_NTP_SERVER "pool.ntp.org"
+#endif
+#endif
+
 #ifndef MY_APP_CONFIG_PASSWORD
 #ifdef CONFIG_MY_APP_CONFIG_PASSWORD
 #define MY_APP_CONFIG_PASSWORD CONFIG_MY_APP_CONFIG_PASSWORD
@@ -246,6 +254,9 @@ typedef struct {
   char http_password[31];
   int8_t http_enable;
 #endif
+#ifdef USE_NTP
+  char ntp_server[32];
+#endif
 } config;
 
 extern config C;
@@ -276,6 +287,7 @@ void save_config(uint32_t mask);  // save C to persistent storage
 #define CONFIG_HTTP_USER (1UL << 19)
 #define CONFIG_HTTP_PASSWD (1UL << 20)
 #define CONFIG_HTTP_ENABLE (1UL << 21)
+#define CONFIG_NTP_SERVER (1UL << 22)
 
 #endif /* CONFIG_H_ */
 

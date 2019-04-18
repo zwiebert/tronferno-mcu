@@ -59,6 +59,9 @@ config C = {
   .http_password = MY_HTTP_PASSWORD,
   .http_enable = MY_HTTP_ENABLE,
 #endif
+#ifdef USE_NTP
+  .ntp_server = MY_NTP_SERVER,
+#endif
 };
 
 #ifdef CONFIG_BLOB
@@ -125,6 +128,7 @@ void read_config(uint32_t mask) {
       nvs_get_u32(handle, "C_BAUD", &C.mcu_serialBaud);
     }
 
+#ifdef USE_WLAN
     if (mask & CONFIG_WIFI_SSID) {
       (len = sizeof C.wifi_SSID), err = nvs_get_str(handle, "C_WIFI_SSID", C.wifi_SSID, &len);
       D(ets_printf("read wifi-ssid err=%x\n", err));
@@ -133,6 +137,13 @@ void read_config(uint32_t mask) {
     if (mask & CONFIG_WIFI_PASSWD) {
       (len = sizeof C.wifi_password), nvs_get_str(handle, "C_WIFI_PASSWD", C.wifi_password, &len);
     }
+#endif
+
+#ifdef USE_NTP
+    if (mask & CONFIG_NTP_SERVER) {
+      (len = sizeof C.ntp_server), err = nvs_get_str(handle, "C_NTP_SERVER", C.ntp_server, &len);
+    }
+#endif
 
     if (mask & CONFIG_CFG_PASSWD) {
       (len = sizeof C.app_configPassword), nvs_get_str(handle, "C_CFG_PASSWD", C.app_configPassword, &len);
@@ -223,14 +234,21 @@ void save_config(uint32_t mask) {
       nvs_set_u32(handle, "C_BAUD", C.mcu_serialBaud);
     }
 
+#ifdef USE_WLAN
     if (mask & CONFIG_WIFI_SSID) {
       err = nvs_set_str(handle, "C_WIFI_SSID", C.wifi_SSID);
-      D(ets_printf("config: wifi_ssid err=%x\n", err));
     }
 
     if (mask & CONFIG_WIFI_PASSWD) {
       nvs_set_str(handle, "C_WIFI_PASSWD", C.wifi_password);
     }
+#endif
+
+#ifdef USE_NTP
+    if (mask & CONFIG_NTP_SERVER) {
+      err = nvs_set_str(handle, "C_NTP_SERVER", C.ntp_server);
+    }
+#endif
 
     if (mask & CONFIG_CFG_PASSWD) {
       nvs_set_str(handle, "C_CFG_PASSWD", C.app_configPassword);

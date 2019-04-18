@@ -35,7 +35,10 @@ config C = {
 	MY_APP_CONFIG_PASSWORD,
 	MY_APP_EXPERT_PASSWORD,
 #ifdef ACCESS_GPIO
-	{ 0, }
+	{ 0, },
+#endif
+#ifdef USE_NTP
+  .ntp_server = MY_NTP_SERVER,
 #endif
 };
 

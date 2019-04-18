@@ -31,6 +31,9 @@ const char help_parmConfig[]  =
     "wlan-ssid=(SSID|?)\n"
     "wlan-password=PW\n"
 #endif
+#ifdef USE_NTP
+    "ntp-server=(dhcp|IP4ADDR|NAME) default: ntp.pool.org (TODO: implement list of servers)\n"
+#endif
 #ifdef USE_MQTT
      "mqtt-enable=(0|1) enable MQTT\n"
      "mqtt-url=URL      broker/server URL (e.g. mqtt://192.168.1.42:7777)\n"
@@ -164,6 +167,17 @@ process_parmConfig(clpar p[], int len) {
         }
         break;
 #endif // USE_WLAN
+#ifdef USE_NTP
+        case SO_CFG_NTP_SERVER: {
+          if (strlen(val) < sizeof (C.ntp_server)) {
+            strcpy (C.ntp_server, val);
+            save_config(CONFIG_NTP_SERVER);
+          } else {
+            reply_failure();
+          }
+        }
+        break;
+#endif
 
 #ifdef USE_MQTT
         case SO_CFG_MQTT_ENABLE: {

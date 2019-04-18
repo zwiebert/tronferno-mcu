@@ -11,6 +11,7 @@
 #include "esp_event_loop.h"
 #include "nvs_flash.h"
 #include "string.h"
+#include <ctype.h>
 
 #include <string.h>
 #include <time.h>
@@ -41,12 +42,35 @@
 
 #define printf ets_printf
 
+static void set_server_by_config() { // FIXME: take list of servers instead only one
+  int server_number = 0;
+
+
+  for (server_number = 0; server_number < 1; ++server_number) {
+    const char *server = C.ntp_server;
+    bool use_dhcp = strcmp(server, "dhcp") == 0;
+    bool use_ipaddr = isdigit((int)server[0]);
+
+    sntp_servermode_dhcp(use_dhcp);
+
+    if (use_ipaddr) {
+      ip_addr_t addr = {0};
+      ipaddr_aton(server, &addr);
+      sntp_setserver(server_number, &addr);
+    } else if (use_dhcp) {
+      continue;
+    } else {
+      sntp_setservername(server_number, server);
+    }
+  }
+}
+
 void setup_ntp(void) {
   static int once;
   if (once == 0) {
     once = 1;
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
-    sntp_setservername(0, "pool.ntp.org");
+    set_server_by_config();
     sntp_init();
 
   }

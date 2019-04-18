@@ -38,8 +38,9 @@ uint8_t so_target;
 //key strings used for parsing and printing config commands by CLI/HTTP/MQTT
 //keys must be in same order as their SO_CFG_xxx counterparts in so_msg_t
 const char * const cfg_keys[] = {
-    "cu", "baud", "rtc", "wlan-ssid", "wlan-password", "longitude", "latitude",
-    "timezone", "dst", "tz", "verbose",
+    "cu", "baud", "rtc",
+    "wlan-ssid", "wlan-password", "ntp-server",
+    "longitude", "latitude", "timezone", "dst", "tz", "verbose",
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password",
     "http-enable", "http-user", "http-password",
     "gm-used",
@@ -206,13 +207,19 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_CFG_CU:
     so_out_config_reply_entry_lx(mt, C.fer_centralUnitID);
     break;
+#ifdef USE_WLAN
   case SO_CFG_WLAN_SSID:
     so_out_config_reply_entry_s(mt, C.wifi_SSID);
     break;
   case SO_CFG_WLAN_PASSWORD:
     so_out_config_reply_entry_s(mt, *C.wifi_password ? "*" : "");
     break;
-
+#endif
+#ifdef USE_NTP
+  case SO_CFG_NTP_SERVER:
+    so_out_config_reply_entry_s(mt, C.ntp_server);
+    break;
+#endif
 #ifdef USE_MQTT
   case SO_CFG_MQTT_ENABLE:
     so_out_config_reply_entry_d(mt, C.mqtt_enable ? 1 : 0);
