@@ -255,7 +255,7 @@ typedef struct {
   int8_t http_enable;
 #endif
 #ifdef USE_NTP
-  char ntp_server[32];
+  char ntp_server[64];
 #endif
 } config;
 
