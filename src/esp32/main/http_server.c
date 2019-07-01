@@ -4,7 +4,7 @@
 #include <esp_system.h>
 #include <nvs_flash.h>
 #include <sys/param.h>
-#include <crypto/base64.h>
+#include <mbedtls/base64.h>
 
 #include <esp_http_server.h>
 
@@ -34,16 +34,15 @@ static bool compare_up(const char *up, size_t up_len) {
 static bool test_authorization(httpd_req_t *req) {
   bool login_ok = false;
   char *login = 0;
-  char *up = 0;
-  size_t up_len;
 
   size_t login_len = httpd_req_get_hdr_value_len(req, "Authorization");
   if (login_len && (login = malloc(login_len + 1))) {
     esp_err_t err = httpd_req_get_hdr_value_str(req, "Authorization", login, login_len + 1);
-    if (err == ESP_OK && ((up = (char*) base64_decode((unsigned char*) login + 6, login_len - 6, &up_len)))) {
-      ets_printf("up_len=%u:<%s>\n", up_len, up);
-      login_ok = compare_up(up, up_len);
-      free(up);
+    if (err == ESP_OK) {
+      unsigned char dst[128];
+      size_t olen = 0;
+      if (0 == mbedtls_base64_decode(dst, sizeof dst, &olen, (unsigned char*) login + 6, login_len - 6))
+        login_ok = compare_up((char*)dst, olen);
     }
 
     free(login);

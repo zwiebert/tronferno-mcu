@@ -304,6 +304,7 @@ process_parmConfig(clpar p[], int len) {
            C.fer_usedMembers = gmu;
            save_config(CONFIG_USED_MEMBERS);
         }
+        break;
 
         default:
         break;
@@ -317,12 +318,11 @@ process_parmConfig(clpar p[], int len) {
       int gpio_number = atoi(key + 4);
       mcu_pin_state ps;
 
-      if (!is_gpio_number_usable(gpio_number, true)) {
+      if (*val == '?') {
+        so_output_message(SO_CFG_GPIO_PIN, &gpio_number);
+      } else if (!is_gpio_number_usable(gpio_number, true)) {
         reply_message("gpio:error", "gpio number cannot be used");
         ++errors;
-
-      } else if (*val == '?') {
-        so_output_message(SO_CFG_GPIO_PIN, &gpio_number);
       } else {
         const char *error = NULL;
 
@@ -334,24 +334,24 @@ process_parmConfig(clpar p[], int len) {
 
         switch (ps) {
 
-        case PIN_DEFAULT:
+          case PIN_DEFAULT:
           break;
 
-        case PIN_CLEAR:
-        case PIN_SET:
-        case PIN_OUTPUT:
+          case PIN_CLEAR:
+          case PIN_SET:
+          case PIN_OUTPUT:
           error = mcu_access_pin(gpio_number, NULL, PIN_OUTPUT);
           if (!error && ps != PIN_OUTPUT) {
             error = mcu_access_pin(gpio_number, NULL, ps);
           }
           break;
 
-        case PIN_INPUT:
-        case PIN_INPUT_PULLUP:
+          case PIN_INPUT:
+          case PIN_INPUT_PULLUP:
           error = mcu_access_pin(gpio_number, NULL, ps);
           break;
 
-        default:
+          default:
           error = "unknown gpio config";
           ++errors;
         }
@@ -360,7 +360,7 @@ process_parmConfig(clpar p[], int len) {
           reply_message("gpio:failure", error);
         } else {
           C.gpio[gpio_number] = ps;
-	  save_config(CONFIG_GPIO);
+          save_config(CONFIG_GPIO);
         }
       }
 #endif

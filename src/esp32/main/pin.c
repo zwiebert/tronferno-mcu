@@ -28,50 +28,35 @@
 #define RFIN_GPIO GPIO_NUM_17
 #define BUTTON_GPIO GPIO_NUM_6
 
+#define RESERVED_GPIO (1ULL<<RFOUT_GPIO|1ULL<<RFIN_GPIO|1ULL<<BUTTON_GPIO)
+
+#define gpioUsable  (0xffffffff & ~(1ULL<<0|1ULL<<1|1ULL<<2|1ULL<<20|1ULL<<24|1ULL<<28|1ULL<<29|1ULL<<30|1ULL<<31|RESERVED_GPIO)) \
+  & (0xffffffff | (1ULL<<(GPIO_NUM_32-32)|1ULL<<(GPIO_NUM_33-32)))
+const uint64_t inputGpioUsable = gpioUsable;
+const uint64_t outputGpioUsable = gpioUsable;
+
+#define gpioUsableHigh
+
 
 const char*  mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state);
 
-bool is_gpio_number_usable(int gpio_number, bool cli) {
-  switch (gpio_number) {
-  case GPIO_NUM_3:
-  case GPIO_NUM_4:
-  case GPIO_NUM_5:
-  case GPIO_NUM_6:
-  case GPIO_NUM_7:
-  case GPIO_NUM_8:
-  case GPIO_NUM_9:
-  case GPIO_NUM_10:
-  case GPIO_NUM_11:
-  case GPIO_NUM_12:
-  case GPIO_NUM_13:
-  case GPIO_NUM_14:
-  case GPIO_NUM_15:
-  case GPIO_NUM_16:
-  case GPIO_NUM_17:
-  case GPIO_NUM_18:
-  case GPIO_NUM_19:
+void gpio_get_levels(uint64_t gpio_mask, char *buf, int buf_size) {
+  int i;
+  int buf_len = (buf_size > 40 ? 39 : buf_size - 1);
+  buf[buf_len] = '\0';
 
-  case GPIO_NUM_21:
-  case GPIO_NUM_22:
-  case GPIO_NUM_23:
-
-  case GPIO_NUM_25:
-  case GPIO_NUM_26:
-  case GPIO_NUM_27:
-
-  case GPIO_NUM_32:
-  case GPIO_NUM_33:
-    if (cli && (gpio_number == RFOUT_GPIO || gpio_number == RFIN_GPIO)) {
-      break;
+  for (i=0; i < buf_len; ++i) {
+    if (1ULL<<i & gpioUsable) {
+      buf[i] = gpio_get_level(i) ? '1' : '0';
+    } else {
+      buf[i] = 'x';
     }
-    return true;
-    break;
-
-  default:
-    break;
-
   }
-  return false;
+
+}
+
+bool is_gpio_number_usable(int gpio_number, bool cli) {
+  return  (gpioUsable & 1ULL<<gpio_number) != 0;
 }
 
 void IRAM_ATTR mcu_put_txPin(bool dat) {

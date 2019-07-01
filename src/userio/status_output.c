@@ -295,8 +295,11 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
       int gpio_number = *(int *)arg;
       char key[10] = "gpio";
       strcat(key, itoa(gpio_number, buf, 10));
-      buf[0] = pin_state_args[C.gpio[gpio_number]]; buf[1] = '\0';
-      so_out_config_reply_entry2(key, buf);
+      char ps[2] = "x";
+      if (is_gpio_number_usable(gpio_number, true)) {
+        ps[0] = pin_state_args[C.gpio[gpio_number]];
+      }
+      so_out_config_reply_entry2(key, ps);
     }
 #endif
     break;

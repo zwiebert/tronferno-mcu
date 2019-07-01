@@ -63,7 +63,9 @@ static void set_server_by_config() {
       ipaddr_aton(server, &addr[server_number]);
       sntp_setserver(server_number, &addr[server_number]);
     } else if (use_dhcp) {
+#if SNTP_MAX_SERVERS > 1
       break;
+#endif
     } else {
       sntp_setservername(server_number, server);
     }
