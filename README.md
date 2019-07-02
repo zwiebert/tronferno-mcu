@@ -1,5 +1,7 @@
 # tronferno-mcu
 
+
+
   Tronferno is a firmware to turn an ESP32 MCU board into an hardware
   dongle to control Fernotron devices (usually shutters).
 
@@ -49,6 +51,8 @@ super-heterodyne receiver, like the RXB6, does not have this issue)
 
 
 ### Documentation
+
+  * Quickstart-Manual: [deutsch](docs/starter-de.md)
 
   * [CLI reference manual](https://github.com/zwiebert/tronferno-mcu/blob/master/docs/CLI.md) in the docs folder.
 
