@@ -4,7 +4,6 @@
 #include "esp_event.h"
 #include "esp_event_loop.h"
 #include "nvs_flash.h"
-#include "string.h"
 
 #include "time.h"
 #include "main/rtc.h"
@@ -22,6 +21,7 @@
 
 #include "lwip/sockets.h"
 #include "lwip/netdb.h"
+
 #include <errno.h>
 #include "../../userio/inout.h"
 
@@ -97,7 +97,7 @@ static tcps_cconn *tcps_add_cconn(int fd) {
 }
 
 static void tcps_close_cconn(int idx) {
-  if (close(cconn_table[idx].fd) < 0) perror("close");
+  if (lwip_close(cconn_table[idx].fd) < 0) perror("close");
   cconn_table[idx].fd = -1;
   --cconn_count;
   printf("tcps: disconnected. %d client(s) still connected\n", cconn_count);
@@ -112,12 +112,12 @@ static void tcps_close_current_cconn() {
 int tcps_create_server() {
 
   /** Create streaming socket */
-    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    if ((sockfd = lwip_socket(AF_INET, SOCK_STREAM, 0)) < 0)
   {
     perror("Socket");
     return(errno);
   }
-    if (fcntl(sockfd, F_SETFL, O_NONBLOCK) < 0)
+    if (lwip_fcntl(sockfd, F_SETFL, O_NONBLOCK) < 0)
     {
       perror("fcntl");
       return(errno);
@@ -129,14 +129,14 @@ int tcps_create_server() {
   self.sin_addr.s_addr = INADDR_ANY;
 
   /** Assign a port number to the socket */
-    if (bind(sockfd, (struct sockaddr*)&self, sizeof(self)) != 0)
+    if (lwip_bind(sockfd, (struct sockaddr*)&self, sizeof(self)) != 0)
   {
     perror("socket:bind()");
     return(errno);
   }
 
   /** Make it a "listening socket". Limit to 16 connections */
-  if (listen(sockfd, TCPS_CCONN_MAX) != 0)
+  if (lwip_listen(sockfd, TCPS_CCONN_MAX) != 0)
   {
     perror("socket:listen()");
     return(errno);
@@ -171,7 +171,7 @@ static int tcp_io_putc(char c) {
   for (i = 0; i < TCPS_CCONN_MAX; ++i) {
     int idx = (i + 1) & (TCPS_CCONN_MAX - 1);
     if (cconn_is_used(idx)) {
-      if (send(cconn_table[idx].fd, line_buf, line_idx, 0) < 0) {  // FIXME: handle partially sent data
+      if (lwip_send(cconn_table[idx].fd, line_buf, line_idx, 0) < 0) {  // FIXME: handle partially sent data
         tcps_close_cconn(idx);
       }
     }
@@ -218,7 +218,7 @@ static int tcp_io_puts(const char *s) {
   for (i = 0; i < TCPS_CCONN_MAX; ++i) {
     int idx = (i + 1) & (TCPS_CCONN_MAX - 1);
     if (cconn_is_used(idx)) {
-      if (send(cconn_table[idx].fd, s, s_len, 0) < 0) {
+      if (lwip_send(cconn_table[idx].fd, s, s_len, 0) < 0) {
         tcps_close_cconn(idx);
       }
 
@@ -244,7 +244,7 @@ static int  tcp_io_getc_unbuf(void) {
 #endif
 
   //DP("getc start");
-  if (1 == recv(cconn_curr.fd, buf, 1, MSG_DONTWAIT)) {
+  if (1 == lwip_recv(cconn_curr.fd, buf, 1, MSG_DONTWAIT)) {
 
     return buf[0];
   }
@@ -275,7 +275,7 @@ int  tcps_io_read(char *buf, size_t buf_size, bool incomplete) {
   }
 
 
-  if ((result = recv(cconn_curr.fd, buf, buf_size, 0)) > 0)
+  if ((result = lwip_recv(cconn_curr.fd, buf, buf_size, 0)) > 0)
     return result;
 
 
@@ -303,7 +303,7 @@ static int  tcps_io_getline(char *buf, size_t buf_size, int bytes_already_receiv
   }
 
 
-  if ((bytes_received = recv(cconn_curr.fd, buf + bytes_already_received, buf_size - bytes_already_received, 0)) > 0)
+  if ((bytes_received = lwip_recv(cconn_curr.fd, buf + bytes_already_received, buf_size - bytes_already_received, 0)) > 0)
     return bytes_received;
 
 
@@ -341,7 +341,7 @@ static int  tcp_io_getc_buf(void) {
 #endif
 
   //DP("getc start");
-  if ((res = recv(cconn_curr.fd, buf, BUF_SIZE, MSG_DONTWAIT)) > 0) {
+  if ((res = lwip_recv(cconn_curr.fd, buf, BUF_SIZE, MSG_DONTWAIT)) > 0) {
     used = res;
     return buf[idx++];
   }
@@ -371,7 +371,7 @@ tcps_loop(void) {
     size_t addrlen=sizeof(client_addr);
 
     /** accept an incomming connection  */
-    fd = accept(sockfd, (struct sockaddr*)&client_addr, &addrlen);
+    fd = lwip_accept(sockfd, (struct sockaddr*)&client_addr, &addrlen);
     if (fd >= 0) {
       tcps_add_cconn(fd);
       printf("%s:%d connected (%d clients)\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), cconn_count);
