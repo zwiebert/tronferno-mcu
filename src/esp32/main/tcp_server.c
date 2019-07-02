@@ -97,7 +97,7 @@ static tcps_cconn *tcps_add_cconn(int fd) {
 }
 
 static void tcps_close_cconn(int idx) {
-  if (lwip_close(cconn_table[idx].fd) < 0) perror("close");
+  if (close(cconn_table[idx].fd) < 0) perror("close");
   cconn_table[idx].fd = -1;
   --cconn_count;
   printf("tcps: disconnected. %d client(s) still connected\n", cconn_count);
@@ -375,6 +375,9 @@ tcps_loop(void) {
     if (fd >= 0) {
       tcps_add_cconn(fd);
       printf("%s:%d connected (%d clients)\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), cconn_count);
+    } else if (errno != EAGAIN && errno != EWOULDBLOCK) {
+      perror("tcps: accept");
+
     }
   }
 
