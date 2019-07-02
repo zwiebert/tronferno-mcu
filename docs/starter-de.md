@@ -28,10 +28,10 @@ Ein ESP32 Board wird benötigt. Die Firmware kann mittels Linux- oder Windows-PC
 
 #### Funkmodule
 
-Fernotron sendet und empfängt auf 443MHz.
+Fernotron sendet und empfängt auf 434 MHz.
         
-* Ein 443 MHz Sender wird benötigt um Fernotron Geräte zu steuern. Anschluss an GPIO_22  
-* Ein 443 MHz Empfänger ist optional: Anschluss an GPIO_17. Damit können Fernotron-Sender empfangen werden.
+* Ein 434 MHz Sender wird benötigt um Fernotron Geräte zu steuern. Anschluss an GPIO_22  
+* Ein 434 MHz Empfänger ist optional: Anschluss an GPIO_17. Damit können Fernotron-Sender empfangen werden.
   
   
 #### Ansteuerung
