@@ -8,15 +8,17 @@ Ein ESP32 Board wird benötigt. Die Firmware kann mittels Linux- oder Windows-PC
 ##### Linux-PC
 1. python und pyserial müssen auf dem Linux-PC installiert sein
 2. Download und Entpacken des [Firmware-Binary-Archivs](https://codeload.github.com/zwiebert/tronferno-mcu-bin/zip/master) auf den PC 
-3. Flashen und Konfigurieren mit dem Programm menutool.sh (Anleitung im dazugehörigen [README.md](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md))
+3. ESP32 Board per USB mit dem PC verbinden
+4. Flashen und Konfigurieren mit dem Programm menutool.sh (Anleitung im dazugehörigen [README.md](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md))
    
 ##### Windows-PC
 1. Download und Entpacken des Firmware-Binary-Archivs auf den PC (es wird keine weitere Software benötigt)
-2. Flashen und Konfigurieren mit dem Programm menutool.cmd (Anleitung im dazugehörigen [README.md](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md))
+2. ESP32 Board per USB mit dem PC verbinden
+3. Flashen und Konfigurieren mit dem Programm menutool.cmd (Anleitung im dazugehörigen [README.md](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md))
         
 ##### FHEM-Server
 1. python und pyserial müssen auf dem FHEM-Server installiert sein
-2. Anschließen eines ESP32-Modules per USB an den FHEM-ServerServer
+3. ESP32 Board per USB mit dem FHEM-ServerServer verbinden
 3. Installieren und Definieren des [TronfernoMCU-Moduls](https://github.com/zwiebert/tronferno-fhem/blob/master/README-de.md) auf dem FHEM Server, durch Eingabe unten stehender Befehle in FHEMWEB (der FHEM Weboberfläche)
 4. In FHEMWEB das tfmcu Gerät öffnen und den Set-Menüpunkt "mcu-firmware.esp32" öffnen. Dort "upgrade" auswählen und abschließend auf "set" klicken.
 
@@ -28,10 +30,10 @@ Ein ESP32 Board wird benötigt. Die Firmware kann mittels Linux- oder Windows-PC
 
 #### Funkmodule
 
-Fernotron sendet und empfängt auf 434 MHz.
+Fernotron sendet und empfängt auf 434 MHz (433,92 MHz exakt).
         
-* Ein 434 MHz Sender wird benötigt um Fernotron Geräte zu steuern. Anschluss an GPIO_22  
-* Ein 434 MHz Empfänger ist optional: Anschluss an GPIO_17. Damit können Fernotron-Sender empfangen werden.
+* Ein 434 MHz Sender (z.B. FS1000A) wird benötigt um Fernotron Geräte zu steuern. Anschluss an GPIO_22  
+* Ein 434 MHz Empfänger (z.B. RXB6) ist optional: Anschluss an GPIO_17. Damit können Fernotron-Sender empfangen werden.
   
   
 #### Ansteuerung
