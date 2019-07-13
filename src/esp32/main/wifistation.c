@@ -1,24 +1,25 @@
-#include "freertos/FreeRTOS.h"
-#include "freertos/event_groups.h"
-#include "esp_wifi.h"
-#include "esp_system.h"
-#include "esp_event.h"
-#include "esp_event_loop.h"
-#include "esp_log.h"
-#include "nvs_flash.h"
-#include "driver/gpio.h"
-#include "string.h"
-
-#include "rom/uart.h"
-
-#include "lwip/err.h"
-#include "lwip/sys.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/event_groups.h>
+#include <esp_wifi.h>
+#include <esp_system.h>
+#include <esp_event.h>
+#include <esp_event_loop.h>
+#include <esp_log.h>
+#include <esp_err.h>
+#include <nvs_flash.h>
+#include <driver/gpio.h>
+#include <string.h>
+#include <esp32/rom/uart.h>
+#include <lwip/err.h>
+#include <lwip/sys.h>
 
 #include "userio/ipnet.h"
 #include "userio/inout.h"
 #include "main/common.h"
 #include "config/config.h"
 #include "fernotron/fer.h"
+
+extern ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
 
 #define printf io_printf_fun
 #ifndef DISTRIBUTION
@@ -72,8 +73,6 @@ const char *TAG = "wifistation";
 //#define RETRY_RECONNECT (s_retry_num < 255)
 #define RETRY_RECONNECT (1)
 
-static ip4_addr_t ip4_address;
-
 static esp_err_t event_handler(void *ctx, system_event_t *event) {
 
   switch (event->event_id) {
@@ -108,11 +107,6 @@ static esp_err_t event_handler(void *ctx, system_event_t *event) {
     break;
   }
   return ESP_OK;
-}
-
-void
-ipnet_addr_as_string(char *buf, unsigned buf_len) {
-  ip4addr_ntoa_r(&ip4_address, buf, buf_len);
 }
 
 void
