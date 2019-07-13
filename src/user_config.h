@@ -20,6 +20,7 @@
 #define MDR_TIME
 #define USE_PAIRINGS
 #define USE_JSON
+#define USE_MUTEX
 
 // ESP8266 configuration
 #if defined MCU_ESP8266

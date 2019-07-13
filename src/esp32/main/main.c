@@ -67,6 +67,10 @@ mcu_init() {
 #ifdef USE_MQTT
   setup_mqtt();
 #endif
+#ifdef USE_MUTEX
+  void mutex_setup(void);
+  mutex_setup();
+#endif
   //setup_udp();
   setup_timer();
   setup_storage();
