@@ -19,6 +19,7 @@
 #include "config/config.h"
 #include "fernotron/fer.h"
 
+extern ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
 
 #define printf io_printf_fun
 #ifndef DISTRIBUTION
