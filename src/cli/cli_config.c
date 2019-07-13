@@ -310,8 +310,10 @@ process_parmConfig(clpar p[], int len) {
         break;
       }
 
-
-
+    } else if (strcmp(key, "cuas") == 0) {
+      if (*val == '?') {
+        so_output_message(SO_CUAS_STATE, 0);
+      }
 
 #ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {

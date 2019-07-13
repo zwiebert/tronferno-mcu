@@ -18,6 +18,12 @@
 
 
 
+static cuas_state_T cuas_state;
+
+cuas_state_T cuas_getState() {
+  return cuas_state;
+}
+
 static bool cuas_active;
 static time_t end_time;
 
@@ -30,6 +36,7 @@ bool ICACHE_FLASH_ATTR cu_auto_set(uint16_t id, unsigned timeout_secs) {
     last_received_sender.data[0] = 0;
     cuas_active = true;
     so_output_message(SO_CUAS_START, &id);
+    cuas_state = CUAS_SCANNING;
   }
   return false;
 }
@@ -41,6 +48,7 @@ bool ICACHE_FLASH_ATTR cu_auto_set_check_timeout() {
   if (end_time < run_time(NULL)) {
       end_time = 0;
       so_output_message(SO_CUAS_TIMEOUT, NULL);
+      cuas_state = CUAS_TIME_OUT;
       cuas_active = false;
       return true;
     }
@@ -57,6 +65,7 @@ bool ICACHE_FLASH_ATTR cu_auto_set_check(fer_sender_basic *fsb) {
     C.fer_centralUnitID = cu;
     end_time = 0;
     so_output_message(SO_CUAS_DONE, NULL);
+    cuas_state = CUAS_SUCCESS;
     save_config(CONFIG_CUID);
     cuas_active = false;
     return true;

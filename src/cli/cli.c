@@ -109,6 +109,19 @@ static void ICACHE_FLASH_ATTR cli_out_entry(void_fun_ptr tag, const char *key, c
   }
 }
 
+void  ICACHE_FLASH_ATTR cli_out_set_config(void) {
+  SET_OBJ_TAG(OBJ_TAG_CONFIG);
+}
+
+void  ICACHE_FLASH_ATTR cli_out_set_x(const char *obj_tag) {
+  SET_OBJ_TAG(obj_tag);
+}
+void ICACHE_FLASH_ATTR cli_out_x_reply_entry(const char *key, const char *val, int len) {
+  if (!so_tgt_test_cli_text())
+    return;
+  cli_out_entry(cli_out_start_reply, key, val, len);
+}
+
 void ICACHE_FLASH_ATTR cli_out_timer_reply_entry(const char *key, const char *val, int len) {
   if (!so_tgt_test_cli_text())
     return;

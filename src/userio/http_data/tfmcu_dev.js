@@ -1,5 +1,5 @@
 var base = '';
-var base = 'http://10.0.0.20'; //dev-delete-line//
+var base = 'http://10.0.0.27'; //dev-delete-line//
 
 var gmu = [0,1,2,3,4,5,6,7];
 var gu = [0,1,2,3,4,5,6,7];
@@ -7,6 +7,9 @@ var gu_idx = 0;
 
 var tfmcu_config = {};
 let config_fetched = false;
+let cuas_Interval;
+let cuas_State = 0;
+
 
 class AppState {
 
@@ -102,19 +105,56 @@ class AppState {
         console.log("reply-json: "+JSON.stringify(obj));
 
         if ("config" in obj) {
-            if (config_fetched) {
+	    let config = obj.config;
+
+	    if ("cuas" in config) {
+		if (config.cuas != cuas_State) {
+		    let s = "";
+		    switch(config.cuas) {
+		    case 0: s = ""; break;
+		    case 1: s = '<strong style="animation: blink .75s linear 4;"> ...Scanning... </strong>'; break;
+		    case 2: s = '<strong style="background-color:red;">Time-Out! (no STOP-command received)</strong>'; break;
+		    case 3: s = '<strong style="background-color:green;">Success (cu-id has been saved)</strong>';
+			this.fetchConfig();
+			break;
+		    }
+
+		    if (config.cuas > 1) {
+			window.clearInterval(cuas_Interval);
+		    }
+		    document.getElementById("id_cuasStatus").innerHTML = s;
+		    config.cuas = cuas_State;
+		}
+            } else if (config_fetched) {
                 updateHtmlByConfigData(obj.config);
+		tfmcu_config = obj;
+		gmuUnpack();
             } else {
                 config_fetched = true;
                 document.getElementById("config-div").innerHTML = buildHtmlByConfigData(obj.config);
+		tfmcu_config = obj;
+		gmuUnpack();
             }
-            tfmcu_config = obj;
-            gmuUnpack();
+
         }
 
         if ("position" in obj) {
             document.getElementById('spi').value = obj.position.p;
         }
+
+	if ("mcu" in obj) {
+	    let mcu = obj.mcu;
+	    if ("chip" in mcu) {
+		document.getElementById("id_chip").innerHTML = mcu.chip;
+	    }
+	    if ("firmware" in mcu) {
+		document.getElementById("id_firmware").innerHTML = mcu.firmware;
+	    }
+	    if ("build-time" in mcu) {
+		document.getElementById("id_buildTime").innerHTML = mcu["build-time"];
+	    }
+
+	}
 
         if (this.getAutoName() in obj) {
             this.auto = obj[this.getAutoName()];
@@ -151,11 +191,23 @@ class AppState {
         postData(url, tfmcu);
     }
 
+    
+    fetchVersion() {
+
+        let tfmcu = {to:"tfmcu"};
+
+        tfmcu.mcu = { version:"?" };
+
+        let url = base+'/cmd.json';
+        postData(url, tfmcu);
+    }
+
     load() {
         tabMakeVisibleByIdx(this.tabIdx);
         this.g = this.mG;
         this.m = this.mM;
         this.tabIdx = this.mTabIdx;
+	this.fetchVersion();
         this.fetchConfig(); //FIXME: needed here for group/member numbers
 
     }
@@ -270,6 +322,23 @@ function postMcuRestart() {
     var url = base+'/cmd.json';
     postData(url, json);
 }
+
+
+function postCuasStatus() {
+    var json = { to:"tfmcu", config: { cuas:"?" } };
+    var url = base+'/cmd.json';
+    postData(url, json);
+}
+
+function postCuasStart() {
+    var json = { to:"tfmcu", config: { cu:"auto" } };
+    var url = base+'/cmd.json';
+    postData(url, json);
+    cuas_State = 0;
+    cuas_Interval = window.setInterval(postCuasStatus, 1000);
+}
+
+
 
 function postConfig() {
     let tfmcu = Object.assign({},tfmcu_config);
@@ -473,6 +542,8 @@ function onContentLoaded() {
     document.getElementById("stb").onclick = () => app_state.tabIdx = 0;
     document.getElementById("atb").onclick = () => app_state.tabIdx = 1;
     document.getElementById("ctb").onclick = () => app_state.tabIdx = 2;
+
+    document.getElementById("id_cuasb").onclick = () => postCuasStart();
 }
 
 /*

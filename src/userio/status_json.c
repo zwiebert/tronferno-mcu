@@ -44,7 +44,7 @@ uint16_t ext_buf_size;
 #define USE_CALLBACK (!ext_buf && s_json_config_out)
 #define DO_CALLBACK() s_json_config_out(BUF);
 
-void sj_set_buf(char *dst, uint16_t dst_size) {
+void  ICACHE_FLASH_ATTR sj_set_buf(char *dst, uint16_t dst_size) {
   if (dst) {
     *dst = '\0';
     ext_buf = dst;
@@ -58,11 +58,11 @@ void sj_set_buf(char *dst, uint16_t dst_size) {
 
 static const char *Obj_tag="";
 
-void so_json_set_x(const char *tag) {
+void  ICACHE_FLASH_ATTR so_json_set_x(const char *tag) {
   Obj_tag = tag;
 }
 
-void so_json_x_reply(const char *key, const char *val, bool is_number) {
+void  ICACHE_FLASH_ATTR so_json_x_reply(const char *key, const char *val, bool is_number) {
   D(ets_printf("so_json(): %s, %s, %d\n", key, val, is_number));
 
   if (key == 0 || ((json_idx + strlen(key) + strlen(val) + 6)) > BUF_SIZE) {
@@ -95,7 +95,7 @@ void so_json_x_reply(const char *key, const char *val, bool is_number) {
   D(ets_printf("json_idx: %u, buf: %s\n", json_idx, BUF));
 }
 
-int sj_config2json_buf(char *dst, uint16_t dst_size, so_msg_t key) {
+int ICACHE_FLASH_ATTR sj_config2json_buf(char *dst, uint16_t dst_size, so_msg_t key) {
 
   sj_set_buf(dst,dst_size);
   so_output_message(SO_CFG_all, "j");

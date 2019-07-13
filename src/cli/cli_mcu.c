@@ -5,7 +5,6 @@
 
 #include "userio/inout.h"
 #include "userio/status_output.h"
-#include "user_config.h"
 #include "positions/current_state.h"
 #include "automatic/timer_state.h"
 #include "setup/set_endpos.h"
@@ -27,6 +26,8 @@ int ICACHE_FLASH_ATTR
 process_parmMcu(clpar p[], int len) {
   int arg_idx;
   char buf[24];
+
+  so_output_message(SO_MCU_begin, NULL);
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -123,23 +124,13 @@ process_parmMcu(clpar p[], int len) {
 
     } else if (strcmp(key, "up-time") == 0) {
       if (*val == '?') {
-        cli_out_mcu_reply_entry(key, ltoa(run_time(), buf, 10), 0);
+        so_output_message(SO_MCU_RUN_TIME, NULL);
       } else {
         reply_message("error:mcu:up-time", "option is read-only");
       }
 
     } else if (strcmp(key, "version") == 0) {
-
-      cli_out_mcu_reply_entry("chip", MCU_TYPE, 0);
-
-      cli_out_mcu_reply_entry("firmware", strcat(strcpy(buf, "tronferno-mcu-"), APP_VERSION), 0);
-
-      char *p = strcpy(buf, ISO_BUILD_TIME);
-      do
-        if (*p == ' ')
-          *p = '-';
-      while (*++p);
-      cli_out_mcu_reply_entry("build-time", buf, 0);
+      so_output_message(SO_MCU_VERSION, NULL);
 
     } else {
       warning_unknown_option(key);
@@ -147,7 +138,8 @@ process_parmMcu(clpar p[], int len) {
 
   }
 
-  cli_out_mcu_reply_entry(NULL, NULL, -1);
+  //so_output_message(error_count ? SO_STATUS_ERROR : SO_STATUS_OK, 0);
+  so_output_message(SO_MCU_end, NULL);
 
   return 0;
 }

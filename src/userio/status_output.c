@@ -25,6 +25,7 @@
 #include "main/common.h"
 #include "main/pairings.h"
 #include "main/rtc.h"
+#include "main/cuid_auto_set.h"
 #include "misc/int_macros.h"
 #include "userio/inout.h"
 #include "userio/mqtt.h"
@@ -166,13 +167,51 @@ static void so_print_startup_info(void);
 
 void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   static uint16_t pras_msgid, cuas_msgid;
-  char buf[20];
+  char buf[64];
   int i;
 
   switch (mt) {
   case SO_FW_START_MSG_PRINT:
     so_print_startup_info();
     break;
+
+  case SO_STATUS_OK:
+    so_out_x_reply_entry_ss("status", "ok");
+    break;
+
+  case SO_STATUS_ERROR:
+    so_out_x_reply_entry_ss("status", "error");
+    break;
+
+  case SO_MCU_begin: {
+    so_out_set_tag("mcu");
+  }
+    break;
+
+  case SO_MCU_RUN_TIME: {
+    so_out_x_reply_entry_sl("run-time", run_time());
+
+  }
+    break;
+
+  case SO_MCU_VERSION: {
+    so_out_x_reply_entry_ss("chip", MCU_TYPE);
+
+    so_out_x_reply_entry_ss("firmware", strcat(strcpy(buf, "tronferno-mcu-"), APP_VERSION));
+
+    char *p = strcpy(buf, ISO_BUILD_TIME);
+    do
+      if (*p == ' ')
+        *p = '-';
+    while (*++p);
+    so_out_x_reply_entry_ss("build-time", buf);
+  }
+  break;
+
+  case SO_MCU_end:
+    so_out_x_reply_entry_ss(0, 0);
+    break;
+
 
     /////////////////////////////////////////////////////////////////////////////////
   case SO_SEP_ENABLE:
@@ -356,6 +395,12 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_CUAS_DONE:
     io_puts("U: Central Unit received and stored\n");
     reply_message("cuas=ok", 0);
+    break;
+
+  case SO_CUAS_STATE: {
+    cuas_state_T state = cuas_getState();
+    so_out_x_reply_entry_sd("cuas", state);
+  }
     break;
 
     /////////////////////////////////////////////////////////////////////////////////
