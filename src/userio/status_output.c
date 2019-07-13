@@ -96,46 +96,66 @@ gk(so_msg_t so_key) {
   return NULL;
 }
 
-void so_out_config_reply_entry2(const char *key, const char *val) {
-  if (so_cco) cli_out_config_reply_entry(key, val, 0);
+// pass only string literals as argument
+void so_out_set_tag(const char *tag) {
+  if (so_cco) cli_out_set_x(tag);
+  if (so_jco) so_json_set_x(tag);
 }
 
-void so_out_config_reply_entry(so_msg_t key, const char *val) {
-  if (so_cco) so_out_config_reply_entry2(gk(key), val);
+// provide a version of this cli-function without the third parameter
+static void cli_out_x_reply_entry2(const char *key, const char *val) {
+  cli_out_x_reply_entry(key, val, 0);
 }
 
-void so_out_config_reply_entry_s(so_msg_t key, const char *val) {
-  if (so_cco) so_out_config_reply_entry2(gk(key), val);
-  if (so_jco) so_json_config_reply(gk(key), val, false);
+void so_out_x_reply_entry(so_msg_t key, const char *val) {
+  if (so_cco) cli_out_x_reply_entry2(gk(key), val);
 }
 
-void so_out_config_reply_entry_d(so_msg_t key, int val) {
+void so_out_x_reply_entry_s(so_msg_t key, const char *val) {
+  if (so_cco) cli_out_x_reply_entry2(gk(key), val);
+  if (so_jco) so_json_x_reply(gk(key), val, false);
+}
+
+void so_out_x_reply_entry_ss(const char *key, const char *val) {
+  if (so_cco) cli_out_x_reply_entry2(key, val);
+  if (so_jco) so_json_x_reply(key, val, false);
+}
+void so_out_x_reply_entry_sd(const char *key, int val) {
   char buf[20];
   itoa(val, buf, 10);
-  if (so_cco) so_out_config_reply_entry2(gk(key), buf);
-  if (so_jco) so_json_config_reply(gk(key), buf, true);
+  if (so_cco) cli_out_x_reply_entry2(key, buf);
+  if (so_jco) so_json_x_reply(key, buf, true);
 }
 
-void so_out_config_reply_entry_l(so_msg_t key, int val) {
+void so_out_x_reply_entry_sl(const char *key, int val) {
   char buf[20];
   ltoa(val, buf, 10);
-  if (so_cco) so_out_config_reply_entry2(gk(key), buf);
-  if (so_jco) so_json_config_reply(gk(key), buf, true);
+  if (so_cco) cli_out_x_reply_entry2(key, buf);
+  if (so_jco) so_json_x_reply(key, buf, true);
 }
 
-void so_out_config_reply_entry_lx(so_msg_t key, int val) {
+void so_out_x_reply_entry_d(so_msg_t key, int val) {
+  so_out_x_reply_entry_sd(gk(key), val);
+}
+
+void so_out_x_reply_entry_l(so_msg_t key, int val) {
+  so_out_x_reply_entry_sl(gk(key), val);
+}
+
+void so_out_x_reply_entry_lx(so_msg_t key, int val) {
   char buf[20];
   ltoa(val, buf, 16);
-  if (so_cco) so_out_config_reply_entry2(gk(key), buf);
-  if (so_jco) so_json_config_reply(gk(key), buf, false); //no hex in jason. use string
+  if (so_cco) cli_out_x_reply_entry2(gk(key), buf);
+  if (so_jco) so_json_x_reply(gk(key), buf, false); //no hex in jason. use string
 }
 
-void so_out_config_reply_entry_f(so_msg_t key, float val, int n) {
+void so_out_x_reply_entry_f(so_msg_t key, float val, int n) {
   char buf[20];
   ftoa(val, buf, 5);
-  if (so_cco) so_out_config_reply_entry2(gk(key), buf);
-  if (so_jco) so_json_config_reply(gk(key), buf, true);
+  if (so_cco) cli_out_x_reply_entry2(gk(key), buf);
+  if (so_jco) so_json_x_reply(gk(key), buf, true);
 }
+
 
 
 static void so_print_timer_event_minutes(uint8_t g, uint8_t m);
@@ -197,41 +217,41 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_CFG_BAUD:
-    so_out_config_reply_entry_l(mt, C.mcu_serialBaud);
+    so_out_x_reply_entry_l(mt, C.mcu_serialBaud);
     break;
   case SO_CFG_RTC:
     if (rtc_get_by_string(buf)) {
-      so_out_config_reply_entry_s(mt, buf);
+      so_out_x_reply_entry_s(mt, buf);
     }
     break;
   case SO_CFG_CU:
-    so_out_config_reply_entry_lx(mt, C.fer_centralUnitID);
+    so_out_x_reply_entry_lx(mt, C.fer_centralUnitID);
     break;
 #ifdef USE_WLAN
   case SO_CFG_WLAN_SSID:
-    so_out_config_reply_entry_s(mt, C.wifi_SSID);
+    so_out_x_reply_entry_s(mt, C.wifi_SSID);
     break;
   case SO_CFG_WLAN_PASSWORD:
-    so_out_config_reply_entry_s(mt, *C.wifi_password ? "*" : "");
+    so_out_x_reply_entry_s(mt, *C.wifi_password ? "*" : "");
     break;
 #endif
 #ifdef USE_NTP
   case SO_CFG_NTP_SERVER:
-    so_out_config_reply_entry_s(mt, C.ntp_server);
+    so_out_x_reply_entry_s(mt, C.ntp_server);
     break;
 #endif
 #ifdef USE_MQTT
   case SO_CFG_MQTT_ENABLE:
-    so_out_config_reply_entry_d(mt, C.mqtt_enable ? 1 : 0);
+    so_out_x_reply_entry_d(mt, C.mqtt_enable ? 1 : 0);
     break;
   case SO_CFG_MQTT_URL:
-    so_out_config_reply_entry_s(mt, C.mqtt_url);
+    so_out_x_reply_entry_s(mt, C.mqtt_url);
     break;
   case SO_CFG_MQTT_USER:
-    so_out_config_reply_entry_s(mt, C.mqtt_user);
+    so_out_x_reply_entry_s(mt, C.mqtt_user);
     break;
   case SO_CFG_MQTT_PASSWORD:
-    so_out_config_reply_entry_s(mt, *C.mqtt_password ? "*" : "");
+    so_out_x_reply_entry_s(mt, *C.mqtt_password ? "*" : "");
     break;
 #else
   case SO_CFG_MQTT_ENABLE:
@@ -243,13 +263,13 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
 
 #ifdef USE_HTTP
   case SO_CFG_HTTP_ENABLE:
-    so_out_config_reply_entry_d(mt, C.http_enable ? 1 : 0);
+    so_out_x_reply_entry_d(mt, C.http_enable ? 1 : 0);
     break;
   case SO_CFG_HTTP_USER:
-    so_out_config_reply_entry_s(mt, C.http_user);
+    so_out_x_reply_entry_s(mt, C.http_user);
     break;
   case SO_CFG_HTTP_PASSWORD:
-    so_out_config_reply_entry_s(mt, *C.http_password ? "*" : "");
+    so_out_x_reply_entry_s(mt, *C.http_password ? "*" : "");
     break;
 #else
   case SO_CFG_HTTP_ENABLE:
@@ -259,33 +279,33 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
 #endif
 
   case SO_CFG_LONGITUDE:
-    so_out_config_reply_entry_f(mt, C.geo_longitude, 5);
+    so_out_x_reply_entry_f(mt, C.geo_longitude, 5);
     break;
   case SO_CFG_LATITUDE:
-    so_out_config_reply_entry_f(mt, C.geo_latitude, 5);
+    so_out_x_reply_entry_f(mt, C.geo_latitude, 5);
     break;
   case SO_CFG_TIMEZONE:
-    so_out_config_reply_entry_f(mt, C.geo_timezone, 5);
+    so_out_x_reply_entry_f(mt, C.geo_timezone, 5);
     break;
   case SO_CFG_VERBOSE:
-    so_out_config_reply_entry_d(mt, C.app_verboseOutput);
+    so_out_x_reply_entry_d(mt, C.app_verboseOutput);
     break;
     case SO_CFG_TZ:
 #ifdef POSIX_TIME
-      so_out_config_reply_entry_s(mt, C.geo_tz);
+      so_out_x_reply_entry_s(mt, C.geo_tz);
 #endif
     break;
   case SO_CFG_DST:
 #ifdef MDR_TIME
   {
     const char *dst = (C.geo_dST == dstEU ? "eu" : (C.geo_dST == dstNone ? "0" : "1"));
-    so_out_config_reply_entry_s(mt, dst);
+    so_out_x_reply_entry_s(mt, dst);
   }
 #endif
     break;
 
   case SO_CFG_GM_USED: {
-    so_out_config_reply_entry_lx(mt, C.fer_usedMembers);
+    so_out_x_reply_entry_lx(mt, C.fer_usedMembers);
   }
     break;
 
@@ -299,16 +319,17 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
       if (is_gpio_number_usable(gpio_number, true)) {
         ps[0] = pin_state_args[C.gpio[gpio_number]];
       }
-      so_out_config_reply_entry2(key, ps);
+      so_out_x_reply_entry_ss(key, ps);
     }
 #endif
     break;
 
   case SO_CFG_begin:
+    so_out_set_tag("config");
     break;
 
   case SO_CFG_end:
-    so_out_config_reply_entry_s(SO_NONE, NULL);
+    so_out_x_reply_entry_s(SO_NONE, NULL);
     break;
 
     /////////////////////////////////////////////////////////////////////////////////

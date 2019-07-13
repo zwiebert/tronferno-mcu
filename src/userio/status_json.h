@@ -11,7 +11,9 @@
 #include <stdbool.h>
 #include "status_output.h"
 
-void so_json_config_reply(const char *key, const char *val, bool is_number);
+void so_json_set_x(const char *tag);
+void so_json_x_reply(const char *key, const char *val, bool is_number);
+
 extern void (*s_json_config_out)(const char *s);
 void sj_timer2json_buf(char *dst, uint16_t dst_size, uint8_t g, uint8_t m, bool wildcard);
 const char *sj_timer2json(uint8_t g, uint8_t m);

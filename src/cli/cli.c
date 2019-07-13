@@ -26,6 +26,14 @@ fer_sender_basic default_sender;
 fer_sender_basic last_received_sender;
 uint16_t msgid;
 
+const char *Obj_tag="";
+#define SET_OBJ_TAG(tag) Obj_tag=(tag)
+#define OBJ_TAG (Obj_tag+0)
+#define OBJ_TAG_TIMER "timer"
+#define OBJ_TAG_CONFIG "config"
+#define OBJ_TAG_MCU "mcu"
+#define OBJ_TAG_SEND "send"
+
 
 static void ICACHE_FLASH_ATTR cli_out_top_tag(void) {
     io_puts("tf: ");
@@ -39,48 +47,33 @@ static void ICACHE_FLASH_ATTR cli_out_reply_tag(void) {
   }
 }
 
-static void ICACHE_FLASH_ATTR cli_out_timer_tag(void) {
-    io_puts("timer: ");
+static void ICACHE_FLASH_ATTR cli_out_obj_tag(void) {
+    io_puts(OBJ_TAG), io_puts(":");
 }
 
-static void ICACHE_FLASH_ATTR cli_out_config_tag(void) {
-    io_puts("config:");
+static void ICACHE_FLASH_ATTR cli_out_start_reply(void) {
+  cli_out_top_tag();
+  cli_out_reply_tag();
+  cli_out_obj_tag();
 }
-
-static void ICACHE_FLASH_ATTR cli_out_send_tag(void) {
-    io_puts("send:");
-}
-
-static void ICACHE_FLASH_ATTR cli_out_mcu_tag(void) {
-    io_puts("mcu:");
-}
-
 
 
 static void ICACHE_FLASH_ATTR cli_out_start_timer_reply(void) {
-  cli_out_top_tag();
-  cli_out_reply_tag();
-  cli_out_timer_tag();
+  SET_OBJ_TAG(OBJ_TAG_TIMER);
+  cli_out_start_reply();
 }
 
 
 static void ICACHE_FLASH_ATTR cli_out_start_config_reply(void) {
-  cli_out_top_tag();
-  cli_out_reply_tag();
-  cli_out_config_tag();
+  SET_OBJ_TAG(OBJ_TAG_CONFIG);
+  cli_out_start_reply();
 }
 
 static void ICACHE_FLASH_ATTR cli_out_start_mcu_reply(void) {
-  cli_out_top_tag();
-  cli_out_reply_tag();
-  cli_out_mcu_tag();
+  SET_OBJ_TAG(OBJ_TAG_MCU);
+  cli_out_start_reply();
 }
 
-static void ICACHE_FLASH_ATTR cli_out_start_config_bc(void) {
-  cli_out_top_tag();
-  //cli_out_reply_tag();
-  cli_out_config_tag();
-}
 
 typedef void (*void_fun_ptr)(void);
 const int OUT_MAX_LEN = 80;

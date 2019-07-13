@@ -56,7 +56,13 @@ void sj_set_buf(char *dst, uint16_t dst_size) {
   }
 }
 
-void so_json_config_reply(const char *key, const char *val, bool is_number) {
+static const char *Obj_tag="";
+
+void so_json_set_x(const char *tag) {
+  Obj_tag = tag;
+}
+
+void so_json_x_reply(const char *key, const char *val, bool is_number) {
   D(ets_printf("so_json(): %s, %s, %d\n", key, val, is_number));
 
   if (key == 0 || ((json_idx + strlen(key) + strlen(val) + 6)) > BUF_SIZE) {
@@ -79,7 +85,7 @@ void so_json_config_reply(const char *key, const char *val, bool is_number) {
 
 
   if (json_idx == 0) {
-    strcpy(BUF, "{\"from\":\"tfmcu\",\"config\":{");
+    sprintf(BUF, "{\"from\":\"tfmcu\",\"%s\":{", Obj_tag);
     json_idx = strlen(BUF);
   }
 

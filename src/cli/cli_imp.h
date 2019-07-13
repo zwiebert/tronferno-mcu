@@ -38,9 +38,13 @@ void msg_print(const char *msg, const char *tag);
 void reply_print(const char *tag);
 void reply_message(const char *tag, const char *msg);
 void reply_id_message(uint16_t id, const char *tag, const char *msg);
+
 void cli_out_timer_reply_entry(const char *key, const char *val, int len);
 void cli_out_config_reply_entry(const char *key, const char *val, int len);
 void cli_out_mcu_reply_entry(const char *key, const char *val, int len);
+void cli_out_set_x(const char *obj_tag);
+void cli_out_x_reply_entry(const char *key, const char *val, int len);
+
 int process_parmSend(clpar p[], int len);
 int process_parmConfig(clpar p[], int len);
 int process_parmMcu(clpar p[], int len);
