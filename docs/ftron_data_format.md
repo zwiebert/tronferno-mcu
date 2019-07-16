@@ -14,7 +14,7 @@ Basics
 
 Fernotron works uni-directional:
 
-A controller device transmits a message on 443 MHz and all receiving devices listen and filter out the messages addressed to them, or the group they belong to. They cannot acknowledge to the sender, that they received the data.  They can only give feedback to the user itself, by moving the shutter a bit when they have succesfully received a command which not involves moving the shutter directly.
+A controller device transmits a message on 434 MHz and all receiving devices listen and filter out the messages addressed to them, or the group they belong to. They cannot acknowledge to the sender, that they received the data.  They can only give feedback to the user itself, by moving the shutter a bit when they have succesfully received a command which not involves moving the shutter directly.
 
 
 Each device has an unique ID. On motors this ID is usually printed on the motor itself and on some sticker on the cable. That ID can be used to access the motor without having to press the physical set button, which may not easy accessible.
@@ -33,7 +33,7 @@ Additionally, each receiver keeps a list in its persistent memory, containing se
 Message "Envelope"
 ==================
 
-Simple messages like up/down/stop are are encoded into 5 bytes.  If you counted 6 bytes in log output ... yes its really 6, but the 6th contains just a check-sum of that 5 bytes. You may have looked at the data, which actually is sent via 443 MHz, and it looks much more than just 6 bytes ... ok, there really are 12 words of 10bit. The lower 8bit of each word pair is identical to one of the 6 bytes  (word 0/1 = byte 0, word 2/3 = byte 1, ...  word 10/11 = byte 6). The 2 extra bit in each word contain bit parity and indicate if a word is odd or even-numbered.  ... so its really only 5 data bytes. These contain all the addressing info:
+Simple messages like up/down/stop are are encoded into 5 bytes.  If you counted 6 bytes in log output ... yes its really 6, but the 6th contains just a check-sum of that 5 bytes. You may have looked at the data, which actually is sent via 434 MHz, and it looks much more than just 6 bytes ... ok, there really are 12 words of 10bit. The lower 8bit of each word pair is identical to one of the 6 bytes  (word 0/1 = byte 0, word 2/3 = byte 1, ...  word 10/11 = byte 6). The 2 extra bit in each word contain bit parity and indicate if a word is odd or even-numbered.  ... so its really only 5 data bytes. These contain all the addressing info:
 ```
  bytes 0,1,2: this is the address-field which contains the 3 byte device ID
  byte 3 high nibble: A counter which may increment with each button press
@@ -94,7 +94,7 @@ Now for the message content. Simple messages can fit into the nibble we have lef
 
 byte 4 low nibble: command code number. e.g. stop (encoded as number 3), up (4), down (5), ...
 
-Longer messages are required to set the RTC and set the built-in timers.
+To set the RTC and the built-in timers longer messages are required.
 ```
 message up/down/stop/etc                 ; 4.5 + 0.5 bytes
 message timer rtc-data                   ; 4.5 + 0.5 + 8 bytes
