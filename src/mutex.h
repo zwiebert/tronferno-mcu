@@ -11,7 +11,7 @@
 #include "user_config.h"
 
 #ifdef USE_MUTEX
-void mutex_cliTake();
+bool mutex_cliTake();
 void mutex_cliGive();
 #else
 #define mutex_cliTake()

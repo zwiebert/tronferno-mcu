@@ -406,24 +406,24 @@ struct {
 int ICACHE_FLASH_ATTR
 process_parm(clpar p[], int len) {
   int i;
-  int result = 0;
-  mutex_cliTake();
+  int result = -1;
 
-  // if in sep mode, don't accept commands FIXME
-  if (sep_is_enabled()) {
-    sep_disable();
-    reply_message(0, "error: CLI is disabled in set-endposition-mode\n");
-    result = -1;
-  } else {
-    for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
-      if (strcmp(p[0].key, parm_handlers[i].parm) == 0) {
-        result = parm_handlers[i].process_parmX(p, len);
-        break;
+  if (mutex_cliTake()) {
+
+    // if in sep mode, don't accept commands FIXME
+    if (sep_is_enabled()) {
+      sep_disable();
+      reply_message(0, "error: CLI is disabled in set-endposition-mode\n");
+    } else {
+      for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
+        if (strcmp(p[0].key, parm_handlers[i].parm) == 0) {
+          result = parm_handlers[i].process_parmX(p, len);
+          break;
+        }
       }
     }
+    mutex_cliGive();
   }
-
-  mutex_cliGive();
 
   return result;
 }

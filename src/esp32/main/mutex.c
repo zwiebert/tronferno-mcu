@@ -23,8 +23,13 @@ void mutex_setup() {
 
 }
 
-void mutex_cliTake() {
-  xSemaphoreTake(cli_mutex, portMAX_DELAY);
+bool mutex_cliTake() {
+  if (xSemaphoreTake(cli_mutex, portMAX_DELAY)) {
+    return true;
+  } else {
+   //XXX restart MCU or something
+    return false;
+  }
 }
 void mutex_cliGive() {
   xSemaphoreGive(cli_mutex);
