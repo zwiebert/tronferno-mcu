@@ -17,6 +17,7 @@
 #include "cli_imp.h"
 #include "userio/status_output.h"
 #include "automatic/timer_data.h"
+#include "mutex.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 #define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
@@ -405,19 +406,26 @@ struct {
 int ICACHE_FLASH_ATTR
 process_parm(clpar p[], int len) {
   int i;
+  int result = 0;
+  mutex_cliTake();
 
   // if in sep mode, don't accept commands FIXME
   if (sep_is_enabled()) {
     sep_disable();
     reply_message(0, "error: CLI is disabled in set-endposition-mode\n");
-    return -1;
+    result = -1;
+  } else {
+    for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
+      if (strcmp(p[0].key, parm_handlers[i].parm) == 0) {
+        result = parm_handlers[i].process_parmX(p, len);
+        break;
+      }
+    }
   }
 
-  for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
-    if (strcmp(p[0].key, parm_handlers[i].parm) == 0)
-      return parm_handlers[i].process_parmX(p, len);
-  }
-  return 0;
+  mutex_cliGive();
+
+  return result;
 }
 
 void ICACHE_FLASH_ATTR

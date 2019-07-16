@@ -16,12 +16,11 @@ static SemaphoreHandle_t cli_mutex;
 
 void mutex_setup() {
 
-  void vATask(void * pvParameters) {
-    /* Create a mutex type semaphore. */
-    cli_mutex = xSemaphoreCreateMutex();
+  /* Create a mutex type semaphore. */
+  cli_mutex = xSemaphoreCreateMutex();
 
-    assert(cli_mutex);
-  }
+  assert(cli_mutex);
+
 }
 
 void mutex_cliTake() {
