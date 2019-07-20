@@ -14,6 +14,7 @@
 //#undef USE_NTP
 //#undef USE_WLAN
 //#undef USE_MQTT
+#undef USE_LAN
 #undef CONFIG_BLOB
 //#undef ACCESS_GPIO
 #define CONFIG_GPIO_SIZE 40

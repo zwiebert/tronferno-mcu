@@ -33,6 +33,9 @@ const char help_parmConfig[]  =
     "wlan-ssid=(SSID|?)\n"
     "wlan-password=PW\n"
 #endif
+#ifdef USE_NETWORK
+    "network=(wlan|ap|lan) ap opens wlan access-point at 192.168.4.1 (restart required)"
+#endif
 #ifdef USE_NTP
     "ntp-server=(dhcp|IP4ADDR|NAME) default: ntp.pool.org (TODO: implement list of servers)\n"
 #endif

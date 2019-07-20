@@ -5,6 +5,7 @@
  *      Author: bertw
  */
 
+#include "user_config.h"
 #include "../main/pin.h"
 
 #include "freertos/FreeRTOS.h"
