@@ -1,4 +1,6 @@
 #include "user_config.h"
+
+#include "cli/cli_config.h"
 #include <string.h>
 
 #include "../userio/status_output.h"
@@ -65,6 +67,27 @@ const char help_parmConfig[]  =
 #endif
 //  "set-expert-password=\n"
 ;
+
+//key strings used for parsing and printing config commands by CLI/HTTP/MQTT
+//keys must be in same order as their SO_CFG_xxx counterparts in so_msg_t
+const char *const cfg_keys[SO_CFG_size] = {
+    "cu", "baud", "rtc",
+    "network", "wlan-ssid", "wlan-password", "ntp-server",
+    "longitude", "latitude", "timezone", "dst", "tz", "verbose",
+    "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password",
+    "http-enable", "http-user", "http-password",
+    "gm-used",
+};
+
+const char *const cfg_args_network[nwLEN] = {
+    ARG_NW_NONE, ARG_NW_WLAN, ARG_NW_WLAN_AP, ARG_NW_LAN,
+};
+
+const char *const *cfg_args[SO_CFG_size] = {
+
+};
+
+
 
 int ICACHE_FLASH_ATTR
 process_parmConfig(clpar p[], int len) {
@@ -146,6 +169,22 @@ process_parmConfig(clpar p[], int len) {
           save_config(CONFIG_VERBOSE);
         }
         break;
+#ifdef USE_NETWORK
+        case SO_CFG_NETWORK: {
+          bool success = false;
+          for (int i=0; i < nwLEN; ++i) {
+            if (strcmp(val, cfg_args_network[i]) == 0) {
+              C.network = i;
+              save_config(CONFIG_NETWORK_CONNECTION);
+              success = true;
+              break;
+            }
+          }
+          if (!success)
+            reply_failure();
+        }
+        break;
+#endif
 #ifdef USE_WLAN
         case SO_CFG_WLAN_SSID: {
           if (strlen(val) < sizeof (C.wifi_SSID)) {

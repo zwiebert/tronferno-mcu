@@ -33,11 +33,7 @@
 #ifdef CONFIG_MY_MCU_UART_BAUD_RATE
 #define MY_MCU_UART_BAUD_RATE CONFIG_MY_MCU_UART_BAUD_RATE
 #else
-#ifdef MCU_ATMEGA328
-#define MY_MCU_UART_BAUD_RATE 57600
-#else
 #define MY_MCU_UART_BAUD_RATE 115200
-#endif
 #endif
 #endif
 
@@ -178,6 +174,11 @@
 #endif
 #endif
 
+#ifndef MY_NETWORK_CONNECTION
+#define MY_NETWORK_CONNECTION nwWlanAp
+#define MY_NETWORK_CONNECTION_OLD_USERS nwWlanSta
+#endif
+
 /*
  esp-idf: kconfig does not support float numbers...
 config MY_GEO_LONGITUDE
@@ -215,6 +216,12 @@ enum rtclock {
 enum verbosity {
 	vrbNone, vrb1, vrb2, vrb3, vrb4, vrbDebug
 };
+
+#ifdef USE_NETWORK
+enum nwConnection {
+  nwNone, nwWlanSta, nwWlanAp, nwLan, nwLEN,
+};
+#endif
 
 typedef struct {
 	uint32_t fer_centralUnitID, mcu_serialBaud;
@@ -257,6 +264,9 @@ typedef struct {
 #ifdef USE_NTP
   char ntp_server[64];
 #endif
+#ifdef USE_NETWORK
+  enum nwConnection network;
+#endif
 } config;
 
 extern config C;
@@ -287,6 +297,7 @@ CB_HTTP_USER,
 CB_HTTP_PASSWD,
 CB_HTTP_ENABLE,
 CB_NTP_SERVER,
+CB_NW_CONN,
 };
 
 #define CONFIG_ALL (~0UL)
@@ -313,5 +324,6 @@ CB_NTP_SERVER,
 #define CONFIG_HTTP_PASSWD (1UL << CB_HTTP_PASSWD)
 #define CONFIG_HTTP_ENABLE (1UL << CB_HTTP_ENABLE)
 #define CONFIG_NTP_SERVER (1UL << CB_NTP_SERVER)
+#define CONFIG_NETWORK_CONNECTION (1UL << CB_NW_CONN)
 #endif /* CONFIG_H_ */
 

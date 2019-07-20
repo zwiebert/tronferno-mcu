@@ -24,8 +24,15 @@
 
 #define printf ets_uart_printf
 
+
+#ifndef USE_LAN
 #define RFOUT_GPIO GPIO_NUM_22
 #define RFIN_GPIO GPIO_NUM_17
+#else
+#define RFOUT_GPIO GPIO_NUM_16
+#define RFIN_GPIO GPIO_NUM_15 //XXX
+#endif
+
 #define BUTTON_GPIO GPIO_NUM_6
 
 #define RESERVED_GPIO (1ULL<<RFOUT_GPIO|1ULL<<RFIN_GPIO|1ULL<<BUTTON_GPIO)

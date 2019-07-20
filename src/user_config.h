@@ -9,8 +9,11 @@
 
 #define FER_TRANSMITTER
 #define FER_RECEIVER
+#define USE_NETWORK
 #define USE_NTP
 #define USE_WLAN
+#define USE_WLAN_AP
+#define USE_LAN
 #define USE_MQTT
 #define USE_HTTP
 #define CONFIG_BLOB
@@ -21,6 +24,8 @@
 #define USE_PAIRINGS
 #define USE_JSON
 #define USE_MUTEX
+
+#define OLIMEX_ESP32_GATEWAY // XXX
 
 // ESP8266 configuration
 #if defined MCU_ESP8266

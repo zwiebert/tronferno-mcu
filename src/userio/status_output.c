@@ -21,6 +21,7 @@
 
 #include "automatic/timer_state.h"
 #include "cli/cli_imp.h" // FIXME?
+#include "cli/cli_config.h"
 #include "config/config.h"
 #include "main/common.h"
 #include "main/pairings.h"
@@ -35,17 +36,6 @@
 #define D(x)
 
 uint8_t so_target;
-
-//key strings used for parsing and printing config commands by CLI/HTTP/MQTT
-//keys must be in same order as their SO_CFG_xxx counterparts in so_msg_t
-const char * const cfg_keys[] = {
-    "cu", "baud", "rtc",
-    "wlan-ssid", "wlan-password", "ntp-server",
-    "longitude", "latitude", "timezone", "dst", "tz", "verbose",
-    "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password",
-    "http-enable", "http-user", "http-password",
-    "gm-used",
-};
 
 bool out_cli = true;
 bool out_js = true;
@@ -82,7 +72,7 @@ char *ICACHE_FLASH_ATTR ftoa(float f, char *buf, int n) {
 so_msg_t ICACHE_FLASH_ATTR
 so_parse_config_key(const char *k) {
   int i;
-  for (i = 0; i < (sizeof cfg_keys / sizeof cfg_keys[0]); ++i) {
+  for (i = 0; i < (SO_CFG_end - SO_CFG_begin); ++i) {
     if (0 == strcmp(k, cfg_keys[i]))
       return i + SO_CFG_begin + 1;
   }
@@ -266,6 +256,11 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_CFG_CU:
     so_out_x_reply_entry_lx(mt, C.fer_centralUnitID);
     break;
+#ifdef USE_NETWORK
+  case SO_CFG_NETWORK:
+    so_out_x_reply_entry_s(mt, cfg_args_network[C.network]);
+    break;
+#endif
 #ifdef USE_WLAN
   case SO_CFG_WLAN_SSID:
     so_out_x_reply_entry_s(mt, C.wifi_SSID);

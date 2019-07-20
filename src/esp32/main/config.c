@@ -62,6 +62,9 @@ config C = {
 #ifdef USE_NTP
   .ntp_server = MY_NTP_SERVER,
 #endif
+#ifdef USE_NETWORK
+  .network = MY_NETWORK_CONNECTION,
+#endif
 };
 
 #ifdef CONFIG_BLOB
@@ -197,6 +200,13 @@ void read_config(uint32_t mask) {
         C.http_enable = temp;
     }
 #endif
+#ifdef USE_NETWORK
+    if (mask & CONFIG_NETWORK_CONNECTION) {
+      int8_t temp;
+      if (ESP_OK == nvs_get_i8(handle, "C_NW_CONN", &temp))
+        C.network = temp;
+    }
+#endif
 
     nvs_close(handle);
   }
@@ -298,6 +308,11 @@ void save_config(uint32_t mask) {
       nvs_set_i8(handle, "C_HTTP_ENABLE", C.http_enable);
     }
 #endif
+#ifdef USE_NETWORK
+    if (mask & CONFIG_NETWORK_CONNECTION) {
+      nvs_set_i8(handle, "C_NW_CONN", C.network);
+    }
+#endif
     nvs_commit(handle);
     nvs_close(handle);
   } else {
@@ -305,4 +320,14 @@ void save_config(uint32_t mask) {
   }
 }
 
+void config_setup() {
+  read_config(~0);
+#ifdef USE_NETWORK
+  // for old users without network configuration, do not start with WLAN AP by default
+  if (C.wifi_SSID[0] != '\0') {
+    C.network = MY_NETWORK_CONNECTION_OLD_USERS;
+    read_config(CONFIG_NETWORK_CONNECTION);
+  }
+#endif
+}
 #endif

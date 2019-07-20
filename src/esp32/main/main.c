@@ -53,13 +53,45 @@ mcu_init() {
 #if ENABLE_SPIFFS
   setup_spiffs();
 #endif
-  read_config(~0);
+  void config_setup(void);
+  config_setup();
+
+
  // setup_serial(C.mcu_serialBaud);
   io_puts("\r\n\r\n");
 
-  //setup_notImplemented();
+  ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+#ifdef USE_NETWORK
+  void ethernet_setup(void);
+  void wifistation_setup(void);
+  void wifiAp_setup(void);
+  switch (C.network) {
+#ifdef USE_WLAN
+  case nwWlanSta:
+    tcpip_adapter_init();
+    wifistation_setup();
+    break;
+#endif
+#ifdef USE_WLAN_AP
+  case nwWlanAp:
+    tcpip_adapter_init();
+    wifiAp_setup();
+    break;
+#endif
+#ifdef USE_LAN
+  case nwLan:
+    tcpip_adapter_init();
+    ethernet_setup();
+#endif
+    break;
+  default:
+    break;
+  }
+#else
+  wifistation_setup();
+#endif
   setup_pin();
-  setup_wifistation();
 #ifdef USE_NTP
   setup_ntp();
 #endif
@@ -83,6 +115,14 @@ void app_main(void) {
   mcu_init();
 
   while (1) {
+#ifdef USE_LAN
+    void ethernet_loop(void);
+    ethernet_loop();
+#endif
+#ifdef USE_WLAN
+    void wifistation_loop(void);
+    wifistation_loop();
+#endif
     tcps_loop();
     loop();
     vTaskDelay(25 / portTICK_PERIOD_MS);
