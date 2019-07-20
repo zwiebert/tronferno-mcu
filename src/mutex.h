@@ -14,7 +14,7 @@
 bool mutex_cliTake();
 void mutex_cliGive();
 #else
-#define mutex_cliTake()
+#define mutex_cliTake() true
 #define mutex_cliGive()
 #endif
 

@@ -21,6 +21,7 @@ extern const char *const build_time;
 #undef USE_HTTP
 #undef USE_JSON
 #undef USE_MUTEX
+#undef USE_NETWORK
 
 #define CONFIG_GPIO_SIZE 17
 // SPIFFS is currently unused

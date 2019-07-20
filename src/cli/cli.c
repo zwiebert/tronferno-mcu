@@ -395,9 +395,6 @@ struct {
                       { "timer", process_parmTimer, help_parmTimer },
                       { "auto", process_parmTimer, help_parmTimer }, // alias
                       { "help", process_parmHelp, help_parmHelp },
-#if ENABLE_EXPERT
-                      { "expert", process_parmExpert, help_None},
-#endif
 #ifdef USE_PAIRINGS
                       { "pair", process_parmPair, help_parmPair},
 #endif

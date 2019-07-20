@@ -79,9 +79,11 @@ const char *const cfg_keys[SO_CFG_size] = {
     "gm-used",
 };
 
+#ifdef USE_NETWORK
 const char *const cfg_args_network[nwLEN] = {
     ARG_NW_NONE, ARG_NW_WLAN, ARG_NW_WLAN_AP, ARG_NW_LAN,
 };
+#endif
 
 const char *const *cfg_args[SO_CFG_size] = {
 
