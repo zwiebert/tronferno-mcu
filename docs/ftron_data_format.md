@@ -54,7 +54,7 @@ Explaining the Device ID
 
    * ID of a receiver (9xxxx):  A motor has a designated 5 digit hex code number. This number is printed on the motor itself and on the cable-sticker. 5 digits are 5 nibbles or 2.5 bytes, not 3.  Prefix these 2.5 bytes with number 9. This will be the Device ID of the Receiver.  If, for example, your original 2411 central unit gets destroyed, you need to press the set button of a motor to pair it to your new 2411. Or you can add that code into your new 2411 and send the "press the button" command via RF to that motor.
 
-   * ID of central unit (8xxxx). Its not printed out anywhere, because there is no need to know it, when using the original hardware.
+   * ID of central unit (8xxxx). Its printed on a label inside the battery compartment.
 
   Example: To pair a motor with a central unit, you first press the set button on the motor. Now you send a "Stop" command to Number 3 of Group 2.  The 5-byte command sent will contain:
 
