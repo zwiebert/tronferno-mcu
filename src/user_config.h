@@ -24,10 +24,9 @@
 #define USE_PAIRINGS
 #define USE_JSON
 #define USE_MUTEX
+#define USE_OTA
 
-#define OLIMEX_ESP32_GATEWAY // XXX
 
-// ESP8266 configuration
 #if defined MCU_ESP8266
 #include "esp8266/esp8266_user_config.h"
 #elif defined MCU_ESP32

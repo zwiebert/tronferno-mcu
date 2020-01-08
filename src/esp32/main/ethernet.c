@@ -31,19 +31,16 @@ extern ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
 
 #define USE_PHY_LAN_8720
 #define PHY_ADDR 0
-#define CONFIG_PHY_USE_POWER_PIN 1
 #define CONFIG_PHY_POWER_PIN GPIO_NUM_12
 
 #elif defined OLIMEX_ESP32_GATEWAY
 
 #define USE_PHY_LAN_8720
 #define PHY_ADDR 0
-#define CONFIG_PHY_USE_POWER_PIN 1
 #define CONFIG_PHY_POWER_PIN GPIO_NUM_5
 
 #else
 #define USE_PHY_LAN_8720
-#define CONFIG_PHY_USE_POWER_PIN 1
 #define CONFIG_PHY_POWER_PIN GPIO_NUM_5
 #endif
 
@@ -58,7 +55,7 @@ static const char *TAG = "eth_example";
 
 #define PIN_PHY_POWER CONFIG_PHY_POWER_PIN
 
-#ifdef CONFIG_PHY_USE_POWER_PIN
+#ifdef CONFIG_PHY_POWER_PIN
 
 static esp_err_t (*orig_pwrctl)(esp_eth_phy_t *phy, bool enable);
 
@@ -160,7 +157,7 @@ void ethernet_setup() {
     ESP_ERROR_CHECK(esp_event_handler_register(ETH_EVENT, ESP_EVENT_ANY_ID, &eth_event_handler, NULL));
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_ETH_GOT_IP, &got_ip_event_handler, NULL));
 
-#ifdef CONFIG_PHY_USE_POWER_PIN
+#ifdef CONFIG_PHY_POWER_PIN
     gpio_pad_select_gpio(PIN_PHY_POWER);
     gpio_set_direction(PIN_PHY_POWER, GPIO_MODE_OUTPUT);
     gpio_set_level(PIN_PHY_POWER, 1);
@@ -178,7 +175,7 @@ void ethernet_setup() {
 #ifdef USE_PHY_LAN_8720
     esp_eth_phy_t *phy = esp_eth_phy_new_lan8720(&phy_config);
 #endif
-#ifdef CONFIG_PHY_USE_POWER_PIN
+#ifdef CONFIG_PHY_POWER_PIN
     orig_pwrctl = phy->pwrctl;
     phy->pwrctl = phy_device_power_enable_via_gpio;
 #endif

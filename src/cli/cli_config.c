@@ -176,8 +176,19 @@ process_parmConfig(clpar p[], int len) {
         break;
 #ifdef USE_NETWORK
         case SO_CFG_NETWORK: {
+          NODEFAULT();
           bool success = false;
           for (int i=0; i < nwLEN; ++i) {
+#ifndef USE_LAN
+            if (i == nwLan)  {
+              continue;
+            }
+#endif
+#ifndef USE_WLAN
+            if (i == nwWlanSta || i == nwWlanAp)  {
+              continue;
+            }
+#endif
             if (strcmp(val, cfg_args_network[i]) == 0) {
               C.network = i;
               save_config(CONFIG_NETWORK_CONNECTION);

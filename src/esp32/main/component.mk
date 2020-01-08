@@ -10,7 +10,7 @@
 #COMPONENT_ADD_INCLUDEDIRS = /home/bertw/proj/mcu/tronferno-mcu/user
 COMPONENT_PRIV_INCLUDEDIRS = ../..
 COMPONENT_SRCDIRS += ../../main ../../misc ../../cli ../../fernotron ../../automatic ../../positions ../../setup ../../config ../../userio ../../debug ../../storage ../../userio/http_data
-
+COMPONENT_EMBED_TXTFILES := ca_cert.pem
 
 ifdef DISTRO
 ifeq ($(DISTRO),1)
@@ -19,5 +19,15 @@ endif
 endif
 
 CPPFLAGS += -DMCU_ESP32
+
+ifdef BOARD_ESP32POE
+CPPFLAGS+=-DBOARD_ESP32POE
+else
+ifdef BOARD_ESP32GATEWAY
+CPPFLAGS+=-DBOARD_ESP32GATEWAY
+else
+CPPFLAGS+=-DBOARD_ESP32WLAN
+endif
+endif
 
 #COMPONENT_DEPENDS += ../../userio/http_data

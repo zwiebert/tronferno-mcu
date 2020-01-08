@@ -11,6 +11,7 @@
 #include "misc/bcd.h"
 #include "main/rtc.h"
 #include "cli_imp.h"
+#include "esp32/main/ota.h"
 
 const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #if ENABLE_SPIFFS
@@ -131,7 +132,12 @@ process_parmMcu(clpar p[], int len) {
 
     } else if (strcmp(key, "version") == 0) {
       so_output_message(SO_MCU_VERSION, NULL);
-
+#ifdef USE_OTA
+    } else if (strcmp(key, "ota") == 0) {
+      ets_printf("do ota update from given URL\n");
+      ota_doUpdate(val);
+      // mcu ota=http://192.168.1.70:8000/tronferno-mcu.bin;
+#endif
     } else {
       warning_unknown_option(key);
     }
