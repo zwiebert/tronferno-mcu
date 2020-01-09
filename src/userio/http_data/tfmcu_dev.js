@@ -1,5 +1,5 @@
 var base = '';
-var base = 'http://192.168.1.53'; //dev-delete-line//
+var base = 'http://192.168.1.69'; //dev-delete-line//
 
 var gmu = [0,1,2,3,4,5,6,7];
 var gu = [0,1,2,3,4,5,6,7];
@@ -10,24 +10,19 @@ let config_fetched = false;
 let cuas_Interval;
 let cuas_State = 0;
 
-
 class AppState {
 
     constructor() {
         this.mG = Number.parseInt((localStorage.getItem("group") || "0"), 10);
         this.mM = Number.parseInt((localStorage.getItem("member") || "0"), 10);
-        this.mTabIdx = Number.parseInt((localStorage.getItem("tab_index") || "0"), 10);
+        this.mTabVisibility = Number.parseInt((localStorage.getItem("tab_vis") || "1"), 10);
         this.mAuto = {link:{}, auto:{}};
     }
 
-    get tabIdx() {
-        return this.mTabIdx;
-    }
-
-    set tabIdx(value) {
-        this.mTabIdx = value;
-        localStorage.setItem("tab_index", value.toString());
-        tabMakeVisibleByIdx(value);
+    set tabVisibility(value) {
+	this.mTabVisibility = value;
+        localStorage.setItem("tab_vis", value.toString());
+	tabSwitchVisibility(value);
     }
 
     get g() {
@@ -191,7 +186,7 @@ class AppState {
         postData(url, tfmcu);
     }
 
-    
+
     fetchVersion() {
 
         let tfmcu = {to:"tfmcu"};
@@ -203,13 +198,12 @@ class AppState {
     }
 
     load() {
-        tabMakeVisibleByIdx(this.tabIdx);
         this.g = this.mG;
         this.m = this.mM;
         this.tabIdx = this.mTabIdx;
 	this.fetchVersion();
         this.fetchConfig(); //FIXME: needed here for group/member numbers
-
+        this.tabSwitchVisibility = this.mTabVisibility;
     }
 
 }
@@ -405,6 +399,16 @@ function postSendCommand(c=document.getElementById('send-c').value) {
     postData(url, tfmcu);
 }
 
+function netFirmwareOTA(fwUrl) {
+    // TODO: validate URL here
+    var netmcu = {to:"tfmcu"};
+    netmcu.mcu = {
+	ota: fwUrl
+    };
+    let url = base+'/cmd.json';
+    console.log("url: "+url);
+    postData(url, netmcu);
+}
 
 function getGuIdx() {
     let val = app_state.g;
@@ -496,9 +500,32 @@ function clearAutomatic() {
     document.getElementById('tmci').checked = false;
 }
 
-let tabButtons = ["stb", "atb", "ctb"];
+const VIS_SEND = 0x01;
+const VIS_AUTO  = 0x02;
+const VIS_CONFIG = 0x04;
+const VIS_FIRMWARE = 0x08;
 
-function tabMakeVisibleByIdx(idx) {
+let tabs = [
+    { 'mask':1, 'button_id':'stb', 'div_id':'senddiv' },
+    { 'mask':2, 'button_id':'atb', 'div_id':'autodiv' },
+    { 'mask':4, 'button_id':'ctb', 'div_id':'configdiv' },
+    { 'mask':8, 'button_id':'ftb', 'div_id':'id-fwDiv' }
+];
+
+
+function tabSwitchVisibility(mask) {
+    const NONE = "none";
+    const SHOW = "";
+    const BGC1 = "hsl(220, 60%, 60%)";
+    const BGC0 = "#eee";
+
+    for (let i=0; i < tabs.length; ++i) {
+        document.getElementById(tabs[i].div_id).style.display = (mask & tabs[i].mask) ? SHOW : NONE;
+        document.getElementById(tabs[i].button_id).style.backgroundColor =  (mask & tabs[i].mask) ? BGC1 : BGC0;
+    }
+}
+
+function tabMakeVisibleByIdx_OLD(idx) {
     let sendCont =  document.getElementById("senddiv");
     let autoCont =  document.getElementById("autodiv");
     let confCont =  document.getElementById("configdiv");
@@ -550,9 +577,21 @@ function onContentLoaded() {
 
     document.getElementById("mrtb").onclick = () => postMcuRestart();
 
-    document.getElementById("stb").onclick = () => app_state.tabIdx = 0;
-    document.getElementById("atb").onclick = () => app_state.tabIdx = 1;
-    document.getElementById("ctb").onclick = () => app_state.tabIdx = 2;
+    document.getElementById("netota").onclick = () => netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);
+    document.getElementById("netota_master").onclick = () => netFirmwareOTA('http://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/master/firmware/esp32/tronferno-mcu.bin');
+    //document.getElementById("netota_beta").onclick = () => netFirmwareOTA('http://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/beta/firmware/esp32/tronferno-mcu.bin');
+    document.getElementById("netota_beta").onclick = () => netFirmwareOTA('http://67.199.248.10/37NTwvp'); //bit.ly/
+
+    //151.101.112.133
+
+
+
+
+//https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/beta/firmware/atmega328/fernotron.hex
+    for (let i=0; i < tabs.length; ++i) {
+        let tab = tabs[i];
+        document.getElementById(tab.button_id).onclick = () => app_state.tabVisibility = tab.mask;
+    }
 
     document.getElementById("id_cuasb").onclick = () => postCuasStart();
 }

@@ -77,6 +77,8 @@ typedef enum {
   SO_MCU_begin, SO_MCU_BOOT_COUNT, SO_MCU_RUN_TIME, SO_MCU_VERSION, SO_MCU_end,
   SO_STATUS_OK, SO_STATUS_ERROR,
 
+  SO_OTA_RUN, SO_OTA_FAIL, SO_OTA_DONE,
+
 
 } so_msg_t;
 

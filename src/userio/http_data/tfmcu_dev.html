@@ -159,6 +159,7 @@
   <button class="tablinks" id="stb">Command</button>
   <button class="tablinks" id="atb">Automatic</button>
   <button class="tablinks" id="ctb">Configuration</button>
+  <button class="tablinks" id="ftb">Firmware-Update</button>
 </div>
 
     <div  class="container tabcontent">
@@ -268,6 +269,21 @@
       </ul>
       </section>
     </div>
+
+
+
+
+    <div id="id-fwDiv">
+      <h4>OTA Firmware Update</h4>
+      <label><button id="netota_master" type="button">Do Flash latest Firmware</button></label><br>
+      <label><button id="netota_beta" type="button">Do Flash latest Beta-Firmware</button></label><br>
+
+      <label><button id="netota" type="button">Do Flash from URL:</button> <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:8000/tronferno-mcu.bin"> </label><br>
+
+
+    </div>
+
+
 
 <!--
          <br><br> <button class="sb" type="button" onclick="testPressed()">Test</button>

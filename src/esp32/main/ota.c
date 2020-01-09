@@ -19,6 +19,10 @@ static const char *TAG = "simple_ota_example";
 extern const uint8_t server_cert_pem_start[] asm("_binary_ca_cert_pem_start");
 extern const uint8_t server_cert_pem_end[] asm("_binary_ca_cert_pem_end");
 
+typedef enum { ota_NONE, ota_RUN, ota_FAIL, ota_DONE} ota_state_T;
+
+static ota_state_T state;
+
 /* The event group allows multiple bits for each event,
    but we only care about one event - are we connected
    to the AP with an IP? */
@@ -83,6 +87,17 @@ bool ota_doUpdate(const char *firmware_url) {
   return false;
 }
 
+#if 0
+void ota_loop() { // TODO: under construction
+  switch (state) {
+  case ota_NONE:
+      return;
+
+
+  }
+  state = ota_NONE;
+}
+#endif
 void ota_setup()
 {
 
