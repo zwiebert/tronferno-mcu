@@ -506,63 +506,36 @@ function clearAutomatic() {
     document.getElementById('tmci').checked = false;
 }
 
-const VIS_SEND = 0x01;
-const VIS_AUTO  = 0x02;
-const VIS_CONFIG = 0x04;
-const VIS_FIRMWARE = 0x08;
-
 let tabs = [
-    { 'mask':1, 'button_id':'stb', 'div_id':'senddiv' },
-    { 'mask':2, 'button_id':'atb', 'div_id':'autodiv' },
-    { 'mask':4, 'button_id':'ctb', 'div_id':'configdiv' },
-    { 'mask':8, 'button_id':'ftb', 'div_id':'id-fwDiv' }
+    { 'mask':1, 'button_id':'stb', 'div_id':['senddiv'] },
+    { 'mask':2, 'button_id':'atb', 'div_id':['senddiv', 'autodiv'] },
+    { 'mask':4, 'button_id':'ctb', 'div_id':['configdiv'] },
+    { 'mask':8, 'button_id':'ftb', 'div_id':['id-fwDiv'] }
 ];
 
 
+//FIXME: enabling a single tab button with multiple bits in a mask makes no sense and does not work
 function tabSwitchVisibility(mask) {
     const NONE = "none";
     const SHOW = "";
     const BGC1 = "hsl(220, 60%, 60%)";
     const BGC0 = "#eee";
-    dbLog("visMask: " + mask.toString());
 
     for (let i=0; i < tabs.length; ++i) {
-        document.getElementById(tabs[i].div_id).style.display = (mask & tabs[i].mask) ? SHOW : NONE;
+        for (let k=0; k < tabs[i].div_id.length; ++k) {
+            if (!(mask & tabs[i].mask)) {
+                document.getElementById(tabs[i].div_id[k]).style.display = NONE;
+            }
+        }
         document.getElementById(tabs[i].button_id).style.backgroundColor =  (mask & tabs[i].mask) ? BGC1 : BGC0;
     }
-}
 
-function tabMakeVisibleByIdx_OLD(idx) {
-    let sendCont =  document.getElementById("senddiv");
-    let autoCont =  document.getElementById("autodiv");
-    let confCont =  document.getElementById("configdiv");
-    const NONE = "none";
-    const SHOW = "";
-    const BGC1 = "hsl(220, 60%, 60%)";
-    const BGC0 = "#eee";
-
-    for (let i = 0; i < tabButtons.length; ++i) {
-        document.getElementById(tabButtons[i]).style.backgroundColor = (i === idx ? BGC1 : BGC0);
-    }
-
-    switch(idx) {
-    case 0:
-        sendCont.style.display = SHOW;
-        autoCont.style.display = NONE;
-        confCont.style.display = NONE;
-        break;
-    case 1:
-        sendCont.style.display = SHOW;
-        autoCont.style.display = SHOW;
-        confCont.style.display = NONE;
-        app_state.fetchAutomatic();
-        break;
-    case 2:
-        sendCont.style.display = NONE;
-        autoCont.style.display = NONE;
-        confCont.style.display = SHOW;
-        app_state.fetchConfig();
-        break;
+    for (let i=0; i < tabs.length; ++i) {
+        for (let k=0; k < tabs[i].div_id.length; ++k) {
+            if ((mask & tabs[i].mask)) {
+                document.getElementById(tabs[i].div_id[k]).style.display = SHOW;
+            }
+        }
     }
 }
 
