@@ -38,7 +38,7 @@ user_set_station_config(void) {
 }
 
 void wst_reconnect(void) {
-  uint8_t status = wifi_station_get_connect_status();
+  u8 status = wifi_station_get_connect_status();
   io_printf_fun("wifi state: %d\n", (int) 0xff & status);
 
   //wifi_station_connect();

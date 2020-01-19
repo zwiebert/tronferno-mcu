@@ -17,18 +17,18 @@ typedef enum {
 
 
 //cast data (message after cmd) to byte array
-#define fmsg_get_data(msg) ((uint8_t(*)[bytesPerPrgLine])(msg)->rtc)
-typedef uint8_t(*fmsg_data)[bytesPerPrgLine];
+#define fmsg_get_data(msg) ((u8(*)[bytesPerPrgLine])(msg)->rtc)
+typedef u8(*fmsg_data)[bytesPerPrgLine];
 
 // message buffer (shared for tx/rx to save RAM)
 extern struct fer_msg message_buffer;
 
 #define rxmsg (&message_buffer)
-#define rxbuf ((uint8_t *)rxmsg)
+#define rxbuf ((u8 *)rxmsg)
 #define rxdat fmsg_get_data(rxmsg)
 
 #define txmsg (&message_buffer)
-#define txbuf ((uint8_t *)txmsg)
+#define txbuf ((u8 *)txmsg)
 #define txdat fmsg_get_data(txmsg)
 
 

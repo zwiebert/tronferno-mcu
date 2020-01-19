@@ -14,11 +14,11 @@
 
 
 
-uint32_t ip4_address, ip4_gateway_address, ip4_netmask;
+u32 ip4_address, ip4_gateway_address, ip4_netmask;
 
 void
 ipnet_addr_as_string(char *buf, unsigned buf_len) {
-  char *ip4addr_ntoa_r(const uint32_t *addr, char *buf, int buflen);
+  char *ip4addr_ntoa_r(const u32 *addr, char *buf, int buflen);
   ip4addr_ntoa_r(&ip4_address, buf, buf_len);
 }
 

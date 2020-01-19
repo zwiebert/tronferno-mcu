@@ -10,7 +10,7 @@
 
 extern volatile bool has_cmdReceived;
 extern volatile bool has_prgReceived;
-extern volatile uint8_t MessageReceived;
+extern volatile u8 MessageReceived;
 
 // lock buffer for transmitting
 bool recv_lockBuffer(bool enableLock);  // blocks receiver access to shared buffer when transmitting

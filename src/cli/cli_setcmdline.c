@@ -10,7 +10,7 @@
 #include <string.h>
 
 char * ICACHE_FLASH_ATTR
-set_commandline(const char *src, uint8_t len) {  // FIXME: make sure cmd_buf is not in use by get_commandline()
+set_commandline(const char *src, u8 len) {  // FIXME: make sure cmd_buf is not in use by get_commandline()
   if (len >= CMD_BUF_SIZE)
     return 0;
 

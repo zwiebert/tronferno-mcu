@@ -22,7 +22,7 @@
 #include "userio/inout.h"
 
 void ICACHE_FLASH_ATTR
-frb_printPacket(const uint8_t *dg) {
+frb_printPacket(const u8 *dg) {
 	int i;
 
   dbg_trace();
@@ -33,13 +33,13 @@ frb_printPacket(const uint8_t *dg) {
 }
 
 void ICACHE_FLASH_ATTR
-printTimerStamp(uint8_t d[18][9], int row, int col) {
+printTimerStamp(u8 d[18][9], int row, int col) {
   printBCD(d[row][col+1]);
   io_puts(":");
   printBCD(d[row][col]);
 }
 
-void ICACHE_FLASH_ATTR fpr_printPrgPacketInfo(uint8_t d[FER_PRG_PACK_CT][FER_PRG_BYTE_CT], bool rtc_only) {
+void ICACHE_FLASH_ATTR fpr_printPrgPacketInfo(u8 d[FER_PRG_PACK_CT][FER_PRG_BYTE_CT], bool rtc_only) {
   int row, col;
 
 const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
@@ -125,7 +125,7 @@ void ICACHE_FLASH_ATTR fmsg_print_as_cmdline(const fer_msg *msg, fmsg_type t) {
     return; // ignore long messages for now
 
   fer_cmd c = FSB_GET_CMD(fsb);
-  uint32_t id = FSB_GET_DEVID(fsb);
+  u32 id = FSB_GET_DEVID(fsb);
 
   const char *cs = NULL;
   const char *fdt = NULL;
@@ -168,8 +168,8 @@ void ICACHE_FLASH_ATTR fmsg_print_as_cmdline(const fer_msg *msg, fmsg_type t) {
   io_puts("type="), io_puts(fdt),
   io_puts(" a="), io_print_hex(id, false);
   if (FSB_ADDR_IS_CENTRAL(fsb)) {
-    uint8_t g = FSB_GET_GRP(fsb);
-    uint8_t m = FSB_GET_MEMB(fsb);
+    u8 g = FSB_GET_GRP(fsb);
+    u8 m = FSB_GET_MEMB(fsb);
     if (g != 0) {
       io_puts(" g="), io_putd(g);
       if (m != 0) {

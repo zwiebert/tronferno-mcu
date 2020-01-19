@@ -26,7 +26,7 @@ extern const char help_parmHelp[] ;
 extern const char help_None[] ;
 
 extern fer_sender_basic default_sender, last_received_sender;
-extern uint16_t msgid;
+extern u16 msgid;
 
 
 #define NODEFAULT() if (val==0) return reply_failure()
@@ -37,7 +37,7 @@ void print_enr(void);
 void msg_print(const char *msg, const char *tag);
 void reply_print(const char *tag);
 void reply_message(const char *tag, const char *msg);
-void reply_id_message(uint16_t id, const char *tag, const char *msg);
+void reply_id_message(u16 id, const char *tag, const char *msg);
 
 void cli_out_timer_reply_entry(const char *key, const char *val, int len);
 void cli_out_config_reply_entry(const char *key, const char *val, int len);
@@ -66,7 +66,7 @@ bool reply(bool success);
 fer_sender_basic *get_sender_by_addr(long addr);
 bool asc2group(const char *s, fer_grp *grp);
 bool asc2memb(const char *s, fer_memb *memb);
-bool timerString2bcd(const char *src, uint8_t *dst, uint16_t size_dst);
+bool timerString2bcd(const char *src, u8 *dst, u16 size_dst);
 int process_parm(clpar p[], int len);
 void cli_process_cmdline(char *line);
 void cli_loop(void);

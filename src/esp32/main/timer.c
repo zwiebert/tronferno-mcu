@@ -21,7 +21,7 @@
 
 
 
-void mcu_delay_us(uint16_t us) {
+void mcu_delay_us(u16 us) {
   ets_delay_us(us);
 }
 
@@ -118,7 +118,7 @@ static void IRAM_ATTR timer1_handler(void *args) {
 #endif
 
   {
-    static uint32_t rtc_ticks;
+    static u32 rtc_ticks;
 
     if (rtc_ticks-- == 0) {
       rtc_ticks = TICK_FREQ_HZ + MS_TO_TICKS(C.app_rtcAdjust);

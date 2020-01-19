@@ -75,11 +75,11 @@ typedef enum {
 #define FER_ADDR_TYPE_CentralUnit   0x80
 #define FER_ADDR_TYPE_Receiver      0x90 // 0x9xxxxx (code written on motor label)
 
-#define FRB_GET_DEVID(data) (((uint32_t)(data[fer_dat_ADDR_2]) << 16) | ((uint16_t)(data[fer_dat_ADDR_1]) << 8) | (data[fer_dat_ADDR_0]))
+#define FRB_GET_DEVID(data) (((u32)(data[fer_dat_ADDR_2]) << 16) | ((u16)(data[fer_dat_ADDR_1]) << 8) | (data[fer_dat_ADDR_0]))
 
 typedef struct {
-	uint8_t data[5];
-	int8_t repeats;
+	u8 data[5];
+	i8 repeats;
 } fer_sender_basic;
 
 #define FSB_ADDR_IS_CENTRAL(fsb)  (((fsb)->data[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)
@@ -89,7 +89,7 @@ typedef struct {
 
 #define FSB_PUT_ADDR(fsb, a2, a1, a0) (((fsb)->data[fer_dat_ADDR_2] = (a2)), ((fsb)->data[fer_dat_ADDR_1] = (a1)), ((fsb)->data[fer_dat_ADDR_0] = (a0)))
 #define FSB_PUT_DEVID(fsb, devID) (((fsb)->data[fer_dat_ADDR_2] = GET_BYTE_2(devID)), ((fsb)->data[fer_dat_ADDR_1] = GET_BYTE_1(devID)), ((fsb)->data[fer_dat_ADDR_0] = GET_BYTE_0(devID)))
-#define FSB_GET_DEVID(fsb) (((uint32_t)(fsb)->data[fer_dat_ADDR_2] << 16) | (uint16_t)((fsb)->data[fer_dat_ADDR_1] << 8) | ((fsb)->data[fer_dat_ADDR_0]))
+#define FSB_GET_DEVID(fsb) (((u32)(fsb)->data[fer_dat_ADDR_2] << 16) | (u16)((fsb)->data[fer_dat_ADDR_1] << 8) | ((fsb)->data[fer_dat_ADDR_0]))
 
 
 
@@ -233,7 +233,7 @@ enum wday2 {
 // values of high nibble of fpr0_RTC_wday (bit flags?)
 #define FLAG_TIMER_DATA 0x8
 
-extern uint8_t bcd2dec(uint8_t bcd);
+extern u8 bcd2dec(u8 bcd);
 
 #define FPR_RTC_START_ROW  0
 #define FPR_RTC_START_COL  0
@@ -282,9 +282,9 @@ extern uint8_t bcd2dec(uint8_t bcd);
 #define FPR_RTC_GET_HOUR_H(d) (0xf - GET_HIGH_NIBBLE((d)[0][fprt0_RTC_hour]))
 #define FPR_RTC_GET_HOUR(d) (FPR_RTC_GET_HOUR_H(d)*10 + FPR_RTC_GET_HOUR_L(d))
 
-void fer_init_sender(fer_sender_basic *fsb, uint32_t devID);
-void fer_init_plain(fer_sender_basic *fsb, uint8_t a2, uint8_t a1, uint8_t a0);
-void fer_init_sunSensor(fer_sender_basic *fsb, uint8_t a2, uint8_t a1, uint8_t a0);
+void fer_init_sender(fer_sender_basic *fsb, u32 devID);
+void fer_init_plain(fer_sender_basic *fsb, u8 a2, u8 a1, u8 a0);
+void fer_init_sunSensor(fer_sender_basic *fsb, u8 a2, u8 a1, u8 a0);
 void fer_update_tglNibble(fer_sender_basic *fsb);
 
 // extract data from word data array (two 10bit-words per byte with parity)

@@ -33,7 +33,7 @@ extern char *ltoa(long val, char *s, int radix);
 
 
 
-void gpi_configure(uint8_t gpi_nmb, uint8_t g, uint8_t m, uint8_t gpi_cmd) {
+void gpi_configure(u8 gpi_nmb, u8 g, u8 m, u8 gpi_cmd) {
   char key[] = "cpair_gpi01";
   precond(gpi_nmb <= GPIO_NUM_MAX);
   precond(1 <= g && g <= 7 && 1 <= m && m <= 7);

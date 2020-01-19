@@ -16,7 +16,7 @@ bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
   return true;
 }
 #else
-static volatile uint8_t requestLock;
+static volatile u8 requestLock;
 static volatile bool isLocked;
 
 bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
@@ -35,14 +35,14 @@ bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
 /////////////////////////// interrupt code //////////////////////
 #if defined FER_RECEIVER || defined FER_TRANSMITTER
 // counters
-static uint8_t CountTicks, CountBits;
-static uint16_t CountWords;
+static u8 CountTicks, CountBits;
+static u16 CountWords;
 // buffer to store received RF data
-static uint16_t dtRecvBuffer[2];
+static u16 dtRecvBuffer[2];
 #define dtSendBuf (dtRecvBuffer[0])
 
 /*  "t if VAL contains an even number of 1 bits" */
-static bool IRAM_ATTR is_bits_even(uint8_t val) {
+static bool IRAM_ATTR is_bits_even(u8 val) {
   val ^= val >> 4;
   val ^= val >> 2;
   val ^= val >> 1;
@@ -51,8 +51,8 @@ static bool IRAM_ATTR is_bits_even(uint8_t val) {
 }
 
 /* "calculate 2bit parity value for DATA_BYTE according to POS" */
-static uint8_t IRAM_ATTR fer_get_word_parity(uint8_t data_byte, uint8_t pos) {
-  uint8_t result;
+static u8 IRAM_ATTR fer_get_word_parity(u8 data_byte, u8 pos) {
+  u8 result;
   bool is_even = is_bits_even(data_byte);
 
   result = ((pos & 1)) ? (is_even ? 3 : 1) : (is_even ? 0 : 2);
@@ -61,8 +61,8 @@ static uint8_t IRAM_ATTR fer_get_word_parity(uint8_t data_byte, uint8_t pos) {
 }
 
 /* "extend DATA_BYTE with parity according to POS" */
-static uint16_t  IRAM_ATTR fer_add_word_parity(uint8_t data_byte, int pos) {
-  uint16_t result = (data_byte | (((uint16_t) fer_get_word_parity(data_byte, pos)) << 8));
+static u16  IRAM_ATTR fer_add_word_parity(u8 data_byte, int pos) {
+  u16 result = (data_byte | (((u16) fer_get_word_parity(data_byte, pos)) << 8));
   return result;
 }
 
@@ -91,9 +91,9 @@ static uint16_t  IRAM_ATTR fer_add_word_parity(uint8_t data_byte, int pos) {
 #define ct_incr(ct, limit) (!((++ct >= limit) ? (ct = 0) : 1))
 #define ct_incrementP(ctp, limit) ((++*ctp, *ctp %= limit) == 0)
 
-static int8_t preBits;
-static int8_t input_edge; // Usually 0, but -1 or +1 at the tick where input has changed
-static uint16_t aTicks, pTicks, nTicks;
+static i8 preBits;
+static i8 input_edge; // Usually 0, but -1 or +1 at the tick where input has changed
+static u16 aTicks, pTicks, nTicks;
 #define POS__IN_DATA (CountTicks > 0 && CountBits < bitsPerWord)
 #define POS__NOT_IN_DATA ((CountTicks == 0) && (CountBits == 0))
 //#define PUTBIT(dst,bit,val) (put_bit_16(&dst, (bit), (val)))
@@ -102,18 +102,18 @@ static uint16_t aTicks, pTicks, nTicks;
 // holds sampled value of input pin
 static bool rx_input, old_rx_input;
 
-static uint32_t prgTickCount;
+static u32 prgTickCount;
 static int error;
 
 // flags
 
-volatile uint8_t MessageReceived;
+volatile u8 MessageReceived;
 
 #define rbuf (&message_buffer)
 
 #define rxbuf_current_byte() (&rbuf->cmd[0] + received_byte_ct)
-static uint16_t received_byte_ct;
-static uint16_t bytesToReceive;
+static u16 received_byte_ct;
+static u16 bytesToReceive;
 #define getBytesToReceive() (bytesToReceive + 0)
 #define hasAllBytesReceived() (bytesToReceive <= received_byte_ct)
 
@@ -127,12 +127,12 @@ static void  IRAM_ATTR frx_incr_received_bytes(void) {
 
 /* "return t if parity is even and position matches parity bit \ 1/3
  on even positions and 0,2 on odd positions)" */
-static bool  IRAM_ATTR fer_word_parity_p(uint16_t word, uint8_t pos) {
+static bool  IRAM_ATTR fer_word_parity_p(u16 word, u8 pos) {
   bool result = fer_add_word_parity((word & 0xff), pos) == word;
   return result;
 }
 
-static fer_error  IRAM_ATTR frx_extract_Byte(const uint16_t *src, uint8_t *dst) {
+static fer_error  IRAM_ATTR frx_extract_Byte(const u16 *src, u8 *dst) {
 #if 0
   if (fer_word_parity_p(src[0], 0)
       && fer_word_parity_p(src[1], 1)
@@ -155,9 +155,9 @@ static fer_error  IRAM_ATTR frx_extract_Byte(const uint16_t *src, uint8_t *dst) 
   return fer_BAD_WORD_PARITY;
 }
 
-static fer_error  IRAM_ATTR frx_verify_cmd(const uint8_t *dg) {
+static fer_error  IRAM_ATTR frx_verify_cmd(const u8 *dg) {
   int i;
-  uint8_t checksum = 0;
+  u8 checksum = 0;
   bool all_null = true;
 
   for (i = 0; i < bytesPerCmdPacket - 1; ++i) {
@@ -172,7 +172,7 @@ static fer_error  IRAM_ATTR frx_verify_cmd(const uint8_t *dg) {
   return (checksum == dg[i] ? fer_OK : fer_BAD_CHECKSUM);
 }
 
-static void  IRAM_ATTR frx_recv_decodeByte(uint8_t *dst) {
+static void  IRAM_ATTR frx_recv_decodeByte(u8 *dst) {
   if (fer_OK != frx_extract_Byte(dtRecvBuffer, dst)) {
     ++error;
   }
@@ -345,7 +345,7 @@ void  IRAM_ATTR frx_tick() {
 #endif
 
 static bool tx_output;   // output line
-extern volatile uint16_t wordsToSend;
+extern volatile u16 wordsToSend;
 
 #define make_Word fer_add_word_parity
 #define init_counter() (CountTicks = CountBits = CountWords = 0)

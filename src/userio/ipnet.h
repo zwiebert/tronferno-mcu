@@ -8,7 +8,7 @@
 #ifndef SRC_MAIN_IPNET_H_
 #define SRC_MAIN_IPNET_H_
 
-//extern uint32_t ip4_address, ip4_gateway_address, ip4_netmask;
+//extern u32 ip4_address, ip4_gateway_address, ip4_netmask;
 
 // interface implemented by mcu specific code
 void ipnet_addr_as_string(char *buf, unsigned buf_len);

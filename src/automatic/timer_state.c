@@ -45,7 +45,7 @@ timer_to_minutes(minutes_t *result, const char *ts) {
 }
 
 bool ICACHE_FLASH_ATTR
-get_timer_minutes_2(timer_minutes_t *timi, uint8_t *group, uint8_t *member, bool wildcard, int16_t day_of_year, int dst, int8_t weekday) {
+get_timer_minutes_2(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, i16 day_of_year, int dst, i8 weekday) {
 
   precond(dst == 0 || dst == 1);
   precond(0 < day_of_year && day_of_year <= 366);
@@ -110,7 +110,7 @@ get_timer_minutes_2(timer_minutes_t *timi, uint8_t *group, uint8_t *member, bool
   if (td_is_astro(&td)) {
     double sunset = 0;
     calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + dst, day_of_year, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
-    timi->minutes[ASTRO_MINTS] = (int16_t) (sunset * 60) + td.astro;
+    timi->minutes[ASTRO_MINTS] = (i16) (sunset * 60) + td.astro;
   }
 
   postcond(timi->minutes[ASTRO_MINTS] == MINUTES_DISABLED
@@ -120,19 +120,19 @@ get_timer_minutes_2(timer_minutes_t *timi, uint8_t *group, uint8_t *member, bool
 }
 
 bool ICACHE_FLASH_ATTR
-get_timer_minutes(timer_minutes_t *timi, uint8_t *group, uint8_t *member, bool wildcard) {
+get_timer_minutes(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard) {
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
-  int16_t day_of_year = tm->tm_yday + 1;
+  i16 day_of_year = tm->tm_yday + 1;
   int dst = tm->tm_isdst ? 1 : 0;
-  int8_t weekday = tm->tm_wday;
+  i8 weekday = tm->tm_wday;
 
   return get_timer_minutes_2(timi, group, member, wildcard, day_of_year, dst, weekday);
 }
 
 minutes_t
 timi_get_earliest(timer_minutes_t *timi, minutes_t now) {
-  uint8_t i;
+  u8 i;
   minutes_t last = MINUTES_DISABLED;
   for (i=0; i < SIZE_MINTS; ++i) {
     if (timi->minutes[i] < now)
@@ -150,15 +150,15 @@ enum pass { PASS_GET_EARLIEST_TIME, PASS_FILL_EVENTS, PASS_STOP};
 
 bool ICACHE_FLASH_ATTR
 get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
-  uint8_t pass, g, m;
+  u8 pass, g, m;
   minutes_t earliest = MINUTES_DISABLED;
   gm_bitmask_t existing_members = {0,};
 
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
-  int16_t day_of_year = tm->tm_yday + 1;
+  i16 day_of_year = tm->tm_yday + 1;
   int dst = tm->tm_isdst ? 1 : 0;
-  int8_t weekday = tm->tm_wday;
+  i8 weekday = tm->tm_wday;
   minutes_t minutes_now = tm->tm_hour * 60 + tm->tm_min;
 
 
@@ -227,7 +227,7 @@ timer_state_loop(void) {
   static timer_event_t teud[2], *teu=&teud[0], *ted=&teud[1], *te;
   int i, k;
 
-  int16_t new_minute = rtc_get_next_minute();
+  i16 new_minute = rtc_get_next_minute();
 
   // FIXME: should also check for changed rtc and longitude/latitude/tz settings
   if (new_minute == 0 || !initialized || timer_data_changed) {

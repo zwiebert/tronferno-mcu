@@ -17,19 +17,19 @@
 
 
 #if 0
-void write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only);
-void write_lastline(fer_sender_basic *fsb, uint8_t d[FPR_ASTRO_WIDTH]);
-void write_dtimer(uint8_t d[FPR_TIMER_STAMP_WIDTH], const uint8_t *dtimer_data);
-void write_wtimer(uint8_t d[][FER_PRG_BYTE_CT], const uint8_t *wtimer_data);
-void write_rtc(uint8_t d[FPR_RTC_WIDTH], bool rtc_only);
-void write_flags(uint8_t d[FPR_RTC_WIDTH], uint8_t flags, uint8_t mask);
+void write_rtc(u8 d[FPR_RTC_WIDTH], bool rtc_only);
+void write_lastline(fer_sender_basic *fsb, u8 d[FPR_ASTRO_WIDTH]);
+void write_dtimer(u8 d[FPR_TIMER_STAMP_WIDTH], const u8 *dtimer_data);
+void write_wtimer(u8 d[][FER_PRG_BYTE_CT], const u8 *wtimer_data);
+void write_rtc(u8 d[FPR_RTC_WIDTH], bool rtc_only);
+void write_flags(u8 d[FPR_RTC_WIDTH], u8 flags, u8 mask);
 #endif
 
 
 /* verify all checksums of message in place. */
 bool ICACHE_FLASH_ATTR fmsg_verify_checksums(const struct fer_msg *m, fmsg_type t) {
 	int line, column;
-	uint8_t checksum = 0;
+	u8 checksum = 0;
 
 
 	for (column=0; column < bytesPerCmdPacket; ++column) {
@@ -84,7 +84,7 @@ bool ICACHE_FLASH_ATTR fmsg_verify_checksums(const struct fer_msg *m, fmsg_type 
 /* create all checksums of message in place. */
 void ICACHE_FLASH_ATTR fmsg_create_checksums(struct fer_msg *m, fmsg_type t) {
 	int line, column;
-	uint8_t checksum = 0;
+	u8 checksum = 0;
 
 	for (column=0; column < bytesPerCmdPacket; ++column) {
 
@@ -130,7 +130,7 @@ void ICACHE_FLASH_ATTR fmsg_create_checksums(struct fer_msg *m, fmsg_type t) {
 
 }
 
-static void ICACHE_FLASH_ATTR disable_timer(uint8_t d[][FER_PRG_BYTE_CT], uint8_t lines) {
+static void ICACHE_FLASH_ATTR disable_timer(u8 d[][FER_PRG_BYTE_CT], u8 lines) {
 	int line, col;
 	for (line = 0; line < lines; ++line) {
 		for (col = 0; col < FPR_TIMER_WIDTH; ++col) {
@@ -145,7 +145,7 @@ static void ICACHE_FLASH_ATTR disable_timer(uint8_t d[][FER_PRG_BYTE_CT], uint8_
 
 
 
-static void ICACHE_FLASH_ATTR write_wtimer(uint8_t d[][FER_PRG_BYTE_CT], const uint8_t *wtimer_data) {
+static void ICACHE_FLASH_ATTR write_wtimer(u8 d[][FER_PRG_BYTE_CT], const u8 *wtimer_data) {
   #ifdef WEEK_STARTS_AT_SUNDAY
   memcpy(d[0], wtimer_data, FPR_TIMER_WIDTH);
   memcpy(d[1],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_WIDTH);
@@ -161,13 +161,13 @@ static void ICACHE_FLASH_ATTR write_wtimer(uint8_t d[][FER_PRG_BYTE_CT], const u
   #endif
 }
 
-static void ICACHE_FLASH_ATTR write_dtimer(uint8_t d[FPR_TIMER_STAMP_WIDTH], const uint8_t *dtimer_data) {
+static void ICACHE_FLASH_ATTR write_dtimer(u8 d[FPR_TIMER_STAMP_WIDTH], const u8 *dtimer_data) {
     memcpy(d, dtimer_data, FPR_TIMER_STAMP_WIDTH);
 }
 
 
 
-static void ICACHE_FLASH_ATTR write_rtc(uint8_t d[FPR_RTC_WIDTH], time_t rtc, bool rtc_only) {
+static void ICACHE_FLASH_ATTR write_rtc(u8 d[FPR_RTC_WIDTH], time_t rtc, bool rtc_only) {
 	//time_t timer = time(NULL);
 	struct tm *t = localtime(&rtc);
 
@@ -182,7 +182,7 @@ static void ICACHE_FLASH_ATTR write_rtc(uint8_t d[FPR_RTC_WIDTH], time_t rtc, bo
 	PUT_BIT(d[fpr0_FlagBits], flag_DST, t->tm_isdst);
 }
 
-static void ICACHE_FLASH_ATTR write_flags(uint8_t d[FPR_RTC_WIDTH], uint8_t flags, uint8_t mask) {
+static void ICACHE_FLASH_ATTR write_flags(u8 d[FPR_RTC_WIDTH], u8 flags, u8 mask) {
 #if 1
 	int i;
 
@@ -204,7 +204,7 @@ static void ICACHE_FLASH_ATTR write_flags(uint8_t d[FPR_RTC_WIDTH], uint8_t flag
 
 
 
-static void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, uint8_t d[bytesPerPrgLine]) {
+static void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, u8 d[bytesPerPrgLine]) {
 	d[0] = 0x00;
 	d[1] = fsb->data[fer_dat_ADDR_2];
 	d[2] = fsb->data[fer_dat_ADDR_1];
@@ -225,13 +225,13 @@ void ICACHE_FLASH_ATTR fmsg_init_data(struct fer_msg *m) {
 void ICACHE_FLASH_ATTR fmsg_write_rtc(fer_msg *msg, time_t rtc, bool rtc_only) {
    write_rtc(msg->rtc, rtc, rtc_only);
 }
-void ICACHE_FLASH_ATTR fmsg_write_flags(fer_msg *msg, uint8_t flags, uint8_t mask) {
+void ICACHE_FLASH_ATTR fmsg_write_flags(fer_msg *msg, u8 flags, u8 mask) {
   write_flags(msg->rtc, flags, mask);
 }
-void ICACHE_FLASH_ATTR fmsg_write_wtimer(fer_msg *msg, const uint8_t *wtimer_data) {
+void ICACHE_FLASH_ATTR fmsg_write_wtimer(fer_msg *msg, const u8 *wtimer_data) {
   write_wtimer(msg->wdtimer, wtimer_data);
 }
-void ICACHE_FLASH_ATTR fmsg_write_dtimer(fer_msg *msg, const uint8_t *dtimer_data) {
+void ICACHE_FLASH_ATTR fmsg_write_dtimer(fer_msg *msg, const u8 *dtimer_data) {
   write_dtimer(&msg->wdtimer[3][FPR_DAILY_START_COL], dtimer_data);
 }
 void ICACHE_FLASH_ATTR fmsg_write_astro(fer_msg *msg, int mint_offset) {
@@ -274,11 +274,11 @@ struct fer_msg test_msg = {
 
 };
 
-const uint8_t testdat_wtimer[] =
+const u8 testdat_wtimer[] =
 	{ 0x56, 0x06, 0x45, 0x19, 0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x56,
 			0x06, 0x45, 0x19, 0x0 };
-const uint8_t testdat_dtimer[] = { };
-extern const uint8_t astro_data[12][8];
+const u8 testdat_dtimer[] = { };
+extern const u8 astro_data[12][8];
 
 #include "config/config.h"
 #if 0
@@ -301,7 +301,7 @@ bool ICACHE_FLASH_ATTR testModule_fer_prg() {
 bool ICACHE_FLASH_ATTR testModule_fer_prg()
 {
 	bool result;
-	uint8_t group = 3, memb = 1;
+	u8 group = 3, memb = 1;
 	fer_cmd cmd = fer_cmd_Program;
 	fer_sender_basic fsb_, *fsb = &fsb_;
 

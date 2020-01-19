@@ -23,7 +23,7 @@ typedef enum {
   SO_TGT_ANY = (~0)
 } so_target_bits;
 
-extern uint8_t so_target;
+extern u8 so_target;
 
 #define so_tgt_set(bitmask) (so_target = (bitmask))
 #define so_tgt_default() (so_tgt_set(SO_TGT_ANY))
@@ -83,21 +83,21 @@ typedef enum {
 } so_msg_t;
 
 typedef struct {
-  uint8_t g, m;
+  u8 g, m;
 } so_arg_gm_t;
 
 typedef struct {
-  uint8_t *mm; //gm_bitmask_t *
-  uint8_t p;
+  u8 *mm; //gm_bitmask_t *
+  u8 p;
 } so_arg_mmp_t;
 
 typedef struct {
-  uint8_t g, m, p;
+  u8 g, m, p;
 } so_arg_gmp_t;
 
 typedef struct {
-  uint32_t a;
-  uint8_t *mm; //gm_bitmask_t *
+  u32 a;
+  u8 *mm; //gm_bitmask_t *
 } so_arg_amm_t;
 
 void so_output_message(so_msg_t mt, void *arg);

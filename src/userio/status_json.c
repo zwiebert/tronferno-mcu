@@ -37,14 +37,14 @@ char json_buf[JSON_BUF_SIZE];
 int json_idx;
 
 char *ext_buf;
-uint16_t ext_buf_size;
+u16 ext_buf_size;
 
 #define BUF (ext_buf ? ext_buf : json_buf)
 #define BUF_SIZE (ext_buf ? ext_buf_size : JSON_BUF_SIZE)
 #define USE_CALLBACK (!ext_buf && s_json_config_out)
 #define DO_CALLBACK() s_json_config_out(BUF);
 
-void  ICACHE_FLASH_ATTR sj_set_buf(char *dst, uint16_t dst_size) {
+void  ICACHE_FLASH_ATTR sj_set_buf(char *dst, u16 dst_size) {
   if (dst) {
     *dst = '\0';
     ext_buf = dst;
@@ -95,7 +95,7 @@ void  ICACHE_FLASH_ATTR so_json_x_reply(const char *key, const char *val, bool i
   D(ets_printf("json_idx: %u, buf: %s\n", json_idx, BUF));
 }
 
-int ICACHE_FLASH_ATTR sj_config2json_buf(char *dst, uint16_t dst_size, so_msg_t key) {
+int ICACHE_FLASH_ATTR sj_config2json_buf(char *dst, u16 dst_size, so_msg_t key) {
 
   sj_set_buf(dst,dst_size);
   so_output_message(SO_CFG_all, "j");
@@ -104,12 +104,12 @@ int ICACHE_FLASH_ATTR sj_config2json_buf(char *dst, uint16_t dst_size, so_msg_t 
   return strlen(dst); //XXX
 }
 
-void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, uint16_t dst_size, uint8_t g, uint8_t m, bool wildcard) {
+void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, u16 dst_size, u8 g, u8 m, bool wildcard) {
   timer_data_t tdr;
   extern gm_bitmask_t manual_bits; //FIXME
   // read_gm_bitmask("MANU", &manual_bits, 1); //FIXME: not needed
   bool f_manual = GET_BIT(manual_bits[g], m);
-  uint8_t g_res = g, m_res = m;
+  u8 g_res = g, m_res = m;
 
   if (read_timer_data(&tdr, &g_res, &m_res, wildcard)) {
     char *dp = dst;
@@ -152,12 +152,12 @@ void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, uint16_t dst_size, uint8_t g
   }
 }
 
-const char *ICACHE_FLASH_ATTR sj_timer2json(uint8_t g, uint8_t m) {
+const char *ICACHE_FLASH_ATTR sj_timer2json(u8 g, u8 m) {
   sj_timer2json_buf(BUF, BUF_SIZE, g, m, true);
   return json_buf;
 }
 
-char *sj_gmp2json_buf(char *dst, uint16_t dst_size, so_arg_gmp_t *gmp) {
+char *sj_gmp2json_buf(char *dst, u16 dst_size, so_arg_gmp_t *gmp) {
   sprintf(dst, "{\"from\":\"tfmcu\",\"position\":{\"g\":%u,\"m\":%u,\"p\":%u}}", gmp->g, gmp->m, gmp->p);
   return dst;
 }

@@ -104,7 +104,7 @@ uart1_write_char(char c)
     }
 }
 
-void rx_copy(uint8_t *start, uint8_t *end);
+void rx_copy(u8 *start, u8 *end);
 
 /******************************************************************************
  * FunctionName : uart0_rx_intr_handler

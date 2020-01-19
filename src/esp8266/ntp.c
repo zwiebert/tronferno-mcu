@@ -47,10 +47,10 @@ void ICACHE_FLASH_ATTR setup_ntp(void) {
 void ICACHE_FLASH_ATTR auto_adjust_time(time_t rtc_time, time_t ntp_time) {
 
   if (last_ntp_time != 0 && last_ntp_time + NO_ADJUST_UNTIL < ntp_time) {
-    int32_t diff_time, interval_time;
+    i32 diff_time, interval_time;
     double interval_days;
-    int32_t adj_ms_per_day;
-    int32_t diff_ms;
+    i32 adj_ms_per_day;
+    i32 diff_ms;
 
     diff_time = difftime(rtc_time, ntp_time);
     diff_ms = difftime(rtc_time, ntp_time) * 1000L;
@@ -64,7 +64,7 @@ void ICACHE_FLASH_ATTR auto_adjust_time(time_t rtc_time, time_t ntp_time) {
 }
 
 bool ICACHE_FLASH_ATTR ntp_set_system_time(void) {
-  uint32_t time_stamp = sntp_get_current_timestamp();
+  u32 time_stamp = sntp_get_current_timestamp();
   if (time_stamp != 0) {
     time_t rtc_time, ntp_time;
     bool autoAdjust = (rtc_last_time_source == RTC_SRC_NTP);

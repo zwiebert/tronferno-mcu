@@ -1,10 +1,10 @@
 #ifndef bcd_h_
 #define bcd_h_
 
-uint8_t bcd2dec(uint8_t bcd);
-uint8_t dec2bcd(uint8_t dec);
+u8 bcd2dec(u8 bcd);
+u8 dec2bcd(u8 dec);
 
-uint8_t dec2bcd_special(uint8_t dec); // like above, but replaces all 9 with 0xf in result
+u8 dec2bcd_special(u8 dec); // like above, but replaces all 9 with 0xf in result
 
 
 #endif

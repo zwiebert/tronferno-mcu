@@ -107,7 +107,7 @@ static esp_err_t phy_device_power_enable_via_gpio(esp_eth_phy_t *phy, bool enabl
 
 /** Event handler for Ethernet events */
 static void eth_event_handler(void* arg, esp_event_base_t event_base,
-                              int32_t event_id, void* event_data)
+                              i32 event_id, void* event_data)
 {
     switch (event_id) {
     case ETHERNET_EVENT_CONNECTED:
@@ -131,7 +131,7 @@ static void eth_event_handler(void* arg, esp_event_base_t event_base,
 
 /** Event handler for IP_EVENT_ETH_GOT_IP */
 static void got_ip_event_handler(void* arg, esp_event_base_t event_base,
-                                 int32_t event_id, void* event_data)
+                                 i32 event_id, void* event_data)
 {
     ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
     const tcpip_adapter_ip_info_t* ip_info = &event->ip_info;

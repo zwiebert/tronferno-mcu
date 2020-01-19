@@ -25,7 +25,7 @@
 
 fer_sender_basic default_sender;
 fer_sender_basic last_received_sender;
-uint16_t msgid;
+u16 msgid;
 
 const char *Obj_tag="";
 #define SET_OBJ_TAG(tag) Obj_tag=(tag)
@@ -189,8 +189,8 @@ void ICACHE_FLASH_ATTR cli_msg_ready(void) {
   io_puts("\nready:\n");
 }
 
-void ICACHE_FLASH_ATTR reply_id_message(uint16_t id, const char *tag, const char *msg) {
-  uint16_t old_id = msgid;
+void ICACHE_FLASH_ATTR reply_id_message(u16 id, const char *tag, const char *msg) {
+  u16 old_id = msgid;
   if (!so_tgt_test_cli_text())
     return;
 
@@ -332,7 +332,7 @@ bool ICACHE_FLASH_ATTR asc2memb(const char *s, fer_memb *memb) {
 
 
 bool ICACHE_FLASH_ATTR
-timerString2bcd(const char *src, uint8_t *dst, uint16_t size_dst) {
+timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
   char buf[3];
   int i;
 

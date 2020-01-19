@@ -48,11 +48,11 @@ enum enr { enr_none, enr_inv_fid, enr_2, enr_3, enr_4, enr_5 };
 
 #ifndef C_DATA2_FLASH_ADDR
 // reserve us some flash_sectors we can access via spi_flash_read() and spi_flash_write() from mem.h
-static volatile const uint8_t our_flash_storage[SECTOR_SIZE * FLASH_SECTORS] __attribute__((section(".irom.text"), aligned(4096)));
+static volatile const u8 our_flash_storage[SECTOR_SIZE * FLASH_SECTORS] __attribute__((section(".irom.text"), aligned(4096)));
 // byte address of our storage in memory mapped flash ROM
-static uint32_t our_start_sector_address;
+static u32 our_start_sector_address;
 // number of first sector of our_flash_storage
-static uint16_t our_start_sector_number;
+static u16 our_start_sector_number;
 #else
 #define our_start_sector_address C_DATA2_FLASH_ADDR
 #define our_start_sector_number (C_DATA2_FLASH_ADDR / 4096)
@@ -64,7 +64,7 @@ static uint16_t our_start_sector_number;
 
 
 // magic cookie to mark the data we save, so we can find it at program start
-static uint32_t MAGIC_COOKIE = 0xBEEF0000;
+static u32 MAGIC_COOKIE = 0xBEEF0000;
 
 #define addr_getBySecBlk(sec, blk) (our_start_sector_address + (sec) * SECTOR_SIZE + (blk) * BLOCK_SIZE)
 #define secn_getBySecIdx(sec) (our_start_sector_number + (sec))
@@ -90,7 +90,7 @@ static uint32_t MAGIC_COOKIE = 0xBEEF0000;
 #define NMB_FILES  64
 typedef fid_t;
 
-uint32_t files[NMB_FILES];
+u32 files[NMB_FILES];
 int free_block_count;
 int free_sec;
 bool flag_garbage;
@@ -103,20 +103,20 @@ bool flag_garbage;
 #define fbc_incr()   (++free_block_count)
 
 typedef struct {
-	uint32_t cookie;
+	u32 cookie;
 	DATA_TYPE data;
 } block_object;
 
 // move file to a new address
 // called to prepare a sector for erase by moving files elsewhere
-static bool ICACHE_FLASH_ATTR move_file(uint16_t file_id, uint32_t new_addr) {
+static bool ICACHE_FLASH_ATTR move_file(u16 file_id, u32 new_addr) {
 	if (!fid_isValid(file_id)) {
 		return false;
 	} else if (!fid_isfileExisting(file_id)) {
 		return false;
 	} else {
 		block_object buf;
-		uint32_t old_addr = fid_getAddr(file_id);
+		u32 old_addr = fid_getAddr(file_id);
 		spi_flash_read(old_addr, &buf.cookie, sizeof(buf));
 		spi_flash_write(new_addr, &buf.cookie, sizeof(buf));
 		buf.cookie = 0;
@@ -128,15 +128,15 @@ static bool ICACHE_FLASH_ATTR move_file(uint16_t file_id, uint32_t new_addr) {
 
 // erase sector.
 // sector must be full, or the free_block_count will be wrong after
-static void ICACHE_FLASH_ATTR erase_full_sector(uint16_t sec_idx) {
+static void ICACHE_FLASH_ATTR erase_full_sector(u16 sec_idx) {
 	SpiFlashOpResult result = spi_flash_erase_sector(secn_getBySecIdx(sec_idx));
 	DB(printf("erase result %d\n", result));
 	fbc_addSec();
 	DB(printf("eras_full_sec sec %d, fbc=%d\n", (int)sec_idx, (int)free_block_count));
 #if TEST_THIS_MODULE
 	{
-		uint32_t cookie= 42;
-		uint32_t addr = addr_getBySecBlk(sec_idx, 0);
+		u32 cookie= 42;
+		u32 addr = addr_getBySecBlk(sec_idx, 0);
 		spi_flash_read(addr, &cookie, sizeof(cookie));
 		DB(printf("cookie %lx\n", cookie));
 
@@ -157,7 +157,7 @@ static void ICACHE_FLASH_ATTR find_all_data_blocks(void) {
 
 	for (sec = 0; sec < FLASH_SECTORS; ++sec) {
 		for (blk = 0; blk < BLOCKS_PER_SECTOR; ++blk) {
-			uint32_t cookie, addr;
+			u32 cookie, addr;
 			addr = addr_getBySecBlk(sec, blk);
 			spi_flash_read(addr, &cookie, sizeof(cookie));
 
@@ -193,16 +193,16 @@ static void ICACHE_FLASH_ATTR find_all_data_blocks(void) {
 }
 
 // find the next free block
-static bool ICACHE_FLASH_ATTR find_free_block(uint32_t *dst) {
-	static uint16_t block_idx;
+static bool ICACHE_FLASH_ATTR find_free_block(u32 *dst) {
+	static u16 block_idx;
 	int i;
 #define sec_idx free_sec
 	for (i = 0; i < FLASH_SECTORS*2; ++i, (sec_idx = sec_getSucc(sec_idx)), (block_idx = 0)) {
 		DB(printf("find_free try: s=%d, b=%d\n", (int)sec_idx, (int)block_idx));
 		bool sector_used = block_idx != 0;
 		for (; block_idx < BLOCKS_PER_SECTOR; ++block_idx) {
-			uint32_t cookie;
-			uint32_t addr = addr_getBySecBlk(sec_idx, block_idx);
+			u32 cookie;
+			u32 addr = addr_getBySecBlk(sec_idx, block_idx);
 			spi_flash_read(addr, &cookie, sizeof(cookie));
 
 			if (cookie == ~0UL) {
@@ -245,7 +245,7 @@ static bool ICACHE_FLASH_ATTR reclaim_sector(int sec) {
 
 		DB(printf("reclaim sec=%d\n", sec));
 		for (blk = 0; blk < BLOCKS_PER_SECTOR; ++blk) {
-			uint32_t cookie, addr;
+			u32 cookie, addr;
 			addr = addr_getBySecBlk(sec, blk);
 			spi_flash_read(addr, &cookie, sizeof(cookie));
 
@@ -256,7 +256,7 @@ static bool ICACHE_FLASH_ATTR reclaim_sector(int sec) {
 				++unused_blocks;
 			} else  if (cookie_isMagic(cookie)) {
 				fid_t fid = fid_getByCookie(cookie);
-				uint32_t new_addr = 0;
+				u32 new_addr = 0;
 
 				if (find_free_block(&new_addr)) {
 					move_file(fid, new_addr);
@@ -289,12 +289,12 @@ static bool ICACHE_FLASH_ATTR reclaim_space(void) {
 
 // find file which ID is pointed to by p
 // stores found address in *p
-static bool ICACHE_FLASH_ATTR find_data_block(uint32_t *p) {
+static bool ICACHE_FLASH_ATTR find_data_block(u32 *p) {
 	int sec, blk;
 
 	for (sec = 0; sec < FLASH_SECTORS; ++sec) {
 		for (blk = 0; blk < BLOCKS_PER_SECTOR; ++blk) {
-			uint32_t cookie, addr;
+			u32 cookie, addr;
 			addr = addr_getBySecBlk(sec, blk);
 
 			spi_flash_read(addr, &cookie, sizeof(cookie));
@@ -311,14 +311,14 @@ static bool ICACHE_FLASH_ATTR find_data_block(uint32_t *p) {
 
 // read data from flash and copy it to DATA_PTR
 // does nothing if not data was found in flash
-static bool ICACHE_FLASH_ATTR read_data2(DATA_TYPE *p, uint16_t file_id) {
+static bool ICACHE_FLASH_ATTR read_data2(DATA_TYPE *p, u16 file_id) {
 
 	if (!fid_isValid(file_id)) {
 		return false;
 	} else if (!fid_isfileExisting(file_id)) {
 		return false;
 	} else {
-		spi_flash_read(fid_getAddr(file_id) + sizeof(MAGIC_COOKIE), (uint32_t*) p, sizeof(DATA_TYPE));
+		spi_flash_read(fid_getAddr(file_id) + sizeof(MAGIC_COOKIE), (u32*) p, sizeof(DATA_TYPE));
 	}
 
 	DB(printf("file read: fid=%d\n", (int)file_id));
@@ -327,13 +327,13 @@ static bool ICACHE_FLASH_ATTR read_data2(DATA_TYPE *p, uint16_t file_id) {
 }
 
 
-static bool ICACHE_FLASH_ATTR delete_file(uint16_t file_id) {
+static bool ICACHE_FLASH_ATTR delete_file(u16 file_id) {
 	if (!fid_isValid(file_id)) {
 		return false;
 	} else if (!fid_isfileExisting(file_id)) {
 		return false;
 	} else {
-		uint32_t cookie = 0;
+		u32 cookie = 0;
 		spi_flash_write(fid_getAddr(file_id), &cookie, sizeof(cookie));
 		fid_delete(file_id);
 		DB2(printf("file deleted: fid=%d\n", (int)file_id));
@@ -341,7 +341,7 @@ static bool ICACHE_FLASH_ATTR delete_file(uint16_t file_id) {
 	}
 }
 
-static int ICACHE_FLASH_ATTR delete_shadowded_files(uint8_t group, uint8_t memb) {
+static int ICACHE_FLASH_ATTR delete_shadowded_files(u8 group, u8 memb) {
 	int g, m, result = 0;
 	for (g = 0; g <= 7; ++g) {
 		for (m = 0; m <= 7; ++m) {
@@ -358,8 +358,8 @@ static int ICACHE_FLASH_ATTR delete_shadowded_files(uint8_t group, uint8_t memb)
 
 // reading data from DATA_PTR and write it to flash
 // does nothing if data is unchanged
-static bool ICACHE_FLASH_ATTR save_data2(DATA_TYPE *p, uint16_t file_id) {
-	uint32_t addr = 0, cookie;
+static bool ICACHE_FLASH_ATTR save_data2(DATA_TYPE *p, u16 file_id) {
+	u32 addr = 0, cookie;
 
 
 	if (!fid_isValid(file_id)) {
@@ -382,7 +382,7 @@ static bool ICACHE_FLASH_ATTR save_data2(DATA_TYPE *p, uint16_t file_id) {
 	cookie = fid_makeCookie(file_id);
 	spi_flash_write(fid_getAddr(file_id), &cookie, sizeof(cookie));
 #if !TEST_THIS_MODULE
-	spi_flash_write(fid_getAddr(file_id) + sizeof(cookie), (uint32_t*) p, sizeof(DATA_TYPE));
+	spi_flash_write(fid_getAddr(file_id) + sizeof(cookie), (u32*) p, sizeof(DATA_TYPE));
 #endif
 
 	DB2(printf("file saved: fid=%d\n", (int)file_id));
@@ -395,7 +395,7 @@ static bool ICACHE_FLASH_ATTR save_data2(DATA_TYPE *p, uint16_t file_id) {
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 
 
-bool ICACHE_FLASH_ATTR save_timer_data_old(DATA_TYPE *p, uint8_t g, uint8_t m) {
+bool ICACHE_FLASH_ATTR save_timer_data_old(DATA_TYPE *p, u8 g, u8 m) {
 	bool result = false;
 
 	delete_shadowded_files(g, m);
@@ -405,7 +405,7 @@ bool ICACHE_FLASH_ATTR save_timer_data_old(DATA_TYPE *p, uint8_t g, uint8_t m) {
 	return result;
 }
 
-bool ICACHE_FLASH_ATTR read_timer_data_old(DATA_TYPE *p, uint8_t *g, uint8_t *m, bool wildcard) {
+bool ICACHE_FLASH_ATTR read_timer_data_old(DATA_TYPE *p, u8 *g, u8 *m, bool wildcard) {
 	bool result = read_data2(p, fid_getByGM(*g, *m));
 
 	if (!result && wildcard) {

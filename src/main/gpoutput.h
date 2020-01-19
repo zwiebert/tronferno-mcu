@@ -5,9 +5,9 @@
 
 enum gpo_cmd { gpoc_DOWN, gpoc_UP, gpoc_SWITCH};
 
-void gpo_configure(uint8_t gpo_nmb, uint8_t g, uint8_t m, uint8_t gpo_cmd);
+void gpo_configure(u8 gpo_nmb, u8 g, u8 m, u8 gpo_cmd);
 
-void gpo_action(uint8_t g, uint8_t m, uint8_t cmd);
+void gpo_action(u8 g, u8 m, u8 cmd);
 
 
 #endif

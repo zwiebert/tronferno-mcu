@@ -34,8 +34,8 @@ int ICACHE_FLASH_ATTR
 process_parmPair(clpar p[], int len) {
   int arg_idx;
 
-  uint32_t addr = 0;
-  uint8_t g = 0, m = 0, c = 0;
+  u32 addr = 0;
+  u8 g = 0, m = 0, c = 0;
   bool pair = false, unpair = false, read = false, scan = false;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {

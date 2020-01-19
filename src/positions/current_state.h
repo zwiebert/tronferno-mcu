@@ -12,9 +12,9 @@
 #include "fernotron/fer_code.h"
 #include "positions/shutter_state.h"
 
-int get_shutter_state(uint32_t a, uint8_t g, uint8_t m);
-int set_shutter_state(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd);
-int modify_shutter_positions(gm_bitmask_t mm, uint8_t p);
+int get_shutter_state(u32 a, u8 g, u8 m);
+int set_shutter_state(u32 a, u8 g, u8 m, fer_cmd cmd);
+int modify_shutter_positions(gm_bitmask_t mm, u8 p);
 int print_shutter_positions(void);
 
 

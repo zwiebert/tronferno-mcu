@@ -25,9 +25,9 @@
 
 static bool pras_active;
 static time_t end_time;
-static uint8_t pras_g, pras_m, pras_c;
+static u8 pras_g, pras_m, pras_c;
 
-bool ICACHE_FLASH_ATTR pair_auto_set(uint8_t g, uint8_t m, uint8_t c, uint16_t id, unsigned timeout_secs) {
+bool ICACHE_FLASH_ATTR pair_auto_set(u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
 
@@ -62,7 +62,7 @@ bool ICACHE_FLASH_ATTR pair_auto_set_check(fer_sender_basic *fsb) {
     return false;
 
   if (!FSB_ADDR_IS_CENTRAL(fsb)) {
-    uint32_t a = FSB_GET_DEVID(fsb);
+    u32 a = FSB_GET_DEVID(fsb);
     bool success = false;
 
     if (pras_c == PC_pair || pras_c == PC_unpair) {

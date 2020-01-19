@@ -6,7 +6,7 @@
 #include "userio/inout.h"
 
 volatile bool is_sendMsgPending;
-volatile uint16_t wordsToSend;
+volatile u16 wordsToSend;
 
 fer_sender_basic send_fsb;
 

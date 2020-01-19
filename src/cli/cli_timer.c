@@ -61,15 +61,15 @@ process_parmTimer(clpar p[], int len) {
   bool f_disableWeekly = false, f_disableDaily = false, f_disableAstro = false, f_disableManu = false;
   bool f_enableWeekly = false, f_enableDaily = false, f_enableAstro = false, f_enableManu = false;
 
-  int16_t astro_offset = 0;
-  uint8_t weekly_data[FPR_TIMER_STAMP_WIDTH * 7];
-  uint8_t daily_data[FPR_TIMER_STAMP_WIDTH];
+  i16 astro_offset = 0;
+  u8 weekly_data[FPR_TIMER_STAMP_WIDTH * 7];
+  u8 daily_data[FPR_TIMER_STAMP_WIDTH];
   fer_sender_basic *fsb = &default_sender;
   fer_grp group = fer_grp_Broadcast;
   fer_memb memb = fer_memb_Broadcast;
-  uint32_t addr = 0;
-  uint8_t fpr0_flags = 0, fpr0_mask = 0;
-  int8_t flag_rtc_only = FLAG_NONE;
+  u32 addr = 0;
+  u8 fpr0_flags = 0, fpr0_mask = 0;
+  i8 flag_rtc_only = FLAG_NONE;
   time_t timer = time(NULL);
   bool f_modify = false;
   bool f_no_send = false;
@@ -78,8 +78,8 @@ process_parmTimer(clpar p[], int len) {
   timer_data_t tdr;
 
   const char *weeklyVal = 0, *dailyVal = 0;
-  uint8_t mn = 0;
-  uint8_t rs = 0;
+  u8 mn = 0;
+  u8 rs = 0;
 
   // init data
   for (i = 0; i + 1 < sizeof(weekly_data) / sizeof(weekly_data[0]); i += 2) {
@@ -200,7 +200,7 @@ process_parmTimer(clpar p[], int len) {
 
   // use (parts of) previously saved data
    if (need_reload_td) {
-    uint8_t g = group, m = mn;
+    u8 g = group, m = mn;
 
     // fill in missing parts from stored timer data
     if (read_timer_data(&tdr, &g, &m, true)) {

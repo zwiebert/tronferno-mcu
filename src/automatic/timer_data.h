@@ -12,8 +12,8 @@
 #include <stdbool.h>
 
 typedef struct {
-  int16_t astro;      // minute offset of civil dusk, or 20000 for disables astro
-  uint8_t bf;         // bitfield
+  i16 astro;      // minute offset of civil dusk, or 20000 for disables astro
+  u8 bf;         // bitfield
   char daily[8+1];    // ASCII string of one daily timer
   char weekly[7*8+1]; // ASCII string of seven weekly timers
 } timer_data_t;
@@ -40,8 +40,8 @@ typedef struct {
 // wildcard  if true, find the best matching data my return timer g=1 m=0 data on a search for g=1 m=1
 //
 // when saving data with group=0 or menber=0, all matching old data will be deleted. So g=0 m=0 will delete all other data, because it addresses all receivers
-bool save_timer_data(timer_data_t *p, uint8_t group, uint8_t member);
-bool read_timer_data(timer_data_t *p, uint8_t *group, uint8_t *member, bool wildcard);
+bool save_timer_data(timer_data_t *p, u8 group, u8 member);
+bool read_timer_data(timer_data_t *p, u8 *group, u8 *member, bool wildcard);
 
 extern bool timer_data_changed; // set by sabe_timer_data - cleared by code reading it
 

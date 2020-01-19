@@ -1,9 +1,7 @@
 #ifndef _inout_h
 #define _inout_h
 
-#include <stdint.h>
-#include <stdbool.h>
-
+#include "user_config.h"
 
 extern char *itoa(int val, char *s, int radix);
 extern char *ltoa(long val, char *s, int radix);
@@ -20,28 +18,28 @@ int io_puts(const char *s);
 int io_getline(char *buf, unsigned buf_size);
 int io_printf(const char *fmt, ...);
 
-void io_print_hex_8(uint8_t n, bool comma);
-void io_print_hex_16(uint16_t n, bool comma);
-void io_print_hex_32(uint32_t n, bool comma);
-void io_print_hex(uint32_t n, bool prefix);
+void io_print_hex_8(u8 n, bool comma);
+void io_print_hex_16(u16 n, bool comma);
+void io_print_hex_32(u32 n, bool comma);
+void io_print_hex(u32 n, bool prefix);
 
-void io_print_dec_8(int8_t n, bool comma);
-void io_print_dec_16(int16_t n, bool comma);
-void io_print_dec_32(int32_t n, bool comma);
+void io_print_dec_8(i8 n, bool comma);
+void io_print_dec_16(i16 n, bool comma);
+void io_print_dec_32(i32 n, bool comma);
 
 void io_print_float(float f, int n);
 
 void io_putn(int n, int radix);
-void io_putl(int32_t n, int radix);
+void io_putl(i32 n, int radix);
 void io_putd(int n);
-void io_putld(int32_t n);
-void io_putx8(uint8_t n);
+void io_putld(i32 n);
+void io_putx8(u8 n);
 
 
 
-void printBCD(uint8_t bcd);
-void print_array_8(const uint8_t *src, int len);
-void print_array_8_inv(const uint8_t *src, int len);
+void printBCD(u8 bcd);
+void print_array_8(const u8 *src, int len);
+void print_array_8_inv(const u8 *src, int len);
 
 
 extern int ets_uart_printf(const char *fmt, ...);

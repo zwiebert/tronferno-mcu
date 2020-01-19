@@ -26,10 +26,10 @@ static int es_io_putc(char c) {
 }
 
 #define RX_BUFSIZE 128
-static uint8_t buf[RX_BUFSIZE];
-static uint8_t head = 0, tail = 0;
+static u8 buf[RX_BUFSIZE];
+static u8 head = 0, tail = 0;
 
-void rx_copy(uint8_t *start, uint8_t *end) {
+void rx_copy(u8 *start, u8 *end) {
   while (start < end) {
     buf[tail++] = *start++;
     tail %= RX_BUFSIZE;
@@ -48,7 +48,7 @@ static int ICACHE_FLASH_ATTR es_io_getc(void) {
 }
 
 void ICACHE_FLASH_ATTR
-setup_serial(uint32_t baudrate) {
+setup_serial(u32 baudrate) {
   // Configure the UART
   uart_init(baudrate, baudrate); // FIXME: the baud_rate parameter has no effect
   io_putc_fun = es_io_putc;

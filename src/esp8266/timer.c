@@ -21,7 +21,7 @@
 
 
 
-void ICACHE_FLASH_ATTR mcu_delay_us(uint16_t us) {
+void ICACHE_FLASH_ATTR mcu_delay_us(u16 us) {
   os_delay_us(us);
 }
 
@@ -42,7 +42,7 @@ void ICACHE_FLASH_ATTR mcu_delay_us(uint16_t us) {
 #define TIMER1_COUNT_MASK               0x007fffff        // 23 bit timer
 
 void ICACHE_FLASH_ATTR
-timer1Start(uint32_t ticks, uint16_t flags, void (*handler)(void)) {
+timer1Start(u32 ticks, u16 flags, void (*handler)(void)) {
   RTC_REG_WRITE(FRC1_LOAD_ADDRESS, ticks & TIMER1_COUNT_MASK);
   RTC_REG_WRITE(FRC1_CTRL_ADDRESS, (flags & TIMER1_FLAGS_MASK) | TIMER1_ENABLE_TIMER);
   RTC_CLR_REG_MASK(FRC1_INT_ADDRESS, FRC1_INT_CLR_MASK);
@@ -89,7 +89,7 @@ void timer_handler(void) {
 #endif
 
   if (rtcAvrTime == C.app_rtc) {
-    static uint32_t rtc_ticks;
+    static u32 rtc_ticks;
 
     if (rtc_ticks-- == 0) {
       rtc_ticks = TICK_FREQ_HZ + MS_TO_TICKS(C.app_rtcAdjust);
@@ -101,8 +101,8 @@ void timer_handler(void) {
 }
 
 void ICACHE_FLASH_ATTR setup_timer(void) {
-  uint32_t ticks = F_CPU / TICK_FREQ_HZ;
-  uint16_t flags = TIMER1_DIVIDE_BY_1 | TIMER1_ENABLE_TIMER | TIMER1_AUTO_LOAD;
+  u32 ticks = F_CPU / TICK_FREQ_HZ;
+  u16 flags = TIMER1_DIVIDE_BY_1 | TIMER1_ENABLE_TIMER | TIMER1_AUTO_LOAD;
 
   timer1Start(ticks, flags, timer_handler);
 }

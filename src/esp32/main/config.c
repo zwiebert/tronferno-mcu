@@ -69,7 +69,7 @@ config C = {
 
 #ifdef CONFIG_BLOB
 
-void read_config(uint32_t mask) {
+void read_config(u32 mask) {
   esp_err_t err = 0;
   nvs_handle my_handle;
   size_t len;
@@ -81,7 +81,7 @@ void read_config(uint32_t mask) {
 
 }
 
-void save_config(uint32_t mask) {
+void save_config(u32 mask) {
   esp_err_t err = 0;
   nvs_handle my_handle;
 
@@ -94,7 +94,7 @@ void save_config(uint32_t mask) {
 #endif
 #ifdef CONFIG_DICT
 
-void read_config(uint32_t mask) {
+void read_config(u32 mask) {
   esp_err_t err = 0;
   nvs_handle handle;
   size_t len;
@@ -102,19 +102,19 @@ void read_config(uint32_t mask) {
   if ((err = nvs_open(CFG_NAMESPACE, NVS_READONLY, &handle)) == ESP_OK) {
 
     if (mask & CONFIG_RECV) {
-      int8_t temp;
+      i8 temp;
       if (ESP_OK == nvs_get_i8(handle, "C_RECEIVER", &temp))
         C.app_recv = temp;
     }
 
     if (mask & CONFIG_TRANSM) {
-      int8_t temp;
+      i8 temp;
       if (ESP_OK == nvs_get_i8(handle, "C_TRANSM", &temp))
         C.app_transm = temp;
     }
 
     if (mask & CONFIG_VERBOSE) {
-      int8_t temp;
+      i8 temp;
       if (ESP_OK == nvs_get_i8(handle, "C_VERBOSE", &temp))
         C.app_verboseOutput = temp;
     }
@@ -182,7 +182,7 @@ void read_config(uint32_t mask) {
       (len = sizeof C.mqtt_password), nvs_get_str(handle, "C_MQTT_PASSWD", C.mqtt_password, &len);
     }
     if (mask & CONFIG_MQTT_ENABLE) {
-      int8_t temp;
+      i8 temp;
       if (ESP_OK == nvs_get_i8(handle, "C_MQTT_ENABLE", &temp))
         C.mqtt_enable = temp;
     }
@@ -195,14 +195,14 @@ void read_config(uint32_t mask) {
       (len = sizeof C.http_password), nvs_get_str(handle, "C_HTTP_PASSWD", C.http_password, &len);
     }
     if (mask & CONFIG_HTTP_ENABLE) {
-      int8_t temp;
+      i8 temp;
       if (ESP_OK == nvs_get_i8(handle, "C_HTTP_ENABLE", &temp))
         C.http_enable = temp;
     }
 #endif
 #ifdef USE_NETWORK
     if (mask & CONFIG_NETWORK_CONNECTION) {
-      int8_t temp;
+      i8 temp;
       if (ESP_OK == nvs_get_i8(handle, "C_NW_CONN", &temp))
         C.network = temp;
     }
@@ -213,7 +213,7 @@ void read_config(uint32_t mask) {
 
 }
 
-void save_config(uint32_t mask) {
+void save_config(u32 mask) {
   esp_err_t err = 0;
   nvs_handle handle;
   size_t len;

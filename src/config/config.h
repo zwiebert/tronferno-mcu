@@ -224,19 +224,19 @@ enum nwConnection {
 #endif
 
 typedef struct {
-	uint32_t fer_centralUnitID, mcu_serialBaud;
+	u32 fer_centralUnitID, mcu_serialBaud;
 	float geo_longitude, geo_latitude;
 
 	float geo_timezone;
 #ifdef MDR_TIME
   enum dst geo_dST;
 #endif
-  int32_t app_rtcAdjust;
+  i32 app_rtcAdjust;
 	enum receiver app_recv;
 	enum transmitter app_transm;
 	enum rtclock app_rtc;
 	enum verbosity app_verboseOutput;
-	uint32_t fer_usedMembers; // each of the nibbles 1-7 stands for a group. nibble 1 == group 1. nibble 0 = number of used Groups (stored for the front-end, not used here on the MCU)
+	u32 fer_usedMembers; // each of the nibbles 1-7 stands for a group. nibble 1 == group 1. nibble 0 = number of used Groups (stored for the front-end, not used here on the MCU)
 
 #ifdef USE_WLAN
 	char wifi_SSID[32];
@@ -254,12 +254,12 @@ typedef struct {
   char mqtt_url[64];
   char mqtt_user[16];
   char mqtt_password[31];
-  int8_t mqtt_enable;
+  i8 mqtt_enable;
 #endif
 #ifdef USE_HTTP
   char http_user[16];
   char http_password[31];
-  int8_t http_enable;
+  i8 http_enable;
 #endif
 #ifdef USE_NTP
   char ntp_server[64];
@@ -271,8 +271,8 @@ typedef struct {
 
 extern config C;
 
-void read_config(uint32_t mask);  // restore C from persistent storage
-void save_config(uint32_t mask);  // save C to persistent storage
+void read_config(u32 mask);  // restore C from persistent storage
+void save_config(u32 mask);  // save C to persistent storage
 enum {
 CB_RECV,
 CB_TRANSM,

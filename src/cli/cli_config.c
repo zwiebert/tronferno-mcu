@@ -147,7 +147,7 @@ process_parmConfig(clpar p[], int len) {
             cu_auto_set(msgid, 60);
             reply_success();
           } else {
-            uint32_t cu = (strcmp(val, "auto-old") == 0) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
+            u32 cu = (strcmp(val, "auto-old") == 0) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
 
             if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
               return reply_failure();
@@ -161,7 +161,7 @@ process_parmConfig(clpar p[], int len) {
           break;
 
         case SO_CFG_BAUD: {
-          uint32_t baud = strtoul(val, NULL, 10);
+          u32 baud = strtoul(val, NULL, 10);
           C.mcu_serialBaud = baud;
           save_config(CONFIG_BAUD);
         }
@@ -355,7 +355,7 @@ process_parmConfig(clpar p[], int len) {
 
 
         case SO_CFG_GM_USED: {
-           uint32_t gmu = strtoul(val, NULL, 16);
+           u32 gmu = strtoul(val, NULL, 16);
            C.fer_usedMembers = gmu;
            save_config(CONFIG_USED_MEMBERS);
         }

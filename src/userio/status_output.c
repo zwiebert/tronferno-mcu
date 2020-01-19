@@ -35,7 +35,7 @@
 
 #define D(x)
 
-uint8_t so_target;
+u8 so_target;
 
 bool out_cli = true;
 bool out_js = true;
@@ -46,9 +46,9 @@ bool out_js = true;
 
 char *ICACHE_FLASH_ATTR ftoa(float f, char *buf, int n) {
   int i;
-  int32_t mult;
-  uint32_t rop;
-  int16_t lop = (int16_t) f;
+  i32 mult;
+  u32 rop;
+  i16 lop = (i16) f;
   char *s = buf;
 
   itoa(lop, s, 10);
@@ -62,7 +62,7 @@ char *ICACHE_FLASH_ATTR ftoa(float f, char *buf, int n) {
   for (i = 0; i < n; ++i)
     mult *= 10;
 
-  rop = (uint32_t) (f * mult);
+  rop = (u32) (f * mult);
   ltoa(rop, s, 10);
 
   return buf;
@@ -149,14 +149,14 @@ void so_out_x_reply_entry_f(so_msg_t key, float val, int n) {
 
 
 
-static void so_print_timer_event_minutes(uint8_t g, uint8_t m);
-static void so_print_timer_as_text(uint8_t g, uint8_t m, bool wildcard);
-static void so_print_timer(uint8_t g, uint8_t m);
+static void so_print_timer_event_minutes(u8 g, u8 m);
+static void so_print_timer_as_text(u8 g, u8 m, bool wildcard);
+static void so_print_timer(u8 g, u8 m);
 static void so_print_gmbitmask(gm_bitmask_t mm);
 static void so_print_startup_info(void);
 
 void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
-  static uint16_t pras_msgid, cuas_msgid;
+  static u16 pras_msgid, cuas_msgid;
   char buf[64];
   int i;
 
@@ -379,7 +379,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
 
     /////////////////////////////////////////////////////////////////////////////////
   case SO_CUAS_START:
-    cuas_msgid = *(uint16_t *) arg;
+    cuas_msgid = *(u16 *) arg;
     io_puts("U: Press Stop on the Fernotron central unit\n");
     break;
   case SO_CUAS_TIMEOUT:
@@ -400,11 +400,11 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
 
     /////////////////////////////////////////////////////////////////////////////////
   case SO_PRAS_START_LISTENING:
-    pras_msgid = *(uint16_t *) arg;
+    pras_msgid = *(u16 *) arg;
     io_puts("U:pras: start listening at RF\n");
     break;
   case SO_PRAS_STOP_LISTENING:
-    if (arg && *(uint16_t *) arg) {
+    if (arg && *(u16 *) arg) {
       io_puts("U:pras: success\n");
     } else {
       io_puts("U:pras: failure\n");
@@ -511,7 +511,7 @@ static void print_timer_event_minute(const char *label, minutes_t mins) {
     io_putc('='), io_putd(mins), io_putlf();
 }
 
-static void ICACHE_FLASH_ATTR so_print_timer_event_minutes(uint8_t g, uint8_t m) {
+static void ICACHE_FLASH_ATTR so_print_timer_event_minutes(u8 g, u8 m) {
   timer_minutes_t tm;
   if (get_timer_minutes(&tm, &g, &m, true)) {
     print_timer_event_minute("astro-down", tm.minutes[0]);
@@ -524,10 +524,10 @@ static void ICACHE_FLASH_ATTR so_print_timer_event_minutes(uint8_t g, uint8_t m)
 
 
 
-static void ICACHE_FLASH_ATTR so_print_timer_as_text(uint8_t g, uint8_t m, bool wildcard) {
+static void ICACHE_FLASH_ATTR so_print_timer_as_text(u8 g, u8 m, bool wildcard) {
   timer_data_t tdr;
   char buf[10];
-  uint8_t g_res = g, m_res = m;
+  u8 g_res = g, m_res = m;
   extern gm_bitmask_t manual_bits; //FIXME
   // read_gm_bitmask("MANU", &manual_bits, 1); //FIXME: not needed
   bool f_manual = GET_BIT(manual_bits[g], m);
@@ -571,7 +571,7 @@ static void ICACHE_FLASH_ATTR so_print_timer_as_text(uint8_t g, uint8_t m, bool 
   if (so_cto) cli_out_timer_reply_entry(NULL, NULL, -1);
 }
 
-static void ICACHE_FLASH_ATTR so_print_timer(uint8_t g, uint8_t m) {
+static void ICACHE_FLASH_ATTR so_print_timer(u8 g, u8 m) {
 
   if (so_tgt_test_cli_text())
     so_print_timer_as_text(g, m, true);
@@ -592,7 +592,7 @@ static void ICACHE_FLASH_ATTR so_print_timer(uint8_t g, uint8_t m) {
 }
 
 static void ICACHE_FLASH_ATTR so_print_gmbitmask(gm_bitmask_t mm) {
-  uint8_t g;
+  u8 g;
 
   for (g = 0; g < 8; ++g) {
     io_putx8(mm[g]);

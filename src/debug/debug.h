@@ -39,7 +39,7 @@ void db_blink_light(int ms_on, int ms_off, int repeats, int n);
 
 /* to turn on indicator lights at program start to see if they are
    connected properly */
-void db_test_all_indicators(uint8_t nmb_flashs);
+void db_test_all_indicators(u8 nmb_flashs);
 #else
 
 #define db_blink_def(ms_on, ms_off, repeats)

@@ -50,7 +50,7 @@ read_controller(gm_bitmask_t *gm, const char *key)
 }
 
 static bool
-add_rm_controller(const char *key, uint8_t g, uint8_t m, bool remove)
+add_rm_controller(const char *key, u8 g, u8 m, bool remove)
 {
   esp_err_t err;
   nvs_handle handle;
@@ -91,7 +91,7 @@ add_rm_controller(const char *key, uint8_t g, uint8_t m, bool remove)
 
 
 bool
-pair_controller(uint32_t controller, uint8_t g, uint8_t m, bool unpair) {
+pair_controller(u32 controller, u8 g, u8 m, bool unpair) {
   D(ets_printf("%s: g=%d, m=%d, unpair=%d\n", __func__, (int)g, (int)m, (int)unpair));
   precond ((controller & 0xff000000) == 0);
   precond (1 <= g && g <= 7 && 1 <= m && m <= 7);
@@ -104,7 +104,7 @@ pair_controller(uint32_t controller, uint8_t g, uint8_t m, bool unpair) {
 }
 
 bool
-read_pairings(gm_bitmask_t *gm, uint32_t controller) {
+read_pairings(gm_bitmask_t *gm, u32 controller) {
   precond (gm && (controller & 0xff000000) == 0);
 
   char key[] = "cpair_10abcd";

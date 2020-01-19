@@ -50,7 +50,7 @@ loop(void) {
         pair_auto_set_check(&last_received_sender);
 #endif
         { //TODO: improve shutter states
-          uint8_t g=0, m=0;
+          u8 g=0, m=0;
 
           if (FRB_ADDR_IS_CENTRAL(rxmsg->cmd)) {
             g = FRB_GET_GRP(rxmsg->cmd);

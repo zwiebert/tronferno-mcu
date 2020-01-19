@@ -22,7 +22,7 @@ void abort_precond(const char *msg, int orig_line) {
 }
 void abort_postcond(const char *msg, int orig_line) {
 }
-void db_test_all_indicators(uint8_t nmb_flashs) {
+void db_test_all_indicators(u8 nmb_flashs) {
 }
 void db_put_light(int state, int n) {
 }

@@ -26,8 +26,8 @@
 
 // circular buffers
 #define URX_BUFSIZE 256  // power of 2
-static uint8_t urx_buf[URX_BUFSIZE];
-static uint8_t urx_head = 0, urx_tail = 0;
+static u8 urx_buf[URX_BUFSIZE];
+static u8 urx_head = 0, urx_tail = 0;
 #define urxb_isEmpty() (urx_head == urx_tail)
 #define urxb_push(c) do { urx_buf[urx_tail++] = (c); wrap_idx(urx_tail, URX_BUFSIZE);  } while(0)
 

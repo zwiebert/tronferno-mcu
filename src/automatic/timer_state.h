@@ -11,7 +11,7 @@ enum { ASTRO_MINTS,
        SIZE_MINTS
 };
 
-typedef uint16_t minutes_t;
+typedef u16 minutes_t;
 #define MINUTES_DISABLED ((minutes_t)~0)
 typedef struct {
   minutes_t minutes[SIZE_MINTS];
@@ -21,12 +21,12 @@ typedef struct {
 // return minute offsets of todays timer events
 // offsets are minutes after 00:00 hour.
 // offset == -1 means: no timer event exists for today
-bool get_timer_minutes(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard);
+bool get_timer_minutes(timer_minutes_t *result, u8 *group, u8 *member, bool wildcard);
 
 
 
 
-typedef uint8_t te_flags_t;
+typedef u8 te_flags_t;
 enum te_flags {tef_UP, tef_DOWN, };
 
 #define te_is_up(te) GET_BIT((te)->flags, tef_UP)

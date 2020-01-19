@@ -30,12 +30,12 @@ int ICACHE_FLASH_ATTR
 process_parmSend(clpar p[], int len) {
   int arg_idx;
 
-  uint32_t addr = 0;
+  u32 addr = 0;
   fer_grp group = fer_grp_Broadcast;
   fer_memb memb = fer_memb_Broadcast;
   fer_cmd cmd = fer_cmd_None;
   int set_end_pos = -1;
-  uint8_t repeats = FSB_PLAIN_REPEATS;
+  u8 repeats = FSB_PLAIN_REPEATS;
   bool read_state = false;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
@@ -85,8 +85,8 @@ process_parmSend(clpar p[], int len) {
   }
 
   if (read_state) {
-    uint8_t g = group;
-    uint8_t m = memb == 0 ? 0 : memb - 7;
+    u8 g = group;
+    u8 m = memb == 0 ? 0 : memb - 7;
     if (g != 0 && m != 0) {
       int pos = get_shutter_state(addr, g, m);
       if (pos >= 0) {
@@ -122,8 +122,8 @@ process_parmSend(clpar p[], int len) {
       fer_update_tglNibble(fsb);
       fsb->repeats = repeats;
       if (reply(fer_send_msg(fsb, MSG_TYPE_PLAIN))) {
-        uint8_t g = group;
-        uint8_t m = memb == 0 ? 0 : memb - 7;
+        u8 g = group;
+        u8 m = memb == 0 ? 0 : memb - 7;
         set_shutter_state(FSB_GET_DEVID(fsb), g, m, FSB_GET_CMD(fsb));
       }
     } else {

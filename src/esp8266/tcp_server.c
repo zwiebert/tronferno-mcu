@@ -50,11 +50,11 @@ static int nmbConnected;
 
 // circular buffers
 #define RX_BUFSIZE 128  // power of 2
-static uint8_t rx_buf[RX_BUFSIZE];
-static uint8_t rx_head = 0, rx_tail = 0;
+static u8 rx_buf[RX_BUFSIZE];
+static u8 rx_head = 0, rx_tail = 0;
 #define rxb_isEmpty() (rx_head == rx_tail)
 #define  rxb_push(c) do {  rx_buf[rx_tail++] = (c);   wrap_idx(rx_tail, RX_BUFSIZE);  } while(0)
-static bool ICACHE_FLASH_ATTR rxb_pop(uint8_t *res) {
+static bool ICACHE_FLASH_ATTR rxb_pop(u8 *res) {
   if (rxb_isEmpty())
     return false;
   *res = rx_buf[rx_head++];
@@ -63,11 +63,11 @@ static bool ICACHE_FLASH_ATTR rxb_pop(uint8_t *res) {
 }
 #if !PUTC_LINE_BUFFER
 #define TX_BUFSIZE 128 // power of 2
-static uint8_t tx_buf[RX_BUFSIZE];
-static uint8_t tx_head = 0, tx_tail = 0;
+static u8 tx_buf[RX_BUFSIZE];
+static u8 tx_head = 0, tx_tail = 0;
 #define txb_isEmpty() (tx_head == tx_tail)
 #define  txb_push(c) do {  tx_buf[tx_tail++] = (c);   wrap_idx(tx_tail, TX_BUFSIZE);  } while(0)
-static bool ICACHE_FLASH_ATTR txb_pop(uint8_t *res) {
+static bool ICACHE_FLASH_ATTR txb_pop(u8 *res) {
   if (txb_isEmpty())
     return false;
   *res = tx_buf[tx_head++];
@@ -82,7 +82,7 @@ static int tx_pending;
 
 static int ICACHE_FLASH_ATTR
 tcpSocket_io_getc(void) {
-  uint8_t c;
+  u8 c;
 
 #if SERIAL_INPUT
   if (old_io_getc_fun) {
@@ -118,7 +118,7 @@ static bool line_complete;
 
 static int ICACHE_FLASH_ATTR
 write_line(void) {
-  uint8_t i;
+  u8 i;
 
   if (line_idx == 0)
     return -1;
@@ -172,7 +172,7 @@ write_line(void) {
 
 static int ICACHE_FLASH_ATTR
 tcpSocket_io_putc(char c) {
-  uint8_t i;
+  u8 i;
 
 #if SERIAL_ECHO
   if (old_io_putc_fun)
@@ -196,7 +196,7 @@ tcpSocket_io_putc(char c) {
 #else
 static int ICACHE_FLASH_ATTR
 tcpSocket_io_putc(char c) {
-  uint8_t new_tail = tx_tail + 1;
+  u8 new_tail = tx_tail + 1;
   if (new_tail == TX_BUFSIZE)
     new_tail = 0;
 
@@ -251,7 +251,7 @@ tcps_tx_loop(void) {
   }
 
   if (!tx_pending && tx_head != tx_tail) {
-    uint8_t h = tx_head, t = tx_tail, l;
+    u8 h = tx_head, t = tx_tail, l;
 
     l = (h <= t) ? t - h : TX_BUFSIZE - h;
 

@@ -16,10 +16,10 @@ time_t time_iso2time(const char *dateTimeString);
 
 time_t rtc_timezone_in_secs();
 
-int8_t get_weekDay(void);
-int16_t get_yearDay(void);
+i8 get_weekDay(void);
+i16 get_yearDay(void);
 int get_dst(void);
-int16_t rtc_get_next_minute(void); // get next minute_of_day or -1 until next minute begins
+i16 rtc_get_next_minute(void); // get next minute_of_day or -1 until next minute begins
 
 void rtc_setup(void);
 

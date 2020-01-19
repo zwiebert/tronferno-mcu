@@ -25,13 +25,13 @@
 enum pos {
   POS_0, POS_50, POS_100, POS_SIZE
 };
-static const uint8_t pos_map[POS_SIZE] = { 0, 50, 100 };
+static const u8 pos_map[POS_SIZE] = { 0, 50, 100 };
 
 static gm_bitmask_t positions[POS_SIZE];
 
 static int ICACHE_FLASH_ATTR
-get_state(uint32_t a, int g, int m) {
-  uint8_t p;
+get_state(u32 a, int g, int m) {
+  u8 p;
 
   precond(1 <= g && g <= 7 && 1 <= m && m <= 7);
 
@@ -43,8 +43,8 @@ get_state(uint32_t a, int g, int m) {
 }
 
 static int ICACHE_FLASH_ATTR
-set_state(uint32_t a, int g, int m, int position) {
-  uint8_t p, gi, mi;
+set_state(u32 a, int g, int m, int position) {
+  u8 p, gi, mi;
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, position=%d\n", __func__, a, g, m, position));
   precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
   precond(0 <= position && position <= 100);
@@ -63,14 +63,14 @@ set_state(uint32_t a, int g, int m, int position) {
 }
 
 int ICACHE_FLASH_ATTR
-get_shutter_state(uint32_t a, uint8_t g, uint8_t m) {
+get_shutter_state(u32 a, u8 g, u8 m) {
   precond(g <= 7 && m <= 7);
 
   return get_state(a, g, m);
 }
 
 int ICACHE_FLASH_ATTR
-set_shutter_state(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd) {
+set_shutter_state(u32 a, u8 g, u8 m, fer_cmd cmd) {
   int position = -1;
   precond(g <= 7 && m <= 7);
 
@@ -112,8 +112,8 @@ set_shutter_state(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd) {
 }
 
 int ICACHE_FLASH_ATTR
-modify_shutter_positions(gm_bitmask_t mm, uint8_t p) {
-  uint8_t g, m;
+modify_shutter_positions(gm_bitmask_t mm, u8 p) {
+  u8 g, m;
 
   for (g = 1; g <= GRP_MAX; ++g) {
     for (m = 1; m <= MBR_MAX; ++m) {
@@ -133,7 +133,7 @@ modify_shutter_positions(gm_bitmask_t mm, uint8_t p) {
 
 int ICACHE_FLASH_ATTR
 print_shutter_positions() {
-  uint8_t p, g;
+  u8 p, g;
 
   so_output_message(SO_POS_begin, NULL);
   for (p = 0; p < POS_SIZE; ++p) {

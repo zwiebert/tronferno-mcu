@@ -62,7 +62,7 @@ user_set_station_config(void) {
 
 #if 0
 void wst_reconnect(void) {
-  uint8_t status = wifi_station_get_connect_status();
+  u8 status = wifi_station_get_connect_status();
   io_printf_fun("wifi state: %d\n", (int) 0xff & status);
 
   //wifi_station_connect();
@@ -81,7 +81,7 @@ volatile static bool wifistation_connected;
 volatile static bool wifistation_disconnected;
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
-        int32_t event_id, void* event_data) {
+        i32 event_id, void* event_data) {
 
     switch (event_id) {
 
@@ -110,7 +110,7 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
 
 /** Event handler for IP_EVENT_STA_GOT_IP */
 static void got_ip_event_handler(void* arg, esp_event_base_t event_base,
-        int32_t event_id, void* event_data) {
+        i32 event_id, void* event_data) {
 
     ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
     const tcpip_adapter_ip_info_t* ip_info = &event->ip_info;

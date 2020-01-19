@@ -27,7 +27,7 @@ cuas_state_T cuas_getState() {
 static bool cuas_active;
 static time_t end_time;
 
-bool ICACHE_FLASH_ATTR cu_auto_set(uint16_t id, unsigned timeout_secs) {
+bool ICACHE_FLASH_ATTR cu_auto_set(u16 id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
 
@@ -60,7 +60,7 @@ bool ICACHE_FLASH_ATTR cu_auto_set_check(fer_sender_basic *fsb) {
     return false;
 
  if (FSB_ADDR_IS_CENTRAL(fsb)) {
-    uint32_t cu = FSB_GET_DEVID(fsb);
+    u32 cu = FSB_GET_DEVID(fsb);
     FSB_PUT_DEVID(&default_sender, cu);
     C.fer_centralUnitID = cu;
     end_time = 0;

@@ -68,14 +68,14 @@ typedef struct {
 } tcps_cconn;
 
 static tcps_cconn cconn_table[TCPS_CCONN_MAX];
-static uint8_t cconn_idx;
+static u8 cconn_idx;
 #define cconn_is_used(idx) (cconn_table[(idx)].fd >= 0)
 #define cconn_free_count (TCPS_CCONN_MAX - cconn_count)
 #define cconn_curr (cconn_table[cconn_idx])
 #define cconn_incr() (cconn_idx = (cconn_idx+1) & (TCPS_CCONN_MAX - 1))
 
 static tcps_cconn *get_next_ccon(bool in_use) {
-  uint8_t i;
+  u8 i;
   for (i=0; i < TCPS_CCONN_MAX; ++i) {
     cconn_incr();
 
@@ -152,7 +152,7 @@ static char line_buf[TCPS_LINE_LEN];
 static int line_idx;
 
 static int tcp_io_putc(char c) {
-  uint8_t i;
+  u8 i;
 
 #if SERIAL_ECHO
   if(old_io_putc_fun)
@@ -183,7 +183,7 @@ static int tcp_io_putc(char c) {
 
 #else
 static int tcp_io_putc(char c) {
-  uint8_t i;
+  u8 i;
 
   if(old_io_putc_fun)
     old_io_putc_fun(c);
@@ -203,7 +203,7 @@ static int tcp_io_putc(char c) {
 #endif
 
 static int tcp_io_puts(const char *s) {
-  uint8_t i;
+  u8 i;
   size_t s_len;
 
   s_len = strlen(s);
@@ -320,7 +320,7 @@ static int  tcps_io_getline(char *buf, size_t buf_size, int bytes_already_receiv
 static int  tcp_io_getc_buf(void) {
   #define BUF_SIZE 80
   static char buf[BUF_SIZE];
-  static uint8_t idx, used;
+  static u8 idx, used;
   int c, res;
 
   if (old_io_getc_fun && (c = old_io_getc_fun()) >= 0) return c;
@@ -401,7 +401,7 @@ static void modify_io_fun(bool add_connection) {
 
 void
 setup_tcp_server(void) {
-  uint8_t i;
+  u8 i;
 
   for (i=0; i < TCPS_CCONN_MAX; ++i) {
     cconn_table[i].fd = -1;

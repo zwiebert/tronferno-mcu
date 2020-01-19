@@ -80,29 +80,29 @@ static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE + 32) * 4];
  alignedEnd:                      ^
  */
 
-int32_t ICACHE_FLASH_ATTR my_spiffs_read(uint32_t addr, uint32_t size, uint8_t *dst) {
+i32 ICACHE_FLASH_ATTR my_spiffs_read(u32 addr, u32 size, u8 *dst) {
 	DEBUGV("spiffs: read 0x%lx, %lu\n", addr, size);
 
-	uint32_t result = SPIFFS_OK;
-	uint32_t alignedBegin = (addr + 3) & (~3);
-	uint32_t alignedEnd = (addr + size) & (~3);
+	u32 result = SPIFFS_OK;
+	u32 alignedBegin = (addr + 3) & (~3);
+	u32 alignedEnd = (addr + size) & (~3);
 	if (alignedEnd < alignedBegin) {
 		alignedEnd = alignedBegin;
 	}
 
 	if (addr < alignedBegin) {
-		uint32_t nb = alignedBegin - addr;
-		uint32_t tmp;
+		u32 nb = alignedBegin - addr;
+		u32 tmp;
 		if (SPI_FLASH_RESULT_OK != spi_flash_read(alignedBegin - 4, &tmp, 4)) {
 			DEBUGV("_spif_read(%d) addr=%x size=%x ab=%x ae=%x\r\n",
 			__LINE__, addr, size, alignedBegin, alignedEnd);
 			return SPIFFS_ERR_INTERNAL;
 		}
-		memcpy(dst, ((uint8_t*) &tmp) + 4 - nb, nb);
+		memcpy(dst, ((u8*) &tmp) + 4 - nb, nb);
 	}
 
 	if (alignedEnd != alignedBegin) {
-		if (SPI_FLASH_RESULT_OK != spi_flash_read(alignedBegin, (uint32_t*) (dst + alignedBegin - addr), alignedEnd - alignedBegin)) {
+		if (SPI_FLASH_RESULT_OK != spi_flash_read(alignedBegin, (u32*) (dst + alignedBegin - addr), alignedEnd - alignedBegin)) {
 			DEBUGV("_spif_read(%d) addr=%x size=%x ab=%x ae=%x\r\n",
 			__LINE__, addr, size, alignedBegin, alignedEnd);
 			return SPIFFS_ERR_INTERNAL;
@@ -110,8 +110,8 @@ int32_t ICACHE_FLASH_ATTR my_spiffs_read(uint32_t addr, uint32_t size, uint8_t *
 	}
 
 	if (addr + size > alignedEnd) {
-		uint32_t nb = addr + size - alignedEnd;
-		uint32_t tmp;
+		u32 nb = addr + size - alignedEnd;
+		u32 tmp;
 		if (SPI_FLASH_RESULT_OK != spi_flash_read(alignedEnd, &tmp, 4)) {
 			DEBUGV("_spif_read(%d) addr=%x size=%x ab=%x ae=%x\r\n",
 			__LINE__, addr, size, alignedBegin, alignedEnd);
@@ -137,21 +137,21 @@ int32_t ICACHE_FLASH_ATTR my_spiffs_read(uint32_t addr, uint32_t size, uint8_t *
 
 static const int UNALIGNED_WRITE_BUFFER_SIZE = 512;
 
-int32_t ICACHE_FLASH_ATTR my_spiffs_write(uint32_t addr, uint32_t size, uint8_t *src) {
+i32 ICACHE_FLASH_ATTR my_spiffs_write(u32 addr, u32 size, u8 *src) {
 	DEBUGV("spiffs: write 0x%lx, %lu\n", addr, size);
 
-	uint32_t alignedBegin = (addr + 3) & (~3);
-	uint32_t alignedEnd = (addr + size) & (~3);
+	u32 alignedBegin = (addr + 3) & (~3);
+	u32 alignedEnd = (addr + size) & (~3);
 	if (alignedEnd < alignedBegin) {
 		alignedEnd = alignedBegin;
 	}
 
 	if (addr < alignedBegin) {
-		uint32_t ofs = alignedBegin - addr;
-		uint32_t nb = (size < ofs) ? size : ofs;
-		uint8_t tmp[4] __attribute__((aligned(4))) = { 0xff, 0xff, 0xff, 0xff };
+		u32 ofs = alignedBegin - addr;
+		u32 nb = (size < ofs) ? size : ofs;
+		u8 tmp[4] __attribute__((aligned(4))) = { 0xff, 0xff, 0xff, 0xff };
 		memcpy(tmp + 4 - ofs, src, nb);
-		if (SPI_FLASH_RESULT_OK != spi_flash_write(alignedBegin - 4, (uint32_t*) tmp, 4)) {
+		if (SPI_FLASH_RESULT_OK != spi_flash_write(alignedBegin - 4, (u32*) tmp, 4)) {
 			DEBUGV("_spif_write(%d) addr=%x size=%x ab=%x ae=%x\r\n",
 			__LINE__, addr, size, alignedBegin, alignedEnd);
 			return SPIFFS_ERR_INTERNAL;
@@ -159,22 +159,22 @@ int32_t ICACHE_FLASH_ATTR my_spiffs_write(uint32_t addr, uint32_t size, uint8_t 
 	}
 
 	if (alignedEnd != alignedBegin) {
-		uint32_t* srcLeftover = (uint32_t*) (src + alignedBegin - addr);
-		uint32_t srcAlign = ((uint32_t) srcLeftover) & 3;
+		u32* srcLeftover = (u32*) (src + alignedBegin - addr);
+		u32 srcAlign = ((u32) srcLeftover) & 3;
 		if (!srcAlign) {
-			if (SPI_FLASH_RESULT_OK != spi_flash_write(alignedBegin, (uint32_t*) srcLeftover, alignedEnd - alignedBegin)) {
+			if (SPI_FLASH_RESULT_OK != spi_flash_write(alignedBegin, (u32*) srcLeftover, alignedEnd - alignedBegin)) {
 				DEBUGV("_spif_write(%d) addr=%x size=%x ab=%x ae=%x, src=%p\r\n",
 				__LINE__, addr, size, alignedBegin, alignedEnd, srcLeftover);
 				return SPIFFS_ERR_INTERNAL;
 			}
 		} else {
-			uint32_t sizeLeft;
-			uint8_t buf[UNALIGNED_WRITE_BUFFER_SIZE];
+			u32 sizeLeft;
+			u8 buf[UNALIGNED_WRITE_BUFFER_SIZE];
 			for (sizeLeft = alignedEnd - alignedBegin; sizeLeft;) {
 				size_t willCopy = min(sizeLeft, sizeof(buf));
 				memcpy(buf, srcLeftover, willCopy);
 
-				if (SPI_FLASH_RESULT_OK != spi_flash_write(alignedBegin, (uint32_t*) buf, willCopy)) {
+				if (SPI_FLASH_RESULT_OK != spi_flash_write(alignedBegin, (u32*) buf, willCopy)) {
 					DEBUGV("_spif_write(%d) addr=%x size=%x ab=%x ae=%x\r\n",
 					__LINE__, addr, size, alignedBegin, alignedEnd);
 					return SPIFFS_ERR_INTERNAL;
@@ -188,8 +188,8 @@ int32_t ICACHE_FLASH_ATTR my_spiffs_write(uint32_t addr, uint32_t size, uint8_t 
 	}
 
 	if (addr + size > alignedEnd) {
-		uint32_t nb = addr + size - alignedEnd;
-		uint32_t tmp = 0xffffffff;
+		u32 nb = addr + size - alignedEnd;
+		u32 tmp = 0xffffffff;
 		memcpy(&tmp, src + size - nb, nb);
 
 		if (SPI_FLASH_RESULT_OK != spi_flash_write(alignedEnd, &tmp, 4)) {
@@ -202,13 +202,13 @@ int32_t ICACHE_FLASH_ATTR my_spiffs_write(uint32_t addr, uint32_t size, uint8_t 
 	return SPIFFS_OK;
 }
 
-int32_t ICACHE_FLASH_ATTR my_spiffs_erase(uint32_t addr, uint32_t size) {
-	uint32_t i;
-	const uint32_t sector = addr / SPI_FLASH_SEC_SIZE;
-	const uint32_t sectorCount = size / SPI_FLASH_SEC_SIZE;
+i32 ICACHE_FLASH_ATTR my_spiffs_erase(u32 addr, u32 size) {
+	u32 i;
+	const u32 sector = addr / SPI_FLASH_SEC_SIZE;
+	const u32 sectorCount = size / SPI_FLASH_SEC_SIZE;
 	for (i = 0; i < sectorCount; ++i) {
 
-		if (SPI_FLASH_RESULT_OK != spi_flash_erase_sector((uint16_t) (sector + i))) {
+		if (SPI_FLASH_RESULT_OK != spi_flash_erase_sector((u16) (sector + i))) {
 			DEBUGV("_spif_erase addr=%x size=%d i=%d\r\n", addr, size, i);
 			return SPIFFS_ERR_INTERNAL;
 		}

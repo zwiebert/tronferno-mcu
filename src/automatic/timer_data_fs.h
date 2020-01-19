@@ -12,7 +12,7 @@
 #include "timer_data.h"
 
 
-bool save_timer_data_fs(timer_data_t *p, uint8_t group, uint8_t member);
-bool read_timer_data_fs(timer_data_t *p, uint8_t *group, uint8_t *member, bool wildcard);
+bool save_timer_data_fs(timer_data_t *p, u8 group, u8 member);
+bool read_timer_data_fs(timer_data_t *p, u8 *group, u8 *member, bool wildcard);
 
 #endif /* USER_MAIN_TIMER_DATA_FS_H_ */

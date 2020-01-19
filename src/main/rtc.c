@@ -26,14 +26,14 @@ rtc_time_t ICACHE_FLASH_ATTR rtc_time(void) {
 }
 
 
-int8_t ICACHE_FLASH_ATTR
+i8 ICACHE_FLASH_ATTR
 get_weekDay() {
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
   return tm->tm_wday;
 }
 
-int16_t ICACHE_FLASH_ATTR
+i16 ICACHE_FLASH_ATTR
 get_yearDay() {
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
@@ -47,7 +47,7 @@ get_dst() {
   return tm->tm_isdst ? 1 : 0;
 }
 
-int16_t ICACHE_FLASH_ATTR
+i16 ICACHE_FLASH_ATTR
 rtc_get_next_minute() {
   static int last_minute;
 
@@ -57,7 +57,7 @@ rtc_get_next_minute() {
     return -1;
 
   last_minute = tm->tm_min;
-  return (int16_t)tm->tm_hour * 60 + tm->tm_min;
+  return (i16)tm->tm_hour * 60 + tm->tm_min;
 }
 
 
@@ -121,20 +121,20 @@ rtc_set_by_string(const char *dateTimeString) {
   return false;
 }
 
-int16_t ICACHE_FLASH_ATTR
-eu_dst(const time_t *timer, int32_t * z) {
-  uint32_t t = *timer;
-  if ((uint8_t) (t >> 24) >= 194)
+i16 ICACHE_FLASH_ATTR
+eu_dst(const time_t *timer, i32 * z) {
+  u32 t = *timer;
+  if ((u8) (t >> 24) >= 194)
     t -= 3029443200U;
   t = (t + 655513200) / 604800 * 28;
-  if ((uint16_t) (t % 1461) < 856)
+  if ((u16) (t % 1461) < 856)
     return 3600;
   else
     return 0;
 }
 
-int16_t ICACHE_FLASH_ATTR
-always_dst(const time_t *timer, int32_t * z) {
+i16 ICACHE_FLASH_ATTR
+always_dst(const time_t *timer, i32 * z) {
   return 3600;
 }
 

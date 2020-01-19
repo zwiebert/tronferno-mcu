@@ -37,7 +37,7 @@ int ICACHE_FLASH_ATTR io_puts(const char *s) {
 }
 
 void ICACHE_FLASH_ATTR
-io_putx8(uint8_t n) {
+io_putx8(u8 n) {
   char s[3];
   if (n & 0xf0) {
     itoa(n, s, 16);
@@ -51,7 +51,7 @@ io_putx8(uint8_t n) {
 
 
 void ICACHE_FLASH_ATTR
-io_print_hex_8(uint8_t n, bool comma) {
+io_print_hex_8(u8 n, bool comma) {
   char s[3];
   itoa(n, s, 16);
   io_puts((n & 0xF0) ? "0x" : "0x0");
@@ -62,7 +62,7 @@ io_print_hex_8(uint8_t n, bool comma) {
  
 
 void ICACHE_FLASH_ATTR
-io_print_hex_16(uint16_t n, bool comma) {
+io_print_hex_16(u16 n, bool comma) {
   char s[5];
   itoa(n, s, 16);
   io_puts((n & 0xFFF0)== 0 ? "0x000" :
@@ -76,7 +76,7 @@ io_print_hex_16(uint16_t n, bool comma) {
 }
 
 void ICACHE_FLASH_ATTR
-io_print_hex_32(uint32_t n, bool comma) {
+io_print_hex_32(u32 n, bool comma) {
   char s[10];
   ltoa(n, s, 16);
   io_puts((n & 0xFFFFFFF0)== 0 ? "0x0000000" :
@@ -95,7 +95,7 @@ io_print_hex_32(uint32_t n, bool comma) {
 }
 
 void ICACHE_FLASH_ATTR
-io_print_hex(uint32_t n, bool prefix) {
+io_print_hex(u32 n, bool prefix) {
   char s[10];
   ltoa(n, s, 16);
   if (prefix)
@@ -104,7 +104,7 @@ io_print_hex(uint32_t n, bool prefix) {
 }
       
 void ICACHE_FLASH_ATTR
-io_print_dec_32(int32_t n, bool comma) {
+io_print_dec_32(i32 n, bool comma) {
   char s[12];
   ltoa(n, s, 10);
   io_puts(s);
@@ -114,7 +114,7 @@ io_print_dec_32(int32_t n, bool comma) {
 }
       
 void ICACHE_FLASH_ATTR
-io_print_dec_16(int16_t n, bool comma) {
+io_print_dec_16(i16 n, bool comma) {
   char s[10];
   io_puts(itoa(n, s, 10));
   if (comma)
@@ -123,9 +123,9 @@ io_print_dec_16(int16_t n, bool comma) {
 
 void ICACHE_FLASH_ATTR io_print_float(float f, int n) {
 	int i;
-	int32_t mult;
-	uint32_t rop;
-	int16_t lop = (int16_t) f;
+	i32 mult;
+	u32 rop;
+	i16 lop = (i16) f;
 	io_print_dec_16(lop, false);
 	io_putc('.');
 
@@ -136,7 +136,7 @@ void ICACHE_FLASH_ATTR io_print_float(float f, int n) {
 	for (i = 0; i < n; ++i)
 		mult *= 10;
 
-	rop = (uint32_t) (f * mult);
+	rop = (u32) (f * mult);
 
 	io_print_dec_32(rop, false);
 }
@@ -152,7 +152,7 @@ io_putn(int n, int radix) {
 
 
 void ICACHE_FLASH_ATTR
-io_putl(int32_t n, int radix) {
+io_putl(i32 n, int radix) {
   char s[13];
   io_puts(ltoa(n, s, radix));
 }
@@ -165,7 +165,7 @@ io_putd(int n) {
 
 
 void ICACHE_FLASH_ATTR
-io_putld(int32_t n) {
+io_putld(i32 n) {
   io_putl(n, 10);
 }
 
@@ -190,14 +190,14 @@ io_getline(char *buf, unsigned buf_size) {
 }
 
 void ICACHE_FLASH_ATTR
-printBCD(uint8_t bcd) {
+printBCD(u8 bcd) {
   char s[10];
   io_puts(itoa(GET_HIGH_NIBBLE(bcd), s , 16)); 
   io_puts(itoa(GET_LOW_NIBBLE( bcd), s , 16)); 
 }
 
 void ICACHE_FLASH_ATTR
-print_array_8(const uint8_t *src, int len) {
+print_array_8(const u8 *src, int len) {
   int i;
 
   for (i = 0; i < len; ++i) {
@@ -207,7 +207,7 @@ print_array_8(const uint8_t *src, int len) {
 }
 
 void ICACHE_FLASH_ATTR
-print_array_8_inv(const uint8_t *src, int len) {
+print_array_8_inv(const u8 *src, int len) {
   int i;
 
   for (i = 0; i < len; ++i) {

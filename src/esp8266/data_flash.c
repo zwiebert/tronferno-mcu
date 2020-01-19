@@ -44,11 +44,11 @@ extern int ENR;
 
 #ifndef C_DATA_FLASH_ADDR
 // reserve us some flash_sectors we can access via spi_flash_read() and spi_flash_write() from mem.h
-static volatile const uint8_t our_flash_storage[SECTOR_SIZE * FLASH_SECTORS] __attribute__((section(".irom.text"), aligned(4096)));
+static volatile const u8 our_flash_storage[SECTOR_SIZE * FLASH_SECTORS] __attribute__((section(".irom.text"), aligned(4096)));
 // number of first sector of our_flash_storage
-static uint16_t our_start_sector_number;
+static u16 our_start_sector_number;
 #else
-static uint16_t our_start_sector_number = ((uint16_t)((C_DATA_FLASH_ADDR) / 4096));
+static u16 our_start_sector_number = ((u16)((C_DATA_FLASH_ADDR) / 4096));
 #undef FLASH_SECTORS
 #define FLASH_SECTORS (C_DATA_FLASH_SIZE / 4096)
 #endif
@@ -56,23 +56,23 @@ static uint16_t our_start_sector_number = ((uint16_t)((C_DATA_FLASH_ADDR) / 4096
 
 
 // the index of the sector we currently use (our_start_sector == index 0) ...
-static uint16_t our_current_sector_index;
+static u16 our_current_sector_index;
 // ... and the number of that current sector ...
 #define our_current_sector_number (our_start_sector_number + our_current_sector_index)
 // ... and the byte address of that current sector in the memory mapped flash ROM
 #define our_current_sector_address (our_current_sector_number * SECTOR_SIZE + our_current_block_index * BLOCK_SIZE)
 
 // the index of the block we currently use in the current sector
-static uint16_t our_current_block_index;
+static u16 our_current_block_index;
 
 // magic cookie to mark the data we save, so we can find it at program start
-static uint32_t MAGIC_COOKIE = 0xDEADBEEF;
+static u32 MAGIC_COOKIE = 0xDEADBEEF;
 
 
 #if ! NO_CACHE
 // locally cache the user data in flash_obj to keep track of changes and keep code simple (FIXME: not really that useful, waste of RAM)
 static struct {
-	uint32_t magic_cookie;
+	u32 magic_cookie;
 	DATA_TYPE data;
 } flash_obj;
 #endif
@@ -86,7 +86,7 @@ static bool ICACHE_FLASH_ATTR find_free_block(void) {
 
 	for (; our_current_sector_index < FLASH_SECTORS; ++our_current_sector_index, our_current_block_index = 0) {
 		for (; our_current_block_index < BLOCKS_PER_SECTOR; ++our_current_block_index) {
-			uint32_t cookie;
+			u32 cookie;
 
 			spi_flash_read(our_current_sector_address, &cookie, sizeof(cookie));
 
@@ -117,7 +117,7 @@ static bool ICACHE_FLASH_ATTR find_data_block() {
 
 	for (; our_current_sector_index < FLASH_SECTORS; ++our_current_sector_index, our_current_block_index = 0) {
 		for (; our_current_block_index < BLOCKS_PER_SECTOR; ++our_current_block_index) {
-			uint32_t cookie;
+			u32 cookie;
 
 			spi_flash_read(our_current_sector_address, &cookie, sizeof(cookie));
 			if (cookie == MAGIC_COOKIE)
@@ -136,18 +136,18 @@ static void ICACHE_FLASH_ATTR write_flash() {
 	DB(ets_uart_printf("write_flash(): sn=%d, bn=%d, size=%d\n", (int)(our_start_sector_number + our_current_sector_index), (int)our_current_block_index, (int)BLOCK_SIZE));
 #if NO_CACHE
 	spi_flash_write(our_current_sector_address, &MAGIC_COOKIE, sizeof (MAGIC_COOKIE));
-	spi_flash_write(our_current_sector_address + sizeof (MAGIC_COOKIE), (uint32_t*) DATA_PTR, sizeof (DATA_TYPE));
+	spi_flash_write(our_current_sector_address + sizeof (MAGIC_COOKIE), (u32*) DATA_PTR, sizeof (DATA_TYPE));
 #else
-	spi_flash_write(our_current_sector_address, (uint32_t*) &flash_obj, sizeof(flash_obj));
+	spi_flash_write(our_current_sector_address, (u32*) &flash_obj, sizeof(flash_obj));
 #endif
 }
 
 // read data from current block
 static void ICACHE_FLASH_ATTR read_flash() {
 #if NO_CACHE
-	spi_flash_read(our_current_sector_address + sizeof (MAGIC_COOKIE), (uint32_t*) DATA_PTR, sizeof (DATA_TYPE));
+	spi_flash_read(our_current_sector_address + sizeof (MAGIC_COOKIE), (u32*) DATA_PTR, sizeof (DATA_TYPE));
 #else
-	spi_flash_read(our_current_sector_address, (uint32_t*) &flash_obj, sizeof(flash_obj));
+	spi_flash_read(our_current_sector_address, (u32*) &flash_obj, sizeof(flash_obj));
 #endif
 }
 
@@ -182,9 +182,9 @@ void ICACHE_FLASH_ATTR save_data(void) {
 // initialize this software module
 void ICACHE_FLASH_ATTR setup_dataFlash() {
 #ifndef C_DATA_FLASH_ADDR
-	uint32_t our_start_sector_address; // byte address of our storage in memory mapped flash ROM
+	u32 our_start_sector_address; // byte address of our storage in memory mapped flash ROM
 
-	our_start_sector_address = (uint32_t) &our_flash_storage[0] - FLASH_MAPPED;
+	our_start_sector_address = (u32) &our_flash_storage[0] - FLASH_MAPPED;
 	our_start_sector_number = (our_start_sector_address >> (3 * 4));
 #endif
 

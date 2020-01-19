@@ -27,7 +27,7 @@ void loop(void);
 void tcps_loop(void);
 
 extern void setup_timer(void);
-extern void setup_serial(uint32_t baudrate);
+extern void setup_serial(u32 baudrate);
 extern void setup_notImplemented(void);
 extern void setup_pin(void);
 void setup_wifistation(void);
