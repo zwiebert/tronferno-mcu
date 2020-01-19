@@ -132,6 +132,7 @@ class AppState {
             } else {
                 config_fetched = true;
                 document.getElementById("config-div").innerHTML = buildHtmlByConfigData(obj.config);
+                updateHtmlByConfigData(obj.config);
 		tfmcu_config = obj;
 		gmuUnpack();
             }
@@ -230,7 +231,7 @@ function buildConfigTableRowHtml(name,value) {
 	        return '<td><label class="config-label">'+name+
             '</label></td><td><select  class="config-input" id="cfg_'+name+'">'+
                '<option value="wlan">Connect to existing WLAN</option>'+
-               '<option value="ap">WLAN-AP at 192.168.1.4</option>'+
+               '<option value="ap">WLAN-AP at 192.168.4.1 (ssid=tronferno/pw=tronferno)</option>'+
                '<option value="lan">Connect to Ethernet</option>'+
             '</select></td>';
     } else {
