@@ -64,11 +64,9 @@ void simple_ota_example_task(void * pvParameter)
    // ESP_LOGI(TAG, "Starting OTA example");
 
     esp_http_client_config_t config = {
-        //.url = "http://192.168.1.70:8000/netmcu.bin",
         .url = Firmware_url,
         .cert_pem = (char *)server_cert_pem_start,
         .event_handler = _http_event_handler,
-        .skip_cert_common_name_check = true,
     };
     //vTaskDelete(NULL);
     esp_err_t ret = esp_https_ota(&config);

@@ -12,7 +12,7 @@ let cuas_State = 0;
 
 
 function dbLog(msg) {
-   // console.log(msg);
+    console.log(msg);
 }
 
 class AppState {
