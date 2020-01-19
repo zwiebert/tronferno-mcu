@@ -10,6 +10,11 @@ let config_fetched = false;
 let cuas_Interval;
 let cuas_State = 0;
 
+
+function dbLog(msg) {
+   // console.log(msg);
+}
+
 class AppState {
 
     constructor() {
@@ -35,7 +40,7 @@ class AppState {
     gmChanged() {
         this.linkAutoObj();
         this.updateAutomaticHtml();
-        console.log(JSON.stringify(this));
+        dbLog(JSON.stringify(this));
         this.fetchAutomatic();
     }
 
@@ -88,7 +93,7 @@ class AppState {
         down_elem.value = "";
 
         if ("daily" in auto) {
-            console.log("------");
+            dbLog("------");
             let d = auto.daily;
             let l = auto.daily.length;
             up_elem.value = d.startsWith("-") ? "" : d.substring(0,2)+":"+d.substring(2,4);
@@ -97,7 +102,7 @@ class AppState {
     }
 
     handleFetchedData(obj) {
-        console.log("reply-json: "+JSON.stringify(obj));
+        dbLog("reply-json: "+JSON.stringify(obj));
 
         if ("config" in obj) {
 	    let config = obj.config;
@@ -203,7 +208,7 @@ class AppState {
         this.tabIdx = this.mTabIdx;
 	this.fetchVersion();
         this.fetchConfig(); //FIXME: needed here for group/member numbers
-        this.tabSwitchVisibility = this.mTabVisibility;
+        this.tabVisibility = this.mTabVisibility;
     }
 
 }
@@ -213,7 +218,7 @@ let app_state;
 
 function buildConfigTableRowHtml(name,value) {
     if (name.endsWith("-enable")) {
-        console.log("value: "+value);
+        dbLog("value: "+value);
         return '<td><label class="config-label">'+name+
             '</label></td><td><input class="config-input cb" type="checkbox" id="cfg_'+name+
             '" name="'+name +'"' + (value ? " checked" : "") +'></td>';
@@ -240,7 +245,7 @@ function gmuUnpack() {
     let val = document.getElementById("cfg_gm-used").value; //HEX string! not a number!
     while(val.length < 8)
         val = "0"+val;
-    console.log("val: "+val);
+    dbLog("val: "+val);
 
     let g=1;
     gmu = [0];
@@ -253,8 +258,8 @@ function gmuUnpack() {
         gmu.push(mct);
         document.getElementById(id).value = val[i];
     }
-    console.log(gmu);
-    console.log(gu);
+    dbLog(gmu);
+    dbLog(gu);
 }
 
 function gmuPack() {
@@ -300,7 +305,7 @@ function updateHtmlByConfigData(cfg) {
 
 function postData(url = '', data = {}) {
     // Default options are marked with *
-    console.log("post-json: "+JSON.stringify(data));
+    dbLog("post-json: "+JSON.stringify(data));
     return fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         //mode: "cors", // no-cors, cors, *same-origin
@@ -354,7 +359,7 @@ function postConfig() {
     Object.keys(cfg).forEach (function (key, idx) {
         let new_val = 0;
         let el = document.getElementById('cfg_'+key);
-        console.log("key: "+key);
+        dbLog("key: "+key);
 
         switch(el.type) {
         case 'checkbox':
@@ -367,7 +372,7 @@ function postConfig() {
         if (new_val != old_val) {
             new_cfg[key] = new_val;
             has_changed = true;
-            console.log(key);
+            dbLog(key);
         }
     });
 
@@ -375,9 +380,9 @@ function postConfig() {
         new_cfg.all = "?";
         tfmcu.config = new_cfg;
 
-        console.log(JSON.stringify(tfmcu));
+        dbLog(JSON.stringify(tfmcu));
         var url = base+'/cmd.json';
-        console.log("url: "+url);
+        dbLog("url: "+url);
         postData(url, tfmcu);
     }
 }
@@ -393,9 +398,9 @@ function postSendCommand(c=document.getElementById('send-c').value) {
         c: c,
     };
     tfmcu.send = send;
-    console.log(JSON.stringify(tfmcu));
+    dbLog(JSON.stringify(tfmcu));
     var url = base+'/cmd.json';
-    console.log("url: "+url);
+    dbLog("url: "+url);
     postData(url, tfmcu);
 }
 
@@ -406,7 +411,7 @@ function netFirmwareOTA(fwUrl) {
 	ota: fwUrl
     };
     let url = base+'/cmd.json';
-    console.log("url: "+url);
+    dbLog("url: "+url);
     postData(url, netmcu);
 }
 
@@ -481,7 +486,7 @@ function postAutomatic() {
 
 
 
-    console.log(JSON.stringify(tfmcu));
+    dbLog(JSON.stringify(tfmcu));
     postData(url, tfmcu);
 
 }
@@ -518,6 +523,7 @@ function tabSwitchVisibility(mask) {
     const SHOW = "";
     const BGC1 = "hsl(220, 60%, 60%)";
     const BGC0 = "#eee";
+    dbLog("visMask: " + mask.toString());
 
     for (let i=0; i < tabs.length; ++i) {
         document.getElementById(tabs[i].div_id).style.display = (mask & tabs[i].mask) ? SHOW : NONE;
@@ -578,16 +584,10 @@ function onContentLoaded() {
     document.getElementById("mrtb").onclick = () => postMcuRestart();
 
     document.getElementById("netota").onclick = () => netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);
-    document.getElementById("netota_master").onclick = () => netFirmwareOTA('http://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/master/firmware/esp32/tronferno-mcu.bin');
-    //document.getElementById("netota_beta").onclick = () => netFirmwareOTA('http://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/beta/firmware/esp32/tronferno-mcu.bin');
-    document.getElementById("netota_beta").onclick = () => netFirmwareOTA('http://67.199.248.10/37NTwvp'); //bit.ly/
-
-    //151.101.112.133
+    document.getElementById("netota_master").onclick = () => netFirmwareOTA('https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/master/firmware/esp32/tronferno-mcu.bin');
+    document.getElementById("netota_beta").onclick = () => netFirmwareOTA('https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/beta/firmware/esp32/tronferno-mcu.bin');
 
 
-
-
-//https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/beta/firmware/atmega328/fernotron.hex
     for (let i=0; i < tabs.length; ++i) {
         let tab = tabs[i];
         document.getElementById(tab.button_id).onclick = () => app_state.tabVisibility = tab.mask;

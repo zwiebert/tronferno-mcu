@@ -68,6 +68,7 @@ void simple_ota_example_task(void * pvParameter)
         .url = Firmware_url,
         .cert_pem = (char *)server_cert_pem_start,
         .event_handler = _http_event_handler,
+        .skip_cert_common_name_check = true,
     };
     //vTaskDelete(NULL);
     esp_err_t ret = esp_https_ota(&config);

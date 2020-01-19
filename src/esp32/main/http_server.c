@@ -74,7 +74,7 @@ static bool check_access_allowed(httpd_req_t *req) {
 
 /* An HTTP POST handler */
 esp_err_t post_handler_json(httpd_req_t *req) {
-  char buf[100];
+  char buf[256];
   int ret, remaining = req->content_len;
 
   if (!check_access_allowed(req))
