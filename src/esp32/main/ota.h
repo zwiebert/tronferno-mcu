@@ -10,6 +10,9 @@
 
 #include <stdbool.h>
 
+#define OTA_FWURL_MASTER "https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/master/firmware/esp32/tronferno-mcu.bin"
+#define OTA_FWURL_BETA "https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/beta/firmware/esp32/tronferno-mcu.bin"
+
 // downloads firmwareUpdate into OTA partion
 // if success you should can call esp_restart() to run the new firwmare
 bool ota_doUpdate(const char *firmwareURL);

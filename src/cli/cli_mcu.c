@@ -134,9 +134,20 @@ process_parmMcu(clpar p[], int len) {
       so_output_message(SO_MCU_VERSION, NULL);
 #ifdef USE_OTA
     } else if (strcmp(key, "ota") == 0) {
-      ets_printf("do ota update from given URL\n");
-      ota_doUpdate(val);
-      // mcu ota=http://192.168.1.70:8000/tronferno-mcu.bin;
+      if (strcmp(val, "github-master") == 0) {
+        ets_printf("doing ota update from github master branch\n");
+        ota_doUpdate(OTA_FWURL_MASTER);
+      } else if (strcmp(val, "github-beta") == 0) {
+        ets_printf("doing ota update from github master branch\n");
+        ota_doUpdate(OTA_FWURL_BETA);
+      } else {
+#ifdef DISTRIBUTION
+        ets_printf("forbidden: ota update from given URL\n");
+#else
+        ets_printf("doing ota update from given URL\n");
+        ota_doUpdate(val);
+#endif
+      }
 #endif
     } else {
       warning_unknown_option(key);

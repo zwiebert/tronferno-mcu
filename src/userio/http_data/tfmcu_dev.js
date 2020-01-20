@@ -558,8 +558,8 @@ function onContentLoaded() {
     document.getElementById("mrtb").onclick = () => postMcuRestart();
 
     document.getElementById("netota").onclick = () => netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);
-    document.getElementById("netota_master").onclick = () => netFirmwareOTA('https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/master/firmware/esp32/tronferno-mcu.bin');
-    document.getElementById("netota_beta").onclick = () => netFirmwareOTA('https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/beta/firmware/esp32/tronferno-mcu.bin');
+    document.getElementById("netota_master").onclick = () => netFirmwareOTA('github-master');
+    document.getElementById("netota_beta").onclick = () => netFirmwareOTA('github-beta');
 
 
     for (let i=0; i < tabs.length; ++i) {

@@ -256,11 +256,6 @@
       <br><br>
       <button id="mrtb" type="button">Restart MCU</button><br>
 
-      <ul>
-	<li>chip: <span id="id_chip"></span></li>
-	<li>firmware-version: <span id="id_firmware"></span></li>
-	<li>firmware-build-date: <span id="id_buildTime"></span></li>
-      </ul>
 
       <section>
       <h1>Configuration-Wizards</h1>
@@ -275,10 +270,18 @@
 
     <div id="id-fwDiv">
       <h4>OTA Firmware Update</h4>
-      <label><button id="netota_master" type="button">Do Flash latest Firmware</button></label><br>
-      <label><button id="netota_beta" type="button">Do Flash latest Beta-Firmware</button></label><br>
+      <ul>
+        <li><label><button id="netota_master" type="button">Do flash latest firmware</button></label><br><br></li>
+        <li><label><button id="netota_beta" type="button">Do Flash latest beta firmware</button></label><br><br></li>
+        <li><label><button id="netota" type="button">Do flash firmware from given URL</button> <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:8000/tronferno-mcu.bin"> </label><br><br></li> <!--dev-distro-delete-line-->
+      </ul>
 
-      <label><button id="netota" type="button">Do Flash from URL:</button> <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:8000/tronferno-mcu.bin"> </label><br>
+      <h4>Firmware Info</h4>
+      <ul>
+	<li>MCU type: <span id="id_chip"></span></li>
+	<li>firmware version: <span id="id_firmware"></span></li>
+	<li>firmware build date: <span id="id_buildTime"></span></li>
+      </ul>
 
 
     </div>
