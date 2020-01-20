@@ -9,6 +9,7 @@ SED_OPTS_JS = -e '/dev-delete-line/d'
 ifdef DISTRO
 ifeq ($(DISTRO),1)
 SED_OPTS_HTML +=  -e '/dev-distro-delete-line/d'
+SED_OPTS_JS +=  -e '/dev-distro-delete-line/d'
 endif
 endif
 

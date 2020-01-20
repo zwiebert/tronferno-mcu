@@ -557,7 +557,7 @@ function onContentLoaded() {
 
     document.getElementById("mrtb").onclick = () => postMcuRestart();
 
-    document.getElementById("netota").onclick = () => netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);
+    document.getElementById("netota").onclick = () => netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);//dev-distro-delete-line//
     document.getElementById("netota_master").onclick = () => netFirmwareOTA('github-master');
     document.getElementById("netota_beta").onclick = () => netFirmwareOTA('github-beta');
 
