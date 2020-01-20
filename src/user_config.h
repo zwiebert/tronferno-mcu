@@ -4,7 +4,7 @@
 
 
 
-#define APP_VERSION "0.8.0-beta"
+#define APP_VERSION "0.8.1-beta"
 
 
 #define FER_TRANSMITTER
