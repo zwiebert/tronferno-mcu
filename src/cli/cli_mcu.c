@@ -138,7 +138,7 @@ process_parmMcu(clpar p[], int len) {
         ets_printf("doing ota update from github master branch\n");
         ota_doUpdate(OTA_FWURL_MASTER);
       } else if (strcmp(val, "github-beta") == 0) {
-        ets_printf("doing ota update from github master branch\n");
+        ets_printf("doing ota update from github beta branch\n");
         ota_doUpdate(OTA_FWURL_BETA);
       } else {
 #ifdef DISTRIBUTION
