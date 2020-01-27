@@ -13,9 +13,10 @@
 #include <string.h>
 
 #include "user_config.h"
+#ifdef USE_NTP
 #include "config/config.h"
 #include "esp_event.h"
-#include "esp_event_loop.h"
+#include "esp_event.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
 
@@ -82,3 +83,5 @@ void setup_ntp(void) {
     D(ets_printf("server:<%s> <%s> <%s>\n",sntp_getservername(0), sntp_getservername(1), sntp_getservername(2)));
   }
 }
+#endif
+

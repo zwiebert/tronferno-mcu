@@ -4,7 +4,7 @@
 #include "esp_wifi.h"
 #include "esp_system.h"
 #include "esp_event.h"
-#include "esp_event_loop.h"
+#include "esp_event.h"
 #include "nvs_flash.h"
 #include "driver/gpio.h"
 #include "string.h"
@@ -69,19 +69,19 @@ mcu_init() {
   switch (C.network) {
 #ifdef USE_WLAN
   case nwWlanSta:
-    tcpip_adapter_init();
+    esp_netif_init();
     wifistation_setup();
     break;
 #endif
 #ifdef USE_WLAN_AP
   case nwWlanAp:
-    tcpip_adapter_init();
+    esp_netif_init();
     wifiAp_setup();
     break;
 #endif
 #ifdef USE_LAN
   case nwLan:
-    tcpip_adapter_init();
+    esp_netif_init();
     ethernet_setup();
 #endif
     break;
