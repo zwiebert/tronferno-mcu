@@ -28,8 +28,6 @@
 
 #ifdef BOARD_ESP32GATEWAY
 #define OLIMEX_ESP32_GATEWAY
-#else
-#undef USE_LAN
 #endif
 
 #define SAVE_TIMER_DATA_FUN save_timer_data_fs

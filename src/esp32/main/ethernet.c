@@ -133,7 +133,7 @@ void ethernet_configure() {
 
 #ifdef OLIMEX_ESP32_POE
   ethernet_phy_power_pin = GPIO_NUM_12;
-#elif defined OLIMEX_ESP32_GATEWAY
+#else
   ethernet_phy_power_pin = GPIO_NUM_5;
 #endif
 
