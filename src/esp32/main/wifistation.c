@@ -28,8 +28,6 @@
 #define D(x)
 #endif
 
-
-
 // WIFI Station ////////////////////////////////////////
 
 /* FreeRTOS event group to signal when we are connected*/

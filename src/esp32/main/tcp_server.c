@@ -56,7 +56,7 @@ static int (*old_io_getc_fun)(void);
 
 static void modify_io_fun(bool add_connection);
 
-static int sockfd;
+static int sockfd = -1;
 static struct sockaddr_in self;
 static int cconn_count;
 
@@ -364,6 +364,8 @@ static int  tcp_io_getc_buf(void) {
 void
 tcps_loop(void) {
   /** Server run continuously */
+  if (sockfd < 0)
+    return;
 
   if (cconn_free_count > 0) {
     int fd;

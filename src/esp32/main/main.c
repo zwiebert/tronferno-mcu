@@ -33,6 +33,20 @@ static int  es_io_getc(void) {
  return getchar();
 }
 
+void main_setup_ip_dependent() {
+  static int once;
+  if (!once) {
+    once = 1;
+#ifdef USE_NTP
+    setup_ntp();
+#endif
+    setup_tcp_server();
+#ifdef USE_MQTT
+    setup_mqtt();
+#endif
+  }
+}
+
 static void
 mcu_init() {
 
@@ -92,13 +106,7 @@ mcu_init() {
   wifistation_setup();
 #endif
   setup_pin();
-#ifdef USE_NTP
-  setup_ntp();
-#endif
-  setup_tcp_server();
-#ifdef USE_MQTT
-  setup_mqtt();
-#endif
+
 #ifdef USE_MUTEX
   void mutex_setup(void);
   mutex_setup();
