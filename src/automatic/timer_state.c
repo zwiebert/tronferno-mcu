@@ -225,7 +225,7 @@ void ICACHE_FLASH_ATTR
 timer_state_loop(void) {
   static bool initialized;
   static timer_event_t teud[2], *teu=&teud[0], *ted=&teud[1], *te;
-  int i, k;
+  int k;
 
   i16 new_minute = rtc_get_next_minute();
 

@@ -44,9 +44,10 @@ static bool is_connected;
 
 
 static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event) {
-  esp_mqtt_client_handle_t client = event->client;
-  int msg_id;
+  //esp_mqtt_client_handle_t client = event->client;
+  //int msg_id;
   // your_context_t *context = event->context;
+
   switch (event->event_id) {
   case MQTT_EVENT_CONNECTED:
     is_connected = true;
@@ -100,14 +101,14 @@ void io_mqtt_subscribe(const char *topic, int qos) {
   if (!client || !is_connected)
     return;
 
-  int msg_id = esp_mqtt_client_subscribe(client, topic, qos);
+  /*int msg_id = */ esp_mqtt_client_subscribe(client, topic, qos);
 }
 
 void io_mqtt_unsubscribe(const char *topic) {
   if (!client || !is_connected)
     return;
 
-  int msg_id = esp_mqtt_client_unsubscribe(client, topic);
+  /*int msg_id = */ esp_mqtt_client_unsubscribe(client, topic);
 }
 
 void io_mqtt_publish(const char *topic, const char *data) {
@@ -117,7 +118,7 @@ void io_mqtt_publish(const char *topic, const char *data) {
     return;
 
   D(ESP_LOGI(TAG, "MQTT_PUBLISH, topic=%s, data=%s", topic, data));
-   int msg_id = esp_mqtt_client_publish(client, topic, data, 0, 1, 0);
+  /*int msg_id = */ esp_mqtt_client_publish(client, topic, data, 0, 1, 0);
 }
 
 static void io_mqtt_create_client(void) {

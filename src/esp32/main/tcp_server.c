@@ -202,68 +202,6 @@ static int tcp_io_putc(char c) {
 }
 #endif
 
-static int tcp_io_puts(const char *s) {
-  u8 i;
-  size_t s_len;
-
-  s_len = strlen(s);
-
-  printf("%s", s);  // KLUDGE: send also to serial
-
-#if 0
-  if(old_io_puts_fun)
-    old_io_puts_fun(s);
-#endif
-
-  for (i = 0; i < TCPS_CCONN_MAX; ++i) {
-    int idx = (i + 1) & (TCPS_CCONN_MAX - 1);
-    if (cconn_is_used(idx)) {
-      if (lwip_send(cconn_table[idx].fd, s, s_len, 0) < 0) {
-        tcps_close_cconn(idx);
-      }
-
-    }
-
-  }
-  return 1;
-}
-
-static int  tcp_io_getc_unbuf(void) {
-  char buf[1];
-  int c;
-
-  if (old_io_getc_fun && (c = old_io_getc_fun()) >= 0) return c;
-
-
-
-  if (cconn_count == 0)
-    return -1;
-#if 1
-  if (!cconn_is_used(cconn_idx)  && get_next_ccon(true) == 0)
-    return -1;
-#endif
-
-  //DP("getc start");
-  if (1 == lwip_recv(cconn_curr.fd, buf, 1, MSG_DONTWAIT)) {
-
-    return buf[0];
-  }
-  //DP("getc end");
-
-
-
-  if (errno == EAGAIN || errno == EWOULDBLOCK) {
-    get_next_ccon(true);
-    return -1;
-  }
-
-  perror("tcp_io_getc");
-  tcps_close_current_cconn();
-
-  return -1;
-}
-
-
 int  tcps_io_read(char *buf, size_t buf_size, bool incomplete) {
   int result;
 
@@ -291,31 +229,6 @@ int  tcps_io_read(char *buf, size_t buf_size, bool incomplete) {
   return result;
 }
 
-
-static int  tcps_io_getline(char *buf, size_t buf_size, int bytes_already_received) {
-  int bytes_received;
-
-  if (!cconn_is_used(cconn_idx)) {
-    if (bytes_already_received > 0)
-      return -2;
-    if (get_next_ccon(true) == 0)
-      return -1;
-  }
-
-
-  if ((bytes_received = lwip_recv(cconn_curr.fd, buf + bytes_already_received, buf_size - bytes_already_received, 0)) > 0)
-    return bytes_received;
-
-
-  if (errno == EAGAIN || errno == EWOULDBLOCK) {
-    get_next_ccon(true);
-    return -1;
-  }
-
-  tcps_close_current_cconn();
-
-  return -1;
-}
 
 static int  tcp_io_getc_buf(void) {
   #define BUF_SIZE 80

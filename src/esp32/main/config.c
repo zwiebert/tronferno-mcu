@@ -216,8 +216,7 @@ void read_config(u32 mask) {
 void save_config(u32 mask) {
   esp_err_t err = 0;
   nvs_handle handle;
-  size_t len;
-  
+
   if ((err = nvs_open(CFG_NAMESPACE, NVS_READWRITE, &handle)) == ESP_OK) {
 
     if (mask & CONFIG_RECV) {

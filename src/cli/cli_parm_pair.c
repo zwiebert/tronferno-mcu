@@ -68,11 +68,14 @@ process_parmPair(clpar p[], int len) {
       } else if (strcmp(val, "read") == 0) {
         read = true;
         c = PC_read;
+#if 0
       } else if (strncmp(key, "gpin", 4) == 0) {
         int gpio_number = atoi(key + 4);
       } else if (strncmp(key, "gpout", 5) == 0) {
         int gpio_number = atoi(key + 5);
+#endif
       }
+
     } else {
       reply_failure();
     }

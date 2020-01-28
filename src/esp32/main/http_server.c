@@ -195,8 +195,6 @@ esp_err_t get_handler_test(httpd_req_t *req) {
   return ESP_OK;
 }
 
-extern const char tfmcu_test[];
-
 httpd_uri_t uri_tfmcu_test = { .uri = "/test", .method = HTTP_GET, .handler = get_handler_test, .user_ctx = NULL, };
 
 

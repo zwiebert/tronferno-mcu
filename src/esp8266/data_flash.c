@@ -34,7 +34,6 @@
 #define DB(x) ((C.app_verboseOutput >= vrbDebug) && (x),1)
 #endif
 #define printf ets_uart_printf
-extern int ENR;
 
 ////////////////// private ///////////////////////////////////////////////////////////////
 #define FLASH_MAPPED 0x40200000

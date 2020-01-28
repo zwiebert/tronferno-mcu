@@ -26,7 +26,6 @@ const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 int ICACHE_FLASH_ATTR
 process_parmMcu(clpar p[], int len) {
   int arg_idx;
-  char buf[24];
 
   so_output_message(SO_MCU_begin, NULL);
 

@@ -115,7 +115,7 @@ bool mcu_get_buttonPin(void) {
 const char* mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
 
   if (state == PIN_OUTPUT || state == PIN_INPUT || state == PIN_INPUT_PULLUP) {
-    bool pullup = state == PIN_INPUT_PULLUP;
+    //bool pullup = state == PIN_INPUT_PULLUP;
 
     if (state != PIN_OUTPUT) {
       GPIO_DIS_OUTPUT(GPIO_ID_PIN(gpio_number));

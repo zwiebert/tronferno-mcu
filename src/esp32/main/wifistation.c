@@ -42,7 +42,6 @@ extern esp_ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
 
 void
 user_set_station_config(void) {
-  esp_err_t esp_err;
 
   wifi_config_t sta_config = { };
 

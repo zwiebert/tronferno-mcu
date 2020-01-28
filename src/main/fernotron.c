@@ -19,7 +19,7 @@
 extern fer_sender_basic default_sender;
 extern fer_sender_basic last_received_sender;
 
-bool  ntp_update_system_time(unsigned interval_seconds);
+
 
 void ICACHE_FLASH_ATTR
 loop(void) {
@@ -79,6 +79,7 @@ loop(void) {
 #endif
 
 #if defined USE_NTP && defined MCU_ESP8266
+  bool  ntp_update_system_time(unsigned interval_seconds);
   ntp_update_system_time(SECS_PER_DAY);
 #endif
 }

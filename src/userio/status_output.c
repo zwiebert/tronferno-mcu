@@ -12,7 +12,6 @@
 #include "userio/status_json.h"
 #else
 #define so_json_config_reply(a,b,c)
-#define so_jco false
 #endif
 #define so_jto so_jco
 
@@ -38,11 +37,17 @@
 u8 so_target;
 
 bool out_cli = true;
+#ifdef USE_JSON
 bool out_js = true;
+#define so_jco out_js
+#else
+bool out_js = false;
+#define so_jco false
+#endif
 
 #define so_cco out_cli
 #define so_cto so_cco
-#define so_jco out_js
+
 
 char *ICACHE_FLASH_ATTR ftoa(float f, char *buf, int n) {
   int i;

@@ -19,10 +19,12 @@ static bool startsWith(const char *s1, int s1_len, const char *s2) {
   return s1_len >= s2_len && (0 == strncmp(s1, s2, s2_len));
 }
 
+#if 0
 static bool endsWith(const char *s1, int s1_len, const char *s2) {
   size_t s2_len = strlen(s2);
   return s1_len >= s2_len && (0 == strncmp(s1 + s1_len - s2_len, s2, s2_len));
 }
+#endif
 
 static bool isJson(const char *s, int s_len) {
   int i;
