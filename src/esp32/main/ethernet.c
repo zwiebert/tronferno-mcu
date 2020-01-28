@@ -18,6 +18,8 @@
 #include "userio/ipnet.h"
 #include "config/config.h"
 
+#ifdef USE_LAN
+
 extern esp_ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
 
 static esp_eth_phy_t *(*ethernet_create_phy)(const eth_phy_config_t *config);
@@ -204,7 +206,7 @@ void ethernet_loop() {
       ethernet_disconnected = false;
   }
 }
-
+#endif
 
 
 
