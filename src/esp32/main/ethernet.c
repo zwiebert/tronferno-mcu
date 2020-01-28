@@ -22,7 +22,7 @@ extern esp_ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
 
 static esp_eth_phy_t *(*ethernet_create_phy)(const eth_phy_config_t *config);
 static esp_err_t (*ethernet_phy_pwrctl)(esp_eth_phy_t *phy, bool enable);
-static u8 ethernet_phy_power_pin = 0xff;
+static i8 ethernet_phy_power_pin = -1;
 static i32 ethernet_phy_address;
 
 
@@ -34,8 +34,8 @@ static esp_eth_handle_t s_eth_handle = NULL;
 
 static const char *TAG = "ethernet";
 
-static esp_err_t (*orig_pwrctl)(esp_eth_phy_t *phy, bool enable);
 
+static esp_err_t (*orig_pwrctl)(esp_eth_phy_t *phy, bool enable);
 /**
  * @brief re-define power enable func for phy
  *
@@ -45,26 +45,24 @@ static esp_err_t (*orig_pwrctl)(esp_eth_phy_t *phy, bool enable);
  * If this GPIO is not connected on your device (and PHY is always powered),
  * you can use the default PHY-specific power on/off function.
  */
-static esp_err_t phy_device_power_enable_via_gpio(esp_eth_phy_t *phy, bool enable) {
+static esp_err_t phy_pwctl_with_voltage(esp_eth_phy_t *phy, bool enable) {
   esp_err_t result = ESP_OK;
 
-  gpio_pad_select_gpio(ethernet_phy_power_pin);
-  gpio_set_direction(ethernet_phy_power_pin, GPIO_MODE_OUTPUT);
-
   if (enable) {
-    gpio_set_level(ethernet_phy_power_pin, 1);
-    ESP_LOGI(TAG, "Power On Ethernet PHY");
-    vTaskDelay(1); // Allow the power up/down to take effect, min 300us
+
+    if (ethernet_phy_power_pin >= 0) {
+      gpio_set_level(ethernet_phy_power_pin, 1);
+      vTaskDelay(10 / portTICK_PERIOD_MS);; // Allow the power up/down to take effect, min 300us
+    }
     if (orig_pwrctl) {
       result = orig_pwrctl(phy, enable);
     }
-
   } else {
     if (orig_pwrctl) {
       result = orig_pwrctl(phy, enable);
     }
-    gpio_set_level(ethernet_phy_power_pin, 0);
-    ESP_LOGI(TAG, "Power Off Ethernet PHY");
+    if (ethernet_phy_power_pin >= 0)
+      gpio_set_level(ethernet_phy_power_pin, 0);
   }
 
   return result;
@@ -129,22 +127,29 @@ static void got_ip_event_handler(void* arg, esp_event_base_t event_base,
 }
 
 void ethernet_configure() {
-  ethernet_create_phy = esp_eth_phy_new_lan8720; //XXX
 
-#ifdef OLIMEX_ESP32_POE
-  ethernet_phy_power_pin = GPIO_NUM_12;
-#else
-  ethernet_phy_power_pin = GPIO_NUM_5;
-#endif
+  switch(C.lan_phy) {
+  case lanPhyRTL8201:
+    ethernet_create_phy = esp_eth_phy_new_rtl8201;
+    break;
+  case lanPhyIP101:
+    ethernet_create_phy = esp_eth_phy_new_ip101;
+    break;
+  case lanPhyLAN8270:
+  default:
+    ethernet_create_phy = esp_eth_phy_new_lan8720;
+    break;
+  }
 
-  if (ethernet_phy_power_pin != 0xff) {
-    ethernet_phy_pwrctl = phy_device_power_enable_via_gpio;
+
+  ethernet_phy_power_pin = C.lan_pwr_gpio;
+
+  if (ethernet_phy_power_pin >= 0) {
+    ethernet_phy_pwrctl = phy_pwctl_with_voltage;
   }
 }
 
 void ethernet_setup() {
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-
     ethernet_configure();
 
     esp_netif_config_t cfg = ESP_NETIF_DEFAULT_ETH();
@@ -156,10 +161,11 @@ void ethernet_setup() {
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_ETH_GOT_IP, &got_ip_event_handler, NULL));
 
     // power on phy here
-    if (ethernet_phy_power_pin != 0xff) {
+    if (ethernet_phy_power_pin >= 0) {
       gpio_pad_select_gpio(ethernet_phy_power_pin);
       gpio_set_direction(ethernet_phy_power_pin, GPIO_MODE_OUTPUT);
-      gpio_set_level(ethernet_phy_power_pin, 1);
+      vTaskDelay(500 / portTICK_PERIOD_MS);  //XXX: phy power fails without this delay before gpio_set_level (???)
+      //gpio_set_level(ethernet_phy_power_pin, 1);  // done in powerctl anyway
     }
 
     // Setup MAC

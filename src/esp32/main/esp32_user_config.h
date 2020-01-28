@@ -29,6 +29,10 @@
 #ifdef BOARD_ESP32GATEWAY
 #define OLIMEX_ESP32_GATEWAY
 #endif
+#ifdef BOARD_ESP32POE
+#define OLIMEX_ESP32_POE
+#endif
+
 
 #define SAVE_TIMER_DATA_FUN save_timer_data_fs
 #define READ_TIMER_DATA_FUN read_timer_data_fs

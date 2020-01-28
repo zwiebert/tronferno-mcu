@@ -179,6 +179,14 @@
 #define MY_NETWORK_CONNECTION_OLD_USERS nwWlanSta
 #endif
 
+#ifndef MY_LAN_PHY
+#define MY_LAN_PHY lanPhyLAN8270
+#endif
+
+#ifndef MY_LAN_PWR_GPIO
+#define MY_LAN_PWR_GPIO 5
+#endif
+
 /*
  esp-idf: kconfig does not support float numbers...
 config MY_GEO_LONGITUDE
@@ -216,6 +224,12 @@ enum rtclock {
 enum verbosity {
 	vrbNone, vrb1, vrb2, vrb3, vrb4, vrbDebug
 };
+
+#ifdef USE_LAN
+enum lanPhy {
+  lanPhyNone, lanPhyLAN8270, lanPhyRTL8201, lanPhyIP101, lanPhyLEN,
+};
+#endif
 
 #ifdef USE_NETWORK
 enum nwConnection {
@@ -267,6 +281,10 @@ typedef struct {
 #ifdef USE_NETWORK
   enum nwConnection network;
 #endif
+#ifdef USE_LAN
+  enum lanPhy lan_phy;
+  i8 lan_pwr_gpio;
+#endif
 } config;
 
 extern config C;
@@ -298,6 +316,8 @@ CB_HTTP_PASSWD,
 CB_HTTP_ENABLE,
 CB_NTP_SERVER,
 CB_NW_CONN,
+CB_LAN_PHY,
+CB_LAN_PWR_GPIO,
 };
 
 #define CONFIG_ALL (~0UL)
@@ -325,5 +345,7 @@ CB_NW_CONN,
 #define CONFIG_HTTP_ENABLE (1UL << CB_HTTP_ENABLE)
 #define CONFIG_NTP_SERVER (1UL << CB_NTP_SERVER)
 #define CONFIG_NETWORK_CONNECTION (1UL << CB_NW_CONN)
+#define CONFIG_LAN_PHY (1UL << CB_LAN_PHY)
+#define CONFIG_LAN_PWR_GPIO (1UL << CB_LAN_PWR_GPIO)
 #endif /* CONFIG_H_ */
 

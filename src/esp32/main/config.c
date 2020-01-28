@@ -65,6 +65,10 @@ config C = {
 #ifdef USE_NETWORK
   .network = MY_NETWORK_CONNECTION,
 #endif
+#ifdef USE_LAN
+  .lan_phy = MY_LAN_PHY,
+  .lan_pwr_gpio = MY_LAN_PWR_GPIO,
+#endif
 };
 
 #ifdef CONFIG_BLOB
@@ -207,6 +211,18 @@ void read_config(u32 mask) {
         C.network = temp;
     }
 #endif
+#ifdef USE_LAN
+    if (mask & CONFIG_LAN_PHY) {
+      i8 temp;
+      if (ESP_OK == nvs_get_i8(handle, "C_LAN_PHY", &temp))
+        C.lan_phy = temp;
+    }
+    if (mask & CONFIG_LAN_PWR_GPIO) {
+      i8 temp;
+      if (ESP_OK == nvs_get_i8(handle, "C_LAN_PWR_GPIO", &temp))
+        C.lan_pwr_gpio = temp;
+    }
+#endif
 
     nvs_close(handle);
   }
@@ -310,6 +326,14 @@ void save_config(u32 mask) {
 #ifdef USE_NETWORK
     if (mask & CONFIG_NETWORK_CONNECTION) {
       nvs_set_i8(handle, "C_NW_CONN", C.network);
+    }
+#endif
+#ifdef USE_LAN
+    if (mask & CONFIG_LAN_PHY) {
+      nvs_set_i8(handle, "C_LAN_PHY", C.lan_phy);
+    }
+    if (mask & CONFIG_LAN_PWR_GPIO) {
+      nvs_set_i8(handle, "C_LAN_PWR_GPIO", C.lan_pwr_gpio);
     }
 #endif
     nvs_commit(handle);

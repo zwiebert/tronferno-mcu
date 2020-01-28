@@ -75,7 +75,7 @@ const char help_parmConfig[]  =
 //keys must be in same order as their SO_CFG_xxx counterparts in so_msg_t
 const char *const cfg_keys[SO_CFG_size] = {
     "cu", "baud", "rtc",
-    "network", "wlan-ssid", "wlan-password", "ntp-server",
+    "network", "wlan-ssid", "wlan-password", "ntp-server", "lan-phy", "lan-pwr-gpio",
     "longitude", "latitude", "timezone", "dst", "tz", "verbose",
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password",
     "http-enable", "http-user", "http-password",
@@ -85,6 +85,12 @@ const char *const cfg_keys[SO_CFG_size] = {
 #ifdef USE_NETWORK
 const char *const cfg_args_network[nwLEN] = {
     ARG_NW_NONE, ARG_NW_WLAN, ARG_NW_WLAN_AP, ARG_NW_LAN,
+};
+#endif
+
+#ifdef USE_LAN
+const char *const cfg_args_lanPhy[lanPhyLEN] = {
+    "none", "lan8270", "rtl8201", "ip101",
 };
 #endif
 
@@ -222,6 +228,31 @@ process_parmConfig(clpar p[], int len) {
         }
         break;
 #endif // USE_WLAN
+#ifdef USE_LAN
+        case SO_CFG_LAN_PHY: {
+          NODEFAULT();
+           bool success = false;
+           u8 i;
+           for (i=0; i < lanPhyLEN; ++i) {
+             if (strcasecmp(val, cfg_args_lanPhy[i]) == 0) {
+               C.lan_phy = i;
+               save_config(CONFIG_LAN_PHY);
+               success = true;
+               break;
+             }
+           }
+           if (!success)
+             reply_failure();
+         }
+         break;
+        case SO_CFG_LAN_PWR_GPIO: {
+          NODEFAULT();
+          C.lan_pwr_gpio = atoi(val);
+          save_config(CONFIG_LAN_PWR_GPIO);
+        }
+        break;
+#endif // USE_LAN
+
 #ifdef USE_NTP
         case SO_CFG_NTP_SERVER: {
           if (strlen(val) < sizeof (C.ntp_server)) {

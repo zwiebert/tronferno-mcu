@@ -1,5 +1,5 @@
 var base = '';
-var base = 'http://192.168.1.69'; //dev-delete-line//
+var base = 'http://192.168.1.63'; //dev-delete-line//
 
 var gmu = [0,1,2,3,4,5,6,7];
 var gu = [0,1,2,3,4,5,6,7];
@@ -234,6 +234,17 @@ function buildConfigTableRowHtml(name,value) {
                '<option value="ap">WLAN-AP at 192.168.4.1 (ssid=tronferno/pw=tronferno)</option>'+
                '<option value="lan">Connect to Ethernet</option>'+
             '</select></td>';
+    } else if (name === 'lan-phy') {
+	        return '<td><label class="config-label">'+name+
+            '</label></td><td><select  class="config-input" id="cfg_'+name+'">'+
+               '<option value="lan8270">LAN8270</option>'+
+               '<option value="rtl8201">RTL8201</option>'+
+               '<option value="ip101">IP101</option>'+
+            '</select></td>';
+    } else if (name === 'lan-pwr-gpio') {
+	        return '<td><label class="config-label">'+name+
+            '</label></td><td><input class="config-input" type="number" min="-1" max="36" id="cfg_'+name+
+            '" name="'+name+'" value="'+value+'"></td>';
     } else {
         return '<td><label class="config-label">'+name+
             '</label></td><td><input class="config-input text" type="text" id="cfg_'+name+
