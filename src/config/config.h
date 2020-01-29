@@ -237,6 +237,10 @@ enum nwConnection {
 };
 #endif
 
+#ifdef POSIX_TIME
+void cfg_tz2timezone(void);
+#endif
+
 typedef struct {
 	u32 fer_centralUnitID, mcu_serialBaud;
 	float geo_longitude, geo_latitude;
@@ -299,25 +303,40 @@ CB_USED_MEMBERS,
 CB_BAUD,
 CB_GPIO,
 CB_VERBOSE,
+#ifdef USE_WLAN
 CB_WIFI_SSID,
 CB_WIFI_PASSWD,
+#endif
 CB_CFG_PASSWD,
 CB_LONGITUDE,
 CB_LATITUDE,
+#ifndef POSIX_TIME
 CB_TIZO,
+#else
 CB_TZ,
+#endif
+#ifdef MDR_TIME
 CB_DST,
+#endif
+#ifdef USE_MQTT
 CB_MQTT_URL,
 CB_MQTT_USER,
 CB_MQTT_PASSWD,
 CB_MQTT_ENABLE,
+#endif
+#ifdef USE_HTTP
 CB_HTTP_USER,
 CB_HTTP_PASSWD,
 CB_HTTP_ENABLE,
+#endif
+#ifdef USE_NTP
 CB_NTP_SERVER,
+#endif
+#ifdef USE_NETWORK
 CB_NW_CONN,
 CB_LAN_PHY,
 CB_LAN_PWR_GPIO,
+#endif
 };
 
 #define CONFIG_ALL (~0UL)

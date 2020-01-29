@@ -331,9 +331,11 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_CFG_LATITUDE:
     so_out_x_reply_entry_f(mt, C.geo_latitude, 5);
     break;
+#ifndef POSIX_TIME
   case SO_CFG_TIMEZONE:
     so_out_x_reply_entry_f(mt, C.geo_timezone, 5);
     break;
+#endif
   case SO_CFG_VERBOSE:
     so_out_x_reply_entry_d(mt, C.app_verboseOutput);
     break;

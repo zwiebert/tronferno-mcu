@@ -352,9 +352,11 @@ process_parmConfig(clpar p[], int len) {
         break;
 
         case SO_CFG_TIMEZONE: {
+#ifndef POSIX_TIME
           C.geo_timezone = stof(val);
           rtc_setup();
           save_config(CONFIG_TIZO);
+#endif
         }
         break;
 
@@ -363,6 +365,7 @@ process_parmConfig(clpar p[], int len) {
           strncpy(C.geo_tz, val, sizeof (C.geo_tz) -1);
           rtc_setup();
           save_config(CONFIG_TZ);
+          cfg_tz2timezone();
 #endif
         }
         break;

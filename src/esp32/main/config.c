@@ -19,6 +19,7 @@
 #include "esp_system.h"
 #include "nvs_flash.h"
 #include "nvs.h"
+#include <ctype.h>
 #include "config/config.h"
 
 #define D(x) 
@@ -47,7 +48,9 @@ config C = {
 #ifdef ACCESS_GPIO
   .gpio =  { 0, },
 #endif
-  MY_GEO_TZ,
+#ifdef POSIX_TIME
+  .geo_tz = MY_GEO_TZ,
+#endif
 #ifdef USE_MQTT
   .mqtt_url = MY_MQTT_URL,
   .mqtt_user = MY_MQTT_USER,
@@ -70,6 +73,24 @@ config C = {
   .lan_pwr_gpio = MY_LAN_PWR_GPIO,
 #endif
 };
+
+#ifdef POSIX_TIME
+static double tz2offset(const char *tz) {
+  double offset = 0.0;
+
+  for (const char *p=tz; *p; ++p) {
+    if (isalpha(*p))
+      continue;
+    offset = strtod(p, 0) * -1;
+    return offset;
+  }
+  return 0;
+}
+
+void cfg_tz2timezone(void) {
+  C.geo_timezone = tz2offset(C.geo_tz);
+}
+#endif
 
 #ifdef CONFIG_BLOB
 
@@ -163,14 +184,16 @@ void read_config(u32 mask) {
     if (mask & CONFIG_LATITUDE) {
       (len = sizeof C.geo_longitude), nvs_get_blob(handle, "C_LATITUDE", &C.geo_latitude, &len);
     }
-
+#ifndef POSIX_TIME
     if (mask & CONFIG_TIZO) {
       (len = sizeof C.geo_timezone), nvs_get_blob(handle, "C_TIZO", &C.geo_timezone, &len);
     }
-
+#else
     if (mask & CONFIG_TZ) {
       (len = sizeof C.geo_tz), nvs_get_str(handle, "C_TZ", C.geo_tz, &len);
+      cfg_tz2timezone();
     }
+#endif
 
     if (mask & CONFIG_GPIO) {
       (len = sizeof C.gpio), nvs_get_blob(handle, "C_GPIO", &C.gpio, &len);
@@ -286,14 +309,15 @@ void save_config(u32 mask) {
     if (mask & CONFIG_LATITUDE) {
       nvs_set_blob(handle, "C_LATITUDE", &C.geo_latitude, sizeof C.geo_latitude);
     }
-
+#ifndef POSIX_TIME
     if (mask & CONFIG_TIZO) {
       nvs_set_blob(handle, "C_TIZO", &C.geo_timezone, sizeof C.geo_timezone);
     }
-
+#else
     if (mask & CONFIG_TZ) {
       nvs_set_str(handle, "C_TZ", C.geo_tz);
     }
+#endif
 
     if (mask & CONFIG_GPIO) {
        nvs_set_blob(handle, "C_GPIO", &C.gpio, sizeof C.gpio);
