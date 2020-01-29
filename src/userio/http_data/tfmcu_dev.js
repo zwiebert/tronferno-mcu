@@ -232,7 +232,7 @@ function buildConfigTableRowHtml(name,value) {
             '</label></td><td><select  class="config-input" id="cfg_'+name+'">'+
                '<option value="wlan">Connect to existing WLAN</option>'+
                '<option value="ap">WLAN-AP at 192.168.4.1 (ssid=tronferno/pw=tronferno)</option>'+
-               '<option value="lan">Connect to Ethernet</option>'+
+               '<option value="lan">Connect to Ethernet</option>'+ //dev-no-lan-delete-line
             '</select></td>';
     } else if (name === 'lan-phy') {
 	        return '<td><label class="config-label">'+name+
