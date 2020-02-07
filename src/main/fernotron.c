@@ -96,7 +96,8 @@ main_setup() {
 
   so_output_message(SO_FW_START_MSG_PRINT, 0);
   db_test_all_indicators(3);
-
+  void currentState_init(void);
+  currentState_init();
   dbg_trace();
   return 0;
 

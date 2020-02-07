@@ -76,4 +76,3 @@ bool ICACHE_FLASH_ATTR fer_send_msg(fer_sender_basic *fsb, fmsg_type msgType) {
   return true;
 }
 
-

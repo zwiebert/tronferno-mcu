@@ -25,40 +25,50 @@
 enum pos {
   POS_0, POS_50, POS_100, POS_SIZE
 };
-static const u8 pos_map[POS_SIZE] = { 0, 50, 100 };
 
-static gm_bitmask_t positions[POS_SIZE];
+static  u8 pos_map[8][8];
+#define pm_GROUP_UNUSED 101
+#define pm_MEMBER_UNUSED 102
+#define pm_getPct(g,m) (pos_map[(g)][(m)]+0)
+#define pm_setPct(g,m,pct) pos_map[(g)][(m)] = (pct)
+#define pm_setMemberUnused(g,m) pm_setPct((g),(m),pm_MEMBER_UNUSED)
+#define pm_isMemberUnused(g, m) (pm_getPct((g),(m)) == pm_MEMBER_UNUSED)
+#define pm_setGroupUnused(g) pm_setPct((g),0,pm_GROUP_UNUSED)
+#define pm_isGroupUnused(g) (pm_getPct((g),0) == pm_GROUP_UNUSED)
+
 
 static int ICACHE_FLASH_ATTR
 get_state(u32 a, int g, int m) {
-  u8 p;
-
   precond(1 <= g && g <= 7 && 1 <= m && m <= 7);
 
-  for (p = 0; p < POS_SIZE; ++p) {
-    if (GET_BIT(positions[p][g], m))
-      return pos_map[p];
-  }
+  if (m != 0 && !pm_isGroupUnused(g) && !pm_isMemberUnused(g,0))
+    return pm_getPct(g, 0);
+
+  if (!pm_isMemberUnused(g,m))
+    return pm_getPct(g,m);
+
   return -1;
 }
 
 static int ICACHE_FLASH_ATTR
 set_state(u32 a, int g, int m, int position) {
-  u8 p, gi, mi;
+  u8  mi;
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, position=%d\n", __func__, a, g, m, position));
   precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
   precond(0 <= position && position <= 100);
 
-  for (gi = 1; gi <= GRP_MAX; ++gi) {
-    for (mi = 1; mi <= MBR_MAX; ++mi) {
+  if (m != 0 && !pm_isGroupUnused(g) && !pm_isMemberUnused(g,0)) {
+    u8 pct = pm_getPct(g,0);
 
-      if (g == 0 || gi == g)
-        for (p = 0; p < POS_SIZE; ++p) {
-          if (m == 0 || mi == m)
-            PUT_BIT(positions[p][gi], mi, (pos_map[p] == position));
-        }
+    for (mi = 1; mi <= MBR_MAX; ++mi) {
+      pm_setPct(g,mi, pct);
     }
   }
+
+  pm_setMemberUnused(g,0);
+  pm_setPct(g,m,position);
+
+
   return 0;
 }
 
@@ -81,7 +91,7 @@ set_shutter_state(u32 a, u8 g, u8 m, fer_cmd cmd) {
     if (read_pairings(&gm, a))
     for (g=1; g <= GRP_MAX; ++g) {
       for (m=1; m <= MBR_MAX; ++m) {
-        if (GET_BIT(gm[g], m)) {
+        if (gm_GetBit(gm, g, m)) {
           // recursion for each paired g/m
           set_shutter_state(0, g, m, cmd);
         }
@@ -122,34 +132,55 @@ modify_shutter_positions(gm_bitmask_t mm, u8 p) {
       }
     }
   }
-
-  {
-    so_arg_mmp_t mmp = { &mm[0], p };
-    so_output_message(SO_POS_PRINT_MMP, &mmp);
-  }
-
   return 0;
 }
 
 int ICACHE_FLASH_ATTR
 print_shutter_positions() {
-  u8 p, g;
+  u8 g, m, g2, m2;
+  gm_bitmask_t msk = {0,};
 
-  so_output_message(SO_POS_begin, NULL);
-  for (p = 0; p < POS_SIZE; ++p) {
-    for (g = 1; g < 8; ++g) {
-      // don't print a position with no members
-      if (positions[p][g] != 0) {
-        {
-          so_arg_mmp_t mmp = { &positions[p][0], pos_map[p] };
-          so_output_message(SO_POS_PRINT_MMP, &mmp);
+  so_output_message(SO_POS_begin, 0);
+  for (g=0; g < 8; ++g) {
+    if (pm_isGroupUnused(g))
+      continue;
+    for (m=0; m < 8; ++m) {
+      if (pm_isMemberUnused(g,m))
+        continue; //
+      if (gm_GetBit(msk, g, m))
+        continue; // was already processed by a previous pass
+
+      u8 pct = pm_getPct(g,m);
+      gm_bitmask_t pos_msk = {0,};
+      for (g2=g; g2 < 8; ++g2) {
+        for (m2=0; m2 < 8; ++m2) {
+          if (pm_getPct(g2,m2) == pct) {
+            gm_SetBit(pos_msk, g2, m2); // mark as being equal to pct
+            gm_SetBit(msk, g2, m2); // mark as already processed
+            if (m2 == 0) {
+              goto next_g2;  // all group members have the same pct value because m==0 is used
+            }
+          }
         }
-        break; // printing done, got to next position
+        next_g2:;
       }
+
+      so_arg_mmp_t mmp = { pos_msk, pct };
+      so_output_message(SO_POS_PRINT_MMP, &mmp);
     }
   }
-  so_output_message(SO_POS_end, NULL);
+  so_output_message(SO_POS_end, 0);
   return 0;
+}
 
+void currentState_init() {
+  u8 g, m;
+
+  for (g=0; g < 8; ++g) {
+    pm_setGroupUnused(g);
+    for (m=1; m < 8; ++m) {
+      pm_setMemberUnused(g,m);
+    }
+  }
 }
 
