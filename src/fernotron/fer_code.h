@@ -285,6 +285,7 @@ extern u8 bcd2dec(u8 bcd);
 void fer_init_sender(fer_sender_basic *fsb, u32 devID);
 void fer_init_plain(fer_sender_basic *fsb, u8 a2, u8 a1, u8 a0);
 void fer_init_sunSensor(fer_sender_basic *fsb, u8 a2, u8 a1, u8 a0);
+u8 fer_tglNibble_ctUp(u8 toggle_nibble, int step);
 void fer_update_tglNibble(fer_sender_basic *fsb);
 
 // extract data from word data array (two 10bit-words per byte with parity)

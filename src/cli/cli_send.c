@@ -119,7 +119,6 @@ process_parmSend(clpar p[], int len) {
         sep_disable();
     } else if (cmd != fer_cmd_None) {
       FSB_PUT_CMD(fsb, cmd);
-      fer_update_tglNibble(fsb);
       fsb->repeats = repeats;
       if (reply(fer_send_msg(fsb, MSG_TYPE_PLAIN))) {
         u8 g = group;
