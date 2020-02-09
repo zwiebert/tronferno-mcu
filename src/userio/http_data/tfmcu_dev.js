@@ -1,5 +1,5 @@
 var base = '';
-var base = 'http://192.168.1.63'; //dev-delete-line//
+var base = 'http://192.168.1.69'; //dev-delete-line//
 
 var gmu = [0,1,2,3,4,5,6,7];
 var gu = [0,1,2,3,4,5,6,7];
@@ -42,6 +42,7 @@ class AppState {
         this.updateAutomaticHtml();
         dbLog(JSON.stringify(this));
         this.fetchAutomatic();
+        this.fetchPosition();
     }
 
     set g(value) {
@@ -192,6 +193,19 @@ class AppState {
         postData(url, tfmcu);
     }
 
+    fetchPosition() {
+
+        let tfmcu = {to:"tfmcu"};
+
+        tfmcu.send = {
+            g: this.g,
+            m: this.m,
+            p: "?",
+        };
+
+        let url = base+'/cmd.json';
+        postData(url, tfmcu);
+    }
 
     fetchVersion() {
 
@@ -466,6 +480,24 @@ function onMPressed() {
     app_state.m = val;
 }
 
+function onPosPressed() {
+    let pct = document.getElementById("spi").value;
+
+    console.log("pct="+pct.toString());
+
+        let tfmcu = {to:"tfmcu"};
+
+        tfmcu.send = {
+            g: app_state.g,
+            m: app_state.m,
+            p: pct,
+        };
+
+        let url = base+'/cmd.json';
+        postData(url, tfmcu);
+
+}
+
 function postAutomatic() {
     let url = base+'/cmd.json';
     let tfmcu = { to:"tfmcu", timer: { }};
@@ -559,6 +591,7 @@ function onContentLoaded() {
     document.getElementById("sub").onclick = () => postSendCommand('up');
     document.getElementById("ssb").onclick = () => postSendCommand('stop');
     document.getElementById("sdb").onclick = () => postSendCommand('down');
+    document.getElementById("spb").onclick = () => onPosPressed();
 
     document.getElementById("arlb").onclick = () => app_state.fetchAutomatic();
     document.getElementById("asvb").onclick = () => postAutomatic();
