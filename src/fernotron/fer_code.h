@@ -135,7 +135,7 @@ enum fpr0_FlagBitsValues { // FIXME: there may be more flag bits in use. try to 
 	flag_SunAuto  // enable automatic sun-sensor. if off the sun-down command does not work. (ignored at rtc-only frames)
 };
 
-// frames 1 - 4: timer  
+// frame rows 1 - 4: timer
 enum fpr1 {
 	fpr1_T_sun_up_mint,
 	fpr1_T_sun_up_hour,
@@ -186,11 +186,11 @@ enum fpr4 {
 
 //////////////////////////////////////////////////////////////////////////
 
-// frames 5 - 16: astro
+// frame rows 5 - 16: astro
 
 //////////////////////////////////////////////////////////////////////////
 
-// frame 17
+// frame row 17
 
 enum fpr17 {
 	fpr17_0,
@@ -265,35 +265,11 @@ extern u8 bcd2dec(u8 bcd);
 #define FPR_DATA_WIDTH 8
 #define FPR_CS_WIDTH 1
 
-#define fpr2dec(fpr_nmb) (bcd2dec(0xff - (fpr_nmb)))
-
-#define FPR_GET_LOW_NIBBLE(d,row,col)  (0xF & GET_LOW_NIBBLE( (d)[(row)][(col)]))
-#define FPR_GET_HIGH_NIBBLE(d,row,col) (0xF & GET_HIGH_NIBBLE((d)[(row)][(col)]))
-
-#define FPR_RTC_GET_SECS_L(d) (FPR_GET_LOW_NIBBLE( d, 0, fprt0_RTC_secs))
-#define FPR_RTC_GET_SECS_H(d) (FPR_GET_HIGH_NIBBLE(d, 0, fprt0_RTC_secs))
-#define FPR_RTC_GET_SECS(d)   (FPR_RTC_GET_SECS_H(d)*10 + FPR_RTC_GET_SECS_L(d))
-
-#define FPR_RTC_GET_MINT_L(d) (0xf - GET_LOW_NIBBLE( (d)[0][fprt0_RTC_mint]))
-#define FPR_RTC_GET_MINT_H(d) (0xf - GET_HIGH_NIBBLE((d)[0][fprt0_RTC_mint]))
-#define FPR_RTC_GET_MINT(d) (FPR_RTC_GET_MINT_H(d)*10 + FPR_RTC_GET_MINT_L(d))
-
-#define FPR_RTC_GET_HOUR_L(d) (0xf - GET_LOW_NIBBLE( (d)[0][fprt0_RTC_hour]))
-#define FPR_RTC_GET_HOUR_H(d) (0xf - GET_HIGH_NIBBLE((d)[0][fprt0_RTC_hour]))
-#define FPR_RTC_GET_HOUR(d) (FPR_RTC_GET_HOUR_H(d)*10 + FPR_RTC_GET_HOUR_L(d))
-
 void fer_init_sender(fer_sender_basic *fsb, u32 devID);
 void fer_init_plain(fer_sender_basic *fsb, u8 a2, u8 a1, u8 a0);
 void fer_init_sunSensor(fer_sender_basic *fsb, u8 a2, u8 a1, u8 a0);
 u8 fer_tglNibble_ctUp(u8 toggle_nibble, int step);
 void fer_update_tglNibble(fer_sender_basic *fsb);
-
-// extract data from word data array (two 10bit-words per byte with parity)
-#define FRW_GET_CMD(data)          (GET_LOW_NIBBLE((data)[fer_dat_GRP_and_CMD * 2]))
-#define FRW_GET_MEMB(data)         (GET_LOW_NIBBLE((data)[fer_dat_TGL_and_MEMB * 2]))
-#define FRW_GET_GRP(data)          (GET_HIGH_NIBBLE((data)[fer_dat_GRP_and_CMD * 2]))
-#define FRW_MODEL_IS_CENTRAL(data)  (((data)[fer_dat_ADDR_2 * 2] & 0xff)  == FER_ADDR_TYPE_CentralUnit)
-#define FRW_GET_FPR0_IS_RTC_ONLY(data) ((GET_HIGH_NIBBLE((data)[fpr0_RTC_wday * 2]) & 0x8) != 0)
 
 // extract data from data byte array
 #define FRB_GET_CMD(data)          (GET_LOW_NIBBLE((data)[fer_dat_GRP_and_CMD]))
