@@ -9,6 +9,25 @@
 #include "fernotron/fer_code.h"
 #include "config/config.h"
 
+//  the same timings relative to ticks of interrupt frequency
+#define FER_PRE_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_DCK)
+#define FER_PRE_WIDTH_MIN_TCK   DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_MIN_DCK)
+#define FER_PRE_WIDTH_MAX_TCK   DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_MAX_DCK)
+#define FER_PRE_NEDGE_MIN_TCK   DATA_CLOCK_TO_TICKS(FER_PRE_NEDGE_MIN_DCK)
+#define FER_PRE_NEDGE_MAX_TCK   DATA_CLOCK_TO_TICKS(FER_PRE_NEDGE_MAX_DCK)
+
+#define FER_STP_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_STP_WIDTH_DCK)
+#define FER_STP_WIDTH_MIN_TCK   DATA_CLOCK_TO_TICKS(FER_STP_WIDTH_MIN_DCK)
+#define FER_STP_WIDTH_MAX_TCK   DATA_CLOCK_TO_TICKS(FER_STP_WIDTH_MAX_DCK)
+#define FER_STP_NEDGE_TCK       DATA_CLOCK_TO_TICKS(FER_STP_NEDGE_DCK)
+#define FER_STP_NEDGE_MIN_TCK   DATA_CLOCK_TO_TICKS(FER_STP_NEDGE_MIN_DCK)
+#define FER_STP_NEDGE_MAX_TCK   DATA_CLOCK_TO_TICKS(FER_STP_NEDGE_MAX_DCK)
+
+#define FER_BIT_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_BIT_WIDTH_DCK)
+#define FER_BIT_SHORT_TCK       DATA_CLOCK_TO_TICKS(FER_BIT_SHORT_DCK)
+#define FER_BIT_LONG_TCK        DATA_CLOCK_TO_TICKS(FER_BIT_LONG_DCK)
+#define FER_BIT_SAMP_POS_TCK    DATA_CLOCK_TO_TICKS(FER_BIT_SAMP_POS_DCK)
+
 struct fer_msg message_buffer;
 
 #ifndef FER_RECEIVER
@@ -70,16 +89,14 @@ static u16  IRAM_ATTR fer_add_word_parity(u8 data_byte, int pos) {
 
 #ifdef FER_RECEIVER
 
-#define bitLen               FER_BIT_WIDTH_TCK
+#define bitLen               DATA_CLOCK_TO_TICKS(FER_BIT_WIDTH_DCK)
 // bit is 1, if data edge comes before sample position (/SHORT\..long../)
 // bit is 0, if data edge comes after sample position  (/..LONG..\short/)
-#define SAMPLE_BIT ((pTicks < FER_BIT_SAMP_POS_TCK))
+#define SAMPLE_BIT ((pTicks < DATA_CLOCK_TO_TICKS(FER_BIT_SAMP_POS_DCK)))
 
 #define IS_P_INPUT (rx_input == true)
 #define IS_N_INPUT (rx_input == false)
-#define veryLongPauseLow_Len (2 * FER_STP_WIDTH_MAX_TCK)
-#define fuzCmp(a,b) (abs((a)-(b)) < (FER_TICK_FREQ_MULT * 2))
-#define fuzzCmp(a,b,n) (abs((a)-(b)) < (FER_TICK_FREQ_MULT * (n)))
+#define veryLongPauseLow_Len (2 * DATA_CLOCK_TO_TICKS(FER_STP_WIDTH_MAX_DCK))
 
 #define pEdge (input_edge > 0)
 #define nEdge (input_edge < 0)
