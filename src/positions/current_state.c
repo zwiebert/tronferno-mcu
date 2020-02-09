@@ -89,6 +89,8 @@ set_shutter_state(u32 a, u8 g, u8 m, fer_cmd cmd) {
     pct = 0;
   else if (cmd == fer_cmd_SunDOWN)
     pct = 50;
+  else
+    return -1;
 
   return set_shutter_pct(a, g, m, pct);
 }

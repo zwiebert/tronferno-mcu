@@ -18,12 +18,12 @@ u16 calc_delay(u8 g, u8 m, u8 curr_pct, u8 pct) {
     return 0;
   } else if (pct < curr_pct) {  // moving down
     u8 span = curr_pct - pct;
-    return span * (25.0 / 100.0);
+    return span * (250.0 / 100.0);
   } else { // moving up
     u8 span = pct - curr_pct;
-    u16 result = span * (26.0 / 100.0);
+    u16 result = span * (260.0 / 100.0);
     if (curr_pct == 0)
-      result += 5;
+      result += 50;
     return result;
   }
   return 0;
@@ -36,7 +36,6 @@ return false;
 bool move_to_pct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   precond(g <= 7 && m <= 7 && pct <= 100);
   int curr_pct = -1;
-  u16 stop_delay = 0;
 
   fer_cmd fc = fer_cmd_None;
   fer_grp group = g;

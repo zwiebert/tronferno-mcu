@@ -10,11 +10,17 @@
 volatile bool is_sendMsgPending;
 volatile u16 wordsToSend;
 
+bool fer_send_queued_msg(void);
+
+extern volatile u32 run_time_s10;
+#define run_time_10(x) (run_time_s10 + 0)
+
 u8 sf_toggle;
 #define sf_SIZE 8
 struct {
   fer_sender_basic fsb;
   u32 s10; // timer in 1 secs
+  fmsg_type mt;
 } sf[sf_SIZE];
 
 u8 sf_head_, sf_tail_;
@@ -31,13 +37,12 @@ static fer_sender_basic *sf_shift() {
   sf_incrHead();
   return fsb;
 }
-static bool sf_append(const fer_sender_basic *fsb, u32 s10) {
+static bool sf_append(const fer_sender_basic *fsb, fmsg_type msgType, u32 s10) {
   if (sf_isFull())
     return false;
   sf[sf_tail].fsb = *fsb;
   sf[sf_tail].s10 = s10;
-  sf_toggle = fer_tglNibble_ctUp(sf_toggle, 1);
-  FSB_PUT_TGL(&sf[sf_tail].fsb, sf_toggle);
+  sf[sf_tail].mt = msgType;
   sf_incrTail();
   return false;
 }
@@ -55,14 +60,13 @@ fers_loop() {
   if (is_sendMsgPending)
     return false;
 
-  if (!sf_isEmpty() && sf[sf_head].s10 <= run_time(0)) {
+  if (!sf_isEmpty() && sf[sf_head].s10 <= run_time_10(0)) {
 #ifdef XXX_TOGGLE_STOP_REPEATS  // disabled because it blocks the receiver instead of making sure the stop is received //FIXME: not really true!?
     if (FSB_GET_CMD(&send_fsb[sf_head]) == fer_cmd_STOP) {
       fer_update_tglNibble(&send_fsb);
     }
 #endif
-    fer_send_msg(0, MSG_TYPE_PLAIN);
-
+    fer_send_queued_msg();
   }
 
   return true;
@@ -88,36 +92,40 @@ bool ICACHE_FLASH_ATTR fer_send_msg(const fer_sender_basic *fsb, fmsg_type msgTy
 }
 
 bool ICACHE_FLASH_ATTR fer_send_delayed_msg(const fer_sender_basic *fsb, fmsg_type msgType, u16 delay) {
+  precond(fsb);
+
+  if (sf_isFull())
+    return false;
+
+  sf_append(fsb, msgType, delay + run_time_10(0));
+  return true;
+
+}
+
+bool ICACHE_FLASH_ATTR fer_send_queued_msg() {
   if (is_sendMsgPending)
+    return false;
+  if (sf_isEmpty())
     return false;
 
   if (!recv_lockBuffer(true)) {
     return false;
   }
 
-  if (fsb) {
+  static unsigned send_ct;
 
+  if (send_ct == 0) {
+    sf_toggle = fer_tglNibble_ctUp(sf_toggle, 1);
+    FSB_PUT_TGL(&sf[sf_head].fsb, sf_toggle);
   }
 
-  if (msgType == MSG_TYPE_PLAIN) {
-    if (fsb) {
-      if (sf_isFull()) {
-        return false;
-      } else {
-        sf_append(fsb, delay + run_time(0));
-        return true;
-      }
-    } else {
-      if (sf_isEmpty()) {
-        return false;
-      } else {
-        --sf[sf_head].fsb.repeats;
-        fsb = &sf[sf_head].fsb;
-        if (fsb->repeats < 0) {
-          sf_incrHead();
-        }
-      }
-    }
+  --sf[sf_head].fsb.repeats;
+  ++send_ct;
+  const fer_sender_basic *fsb = &sf[sf_head].fsb;
+  fmsg_type msgType = sf[sf_head].mt;
+  if (fsb->repeats < 0) {
+    sf_incrHead();
+    send_ct = 0;
   }
 
   memcpy(txmsg->cmd, fsb->data, 5);
@@ -126,10 +134,7 @@ bool ICACHE_FLASH_ATTR fer_send_delayed_msg(const fer_sender_basic *fsb, fmsg_ty
   if (C.app_verboseOutput >= vrb1)
     io_puts("S:"), fmsg_print(txmsg, C.app_verboseOutput >= vrb2 ? msgType : MSG_TYPE_PLAIN);
 
-  wordsToSend = 2 * ((msgType == MSG_TYPE_PLAIN) ? BYTES_MSG_PLAIN
-      : (msgType == MSG_TYPE_RTC) ? BYTES_MSG_RTC
-          : BYTES_MSG_TIMER);
-
+  wordsToSend = 2 * ((msgType == MSG_TYPE_PLAIN) ? BYTES_MSG_PLAIN : (msgType == MSG_TYPE_RTC) ? BYTES_MSG_RTC : BYTES_MSG_TIMER);
 
   is_sendMsgPending = true;
   recv_lockBuffer(false);

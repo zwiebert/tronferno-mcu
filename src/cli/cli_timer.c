@@ -270,7 +270,7 @@ process_parmTimer(clpar p[], int len) {
       }
       fmsg_write_lastline(txmsg, fsb);
     }
-
+    fsb->repeats = 0;
     // send buffer
     send_ok = fer_send_msg(fsb, (flag_rtc_only == FLAG_TRUE) ? MSG_TYPE_RTC : MSG_TYPE_TIMER);
     reply(send_ok);

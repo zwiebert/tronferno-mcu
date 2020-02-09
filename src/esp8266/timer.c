@@ -63,6 +63,7 @@ timer1Stop(void) {
   RTC_REG_WRITE(FRC1_CTRL_ADDRESS, 0);
 }
 //////////////////////////////////////////////////////////////////////////
+volatile u32 run_time_s10;
 
 void timer_handler(void) {
 
@@ -87,6 +88,15 @@ void timer_handler(void) {
     frx_tick();
   }
 #endif
+
+  {
+    static u32 s10_ticks;
+
+    if (s10_ticks-- == 0) {
+      s10_ticks = TICK_FREQ_HZ / 10;
+      ++run_time_s10;
+    }
+  }
 
   if (rtcAvrTime == C.app_rtc) {
     static u32 rtc_ticks;
