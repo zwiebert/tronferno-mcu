@@ -6,12 +6,14 @@
 #include "userio/inout.h"
 #include "user_config.h"
 #include "positions/current_state.h"
+#include "positions/commands.h"
 #include "automatic/timer_state.h"
 #include "fernotron/fer.h"
 #include "setup/set_endpos.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "userio/status_output.h"
+
 
 #define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
@@ -37,6 +39,7 @@ process_parmSend(clpar p[], int len) {
   int set_end_pos = -1;
   u8 repeats = FSB_PLAIN_REPEATS;
   bool read_state = false;
+  i8 pct = -1;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -62,11 +65,9 @@ process_parmSend(clpar p[], int len) {
       if (*val == '?') {
         read_state = true;
       } else {
-        switch(atoi(val)) {
-          case 100: cmd = fer_cmd_UP; break;
-          case 0: cmd = fer_cmd_DOWN; break;
-          default: return reply_failure(); break;
-        }
+        pct = atoi(val);
+        if (!(0 <= pct && pct <= 100))
+          return reply_failure();
       }
     } else if (strcmp(key, "c") == 0) {
       NODEFAULT();
@@ -117,6 +118,10 @@ process_parmSend(clpar p[], int len) {
         sep_enable(fsb);
       else
         sep_disable();
+    } else if (pct >= 0) {
+      u8 m = memb == 0 ? 0 : memb - 7;
+
+      move_to_pct(addr, group, m, pct, repeats);
     } else if (cmd != fer_cmd_None) {
       FSB_PUT_CMD(fsb, cmd);
       fsb->repeats = repeats;

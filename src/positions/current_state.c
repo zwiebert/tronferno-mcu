@@ -79,9 +79,24 @@ get_shutter_state(u32 a, u8 g, u8 m) {
   return get_state(a, g, m);
 }
 
+
 int ICACHE_FLASH_ATTR
 set_shutter_state(u32 a, u8 g, u8 m, fer_cmd cmd) {
-  int position = -1;
+  u8 pct = -1;
+  if (cmd == fer_cmd_UP)
+    pct = 100;
+  else if (cmd == fer_cmd_DOWN)
+    pct = 0;
+  else if (cmd == fer_cmd_SunDOWN)
+    pct = 50;
+
+  return set_shutter_pct(a, g, m, pct);
+}
+
+
+int ICACHE_FLASH_ATTR
+set_shutter_pct(u32 a, u8 g, u8 m, u8 pct) {
+  int position = pct;
   precond(g <= 7 && m <= 7);
 
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, cmd=%d\n", __func__, a, (int)g, (int)m, (int)cmd));
@@ -93,7 +108,7 @@ set_shutter_state(u32 a, u8 g, u8 m, fer_cmd cmd) {
       for (m=1; m <= MBR_MAX; ++m) {
         if (gm_GetBit(gm, g, m)) {
           // recursion for each paired g/m
-          set_shutter_state(0, g, m, cmd);
+          set_shutter_pct(0, g, m, pct);
         }
       }
     }
@@ -101,12 +116,7 @@ set_shutter_state(u32 a, u8 g, u8 m, fer_cmd cmd) {
   }
 #endif
 
-  if (cmd == fer_cmd_UP)
-    position = 100;
-  else if (cmd == fer_cmd_DOWN)
-    position = 0;
-  else if (cmd == fer_cmd_SunDOWN)
-    position = 50;
+
 
   if (0 <= position && position <= 100) {
     if (a == 0 || a == C.fer_centralUnitID) {

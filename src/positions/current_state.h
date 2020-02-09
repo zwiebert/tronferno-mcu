@@ -14,6 +14,7 @@
 
 int get_shutter_state(u32 a, u8 g, u8 m);
 int set_shutter_state(u32 a, u8 g, u8 m, fer_cmd cmd);
+int set_shutter_pct(u32 a, u8 g, u8 m, u8 pct);
 int modify_shutter_positions(gm_bitmask_t mm, u8 p);
 int print_shutter_positions(void);
 

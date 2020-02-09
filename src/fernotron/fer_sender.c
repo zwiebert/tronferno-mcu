@@ -68,16 +68,16 @@ fers_loop() {
   return true;
 }
 
-bool ICACHE_FLASH_ATTR fer_send_msg_with_stop(const fer_sender_basic *fsb, u16 stopDelay) {
+bool ICACHE_FLASH_ATTR fer_send_msg_with_stop(const fer_sender_basic *fsb, u16 delay, u16 stopDelay) {
   precond(fsb);
   precond(stopDelay > 0);
 
-  if(fer_send_delayed_msg(fsb, MSG_TYPE_PLAIN, 0)) {
+  if(fer_send_delayed_msg(fsb, MSG_TYPE_PLAIN, delay)) {
     fer_sender_basic stop_fsb = *fsb;
     FSB_PUT_CMD(&stop_fsb, fer_cmd_STOP);
     stop_fsb.repeats = 2;
     fer_update_tglNibble(&stop_fsb);
-    return fer_send_delayed_msg(&stop_fsb, MSG_TYPE_PLAIN, stopDelay);
+    return fer_send_delayed_msg(&stop_fsb, MSG_TYPE_PLAIN, delay + stopDelay);
   }
   return false;
 }
