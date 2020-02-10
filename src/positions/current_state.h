@@ -13,10 +13,13 @@
 #include "positions/shutter_state.h"
 
 int get_shutter_state(u32 a, u8 g, u8 m);
-int set_shutter_state(u32 a, u8 g, u8 m, fer_cmd cmd);
-int set_shutter_pct(u32 a, u8 g, u8 m, u8 pct);
 int modify_shutter_positions(gm_bitmask_t mm, u8 p);
 int print_shutter_positions(void);
+
+int currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd);
+
+void currentState_loop(void);
+void currentState_init(void);
 
 
 #endif /* USER_MAIN_CURRENT_STATE_H_ */

@@ -6,6 +6,7 @@
 #include "userio/inout.h"
 #include "main/rtc.h"
 #include "fernotron/fer_code.h"
+#include "positions/current_state.h"
 
 volatile bool is_sendMsgPending;
 volatile u16 wordsToSend;
@@ -112,17 +113,23 @@ bool ICACHE_FLASH_ATTR fer_send_queued_msg() {
     return false;
   }
 
+  const fer_sender_basic *fsb = &sf[sf_head].fsb;
+  fmsg_type msgType = sf[sf_head].mt;
+
   static unsigned send_ct;
 
   if (send_ct == 0) {
     sf_toggle = fer_tglNibble_ctUp(sf_toggle, 1);
     FSB_PUT_TGL(&sf[sf_head].fsb, sf_toggle);
+    if (msgType == MSG_TYPE_PLAIN) {
+      currentState_Move(FSB_GET_DEVID(fsb), FSB_GET_GRP(fsb), FSB_GET_MEMB(fsb) == 0 ? 0 : FSB_GET_MEMB(fsb)-7, FSB_GET_CMD(fsb));
+    }
+
   }
 
   --sf[sf_head].fsb.repeats;
   ++send_ct;
-  const fer_sender_basic *fsb = &sf[sf_head].fsb;
-  fmsg_type msgType = sf[sf_head].mt;
+
   if (fsb->repeats < 0) {
     sf_incrHead();
     send_ct = 0;

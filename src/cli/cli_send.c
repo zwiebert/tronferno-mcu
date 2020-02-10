@@ -126,9 +126,7 @@ process_parmSend(clpar p[], int len) {
       FSB_PUT_CMD(fsb, cmd);
       fsb->repeats = repeats;
       if (reply(fer_send_msg(fsb, MSG_TYPE_PLAIN))) {
-        u8 g = group;
-        u8 m = memb == 0 ? 0 : memb - 7;
-        set_shutter_state(FSB_GET_DEVID(fsb), g, m, FSB_GET_CMD(fsb));
+
       }
     } else {
       reply_failure();

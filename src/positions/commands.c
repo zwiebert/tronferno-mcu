@@ -67,7 +67,6 @@ bool move_to_pct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     if (fer_send_msg(fsb, MSG_TYPE_PLAIN)) {
       u8 g = group;
       u8 m = memb == 0 ? 0 : memb - 7;
-      set_shutter_pct(a, g, m, pct);
     }
   } else if (curr_pct >= 0) {
     u16 stop_delay = calc_delay(g, m, curr_pct, pct);
@@ -77,7 +76,6 @@ bool move_to_pct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     FSB_PUT_CMD(fsb, fc);
     fsb->repeats = repeats;
     fer_send_msg_with_stop(fsb, 0, stop_delay);
-    set_shutter_pct(a, g, m, pct);
   } else {
     FSB_PUT_CMD(fsb, fer_cmd_UP);
     fsb->repeats = repeats;
@@ -88,7 +86,6 @@ bool move_to_pct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
       return false;
     FSB_PUT_CMD(fsb, fer_cmd_DOWN);
     fer_send_msg_with_stop(fsb, delay, stop_delay);
-    set_shutter_pct(a, g, m, pct);
   }
 
     return false;

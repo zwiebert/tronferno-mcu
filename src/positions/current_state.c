@@ -22,11 +22,20 @@
 #define GRP_MAX 7
 #define MBR_MAX 7
 
-enum pos {
-  POS_0, POS_50, POS_100, POS_SIZE
-};
+#define PCT_UP 100
+#define PCT_DOWN 0
 
-static  u8 pos_map[8][8];
+#define mv_SIZE 8
+struct mv {
+  gm_bitmask_t mask;
+  u32 start_time;
+  bool active : 1;
+  bool direction_up : 1; //down=false, up=true
+} moving[mv_SIZE];
+u8 moving_mask;
+
+
+static u8 pos_map[8][8];
 #define pm_GROUP_UNUSED 101
 #define pm_MEMBER_UNUSED 102
 #define pm_getPct(g,m) (pos_map[(g)][(m)]+0)
@@ -39,7 +48,7 @@ static  u8 pos_map[8][8];
 
 static int ICACHE_FLASH_ATTR
 get_state(u32 a, int g, int m) {
-  precond(1 <= g && g <= 7 && 1 <= m && m <= 7);
+  precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
 
   if (m != 0 && !pm_isGroupUnused(g) && !pm_isMemberUnused(g,0))
     return pm_getPct(g, 0);
@@ -80,24 +89,9 @@ get_shutter_state(u32 a, u8 g, u8 m) {
 }
 
 
-int ICACHE_FLASH_ATTR
-set_shutter_state(u32 a, u8 g, u8 m, fer_cmd cmd) {
-  u8 pct = -1;
-  if (cmd == fer_cmd_UP)
-    pct = 100;
-  else if (cmd == fer_cmd_DOWN)
-    pct = 0;
-  else if (cmd == fer_cmd_SunDOWN)
-    pct = 50;
-  else
-    return -1;
 
-  return set_shutter_pct(a, g, m, pct);
-}
-
-
-int ICACHE_FLASH_ATTR
-set_shutter_pct(u32 a, u8 g, u8 m, u8 pct) {
+static int ICACHE_FLASH_ATTR
+currentState_set_shutter_pct(u32 a, u8 g, u8 m, u8 pct) {
   int position = pct;
   precond(g <= 7 && m <= 7);
 
@@ -110,7 +104,7 @@ set_shutter_pct(u32 a, u8 g, u8 m, u8 pct) {
       for (m=1; m <= MBR_MAX; ++m) {
         if (gm_GetBit(gm, g, m)) {
           // recursion for each paired g/m
-          set_shutter_pct(0, g, m, pct);
+          currentState_set_shutter_pct(0, g, m, pct);
         }
       }
     }
@@ -132,6 +126,23 @@ set_shutter_pct(u32 a, u8 g, u8 m, u8 pct) {
   else
     return set_state(a, g, m, position);
 }
+
+
+int ICACHE_FLASH_ATTR
+XXXset_shutter_state(u32 a, u8 g, u8 m, fer_cmd cmd) {
+  u8 pct = -1;
+  if (cmd == fer_cmd_UP)
+    pct = 100;
+  else if (cmd == fer_cmd_DOWN)
+    pct = 0;
+  else if (cmd == fer_cmd_SunDOWN)
+    pct = 50;
+  else
+    return -1;
+
+  return currentState_set_shutter_pct(a, g, m, pct);
+}
+
 
 int ICACHE_FLASH_ATTR
 modify_shutter_positions(gm_bitmask_t mm, u8 p) {
@@ -183,6 +194,162 @@ print_shutter_positions() {
   }
   so_output_message(SO_POS_end, 0);
   return 0;
+}
+
+
+extern volatile u32 run_time_s10;
+#define run_time_10(x) (run_time_s10 + 0)
+
+// register moving related commands sent to a shutter to keep track of its changing position
+int ICACHE_FLASH_ATTR
+currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd) {
+  precond(g <= 7 && m <= 7);
+
+  DT(ets_printf("%s: a=%lx, g=%d, m=%d, cmd=%d\n", __func__, a, (int)g, (int)m, (int)cmd));
+#ifdef USE_PAIRINGS
+  if (!(a == 0 || a == C.fer_centralUnitID)) {
+    gm_bitmask_t gm;
+    if (read_pairings(&gm, a))
+      for (g = 1; g <= GRP_MAX; ++g) {
+        for (m = 1; m <= MBR_MAX; ++m) {
+          if (gm_GetBit(gm, g, m)) {
+            // recursion for each paired g/m
+            currentState_Move(0, g, m, cmd);
+          }
+        }
+      }
+    return 0;
+  }
+#endif
+
+  u32 rt = run_time_10(0);
+  int i, k, gi;
+  bool isMoving = false, direction = false, isStopping = false;
+
+  switch (cmd) {
+  case fer_cmd_STOP:
+    isStopping = true;
+    break;
+  case fer_cmd_UP:
+    isMoving = true;
+    direction = 1;
+    break;
+  case fer_cmd_DOWN:
+    isMoving = true;
+    direction = 0;
+    break;
+  default:
+    return -1;
+    break;
+
+  }
+
+  if (isMoving) {
+    u8 currPct = get_state(a, g, m);
+    if ((direction && currPct == PCT_UP) || (!direction && currPct == PCT_DOWN))
+      return -1; // cannot move beyond end point
+  }
+
+  if (moving_mask && (isStopping || isMoving)) {
+    for (i = 0; i < mv_SIZE; ++i) {
+      struct mv *mv = &moving[i];
+
+      if (!(mv->active && gm_GetBit(mv->mask, g, m)))
+        continue;
+
+      if (isMoving && mv->direction_up == direction) {
+        return 0; // already moving in right direction
+      } else {
+        gm_ClrBit(moving[i].mask, g, m);
+        bool remaining = false;
+        for (gi = 0; gi < 8; ++gi) {
+          if (mv->mask[gi]) {
+            remaining = true;
+            break;
+          }
+        }
+        if (!remaining) {
+          mv->active = false;
+          CLR_BIT(moving_mask, i);
+        }
+      }
+    }
+  }
+
+  if (isMoving) {
+    for (i = 0; i < mv_SIZE; ++i) {
+      if (moving[i].active && direction == moving[i].direction_up && rt == moving[i].start_time) {
+        gm_SetBit(moving[i].mask, g, m);
+        break;
+      }
+      if (moving[i].active)
+        continue;
+
+      gm_SetBit(moving[i].mask, g, m);
+      moving[i].active = true;
+      moving[i].direction_up = direction;
+      SET_BIT(moving_mask, i);
+      moving[i].start_time = rt;
+      break;
+    }
+
+  }
+
+  return 0;
+}
+
+#define MV_TIMEOUT_S10 30
+
+u8 currentState_mvCalcPct(u8 g, u8 m, bool direction_up, u16 time_s10) {
+  if (time_s10 > MV_TIMEOUT_S10) //XXX
+      return direction_up ? PCT_UP: PCT_DOWN; //XXX
+  return 42; // XXX
+}
+
+// check if a moving shutter has reached its end position
+static void currentState_mvCheck() {
+  u32 rt = run_time_10(0);
+  u8 i, g, m;
+  u8 mask = moving_mask;
+
+  for (i = 0; mask != 0; ++i, (mask >>= 1)) {
+    if (!(mask & 1))
+      continue;
+    struct mv *mv = &moving[i];
+    u16 time_s10 = rt - mv->start_time;
+    if (mv->start_time + MV_TIMEOUT_S10 < rt) {
+      bool remaining = false;
+      for (g = 0; g < 8; ++g) {
+        for (m = 0; m < 8; ++m) {
+          if (gm_GetBit(mv->mask, g, m)) {
+            u8 pct = currentState_mvCalcPct(g, m, mv->direction_up, time_s10);
+            if ((mv->direction_up && pct == PCT_UP) || (!mv->direction_up && pct == PCT_DOWN)) {
+              currentState_set_shutter_pct(0, g, m, pct);
+              gm_ClrBit(mv->mask, g, m);
+            } else {
+              remaining = true;
+            }
+          }
+        }
+      }
+      if (!remaining) {
+        mv->active = false;
+        CLR_BIT(moving_mask, i);
+      }
+    }
+  }
+}
+
+
+
+void currentState_loop() {
+  static int next_s10;
+
+  if (moving_mask && next_s10 < run_time_10()) {
+    next_s10 = run_time_10() + 5;
+    currentState_mvCheck();
+  }
+
 }
 
 void currentState_init() {
