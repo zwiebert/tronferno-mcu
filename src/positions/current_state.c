@@ -46,6 +46,7 @@ static u8 pos_map[8][8];
 #define pm_isGroupUnused(g) (pm_getPct((g),0) == pm_GROUP_UNUSED)
 
 
+
 static int ICACHE_FLASH_ATTR
 get_state(u32 a, int g, int m) {
   precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
@@ -90,7 +91,7 @@ get_shutter_state(u32 a, u8 g, u8 m) {
 
 
 
-static int ICACHE_FLASH_ATTR
+int ICACHE_FLASH_ATTR
 currentState_set_shutter_pct(u32 a, u8 g, u8 m, u8 pct) {
   int position = pct;
   precond(g <= 7 && m <= 7);
@@ -151,7 +152,7 @@ modify_shutter_positions(gm_bitmask_t mm, u8 p) {
   for (g = 1; g <= GRP_MAX; ++g) {
     for (m = 1; m <= MBR_MAX; ++m) {
       if (GET_BIT(mm[g], m)) {
-        set_state(0, g, m, p);
+        currentState_set_shutter_pct(0, g, m, p);
       }
     }
   }
@@ -261,6 +262,7 @@ currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd) {
         return 0; // already moving in right direction
       } else {
         gm_ClrBit(moving[i].mask, g, m);
+        currentState_set_shutter_pct(0, g, m, currentState_mvCalcPct(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
         bool remaining = false;
         for (gi = 0; gi < 8; ++gi) {
           if (mv->mask[gi]) {
@@ -298,13 +300,45 @@ currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd) {
   return 0;
 }
 
-#define MV_TIMEOUT_S10 30
+#define MV_UP_10 26
+#define MV_DOWN_10 25
+#define MV_UP_TO1 60
+#define MV_DOWN_FROM1 50
+
+u16 currentState_mvCalcTime10(u8 g, u8 m, u8 curr_pct, u8 pct) {
+  bool direction = curr_pct < pct;
+  u8 pct_diff = direction ? pct - curr_pct : curr_pct - pct;
+
+  u16 result = (direction ? pct_diff * MV_UP_10 : pct_diff * MV_DOWN_10) / 10;
+#if 0
+  if (curr_pct == 0 && direction)
+    result += MV_UP_TO1;
+  else if (pct == 0 && !direction)
+    result += MV_DOWN_FROM1;
+#endif
+    return result;
+}
+
 
 u8 currentState_mvCalcPct(u8 g, u8 m, bool direction_up, u16 time_s10) {
-  if (time_s10 > MV_TIMEOUT_S10) //XXX
-      return direction_up ? PCT_UP: PCT_DOWN; //XXX
-  return 42; // XXX
+  int pct = get_state(0, g, m);
+
+  if (pct == -1) {
+    return direction_up ? PCT_UP : PCT_DOWN;// XXX
+  }
+
+  int add = (direction_up ? 10 * time_s10 / MV_UP_10 : -10 * time_s10 / MV_DOWN_10);
+  add += pct;
+
+  if (add > 100)
+    return 100;
+  else if (add < 0)
+    return 0;
+  else
+    return add;
 }
+
+
 
 // check if a moving shutter has reached its end position
 static void currentState_mvCheck() {
@@ -317,7 +351,7 @@ static void currentState_mvCheck() {
       continue;
     struct mv *mv = &moving[i];
     u16 time_s10 = rt - mv->start_time;
-    if (mv->start_time + MV_TIMEOUT_S10 < rt) {
+   {
       bool remaining = false;
       for (g = 0; g < 8; ++g) {
         for (m = 0; m < 8; ++m) {
