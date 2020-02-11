@@ -38,7 +38,7 @@ static fer_sender_basic *sf_shift() {
   sf_incrHead();
   return fsb;
 }
-static bool sf_append(const fer_sender_basic *fsb, fmsg_type msgType, u32 s10) {
+static bool  ICACHE_FLASH_ATTR sf_append(const fer_sender_basic *fsb, fmsg_type msgType, u32 s10) {
   if (sf_isFull())
     return false;
   sf[sf_tail].fsb = *fsb;
