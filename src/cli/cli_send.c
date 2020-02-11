@@ -89,13 +89,13 @@ process_parmSend(clpar p[], int len) {
     u8 g = group;
     u8 m = memb == 0 ? 0 : memb - 7;
     if (g != 0 && m != 0) {
-      int pos = get_shutter_state(addr, g, m);
+      int pos = currentState_getShutterPct(addr, g, m);
       if (pos >= 0) {
         so_arg_gmp_t gmp = {g, m, pos};
         so_output_message(SO_POS_PRINT_GMP, &gmp);
       }
     } else {
-      print_shutter_positions();
+      currentState_printShutterPositions();
     }
   } else {
     fer_sender_basic *fsb = get_sender_by_addr(addr);

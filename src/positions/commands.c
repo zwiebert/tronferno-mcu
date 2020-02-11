@@ -11,12 +11,8 @@
 #include "fernotron/fer.h"
 #include "cli/cli_imp.h"
 
-
-
-
-
 bool move_to_end(u32 a, u8 g, u8 m, u8 pct) {
-return false;
+  return false;
 }
 
 bool move_to_pct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
@@ -28,7 +24,7 @@ bool move_to_pct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   fer_memb memb = m == 0 ? 0 : m + 7;
 
   if (g > 0 && m > 0) {
-    curr_pct = get_shutter_state(a, g, m);
+    curr_pct = currentState_getShutterPct(a, g, m);
   }
 
   fer_sender_basic *fsb = get_sender_by_addr(a);
@@ -44,7 +40,6 @@ bool move_to_pct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     FSB_PUT_GRP(fsb, group);
     FSB_PUT_MEMB(fsb, memb);
   }
-
 
   if (pct == 0 || pct == 100) {
     fc = (pct == 0) ? fer_cmd_DOWN : fer_cmd_UP;
@@ -74,5 +69,5 @@ bool move_to_pct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     fer_send_msg_with_stop(fsb, delay, stop_delay);
   }
 
-    return false;
+  return false;
 }

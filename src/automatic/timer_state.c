@@ -249,7 +249,7 @@ timer_state_loop(void) {
 	continue;
 #endif
       }
-      modify_shutter_positions(te->matching_members, te_is_up(te) ? 100 : 0);
+      currentState_modifyShutterPositions(te->matching_members, te_is_up(te) ? 100 : 0);
 
     }
   }
