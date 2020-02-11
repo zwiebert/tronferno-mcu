@@ -30,6 +30,7 @@ loop(void) {
 #endif
 
   cli_loop();
+  currentState_loop();
 
   timer_state_loop();
   cu_auto_set_check_timeout();
@@ -58,7 +59,7 @@ loop(void) {
             if (m)
             m -= 7;
           }
-          set_shutter_state(FRB_GET_DEVID(rxmsg->cmd), g, m, FRB_GET_CMD(rxmsg->cmd));
+          currentState_Move(FRB_GET_DEVID(rxmsg->cmd), g, m, FRB_GET_CMD(rxmsg->cmd));
         }
       }
       break;
@@ -96,7 +97,8 @@ main_setup() {
 
   so_output_message(SO_FW_START_MSG_PRINT, 0);
   db_test_all_indicators(3);
-
+  void currentState_init(void);
+  currentState_init();
   dbg_trace();
   return 0;
 

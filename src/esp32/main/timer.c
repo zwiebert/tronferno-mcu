@@ -86,6 +86,7 @@ void timer1_start() {
 
 
 //////////////////////////////////////////////////////////////////////////
+volatile u32 run_time_s10;
 
 static void IRAM_ATTR timer1_handler(void *args) {
   int timer_idx = (int) args;
@@ -116,6 +117,15 @@ static void IRAM_ATTR timer1_handler(void *args) {
     frx_tick();
   }
 #endif
+
+  {
+    static u32 s10_ticks;
+
+    if (s10_ticks-- == 0) {
+      s10_ticks = TICK_FREQ_HZ / 10;
+      ++run_time_s10;
+    }
+  }
 
   {
     static u32 rtc_ticks;

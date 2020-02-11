@@ -23,7 +23,9 @@
 #define NB_PFX "GMBM_"
 #define NB_N (NB_SIZE - sizeof (NB_PFX))
 
-static int store (const char *name, gm_bitmask_t *gm, int count, bool write) {
+typedef u8 u8a8[8];
+
+static int store (const char *name, u8a8 *gm, int count, bool write) {
   char nb[NB_SIZE] = NB_PFX;
   strncat (nb, name, NB_N);
 
@@ -47,9 +49,24 @@ static int store (const char *name, gm_bitmask_t *gm, int count, bool write) {
 }
 
 int read_gm_bitmask(const char *name, const gm_bitmask_t *gm, int count) {
-  return store (name, (gm_bitmask_t *)gm, count, false);
+  return store (name, (u8a8 *)gm, count, false);
 }
 
 int save_gm_bitmask(const char *name, gm_bitmask_t *gm, int count) {
-  return store (name, gm, count, true);
+  return store (name, (u8a8 *)gm, count, true);
+}
+
+
+static char *g_to_name(u8 g, char *buf) {
+  return "TODO"; //TODO: IMPLEMENT ME
+}
+
+ int read_g_positions(u8 g, const shutterGroupPositionsT *positions) {
+   char buf[8];
+  return store (g_to_name(g, buf), (u8a8 *)positions, 1, false);
+}
+
+int save_g_positions(u8 g, shutterGroupPositionsT *positions) {
+  char buf[8];
+  return store (g_to_name(g, buf), (u8a8 *)positions, 1, true);
 }

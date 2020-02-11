@@ -77,7 +77,7 @@ process_parmMcu(clpar p[], int len) {
       io_putlf();
 
     } else if (strcmp(key, "cs") == 0) {
-      print_shutter_positions();
+      currentState_printShutterPositions();
 #ifdef CONFIG_GPIO_SIZE
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
