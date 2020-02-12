@@ -58,15 +58,17 @@ int save_gm_bitmask(const char *name, gm_bitmask_t *gm, int count) {
 
 
 static char *g_to_name(u8 g, char *buf) {
-  return "TODO"; //TODO: IMPLEMENT ME
+  strcpy(buf, "PMAP_Gx");
+  buf[6] = '0' + g;
+  return buf;
 }
 
- int read_g_positions(u8 g, const shutterGroupPositionsT *positions) {
+ int read_g_positions(u8 g, const shutterGroupPositionsT positions) {
    char buf[8];
   return store (g_to_name(g, buf), (u8a8 *)positions, 1, false);
 }
 
-int save_g_positions(u8 g, shutterGroupPositionsT *positions) {
+int save_g_positions(u8 g, shutterGroupPositionsT positions) {
   char buf[8];
   return store (g_to_name(g, buf), (u8a8 *)positions, 1, true);
 }

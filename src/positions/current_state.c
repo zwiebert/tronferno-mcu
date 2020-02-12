@@ -36,8 +36,8 @@ u8 moving_mask;
 
 
 static u8 pos_map[8][8];
-#define pm_GROUP_UNUSED 101
-#define pm_MEMBER_UNUSED 102
+static u8  pos_map_changed;
+enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 #define pm_getPct(g,m) (pos_map[(g)][(m)]+0)
 #define pm_setPct(g,m,pct) pos_map[(g)][(m)] = (pct)
 #define pm_setMemberUnused(g,m) pm_setPct((g),(m),pm_MEMBER_UNUSED)
@@ -78,6 +78,7 @@ set_state(u32 a, int g, int m, int position) {
   pm_setMemberUnused(g,0);
   pm_setPct(g,m,position);
 
+  SET_BIT(pos_map_changed, g);
 
   return 0;
 }
@@ -88,7 +89,6 @@ currentState_getShutterPct(u32 a, u8 g, u8 m) {
 
   return get_state(a, g, m);
 }
-
 
 
 int ICACHE_FLASH_ATTR
@@ -171,7 +171,7 @@ currentState_printShutterPositions() {
     for (m=0; m < 8; ++m) {
       if (pm_isMemberUnused(g,m))
         continue; //
-      if (gm_GetBit(msk, g, m))
+      if (gm_GetBit(msk, g, 0) || gm_GetBit(msk, g, m))
         continue; // was already processed by a previous pass
 
       u8 pct = pm_getPct(g,m);
@@ -496,10 +496,21 @@ static void currentState_mvCheck() {
 
 void currentState_loop() {
   static int next_s10;
-
   if (moving_mask && next_s10 < run_time_10()) {
     next_s10 = run_time_10() + 20;
     currentState_mvCheck();
+  }
+
+  static u32 next_save_pos;
+  if (pos_map_changed && next_save_pos < run_time_10()) {
+    next_save_pos = run_time_10() + 100;
+    u8 g, mask = pos_map_changed;
+    pos_map_changed = 0;
+
+    for (g=0; mask; ++g, (mask >>=1)) {
+      if (mask&1)
+        save_g_positions(g, pos_map[g]);
+    }
   }
 }
 
@@ -507,10 +518,14 @@ void currentState_init() {
   u8 g, m;
 
   for (g=0; g < 8; ++g) {
-    pm_setGroupUnused(g);
+    read_g_positions(g, pos_map[g]);
+    if (pm_getPct(g,0) >= pm_INVALID)
+      pm_setGroupUnused(g);
     for (m=1; m < 8; ++m) {
-      pm_setMemberUnused(g,m);
+      if (pm_getPct(g,m) >= pm_INVALID)
+        pm_setMemberUnused(g,m);
     }
+
   }
 }
 
