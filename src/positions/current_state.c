@@ -197,7 +197,6 @@ currentState_printShutterPositions() {
   return 0;
 }
 
-
 extern volatile u32 run_time_s10;
 #define run_time_10(x) (run_time_s10 + 0)
 
@@ -479,6 +478,8 @@ static void currentState_mvCheck() {
               gm_ClrBit(mv->mask, g, m);
             } else {
               remaining = true;
+              so_arg_gmp_t gmp = {g, m, pct};
+              so_output_message(SO_POS_PRINT_GMP, &gmp);
             }
           }
         }
@@ -497,10 +498,9 @@ void currentState_loop() {
   static int next_s10;
 
   if (moving_mask && next_s10 < run_time_10()) {
-    next_s10 = run_time_10() + 5;
+    next_s10 = run_time_10() + 20;
     currentState_mvCheck();
   }
-
 }
 
 void currentState_init() {
