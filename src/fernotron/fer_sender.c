@@ -18,7 +18,7 @@ extern volatile u32 run_time_s10;
 
 u8 sf_toggle;
 #define sf_SIZE 8
-struct {
+struct sf {
   fer_sender_basic fsb;
   u32 s10; // timer in 1 secs
   fmsg_type mt;
@@ -29,6 +29,8 @@ u8 sf_head_, sf_tail_;
 #define sf_tail (sf_tail_+0)
 #define sf_incrHead() ((void)(sf_head_ = ((sf_head+1) & (sf_SIZE-1))))
 #define sf_incrTail() ((void)(sf_tail_ = ((sf_tail+1) & (sf_SIZE-1))))
+#define sf_Pred(a) ((((u8)(a))-1) & (sf_SIZE-1))
+#define sf_Succ(a) ((((u8)(a))+1) & (sf_SIZE-1))
 #define sf_isEmpty() (sf_head_ == sf_tail)
 #define sf_isFull()  (sf_head_ == (((sf_tail+1) & (sf_SIZE-1))))
 static fer_sender_basic *sf_shift() {
@@ -42,10 +44,23 @@ static fer_sender_basic *sf_shift() {
 static bool  ICACHE_FLASH_ATTR sf_append(const fer_sender_basic *fsb, fmsg_type msgType, u32 s10) {
   if (sf_isFull())
     return false;
-  sf[sf_tail].fsb = *fsb;
-  sf[sf_tail].s10 = s10;
-  sf[sf_tail].mt = msgType;
+  u8 i = sf_tail;
+  u8 k = sf_Pred(i);
   sf_incrTail();
+
+  while(i != sf_head)  {
+    if (s10 >= sf[k].s10) {
+      break;
+    }
+    sf[i] = sf[k];
+    i = k;
+    k = sf_Pred(i);
+  }
+
+  sf[i].fsb = *fsb;
+  sf[i].s10 = s10;
+  sf[i].mt = msgType;
+
   return false;
 }
 
