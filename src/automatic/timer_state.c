@@ -249,8 +249,8 @@ timer_state_loop(void) {
 	continue;
 #endif
       }
-      currentState_modifyShutterPositions(te->matching_members, te_is_up(te) ? 100 : 0);
-
+      currentState_mmMove(te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
+      //currentState_modifyShutterPositions(te->matching_members, te_is_up(te) ? 100 : 0);
     }
   }
 }

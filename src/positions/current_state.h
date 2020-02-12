@@ -17,6 +17,7 @@ int currentState_modifyShutterPositions(gm_bitmask_t mm, u8 pct);
 int currentState_printShutterPositions(void);
 
 int currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd);
+int currentState_mmMove(gm_bitmask_t mm, fer_cmd cmd);
 
 int currentState_setShutterPct(u32 a, u8 g, u8 m, u8 pct);
 u16 currentState_mvCalcTime10(u8 g, u8 m, u8 curr_pct, u8 pct);

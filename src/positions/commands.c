@@ -46,10 +46,7 @@ bool  ICACHE_FLASH_ATTR move_to_pct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     fc = (pct == 0) ? fer_cmd_DOWN : fer_cmd_UP;
     FSB_PUT_CMD(fsb, fc);
     fsb->repeats = repeats;
-    if (fer_send_msg(fsb, MSG_TYPE_PLAIN)) {
-      u8 g = group;
-      u8 m = memb == 0 ? 0 : memb - 7;
-    }
+    fer_send_msg(fsb, MSG_TYPE_PLAIN);
   } else if (curr_pct >= 0) {
     u16 stop_delay = currentState_mvCalcTime10(g, m, curr_pct, pct);
     if (stop_delay == 0)
