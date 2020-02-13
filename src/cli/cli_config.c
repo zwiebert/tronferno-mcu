@@ -3,12 +3,12 @@
 #include "cli/cli_config.h"
 #include <string.h>
 
+#include "../motor_setup/set_endpos.h"
 #include "../userio/status_output.h"
 #include "main/cuid_auto_set.h"
 #include "user_config.h"
 #include "config/config.h"
 #include "main/rtc.h"
-#include "setup/set_endpos.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "misc/stof.h"

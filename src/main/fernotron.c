@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "../motor_setup/set_endpos.h"
 #include "user_config.h"
 
 
@@ -11,7 +12,6 @@
 #include "main/cuid_auto_set.h"
 #include "debug/debug.h"
 #include "main/rtc.h"
-#include "setup/set_endpos.h"
 #include "main/pairings.h"
 #include "positions/current_state.h"
 #include "userio/status_output.h"

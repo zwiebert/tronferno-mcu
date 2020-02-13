@@ -6,9 +6,10 @@
 #include "automatic/timer_state.h"
 #include "cli/cli.h"
 
-#include "setup/set_endpos.h"
 #include "misc/bcd.h"
 #include "main/pairings.h"
+
+#include "../motor_setup/set_endpos.h"
 #include "main/rtc.h"
 #include "../userio/status_output.h"
 

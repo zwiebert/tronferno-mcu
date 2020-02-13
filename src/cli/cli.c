@@ -9,10 +9,10 @@
 
 #include <string.h>
 
+#include "../motor_setup/set_endpos.h"
 #include "config/config.h"
 #include "positions/current_state.h"
 #include "automatic/timer_state.h"
-#include "setup/set_endpos.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "userio/status_output.h"

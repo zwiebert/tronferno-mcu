@@ -2,14 +2,13 @@
 
 #include <string.h>
 
-
+#include "../motor_setup/set_endpos.h"
 #include "userio/inout.h"
 #include "user_config.h"
 #include "positions/current_state.h"
 #include "positions/commands.h"
 #include "automatic/timer_state.h"
 #include "fernotron/fer.h"
-#include "setup/set_endpos.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "userio/status_output.h"
