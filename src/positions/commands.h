@@ -10,7 +10,7 @@
 
 #include "user_config.h"
 
-bool move_to_pct(u32 a, u8 g, u8 m, u8 pct, u8 repeats);
+bool commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats);
 
 
 #endif /* SRC_POSITIONS_COMMANDS_H_ */

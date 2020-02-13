@@ -121,7 +121,7 @@ process_parmSend(clpar p[], int len) {
     } else if (pct >= 0) {
       u8 m = memb == 0 ? 0 : memb - 7;
 
-      move_to_pct(addr, group, m, pct, repeats);
+      commands_moveShutterToPct(addr, group, m, pct, repeats);
     } else if (cmd != fer_cmd_None) {
       FSB_PUT_CMD(fsb, cmd);
       fsb->repeats = repeats;

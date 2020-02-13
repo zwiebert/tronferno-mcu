@@ -127,23 +127,6 @@ currentState_setShutterPct(u32 a, u8 g, u8 m, u8 pct) {
     return set_state(a, g, m, position);
 }
 
-
-int ICACHE_FLASH_ATTR
-XXXset_shutter_state(u32 a, u8 g, u8 m, fer_cmd cmd) {
-  u8 pct = -1;
-  if (cmd == fer_cmd_UP)
-    pct = 100;
-  else if (cmd == fer_cmd_DOWN)
-    pct = 0;
-  else if (cmd == fer_cmd_SunDOWN)
-    pct = 50;
-  else
-    return -1;
-
-  return currentState_setShutterPct(a, g, m, pct);
-}
-
-
 int ICACHE_FLASH_ATTR
 currentState_modifyShutterPositions(gm_bitmask_t mm, u8 p) {
   u8 g, m;

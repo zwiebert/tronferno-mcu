@@ -12,11 +12,7 @@
 #include "cli/cli_imp.h"
 
 
-bool ICACHE_FLASH_ATTR move_to_end(u32 a, u8 g, u8 m, u8 pct) {
-  return false;
-}
-
-bool  ICACHE_FLASH_ATTR move_to_pct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
+bool  ICACHE_FLASH_ATTR commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   precond(g <= 7 && m <= 7 && pct <= 100);
   int curr_pct = -1;
 
