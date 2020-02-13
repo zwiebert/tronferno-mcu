@@ -11,7 +11,7 @@
 #include "misc/bcd.h"
 #include "main/rtc.h"
 #include "cli_imp.h"
-#include "esp32/main/ota.h"
+#include "esp32/app-update/ota.h"
 
 const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #if ENABLE_SPIFFS

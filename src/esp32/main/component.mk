@@ -9,8 +9,8 @@
 
 #COMPONENT_ADD_INCLUDEDIRS = /home/bertw/proj/mcu/tronferno-mcu/user
 COMPONENT_PRIV_INCLUDEDIRS = ../..
-COMPONENT_SRCDIRS += ../network ../persistence ../gpio ../../main ../../misc ../../cli ../../fernotron ../../automatic ../../positions ../../setup ../../config ../../userio ../../debug ../../storage ../../userio/http_data
-COMPONENT_EMBED_TXTFILES := ../network/ca_cert.pem
+COMPONENT_SRCDIRS += ../network ../persistence ../gpio ../app-update ../../main ../../misc ../../cli ../../fernotron ../../automatic ../../positions ../../setup ../../config ../../userio ../../debug ../../storage ../../userio/http_data
+COMPONENT_EMBED_TXTFILES := ../app-update/ca_cert.pem
 
 ifdef DISTRO
 ifeq ($(DISTRO),1)
