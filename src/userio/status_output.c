@@ -273,6 +273,10 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_CFG_LAN_PWR_GPIO:
     so_out_x_reply_entry_d(mt, C.lan_pwr_gpio);
     break;
+#else
+  case SO_CFG_LAN_PHY:
+  case SO_CFG_LAN_PWR_GPIO:
+    break;
 #endif
 #ifdef USE_WLAN
   case SO_CFG_WLAN_SSID:
@@ -331,11 +335,13 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_CFG_LATITUDE:
     so_out_x_reply_entry_f(mt, C.geo_latitude, 5);
     break;
-#ifndef POSIX_TIME
+
   case SO_CFG_TIMEZONE:
+#ifndef POSIX_TIME
     so_out_x_reply_entry_f(mt, C.geo_timezone, 5);
-    break;
 #endif
+    break;
+
   case SO_CFG_VERBOSE:
     so_out_x_reply_entry_d(mt, C.app_verboseOutput);
     break;
