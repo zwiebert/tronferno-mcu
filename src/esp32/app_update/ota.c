@@ -19,6 +19,7 @@ static const char *TAG = "simple_ota_example";
 extern const u8 server_cert_pem_start[] asm("_binary_ca_cert_pem_start");
 //extern const u8 server_cert_pem_end[] asm("_binary_ca_cert_pem_end");
 
+
 typedef enum { ota_NONE, ota_RUN, ota_FAIL, ota_DONE} ota_state_T;
 
 //static ota_state_T state; //XXX

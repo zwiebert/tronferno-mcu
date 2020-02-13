@@ -1,6 +1,6 @@
 .PHONY: clean all rebuild http_data
 
-mcus := esp32 esp8266
+mcus := esp8266
 tgts := clean all rebuild flash app-flash reflash eeprom flashinit flasherase spiffs
 
 #default rule
@@ -29,4 +29,19 @@ $(1)-$(2)-force: $(1)-$(2)
 endef
 
 $(foreach mcu,$(mcus),$(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(mcu),$(tgt)))))
+
+
+.PHONY: esp32-all esp32-all-force esp32-rebuild
+
+esp32-all: http_data
+	idf.py -C src/esp32 reconfigure all
+
+esp32-lan: http_data
+	env FLAVOR_LAN=1 idf.py -C src/esp32 reconfigure all
+
+esp32-flash: http_data
+	idf.py -C src/esp32 flash
+
+esp32-clean: http_data
+	idf.py -C src/esp32 clean
 

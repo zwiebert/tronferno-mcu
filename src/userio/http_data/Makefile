@@ -1,4 +1,4 @@
-all: tfmcu_html.c tfmcu_js.c
+all: tfmcu.html tfmcu.js
 
 HTMLMIN ?= ~/.local/bin/htmlmin
 JSMIN ?= python -m jsmin

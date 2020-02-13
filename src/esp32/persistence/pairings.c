@@ -1,8 +1,6 @@
-#include "main/pairings.h"
 #include "user_config.h"
 
-#include "positions/shutter_state.h"
-
+#include "main/pairings.h"
 #include <stdio.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"
@@ -10,6 +8,7 @@
 #include "esp_system.h"
 #include "nvs_flash.h"
 #include "nvs.h"
+#include "../../shutter_positions/shutter_state.h"
 
 
 #ifndef DISTRIBUTION

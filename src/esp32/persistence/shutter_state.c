@@ -17,7 +17,7 @@
 
 #include "user_config.h"
 #include "config/config.h"
-#include "positions/shutter_state.h"
+#include "../../shutter_positions/shutter_state.h"
 
 #define NB_SIZE 30
 #define NB_PFX "GMBM_"
@@ -48,11 +48,11 @@ static int store (const char *name, u8a8 *gm, int count, bool write) {
   return err == ESP_OK;
 }
 
-int read_gm_bitmask(const char *name, const gm_bitmask_t *gm, int count) {
+int read_gm_bitmask(const char *name, const gm_bitmask_t gm, int count) {
   return store (name, (u8a8 *)gm, count, false);
 }
 
-int save_gm_bitmask(const char *name, gm_bitmask_t *gm, int count) {
+int save_gm_bitmask(const char *name, gm_bitmask_t gm, int count) {
   return store (name, (u8a8 *)gm, count, true);
 }
 

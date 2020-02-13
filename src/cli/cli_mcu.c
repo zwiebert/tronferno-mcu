@@ -4,9 +4,9 @@
 
 #include "../esp32/app_update/ota.h"
 #include "../motor_setup/set_endpos.h"
+#include "../shutter_positions/current_state.h"
 #include "userio/inout.h"
 #include "userio/status_output.h"
-#include "positions/current_state.h"
 #include "automatic/timer_state.h"
 #include "misc/bcd.h"
 #include "main/rtc.h"

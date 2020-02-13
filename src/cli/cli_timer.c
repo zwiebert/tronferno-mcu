@@ -3,9 +3,9 @@
 #include <string.h>
 
 #include "../motor_setup/set_endpos.h"
+#include "../shutter_positions/current_state.h"
 #include "../userio/status_output.h"
 #include "user_config.h"
-#include "positions/current_state.h"
 #include "automatic/timer_state.h"
 #include "main/rtc.h"
 #include "fernotron/fer.h"

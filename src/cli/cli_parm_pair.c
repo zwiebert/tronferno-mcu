@@ -2,11 +2,11 @@
 
 #include <string.h>
 
+#include "../shutter_positions/shutter_state.h"
 #include "cli/cli_imp.h"
 #include "fernotron/fer_code.h"
 #include "main/common.h"
 #include "main/pairings.h"
-#include "positions/shutter_state.h"
 #include "userio/status_output.h"
 
 

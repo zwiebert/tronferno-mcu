@@ -4,7 +4,6 @@
 #include "user_config.h"
 
 #include "automatic/timer_state.h"
-#include "positions/current_state.h"
 #include "timer_data.h"
 #include "main/rtc.h"
 #include "misc/sun.h"
@@ -12,6 +11,7 @@
 #include "debug/debug.h"
 #include "misc/int_macros.h"
 #include "time.h"
+#include "../shutter_positions/current_state.h"
 
 
 #ifndef DISTRIBUTION

@@ -5,9 +5,10 @@
  *      Author: bertw
  */
 
+#include "../shutter_positions/commands.h"
+
+#include "../shutter_positions/current_state.h"
 #include "user_config.h"
-#include "commands.h"
-#include "current_state.h"
 #include "fernotron/fer.h"
 #include "cli/cli_imp.h"
 

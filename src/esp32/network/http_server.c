@@ -152,13 +152,13 @@ esp_err_t get_handler_js(httpd_req_t *req) {
   return ESP_OK;
 }
 
-extern const char tfmcu_js[];
+extern const u8 text_tfmcu_js[] asm("_binary_tfmcu_js_start");
 
 httpd_uri_t uri_tfmcu_js = {
     .uri       = "/tfmcu.js",
     .method    = HTTP_GET,
     .handler   = get_handler_js,
-    .user_ctx  = (void*)tfmcu_js,
+    .user_ctx  = (void*)text_tfmcu_js,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,13 +174,13 @@ esp_err_t get_handler_html(httpd_req_t *req) {
   return ESP_OK;
 }
 
-extern const char tfmcu_html[];
+extern const u8 text_tfmcu_html[] asm("_binary_tfmcu_html_start");
 
 httpd_uri_t uri_tfmcu_html = {
     .uri       = "/",
     .method    = HTTP_GET,
     .handler   = get_handler_html,
-    .user_ctx  = (void*)tfmcu_html,
+    .user_ctx  = (void*)text_tfmcu_html,
 };
 
 

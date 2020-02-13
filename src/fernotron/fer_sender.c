@@ -1,4 +1,6 @@
 #include <string.h>
+
+#include "../shutter_positions/current_state.h"
 #include "user_config.h"
 
 #include "fernotron/fer.h"
@@ -6,7 +8,6 @@
 #include "userio/inout.h"
 #include "main/rtc.h"
 #include "fernotron/fer_code.h"
-#include "positions/current_state.h"
 
 volatile bool is_sendMsgPending;
 volatile u16 wordsToSend;

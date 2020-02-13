@@ -1,6 +1,7 @@
+#include "../shutter_positions/current_state.h"
+
 #include "user_config.h"
 
-#include "positions/current_state.h"
 #include "config/config.h"
 #include "debug/debug.h"
 #include "misc/int_macros.h"

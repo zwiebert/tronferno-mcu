@@ -10,7 +10,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "positions/shutter_state.h"
+
+#include "../shutter_positions/shutter_state.h"
 
 // to select target for output messages
 typedef enum {

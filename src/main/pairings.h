@@ -1,7 +1,7 @@
 #ifndef pairings_h_
 #define pairings_h_
+#include "../shutter_positions/shutter_state.h"
 #include "fernotron/fer_code.h"
-#include "positions/shutter_state.h"
 
 enum pair_cmds { PC_none, PC_pair, PC_unpair, PC_read };
 

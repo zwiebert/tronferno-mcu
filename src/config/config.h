@@ -337,6 +337,7 @@ CB_NW_CONN,
 CB_LAN_PHY,
 CB_LAN_PWR_GPIO,
 #endif
+CB_size
 };
 
 #define CONFIG_ALL (~0UL)

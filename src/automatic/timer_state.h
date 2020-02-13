@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "positions/shutter_state.h"
+
+#include "../shutter_positions/shutter_state.h"
 
 enum { ASTRO_MINTS,
        DAILY_UP_MINTS, DAILY_DOWN_MINTS,

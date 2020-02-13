@@ -9,8 +9,9 @@
 #define USER_MAIN_CURRENT_STATE_H_
 
 #include "main/common.h"
+
+#include "shutter_state.h"
 #include "fernotron/fer_code.h"
-#include "positions/shutter_state.h"
 
 int currentState_getShutterPct(u32 a, u8 g, u8 m);
 int currentState_modifyShutterPositions(gm_bitmask_t mm, u8 pct);

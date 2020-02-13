@@ -9,8 +9,13 @@
 
 #COMPONENT_ADD_INCLUDEDIRS = /home/bertw/proj/mcu/tronferno-mcu/user
 COMPONENT_PRIV_INCLUDEDIRS = ../..
-COMPONENT_SRCDIRS += ../network ../persistence ../gpio ../app_update ../../main ../../misc ../../cli ../../fernotron ../../automatic ../../positions ../../motor_setup ../../config ../../userio ../../debug ../../storage ../../userio/http_data
-COMPONENT_EMBED_TXTFILES := ../app_update/ca_cert.pem
+COMPONENT_SRCDIRS += ../network ../persistence ../gpio ../app_update \
+../../main ../../misc ../../cli ../../fernotron ../../automatic ../../shutter_positions \
+../../motor_setup ../../config ../../userio ../../debug ../../storage ../../userio/http_data
+
+
+	
+COMPONENT_EMBED_TXTFILES := ../app_update/ca_cert.pem  ../../userio/http_data/tfmcu.html ../../userio/http_data/tfmcu.js
 
 ifdef DISTRO
 ifeq ($(DISTRO),1)
@@ -24,5 +29,3 @@ ifdef FLAVOR_LAN
 CPPFLAGS+=-DFLAVOR_LAN
 endif
 
-
-#COMPONENT_DEPENDS += ../../userio/http_data
