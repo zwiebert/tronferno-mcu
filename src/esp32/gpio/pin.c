@@ -6,7 +6,7 @@
  */
 
 #include "user_config.h"
-#include "../main/pin.h"
+#include "../gpio/pin.h"
 
 #include "freertos/FreeRTOS.h"
 #include "esp_wifi.h"

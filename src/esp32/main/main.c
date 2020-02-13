@@ -10,8 +10,8 @@
 #include "string.h"
 
 #include "../../userio/inout.h"
-#include "../main/pin.h"
-#include "../main/wifistation.h"
+#include "../gpio/pin.h"
+#include "../network/wifistation.h"
 #include "config/config.h"
 #include "fernotron/fer.h"
 
