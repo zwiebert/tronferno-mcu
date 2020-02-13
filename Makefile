@@ -30,11 +30,11 @@ endef
 
 $(foreach mcu,$(mcus),$(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(mcu),$(tgt)))))
 
-ifdef BUILD_DIR
-esp32_build_dir := -B $(BUILD_DIR)
+ifdef BUILD_DIR_BASE
+esp32_build_dir := -B $(BUILD_DIR_BASE)
 endif
 
-esp32_build_cmd := idf.py -C src/esp32 $(esp_build_dir)
+esp32_build_cmd := idf.py -C src/esp32 $(esp32_build_dir)
 
 .PHONY: esp32-all esp32-all-force esp32-rebuild
 
