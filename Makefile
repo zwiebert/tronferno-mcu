@@ -30,18 +30,23 @@ endef
 
 $(foreach mcu,$(mcus),$(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(mcu),$(tgt)))))
 
+ifdef BUILD_DIR
+esp32_build_dir := -B $(BUILD_DIR)
+endif
+
+esp32_build_cmd := idf.py -C src/esp32 $(esp_build_dir)
 
 .PHONY: esp32-all esp32-all-force esp32-rebuild
 
 esp32-all: http_data
-	idf.py -C src/esp32 reconfigure all
+	$(esp32_build_cmd) reconfigure all
 
 esp32-lan: http_data
-	env FLAVOR_LAN=1 idf.py -C src/esp32 reconfigure all
+	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
 
 esp32-flash: http_data
-	idf.py -C src/esp32 -p /dev/ttyUSB0 flash
+	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
 
-esp32-clean: http_data
-	idf.py -C src/esp32 clean
+esp32-clean:
+	$(esp32_build_cmd) clean
 
