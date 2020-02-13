@@ -40,7 +40,7 @@ esp32-lan: http_data
 	env FLAVOR_LAN=1 idf.py -C src/esp32 reconfigure all
 
 esp32-flash: http_data
-	idf.py -C src/esp32 flash
+	idf.py -C src/esp32 -p /dev/ttyUSB0 flash
 
 esp32-clean: http_data
 	idf.py -C src/esp32 clean
