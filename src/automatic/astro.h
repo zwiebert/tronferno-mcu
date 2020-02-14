@@ -16,7 +16,11 @@
 
 
 
-void write_astro(astro_byte_data d, int mint_offset);
+// calculate and fill in astro data
+void astro_write_data(astro_byte_data d, int mint_offset);
+
+// calculate astro time like the motor does
+u16  astro_calc_minutes(const struct tm *tm);
 
 
 #endif /* ASTRO_H_ */

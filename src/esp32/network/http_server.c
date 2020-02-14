@@ -65,6 +65,7 @@ static void reqest_authorization(httpd_req_t *req) {
   httpd_resp_set_status(req, "401 Unauthorized");
   httpd_resp_set_type(req, "text/html");
   httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"tronferno-mcu.all\"");
+  DB_AO(req);
   httpd_resp_sendstr(req, "<p>please login</p>");
 }
 
@@ -79,7 +80,7 @@ static bool check_access_allowed(httpd_req_t *req) {
 ///////////////////////////////////////////////////////////////
 
 /* An HTTP POST handler */
-esp_err_t post_handler_json(httpd_req_t *req) {
+static esp_err_t post_handler_json(httpd_req_t *req) {
   char buf[256];
   int ret, remaining = req->content_len;
 
@@ -97,7 +98,7 @@ esp_err_t post_handler_json(httpd_req_t *req) {
     if (json) {
       sj_set_buf(json, json_size);  // reply json will now be created in our buffer
       hts_query(HQT_NONE, buf, ret); // parse and process received command
-
+      DB_AO(req);
       httpd_resp_set_type(req, "application/json");
       httpd_resp_sendstr(req, *json ? json : "{\"from\":\"tfmcu\"}"); // respond with reply json or empty object json
 
@@ -118,7 +119,7 @@ httpd_uri_t echo = {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // /config.json
-esp_err_t get_handler_config_json(httpd_req_t *req) {
+static esp_err_t get_handler_config_json(httpd_req_t *req) {
 
   if (!check_access_allowed(req))
     return ESP_OK;
@@ -149,7 +150,7 @@ httpd_uri_t config_json = {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // get .js
-esp_err_t get_handler_js(httpd_req_t *req) {
+static esp_err_t get_handler_js(httpd_req_t *req) {
   if (!check_access_allowed(req))
     return ESP_OK;
 
@@ -171,7 +172,7 @@ httpd_uri_t uri_tfmcu_js = {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // get .js
-esp_err_t get_handler_html(httpd_req_t *req) {
+static esp_err_t get_handler_html(httpd_req_t *req) {
 
   if (!check_access_allowed(req))
     return ESP_OK;
@@ -193,11 +194,11 @@ httpd_uri_t uri_tfmcu_html = {
 };
 
 
-esp_err_t get_handler_test(httpd_req_t *req) {
+static esp_err_t get_handler_test(httpd_req_t *req) {
 
   if (!check_access_allowed(req))
     return ESP_OK;
-
+  DB_AO(req);
   httpd_resp_set_type(req, "text/html");
   httpd_resp_sendstr(req, "<p>login ok</p>");
 
@@ -207,7 +208,7 @@ esp_err_t get_handler_test(httpd_req_t *req) {
 httpd_uri_t uri_tfmcu_test = { .uri = "/test", .method = HTTP_GET, .handler = get_handler_test, .user_ctx = NULL, };
 
 
-httpd_handle_t start_webserver(void)
+static httpd_handle_t start_webserver(void)
 {
     httpd_handle_t server = NULL;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
@@ -230,21 +231,16 @@ httpd_handle_t start_webserver(void)
     return NULL;
 }
 
-void stop_webserver(httpd_handle_t server)
-{
-    // Stop the httpd server
-    httpd_stop(server);
-}
-
 static httpd_handle_t server;
 
+///////// public ///////////////////
 void hts_enable_http_server(bool enable) {
   if (enable && !server) {
     server = start_webserver();
   }
 
   if (!enable && server) {
-    stop_webserver(server);
+    httpd_stop(server);
     server = NULL;
   }
 }

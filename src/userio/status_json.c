@@ -144,7 +144,9 @@ void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, u16 dst_size, u8 g, u8 m, bo
     }
 
     if (td_is_astro(&tdr)) {
-      sprintf(dp, ",\"astro\":%d", tdr.astro);
+      timer_minutes_t tmi;
+      get_timer_minutes(&tmi, &g_res, &m_res, false);
+      sprintf(dp, ",\"astro\":%d,\"astro-minute\":%d", tdr.astro, tmi.minutes[ASTRO_MINTS]);
       dp += strlen(dp);
     }
 

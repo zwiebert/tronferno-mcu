@@ -57,7 +57,13 @@ process_parmMcu(clpar p[], int len) {
         gm.m = val[1] - '0';
         so_output_message(SO_TIMER_EVENT_PRINT, &gm);
       }
-
+    } else if (strcmp(key, "am") == 0) {
+      if (strlen(val) == 2) {
+        so_arg_gm_t gm;
+        gm.g = val[0] - '0';
+        gm.m = val[1] - '0';
+        so_output_message(SO_ASTRO_MINUTES_PRINT, &gm);
+      }
     } else if (strcmp(key, "te") == 0) {
       int i;
 

@@ -6,7 +6,7 @@
 #include "automatic/timer_state.h"
 #include "timer_data.h"
 #include "main/rtc.h"
-#include "misc/sun.h"
+#include "automatic/astro.h"
 #include "config/config.h"
 #include "debug/debug.h"
 #include "misc/int_macros.h"
@@ -44,12 +44,10 @@ timer_to_minutes(minutes_t *result, const char *ts) {
   return true;
 }
 
-bool ICACHE_FLASH_ATTR
-get_timer_minutes_2(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, i16 day_of_year, int dst, i8 weekday) {
 
-  precond(dst == 0 || dst == 1);
-  precond(0 < day_of_year && day_of_year <= 366);
-  precond(0 <= weekday && weekday <= 7);
+bool ICACHE_FLASH_ATTR
+get_timer_minutes_2(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, struct tm *tm) {
+
   precond(timi && group && member);
 
   timer_data_t td = td_initializer; //?
@@ -57,7 +55,7 @@ get_timer_minutes_2(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard,
   int i;
 
   // weekly strings starts with monday, not sunday
-  weekday = (weekday == 0) ? 7 : weekday - 1;
+  u8 weekday = (tm->tm_wday == 0) ? 7 : tm->tm_wday - 1;
 
   if (!read_timer_data(&td, group, member, wildcard))
     return false;
@@ -108,9 +106,7 @@ get_timer_minutes_2(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard,
   }
 
   if (td_is_astro(&td)) {
-    double sunset = 0;
-    calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + dst, day_of_year, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
-    timi->minutes[ASTRO_MINTS] = (i16) (sunset * 60) + td.astro;
+    timi->minutes[ASTRO_MINTS] = astro_calc_minutes(tm) + td.astro;
   }
 
   postcond(timi->minutes[ASTRO_MINTS] == MINUTES_DISABLED
@@ -123,11 +119,7 @@ bool ICACHE_FLASH_ATTR
 get_timer_minutes(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard) {
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
-  i16 day_of_year = tm->tm_yday + 1;
-  int dst = tm->tm_isdst ? 1 : 0;
-  i8 weekday = tm->tm_wday;
-
-  return get_timer_minutes_2(timi, group, member, wildcard, day_of_year, dst, weekday);
+  return get_timer_minutes_2(timi, group, member, wildcard, tm);
 }
 
 minutes_t
@@ -158,7 +150,6 @@ get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
   struct tm *tm = localtime(&timer);
   i16 day_of_year = tm->tm_yday + 1;
   int dst = tm->tm_isdst ? 1 : 0;
-  i8 weekday = tm->tm_wday;
   minutes_t minutes_now = tm->tm_hour * 60 + tm->tm_min;
 
 
@@ -191,7 +182,7 @@ get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
 	  continue;
 	}
 
-	if (get_timer_minutes_2(&timi, &g, &m, false, day_of_year, dst, weekday)) {
+	if (get_timer_minutes_2(&timi, &g, &m, false, tm)) {
 	  SET_BIT(existing_members[g], m);
 	  if (pass == PASS_GET_EARLIEST_TIME) {
 	    minutes_t temp = timi_get_earliest(&timi, minutes_now);

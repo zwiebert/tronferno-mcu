@@ -50,7 +50,7 @@ time_to_bcd(u8 *bcdMinutes, u8 *bcdHours, double time, bool force_even_minutes) 
 
 }
 
-#if 1
+#if 0
 
 /*
  *  Calculate civil dusk for configured location on earth and fill in "astro"/dusk table ready to send to Fernotron receiver
@@ -97,6 +97,28 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
     }
   }
 }
+#elif 1
+u16 ICACHE_FLASH_ATTR astro_calc_minutes(const struct tm *tm) {
+  double dusk;
+  double dayofy = (tm->tm_mon * 30 + tm->tm_mday) * 1.0139;
+  calc_sunrise_sunset(NULL, &dusk, C.geo_timezone + (tm->tm_isdst ? 1 : 0), dayofy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+  u16 minutes = dusk * 60;
+  return minutes;
+}
+static void ICACHE_FLASH_ATTR
+math_write_astro(astro_byte_data dst, int mint_offset) {
+  int i, j, yd;
+
+  for (i = 0, yd=88; i < FPR_ASTRO_HEIGHT; ++i) { // 4*88=352
+    for (j = 0; j < 4; ++j) {
+    double dusk;
+    double dayofy = (4 * yd--) * 1.0139; // 360 => 365 days per year
+
+    calc_sunrise_sunset(NULL, &dusk, C.geo_timezone + (mint_offset / 60.0f), dayofy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+    time_to_bcd(&dst[i][j * 2], &dst[i][j * 2 + 1], dusk, true);
+    }
+  }
+ }
 
 #else
 
@@ -138,7 +160,7 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
 /////////////////////////////////////////////////////////////////////////////////////
 
 
-void ICACHE_FLASH_ATTR write_astro(u8 d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
+void ICACHE_FLASH_ATTR astro_write_data(u8 d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
   math_write_astro(d, mint_offset);
 }
 
@@ -230,53 +252,87 @@ const u8 ad_plz_10[12][8]  = {
  * 07: 30
  * 06: 28
  *
+*/
+
+ /*
+
+ 350    354    358    2     // year of day based on 30 day per month
 12/20  12/24  12/28  01/02  // dates from 12/20..23 ... 06/20..23 forward
 17:00, 17:06, 17:12, 17:18, // (generated test times. unimportant)
 12/20  12/16  12/12  12/08  // dates from 12/23..20 ... 06/27..24 backward
+ 350    346    342    338   // year of day based on 30 day per month
+ 352    348  ...             // yod indices
 
+  6      10     14     18
 01/06  01/10  01/14  01/18
 17:24, 17:30, 17:36, 17:42,
 12/04  11/30  11/26  11/22
+ 334    330    326    322
 
+  22     26     30     34
 01/22  01/26  01/30  02/04
 17:48, 17:54, 18:00, 18:06,
 11/18  11/14  11/10  11/06
+ 318    314    310    306
 
+ 38    42      46     50
 02/08  02/12  02/16  02/20
 18:12, 18:18, 18:24, 18:30,
 11/02  10/30  10/26  10/22
+ 302    300    296    292
 
+  54     58     64    68
 02/24  02/28  03/04  03/08
 18:36, 18:42, 18:48, 18:54,
 10/18  10/14  10/10  10/06
+ 288    284    280    276
 
+  72     76     80    84
 03/12  03/16  03/20  03/24
 1f:00, 1f:06, 1f:12, 1f:18,
 10/02  09/28  09/24  09/20
+ 272    268    264    260
 
+######middle################
+
+  88            94    98
 03/28         04/04  04/08   --- skipped entry
 1f:24, 1f:30, 1f:36, 1f:42,
 09/16  09/12  09/08  09/04
+ 256    252    248    244
 
+ 102    106    110    114
 04/12  04/16  04/20  04/24
 1f:48, 1f:54, 20:00, 20:06,
 08/30  08/26  08/22  08/18
+ 240    236    232    228
 
+
+ 118    122    126    130
 04/28  05/02  05/06  05/10
 20:12, 20:18, 20:24, 20:30,
 08/14  08/10  08/06  08/02   ---- 07/30 ---> 08/02
+  224   220    216    212
+               218    214   // end of yod indexes witch +=4
 
+ 134    138    142    146
 05/14  05/18  05/22  05/26
 20:36, 20:42, 20:48, 20:54,
 07/30  07/26  07/22  07/18
+ 210    206    202    198
 
+ 150    154    158    162
 05/30  06/04  06/08  06/12
 21:00, 21:06, 21:12, 21:18,
 07/14  07/10  07/06  07/02
+ 194     190    186   182
 
+ 164    168   (172)  (176) // begin of yod indices
+ 166    170
 06/16  06/20
 21:24, 21:30, 21:36, 21:42,
 06/28  06/24
+ 178    174
 
  */
 

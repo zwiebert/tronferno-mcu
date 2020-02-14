@@ -100,6 +100,12 @@ class AppState {
             up_elem.value = d.startsWith("-") ? "" : d.substring(0,2)+":"+d.substring(2,4);
             down_elem.value = d.endsWith("-") ? "" : d.substring(l-4,l-2)+":"+d.substring(l-2);
         }
+        if ("astro-minute" in auto) {
+	    document.getElementById("id_astroTime").innerHTML = "(today: )"+ Math.floor((auto["astro-minute"]/60)).toString() + ":" + (auto["astro-minute"]%60).toString() + ")";
+	} else {
+            document.getElementById("id_astroTime").innerHTML = "";
+        }
+
     }
 
     handleFetchedData(obj) {
@@ -155,7 +161,6 @@ class AppState {
 	    if ("build-time" in mcu) {
 		document.getElementById("id_buildTime").innerHTML = mcu["build-time"];
 	    }
-
 	}
 
         if (this.getAutoName() in obj) {

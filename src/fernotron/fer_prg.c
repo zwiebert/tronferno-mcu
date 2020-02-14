@@ -235,7 +235,7 @@ void ICACHE_FLASH_ATTR fmsg_write_dtimer(fer_msg *msg, const u8 *dtimer_data) {
   write_dtimer(&msg->wdtimer[3][FPR_DAILY_START_COL], dtimer_data);
 }
 void ICACHE_FLASH_ATTR fmsg_write_astro(fer_msg *msg, int mint_offset) {
-  write_astro(msg->astro, mint_offset);
+  astro_write_data(msg->astro, mint_offset);
 }
 void ICACHE_FLASH_ATTR fmsg_write_lastline(fer_msg *msg, fer_sender_basic *fsb) {
 	write_lastline(fsb, msg->last);
@@ -320,7 +320,7 @@ bool ICACHE_FLASH_ATTR testModule_fer_prg()
 	write_rtc(test_msg.rtc, false);
 	write_wtimer(test_msg.wdtimer, testdat_wtimer);
 	write_dtimer(&test_msg.wdtimer[3][FPR_DAILY_START_COL], testdat_wtimer);
-	write_astro(test_msg.astro, 0);
+	astro_write_data(test_msg.astro, 0);
 
 	fmsg_create_checksums(&test_msg, MSG_TYPE_TIMER
 			);

@@ -40,6 +40,7 @@ static void hts_query_json(char *qstr) {
   cli_process_json(qstr);
 }
 
+///////// public ///////////////////
 void hts_query(hts_query_t qtype, const char *qstr, int qstr_len) {
   char *buf, *p;
 #define cmd_len 20 // FIXME

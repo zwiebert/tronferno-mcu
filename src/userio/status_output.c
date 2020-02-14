@@ -471,6 +471,16 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   }
     break;
 
+  case SO_ASTRO_MINUTES_PRINT: {
+    so_arg_gm_t *a = arg;
+    u8 g = a->g, m = a->m;
+    timer_minutes_t tmi;
+    if (get_timer_minutes(&tmi, &g, &m, true)) {
+      so_out_x_reply_entry_sl("astro-minute", tmi.minutes[ASTRO_MINTS]);
+    }
+
+  }
+break;
     /////////////////////////////////////////////////////////////////////////////////
 
 
