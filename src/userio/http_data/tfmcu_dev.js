@@ -165,6 +165,7 @@ class AppState {
 
 
     fetchConfig() {
+        console.log("fetch config");
         var url = base+'/config.json';
         fetch (url, {
             method: 'get',
@@ -334,7 +335,7 @@ function postData(url = '', data = {}) {
     dbLog("post-json: "+JSON.stringify(data));
     return fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
-        //mode: "cors", // no-cors, cors, *same-origin
+        mode: "no-cors", // no-cors, cors, *same-origin  //dev-delete-line//
         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
        // credentials: "same-origin", // include, *same-origin, omit
         headers: {

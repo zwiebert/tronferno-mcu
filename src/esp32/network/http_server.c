@@ -17,6 +17,12 @@
 
 static const char *TAG="APP";
 
+#if DISTRIBUTION
+#define DB_AO(req)
+#else
+#define DB_AO(req) httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*")
+#endif
+
 ///////////////////////////Authorization//////////////////////
 #define HTTP_USER C.http_user
 #define HTTP_USER_LEN (strlen(HTTP_USER))
@@ -117,6 +123,7 @@ esp_err_t get_handler_config_json(httpd_req_t *req) {
   if (!check_access_allowed(req))
     return ESP_OK;
 
+  DB_AO(req);
   httpd_resp_set_type(req, "application/json");
 
   {
@@ -147,6 +154,7 @@ esp_err_t get_handler_js(httpd_req_t *req) {
     return ESP_OK;
 
   httpd_resp_set_type(req, "text/javascript");
+  DB_AO(req);
   httpd_resp_sendstr(req, (const char*) req->user_ctx);
 
   return ESP_OK;
@@ -169,6 +177,7 @@ esp_err_t get_handler_html(httpd_req_t *req) {
     return ESP_OK;
 
   httpd_resp_set_type(req, "text/html");
+  DB_AO(req);
   httpd_resp_sendstr(req, (const char*) req->user_ctx);
 
   return ESP_OK;
