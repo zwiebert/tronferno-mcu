@@ -32,9 +32,9 @@ bool ICACHE_FLASH_ATTR fmsg_verify_checksums(const struct fer_msg *m, fmsg_type 
 	u8 checksum = 0;
 
 
-	for (column=0; column < bytesPerCmdPacket; ++column) {
+	for (column=0; column < FER_CMD_BYTE_CT; ++column) {
 
-		if (column == bytesPerCmdPacket - 1)
+		if (column == FER_CMD_BYTE_CT - 1)
 			 if (m->cmd[column] != checksum)
 				 return false;
 
@@ -44,9 +44,9 @@ bool ICACHE_FLASH_ATTR fmsg_verify_checksums(const struct fer_msg *m, fmsg_type 
 	if (MSG_TYPE_PLAIN == t)
 		return true;
 
-	for (column = 0; column < bytesPerPrgLine; ++ column) {
+	for (column = 0; column < FER_PRG_BYTE_CT; ++ column) {
 
-		if (column == bytesPerPrgLine - 1)
+		if (column == FER_PRG_BYTE_CT - 1)
 			 if (m->rtc[column] != checksum)
 				 return false;
 
@@ -57,9 +57,9 @@ bool ICACHE_FLASH_ATTR fmsg_verify_checksums(const struct fer_msg *m, fmsg_type 
 		return true;
 
 	for (line = 0; line < FPR_TIMER_HEIGHT; ++line) {
-		for (column = 0; column < bytesPerPrgLine; ++column) {
+		for (column = 0; column < FER_PRG_BYTE_CT; ++column) {
 
-			if (column == bytesPerPrgLine - 1)
+			if (column == FER_PRG_BYTE_CT - 1)
 				 if (m->wdtimer[line][column] != checksum)
 					 return false;
 
@@ -68,9 +68,9 @@ bool ICACHE_FLASH_ATTR fmsg_verify_checksums(const struct fer_msg *m, fmsg_type 
 	}
 
 	for (line = 0; line < FPR_ASTRO_HEIGHT; ++line) {
-		for (column = 0; column < bytesPerPrgLine; ++column) {
+		for (column = 0; column < FER_PRG_BYTE_CT; ++column) {
 
-			if (column == bytesPerPrgLine - 1)
+			if (column == FER_PRG_BYTE_CT - 1)
 				 if (m->astro[line][column] != checksum)
 					 return false;
 
@@ -86,9 +86,9 @@ void ICACHE_FLASH_ATTR fmsg_create_checksums(struct fer_msg *m, fmsg_type t) {
 	int line, column;
 	u8 checksum = 0;
 
-	for (column=0; column < bytesPerCmdPacket; ++column) {
+	for (column=0; column < FER_CMD_BYTE_CT; ++column) {
 
-		if (column == bytesPerCmdPacket - 1)
+		if (column == FER_CMD_BYTE_CT - 1)
 			 m->cmd[column] = checksum;
 
 		checksum += m->cmd[column];
@@ -97,9 +97,9 @@ void ICACHE_FLASH_ATTR fmsg_create_checksums(struct fer_msg *m, fmsg_type t) {
 	if (MSG_TYPE_PLAIN == t)
 		return;
 
-	for (column = 0; column < bytesPerPrgLine; ++ column) {
+	for (column = 0; column < FER_PRG_BYTE_CT; ++ column) {
 
-		if (column == bytesPerPrgLine - 1)
+		if (column == FER_PRG_BYTE_CT - 1)
 			 m->rtc[column] = checksum;
 
 		checksum += m->rtc[column];
@@ -109,9 +109,9 @@ void ICACHE_FLASH_ATTR fmsg_create_checksums(struct fer_msg *m, fmsg_type t) {
 		return;
 
 	for (line = 0; line < FPR_TIMER_HEIGHT; ++line) {
-		for (column = 0; column < bytesPerPrgLine; ++column) {
+		for (column = 0; column < FER_PRG_BYTE_CT; ++column) {
 
-			if (column == bytesPerPrgLine - 1)
+			if (column == FER_PRG_BYTE_CT - 1)
 				 m->wdtimer[line][column] = checksum;
 
 			checksum += m->wdtimer[line][column];
@@ -119,9 +119,9 @@ void ICACHE_FLASH_ATTR fmsg_create_checksums(struct fer_msg *m, fmsg_type t) {
 	}
 
 	for (line = 0; line < FPR_ASTRO_HEIGHT; ++line) {
-		for (column = 0; column < bytesPerPrgLine; ++column) {
+		for (column = 0; column < FER_PRG_BYTE_CT; ++column) {
 
-			if (column == bytesPerPrgLine - 1)
+			if (column == FER_PRG_BYTE_CT - 1)
 				 m->astro[line][column] = checksum;
 
 			checksum += m->astro[line][column];
@@ -204,7 +204,7 @@ static void ICACHE_FLASH_ATTR write_flags(u8 d[FPR_RTC_WIDTH], u8 flags, u8 mask
 
 
 
-static void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, u8 d[bytesPerPrgLine]) {
+static void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, u8 d[FER_PRG_BYTE_CT]) {
 	d[0] = 0x00;
 	d[1] = fsb->data[fer_dat_ADDR_2];
 	d[2] = fsb->data[fer_dat_ADDR_1];

@@ -18,6 +18,7 @@
 #include "fernotron/fer.h"
 #include "config/config.h"
 #include "main/rtc.h"
+#include "main/interrupt_timer.h"
 
 
 
@@ -44,7 +45,6 @@ static void timer1_handler(void *args);
 #define TIMER_INTERVAL1_SEC   (5.78)   // sample test interval for the second timer
 #define TEST_WITHOUT_RELOAD   0        // testing will be done without auto reload
 #define TEST_WITH_RELOAD      1        // testing will be done with auto reload
-
 
 
 /*

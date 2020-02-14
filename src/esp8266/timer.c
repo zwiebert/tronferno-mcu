@@ -18,6 +18,7 @@
 #include "fernotron/fer.h"
 #include "config/config.h"
 #include "main/rtc.h"
+#include "main/interrupt_timer.h"
 
 
 

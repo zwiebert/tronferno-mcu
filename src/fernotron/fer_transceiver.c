@@ -8,6 +8,7 @@
 #include "fernotron/fer.h"
 #include "fernotron/fer_code.h"
 #include "config/config.h"
+#include "main/interrupt_timer.h"
 
 //  the same timings relative to ticks of interrupt frequency
 #define FER_PRE_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_DCK)
@@ -111,7 +112,7 @@ static u16  IRAM_ATTR fer_add_word_parity(u8 data_byte, int pos) {
 static i8 preBits;
 static i8 input_edge; // Usually 0, but -1 or +1 at the tick where input has changed
 static u16 aTicks, pTicks, nTicks;
-#define POS__IN_DATA (CountTicks > 0 && CountBits < bitsPerWord)
+#define POS__IN_DATA (CountTicks > 0 && CountBits < FER_CMD_BIT_CT)
 #define POS__NOT_IN_DATA ((CountTicks == 0) && (CountBits == 0))
 //#define PUTBIT(dst,bit,val) (put_bit_16(&dst, (bit), (val)))
 #define PUTBIT(dst,bit,val) ((val) ? (dst |= (1 << (bit))) : (dst &= ~(1 << (bit))))
@@ -177,7 +178,7 @@ static fer_error  IRAM_ATTR frx_verify_cmd(const u8 *dg) {
   u8 checksum = 0;
   bool all_null = true;
 
-  for (i = 0; i < bytesPerCmdPacket - 1; ++i) {
+  for (i = 0; i < FER_CMD_BYTE_CT - 1; ++i) {
     checksum += dg[i];
     if (dg[i] != 0)
       all_null = false;
@@ -238,7 +239,7 @@ static bool  IRAM_ATTR frx_receive_message(void) {
 
   if (frx_wait_and_sample()) {
     if (ct_incr(CountTicks, bitLen)) {
-      if (ct_incr(CountBits, bitsPerWord)) {
+      if (ct_incr(CountBits, FER_CMD_BIT_CT)) {
         // word complete
         if ((CountWords & 1) == 1) {
           // word pair complete
@@ -367,15 +368,15 @@ extern volatile u16 wordsToSend;
 #define make_Word fer_add_word_parity
 #define init_counter() (CountTicks = CountBits = CountWords = 0)
 #define ftx_update_output_preamble() (tx_output = (CountTicks < shortPositive_Len))
-#define advancePreCounter() (ct_incr(CountTicks, pre_Len) && ct_incr(CountBits, bitsPerPre))
-#define advanceStopCounter() (ct_incr(CountTicks, bitLen) && ct_incr(CountBits, bitsPerPause))
+#define advancePreCounter() (ct_incr(CountTicks, pre_Len) && ct_incr(CountBits, FER_PRE_BIT_CT))
+#define advanceStopCounter() (ct_incr(CountTicks, bitLen) && ct_incr(CountBits, FER_STP_BIT_CT))
 #define ftx_update_output_stop() (tx_output = (CountTicks < pauseHigh_Len) && (CountBits == 0))
 
 // sets output line according to current bit in data word
 // a stop bit is sent in CountBits 0 .. 2
 // a data word is sent in CountBits 3 .. 10
 static void  IRAM_ATTR ftx_update_output_data() {
-  int bit = CountBits - bitsPerPause;
+  int bit = CountBits - FER_STP_BIT_CT;
 
   if (bit < 0) {  // in stop bit (CountBits 0 .. 2)
     tx_output = CountBits == 0 && CountTicks < shortPositive_Len;
@@ -404,7 +405,7 @@ static bool  IRAM_ATTR ftx_send_message() {
     // counting ticks until end_of_frame
     if (ct_incr(CountTicks, bitLen)) {
       // bit sent
-      if ((ct_incr(CountBits, bitsPerWord + bitsPerPause))) {
+      if ((ct_incr(CountBits, FER_CMD_BIT_CT + FER_STP_BIT_CT))) {
         // word + stop sent
         if (ct_incr(CountWords, wordsToSend)) {
           // line sent

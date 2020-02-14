@@ -174,10 +174,10 @@ process_parmTimer(clpar p[], int len) {
   bool f_manual = false;
 
   if (is_timer_frame) {
-    read_gm_bitmask("MANU", &manual_bits, 1);
+    read_gm_bitmask("MANU", manual_bits, 1);
     if (f_disableManu || f_enableManu) {
       PUT_BIT(manual_bits[group], mn, f_enableManu);
-      save_gm_bitmask("MANU", &manual_bits, 1);
+      save_gm_bitmask("MANU", manual_bits, 1);
     }
     f_manual = GET_BIT(manual_bits[group], mn);
   }

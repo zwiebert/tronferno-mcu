@@ -18,11 +18,11 @@ typedef enum {
   MSG_TYPE_NONE, MSG_TYPE_PLAIN, MSG_TYPE_RTC, MSG_TYPE_TIMER
 } fmsg_type;
 
-typedef u8 cmd_byte_data[bytesPerCmdPacket];
-typedef u8 rtc_byte_data[bytesPerPrgLine];
-typedef u8 last_byte_data[bytesPerPrgLine];
+typedef u8 cmd_byte_data[FER_CMD_BYTE_CT];
+typedef u8 rtc_byte_data[FER_PRG_BYTE_CT];
+typedef u8 last_byte_data[FER_PRG_BYTE_CT];
 typedef u8 astro_byte_data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];
-typedef u8 wdtimer_byte_data[FPR_TIMER_HEIGHT][bytesPerPrgLine];
+typedef u8 wdtimer_byte_data[FPR_TIMER_HEIGHT][FER_PRG_BYTE_CT];
 
 typedef struct fer_msg {
   cmd_byte_data cmd;

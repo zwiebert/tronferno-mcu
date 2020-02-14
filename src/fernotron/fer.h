@@ -17,8 +17,8 @@ typedef enum {
 
 
 //cast data (message after cmd) to byte array
-#define fmsg_get_data(msg) ((u8(*)[bytesPerPrgLine])(msg)->rtc)
-typedef u8(*fmsg_data)[bytesPerPrgLine];
+#define fmsg_get_data(msg) ((u8(*)[FER_PRG_BYTE_CT])(msg)->rtc)
+typedef u8(*fmsg_data)[FER_PRG_BYTE_CT];
 
 // message buffer (shared for tx/rx to save RAM)
 extern struct fer_msg message_buffer;

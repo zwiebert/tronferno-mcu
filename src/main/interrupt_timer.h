@@ -22,5 +22,6 @@
 #define US_TO_TICKS(us) ((us) / TICK_PERIOD_US)
 #define MS_TO_TICKS(ms) ((ms) / TICK_PERIOD_MS)
 
+#define FER_SENDER_DCK   // use data clock instead of tick clock for fer_sender.c
 
 #endif /* SRC_INTERRUPT_TIMER_H_ */

@@ -22,4 +22,5 @@ void frx_clear(void); // call it after received data buffers has been processed 
 void frx_tick(void);  // call it from timer tick interrupt
 void ftx_tick(void);  // call it from timer tick interrupt
 
+
 #endif /* USER_MAIN_FER_TRANSCEIVER_H_ */

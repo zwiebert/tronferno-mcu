@@ -26,7 +26,7 @@ frb_printPacket(const u8 *dg) {
 	int i;
 
   dbg_trace();
-  for (i = 0; i < bytesPerCmdPacket; ++i) {
+  for (i = 0; i < FER_CMD_BYTE_CT; ++i) {
     io_print_hex_8(dg[i], true);
   }
   io_putlf();
