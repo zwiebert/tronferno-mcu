@@ -1,52 +1,50 @@
 .PHONY: clean all rebuild http_data
 
-mcus := esp8266
-tgts := clean all rebuild flash app-flash reflash eeprom flashinit flasherase spiffs
+mcus := esp8266 esp32
+tgts := all clean
 
-#default rule
-esp32-all:
-
-all: esp32-all esp8266-all
-clean: esp32-clean esp8266-clean
-
-
+define GEN_RULE
+.PHONY: $(1)
+$(1): $$(addsuffix -$(1),$(mcus))
+endef
+$(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(tgt))))
 
 http_data :
 	cd src/userio/http_data && $(MAKE)
+	
+esp8266_build_cmd := make -C src/esp8266
+esp8266_tgts_auto := all clean flash app-flash flashinit flasherase spiffs
 
 define GEN_RULE
-.PHONY: $(1)-$(2) $(1)-$(2)-force $(1)-rebuild
-
-$(1)-$(2): http_data
-	$$(MAKE) --directory src/$(1) $(2)
-
-$(1)-$(2)-force: $(1)-$(2)
-	$$(MAKE) --always-make $(1)-$(2)
-
-#$(1)-rebuild: $(1)-all-force
-
-
+.PHONY: esp8266-$(1)
+esp8266-$(1): http_data
+	$(esp8266_build_cmd) $(1)
 endef
-
-$(foreach mcu,$(mcus),$(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(mcu),$(tgt)))))
+$(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 ifdef BUILD_DIR_BASE
 esp32_build_dir := -B $(BUILD_DIR_BASE)
 endif
 
 esp32_build_cmd := idf.py -C src/esp32 $(esp32_build_dir)
+esp32_tgts_auto := menuconfig clean
 
-.PHONY: esp32-all esp32-all-force esp32-rebuild
+.PHONY: esp32-all-force esp32-rebuild
+.PHONY: esp32-all esp32-lan esp32-flash
+
+
+
+define GEN_RULE
+.PHONY: esp32-$(1)
+esp32-$(1): http_data
+	$(esp32_build_cmd) $(1)
+endef
+$(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 esp32-all: http_data
 	$(esp32_build_cmd) reconfigure all
-
 esp32-lan: http_data
 	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
-
 esp32-flash: http_data
 	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
-
-esp32-clean:
-	$(esp32_build_cmd) clean
 
