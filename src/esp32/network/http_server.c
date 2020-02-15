@@ -70,16 +70,16 @@ static bool check_access_allowed(httpd_req_t *req) {
   return true;
 }
 
-///////////////////////////////////////////////////////////////
 
-/* An HTTP POST handler */
-static esp_err_t post_handler_json(httpd_req_t *req) {
+
+// handle post request to /cmd.json
+
+static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   char buf[256];
   int ret, remaining = req->content_len;
 
   if (!check_access_allowed(req))
-    return ESP_OK;
-
+    return ESP_FAIL;
 
   if ((ret = httpd_req_recv(req, buf, MIN(remaining, sizeof(buf)))) <= 0) {
     return ESP_FAIL;
@@ -102,19 +102,16 @@ static esp_err_t post_handler_json(httpd_req_t *req) {
   return ESP_OK;
 }
 
-httpd_uri_t echo = {
-    .uri       = "/cmd.json",
-    .method    = HTTP_POST,
-    .handler   = post_handler_json,
-    .user_ctx  = NULL
-};
+httpd_uri_t uri_cmd_json = { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json, .user_ctx = NULL };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-// /config.json
-static esp_err_t get_handler_config_json(httpd_req_t *req) {
+
+
+// handler to get MCU configuration data from /config.json
+
+static esp_err_t handle_uri_config_json(httpd_req_t *req) {
 
   if (!check_access_allowed(req))
-    return ESP_OK;
+    return ESP_FAIL;
 
   httpd_resp_set_type(req, "application/json");
 
@@ -127,23 +124,20 @@ static esp_err_t get_handler_config_json(httpd_req_t *req) {
       free(js);
     }
   }
-  //httpd_resp_sendstr(req, (const char*) test_html);
 
   return ESP_OK;
 }
 
-httpd_uri_t config_json = {
-    .uri       = "/config.json",
-    .method    = HTTP_GET,
-    .handler   = get_handler_config_json,
-    .user_ctx  = NULL
-};
+httpd_uri_t uri_config_json = { .uri = "/config.json", .method = HTTP_GET, .handler = handle_uri_config_json, .user_ctx = NULL };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-// get .js
-static esp_err_t get_handler_js(httpd_req_t *req) {
+
+// handler for getting file /tfmcu.js
+
+extern const u8 text_tfmcu_js[] asm("_binary_tfmcu_js_start");
+
+static esp_err_t handle_uri_tfmcu_js(httpd_req_t *req) {
   if (!check_access_allowed(req))
-    return ESP_OK;
+    return ESP_FAIL;
 
   httpd_resp_set_type(req, "text/javascript");
   httpd_resp_sendstr(req, (const char*) req->user_ctx);
@@ -151,21 +145,16 @@ static esp_err_t get_handler_js(httpd_req_t *req) {
   return ESP_OK;
 }
 
-extern const u8 text_tfmcu_js[] asm("_binary_tfmcu_js_start");
+httpd_uri_t uri_tfmcu_js = { .uri = "/tfmcu.js", .method = HTTP_GET, .handler = handle_uri_tfmcu_js, .user_ctx = (void*) text_tfmcu_js, };
 
-httpd_uri_t uri_tfmcu_js = {
-    .uri       = "/tfmcu.js",
-    .method    = HTTP_GET,
-    .handler   = get_handler_js,
-    .user_ctx  = (void*)text_tfmcu_js,
-};
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-// get .js
-static esp_err_t get_handler_html(httpd_req_t *req) {
+// handler for getting file /tfmcu.html
 
+extern const u8 text_tfmcu_html[] asm("_binary_tfmcu_html_start");
+
+static esp_err_t handle_uri_tfmcu_html(httpd_req_t *req) {
   if (!check_access_allowed(req))
-    return ESP_OK;
+    return ESP_FAIL;
 
   httpd_resp_set_type(req, "text/html");
   httpd_resp_sendstr(req, (const char*) req->user_ctx);
@@ -173,50 +162,28 @@ static esp_err_t get_handler_html(httpd_req_t *req) {
   return ESP_OK;
 }
 
-extern const u8 text_tfmcu_html[] asm("_binary_tfmcu_html_start");
-
-httpd_uri_t uri_tfmcu_html = {
-    .uri       = "/",
-    .method    = HTTP_GET,
-    .handler   = get_handler_html,
-    .user_ctx  = (void*)text_tfmcu_html,
-};
+httpd_uri_t uri_tfmcu_html = { .uri = "/", .method = HTTP_GET, .handler = handle_uri_tfmcu_html, .user_ctx = (void*) text_tfmcu_html, };
 
 
-static esp_err_t get_handler_test(httpd_req_t *req) {
-
-  if (!check_access_allowed(req))
-    return ESP_OK;
-  httpd_resp_set_type(req, "text/html");
-  httpd_resp_sendstr(req, "<p>login ok</p>");
-
-  return ESP_OK;
-}
-
-httpd_uri_t uri_tfmcu_test = { .uri = "/test", .method = HTTP_GET, .handler = get_handler_test, .user_ctx = NULL, };
+static httpd_handle_t start_webserver(void) {
+  httpd_handle_t server = NULL;
+  httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+  config.max_open_sockets = 6;
 
 
-static httpd_handle_t start_webserver(void)
-{
-    httpd_handle_t server = NULL;
-    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    config.max_open_sockets = 6;
-
-    // Start the httpd server
-    ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
-    if (httpd_start(&server, &config) == ESP_OK) {
-        // Set URI handlers
-        ESP_LOGI(TAG, "Registering URI handlers");
-        httpd_register_uri_handler(server, &echo);
-        httpd_register_uri_handler(server, &config_json);
-        httpd_register_uri_handler(server, &uri_tfmcu_js);
-        httpd_register_uri_handler(server, &uri_tfmcu_html);
-        httpd_register_uri_handler(server, &uri_tfmcu_test);
-        return server;
-    }
-
+  ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
+  if (httpd_start(&server, &config) != ESP_OK) {
     ESP_LOGI(TAG, "Error starting server!");
     return NULL;
+  }
+
+  ESP_LOGI(TAG, "Registering URI handlers");
+  httpd_register_uri_handler(server, &uri_cmd_json);
+  httpd_register_uri_handler(server, &uri_config_json);
+  httpd_register_uri_handler(server, &uri_tfmcu_js);
+  httpd_register_uri_handler(server, &uri_tfmcu_html);
+
+  return server;
 }
 
 static httpd_handle_t server;
