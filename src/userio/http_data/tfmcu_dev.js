@@ -1,6 +1,4 @@
 var base = '';
-var base = 'http://192.168.1.69'; //dev-delete-line//
-
 var gmu = [0,1,2,3,4,5,6,7];
 var gu = [0,1,2,3,4,5,6,7];
 var gu_idx = 0;
@@ -101,7 +99,7 @@ class AppState {
             down_elem.value = d.endsWith("-") ? "" : d.substring(l-4,l-2)+":"+d.substring(l-2);
         }
         if ("astro-minute" in auto) {
-	    document.getElementById("id_astroTime").innerHTML = "(today: )"+ Math.floor((auto["astro-minute"]/60)).toString() + ":" + (auto["astro-minute"]%60).toString() + ")";
+	    document.getElementById("id_astroTime").innerHTML = "(today: "+ Math.floor((auto["astro-minute"]/60)).toString() + ":" + (auto["astro-minute"]%60).toString() + ")";
 	} else {
             document.getElementById("id_astroTime").innerHTML = "";
         }
@@ -340,7 +338,7 @@ function postData(url = '', data = {}) {
     dbLog("post-json: "+JSON.stringify(data));
     return fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "no-cors", // no-cors, cors, *same-origin  //dev-delete-line//
+        //mode: "no-cors", // no-cors, cors, *same-origin  //dev-delete-line//
         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
        // credentials: "same-origin", // include, *same-origin, omit
         headers: {

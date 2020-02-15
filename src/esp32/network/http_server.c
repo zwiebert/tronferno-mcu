@@ -17,13 +17,7 @@
 
 static const char *TAG="APP";
 
-#if DISTRIBUTION
-#define DB_AO(req)
-#else
-#define DB_AO(req) httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*")
-#endif
-
-///////////////////////////Authorization//////////////////////
+//////////////////////////Authorization//////////////////////
 #define HTTP_USER C.http_user
 #define HTTP_USER_LEN (strlen(HTTP_USER))
 #define HTTP_PW C.http_password
@@ -65,7 +59,6 @@ static void reqest_authorization(httpd_req_t *req) {
   httpd_resp_set_status(req, "401 Unauthorized");
   httpd_resp_set_type(req, "text/html");
   httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"tronferno-mcu.all\"");
-  DB_AO(req);
   httpd_resp_sendstr(req, "<p>please login</p>");
 }
 
@@ -98,7 +91,6 @@ static esp_err_t post_handler_json(httpd_req_t *req) {
     if (json) {
       sj_set_buf(json, json_size);  // reply json will now be created in our buffer
       hts_query(HQT_NONE, buf, ret); // parse and process received command
-      DB_AO(req);
       httpd_resp_set_type(req, "application/json");
       httpd_resp_sendstr(req, *json ? json : "{\"from\":\"tfmcu\"}"); // respond with reply json or empty object json
 
@@ -124,7 +116,6 @@ static esp_err_t get_handler_config_json(httpd_req_t *req) {
   if (!check_access_allowed(req))
     return ESP_OK;
 
-  DB_AO(req);
   httpd_resp_set_type(req, "application/json");
 
   {
@@ -155,7 +146,6 @@ static esp_err_t get_handler_js(httpd_req_t *req) {
     return ESP_OK;
 
   httpd_resp_set_type(req, "text/javascript");
-  DB_AO(req);
   httpd_resp_sendstr(req, (const char*) req->user_ctx);
 
   return ESP_OK;
@@ -178,7 +168,6 @@ static esp_err_t get_handler_html(httpd_req_t *req) {
     return ESP_OK;
 
   httpd_resp_set_type(req, "text/html");
-  DB_AO(req);
   httpd_resp_sendstr(req, (const char*) req->user_ctx);
 
   return ESP_OK;
@@ -198,7 +187,6 @@ static esp_err_t get_handler_test(httpd_req_t *req) {
 
   if (!check_access_allowed(req))
     return ESP_OK;
-  DB_AO(req);
   httpd_resp_set_type(req, "text/html");
   httpd_resp_sendstr(req, "<p>login ok</p>");
 
