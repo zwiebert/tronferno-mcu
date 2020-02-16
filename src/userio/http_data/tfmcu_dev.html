@@ -271,11 +271,14 @@
 
     <div id="id-fwDiv">
       <h4>OTA Firmware Update</h4>
+      <div id="netota_controls">
       <ul>
         <li><label><button id="netota_master" type="button">Do flash latest firmware</button></label><br><br></li>
         <li><label><button id="netota_beta" type="button">Do Flash latest beta firmware</button></label><br><br></li>
         <li><label><button id="netota" type="button">Do flash firmware from given URL</button> <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:8000/tronferno-mcu.bin"> </label><br><br></li> <!--dev-distro-delete-line-->
       </ul>
+      </div>
+      <span id="netota_feedback"></span>
 
       <h4>Firmware Info</h4>
       <ul>
@@ -283,8 +286,6 @@
 	<li>firmware version: <span id="id_firmware"></span></li>
 	<li>firmware build date: <span id="id_buildTime"></span></li>
       </ul>
-
-
     </div>
 
 

@@ -16,11 +16,6 @@
 #include "main/pairings.h"
 #include "userio/status_output.h"
 
-extern fer_sender_basic default_sender;
-extern fer_sender_basic last_received_sender;
-
-
-
 void ICACHE_FLASH_ATTR
 loop(void) {
   fers_loop();
@@ -91,8 +86,13 @@ main_setup() {
 
   rtc_setup();
   fer_init_sender(&default_sender, C.fer_centralUnitID);
+
 #ifdef DEBUG
-  test_modules();
+  if (test_modules()) {
+    io_puts("self-test: ok\n");
+  } else {
+    io_puts("self-test: fail\n");
+  }
 #endif
 
   so_output_message(SO_FW_START_MSG_PRINT, 0);

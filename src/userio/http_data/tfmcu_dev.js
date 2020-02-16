@@ -27,6 +27,10 @@ class AppState {
         localStorage.setItem("tab_vis", value.toString());
 	tabSwitchVisibility(value);
     }
+    get tabVisibility() {
+        return 	this.mTabVisibility;
+    }
+
 
     get g() {
         return this.mG;
@@ -159,6 +163,31 @@ class AppState {
 	    if ("build-time" in mcu) {
 		document.getElementById("id_buildTime").innerHTML = mcu["build-time"];
 	    }
+            if ("ota-state" in mcu) {
+                let e = document.getElementById("netota_feedback");
+                switch(mcu["ota-state"]) {
+                case 0: // none
+                    e.innerHTML = "";
+                    break;
+                case 1: // run
+                    e.innerHTML = "<strong>OTA is running " + (++netota_progressCounter).toString() + "<br><br></strong>";
+                    break;
+                case 2: // fail
+                    e.innerHTML = "<strong>OTA has failed<br><br></strong>";
+                    break;
+                case 3: // done
+                    e.innerHTML = "<strong>OTA has succeeded <button>Reboot</button><br><br></strong>";
+                    break;
+                }
+                if (netota_isInProgress && mcu["ota-state"] != 1) {
+                    clearInterval(netota_intervalID);
+                    netota_progressCounter = 0;
+                    netota_isInProgress = false;
+                    document.getElementById("netota_controls").style.display = "";
+                }
+
+            }
+
 	}
 
         if (this.getAutoName() in obj) {
@@ -434,8 +463,22 @@ function postSendCommand(c=document.getElementById('send-c').value) {
     postData(url, tfmcu);
 }
 
+var netota_intervalID = 0;
+var netota_isInProgress = false;
+var netota_progressCounter = 0;
+function netota_FetchFeedback() {
+    var netmcu = {to:"tfmcu"};
+    netmcu.mcu = {
+	"ota":"?"
+    };
+    let url = base+'/cmd.json';
+    dbLog("url: "+url);
+    postData(url, netmcu);
+}
+
 function netFirmwareOTA(fwUrl) {
-    // TODO: validate URL here
+    if (netota_isInProgress)
+        return;
     var netmcu = {to:"tfmcu"};
     netmcu.mcu = {
 	ota: fwUrl
@@ -443,6 +486,9 @@ function netFirmwareOTA(fwUrl) {
     let url = base+'/cmd.json';
     dbLog("url: "+url);
     postData(url, netmcu);
+    netota_intervalID = setInterval(netota_FetchFeedback, 1000);
+    netota_isInProgress = true;
+    document.getElementById("netota_controls").style.display = "none";
 }
 
 function getGuIdx() {
@@ -532,11 +578,8 @@ function postAutomatic() {
         auto.daily = td;
     }
 
-
-
     dbLog(JSON.stringify(tfmcu));
     postData(url, tfmcu);
-
 }
 
 function clearAutomatic() {
@@ -598,8 +641,13 @@ function onContentLoaded() {
     document.getElementById("spb").onclick = () => onPosPressed();
 
     document.getElementById("arlb").onclick = () => app_state.fetchAutomatic();
-    document.getElementById("asvb").onclick = () => postAutomatic();
+    document.getElementById("asvb").onclick = () => {
+        // disable button for 5 seconds while data is being sent to shutter motor by RF
+        document.getElementById("asvb").disabled = true;
+        setTimeout(() => { document.getElementById("asvb").disabled = false; }, 5000);
 
+        postAutomatic();
+    }
     document.getElementById("csvb").onclick = () => postConfig();
     document.getElementById("crlb").onclick = () => app_state.fetchConfig();
 

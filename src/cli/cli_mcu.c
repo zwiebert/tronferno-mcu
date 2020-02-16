@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-#include "../esp32/app_update/ota.h"
+#include "firmware_update/ota.h"
 #include "../motor_setup/set_endpos.h"
 #include "../shutter_positions/current_state.h"
 #include "userio/inout.h"
@@ -138,11 +138,13 @@ process_parmMcu(clpar p[], int len) {
       so_output_message(SO_MCU_VERSION, NULL);
 #ifdef USE_OTA
     } else if (strcmp(key, "ota") == 0) {
-      if (strcmp(val, "github-master") == 0) {
-        ets_printf("doing ota update from github master branch\n");
+      if (*val == '?') {
+        so_output_message(SO_MCU_OTA_STATE, 0);
+      } else if (strcmp(val, "github-master") == 0) {
+        so_output_message(SO_MCU_OTA, OTA_FWURL_MASTER);
         ota_doUpdate(OTA_FWURL_MASTER);
       } else if (strcmp(val, "github-beta") == 0) {
-        ets_printf("doing ota update from github beta branch\n");
+        so_output_message(SO_MCU_OTA, OTA_FWURL_BETA);
         ota_doUpdate(OTA_FWURL_BETA);
       } else {
 #ifdef DISTRIBUTION

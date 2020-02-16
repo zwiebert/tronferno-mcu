@@ -168,19 +168,19 @@ void ICACHE_FLASH_ATTR astro_write_data(u8 d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT],
 
 /////////////////////////////////////////////////////////////////////////////////////
 #if TEST_MODULE_ASTRO
-u8 data[12][8];
+u8 data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];
 
 bool ICACHE_FLASH_ATTR
 testModule_astro()
 {
   double rise, set;
   u16 doy = 172;
-  calc_sunrise_sunset(&rise, &set, C.timezone, doy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+  calc_sunrise_sunset(&rise, &set, C.geo_timezone, doy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
   
-  fill_astro(data, C.geo_timezone, 0, C.geo_longitude, C.geo_latitude);
+  astro_write_data(data, 0);
   
 
-  return rise == set;
+  return rise != set; //XXX: ???
 }
 
 #endif

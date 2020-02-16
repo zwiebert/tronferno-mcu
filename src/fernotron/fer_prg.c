@@ -15,17 +15,6 @@
 #include "config/config.h"
 #include "misc/bcd.h"
 
-
-#if 0
-void write_rtc(u8 d[FPR_RTC_WIDTH], bool rtc_only);
-void write_lastline(fer_sender_basic *fsb, u8 d[FPR_ASTRO_WIDTH]);
-void write_dtimer(u8 d[FPR_TIMER_STAMP_WIDTH], const u8 *dtimer_data);
-void write_wtimer(u8 d[][FER_PRG_BYTE_CT], const u8 *wtimer_data);
-void write_rtc(u8 d[FPR_RTC_WIDTH], bool rtc_only);
-void write_flags(u8 d[FPR_RTC_WIDTH], u8 flags, u8 mask);
-#endif
-
-
 /* verify all checksums of message in place. */
 bool ICACHE_FLASH_ATTR fmsg_verify_checksums(const struct fer_msg *m, fmsg_type t) {
 	int line, column;
@@ -131,19 +120,15 @@ void ICACHE_FLASH_ATTR fmsg_create_checksums(struct fer_msg *m, fmsg_type t) {
 }
 
 static void ICACHE_FLASH_ATTR disable_timer(u8 d[][FER_PRG_BYTE_CT], u8 lines) {
-	int line, col;
-	for (line = 0; line < lines; ++line) {
-		for (col = 0; col < FPR_TIMER_WIDTH; ++col) {
-			d[line][col] = 0xff;
-			++col;
-			d[line][col] = 0x0f;
-		}
-	}
+  int line, col;
+  for (line = 0; line < lines; ++line) {
+    for (col = 0; col < FPR_TIMER_WIDTH; ++col) {
+      d[line][col] = 0xff;
+      ++col;
+      d[line][col] = 0x0f;
+    }
+  }
 }
-
-
-
-
 
 static void ICACHE_FLASH_ATTR write_wtimer(u8 d[][FER_PRG_BYTE_CT], const u8 *wtimer_data) {
   #ifdef WEEK_STARTS_AT_SUNDAY
@@ -183,23 +168,7 @@ static void ICACHE_FLASH_ATTR write_rtc(u8 d[FPR_RTC_WIDTH], time_t rtc, bool rt
 }
 
 static void ICACHE_FLASH_ATTR write_flags(u8 d[FPR_RTC_WIDTH], u8 flags, u8 mask) {
-#if 1
-	int i;
-
-	for (i = 0; i < 8; ++i) {
-		if (mask & 1) {
-			PUT_BIT(d[fpr0_FlagBits], i, (flags & 1));
-		}
-
-		mask >>= 1;
-		flags >>= 1;
-	}
-
-#else // FIXME: did I forgot how to use bit masks
-	d[fpr0_FlagBits] |= (flags & mask);
-	d[fpr0_FlagBits] ^= ~(flags & mask);
-#endif
-
+	d[fpr0_FlagBits] = (d[fpr0_FlagBits] & ~mask) | (flags & mask);
 }
 
 
@@ -317,7 +286,7 @@ bool ICACHE_FLASH_ATTR testModule_fer_prg()
 
 	//init_prgData((test_prg);
 
-	write_rtc(test_msg.rtc, false);
+	write_rtc(test_msg.rtc, time(NULL), false);
 	write_wtimer(test_msg.wdtimer, testdat_wtimer);
 	write_dtimer(&test_msg.wdtimer[3][FPR_DAILY_START_COL], testdat_wtimer);
 	astro_write_data(test_msg.astro, 0);

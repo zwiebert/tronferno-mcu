@@ -2,7 +2,9 @@
 #ifndef USER_CONFIG_H_
 #define USER_CONFIG_H_
 
-
+#if !DISTRIBUTION
+//#define DEBUG 1
+#endif
 
 #define APP_VERSION "0.8.2-beta"
 

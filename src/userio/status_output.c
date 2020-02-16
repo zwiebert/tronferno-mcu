@@ -31,6 +31,7 @@
 #include "userio/mqtt.h"
 #include "userio/status_json.h"
 #include "userio/ipnet.h"
+#include "firmware_update/ota.h"
 
 #define D(x)
 
@@ -202,6 +203,17 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     so_out_x_reply_entry_ss("build-time", buf);
   }
   break;
+
+  case SO_MCU_OTA:
+#ifdef USE_OTA
+    so_out_x_reply_entry_ss("ota-url", arg);
+#endif
+    break;
+  case SO_MCU_OTA_STATE:
+#ifdef USE_OTA
+    so_out_x_reply_entry_sd("ota-state", ota_getState());
+#endif
+    break;
 
   case SO_MCU_end:
     so_out_x_reply_entry_ss(0, 0);

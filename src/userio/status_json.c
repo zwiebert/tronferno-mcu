@@ -25,7 +25,7 @@
 #include "userio/inout.h"
 #include "userio/mqtt.h"
 
-#define D(x)
+#define D(x) x
 #ifdef MCU_ESP8266
 #define sprintf(...) (-1)  //FIXME: or should we use it?
 #endif
@@ -65,8 +65,13 @@ void  ICACHE_FLASH_ATTR so_json_set_x(const char *tag) {
 void  ICACHE_FLASH_ATTR so_json_x_reply(const char *key, const char *val, bool is_number) {
   D(ets_printf("so_json(): %s, %s, %d\n", key, val, is_number));
 
-  if (key == 0 || ((json_idx + strlen(key) + strlen(val) + 6)) > BUF_SIZE) {
+  if (key && ((json_idx + strlen(key) + strlen(val) + 6)) > BUF_SIZE) {
     D(ets_printf("json buffer overflow: idx=%u, buf_size=%u\n", json_idx, BUF_SIZE));
+    if (key != 0)
+      return;
+  }
+
+  if (key == 0) {
     if (json_idx > 0) {
       if (BUF[json_idx - 1] == ',') { // remove trailing comma...
         --json_idx;
@@ -85,12 +90,12 @@ void  ICACHE_FLASH_ATTR so_json_x_reply(const char *key, const char *val, bool i
 
 
   if (json_idx == 0) {
-    sprintf(BUF, "{\"from\":\"tfmcu\",\"%s\":{", Obj_tag);
+    snprintf(BUF, BUF_SIZE - json_idx - 6,"{\"from\":\"tfmcu\",\"%s\":{", Obj_tag);
     json_idx = strlen(BUF);
   }
 
   const char *quote = is_number ? "" : "\"";
-  sprintf(BUF + json_idx, "\"%s\":%s%s%s,", key, quote, val, quote);
+  snprintf(BUF + json_idx, BUF_SIZE - json_idx - 6, "\"%s\":%s%s%s,", key, quote, val, quote);
   json_idx += strlen(BUF+json_idx);
   D(ets_printf("json_idx: %u, buf: %s\n", json_idx, BUF));
 }

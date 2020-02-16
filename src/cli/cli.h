@@ -18,7 +18,6 @@ void cli_process_cmdline(char *line);
 void cli_process_json(char *json);
 void cli_loop(void);
 
-extern fer_sender_basic senders[10];
 extern fer_sender_basic default_sender, last_received_sender;
 
 #endif /* CLI_H_ */

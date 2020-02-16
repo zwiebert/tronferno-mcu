@@ -95,11 +95,11 @@ void db_test_all_indicators(u8 nmb_flashs);
 
 
 // testing modules
-#define TEST_MODULE_ASTRO 0
-#define TEST_MODULE_RTC 0
-#define TEST_MODULE_FER_PRG 0
-#define TEST_MODULE_CONFIG 0
-#define TEST_MODULE_CLI 0
+#define TEST_MODULE_ASTRO 1
+#define TEST_MODULE_RTC 1
+#define TEST_MODULE_FER_PRG 1
+#define TEST_MODULE_CONFIG 1
+#define TEST_MODULE_CLI 1
 
 bool test_modules(void);
 bool testModule_astro(void);

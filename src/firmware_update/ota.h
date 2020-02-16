@@ -22,5 +22,8 @@
 // if success you should can call esp_restart() to run the new firwmare
 bool ota_doUpdate(const char *firmwareURL);
 
+typedef enum { ota_NONE, ota_RUN, ota_FAIL, ota_DONE} ota_state_T;
+ota_state_T ota_getState(void);
+
 
 #endif /* MAIN_OTA_H_ */

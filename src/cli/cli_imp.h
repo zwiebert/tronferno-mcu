@@ -25,7 +25,6 @@ extern const char help_parmPair[] ;
 extern const char help_parmHelp[] ;
 extern const char help_None[] ;
 
-extern fer_sender_basic default_sender, last_received_sender;
 extern u16 msgid;
 
 
