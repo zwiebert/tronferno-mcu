@@ -102,8 +102,8 @@ class AppState {
             up_elem.value = d.startsWith("-") ? "" : d.substring(0,2)+":"+d.substring(2,4);
             down_elem.value = d.endsWith("-") ? "" : d.substring(l-4,l-2)+":"+d.substring(l-2);
         }
-        if ("astro-minute" in auto) {
-	    document.getElementById("id_astroTime").innerHTML = "(today: "+ Math.floor((auto["astro-minute"]/60)).toString() + ":" + (auto["astro-minute"]%60).toString() + ")";
+        if ("asmin" in auto) {
+	    document.getElementById("id_astroTime").innerHTML = "(today: "+ Math.floor((auto.asmin/60)).toString().padStart(2,'0') + ":" + (auto.asmin%60).toString().padStart(2,'0') + ")";
 	} else {
             document.getElementById("id_astroTime").innerHTML = "";
         }
@@ -195,28 +195,23 @@ class AppState {
         }
     }
 
+     fetchConfig() {
 
-    fetchConfig() {
-        console.log("fetch config");
-        var url = base+'/config.json';
-        fetch (url, {
-            method: 'get',
-            headers: {
-                Accept: 'application/json'
-            },
-        }).then(response => {
-            if(response.ok) {
-                response.json().then(obj => this.handleFetchedData(obj));
-            }
-        });
+        let tfmcu = {to:"tfmcu"};
+
+        tfmcu.config = {
+            all: "?",
+        };
+
+        let url = base+'/cmd.json';
+        postData(url, tfmcu);
     }
-
 
     fetchAutomatic() {
 
         let tfmcu = {to:"tfmcu"};
 
-        tfmcu.timer = {
+        tfmcu.auto = {
             g: this.g,
             m: this.m,
             f: "uki",
@@ -647,7 +642,7 @@ function onContentLoaded() {
         setTimeout(() => { document.getElementById("asvb").disabled = false; }, 5000);
 
         postAutomatic();
-    }
+    };
     document.getElementById("csvb").onclick = () => postConfig();
     document.getElementById("crlb").onclick = () => app_state.fetchConfig();
 

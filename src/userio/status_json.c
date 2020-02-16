@@ -32,7 +32,7 @@
 
 void (*sj_callback_onClose_ifNotEmpty)(const char *s);
 
-#define JSON_BUF_SIZE 128
+#define JSON_BUF_SIZE 256
 char json_buf[JSON_BUF_SIZE];
 int json_idx;
 
@@ -44,72 +44,75 @@ u16 ext_buf_size;
 #define USE_CALLBACK (!ext_buf && sj_callback_onClose_ifNotEmpty)
 #define DO_CALLBACK() sj_callback_onClose_ifNotEmpty(BUF);
 
-void   sj_set_buf(char *dst, u16 dst_size) {
-  if (dst) {
-    *dst = '\0';
-    ext_buf = dst;
-    ext_buf_size = dst_size;
-    json_idx = 0;
-  } else {
-    ext_buf = 0;
-    ext_buf_size = 0;
+char *sj_get_json() { return BUF; }
+
+bool sj_alloc_buffer(size_t buf_size) {
+  precond(!ext_buf);
+  ext_buf_size = buf_size;
+  ext_buf = malloc(buf_size);
+  json_idx = 0;
+  if (!ext_buf)
+    return false;
+  ext_buf[0] = '\0';
+  return true;;
+}
+
+void sj_free_buffer() {
+  precond(ext_buf);
+  free(ext_buf);
+  ext_buf = 0;
+  ext_buf_size = 0;
+}
+
+static void start_json(const char *dictionary_name) {
+  sprintf(BUF, "{\"from\":\"tfmcu\",\"%s\":{", dictionary_name);
+  json_idx = strlen(BUF);
+}
+
+static void terminate_json() {
+  precond(json_idx >0);
+  if (BUF[json_idx - 1] == ',') { // remove trailing comma...
+    --json_idx;
   }
+  strcpy(BUF + json_idx, "}}");
+  json_idx = 0;
 }
 
-static const char *Obj_tag="";
-
-void   sj_open_dictionary(const char *tag) {
-  Obj_tag = tag;
+void   sj_open_dictionary(const char *dictionary_name) {
+  start_json(dictionary_name);
 }
+
 void sj_close_dictionary() {
-  sj_append_to_dictionary(0,0,false);
+  precond(json_idx);
+  terminate_json();
+
+  if (USE_CALLBACK)
+    DO_CALLBACK();
+
+sj_callback_onClose_ifNotEmpty = 0;
+
 }
 
-void   sj_append_to_dictionary(const char *key, const char *val, bool is_number) {
+
+
+bool   sj_append_to_dictionary(const char *key, const char *val, bool is_number) {
   D(ets_printf("so_json(): %s, %s, %d\n", key, val, is_number));
+  precond(json_idx > 0);
+  precond(key);
 
-  if (key && ((json_idx + strlen(key) + strlen(val) + (json_idx ? 6 : 40))) > BUF_SIZE) {
+  //precond(sj_callback_onClose_ifNotEmpty || ext_buf);
+
+  if ((json_idx + strlen(key) + strlen(val) + 6) > BUF_SIZE) {
     D(ets_printf("json buffer overflow: idx=%u, buf_size=%u\n", json_idx, BUF_SIZE));
-    if (key != 0)
-      return;
+    return false;
   }
 
-  if (key == 0) {
-    if (json_idx > 0) {
-      if (BUF[json_idx - 1] == ',') { // remove trailing comma...
-        --json_idx;
-      }
-      strcpy(BUF + json_idx, "}}");
-      if (USE_CALLBACK)
-        DO_CALLBACK();
-      cli_print_json(BUF);
-    }
-    json_idx = 0;
-    if (key == 0)
-      return; // ...if done then exit
-    //...if overflow then continue
-  }
-
-
-
-  if (json_idx == 0) {
-    sprintf(BUF, "{\"from\":\"tfmcu\",\"%s\":{", Obj_tag);
-    json_idx = strlen(BUF);
-  }
 
   const char *quote = is_number ? "" : "\"";
   sprintf(BUF + json_idx, "\"%s\":%s%s%s,", key, quote, val, quote);
   json_idx += strlen(BUF+json_idx);
   D(ets_printf("json_idx: %u, buf: %s\n", json_idx, BUF));
-}
-
-int  sj_fillBuf_with_allConfigData(char *dst, u16 dst_size) {
-
-  sj_set_buf(dst,dst_size);
-  so_output_message(SO_CFG_all, "j");
-  sj_set_buf(0,0);
-
-  return strlen(dst); //XXX
+  return true;
 }
 
 void  sj_fillBuf_with_automaticData(char *dst, u16 dst_size, u8 g, u8 m, bool wildcard) {
@@ -154,7 +157,7 @@ void  sj_fillBuf_with_automaticData(char *dst, u16 dst_size, u8 g, u8 m, bool wi
     if (td_is_astro(&tdr)) {
       timer_minutes_t tmi;
       get_timer_minutes(&tmi, &g_res, &m_res, false);
-      sprintf(dp, ",\"astro\":%d,\"astro-minute\":%d", tdr.astro, tmi.minutes[ASTRO_MINTS]);
+      sprintf(dp, ",\"astro\":%d,\"asmin\":%d", tdr.astro, tmi.minutes[ASTRO_MINTS]);
       dp += strlen(dp);
     }
 

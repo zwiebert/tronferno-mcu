@@ -40,13 +40,15 @@ u8 so_target;
 bool out_cli = true;
 #ifdef USE_JSON
 bool out_js = true;
-#define so_jco out_js
+#define so_jco cli_isJson
 #else
 bool out_js = false;
 #define so_jco false
 #endif
 
-#define so_cco out_cli
+#define so_cco (!cli_isJson)
+
+
 #define so_cto so_cco
 
 
@@ -96,12 +98,21 @@ gk(so_msg_t so_key) {
 // pass only string literals as argument
 void so_out_x_open(const char *name_literal) {
   if (so_cco) cli_out_set_x(name_literal);
+  if (so_tgt_test(SO_TGT_CLI) && so_jco) {
+    if (!so_tgt_test(SO_TGT_HTTP | SO_TGT_MQTT))
+      sj_alloc_buffer(512);
+  }
   if (so_jco) sj_open_dictionary(name_literal);
 }
 
 void so_out_x_close() {
   if (so_cco) cli_out_close();
   if (so_jco) sj_close_dictionary();
+  if (so_tgt_test(SO_TGT_CLI) && so_jco) {
+    cli_print_json(sj_get_json());
+    if (!so_tgt_test(SO_TGT_HTTP | SO_TGT_MQTT))
+      sj_free_buffer();
+  }
 }
 
 // provide a version of this cli-function without the third parameter
@@ -257,7 +268,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
 
     }
     if (!out_js || ((json_buf = malloc(256)))) {
-      for (i = SO_CFG_begin; i <= SO_CFG_end; ++i) {
+      for (i = SO_CFG_begin+1; i < SO_CFG_end; ++i) {
         so_output_message(i, NULL);
       }
       free(json_buf);
@@ -621,11 +632,11 @@ static void  so_print_timer_as_text(u8 g, u8 m, bool wildcard) {
 
 static void  so_print_timer(u8 g, u8 m) {
 
-  if (so_tgt_test_cli_text())
+  if (so_tgt_test(SO_TGT_CLI) && so_cco)
     so_print_timer_as_text(g, m, true);
 
 #ifdef USE_JSON
-  if (so_tgt_test_cli_json() || so_tgt_test(SO_TGT_MQTT|SO_TGT_HTTP)) {
+  if ((so_tgt_test(SO_TGT_CLI) && so_jco) || so_tgt_test(SO_TGT_MQTT|SO_TGT_HTTP)) {
     const char *json = sj_json_from_automaticData(g, m);
 
 #ifdef USE_MQTT

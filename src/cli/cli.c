@@ -121,25 +121,25 @@ void cli_out_close() {
   cli_out_x_reply_entry(0, 0, 0);
 }
 void  cli_out_x_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test_cli_text())
+  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
   cli_out_entry(cli_out_start_reply, key, val, len);
 }
 
 void  cli_out_timer_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test_cli_text())
+  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
   cli_out_entry(cli_out_start_timer_reply, key, val, len);
 }
 
 void  cli_out_config_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test_cli_text())
+  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
   cli_out_entry(cli_out_start_config_reply, key, val, len);
 }
 
 void  cli_out_mcu_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test_cli_text())
+  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
   cli_out_entry(cli_out_start_mcu_reply, key, val, len);
 }
@@ -150,7 +150,7 @@ void  print_enr(void) {
 }
 
 void  msg_print(const char *msg, const char *tag) {
-  if (!so_tgt_test_cli_text())
+  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
   if (msg)
     io_puts(msg);
@@ -166,19 +166,19 @@ void  msg_print(const char *msg, const char *tag) {
 }
 
 void  warning_unknown_option(const char *key) {
-  if (!so_tgt_test_cli_text())
+  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
   msg_print("warning", "unknown-option"), io_puts(key), io_putc('\n');
 }
 
 void  reply_print(const char *tag) {
-  if (!so_tgt_test_cli_text())
+  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
   msg_print("reply", tag);
 }
 
 void  reply_message(const char *tag, const char *msg) {
-  if (!so_tgt_test_cli_text())
+  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
   reply_print(tag);
   if (msg)
@@ -187,14 +187,14 @@ void  reply_message(const char *tag, const char *msg) {
 }
 
 void  cli_msg_ready(void) {
-  if (!so_tgt_test_cli_text())
+  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
   io_puts("\nready:\n");
 }
 
 void  reply_id_message(u16 id, const char *tag, const char *msg) {
   u16 old_id = msgid;
-  if (!so_tgt_test_cli_text())
+  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
 
   msgid = id;
@@ -431,6 +431,8 @@ process_parm(clpar p[], int len) {
 void 
 cli_process_cmdline(char *line) {
   dbg_vpf(db_printf("process_cmdline: %s\n", line));
+  cli_isJson = false;
+
   int n = parse_commandline(line);
   if (n < 0) {
     reply_failure();
@@ -498,14 +500,19 @@ process_parmHelp(clpar p[], int len) {
   return 0;
 }
 
+bool cli_isJson;
+
+
 void  cli_loop(void) {
   char *cmdline;
   static bool ready;
   if ((cmdline = get_commandline())) {
     so_tgt_set(SO_TGT_CLI);
     if (cmdline[0] == '{') {
+
      cli_process_json(cmdline);
     } else {
+
       io_putlf();
       cli_process_cmdline(cmdline);
       cli_msg_ready();

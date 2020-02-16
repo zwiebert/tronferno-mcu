@@ -30,18 +30,6 @@ extern u8 so_target;
 #define so_tgt_default() (so_tgt_set(SO_TGT_ANY))
 #define so_tgt_test(bitmask) (so_target & (bitmask))
 
-#ifndef DISTRIBUTION
-//#define DEV_CLI_JSON
-#endif
-
-#ifdef DEV_CLI_JSON
-#define so_tgt_test_cli_json() ((so_target & SO_TGT_CLI))
-#define so_tgt_test_cli_text() false
-#else
-#define so_tgt_test_cli_text() ((so_target & SO_TGT_CLI))
-#define so_tgt_test_cli_json() false
-#endif
-
 #define SO_CFG_size (SO_CFG_end - SO_CFG_begin - 1)
 
 typedef enum {

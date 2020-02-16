@@ -8,7 +8,7 @@ extern char cmd_buf[CMD_BUF_SIZE];
 
 // implementation interface for  cli*.c files
 extern const char pin_state_args[];
-
+extern bool cli_isJson;
 
 typedef struct {
   char *key;

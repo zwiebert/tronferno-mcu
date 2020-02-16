@@ -86,16 +86,13 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   }
 
   {
-    u16 json_size = 512;
-    char *json = malloc(json_size);
-    if (json) {
-      sj_set_buf(json, json_size);  // reply json will now be created in our buffer
+#define JS_SIZE 512
+    if (sj_alloc_buffer(JS_SIZE)) {
       hts_query(HQT_NONE, buf, ret); // parse and process received command
       httpd_resp_set_type(req, "application/json");
-      httpd_resp_sendstr(req, *json ? json : "{\"from\":\"tfmcu\"}"); // respond with reply json or empty object json
-
-      sj_set_buf(0, 0); // unregister our jsone buffer
-      free(json);
+      httpd_resp_sendstr(req, sj_get_json());
+      ets_printf("cmd-response: <%s>\n", sj_get_json());
+      sj_free_buffer();
     }
   }
 
@@ -103,32 +100,6 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 }
 
 httpd_uri_t uri_cmd_json = { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json, .user_ctx = NULL };
-
-
-
-// handler to get MCU configuration data from /config.json
-
-static esp_err_t handle_uri_config_json(httpd_req_t *req) {
-
-  if (!check_access_allowed(req))
-    return ESP_FAIL;
-
-  httpd_resp_set_type(req, "application/json");
-
-  {
-    u16 js_size = 512;
-    char *js = malloc(js_size);
-    if (js) {
-      if (sj_fillBuf_with_allConfigData(js, js_size) >= 0)
-        httpd_resp_sendstr(req, js);
-      free(js);
-    }
-  }
-
-  return ESP_OK;
-}
-
-httpd_uri_t uri_config_json = { .uri = "/config.json", .method = HTTP_GET, .handler = handle_uri_config_json, .user_ctx = NULL };
 
 
 // handler for getting file /tfmcu.js
@@ -179,7 +150,6 @@ static httpd_handle_t start_webserver(void) {
 
   ESP_LOGI(TAG, "Registering URI handlers");
   httpd_register_uri_handler(server, &uri_cmd_json);
-  httpd_register_uri_handler(server, &uri_config_json);
   httpd_register_uri_handler(server, &uri_tfmcu_js);
   httpd_register_uri_handler(server, &uri_tfmcu_html);
 

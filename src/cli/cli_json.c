@@ -187,9 +187,10 @@ parse_json(char *name, char *s) {
 }
 
 #ifndef TEST_MODULE
-
 void 
 cli_process_json(char *json) {
+  cli_isJson = true;
+
   dbg_vpf(db_printf("process_json: %s\n", json));
   {
     char *name;
@@ -208,7 +209,6 @@ cli_process_json(char *json) {
 
 void 
 cli_print_json(const char *json) {
-  if (so_tgt_test_cli_json())
     io_puts(json), io_putlf();
 }
 

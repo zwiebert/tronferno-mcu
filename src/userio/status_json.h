@@ -12,7 +12,7 @@
 #include "status_output.h"
 
 void sj_open_dictionary(const char *name);
-void sj_append_to_dictionary(const char *key, const char *val, bool is_number);
+bool sj_append_to_dictionary(const char *key, const char *val, bool is_number);
 void sj_close_dictionary();
 
 extern void (*sj_callback_onClose_ifNotEmpty)(const char *json);
@@ -23,11 +23,9 @@ const char *sj_json_from_automaticData(u8 g, u8 m);
 char *sj_fillBuf_with_positionData(char *dst, u16 dst_size, so_arg_gmp_t *gmp);
 const char *sj_json_from_postionData(so_arg_gmp_t *gmp);
 
-int sj_fillBuf_with_allConfigData(char *dst, u16 dst_size);
 
-
-// set json buf to dst, so we can read back our json when created or an empty string if nothing was created
-// if dst is NULL, reset json buf to defaul
-void sj_set_buf(char *dst, u16 dst_size);
+bool sj_alloc_buffer(size_t buf_size);
+char *sj_get_json();
+void sj_free_buffer();
 
 #endif /* SRC_USERIO_STATUS_JSON_H_ */
