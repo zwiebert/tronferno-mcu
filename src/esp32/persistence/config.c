@@ -72,6 +72,7 @@ config C = {
   .lan_phy = MY_LAN_PHY,
   .lan_pwr_gpio = MY_LAN_PWR_GPIO,
 #endif
+  .astroCorrection = acAverage,
 };
 
 #ifdef POSIX_TIME

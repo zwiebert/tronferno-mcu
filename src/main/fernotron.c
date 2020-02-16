@@ -15,6 +15,7 @@
 #include "main/rtc.h"
 #include "main/pairings.h"
 #include "userio/status_output.h"
+#include "automatic/astro.h"
 
 void 
 loop(void) {
@@ -86,6 +87,7 @@ main_setup() {
 
   rtc_setup();
   fer_init_sender(&default_sender, C.fer_centralUnitID);
+  astro_init();
 
 #ifdef DEBUG
   if (test_modules()) {
@@ -97,8 +99,8 @@ main_setup() {
 
   so_output_message(SO_FW_START_MSG_PRINT, 0);
   db_test_all_indicators(3);
-  void currentState_init(void);
   currentState_init();
+
   dbg_trace();
   return 0;
 

@@ -6,7 +6,7 @@
 
 
 u8  bcd2dec(u8 bcd) {
-	return ((bcd >> 4) * 10 + (bcd & 0x0F));
+	return (bcd >> 4) * 10 + ((bcd & 0x0F) == 0x0f ? 9 : (bcd & 0x0F));
 }
 
 u8  dec2bcd(u8 dec) {

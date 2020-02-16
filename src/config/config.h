@@ -225,6 +225,10 @@ enum verbosity {
 	vrbNone, vrb1, vrb2, vrb3, vrb4, vrbDebug
 };
 
+enum astroCorrection {
+  acAverage, acMinimum, acMaximum
+};
+
 #ifdef USE_LAN
 enum lanPhy {
   lanPhyNone, lanPhyLAN8270, lanPhyRTL8201, lanPhyIP101, lanPhyLEN,
@@ -289,6 +293,7 @@ typedef struct {
   enum lanPhy lan_phy;
   i8 lan_pwr_gpio;
 #endif
+  enum astroCorrection astroCorrection;
 } config;
 
 extern config C;

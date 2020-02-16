@@ -50,7 +50,43 @@ time_to_bcd(u8 *bcdMinutes, u8 *bcdHours, double time, bool force_even_minutes) 
 
 }
 
-#if 0
+static u16 astro_minutes[48];
+
+void astro_populate_astroMinutes_from_astroBcd() {
+  u8 row, col, midx=0;
+
+  astro_byte_data bcds;
+
+  astro_write_data(bcds, 0);
+
+  for (row = 0; row < FPR_ASTRO_HEIGHT; ++row) {
+    for (col = 0; (col+1) < FPR_ASTRO_WIDTH; col += 2) {
+      u8 min = bcd2dec(bcds[row][col]);
+      u8 hour = bcd2dec(bcds[row][col+1]);
+     astro_minutes[midx++] = hour * 60 + min;
+    }
+  }
+}
+u16 astro_calc_minutes(const struct tm *tm) {
+  i16 old_yd, yd = old_yd = (tm->tm_mon * 30 + tm->tm_mday);
+  i16 idx;
+
+  if (1 <= yd && yd <= 173) {
+    idx = (yd + 2) / 4 + 2;
+    yd = 352 - (4 * idx);
+  } else {
+    idx = abs((352 - yd) / 4);
+    yd = yd / 4 * 4;
+  }
+
+//  ets_printf("idx: %d, yd: %d (old: %d)\n", idx, yd, old_yd);
+
+  assert(0 <= idx && idx <= 47);
+  return astro_minutes[idx];
+}
+
+
+#if 1
 
 /*
  *  Calculate civil dusk for configured location on earth and fill in "astro"/dusk table ready to send to Fernotron receiver
@@ -81,7 +117,22 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
       calc_sunrise_sunset(NULL, &duskf, C.geo_timezone + (mint_offset / 60.0f), dayf, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
       calc_sunrise_sunset(NULL, &duskr, C.geo_timezone + (mint_offset / 60.0f), dayr, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
 
-      dusk = (duskf + duskr) / 2;
+      switch (C.astroCorrection) {
+      case acAverage:
+        dusk = (duskf + duskr) / 2;
+        break;
+      case acMinimum:
+        dusk = MIN(duskf, duskr);
+        break;
+      case acMaximum:
+        dusk = MAX(duskf, duskr);
+        break;
+      }
+
+      //dusk = (duskf + duskr) / 2; // average
+      //dusk = MIN(duskf, duskr); // minimum (never too dark)
+      dusk = MAX(duskf, duskr); // minimum (never too bright)
+
 
       if (dusk < last_dusk) {
         dusk = last_dusk;
@@ -98,13 +149,35 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
   }
 }
 #elif 1
-u16  astro_calc_minutes(const struct tm *tm) {
+
+
+#if 0
+u16 astro_calc_minutes(const struct tm *tm) {
   double dusk;
-  double dayofy = (tm->tm_mon * 30 + tm->tm_mday) * 1.0139;
+  i16 old_yd, yd = old_yd = (tm->tm_mon * 30 + tm->tm_mday);
+  i16 idx;
+
+
+
+  if (1 <= yd && yd <= 173) {
+    idx = (yd + 2) / 4 + 2;
+    yd = 352 - (4 * idx);
+  } else {
+    idx = abs((352 - yd) / 4);
+    yd = yd / 4 * 4;
+  }
+
+  ets_printf("idx: %d, yd: %d (old: %d)\n", idx, yd, old_yd);
+
+  assert(0 <= idx && idx <= 47);
+
+  double dayofy = yd * 1.0139;
   calc_sunrise_sunset(NULL, &dusk, C.geo_timezone + (tm->tm_isdst ? 1 : 0), dayofy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
   u16 minutes = dusk * 60;
   return minutes;
 }
+#endif
+
 static void 
 math_write_astro(astro_byte_data dst, int mint_offset) {
   int i, j, yd;
@@ -164,6 +237,9 @@ void  astro_write_data(u8 d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
   math_write_astro(d, mint_offset);
 }
 
+void astro_init() {
+  astro_populate_astroMinutes_from_astroBcd();
+}
 
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -178,7 +254,22 @@ testModule_astro()
   calc_sunrise_sunset(&rise, &set, C.geo_timezone, doy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
   
   astro_write_data(data, 0);
-  
+  ets_printf("test calc_minutes\n");
+  int ct=0;
+  struct tm tm;
+  for(tm.tm_mon=0; tm.tm_mon < 12; ++tm.tm_mon)
+    for (tm.tm_mday=1; tm.tm_mday <= 30; ++tm.tm_mday) {
+      u16 min = astro_calc_minutes(&tm);
+      ets_printf("%02d:%02d, %s", min / 60, min %60, (ct++ % 16? "": "\n"));
+    }
+  ets_printf("\n------------------------\n");
+  ct = 0; int ct2 = 0;
+  for(tm.tm_mon=0; tm.tm_mon < 12; ++tm.tm_mon)
+    for (tm.tm_mday=1; tm.tm_mday <= 30; ++tm.tm_mday) {
+      u16 min = astro_calc_minutes(&tm);
+      if (!(ct2++ % 4))
+        ets_printf("%02d:%02d, %s", min / 60, min %60, (++ct % 4? "": "\n"));
+    }
 
   return rise != set; //XXX: ???
 }
