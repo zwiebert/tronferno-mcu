@@ -308,7 +308,9 @@ endif
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
-	$(Q) $(AR) cru $@ $^
+	$(Q) $(AR) cru $@.tmp $^
+	$(Q) $(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal --rename-section .iram0.text=.text $@.tmp $@
+
 
 checkdirs: $(BUILD_DIRS) $(FW_BASE) $(DEP_DIR)
 

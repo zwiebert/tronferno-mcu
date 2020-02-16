@@ -22,7 +22,7 @@ const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
         "up-time=?\n"
         "version=full\n";
 
-int ICACHE_FLASH_ATTR
+int 
 process_parmMcu(clpar p[], int len) {
   int arg_idx;
 

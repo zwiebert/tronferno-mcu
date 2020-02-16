@@ -54,7 +54,7 @@ static u8 rx_buf[RX_BUFSIZE];
 static u8 rx_head = 0, rx_tail = 0;
 #define rxb_isEmpty() (rx_head == rx_tail)
 #define  rxb_push(c) do {  rx_buf[rx_tail++] = (c);   wrap_idx(rx_tail, RX_BUFSIZE);  } while(0)
-static bool ICACHE_FLASH_ATTR rxb_pop(u8 *res) {
+static bool  rxb_pop(u8 *res) {
   if (rxb_isEmpty())
     return false;
   *res = rx_buf[rx_head++];
@@ -67,7 +67,7 @@ static u8 tx_buf[RX_BUFSIZE];
 static u8 tx_head = 0, tx_tail = 0;
 #define txb_isEmpty() (tx_head == tx_tail)
 #define  txb_push(c) do {  tx_buf[tx_tail++] = (c);   wrap_idx(tx_tail, TX_BUFSIZE);  } while(0)
-static bool ICACHE_FLASH_ATTR txb_pop(u8 *res) {
+static bool  txb_pop(u8 *res) {
   if (txb_isEmpty())
     return false;
   *res = tx_buf[tx_head++];
@@ -80,7 +80,7 @@ static int tx_pending;
 /////////////////////////////////////
 
 
-static int ICACHE_FLASH_ATTR
+static int 
 tcpSocket_io_getc(void) {
   u8 c;
 
@@ -116,7 +116,7 @@ static char line_buf[TCPS_LINE_LEN];
 static int line_idx;
 static bool line_complete;
 
-static int ICACHE_FLASH_ATTR
+static int 
 write_line(void) {
   u8 i;
 
@@ -170,7 +170,7 @@ write_line(void) {
 
 }
 
-static int ICACHE_FLASH_ATTR
+static int 
 tcpSocket_io_putc(char c) {
   u8 i;
 
@@ -194,7 +194,7 @@ tcpSocket_io_putc(char c) {
   }
 }
 #else
-static int ICACHE_FLASH_ATTR
+static int 
 tcpSocket_io_putc(char c) {
   u8 new_tail = tx_tail + 1;
   if (new_tail == TX_BUFSIZE)
@@ -219,7 +219,7 @@ tcpSocket_io_putc(char c) {
 
 
 #if !PUTC_LINE_BUFFER
-static void ICACHE_FLASH_ATTR
+static void 
 tcps_send_cb(void *arg) {
   --tx_pending;
   (printf("%s(%p), tx_pend=%d\n", __func__, arg, tx_pending));
@@ -227,7 +227,7 @@ tcps_send_cb(void *arg) {
     tx_pending = 0;
 }
 #else
-static void ICACHE_FLASH_ATTR
+static void 
 tcps_send_cb(void *arg) {
   --tx_pending;
   (printf("%s(%p), tx_pend=%d\n", __func__, arg, tx_pending));
@@ -237,7 +237,7 @@ tcps_send_cb(void *arg) {
 #endif
 
 
-static void ICACHE_FLASH_ATTR
+static void 
 tcps_tx_loop(void) {
 #if !PUTC_LINE_BUFFER
   int i;
@@ -281,7 +281,7 @@ tcps_tx_loop(void) {
 #endif
 }
 
-static void ICACHE_FLASH_ATTR
+static void 
 tcps_disconnect_cb(void *arg) {
   int i;
   struct espconn *pesp_conn = arg;
@@ -339,7 +339,7 @@ tcps_disconnect_cb(void *arg) {
   }
 }
 
-static void ICACHE_FLASH_ATTR
+static void 
 tcps_recv_cb(void *arg, char *pdata, unsigned short len) {
   tcpc_last_received = arg;
 
@@ -350,7 +350,7 @@ tcps_recv_cb(void *arg, char *pdata, unsigned short len) {
   }
 }
 
-static void ICACHE_FLASH_ATTR
+static void 
 tcps_connect_cb(void *arg) {
   int i;
 
@@ -390,7 +390,7 @@ tcps_connect_cb(void *arg) {
 
 #if !PUTC_LINE_BUFFER
 static bool command_processing_done;
-void ICACHE_FLASH_ATTR
+void 
 tcps_command_processing_hook(bool done) {
   if (!done) {
 
@@ -400,7 +400,7 @@ tcps_command_processing_hook(bool done) {
 }
 #endif
 
-void ICACHE_FLASH_ATTR
+void 
 tcps_loop(void) {
   int i;
 
@@ -435,7 +435,7 @@ tcps_loop(void) {
   }
 }
 
-void ICACHE_FLASH_ATTR
+void 
 setup_tcp_server(void) {
   // create tcp server
   struct espconn *pesp_conn = os_zalloc((uint32 )sizeof(struct espconn));

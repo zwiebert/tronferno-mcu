@@ -176,7 +176,7 @@ class AppState {
                     e.innerHTML = "<strong>OTA has failed<br><br></strong>";
                     break;
                 case 3: // done
-                    e.innerHTML = "<strong>OTA has succeeded <button>Reboot</button><br><br></strong>";
+                    e.innerHTML = '<strong>OTA has succeeded <button type="button" onClick="postMcuRestart()">Reboot</button><br><br></strong>';
                     break;
                 }
                 if (netota_isInProgress && mcu["ota-state"] != 1) {

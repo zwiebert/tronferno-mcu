@@ -30,7 +30,7 @@ const char help_parmPair[] = ""
     "gpinN=(up|down|stop|rain|toggle)\n"
     "c=(pair|unpair|read)\n";
 
-int ICACHE_FLASH_ATTR
+int 
 process_parmPair(clpar p[], int len) {
   int arg_idx;
 

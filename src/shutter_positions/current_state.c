@@ -47,7 +47,7 @@ enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 
 
 
-static int ICACHE_FLASH_ATTR
+static int 
 get_state(u32 a, int g, int m) {
   precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
 
@@ -60,7 +60,7 @@ get_state(u32 a, int g, int m) {
   return -1;
 }
 
-static int ICACHE_FLASH_ATTR
+static int 
 set_state(u32 a, int g, int m, int position) {
   u8  mi;
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, position=%d\n", __func__, a, g, m, position));
@@ -83,7 +83,7 @@ set_state(u32 a, int g, int m, int position) {
   return 0;
 }
 
-int ICACHE_FLASH_ATTR
+int 
 currentState_getShutterPct(u32 a, u8 g, u8 m) {
   precond(g <= 7 && m <= 7);
 
@@ -91,7 +91,7 @@ currentState_getShutterPct(u32 a, u8 g, u8 m) {
 }
 
 
-int ICACHE_FLASH_ATTR
+int 
 currentState_setShutterPct(u32 a, u8 g, u8 m, u8 pct) {
   int position = pct;
   precond(g <= 7 && m <= 7);
@@ -128,7 +128,7 @@ currentState_setShutterPct(u32 a, u8 g, u8 m, u8 pct) {
     return set_state(a, g, m, position);
 }
 
-int ICACHE_FLASH_ATTR
+int 
 currentState_modifyShutterPositions(gm_bitmask_t mm, u8 p) {
   u8 g, m;
 
@@ -142,7 +142,7 @@ currentState_modifyShutterPositions(gm_bitmask_t mm, u8 p) {
   return 0;
 }
 
-int ICACHE_FLASH_ATTR
+int 
 currentState_printShutterPositions() {
   u8 g, m, g2, m2;
   gm_bitmask_t msk = {0,};
@@ -184,7 +184,7 @@ extern volatile u32 run_time_s10;
 #define run_time_10(x) (run_time_s10 + 0)
 
 // register moving related commands sent to a shutter to keep track of its changing position
-int ICACHE_FLASH_ATTR
+int 
 currentState_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
 
 
@@ -286,7 +286,7 @@ currentState_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
 }
 
 
-int ICACHE_FLASH_ATTR
+int 
 currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd) {
   precond(g <= 7 && m <= 7);
 

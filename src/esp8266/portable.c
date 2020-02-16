@@ -26,14 +26,14 @@
 #include "driver/uart.h"
 
 
-char * ICACHE_FLASH_ATTR
+char * 
 itoa(int val, char *s, int radix) {
 	if (s)
 		os_sprintf(s, (radix == 10 ? "%i" : "%x"), val);
 	return s;
 }
 
-char * ICACHE_FLASH_ATTR
+char * 
 ltoa(long val, char *s, int radix) {
 	if (s)
 		os_sprintf(s, (radix == 10 ? "%li" : "%lx"), val);

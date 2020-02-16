@@ -15,7 +15,7 @@
  * Parameters   : none
  * Returns      : rf cal sector
 *******************************************************************************/
-uint32 ICACHE_FLASH_ATTR user_rf_cal_sector_set(void)
+uint32  user_rf_cal_sector_set(void)
 {
     enum flash_size_map size_map = system_get_flash_size_map();
     uint32 rf_cal_sec = 0;

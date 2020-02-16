@@ -13,11 +13,11 @@
 bool timer_data_changed;
 
 
-bool ICACHE_FLASH_ATTR save_timer_data(DATA_TYPE *p, u8 g, u8 m) {
+bool  save_timer_data(DATA_TYPE *p, u8 g, u8 m) {
   timer_data_changed = true;
   return SAVE_TIMER_DATA_FUN(p, g, m);
 }
 
-bool ICACHE_FLASH_ATTR read_timer_data(DATA_TYPE *p, u8 *g, u8 *m, bool wildcard) {
+bool  read_timer_data(DATA_TYPE *p, u8 *g, u8 *m, bool wildcard) {
   return READ_TIMER_DATA_FUN(p, g, m, wildcard);
 }

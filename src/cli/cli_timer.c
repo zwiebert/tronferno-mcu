@@ -55,7 +55,7 @@ const char help_parmTimer[]  =
     ;
 
 
-int ICACHE_FLASH_ATTR
+int 
 process_parmTimer(clpar p[], int len) {
   int i;
   bool f_disableWeekly = false, f_disableDaily = false, f_disableAstro = false, f_disableManu = false;

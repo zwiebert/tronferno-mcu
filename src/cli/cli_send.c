@@ -27,7 +27,7 @@ const char help_parmSend[]  =
 // "TROT        Toggle rotation direction"
 ;
 
-int ICACHE_FLASH_ATTR
+int 
 process_parmSend(clpar p[], int len) {
   int arg_idx;
 

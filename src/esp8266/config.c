@@ -44,24 +44,24 @@ config C = {
 
 #if ENABLE_SPIFFS
 #include "../main/config_spiffs.h"
-void ICACHE_FLASH_ATTR read_config(void) {
+void  read_config(void) {
   if (!config_read()) {
 #if LEGACY_STORAGE_READ
     read_data();  // FIXME: support old storage in parallel for some time
   }
 #endif
 }
-void ICACHE_FLASH_ATTR save_config(void) {
+void  save_config(void) {
   config_save();
 #if LEGACY_STORAGE_WRITE
   save_data(); // FIXME: support old storage in parallel for some time
 #endif
 }
 #else
-void ICACHE_FLASH_ATTR read_config(u32 mask) {
+void  read_config(u32 mask) {
 	read_data();
 }
-void ICACHE_FLASH_ATTR save_config(u32 mask) {
+void  save_config(u32 mask) {
 	save_data();
 }
 #endif

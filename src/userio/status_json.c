@@ -44,7 +44,7 @@ u16 ext_buf_size;
 #define USE_CALLBACK (!ext_buf && s_json_config_out)
 #define DO_CALLBACK() s_json_config_out(BUF);
 
-void  ICACHE_FLASH_ATTR sj_set_buf(char *dst, u16 dst_size) {
+void   sj_set_buf(char *dst, u16 dst_size) {
   if (dst) {
     *dst = '\0';
     ext_buf = dst;
@@ -58,14 +58,14 @@ void  ICACHE_FLASH_ATTR sj_set_buf(char *dst, u16 dst_size) {
 
 static const char *Obj_tag="";
 
-void  ICACHE_FLASH_ATTR so_json_set_x(const char *tag) {
+void   so_json_set_x(const char *tag) {
   Obj_tag = tag;
 }
 
-void  ICACHE_FLASH_ATTR so_json_x_reply(const char *key, const char *val, bool is_number) {
+void   so_json_x_reply(const char *key, const char *val, bool is_number) {
   D(ets_printf("so_json(): %s, %s, %d\n", key, val, is_number));
 
-  if (key && ((json_idx + strlen(key) + strlen(val) + 6)) > BUF_SIZE) {
+  if (key && ((json_idx + strlen(key) + strlen(val) + (json_idx ? 6 : 40))) > BUF_SIZE) {
     D(ets_printf("json buffer overflow: idx=%u, buf_size=%u\n", json_idx, BUF_SIZE));
     if (key != 0)
       return;
@@ -90,17 +90,17 @@ void  ICACHE_FLASH_ATTR so_json_x_reply(const char *key, const char *val, bool i
 
 
   if (json_idx == 0) {
-    snprintf(BUF, BUF_SIZE - json_idx - 6,"{\"from\":\"tfmcu\",\"%s\":{", Obj_tag);
+    sprintf(BUF, "{\"from\":\"tfmcu\",\"%s\":{", Obj_tag);
     json_idx = strlen(BUF);
   }
 
   const char *quote = is_number ? "" : "\"";
-  snprintf(BUF + json_idx, BUF_SIZE - json_idx - 6, "\"%s\":%s%s%s,", key, quote, val, quote);
+  sprintf(BUF + json_idx, "\"%s\":%s%s%s,", key, quote, val, quote);
   json_idx += strlen(BUF+json_idx);
   D(ets_printf("json_idx: %u, buf: %s\n", json_idx, BUF));
 }
 
-int ICACHE_FLASH_ATTR sj_config2json_buf(char *dst, u16 dst_size, so_msg_t key) {
+int  sj_config2json_buf(char *dst, u16 dst_size, so_msg_t key) {
 
   sj_set_buf(dst,dst_size);
   so_output_message(SO_CFG_all, "j");
@@ -109,7 +109,7 @@ int ICACHE_FLASH_ATTR sj_config2json_buf(char *dst, u16 dst_size, so_msg_t key) 
   return strlen(dst); //XXX
 }
 
-void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, u16 dst_size, u8 g, u8 m, bool wildcard) {
+void  sj_timer2json_buf(char *dst, u16 dst_size, u8 g, u8 m, bool wildcard) {
   timer_data_t tdr;
   extern gm_bitmask_t manual_bits; //FIXME
   // read_gm_bitmask("MANU", &manual_bits, 1); //FIXME: not needed
@@ -159,7 +159,7 @@ void ICACHE_FLASH_ATTR sj_timer2json_buf(char *dst, u16 dst_size, u8 g, u8 m, bo
   }
 }
 
-const char *ICACHE_FLASH_ATTR sj_timer2json(u8 g, u8 m) {
+const char * sj_timer2json(u8 g, u8 m) {
   sj_timer2json_buf(BUF, BUF_SIZE, g, m, true);
   return json_buf;
 }

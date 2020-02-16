@@ -13,7 +13,7 @@ rtc_time_source_t rtc_last_time_source;
 void set_system_time(time_t timestamp);
 
 
-void ICACHE_FLASH_ATTR rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t source) {
+void  rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t source) {
   rtc_last_time_source = source;
 #ifdef POSIX_TIME
   //FIXME: not implemented yet
@@ -21,33 +21,33 @@ void ICACHE_FLASH_ATTR rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t s
   set_system_time(stamp);
 #endif
 }
-rtc_time_t ICACHE_FLASH_ATTR rtc_time(void) {
+rtc_time_t  rtc_time(void) {
   return time(NULL);
 }
 
 
-i8 ICACHE_FLASH_ATTR
+i8 
 get_weekDay() {
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
   return tm->tm_wday;
 }
 
-i16 ICACHE_FLASH_ATTR
+i16 
 get_yearDay() {
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
   return tm->tm_yday + 1;
 }
 
-int ICACHE_FLASH_ATTR
+int 
 get_dst() {
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
   return tm->tm_isdst ? 1 : 0;
 }
 
-i16 ICACHE_FLASH_ATTR
+i16 
 rtc_get_next_minute() {
   static int last_minute;
 
@@ -63,7 +63,7 @@ rtc_get_next_minute() {
 
 // 0123456789012345678
 //"YYYY-MM-DDThh:mm:ss"
-bool ICACHE_FLASH_ATTR
+bool 
 rtc_get_by_string(char *s) {
   time_t timer = time(NULL);
   struct tm t;
@@ -78,7 +78,7 @@ rtc_get_by_string(char *s) {
 
 }
 
-time_t ICACHE_FLASH_ATTR time_iso2time(const char *dateTimeString) {
+time_t  time_iso2time(const char *dateTimeString) {
   if (strlen(dateTimeString) == 19) {
     char s[20], *token;
 
@@ -111,7 +111,7 @@ time_t ICACHE_FLASH_ATTR time_iso2time(const char *dateTimeString) {
   return -1;
 }
 
-bool ICACHE_FLASH_ATTR
+bool 
 rtc_set_by_string(const char *dateTimeString) {
   time_t timestamp = time_iso2time(dateTimeString);
   if (timestamp > 0) {
@@ -121,7 +121,7 @@ rtc_set_by_string(const char *dateTimeString) {
   return false;
 }
 
-i16 ICACHE_FLASH_ATTR
+i16 
 eu_dst(const time_t *timer, i32 * z) {
   u32 t = *timer;
   if ((u8) (t >> 24) >= 194)
@@ -133,7 +133,7 @@ eu_dst(const time_t *timer, i32 * z) {
     return 0;
 }
 
-i16 ICACHE_FLASH_ATTR
+i16 
 always_dst(const time_t *timer, i32 * z) {
   return 3600;
 }
@@ -145,7 +145,7 @@ time_t rtc_timezone_in_secs() {
   return local - utc;
 }
 
-void ICACHE_FLASH_ATTR
+void 
 rtc_setup() {
 
 #ifdef POSIX_TIME

@@ -1,7 +1,7 @@
 #include "user_config.h"
 #include "fernotron/fer_code.h"
 
-void ICACHE_FLASH_ATTR
+void 
 fer_init_sender(fer_sender_basic *fsb, u32 devID) {
 
   fer_init_plain(fsb, GET_BYTE_2(devID), GET_BYTE_1(devID), GET_BYTE_0(devID));
@@ -27,7 +27,7 @@ fer_init_sender(fer_sender_basic *fsb, u32 devID) {
   }
 }
 
-void ICACHE_FLASH_ATTR
+void 
 fer_init_plain(fer_sender_basic *fsb, u8 a2, u8 a1, u8 a0) {
   FSB_PUT_ADDR(fsb, a2, a1, a0);
   FSB_PUT_TGL(fsb, 1);
@@ -37,7 +37,7 @@ fer_init_plain(fer_sender_basic *fsb, u8 a2, u8 a1, u8 a0) {
   fsb->repeats = -1;
 }
 
-void ICACHE_FLASH_ATTR
+void 
 fer_init_sunSensor(fer_sender_basic *fsb, u8 a2, u8 a1, u8 a0) {
   fer_init_plain(fsb, a2, a1, a0);
   FSB_PUT_MEMB(fsb, fer_memb_FromSunSensor);
@@ -49,7 +49,7 @@ fer_init_sunSensor(fer_sender_basic *fsb, u8 a2, u8 a1, u8 a0) {
 Stop key hold down on central unit (-1): (...,1,2,3,4,5,6,7,8,9,a,b,c,d,e,1,2,...)
 Up/Down key hold down on central unit (unchanged) (...,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,...)
 */
-u8 ICACHE_FLASH_ATTR
+u8 
 fer_tglNibble_ctUp(u8 toggle_nibble, int step) {
   u8 result = (toggle_nibble) & 0x0f;
   while(step-- > 0) {
@@ -62,7 +62,7 @@ fer_tglNibble_ctUp(u8 toggle_nibble, int step) {
 }
 
 
-void ICACHE_FLASH_ATTR
+void 
 fer_update_tglNibble(fer_sender_basic *fsb) {
 #if 0
   int step = 0;

@@ -22,7 +22,7 @@
 
 
 
-void ICACHE_FLASH_ATTR mcu_delay_us(u16 us) {
+void  mcu_delay_us(u16 us) {
   os_delay_us(us);
 }
 
@@ -42,7 +42,7 @@ void ICACHE_FLASH_ATTR mcu_delay_us(u16 us) {
 
 #define TIMER1_COUNT_MASK               0x007fffff        // 23 bit timer
 
-void ICACHE_FLASH_ATTR
+void 
 timer1Start(u32 ticks, u16 flags, void (*handler)(void)) {
   RTC_REG_WRITE(FRC1_LOAD_ADDRESS, ticks & TIMER1_COUNT_MASK);
   RTC_REG_WRITE(FRC1_CTRL_ADDRESS, (flags & TIMER1_FLAGS_MASK) | TIMER1_ENABLE_TIMER);
@@ -57,7 +57,7 @@ timer1Start(u32 ticks, u16 flags, void (*handler)(void)) {
   }
 }
 
-void ICACHE_FLASH_ATTR
+void 
 timer1Stop(void) {
   ETS_FRC1_INTR_DISABLE();
   TM1_EDGE_INT_DISABLE();
@@ -111,7 +111,7 @@ void timer_handler(void) {
 
 }
 
-void ICACHE_FLASH_ATTR setup_timer(void) {
+void  setup_timer(void) {
   u32 ticks = F_CPU / TICK_FREQ_HZ;
   u16 flags = TIMER1_DIVIDE_BY_1 | TIMER1_ENABLE_TIMER | TIMER1_AUTO_LOAD;
 

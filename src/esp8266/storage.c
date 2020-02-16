@@ -29,7 +29,7 @@
 
 ///////////// implement read/ write from storage.h ////////////////////////
 
-bool ICACHE_FLASH_ATTR
+bool 
 write_to_file(const char *path, const void *src, size_t len) {
   spiffs_file file;
    s32_t nmb_written;
@@ -58,7 +58,7 @@ write_to_file(const char *path, const void *src, size_t len) {
 
 }
 
-bool ICACHE_FLASH_ATTR
+bool 
 read_from_file(const char *path, void *dst, size_t len) {
   spiffs_file file;
     s32_t nmb_read = 0;
@@ -83,7 +83,7 @@ read_from_file(const char *path, void *dst, size_t len) {
    return true;
 }
 
-bool ICACHE_FLASH_ATTR
+bool 
 delete_file(const char *path) {
   return (SPIFFS_remove(fs_A, path) >= 0);
 }

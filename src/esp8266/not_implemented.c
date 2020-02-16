@@ -33,11 +33,11 @@ void abort_precond(const char *msg, int orig_line) {
 }
 void abort_postcond(const char *msg, int orig_line) {
 }
-void ICACHE_FLASH_ATTR db_test_all_indicators(u8 nmb_flashs) {
+void  db_test_all_indicators(u8 nmb_flashs) {
 }
 void db_put_light(int state, int n) {
 }
 
-void ICACHE_FLASH_ATTR setup_notImplemented(void) {
+void  setup_notImplemented(void) {
 
 }

@@ -26,7 +26,7 @@
 
 // WIFI Station ////////////////////////////////////////
 
-void ICACHE_FLASH_ATTR
+void 
 user_set_station_config(void) {
   struct station_config stationConf;
   stationConf.bssid_set = 0; //need not check MAC address of AP
@@ -54,7 +54,7 @@ ipnet_addr_as_string(char *buf, unsigned buf_len) {
 }
 
 
-void ICACHE_FLASH_ATTR
+void 
 setup_wifistation(void) {
   wifi_set_opmode(STATION_MODE);
   user_set_station_config();

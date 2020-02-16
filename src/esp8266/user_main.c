@@ -46,7 +46,7 @@ static os_event_t user_procTaskQueue[user_procTaskQueueLen];
 #define io_procTaskQueueLen 1
 
 
-static void ICACHE_FLASH_ATTR
+static void 
 user_procTask(os_event_t *events) {
   tcps_loop();
   udp_loop();
@@ -56,7 +56,7 @@ user_procTask(os_event_t *events) {
 }
 
 
-void ICACHE_FLASH_ATTR
+void 
 print_reset_info() {
   struct rst_info *rtc_info = system_get_rst_info();
   if (rtc_info) {
@@ -131,7 +131,7 @@ static const partition_item_t at_partition_table[] = {
 };
 
 
-void ICACHE_FLASH_ATTR user_pre_init(void)
+void  user_pre_init(void)
 {
     if(!system_partition_table_regist(at_partition_table, sizeof(at_partition_table)/sizeof(at_partition_table[0]),SPI_FLASH_SIZE_MAP)) {
     os_printf("system_partition_table_regist fail\r\n");
@@ -142,7 +142,7 @@ void ICACHE_FLASH_ATTR user_pre_init(void)
 
 
 // hardware specific main setup
-void ICACHE_FLASH_ATTR
+void 
 user_init() {
 
   // load config and setup serial interface
@@ -177,7 +177,7 @@ user_init() {
 
 }
 
-void ICACHE_FLASH_ATTR mcu_restart(void) {
+void  mcu_restart(void) {
   printf("mcu_restart()\n");
   os_delay_us(10000);
   system_restart();

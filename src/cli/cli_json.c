@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #define postcond(x) assert((x))
-#define ICACHE_FLASH_ATTR
+#define 
 int msgid;
 
 typedef struct {
@@ -113,7 +113,7 @@ char *json_get_command_object(char *s, char **ret_name) {
   return NULL;
 }
 
-int ICACHE_FLASH_ATTR
+int 
 parse_json(char *name, char *s) {
   int p;
   msgid = 0;
@@ -188,7 +188,7 @@ parse_json(char *name, char *s) {
 
 #ifndef TEST_MODULE
 
-void ICACHE_FLASH_ATTR
+void 
 cli_process_json(char *json) {
   dbg_vpf(db_printf("process_json: %s\n", json));
   {
@@ -206,7 +206,7 @@ cli_process_json(char *json) {
   }
 }
 
-void ICACHE_FLASH_ATTR
+void 
 cli_print_json(const char *json) {
   if (so_tgt_test_cli_json())
     io_puts(json), io_putlf();

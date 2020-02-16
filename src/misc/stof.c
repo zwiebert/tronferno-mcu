@@ -1,7 +1,7 @@
 #include "main/common.h"
 #include "stof.h"
 
-float ICACHE_FLASH_ATTR stof(const char* s) {
+float  stof(const char* s) {
   int point_seen;
 
   float rez = 0, fact = 1;

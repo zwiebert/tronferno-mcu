@@ -32,14 +32,14 @@
 struct fer_msg message_buffer;
 
 #ifndef FER_RECEIVER
-bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
+bool  recv_lockBuffer(bool enableLock) {
   return true;
 }
 #else
 static volatile u8 requestLock;
 static volatile bool isLocked;
 
-bool ICACHE_FLASH_ATTR recv_lockBuffer(bool enableLock) {
+bool  recv_lockBuffer(bool enableLock) {
   if (enableLock) {
     requestLock++;
     do {

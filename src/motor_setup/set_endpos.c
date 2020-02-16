@@ -53,11 +53,11 @@ static time_t end_time;
 
 #define IS_BUTTON_PRESSED()  (mcu_get_buttonPin())
 
-bool ICACHE_FLASH_ATTR sep_is_enabled(void) {
+bool  sep_is_enabled(void) {
   return sep_buttons_enabled;
 }
 
-static bool ICACHE_FLASH_ATTR
+static bool 
 sep_send_stop(void) {
   fer_sender_basic * const fsb = &sep_fsb;
   fsb->repeats = 2;
@@ -69,7 +69,7 @@ sep_send_stop(void) {
   return true;
 }
 
-static bool ICACHE_FLASH_ATTR
+static bool 
 sep_send_down(void) {
   fer_sender_basic * const fsb = &sep_fsb;
   fsb->repeats = 0;
@@ -78,7 +78,7 @@ sep_send_down(void) {
   return fer_send_msg(fsb, MSG_TYPE_PLAIN);
 }
 
-static bool ICACHE_FLASH_ATTR
+static bool 
 sep_send_up(void) {
   fer_sender_basic * const fsb = &sep_fsb;
   fsb->repeats = 0;
@@ -87,7 +87,7 @@ sep_send_up(void) {
   return fer_send_msg(fsb, MSG_TYPE_PLAIN);
 }
 
-void ICACHE_FLASH_ATTR
+void 
 sep_disable(void) {
   if (sep_buttons_enabled) {
     sep_send_stop();  // don't remove this line
@@ -98,7 +98,7 @@ sep_disable(void) {
   }
 }
 
-bool ICACHE_FLASH_ATTR
+bool 
 sep_enable(fer_sender_basic *fsb) {
   if (sep_buttons_enabled) { // already activated
     sep_disable();
@@ -132,7 +132,7 @@ sep_enable(fer_sender_basic *fsb) {
   return false;
 }
 
-bool ICACHE_FLASH_ATTR
+bool 
 sep_loop(void) {
   if (sep_buttons_enabled && !is_sendMsgPending) {
     const bool up_pin = BUTT_UP;

@@ -27,7 +27,7 @@ cuas_state_T cuas_getState() {
 static bool cuas_active;
 static time_t end_time;
 
-bool ICACHE_FLASH_ATTR cu_auto_set(u16 id, unsigned timeout_secs) {
+bool  cu_auto_set(u16 id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
 
@@ -41,7 +41,7 @@ bool ICACHE_FLASH_ATTR cu_auto_set(u16 id, unsigned timeout_secs) {
   return false;
 }
 
-bool ICACHE_FLASH_ATTR cu_auto_set_check_timeout() {
+bool  cu_auto_set_check_timeout() {
   if (end_time == 0)
     return false;
 
@@ -55,7 +55,7 @@ bool ICACHE_FLASH_ATTR cu_auto_set_check_timeout() {
   return false;
 }
 
-bool ICACHE_FLASH_ATTR cu_auto_set_check(fer_sender_basic *fsb) {
+bool  cu_auto_set_check(fer_sender_basic *fsb) {
   if (end_time == 0)
     return false;
 

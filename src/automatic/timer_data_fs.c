@@ -27,7 +27,7 @@
 
 ////////////////// private ///////////////////////////////////////////////////////////////
 
-static char * ICACHE_FLASH_ATTR
+static char * 
 gm_to_file_name (u8 g, u8 m) {
   static char file_name[] = "tdxx.bin";
   if (g > 7 || m > 7) {
@@ -40,16 +40,16 @@ gm_to_file_name (u8 g, u8 m) {
   return file_name;
 }
 
-static bool ICACHE_FLASH_ATTR save_data2(timer_data_t *p, const char *file_name) {
+static bool  save_data2(timer_data_t *p, const char *file_name) {
   return write_to_file(file_name, p, sizeof (timer_data_t));
 }
 
 
-static bool ICACHE_FLASH_ATTR read_data2(timer_data_t *p, const char *file_name) {
+static bool  read_data2(timer_data_t *p, const char *file_name) {
   return read_from_file(file_name, p, sizeof (timer_data_t));
 }
 
-static int ICACHE_FLASH_ATTR delete_shadowded_files(u8 group, u8 memb) {
+static int  delete_shadowded_files(u8 group, u8 memb) {
   int g, m, result = 0;
   DB2(printf("delete shadowed files(group=%d, memb=%d)\n", (int)group, (int)memb));
   for (g = 0; g <= 7; ++g) {
@@ -68,7 +68,7 @@ static int ICACHE_FLASH_ATTR delete_shadowded_files(u8 group, u8 memb) {
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 
 
-bool ICACHE_FLASH_ATTR save_timer_data_fs(timer_data_t *p, u8 g, u8 m) {
+bool  save_timer_data_fs(timer_data_t *p, u8 g, u8 m) {
   bool result = false;
 
   delete_shadowded_files(g, m);
@@ -77,7 +77,7 @@ bool ICACHE_FLASH_ATTR save_timer_data_fs(timer_data_t *p, u8 g, u8 m) {
   return result;
 }
 
-bool ICACHE_FLASH_ATTR read_timer_data_fs(timer_data_t *p, u8 *g, u8 *m, bool wildcard) {
+bool  read_timer_data_fs(timer_data_t *p, u8 *g, u8 *m, bool wildcard) {
   bool result;
 
 #if 0 // FIXME: let it crash, to find programming errors?

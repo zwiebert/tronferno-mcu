@@ -42,7 +42,7 @@ static fer_sender_basic *sf_shift() {
   return fsb;
 }
 
-static bool  ICACHE_FLASH_ATTR sf_append(const fer_sender_basic *fsb, fmsg_type msgType, u32 s10) {
+static bool   sf_append(const fer_sender_basic *fsb, fmsg_type msgType, u32 s10) {
   if (sf_isFull())
     return false;
   u8 i = sf_tail;
@@ -65,7 +65,7 @@ static bool  ICACHE_FLASH_ATTR sf_append(const fer_sender_basic *fsb, fmsg_type 
   return false;
 }
 
-bool ICACHE_FLASH_ATTR
+bool 
 fers_is_ready(void) {
   if (is_sendMsgPending)
     return false;
@@ -73,7 +73,7 @@ fers_is_ready(void) {
   return true;
 }
 
-bool ICACHE_FLASH_ATTR
+bool 
 fers_loop() {
   if (is_sendMsgPending)
     return false;
@@ -90,7 +90,7 @@ fers_loop() {
   return true;
 }
 
-bool ICACHE_FLASH_ATTR fer_send_msg_with_stop(const fer_sender_basic *fsb, u16 delay, u16 stopDelay) {
+bool  fer_send_msg_with_stop(const fer_sender_basic *fsb, u16 delay, u16 stopDelay) {
   precond(fsb);
   precond(stopDelay > 0);
 
@@ -104,12 +104,12 @@ bool ICACHE_FLASH_ATTR fer_send_msg_with_stop(const fer_sender_basic *fsb, u16 d
   return false;
 }
 
-bool ICACHE_FLASH_ATTR fer_send_msg(const fer_sender_basic *fsb, fmsg_type msgType) {
+bool  fer_send_msg(const fer_sender_basic *fsb, fmsg_type msgType) {
  //test// if (fsb) return fer_send_msg_with_stop(fsb, 5);
   return fer_send_delayed_msg(fsb, msgType, 0);
 }
 
-bool ICACHE_FLASH_ATTR fer_send_delayed_msg(const fer_sender_basic *fsb, fmsg_type msgType, u16 delay) {
+bool  fer_send_delayed_msg(const fer_sender_basic *fsb, fmsg_type msgType, u16 delay) {
   precond(fsb);
 
   if (sf_isFull())
@@ -120,7 +120,7 @@ bool ICACHE_FLASH_ATTR fer_send_delayed_msg(const fer_sender_basic *fsb, fmsg_ty
 
 }
 
-bool ICACHE_FLASH_ATTR fer_send_queued_msg() {
+bool  fer_send_queued_msg() {
   if (is_sendMsgPending)
     return false;
   if (sf_isEmpty())

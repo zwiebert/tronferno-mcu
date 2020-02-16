@@ -50,7 +50,7 @@ bool out_js = false;
 #define so_cto so_cco
 
 
-char *ICACHE_FLASH_ATTR ftoa(float f, char *buf, int n) {
+char * ftoa(float f, char *buf, int n) {
   int i;
   i32 mult;
   u32 rop;
@@ -75,7 +75,7 @@ char *ICACHE_FLASH_ATTR ftoa(float f, char *buf, int n) {
 }
 
 // get the so_msg_t for a config key string (or SO_NONE)
-so_msg_t ICACHE_FLASH_ATTR
+so_msg_t 
 so_parse_config_key(const char *k) {
   int i;
   for (i = 0; i < (SO_CFG_end - SO_CFG_begin); ++i) {
@@ -161,7 +161,7 @@ static void so_print_timer(u8 g, u8 m);
 static void so_print_gmbitmask(gm_bitmask_t mm);
 static void so_print_startup_info(void);
 
-void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
+void  so_output_message(so_msg_t mt, void *arg) {
   static u16 pras_msgid, cuas_msgid;
   char buf[64];
   int i;
@@ -554,7 +554,7 @@ static void print_timer_event_minute(const char *label, minutes_t mins) {
     io_putc('='), io_putd(mins), io_putlf();
 }
 
-static void ICACHE_FLASH_ATTR so_print_timer_event_minutes(u8 g, u8 m) {
+static void  so_print_timer_event_minutes(u8 g, u8 m) {
   timer_minutes_t tm;
   if (get_timer_minutes(&tm, &g, &m, true)) {
     print_timer_event_minute("astro-down", tm.minutes[0]);
@@ -567,7 +567,7 @@ static void ICACHE_FLASH_ATTR so_print_timer_event_minutes(u8 g, u8 m) {
 
 
 
-static void ICACHE_FLASH_ATTR so_print_timer_as_text(u8 g, u8 m, bool wildcard) {
+static void  so_print_timer_as_text(u8 g, u8 m, bool wildcard) {
   timer_data_t tdr;
   char buf[10];
   u8 g_res = g, m_res = m;
@@ -614,7 +614,7 @@ static void ICACHE_FLASH_ATTR so_print_timer_as_text(u8 g, u8 m, bool wildcard) 
   if (so_cto) cli_out_timer_reply_entry(NULL, NULL, -1);
 }
 
-static void ICACHE_FLASH_ATTR so_print_timer(u8 g, u8 m) {
+static void  so_print_timer(u8 g, u8 m) {
 
   if (so_tgt_test_cli_text())
     so_print_timer_as_text(g, m, true);
@@ -634,7 +634,7 @@ static void ICACHE_FLASH_ATTR so_print_timer(u8 g, u8 m) {
 
 }
 
-static void ICACHE_FLASH_ATTR so_print_gmbitmask(gm_bitmask_t mm) {
+static void  so_print_gmbitmask(gm_bitmask_t mm) {
   u8 g;
 
   for (g = 0; g < 8; ++g) {
@@ -644,7 +644,7 @@ static void ICACHE_FLASH_ATTR so_print_gmbitmask(gm_bitmask_t mm) {
   }
 }
 
-static void ICACHE_FLASH_ATTR
+static void 
 so_print_startup_info(void) {
   static const char msg_starting[] = "\n\n" "tf: info: start: tronferno-mcu\n" "tf: info: build-date: " __DATE__ " " __TIME__ "\n";
   static const char msg_hint[] = "tf: hint: type 'help;' to get a command list\n";

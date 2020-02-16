@@ -16,7 +16,7 @@
 #include "main/pairings.h"
 #include "userio/status_output.h"
 
-void ICACHE_FLASH_ATTR
+void 
 loop(void) {
   fers_loop();
 
@@ -81,7 +81,7 @@ loop(void) {
 }
 
 
-int ICACHE_FLASH_ATTR
+int 
 main_setup() {
 
   rtc_setup();

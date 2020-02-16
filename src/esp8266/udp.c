@@ -33,7 +33,7 @@ static u8 urx_head = 0, urx_tail = 0;
 
 int udp_available;
 
-int ICACHE_FLASH_ATTR udp_getc(void) {
+int  udp_getc(void) {
   int result = -1;
 
   if (! urxb_isEmpty()) {
@@ -45,12 +45,12 @@ int ICACHE_FLASH_ATTR udp_getc(void) {
   return result;
 }
 
-static void ICACHE_FLASH_ATTR
+static void 
 udp_sendcb(void *arg) {
   struct espconn *pesp_conn = arg;
 }
 
-static void ICACHE_FLASH_ATTR
+static void 
 udp_recvb(void *arg, char *pdata, unsigned short len) {
   struct espconn *pesp_conn = arg;
   while (len-- > 0) {
@@ -73,7 +73,7 @@ bool sendDatagram(char *datagram, uint16 size) {
   ESPCONN_OK == espconn_delete(&sendResponse);
 }
 
-bool ICACHE_FLASH_ATTR
+bool 
 setup_udp(void) {
   struct espconn *pesp_conn = os_zalloc((uint32 )sizeof(struct espconn));
 
@@ -94,7 +94,7 @@ setup_udp(void) {
 
 
 
-void ICACHE_FLASH_ATTR
+void 
 udp_loop(void) {
 
 }

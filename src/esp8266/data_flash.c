@@ -81,7 +81,7 @@ static struct {
 // deletes blocks with previously saved or unknown data
 // erases all visited sectors without free blocks
 /// always succeeds
-static bool ICACHE_FLASH_ATTR find_free_block(void) {
+static bool  find_free_block(void) {
 
 	for (; our_current_sector_index < FLASH_SECTORS; ++our_current_sector_index, our_current_block_index = 0) {
 		for (; our_current_block_index < BLOCKS_PER_SECTOR; ++our_current_block_index) {
@@ -112,7 +112,7 @@ return true;
 // adjusts current_sector and current_block to point at the saved data
 // erase all visited sectors which only contain deleted blocks
 // returns false,  if no saved data was found
-static bool ICACHE_FLASH_ATTR find_data_block() {
+static bool  find_data_block() {
 
 	for (; our_current_sector_index < FLASH_SECTORS; ++our_current_sector_index, our_current_block_index = 0) {
 		for (; our_current_block_index < BLOCKS_PER_SECTOR; ++our_current_block_index) {
@@ -131,7 +131,7 @@ static bool ICACHE_FLASH_ATTR find_data_block() {
 }
 
 // write data to current block
-static void ICACHE_FLASH_ATTR write_flash() {
+static void  write_flash() {
 	DB(ets_uart_printf("write_flash(): sn=%d, bn=%d, size=%d\n", (int)(our_start_sector_number + our_current_sector_index), (int)our_current_block_index, (int)BLOCK_SIZE));
 #if NO_CACHE
 	spi_flash_write(our_current_sector_address, &MAGIC_COOKIE, sizeof (MAGIC_COOKIE));
@@ -142,7 +142,7 @@ static void ICACHE_FLASH_ATTR write_flash() {
 }
 
 // read data from current block
-static void ICACHE_FLASH_ATTR read_flash() {
+static void  read_flash() {
 #if NO_CACHE
 	spi_flash_read(our_current_sector_address + sizeof (MAGIC_COOKIE), (u32*) DATA_PTR, sizeof (DATA_TYPE));
 #else
@@ -153,7 +153,7 @@ static void ICACHE_FLASH_ATTR read_flash() {
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 // read data from flash and copy it to DATA_PTR
 // does nothing if not data was found in flash
-void ICACHE_FLASH_ATTR read_data(void) {
+void  read_data(void) {
 	if (!find_data_block(true))
 		return; // nothing in flash. just keep the default values until save_config() is called from code
 
@@ -165,7 +165,7 @@ void ICACHE_FLASH_ATTR read_data(void) {
 
 // reading data from DATA_PTR and write it to flash
 // does nothing if data is unchanged
-void ICACHE_FLASH_ATTR save_data(void) {
+void  save_data(void) {
 #if ! NO_CACHE
 	if (os_memcmp(&flash_obj.data, DATA_PTR, sizeof(DATA_TYPE)) == 0)
 		return;  // no changes to update
@@ -179,7 +179,7 @@ void ICACHE_FLASH_ATTR save_data(void) {
 }
 
 // initialize this software module
-void ICACHE_FLASH_ATTR setup_dataFlash() {
+void  setup_dataFlash() {
 #ifndef C_DATA_FLASH_ADDR
 	u32 our_start_sector_address; // byte address of our storage in memory mapped flash ROM
 

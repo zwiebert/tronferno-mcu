@@ -36,11 +36,11 @@ const char *Obj_tag="";
 #define OBJ_TAG_SEND "send"
 
 
-static void ICACHE_FLASH_ATTR cli_out_top_tag(void) {
+static void  cli_out_top_tag(void) {
     io_puts("tf: ");
 }
 
-static void ICACHE_FLASH_ATTR cli_out_reply_tag(void) {
+static void  cli_out_reply_tag(void) {
   if (msgid) {
     io_puts("reply="), io_putd(msgid), io_puts(": ");
   } else {
@@ -48,29 +48,29 @@ static void ICACHE_FLASH_ATTR cli_out_reply_tag(void) {
   }
 }
 
-static void ICACHE_FLASH_ATTR cli_out_obj_tag(void) {
+static void  cli_out_obj_tag(void) {
     io_puts(OBJ_TAG), io_puts(":");
 }
 
-static void ICACHE_FLASH_ATTR cli_out_start_reply(void) {
+static void  cli_out_start_reply(void) {
   cli_out_top_tag();
   cli_out_reply_tag();
   cli_out_obj_tag();
 }
 
 
-static void ICACHE_FLASH_ATTR cli_out_start_timer_reply(void) {
+static void  cli_out_start_timer_reply(void) {
   SET_OBJ_TAG(OBJ_TAG_TIMER);
   cli_out_start_reply();
 }
 
 
-static void ICACHE_FLASH_ATTR cli_out_start_config_reply(void) {
+static void  cli_out_start_config_reply(void) {
   SET_OBJ_TAG(OBJ_TAG_CONFIG);
   cli_out_start_reply();
 }
 
-static void ICACHE_FLASH_ATTR cli_out_start_mcu_reply(void) {
+static void  cli_out_start_mcu_reply(void) {
   SET_OBJ_TAG(OBJ_TAG_MCU);
   cli_out_start_reply();
 }
@@ -79,7 +79,7 @@ static void ICACHE_FLASH_ATTR cli_out_start_mcu_reply(void) {
 typedef void (*void_fun_ptr)(void);
 const int OUT_MAX_LEN = 80;
 
-static void ICACHE_FLASH_ATTR cli_out_entry(void_fun_ptr tag, const char *key, const char *val, int len) {
+static void  cli_out_entry(void_fun_ptr tag, const char *key, const char *val, int len) {
   static int length;
 
   if (!key || len == -1) {
@@ -110,43 +110,43 @@ static void ICACHE_FLASH_ATTR cli_out_entry(void_fun_ptr tag, const char *key, c
   }
 }
 
-void  ICACHE_FLASH_ATTR cli_out_set_config(void) {
+void   cli_out_set_config(void) {
   SET_OBJ_TAG(OBJ_TAG_CONFIG);
 }
 
-void  ICACHE_FLASH_ATTR cli_out_set_x(const char *obj_tag) {
+void   cli_out_set_x(const char *obj_tag) {
   SET_OBJ_TAG(obj_tag);
 }
-void ICACHE_FLASH_ATTR cli_out_x_reply_entry(const char *key, const char *val, int len) {
+void  cli_out_x_reply_entry(const char *key, const char *val, int len) {
   if (!so_tgt_test_cli_text())
     return;
   cli_out_entry(cli_out_start_reply, key, val, len);
 }
 
-void ICACHE_FLASH_ATTR cli_out_timer_reply_entry(const char *key, const char *val, int len) {
+void  cli_out_timer_reply_entry(const char *key, const char *val, int len) {
   if (!so_tgt_test_cli_text())
     return;
   cli_out_entry(cli_out_start_timer_reply, key, val, len);
 }
 
-void ICACHE_FLASH_ATTR cli_out_config_reply_entry(const char *key, const char *val, int len) {
+void  cli_out_config_reply_entry(const char *key, const char *val, int len) {
   if (!so_tgt_test_cli_text())
     return;
   cli_out_entry(cli_out_start_config_reply, key, val, len);
 }
 
-void ICACHE_FLASH_ATTR cli_out_mcu_reply_entry(const char *key, const char *val, int len) {
+void  cli_out_mcu_reply_entry(const char *key, const char *val, int len) {
   if (!so_tgt_test_cli_text())
     return;
   cli_out_entry(cli_out_start_mcu_reply, key, val, len);
 }
 
 int ENR; // error number
-void ICACHE_FLASH_ATTR print_enr(void) {
+void  print_enr(void) {
   io_puts("enr: "), io_putd(ENR), io_putlf();
 }
 
-void ICACHE_FLASH_ATTR msg_print(const char *msg, const char *tag) {
+void  msg_print(const char *msg, const char *tag) {
   if (!so_tgt_test_cli_text())
     return;
   if (msg)
@@ -162,19 +162,19 @@ void ICACHE_FLASH_ATTR msg_print(const char *msg, const char *tag) {
   io_puts(": ");
 }
 
-void ICACHE_FLASH_ATTR warning_unknown_option(const char *key) {
+void  warning_unknown_option(const char *key) {
   if (!so_tgt_test_cli_text())
     return;
   msg_print("warning", "unknown-option"), io_puts(key), io_putc('\n');
 }
 
-void ICACHE_FLASH_ATTR reply_print(const char *tag) {
+void  reply_print(const char *tag) {
   if (!so_tgt_test_cli_text())
     return;
   msg_print("reply", tag);
 }
 
-void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
+void  reply_message(const char *tag, const char *msg) {
   if (!so_tgt_test_cli_text())
     return;
   reply_print(tag);
@@ -183,13 +183,13 @@ void ICACHE_FLASH_ATTR reply_message(const char *tag, const char *msg) {
   io_putlf();
 }
 
-void ICACHE_FLASH_ATTR cli_msg_ready(void) {
+void  cli_msg_ready(void) {
   if (!so_tgt_test_cli_text())
     return;
   io_puts("\nready:\n");
 }
 
-void ICACHE_FLASH_ATTR reply_id_message(u16 id, const char *tag, const char *msg) {
+void  reply_id_message(u16 id, const char *tag, const char *msg) {
   u16 old_id = msgid;
   if (!so_tgt_test_cli_text())
     return;
@@ -207,7 +207,7 @@ void ICACHE_FLASH_ATTR reply_id_message(u16 id, const char *tag, const char *msg
 
 
 
-int ICACHE_FLASH_ATTR
+int 
 asc2bool(const char *s) {
   if (!s)
     return 1; // default value for key without value
@@ -234,7 +234,7 @@ struct c_map const fc_map[] = { { "down", fer_cmd_DOWN }, { "up", fer_cmd_UP },
                                 //		{"sun-test", fer_cmd_Program},
                                 { "set", fer_cmd_SET }, };
 
-bool ICACHE_FLASH_ATTR
+bool 
 cli_parm_to_ferCMD(const char *token, fer_cmd *cmd) {
   int i;
   dbg_trace();
@@ -248,18 +248,18 @@ cli_parm_to_ferCMD(const char *token, fer_cmd *cmd) {
   return false;
 }
 
-void ICACHE_FLASH_ATTR
+void 
 reply_success() {
   reply_message(0, "ok");
 }
 
-int ICACHE_FLASH_ATTR
+int 
 reply_failure() {
   reply_message(0, "error");
   return -1;
 }
 
-bool ICACHE_FLASH_ATTR config_receiver(const char *val) {
+bool  config_receiver(const char *val) {
   if (strcmp(val, "on") == 0) {
     C.app_recv = recvTick;
   } else if (strcmp(val, "off") == 0) {
@@ -271,7 +271,7 @@ bool ICACHE_FLASH_ATTR config_receiver(const char *val) {
   return true;
 }
 
-bool ICACHE_FLASH_ATTR
+bool 
 config_transmitter(const char *val) {
   if (strcmp(val, "on") == 0) {
     C.app_transm = transmTick;
@@ -284,7 +284,7 @@ config_transmitter(const char *val) {
   return true;
 }
 
-bool ICACHE_FLASH_ATTR
+bool 
 reply(bool success) {
   if (success)
     reply_success();
@@ -293,7 +293,7 @@ reply(bool success) {
   return success;
 }
 
-fer_sender_basic * ICACHE_FLASH_ATTR
+fer_sender_basic * 
 get_sender_by_addr(long addr) {
   if (addr == 0) {
     return &default_sender;
@@ -304,7 +304,7 @@ get_sender_by_addr(long addr) {
 }
 
 
-bool ICACHE_FLASH_ATTR asc2group(const char *s, fer_grp *grp) {
+bool  asc2group(const char *s, fer_grp *grp) {
   if (s) {
     int g = atoi(s);
     if (0 <= g && g <= 7) {
@@ -317,7 +317,7 @@ bool ICACHE_FLASH_ATTR asc2group(const char *s, fer_grp *grp) {
   return (fer_grp) atoi(s);
 }
 
-bool ICACHE_FLASH_ATTR asc2memb(const char *s, fer_memb *memb) {
+bool  asc2memb(const char *s, fer_memb *memb) {
   if (s) {
 
     int m = atoi(s);
@@ -331,7 +331,7 @@ bool ICACHE_FLASH_ATTR asc2memb(const char *s, fer_memb *memb) {
 
 
 
-bool ICACHE_FLASH_ATTR
+bool 
 timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
   char buf[3];
   int i;
@@ -400,7 +400,7 @@ struct {
 #endif
   };
 
-int ICACHE_FLASH_ATTR
+int 
 process_parm(clpar p[], int len) {
   int i;
   int result = -1;
@@ -425,7 +425,7 @@ process_parm(clpar p[], int len) {
   return result;
 }
 
-void ICACHE_FLASH_ATTR
+void 
 cli_process_cmdline(char *line) {
   dbg_vpf(db_printf("process_cmdline: %s\n", line));
   int n = parse_commandline(line);
@@ -436,7 +436,7 @@ cli_process_cmdline(char *line) {
   }
 }
 
-int ICACHE_FLASH_ATTR
+int 
 process_parmHelp(clpar p[], int len) {
   int i;
 
@@ -495,7 +495,7 @@ process_parmHelp(clpar p[], int len) {
   return 0;
 }
 
-void ICACHE_FLASH_ATTR cli_loop(void) {
+void  cli_loop(void) {
   char *cmdline;
   static bool ready;
   if ((cmdline = get_commandline())) {
@@ -515,7 +515,7 @@ void ICACHE_FLASH_ATTR cli_loop(void) {
 }
 
 #if TEST_MODULE_CLI
-bool ICACHE_FLASH_ATTR
+bool 
 testModule_cli()
 {
   char cl[] = "timer g=5 astro=0;";  //"timer g=2 m=2 weekly=08222000++++10552134+";

@@ -28,7 +28,7 @@ static bool pras_active;
 static time_t end_time;
 static u8 pras_g, pras_m, pras_c;
 
-bool ICACHE_FLASH_ATTR pair_auto_set(u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
+bool  pair_auto_set(u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
 
@@ -44,7 +44,7 @@ bool ICACHE_FLASH_ATTR pair_auto_set(u8 g, u8 m, u8 c, u16 id, unsigned timeout_
   return false;
 }
 
-bool ICACHE_FLASH_ATTR pair_auto_set_check_timeout(void) {
+bool  pair_auto_set_check_timeout(void) {
   if (end_time == 0)
     return false;
 
@@ -58,7 +58,7 @@ bool ICACHE_FLASH_ATTR pair_auto_set_check_timeout(void) {
   return false;
 }
 
-bool ICACHE_FLASH_ATTR pair_auto_set_check(fer_sender_basic *fsb) {
+bool  pair_auto_set_check(fer_sender_basic *fsb) {
   if (end_time == 0)
     return false;
 

@@ -16,7 +16,7 @@
 #include "misc/bcd.h"
 
 /* verify all checksums of message in place. */
-bool ICACHE_FLASH_ATTR fmsg_verify_checksums(const struct fer_msg *m, fmsg_type t) {
+bool  fmsg_verify_checksums(const struct fer_msg *m, fmsg_type t) {
 	int line, column;
 	u8 checksum = 0;
 
@@ -71,7 +71,7 @@ bool ICACHE_FLASH_ATTR fmsg_verify_checksums(const struct fer_msg *m, fmsg_type 
 
 
 /* create all checksums of message in place. */
-void ICACHE_FLASH_ATTR fmsg_create_checksums(struct fer_msg *m, fmsg_type t) {
+void  fmsg_create_checksums(struct fer_msg *m, fmsg_type t) {
 	int line, column;
 	u8 checksum = 0;
 
@@ -119,7 +119,7 @@ void ICACHE_FLASH_ATTR fmsg_create_checksums(struct fer_msg *m, fmsg_type t) {
 
 }
 
-static void ICACHE_FLASH_ATTR disable_timer(u8 d[][FER_PRG_BYTE_CT], u8 lines) {
+static void  disable_timer(u8 d[][FER_PRG_BYTE_CT], u8 lines) {
   int line, col;
   for (line = 0; line < lines; ++line) {
     for (col = 0; col < FPR_TIMER_WIDTH; ++col) {
@@ -130,7 +130,7 @@ static void ICACHE_FLASH_ATTR disable_timer(u8 d[][FER_PRG_BYTE_CT], u8 lines) {
   }
 }
 
-static void ICACHE_FLASH_ATTR write_wtimer(u8 d[][FER_PRG_BYTE_CT], const u8 *wtimer_data) {
+static void  write_wtimer(u8 d[][FER_PRG_BYTE_CT], const u8 *wtimer_data) {
   #ifdef WEEK_STARTS_AT_SUNDAY
   memcpy(d[0], wtimer_data, FPR_TIMER_WIDTH);
   memcpy(d[1],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_WIDTH);
@@ -146,13 +146,13 @@ static void ICACHE_FLASH_ATTR write_wtimer(u8 d[][FER_PRG_BYTE_CT], const u8 *wt
   #endif
 }
 
-static void ICACHE_FLASH_ATTR write_dtimer(u8 d[FPR_TIMER_STAMP_WIDTH], const u8 *dtimer_data) {
+static void  write_dtimer(u8 d[FPR_TIMER_STAMP_WIDTH], const u8 *dtimer_data) {
     memcpy(d, dtimer_data, FPR_TIMER_STAMP_WIDTH);
 }
 
 
 
-static void ICACHE_FLASH_ATTR write_rtc(u8 d[FPR_RTC_WIDTH], time_t rtc, bool rtc_only) {
+static void  write_rtc(u8 d[FPR_RTC_WIDTH], time_t rtc, bool rtc_only) {
 	//time_t timer = time(NULL);
 	struct tm *t = localtime(&rtc);
 
@@ -167,13 +167,13 @@ static void ICACHE_FLASH_ATTR write_rtc(u8 d[FPR_RTC_WIDTH], time_t rtc, bool rt
 	PUT_BIT(d[fpr0_FlagBits], flag_DST, t->tm_isdst);
 }
 
-static void ICACHE_FLASH_ATTR write_flags(u8 d[FPR_RTC_WIDTH], u8 flags, u8 mask) {
+static void  write_flags(u8 d[FPR_RTC_WIDTH], u8 flags, u8 mask) {
 	d[fpr0_FlagBits] = (d[fpr0_FlagBits] & ~mask) | (flags & mask);
 }
 
 
 
-static void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, u8 d[FER_PRG_BYTE_CT]) {
+static void  write_lastline(fer_sender_basic *fsb, u8 d[FER_PRG_BYTE_CT]) {
 	d[0] = 0x00;
 	d[1] = fsb->data[fer_dat_ADDR_2];
 	d[2] = fsb->data[fer_dat_ADDR_1];
@@ -187,26 +187,26 @@ static void ICACHE_FLASH_ATTR write_lastline(fer_sender_basic *fsb, u8 d[FER_PRG
 
 
 
-void ICACHE_FLASH_ATTR fmsg_init_data(struct fer_msg *m) {
+void  fmsg_init_data(struct fer_msg *m) {
 	memset(m->rtc, 0, FPR_RTC_WIDTH);
 	disable_timer(m->wdtimer, FPR_TIMER_HEIGHT + FPR_ASTRO_HEIGHT);
 }
-void ICACHE_FLASH_ATTR fmsg_write_rtc(fer_msg *msg, time_t rtc, bool rtc_only) {
+void  fmsg_write_rtc(fer_msg *msg, time_t rtc, bool rtc_only) {
    write_rtc(msg->rtc, rtc, rtc_only);
 }
-void ICACHE_FLASH_ATTR fmsg_write_flags(fer_msg *msg, u8 flags, u8 mask) {
+void  fmsg_write_flags(fer_msg *msg, u8 flags, u8 mask) {
   write_flags(msg->rtc, flags, mask);
 }
-void ICACHE_FLASH_ATTR fmsg_write_wtimer(fer_msg *msg, const u8 *wtimer_data) {
+void  fmsg_write_wtimer(fer_msg *msg, const u8 *wtimer_data) {
   write_wtimer(msg->wdtimer, wtimer_data);
 }
-void ICACHE_FLASH_ATTR fmsg_write_dtimer(fer_msg *msg, const u8 *dtimer_data) {
+void  fmsg_write_dtimer(fer_msg *msg, const u8 *dtimer_data) {
   write_dtimer(&msg->wdtimer[3][FPR_DAILY_START_COL], dtimer_data);
 }
-void ICACHE_FLASH_ATTR fmsg_write_astro(fer_msg *msg, int mint_offset) {
+void  fmsg_write_astro(fer_msg *msg, int mint_offset) {
   astro_write_data(msg->astro, mint_offset);
 }
-void ICACHE_FLASH_ATTR fmsg_write_lastline(fer_msg *msg, fer_sender_basic *fsb) {
+void  fmsg_write_lastline(fer_msg *msg, fer_sender_basic *fsb) {
 	write_lastline(fsb, msg->last);
 }    
 
@@ -251,7 +251,7 @@ extern const u8 astro_data[12][8];
 
 #include "config/config.h"
 #if 0
-bool ICACHE_FLASH_ATTR testModule_fer_prg() {
+bool  testModule_fer_prg() {
 	rtc_set_by_string("2017-09-07T19:55:00");
 
 	static fer_sender_basic fsb_, *fsb = &fsb_;
@@ -267,7 +267,7 @@ bool ICACHE_FLASH_ATTR testModule_fer_prg() {
 	return true;
 }
 #else
-bool ICACHE_FLASH_ATTR testModule_fer_prg()
+bool  testModule_fer_prg()
 {
 	bool result;
 	u8 group = 3, memb = 1;

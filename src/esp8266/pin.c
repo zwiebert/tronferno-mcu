@@ -27,7 +27,7 @@
 
 const char*  mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state);
 
-bool ICACHE_FLASH_ATTR is_gpio_number_usable(int gpio_number, bool cli) {
+bool  is_gpio_number_usable(int gpio_number, bool cli) {
   if (cli) {
     switch (gpio_number) {
     case 12:
@@ -57,7 +57,7 @@ bool mcu_get_rxPin() {
   return GPIO_INPUT_GET(GPIO_ID_PIN(RFIN_GPIO));
 }
 
-void ICACHE_FLASH_ATTR
+void 
 setup_pin(void) {
   int i;
 
@@ -80,20 +80,20 @@ setup_pin(void) {
   mcu_put_txPin(false); // make sure, the RF transmitter is off
 }
 
-bool ICACHE_FLASH_ATTR mcu_get_buttonUpPin(void) {
+bool  mcu_get_buttonUpPin(void) {
   return false;
 }
 
-bool ICACHE_FLASH_ATTR mcu_get_buttonDownPin(void) {
+bool  mcu_get_buttonDownPin(void) {
   return false;
 }
 
-bool ICACHE_FLASH_ATTR mcu_get_buttonPin(void) {
+bool  mcu_get_buttonPin(void) {
   bool val = GPIO_INPUT_GET(GPIO_ID_PIN(BUTTON_GPIO));
   return val == 0;  // 0 means pressed
 }
 
-const char* ICACHE_FLASH_ATTR mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
+const char*  mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
 
   if (state == PIN_OUTPUT || state == PIN_INPUT || state == PIN_INPUT_PULLUP) {
     bool pullup = state == PIN_INPUT_PULLUP;
@@ -175,7 +175,7 @@ const char* ICACHE_FLASH_ATTR mcu_access_pin2(int gpio_number, mcu_pin_state *re
 
 }
 
-const char* ICACHE_FLASH_ATTR mcu_access_pin(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
+const char*  mcu_access_pin(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
 
   if (state != PIN_READ)
     switch (gpio_number) {

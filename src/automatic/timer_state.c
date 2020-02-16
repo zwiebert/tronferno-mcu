@@ -24,7 +24,7 @@
 #define D(x)
 #endif
 
-static bool ICACHE_FLASH_ATTR
+static bool 
 timer_to_minutes(minutes_t *result, const char *ts) {
   char buf[3];
   DT(ets_printf("%s: ts=%s\n", __FUNCTION__, ts));
@@ -45,7 +45,7 @@ timer_to_minutes(minutes_t *result, const char *ts) {
 }
 
 
-bool ICACHE_FLASH_ATTR
+bool 
 get_timer_minutes_2(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, struct tm *tm) {
 
   precond(timi && group && member);
@@ -115,7 +115,7 @@ get_timer_minutes_2(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard,
   return true;
 }
 
-bool ICACHE_FLASH_ATTR
+bool 
 get_timer_minutes(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard) {
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
@@ -140,7 +140,7 @@ timi_get_earliest(timer_minutes_t *timi, minutes_t now) {
 #define MAX_MBR 7
 enum pass { PASS_GET_EARLIEST_TIME, PASS_FILL_EVENTS, PASS_STOP};
 
-bool ICACHE_FLASH_ATTR
+bool 
 get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
   u8 pass, g, m;
   minutes_t earliest = MINUTES_DISABLED;
@@ -212,7 +212,7 @@ get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
   return true;
 }
 
-void ICACHE_FLASH_ATTR
+void 
 timer_state_loop(void) {
   static bool initialized;
   static timer_event_t teud[2], *teu=&teud[0], *ted=&teud[1], *te;

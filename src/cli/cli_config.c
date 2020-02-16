@@ -100,7 +100,7 @@ const char *const *cfg_args[SO_CFG_size] = {
 
 
 
-int ICACHE_FLASH_ATTR
+int 
 process_parmConfig(clpar p[], int len) {
   int arg_idx;
   int errors = 0;

@@ -32,4 +32,18 @@ server.all("/*.json", (req, res) => {
 });
 
 
+
+
+// serve firmware image for OTA
+server.get("/tronferno-mcu.bin", (req, res) => {
+    res.sendFile('/home/bertw/proj/mcu/tronferno-mcu/src/esp32/build/tronferno-mcu.bin');
+});
+
 server.listen(3000);
+
+
+/*
+Local Variables:
+compile-command: "jshint proxy.js"
+End:
+*/

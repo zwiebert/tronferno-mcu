@@ -25,7 +25,7 @@ void spiffs_print_errno() {
   io_puts("spiffs:errno: "), io_putl(SPIFFS_errno(fs_A), 10),  io_puts("\n");
 }
 
-int ICACHE_FLASH_ATTR
+int 
 config_read(void) {
   spiffs_file file;
   s32_t nmb_read = 0;
@@ -47,7 +47,7 @@ config_read(void) {
 
 
 // call read_data() at least once in the program before the first calling of save_data()!
-int ICACHE_FLASH_ATTR
+int 
 config_save(void) {
   spiffs_file file;
   s32_t nmb_written;

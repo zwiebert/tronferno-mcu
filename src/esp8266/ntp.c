@@ -26,7 +26,7 @@ extern int ets_uart_printf(const char *fmt, ...);
 
 static time_t last_ntp_time;
 
-void ICACHE_FLASH_ATTR setup_ntp(void) {
+void  setup_ntp(void) {
   static int once;
   if (once == 0) {
     once = 1;
@@ -44,7 +44,7 @@ void ICACHE_FLASH_ATTR setup_ntp(void) {
 #define NO_ADJUST_UNTIL (SECS_PER_HOUR) // if ntp is updated too often, don't adjust to avoid wrong values and burning out persistent storage
 #define ADJUST_TOLERANCE_MS 100    // allow tolerance to avoid burning out persistent storage
 
-void ICACHE_FLASH_ATTR auto_adjust_time(time_t rtc_time, time_t ntp_time) {
+void  auto_adjust_time(time_t rtc_time, time_t ntp_time) {
 
   if (last_ntp_time != 0 && last_ntp_time + NO_ADJUST_UNTIL < ntp_time) {
     i32 diff_time, interval_time;
@@ -63,7 +63,7 @@ void ICACHE_FLASH_ATTR auto_adjust_time(time_t rtc_time, time_t ntp_time) {
   }
 }
 
-bool ICACHE_FLASH_ATTR ntp_set_system_time(void) {
+bool  ntp_set_system_time(void) {
   u32 time_stamp = sntp_get_current_timestamp();
   if (time_stamp != 0) {
     time_t rtc_time, ntp_time;
@@ -87,7 +87,7 @@ bool ICACHE_FLASH_ATTR ntp_set_system_time(void) {
   return false;
 }
 
-bool ICACHE_FLASH_ATTR ntp_update_system_time(unsigned interval_seconds) {
+bool  ntp_update_system_time(unsigned interval_seconds) {
   if (last_ntp_time == 0 || time(NULL) >= last_ntp_time + interval_seconds) {
     ntp_set_system_time();
     return true;

@@ -4,7 +4,7 @@
 
 char cmd_buf[CMD_BUF_SIZE];
 
-char * ICACHE_FLASH_ATTR
+char * 
 get_commandline() {
   char *result = NULL;
 

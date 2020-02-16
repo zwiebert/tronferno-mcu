@@ -25,7 +25,7 @@
  *
  * force_even_minutes  - if true, no odd number will be outputted in dstMinutes
  */
-static void ICACHE_FLASH_ATTR
+static void 
 time_to_bcd(u8 *bcdMinutes, u8 *bcdHours, double time, bool force_even_minutes) {
   double integral, fractional;
 
@@ -68,7 +68,7 @@ time_to_bcd(u8 *bcdMinutes, u8 *bcdHours, double time, bool force_even_minutes) 
  *
  *
  */
-static void ICACHE_FLASH_ATTR
+static void 
 math_write_astro(astro_byte_data dst, int mint_offset) {
   int i, j;
   double dusk = 0, duskf = 0, duskr = 0, last_dusk = -1;
@@ -98,14 +98,14 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
   }
 }
 #elif 1
-u16 ICACHE_FLASH_ATTR astro_calc_minutes(const struct tm *tm) {
+u16  astro_calc_minutes(const struct tm *tm) {
   double dusk;
   double dayofy = (tm->tm_mon * 30 + tm->tm_mday) * 1.0139;
   calc_sunrise_sunset(NULL, &dusk, C.geo_timezone + (tm->tm_isdst ? 1 : 0), dayofy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
   u16 minutes = dusk * 60;
   return minutes;
 }
-static void ICACHE_FLASH_ATTR
+static void 
 math_write_astro(astro_byte_data dst, int mint_offset) {
   int i, j, yd;
 
@@ -133,7 +133,7 @@ static int get_yday(int mon, int day)
 }
 
 
-static void ICACHE_FLASH_ATTR
+static void 
 math_write_astro(astro_byte_data dst, int mint_offset) {
   int i, j, month, mday;
   double sunset = 17.0;
@@ -160,7 +160,7 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
 /////////////////////////////////////////////////////////////////////////////////////
 
 
-void ICACHE_FLASH_ATTR astro_write_data(u8 d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
+void  astro_write_data(u8 d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
   math_write_astro(d, mint_offset);
 }
 
@@ -170,7 +170,7 @@ void ICACHE_FLASH_ATTR astro_write_data(u8 d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT],
 #if TEST_MODULE_ASTRO
 u8 data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];
 
-bool ICACHE_FLASH_ATTR
+bool 
 testModule_astro()
 {
   double rise, set;

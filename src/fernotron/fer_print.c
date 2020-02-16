@@ -21,7 +21,7 @@
 #include "stdbool.h"
 #include "userio/inout.h"
 
-void ICACHE_FLASH_ATTR
+void 
 frb_printPacket(const u8 *dg) {
 	int i;
 
@@ -32,14 +32,14 @@ frb_printPacket(const u8 *dg) {
   io_putlf();
 }
 
-void ICACHE_FLASH_ATTR
+void 
 printTimerStamp(u8 d[18][9], int row, int col) {
   printBCD(d[row][col+1]);
   io_puts(":");
   printBCD(d[row][col]);
 }
 
-void ICACHE_FLASH_ATTR fpr_printPrgPacketInfo(u8 d[FER_PRG_PACK_CT][FER_PRG_BYTE_CT], bool rtc_only) {
+void  fpr_printPrgPacketInfo(u8 d[FER_PRG_PACK_CT][FER_PRG_BYTE_CT], bool rtc_only) {
   int row, col;
 
 const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
@@ -96,7 +96,7 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 }
 
 
-void ICACHE_FLASH_ATTR fmsg_print(const fer_msg *msg, fmsg_type t) {
+void  fmsg_print(const fer_msg *msg, fmsg_type t) {
 
   frb_printPacket(msg->cmd);
 
@@ -118,7 +118,7 @@ void ICACHE_FLASH_ATTR fmsg_print(const fer_msg *msg, fmsg_type t) {
 #endif
 }
 
-void ICACHE_FLASH_ATTR fmsg_print_as_cmdline(const fer_msg *msg, fmsg_type t) {
+void  fmsg_print_as_cmdline(const fer_msg *msg, fmsg_type t) {
   const fer_sender_basic *fsb = (fer_sender_basic*) msg;
 
   if (t != MSG_TYPE_PLAIN)

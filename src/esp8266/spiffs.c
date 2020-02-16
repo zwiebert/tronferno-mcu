@@ -80,7 +80,7 @@ static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE + 32) * 4];
  alignedEnd:                      ^
  */
 
-i32 ICACHE_FLASH_ATTR my_spiffs_read(u32 addr, u32 size, u8 *dst) {
+i32  my_spiffs_read(u32 addr, u32 size, u8 *dst) {
 	DEBUGV("spiffs: read 0x%lx, %lu\n", addr, size);
 
 	u32 result = SPIFFS_OK;
@@ -137,7 +137,7 @@ i32 ICACHE_FLASH_ATTR my_spiffs_read(u32 addr, u32 size, u8 *dst) {
 
 static const int UNALIGNED_WRITE_BUFFER_SIZE = 512;
 
-i32 ICACHE_FLASH_ATTR my_spiffs_write(u32 addr, u32 size, u8 *src) {
+i32  my_spiffs_write(u32 addr, u32 size, u8 *src) {
 	DEBUGV("spiffs: write 0x%lx, %lu\n", addr, size);
 
 	u32 alignedBegin = (addr + 3) & (~3);
@@ -202,7 +202,7 @@ i32 ICACHE_FLASH_ATTR my_spiffs_write(u32 addr, u32 size, u8 *src) {
 	return SPIFFS_OK;
 }
 
-i32 ICACHE_FLASH_ATTR my_spiffs_erase(u32 addr, u32 size) {
+i32  my_spiffs_erase(u32 addr, u32 size) {
 	u32 i;
 	const u32 sector = addr / SPI_FLASH_SEC_SIZE;
 	const u32 sectorCount = size / SPI_FLASH_SEC_SIZE;
@@ -216,7 +216,7 @@ i32 ICACHE_FLASH_ATTR my_spiffs_erase(u32 addr, u32 size) {
 	return SPIFFS_OK;
 }
 
-int ICACHE_FLASH_ATTR my_spiffs_mount() {
+int  my_spiffs_mount() {
 	spiffs_config cfg;
 	cfg.phys_size = PHYS_SIZE;
 	cfg.phys_addr = PHYS_ADDR; // start spiffs at start of spi flash
@@ -233,7 +233,7 @@ int ICACHE_FLASH_ATTR my_spiffs_mount() {
 	return res;
 }
 
-void ICACHE_FLASH_ATTR spiffs_test() {
+void  spiffs_test() {
 	char buf[12];
 
 	// Surely, I've mounted spiffs before entering here
@@ -267,7 +267,7 @@ void ICACHE_FLASH_ATTR spiffs_test() {
 	printf("--> %s <--\n", buf);
 }
 
-bool ICACHE_FLASH_ATTR
+bool 
 spiffs_format_fs(spiffs *fs) {
 	if (SPIFFS_mounted(fs)) {
 		SPIFFS_unmount(fs);
@@ -290,7 +290,7 @@ spiffs_format_fs(spiffs *fs) {
 
 
 // setup module
-void ICACHE_FLASH_ATTR setup_spiffs(void) {
+void  setup_spiffs(void) {
 	int result = my_spiffs_mount(); // FIXME: error handling, like reformat fs
 }
 #endif

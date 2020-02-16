@@ -2,7 +2,7 @@
 #ifndef USER_CONFIG_H_
 #define USER_CONFIG_H_
 
-#if !DISTRIBUTION
+#ifndef DISTRIBUTION
 //#define DEBUG 1
 #endif
 

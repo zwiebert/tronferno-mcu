@@ -19,7 +19,7 @@
  * latitude - geographical latitude (in decimal degrees)
  * horizon - horizon (in rad) to calculate twilight
  */
-void ICACHE_FLASH_ATTR
+void 
 calc_sunrise_sunset(double *sunrise, double *sunset, double timezone, double day_of_year, double longitude_deg, double latitude_deg, double horizon) {
 
   double latitude = M_PI * latitude_deg / 180;
