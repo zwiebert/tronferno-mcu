@@ -53,9 +53,9 @@ void io_mqtt_publish_gmp(const so_arg_gmp_t *gmp) {
 void io_mqtt_enable(bool enable) {
   if (enable) {
     io_mqtt_create_and_start();
-    s_json_config_out = io_mqtt_publish_config;
+    sj_callback_onClose_ifNotEmpty = io_mqtt_publish_config;
   } else {
-    s_json_config_out = 0;
+    sj_callback_onClose_ifNotEmpty = 0;
     io_mqtt_stop_and_destroy();
   }
 }

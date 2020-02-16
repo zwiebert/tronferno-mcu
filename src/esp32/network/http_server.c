@@ -119,7 +119,7 @@ static esp_err_t handle_uri_config_json(httpd_req_t *req) {
     u16 js_size = 512;
     char *js = malloc(js_size);
     if (js) {
-      if (sj_config2json_buf(js, js_size, SO_CFG_all) >= 0)
+      if (sj_fillBuf_with_allConfigData(js, js_size) >= 0)
         httpd_resp_sendstr(req, js);
       free(js);
     }

@@ -94,9 +94,14 @@ gk(so_msg_t so_key) {
 }
 
 // pass only string literals as argument
-void so_out_set_tag(const char *tag) {
-  if (so_cco) cli_out_set_x(tag);
-  if (so_jco) so_json_set_x(tag);
+void so_out_x_open(const char *name_literal) {
+  if (so_cco) cli_out_set_x(name_literal);
+  if (so_jco) sj_open_dictionary(name_literal);
+}
+
+void so_out_x_close() {
+  if (so_cco) cli_out_close();
+  if (so_jco) sj_close_dictionary();
 }
 
 // provide a version of this cli-function without the third parameter
@@ -110,25 +115,25 @@ void so_out_x_reply_entry(so_msg_t key, const char *val) {
 
 void so_out_x_reply_entry_s(so_msg_t key, const char *val) {
   if (so_cco) cli_out_x_reply_entry2(gk(key), val);
-  if (so_jco) so_json_x_reply(gk(key), val, false);
+  if (so_jco) sj_append_to_dictionary(gk(key), val, false);
 }
 
 void so_out_x_reply_entry_ss(const char *key, const char *val) {
   if (so_cco) cli_out_x_reply_entry2(key, val);
-  if (so_jco) so_json_x_reply(key, val, false);
+  if (so_jco) sj_append_to_dictionary(key, val, false);
 }
 void so_out_x_reply_entry_sd(const char *key, int val) {
   char buf[20];
   itoa(val, buf, 10);
   if (so_cco) cli_out_x_reply_entry2(key, buf);
-  if (so_jco) so_json_x_reply(key, buf, true);
+  if (so_jco) sj_append_to_dictionary(key, buf, true);
 }
 
 void so_out_x_reply_entry_sl(const char *key, int val) {
   char buf[20];
   ltoa(val, buf, 10);
   if (so_cco) cli_out_x_reply_entry2(key, buf);
-  if (so_jco) so_json_x_reply(key, buf, true);
+  if (so_jco) sj_append_to_dictionary(key, buf, true);
 }
 
 void so_out_x_reply_entry_d(so_msg_t key, int val) {
@@ -143,14 +148,14 @@ void so_out_x_reply_entry_lx(so_msg_t key, int val) {
   char buf[20];
   ltoa(val, buf, 16);
   if (so_cco) cli_out_x_reply_entry2(gk(key), buf);
-  if (so_jco) so_json_x_reply(gk(key), buf, false); //no hex in jason. use string
+  if (so_jco) sj_append_to_dictionary(gk(key), buf, false); //no hex in jason. use string
 }
 
 void so_out_x_reply_entry_f(so_msg_t key, float val, int n) {
   char buf[20];
   ftoa(val, buf, 5);
   if (so_cco) cli_out_x_reply_entry2(gk(key), buf);
-  if (so_jco) so_json_x_reply(gk(key), buf, true);
+  if (so_jco) sj_append_to_dictionary(gk(key), buf, true);
 }
 
 
@@ -180,7 +185,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_MCU_begin: {
-    so_out_set_tag("mcu");
+    so_out_x_open("mcu");
   }
     break;
 
@@ -216,7 +221,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_MCU_end:
-    so_out_x_reply_entry_ss(0, 0);
+    so_out_x_close();
     break;
 
 
@@ -392,11 +397,11 @@ void  so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_CFG_begin:
-    so_out_set_tag("config");
+    so_out_x_open("config");
     break;
 
   case SO_CFG_end:
-    so_out_x_reply_entry_s(SO_NONE, NULL);
+    so_out_x_close();
     break;
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -502,7 +507,7 @@ break;
     io_puts(" g="), io_putd(a->g);
     io_puts(" m="), io_putd(a->m);
     io_puts(" p="), io_putd(a->p), io_puts(";\n");
-    sj_gmp2json(a);
+    sj_json_from_postionData(a);
 #ifdef USE_MQTT
     io_mqtt_publish_gmp(a);
 #endif
@@ -621,7 +626,7 @@ static void  so_print_timer(u8 g, u8 m) {
 
 #ifdef USE_JSON
   if (so_tgt_test_cli_json() || so_tgt_test(SO_TGT_MQTT|SO_TGT_HTTP)) {
-    const char *json = sj_timer2json(g, m);
+    const char *json = sj_json_from_automaticData(g, m);
 
 #ifdef USE_MQTT
     if (so_tgt_test(SO_TGT_MQTT))

@@ -117,6 +117,9 @@ void   cli_out_set_config(void) {
 void   cli_out_set_x(const char *obj_tag) {
   SET_OBJ_TAG(obj_tag);
 }
+void cli_out_close() {
+  cli_out_x_reply_entry(0, 0, 0);
+}
 void  cli_out_x_reply_entry(const char *key, const char *val, int len) {
   if (!so_tgt_test_cli_text())
     return;

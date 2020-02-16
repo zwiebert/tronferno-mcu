@@ -25,12 +25,12 @@
 #include "userio/inout.h"
 #include "userio/mqtt.h"
 
-#define D(x) x
+#define D(x)
 #ifdef MCU_ESP8266
 #define sprintf(...) (-1)  //FIXME: or should we use it?
 #endif
 
-void (*s_json_config_out)(const char *s);
+void (*sj_callback_onClose_ifNotEmpty)(const char *s);
 
 #define JSON_BUF_SIZE 128
 char json_buf[JSON_BUF_SIZE];
@@ -41,8 +41,8 @@ u16 ext_buf_size;
 
 #define BUF (ext_buf ? ext_buf : json_buf)
 #define BUF_SIZE (ext_buf ? ext_buf_size : JSON_BUF_SIZE)
-#define USE_CALLBACK (!ext_buf && s_json_config_out)
-#define DO_CALLBACK() s_json_config_out(BUF);
+#define USE_CALLBACK (!ext_buf && sj_callback_onClose_ifNotEmpty)
+#define DO_CALLBACK() sj_callback_onClose_ifNotEmpty(BUF);
 
 void   sj_set_buf(char *dst, u16 dst_size) {
   if (dst) {
@@ -58,11 +58,14 @@ void   sj_set_buf(char *dst, u16 dst_size) {
 
 static const char *Obj_tag="";
 
-void   so_json_set_x(const char *tag) {
+void   sj_open_dictionary(const char *tag) {
   Obj_tag = tag;
 }
+void sj_close_dictionary() {
+  sj_append_to_dictionary(0,0,false);
+}
 
-void   so_json_x_reply(const char *key, const char *val, bool is_number) {
+void   sj_append_to_dictionary(const char *key, const char *val, bool is_number) {
   D(ets_printf("so_json(): %s, %s, %d\n", key, val, is_number));
 
   if (key && ((json_idx + strlen(key) + strlen(val) + (json_idx ? 6 : 40))) > BUF_SIZE) {
@@ -100,7 +103,7 @@ void   so_json_x_reply(const char *key, const char *val, bool is_number) {
   D(ets_printf("json_idx: %u, buf: %s\n", json_idx, BUF));
 }
 
-int  sj_config2json_buf(char *dst, u16 dst_size, so_msg_t key) {
+int  sj_fillBuf_with_allConfigData(char *dst, u16 dst_size) {
 
   sj_set_buf(dst,dst_size);
   so_output_message(SO_CFG_all, "j");
@@ -109,7 +112,7 @@ int  sj_config2json_buf(char *dst, u16 dst_size, so_msg_t key) {
   return strlen(dst); //XXX
 }
 
-void  sj_timer2json_buf(char *dst, u16 dst_size, u8 g, u8 m, bool wildcard) {
+void  sj_fillBuf_with_automaticData(char *dst, u16 dst_size, u8 g, u8 m, bool wildcard) {
   timer_data_t tdr;
   extern gm_bitmask_t manual_bits; //FIXME
   // read_gm_bitmask("MANU", &manual_bits, 1); //FIXME: not needed
@@ -159,18 +162,18 @@ void  sj_timer2json_buf(char *dst, u16 dst_size, u8 g, u8 m, bool wildcard) {
   }
 }
 
-const char * sj_timer2json(u8 g, u8 m) {
-  sj_timer2json_buf(BUF, BUF_SIZE, g, m, true);
+const char * sj_json_from_automaticData(u8 g, u8 m) {
+  sj_fillBuf_with_automaticData(BUF, BUF_SIZE, g, m, true);
   return json_buf;
 }
 
-char *sj_gmp2json_buf(char *dst, u16 dst_size, so_arg_gmp_t *gmp) {
+char *sj_fillBuf_with_positionData(char *dst, u16 dst_size, so_arg_gmp_t *gmp) {
   sprintf(dst, "{\"from\":\"tfmcu\",\"position\":{\"g\":%u,\"m\":%u,\"p\":%u}}", gmp->g, gmp->m, gmp->p);
   return dst;
 }
 
-const char *sj_gmp2json(so_arg_gmp_t *gmp) {
-  return sj_gmp2json_buf(BUF, BUF_SIZE, gmp);
+const char *sj_json_from_postionData(so_arg_gmp_t *gmp) {
+  return sj_fillBuf_with_positionData(BUF, BUF_SIZE, gmp);
 }
 
 
