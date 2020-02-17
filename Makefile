@@ -1,7 +1,9 @@
 .PHONY: clean all rebuild http_data
 
-mcus := esp8266 esp32
+mcus := esp32 esp8266 
 tgts := all clean
+
+default: esp32-all
 
 define GEN_RULE
 .PHONY: $(1)

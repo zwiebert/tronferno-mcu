@@ -8,6 +8,11 @@ let config_fetched = false;
 let cuas_Interval;
 let cuas_State = 0;
 
+const FETCH_CONFIG = 1;
+const FETCH_AUTO = 2;
+const FETCH_POS = 4;
+const FETCH_VERSION = 8;
+
 
 function dbLog(msg) {
     console.log(msg);
@@ -43,8 +48,7 @@ class AppState {
         this.linkAutoObj();
         this.updateAutomaticHtml();
         dbLog(JSON.stringify(this));
-        this.fetchAutomatic();
-        this.fetchPosition();
+        this.fetchMask(FETCH_AUTO|FETCH_POS);
     }
 
     set g(value) {
@@ -195,51 +199,31 @@ class AppState {
         }
     }
 
-     fetchConfig() {
 
+
+    fetchMask(mask) {
         let tfmcu = {to:"tfmcu"};
 
-        tfmcu.config = {
-            all: "?",
-        };
+        if (mask & FETCH_CONFIG)
+            tfmcu.config = { all: "?" };
 
-        let url = base+'/cmd.json';
-        postData(url, tfmcu);
-    }
+        if (mask & FETCH_VERSION)
+            tfmcu.mcu = { version:"?" };
 
-    fetchAutomatic() {
 
-        let tfmcu = {to:"tfmcu"};
+        if (mask & FETCH_AUTO)
+            tfmcu.auto = {
+                g: this.g,
+                m: this.m,
+                f: "uki",
+            };
 
-        tfmcu.auto = {
-            g: this.g,
-            m: this.m,
-            f: "uki",
-        };
-
-        let url = base+'/cmd.json';
-        postData(url, tfmcu);
-    }
-
-    fetchPosition() {
-
-        let tfmcu = {to:"tfmcu"};
-
-        tfmcu.send = {
-            g: this.g,
-            m: this.m,
-            p: "?",
-        };
-
-        let url = base+'/cmd.json';
-        postData(url, tfmcu);
-    }
-
-    fetchVersion() {
-
-        let tfmcu = {to:"tfmcu"};
-
-        tfmcu.mcu = { version:"?" };
+        if (mask & FETCH_POS)
+            tfmcu.send = {
+                g: this.g,
+                m: this.m,
+                p: "?",
+            };
 
         let url = base+'/cmd.json';
         postData(url, tfmcu);
@@ -249,8 +233,7 @@ class AppState {
         this.g = this.mG;
         this.m = this.mM;
         this.tabIdx = this.mTabIdx;
-        this.fetchConfig(); //FIXME: needed here for group/member numbers
-	this.fetchVersion();
+        this.fetchMask(FETCH_VERSION|FETCH_CONFIG);
         this.tabVisibility = this.mTabVisibility;
     }
 
@@ -635,7 +618,7 @@ function onContentLoaded() {
     document.getElementById("sdb").onclick = () => postSendCommand('down');
     document.getElementById("spb").onclick = () => onPosPressed();
 
-    document.getElementById("arlb").onclick = () => app_state.fetchAutomatic();
+    document.getElementById("arlb").onclick = () => app_state.fetchMask(FETCH_AUTO);
     document.getElementById("asvb").onclick = () => {
         // disable button for 5 seconds while data is being sent to shutter motor by RF
         document.getElementById("asvb").disabled = true;

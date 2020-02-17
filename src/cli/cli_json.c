@@ -14,6 +14,7 @@
 #include "debug/debug.h"
 #include <stdlib.h>
 #include "userio/status_output.h"
+#include "userio/status_json.h"
 
 #else
 #include <string.h>
@@ -95,7 +96,7 @@ static int parse_json_find_next_obj(const char *s, int *key, int *key_len, int *
   return -1;
 }
 
-char *json_get_command_object(char *s, char **ret_name) {
+char *json_get_command_object(char *s, char **ret_name, char **next) {
   int key, key_len, obj, obj_len;
 
   int idx = parse_json_find_next_obj(s, &key, &key_len, &obj, &obj_len);
@@ -105,6 +106,9 @@ char *json_get_command_object(char *s, char **ret_name) {
     s[key + key_len - 1] = '\0'; // terminate name excluding quote sign;
     char *block = &s[obj + 1]; // set to char after '{';
     s[obj + obj_len - 1] = '\0'; // terminate obj excluding '}'
+
+    if (next)
+      *next = &s[obj + obj_len];
 
     if (ret_name)
       *ret_name = name;
@@ -187,24 +191,27 @@ parse_json(char *name, char *s) {
 }
 
 #ifndef TEST_MODULE
-void 
-cli_process_json(char *json) {
+void cli_process_json(char *json) {
   cli_isJson = true;
 
   dbg_vpf(db_printf("process_json: %s\n", json));
-  {
-    char *name;
-    char *cmd_obj = json_get_command_object(json, &name);
 
-    if (cmd_obj) {
-      int n = parse_json(name, cmd_obj);
-      if (n < 0) {
-        reply_failure();
-      } else {
-        process_parm(par, n);
-      }
+  char *name, *cmd_obj;
+
+  sj_open_root_object("tfmcu");
+  while ((cmd_obj = json_get_command_object(json, &name, &json))) {
+    int n = parse_json(name, cmd_obj);
+    if (n < 0) {
+      reply_failure();
+    } else {
+      process_parm(par, n);
     }
   }
+  sj_close_root_object();
+  if (so_tgt_test(SO_TGT_CLI)) {
+    cli_print_json(sj_get_json());
+  }
+
 }
 
 void 

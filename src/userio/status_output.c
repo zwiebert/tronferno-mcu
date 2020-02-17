@@ -98,12 +98,7 @@ gk(so_msg_t so_key) {
 // pass only string literals as argument
 void so_out_x_open(const char *name_literal) {
   if (so_cco) cli_out_set_x(name_literal);
-  if (so_tgt_test(SO_TGT_CLI) && so_jco) {
-    if (!so_tgt_test(SO_TGT_HTTP | SO_TGT_MQTT))
-      sj_alloc_buffer(512);
-  }
   if (so_jco) {
-    sj_open_root_object("tfmcu");
     sj_add_object(name_literal);
   }
 }
@@ -112,12 +107,7 @@ void so_out_x_close() {
   if (so_cco) cli_out_close();
   if (so_jco) {
     sj_close_object();
-    sj_close_root_object();
-  }
-  if (so_tgt_test(SO_TGT_CLI) && so_jco) {
-    cli_print_json(sj_get_json());
-    if (!so_tgt_test(SO_TGT_HTTP | SO_TGT_MQTT))
-      sj_free_buffer();
+
   }
 }
 
@@ -707,9 +697,7 @@ static void  so_print_timer(u8 g, u8 m) {
 
 #ifdef USE_JSON
   if ((so_tgt_test(SO_TGT_CLI) && so_jco) || so_tgt_test(SO_TGT_MQTT|SO_TGT_HTTP)) {
-    sj_open_root_object("tfmcu");
     so_timer_to_json(g, m, true);
-    sj_close_root_object();
     const char *json = sj_get_json();
 
 #ifdef USE_MQTT

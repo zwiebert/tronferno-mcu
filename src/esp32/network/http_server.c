@@ -87,7 +87,7 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 
   {
 #define JS_SIZE 512
-    if (sj_alloc_buffer(JS_SIZE)) {
+    if (sj_realloc_buffer(JS_SIZE)) {
       hts_query(HQT_NONE, buf, ret); // parse and process received command
       httpd_resp_set_type(req, "application/json");
       httpd_resp_sendstr(req, sj_get_json());
