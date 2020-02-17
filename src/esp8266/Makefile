@@ -94,7 +94,7 @@ spiffs/src:
 
 ## make irom archive (move functions from RAM to Flash-ROM on ESP8266)
 %irom.a : %.a
-	$(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal --rename-section .iram0.text=.text  $(<) $(@);
+	$(Q) $(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal --rename-section .iram0.text=.text  $(<) $(@);
 
 
 include $(SRC_BASE)/src/esp8266/common.mk
