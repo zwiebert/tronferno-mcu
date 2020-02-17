@@ -87,7 +87,7 @@ main_setup() {
 
   rtc_setup();
   fer_init_sender(&default_sender, C.fer_centralUnitID);
-  astro_init();
+  astro_init_and_reinit();
 
 #ifdef DEBUG
   if (test_modules()) {

@@ -102,12 +102,18 @@ void so_out_x_open(const char *name_literal) {
     if (!so_tgt_test(SO_TGT_HTTP | SO_TGT_MQTT))
       sj_alloc_buffer(512);
   }
-  if (so_jco) sj_open_dictionary(name_literal);
+  if (so_jco) {
+    sj_open_root_object("tfmcu");
+    sj_add_object(name_literal);
+  }
 }
 
 void so_out_x_close() {
   if (so_cco) cli_out_close();
-  if (so_jco) sj_close_dictionary();
+  if (so_jco) {
+    sj_close_object();
+    sj_close_root_object();
+  }
   if (so_tgt_test(SO_TGT_CLI) && so_jco) {
     cli_print_json(sj_get_json());
     if (!so_tgt_test(SO_TGT_HTTP | SO_TGT_MQTT))
@@ -126,25 +132,25 @@ void so_out_x_reply_entry(so_msg_t key, const char *val) {
 
 void so_out_x_reply_entry_s(so_msg_t key, const char *val) {
   if (so_cco) cli_out_x_reply_entry2(gk(key), val);
-  if (so_jco) sj_append_to_dictionary(gk(key), val, false);
+  if (so_jco) sj_add_key_value_pair_s(gk(key), val);
 }
 
 void so_out_x_reply_entry_ss(const char *key, const char *val) {
   if (so_cco) cli_out_x_reply_entry2(key, val);
-  if (so_jco) sj_append_to_dictionary(key, val, false);
+  if (so_jco) sj_add_key_value_pair_s(key, val);
 }
 void so_out_x_reply_entry_sd(const char *key, int val) {
   char buf[20];
   itoa(val, buf, 10);
   if (so_cco) cli_out_x_reply_entry2(key, buf);
-  if (so_jco) sj_append_to_dictionary(key, buf, true);
+  if (so_jco) sj_add_key_value_pair_d(key, val);
 }
 
 void so_out_x_reply_entry_sl(const char *key, int val) {
   char buf[20];
   ltoa(val, buf, 10);
   if (so_cco) cli_out_x_reply_entry2(key, buf);
-  if (so_jco) sj_append_to_dictionary(key, buf, true);
+  if (so_jco) sj_add_key_value_pair_d(key, val);
 }
 
 void so_out_x_reply_entry_d(so_msg_t key, int val) {
@@ -159,14 +165,14 @@ void so_out_x_reply_entry_lx(so_msg_t key, int val) {
   char buf[20];
   ltoa(val, buf, 16);
   if (so_cco) cli_out_x_reply_entry2(gk(key), buf);
-  if (so_jco) sj_append_to_dictionary(gk(key), buf, false); //no hex in jason. use string
+  if (so_jco) sj_add_key_value_pair_s(gk(key), buf); //no hex in json. use string
 }
 
 void so_out_x_reply_entry_f(so_msg_t key, float val, int n) {
   char buf[20];
   ftoa(val, buf, 5);
   if (so_cco) cli_out_x_reply_entry2(gk(key), buf);
-  if (so_jco) sj_append_to_dictionary(gk(key), buf, true);
+  if (so_jco) sj_add_key_value_pair_f(gk(key), val);
 }
 
 
@@ -407,6 +413,11 @@ void  so_output_message(so_msg_t mt, void *arg) {
 #endif
     break;
 
+    case SO_CFG_ASTRO_CORRECTION: {
+      so_out_x_reply_entry_l(mt, C.astroCorrection);
+    }
+    break;
+
   case SO_CFG_begin:
     so_out_x_open("config");
     break;
@@ -518,7 +529,14 @@ break;
     io_puts(" g="), io_putd(a->g);
     io_puts(" m="), io_putd(a->m);
     io_puts(" p="), io_putd(a->p), io_puts(";\n");
-    sj_json_from_postionData(a);
+
+    so_out_x_open("position");
+    so_out_x_reply_entry_sd("g", a->g);
+    so_out_x_reply_entry_sd("m", a->m);
+    so_out_x_reply_entry_sd("p", a->p);
+    so_out_x_close();
+
+
 #ifdef USE_MQTT
     io_mqtt_publish_gmp(a);
 #endif
@@ -630,6 +648,58 @@ static void  so_print_timer_as_text(u8 g, u8 m, bool wildcard) {
   if (so_cto) cli_out_timer_reply_entry(NULL, NULL, -1);
 }
 
+void  so_timer_to_json(u8 g, u8 m, bool wildcard) {
+  timer_data_t tdr;
+
+  u8 g_res = g, m_res = m;
+
+
+  if (read_timer_data(&tdr, &g_res, &m_res, wildcard)) {
+
+    {
+      char dict[] = "autoGM";
+      dict[4] = '0' + g;
+      dict[5] = '0' + m;
+      sj_add_object(dict);
+    }
+
+    {
+      extern gm_bitmask_t manual_bits; //FIXME
+      bool f_manual = GET_BIT(manual_bits[g], m);
+      char flags[10], *p = flags;
+      *p++ = f_manual ? 'M' : 'm';
+      *p++ = td_is_random(&tdr) ? 'R' : 'r';
+      *p++ = td_is_sun_auto(&tdr) ? 'S' : 's';
+      *p++ = td_is_astro(&tdr) ? 'A' : 'a';
+      *p++ = td_is_daily(&tdr) ? 'D' : 'd';
+      *p++ = td_is_weekly(&tdr) ? 'W' : 'w';
+      *p++ = '\0';
+      sj_add_key_value_pair_s("f", flags);
+    }
+
+
+    if (td_is_daily(&tdr)) {
+      sj_add_key_value_pair_s("daily", tdr.daily);
+    }
+
+    if (td_is_weekly(&tdr)) {
+      sj_add_key_value_pair_s("weekly", tdr.weekly);
+    }
+
+    if (td_is_astro(&tdr)) {
+      sj_add_key_value_pair_d("astro", tdr.astro);
+
+      timer_minutes_t tmi;
+      get_timer_minutes(&tmi, &g_res, &m_res, false);
+      sj_add_key_value_pair_d("asmin", tmi.minutes[ASTRO_MINTS]);
+    }
+
+      sj_close_object();
+  }
+}
+
+
+
 static void  so_print_timer(u8 g, u8 m) {
 
   if (so_tgt_test(SO_TGT_CLI) && so_cco)
@@ -637,7 +707,10 @@ static void  so_print_timer(u8 g, u8 m) {
 
 #ifdef USE_JSON
   if ((so_tgt_test(SO_TGT_CLI) && so_jco) || so_tgt_test(SO_TGT_MQTT|SO_TGT_HTTP)) {
-    const char *json = sj_json_from_automaticData(g, m);
+    sj_open_root_object("tfmcu");
+    so_timer_to_json(g, m, true);
+    sj_close_root_object();
+    const char *json = sj_get_json();
 
 #ifdef USE_MQTT
     if (so_tgt_test(SO_TGT_MQTT))

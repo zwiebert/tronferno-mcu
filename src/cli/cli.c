@@ -270,7 +270,7 @@ bool  config_receiver(const char *val) {
   } else {
     return false;
   }
-  save_config(CONFIG_RECV);
+  save_config_item(CB_RECV);
   return true;
 }
 
@@ -283,7 +283,7 @@ config_transmitter(const char *val) {
   } else {
     return false;
   }
-  save_config(CONFIG_TRANSM);
+  save_config_item(CB_TRANSM);
   return true;
 }
 

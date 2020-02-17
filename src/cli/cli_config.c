@@ -14,6 +14,7 @@
 #include "misc/stof.h"
 #include "userio/mqtt.h"
 #include "userio/http_server.h"
+#include "automatic/astro.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 
@@ -68,6 +69,7 @@ const char help_parmConfig[]  =
 #ifdef ACCESS_GPIO
     "gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default\n"
 #endif
+    "astro-correction   modifies astro table: 0=average, 1=bright 2=dark"
 //  "set-expert-password=\n"
 ;
 
@@ -79,7 +81,7 @@ const char *const cfg_keys[SO_CFG_size] = {
     "longitude", "latitude", "timezone", "dst", "tz", "verbose",
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password",
     "http-enable", "http-user", "http-password",
-    "gm-used",
+    "gm-used", "astro-correction",
 };
 
 #ifdef USE_NETWORK
@@ -160,7 +162,7 @@ process_parmConfig(clpar p[], int len) {
             }
             FSB_PUT_DEVID(&default_sender, cu);
             C.fer_centralUnitID = cu;
-            save_config(CONFIG_CUID);
+            save_config_item(CB_CUID);
           }
 
         }
@@ -169,7 +171,7 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_BAUD: {
           u32 baud = strtoul(val, NULL, 10);
           C.mcu_serialBaud = baud;
-          save_config(CONFIG_BAUD);
+          save_config_item(CB_BAUD);
         }
           break;
 
@@ -177,7 +179,7 @@ process_parmConfig(clpar p[], int len) {
           NODEFAULT();
           enum verbosity level = atoi(val);
           C.app_verboseOutput = level;
-          save_config(CONFIG_VERBOSE);
+          save_config_item(CB_VERBOSE);
         }
         break;
 #ifdef USE_NETWORK
@@ -197,7 +199,7 @@ process_parmConfig(clpar p[], int len) {
 #endif
             if (strcmp(val, cfg_args_network[i]) == 0) {
               C.network = i;
-              save_config(CONFIG_NETWORK_CONNECTION);
+              save_config_item(CB_NETWORK_CONNECTION);
               success = true;
               break;
             }
@@ -211,7 +213,7 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_WLAN_SSID: {
           if (strlen(val) < sizeof (C.wifi_SSID)) {
             strcpy (C.wifi_SSID, val);
-            save_config(CONFIG_WIFI_SSID);
+            save_config_item(CB_WIFI_SSID);
           } else {
             reply_failure();
           }
@@ -221,7 +223,7 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_WLAN_PASSWORD: {
           if (strlen(val) < sizeof (C.wifi_password)) {
             strcpy (C.wifi_password, val);
-            save_config(CONFIG_WIFI_PASSWD);
+            save_config_item(CB_WIFI_PASSWD);
           } else {
             reply_failure();
           }
@@ -236,7 +238,7 @@ process_parmConfig(clpar p[], int len) {
            for (i=0; i < lanPhyLEN; ++i) {
              if (strcasecmp(val, cfg_args_lanPhy[i]) == 0) {
                C.lan_phy = i;
-               save_config(CONFIG_LAN_PHY);
+               save_config_item(CB_LAN_PHY);
                success = true;
                break;
              }
@@ -248,7 +250,7 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_LAN_PWR_GPIO: {
           NODEFAULT();
           C.lan_pwr_gpio = atoi(val);
-          save_config(CONFIG_LAN_PWR_GPIO);
+          save_config_item(CB_LAN_PWR_GPIO);
         }
         break;
 #endif // USE_LAN
@@ -257,7 +259,7 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_NTP_SERVER: {
           if (strlen(val) < sizeof (C.ntp_server)) {
             strcpy (C.ntp_server, val);
-            save_config(CONFIG_NTP_SERVER);
+            save_config_item(CB_NTP_SERVER);
           } else {
             reply_failure();
           }
@@ -269,14 +271,14 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_MQTT_ENABLE: {
           C.mqtt_enable = (*val == '1') ? 1 : 0;
           io_mqtt_enable(C.mqtt_enable);
-          save_config(CONFIG_MQTT_ENABLE);
+          save_config_item(CB_MQTT_ENABLE);
         }
         break;
 
         case SO_CFG_MQTT_PASSWORD: {
           if (strlen(val) < sizeof (C.mqtt_password)) {
             strcpy (C.mqtt_password, val);
-            save_config(CONFIG_MQTT_PASSWD);
+            save_config_item(CB_MQTT_PASSWD);
           } else {
             reply_failure();
           }
@@ -287,7 +289,7 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_MQTT_USER: {
           if (strlen(val) < sizeof (C.mqtt_user)) {
             strcpy (C.mqtt_user, val);
-            save_config(CONFIG_MQTT_USER);
+            save_config_item(CB_MQTT_USER);
           } else {
             reply_failure();
           }
@@ -297,7 +299,7 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_MQTT_URL: {
           if (strlen(val) < sizeof (C.mqtt_url)) {
             strcpy (C.mqtt_url, val);
-            save_config(CONFIG_MQTT_URL);
+            save_config_item(CB_MQTT_URL);
           } else {
             reply_failure();
           }
@@ -309,14 +311,14 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_HTTP_ENABLE: {
           C.http_enable = (*val == '1') ? 1 : 0;
           hts_enable_http_server(C.http_enable);
-          save_config(CONFIG_HTTP_ENABLE);
+          save_config_item(CB_HTTP_ENABLE);
         }
         break;
 
         case SO_CFG_HTTP_PASSWORD: {
           if (strlen(val) < sizeof (C.http_password)) {
             strcpy (C.http_password, val);
-            save_config(CONFIG_HTTP_PASSWD);
+            save_config_item(CB_HTTP_PASSWD);
           } else {
             reply_failure();
           }
@@ -327,7 +329,7 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_HTTP_USER: {
           if (strlen(val) < sizeof (C.http_user)) {
             strcpy (C.http_user, val);
-            save_config(CONFIG_HTTP_USER);
+            save_config_item(CB_HTTP_USER);
           } else {
             reply_failure();
           }
@@ -339,7 +341,7 @@ process_parmConfig(clpar p[], int len) {
           float longitude = stof(val);
           C.geo_longitude = longitude;
           rtc_setup();
-          save_config(CONFIG_LONGITUDE);
+          save_config_item(CB_LONGITUDE);
         }
         break;
 
@@ -347,7 +349,7 @@ process_parmConfig(clpar p[], int len) {
           float latitude = stof(val);
           C.geo_latitude = latitude;
           rtc_setup();
-          save_config(CONFIG_LATITUDE);
+          save_config_item(CB_LATITUDE);
         }
         break;
 
@@ -355,7 +357,7 @@ process_parmConfig(clpar p[], int len) {
 #ifndef POSIX_TIME
           C.geo_timezone = stof(val);
           rtc_setup();
-          save_config(CONFIG_TIZO);
+          save_config_item(CB_TIZO);
 #endif
         }
         break;
@@ -364,7 +366,7 @@ process_parmConfig(clpar p[], int len) {
 #ifdef POSIX_TIME
           strncpy(C.geo_tz, val, sizeof (C.geo_tz) -1);
           rtc_setup();
-          save_config(CONFIG_TZ);
+          save_config_item(CB_TZ);
           cfg_tz2timezone();
 #endif
         }
@@ -382,7 +384,7 @@ process_parmConfig(clpar p[], int len) {
             warning_unknown_option(key);
           }
           rtc_setup();
-          save_config(CONFIG_DST);
+          save_config_item(CB_DST);
 #endif
         }
         break;
@@ -391,10 +393,18 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_GM_USED: {
            u32 gmu = strtoul(val, NULL, 16);
            C.fer_usedMembers = gmu;
-           save_config(CONFIG_USED_MEMBERS);
+           save_config_item(CB_USED_MEMBERS);
         }
         break;
 
+        case SO_CFG_ASTRO_CORRECTION: {
+          NODEFAULT();
+          enum astroCorrection ac = atoi(val);
+          C.astroCorrection = ac;
+          save_config_item(CB_ASTRO_CORRECTION);
+          astro_init_and_reinit();
+        }
+        break;
         default:
         break;
       }
@@ -451,7 +461,7 @@ process_parmConfig(clpar p[], int len) {
           reply_message("gpio:failure", error);
         } else {
           C.gpio[gpio_number] = ps;
-          save_config(CONFIG_GPIO);
+          save_config_item(CB_GPIO);
         }
       }
 #endif
@@ -459,7 +469,7 @@ process_parmConfig(clpar p[], int len) {
     } else if (strcmp(key, "set-pw") == 0) {
       if (strlen(val) < sizeof (C.app_configPassword)) {
         strcpy (C.app_configPassword, val);
-        save_config(CONFIG_CFG_PASSWD);
+        save_config_item(CB_CFG_PASSWD);
       } else {
         reply_failure();
       }

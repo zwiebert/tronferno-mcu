@@ -129,11 +129,6 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
         break;
       }
 
-      //dusk = (duskf + duskr) / 2; // average
-      //dusk = MIN(duskf, duskr); // minimum (never too dark)
-      dusk = MAX(duskf, duskr); // minimum (never too bright)
-
-
       if (dusk < last_dusk) {
         dusk = last_dusk;
       } else {
@@ -237,7 +232,7 @@ void  astro_write_data(u8 d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
   math_write_astro(d, mint_offset);
 }
 
-void astro_init() {
+void astro_init_and_reinit() {
   astro_populate_astroMinutes_from_astroBcd();
 }
 

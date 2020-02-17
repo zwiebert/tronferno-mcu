@@ -249,8 +249,8 @@ class AppState {
         this.g = this.mG;
         this.m = this.mM;
         this.tabIdx = this.mTabIdx;
-	this.fetchVersion();
         this.fetchConfig(); //FIXME: needed here for group/member numbers
+	this.fetchVersion();
         this.tabVisibility = this.mTabVisibility;
     }
 

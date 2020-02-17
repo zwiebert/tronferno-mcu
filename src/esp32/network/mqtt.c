@@ -170,9 +170,9 @@ void setup_mqtt(void) {
   }
   if (C.mqtt_enable) {
     C.mqtt_enable = 0; //FIXME: kludge to avoid endless reboots when url parsing exception
-    save_config(CONFIG_MQTT_ENABLE);
+    save_config_item(CB_MQTT_ENABLE);
     io_mqtt_enable(true);
     C.mqtt_enable = 1;
-    save_config(CONFIG_MQTT_ENABLE);
+    save_config_item(CB_MQTT_ENABLE);
   }
 }

@@ -21,6 +21,7 @@
 #include "nvs.h"
 #include <ctype.h>
 #include "config/config.h"
+#include "misc/int_macros.h"
 
 #define D(x) 
 
@@ -110,55 +111,56 @@ static void nvsBlob(nvs_handle handle, const char *key, void *dst, size_t dst_le
     }
 }
 
-#define nvs_s(mbit, key,val) if (mask&mbit) { nvsStr(handle, key, val, sizeof val, write); }
-#define nvs_b(mbit, key,val) if (mask&mbit) { nvsBlob(handle, key, &val, sizeof val, write); }
-#define nvs_i8(mbit, key,val) if (mask&mbit) { if (write) { nvs_set_i8(handle, key, val); } else { i8 temp; if (ESP_OK == nvs_get_i8(handle, key, &temp)) val = temp;}}
-#define nvs_u32(mbit, key,val) if (mask&mbit) { if (write) { nvs_set_u32(handle, key, val); } else { nvs_get_u32(handle, key, &val); }}
+#define nvs_s(mbit, key,val) if (GET_BIT(mask,mbit)) { nvsStr(handle, key, val, sizeof val, write); }
+#define nvs_b(mbit, key,val) if (GET_BIT(mask,mbit)) { nvsBlob(handle, key, &val, sizeof val, write); }
+#define nvs_i8(mbit, key,val) if (GET_BIT(mask,mbit)) { if (write) { nvs_set_i8(handle, key, val); } else { i8 temp; if (ESP_OK == nvs_get_i8(handle, key, &temp)) val = temp;}}
+#define nvs_u32(mbit, key,val) if (GET_BIT(mask,mbit)) { if (write) { nvs_set_u32(handle, key, val); } else { nvs_get_u32(handle, key, &val); }}
 
 static void rw_config(nvs_handle handle, u32 mask, bool write) {
 #ifdef USE_WLAN
-  nvs_s(CONFIG_WIFI_SSID, "C_WIFI_SSID", C.wifi_SSID);
-  nvs_s(CONFIG_WIFI_PASSWD, "C_WIFI_PASSWD", C.wifi_password);
+  nvs_s(CB_WIFI_SSID, "C_WIFI_SSID", C.wifi_SSID);
+  nvs_s(CB_WIFI_PASSWD, "C_WIFI_PASSWD", C.wifi_password);
 #endif
 #ifdef USE_NTP
-  nvs_s(CONFIG_NTP_SERVER, "C_NTP_SERVER", C.ntp_server);
+  nvs_s(CB_NTP_SERVER, "C_NTP_SERVER", C.ntp_server);
 #endif
-  nvs_s(CONFIG_CFG_PASSWD, "C_CFG_PASSWD", C.app_configPassword);
-  nvs_b(CONFIG_LONGITUDE, "C_LONGITUDE", C.geo_longitude);
-  nvs_b(CONFIG_LATITUDE, "C_LATITUDE", C.geo_latitude);
+  nvs_s(CB_CFG_PASSWD, "C_CFG_PASSWD", C.app_configPassword);
+  nvs_b(CB_LONGITUDE, "C_LONGITUDE", C.geo_longitude);
+  nvs_b(CB_LATITUDE, "C_LATITUDE", C.geo_latitude);
 #ifndef POSIX_TIME
-    nvs_s(CONFIG_TIZO, "C_TIZO", C.geo_timezone);
+    nvs_s(CB_TIZO, "C_TIZO", C.geo_timezone);
 #else
-  nvs_s(CONFIG_TZ, "C_TZ", C.geo_tz);
+  nvs_s(CB_TZ, "C_TZ", C.geo_tz);
   if (!write)
     cfg_tz2timezone();
 #endif
-  nvs_s(CONFIG_GPIO, "C_GPIO", C.gpio);
+  nvs_s(CB_GPIO, "C_GPIO", C.gpio);
 #ifdef USE_MQTT
-  nvs_s(CONFIG_MQTT_URL, "C_MQTT_URL", C.mqtt_url);
-  nvs_s(CONFIG_MQTT_USER, "C_MQTT_USER", C.mqtt_user);
-  nvs_s(CONFIG_MQTT_PASSWD, "C_MQTT_PASSWD", C.mqtt_password);
-  nvs_i8(CONFIG_MQTT_ENABLE, "C_MQTT_ENABLE", C.mqtt_enable);
+  nvs_s(CB_MQTT_URL, "C_MQTT_URL", C.mqtt_url);
+  nvs_s(CB_MQTT_USER, "C_MQTT_USER", C.mqtt_user);
+  nvs_s(CB_MQTT_PASSWD, "C_MQTT_PASSWD", C.mqtt_password);
+  nvs_i8(CB_MQTT_ENABLE, "C_MQTT_ENABLE", C.mqtt_enable);
 #endif
 #ifdef USE_HTTP
-  nvs_s(CONFIG_HTTP_USER, "C_HTTP_USER", C.http_user);
-  nvs_s(CONFIG_HTTP_PASSWD, "C_HTTP_PASSWD", C.http_password);
-  nvs_i8(CONFIG_HTTP_ENABLE, "C_HTTP_ENABLE", C.http_enable);
+  nvs_s(CB_HTTP_USER, "C_HTTP_USER", C.http_user);
+  nvs_s(CB_HTTP_PASSWD, "C_HTTP_PASSWD", C.http_password);
+  nvs_i8(CB_HTTP_ENABLE, "C_HTTP_ENABLE", C.http_enable);
 #endif
-  nvs_i8(CONFIG_RECV, "C_RECEIVER", C.app_recv);
-  nvs_i8(CONFIG_TRANSM, "C_TRANSM", C.app_transm);
-  nvs_i8(CONFIG_VERBOSE, "C_VERBOSE", C.app_verboseOutput);
+  nvs_i8(CB_RECV, "C_RECEIVER", C.app_recv);
+  nvs_i8(CB_TRANSM, "C_TRANSM", C.app_transm);
+  nvs_i8(CB_VERBOSE, "C_VERBOSE", C.app_verboseOutput);
 #ifdef USE_NETWORK
-  nvs_i8(CONFIG_NETWORK_CONNECTION, "C_NW_CONN", C.network);
+  nvs_i8(CB_NETWORK_CONNECTION, "C_NW_CONN", C.network);
 #endif
 #ifdef USE_LAN
-  nvs_i8(CONFIG_LAN_PHY, "C_LAN_PHY", C.lan_phy);
-  nvs_i8(CONFIG_LAN_PWR_GPIO, "C_LAN_PWR_GPIO", C.lan_pwr_gpio);
+  nvs_i8(CB_LAN_PHY, "C_LAN_PHY", C.lan_phy);
+  nvs_i8(CB_LAN_PWR_GPIO, "C_LAN_PWR_GPIO", C.lan_pwr_gpio);
 #endif
 
-  nvs_u32(CONFIG_CUID, "C_CUID", C.fer_centralUnitID);
-  nvs_u32(CONFIG_USED_MEMBERS, "C_GMU", C.fer_usedMembers);
-  nvs_u32(CONFIG_BAUD, "C_BAUD", C.mcu_serialBaud);
+  nvs_i8(CB_ASTRO_CORRECTION, "C_AST_COR", C.astroCorrection);
+  nvs_u32(CB_CUID, "C_CUID", C.fer_centralUnitID);
+  nvs_u32(CB_USED_MEMBERS, "C_GMU", C.fer_usedMembers);
+  nvs_u32(CB_BAUD, "C_BAUD", C.mcu_serialBaud);
 }
 
 void read_config(u32 mask) {
@@ -192,7 +194,7 @@ void config_setup() {
   // for old users without network configuration, do not start with WLAN AP by default
   if (C.wifi_SSID[0] != '\0') {
     C.network = MY_NETWORK_CONNECTION_OLD_USERS;
-    read_config(CONFIG_NETWORK_CONNECTION);
+    read_config_item(CB_NETWORK_CONNECTION);
   }
 #endif
 }

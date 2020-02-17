@@ -66,7 +66,7 @@ bool  cu_auto_set_check(fer_sender_basic *fsb) {
     end_time = 0;
     so_output_message(SO_CUAS_DONE, NULL);
     cuas_state = CUAS_SUCCESS;
-    save_config(CONFIG_CUID);
+    save_config_item(CB_CUID);
     cuas_active = false;
     return true;
   }

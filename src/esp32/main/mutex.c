@@ -28,6 +28,7 @@ bool mutex_cliTake() {
     return true;
   } else {
    //XXX restart MCU or something
+    abort();
     return false;
   }
 }
