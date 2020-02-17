@@ -12,7 +12,7 @@
 
 #include "esp_sleep.h"
 
-#include "../../userio/inout.h"
+#include "userio/inout.h"
 #include "sdkconfig.h"
 
 #include "fernotron/fer.h"

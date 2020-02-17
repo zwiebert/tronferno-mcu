@@ -17,7 +17,7 @@
 
 #include "user_config.h"
 #include "config/config.h"
-#include "../../shutter_positions/shutter_state.h"
+#include "shutter_positions/shutter_state.h"
 
 #define NB_SIZE 30
 #define NB_PFX "GMBM_"

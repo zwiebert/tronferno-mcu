@@ -1,4 +1,4 @@
-#include "../../user_config.h"
+#include "user_config.h"
 #include "freertos/FreeRTOS.h"
 
 #include "esp_wifi.h"
@@ -9,7 +9,7 @@
 #include "driver/gpio.h"
 #include "string.h"
 
-#include "../../userio/inout.h"
+#include "userio/inout.h"
 #include "../gpio/pin.h"
 #include "../network/wifistation.h"
 #include "config/config.h"

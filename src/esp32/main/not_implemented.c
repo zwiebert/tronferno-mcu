@@ -10,7 +10,7 @@
 #include "config/config.h"
 #include <time.h>
 
-#include "../../userio/inout.h"
+#include "userio/inout.h"
 #include "config/config.h"
 
 

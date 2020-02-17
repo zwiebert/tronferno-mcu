@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "../../user_config.h"
+#include "user_config.h"
 
 #include "user_interface.h"
 #include <os_type.h>

@@ -8,7 +8,7 @@
 #include "esp_system.h"
 #include "nvs_flash.h"
 #include "nvs.h"
-#include "../../shutter_positions/shutter_state.h"
+#include "shutter_positions/shutter_state.h"
 
 
 #ifndef DISTRIBUTION

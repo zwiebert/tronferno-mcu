@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../../userio/inout.h"
+#include "userio/inout.h"
 
 char *
 itoa(int val, char *s, int radix) {

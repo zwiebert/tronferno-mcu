@@ -8,8 +8,8 @@
 #include "user_config.h"
 #ifdef USE_MQTT
 
-#include "./mqtt.h"
-#include "./mqtt_imp.h"
+#include "mqtt.h"
+#include "mqtt_imp.h"
 
 #include <string.h>
 #include <stdio.h>

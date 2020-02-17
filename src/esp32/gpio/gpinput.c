@@ -12,7 +12,7 @@
 #include "user_config.h"
 #include "main/gpinput.h"
 
-#include "../../shutter_positions/shutter_state.h"
+#include "shutter_positions/shutter_state.h"
 #include "debug/debug.h"
 
 

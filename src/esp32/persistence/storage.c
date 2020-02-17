@@ -20,7 +20,7 @@
 #include "esp_spiffs.h"
 
 
-#include "../../user_config.h"
+#include "user_config.h"
 
 
 
