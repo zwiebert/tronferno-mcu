@@ -512,7 +512,6 @@ void  so_output_message(so_msg_t mt, void *arg) {
 break;
     /////////////////////////////////////////////////////////////////////////////////
 
-
   case SO_POS_PRINT_GMP: {
     so_arg_gmp_t *a = arg;
     io_puts("A:position:");

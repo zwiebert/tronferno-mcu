@@ -210,6 +210,7 @@ OBJ		:= $(C_OBJ) $(CXX_OBJ) $(ASM_OBJ)
 
 LIBS		:= $(addprefix -l,$(LIBS))
 APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
+APP_AR_IROM		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_appirom.a)
 TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
 
 LD_SCRIPT	:= $(addprefix -T$(SDK_BASE)/$(SDK_LDDIR)/,$(LD_SCRIPT))
@@ -262,10 +263,10 @@ endef
 
 all: checkdirs $(TARGET_OUT) $(SUBMODULES)
 
-$(TARGET_OUT): $(APP_AR) $(GEN_LIBS)
+$(TARGET_OUT): $(APP_AR_IROM) $(GEN_LIBS)
 	$(MAKE) $(C_VERSION_OBJ)
 	$(vecho) "LD $@"
-	$(Q) $(LD) -L$(SDK_LIBDIR) -L$(BUILD_BASE) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group  $(LIBS) $(APP_AR) $(EXTRA_AR) $(C_VERSION_OBJ) -Wl,--end-group -o $@
+	$(Q) $(LD) -L$(SDK_LIBDIR) -L$(BUILD_BASE) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group  $(LIBS) $(APP_AR_IROM) $(EXTRA_AR) $(C_VERSION_OBJ) -Wl,--end-group -o $@
 	$(vecho) "Run objcopy, please wait..."
 	$(Q) $(OBJCOPY) --only-section .text -O binary $@ eagle.app.v6.text.bin
 	$(Q) $(OBJCOPY) --only-section .data -O binary $@ eagle.app.v6.data.bin
@@ -308,8 +309,9 @@ endif
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
-	$(Q) $(AR) cru $@.tmp $^
-	$(Q) $(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal --rename-section .iram0.text=.text $@.tmp $@
+	$(Q) $(AR) cr $@ $^
+#$(APP_AR_IROM): $(APP_AR)
+#	$(Q) $(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal --rename-section .iram0.text=.text $(<) $(@)
 
 
 checkdirs: $(BUILD_DIRS) $(FW_BASE) $(DEP_DIR)

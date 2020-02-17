@@ -19,7 +19,7 @@ extern const char *const build_time;
 #undef USE_MQTT
 #undef USE_PAIRINGS
 #undef USE_HTTP
-#undef USE_JSON
+//#undef USE_JSON
 #undef USE_MUTEX
 #undef USE_NETWORK
 #undef USE_OTA

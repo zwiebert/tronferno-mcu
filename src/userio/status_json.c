@@ -24,12 +24,12 @@ char *ftoa(float f, char *buf, int n);
 void (*sj_callback_onClose_ifNotEmpty)(const char *s);
 
 int json_idx;
-char *ext_buf;
-u16 ext_buf_size;
+static char *json_buf;
+u16 json_buf_size;
 
-#define BUF (ext_buf)
-#define BUF_SIZE (ext_buf_size)
-#define USE_CALLBACK (!ext_buf && sj_callback_onClose_ifNotEmpty)
+#define BUF (json_buf)
+#define BUF_SIZE (json_buf_size)
+#define USE_CALLBACK (!json_buf && sj_callback_onClose_ifNotEmpty)
 #define DO_CALLBACK() sj_callback_onClose_ifNotEmpty(BUF);
 #define BUF_MAX_SIZE 1024
 
@@ -40,29 +40,29 @@ bool sj_realloc_buffer(size_t buf_size) {
   if (buf_size > BUF_MAX_SIZE)
     return false;
 
-  ext_buf = realloc(ext_buf, buf_size);
+  json_buf = realloc(json_buf, buf_size);
 
-  if (!ext_buf)
+  if (!json_buf)
     return false;
 
-  ext_buf_size = buf_size;
+  json_buf_size = buf_size;
   return true;
 }
 
 void sj_free_buffer() {
-  precond(ext_buf);
-  free(ext_buf);
-  ext_buf = 0;
-  ext_buf_size = 0;
+  precond(json_buf);
+  free(json_buf);
+  json_buf = 0;
+  json_buf_size = 0;
 }
 
 bool sj_buffer_grow() {
    size_t new_size = 0;
 
-  if (ext_buf_size == 0) {
+  if (json_buf_size == 0) {
     new_size = 128;
   } else {
-    new_size = ext_buf_size * 2;
+    new_size = json_buf_size * 2;
   }
   return sj_realloc_buffer(new_size);
 }
@@ -146,7 +146,6 @@ bool sj_add_key_value_pair_f(const char *key, float val) {
   D(ets_printf("json_idx: %u, buf: %s\n", json_idx, BUF));
   return true;
 }
-
 
 bool sj_add_key_value_pair_d(const char *key, int val) {
   D(ets_printf("so_json(): %s, %d\n", key, val));

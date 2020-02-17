@@ -49,11 +49,11 @@ bool  is_gpio_number_usable(int gpio_number, bool cli) {
   return false;
 }
 
-void mcu_put_txPin(bool dat) {
+void IRAM_ATTR mcu_put_txPin(bool dat) {
   GPIO_OUTPUT_SET(RFOUT_GPIO, dat);
 }
 
-bool mcu_get_rxPin() {
+bool IRAM_ATTR mcu_get_rxPin() {
   return GPIO_INPUT_GET(GPIO_ID_PIN(RFIN_GPIO));
 }
 

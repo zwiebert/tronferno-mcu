@@ -47,8 +47,6 @@ enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 #define pm_setGroupUnused(g) pm_setPct((g),0,pm_GROUP_UNUSED)
 #define pm_isGroupUnused(g) (pm_getPct((g),0) == pm_GROUP_UNUSED)
 
-
-
 static int 
 get_state(u32 a, int g, int m) {
   precond(0 <= g && g <= 7 && 0 <= m && m <= 7);

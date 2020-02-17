@@ -66,7 +66,7 @@ timer1Stop(void) {
 //////////////////////////////////////////////////////////////////////////
 volatile u32 run_time_s10;
 
-void timer_handler(void) {
+void IRAM_ATTR timer_handler(void) {
 
 #ifdef FER_TRANSMITTER
   if (transmTick == C.app_transm) {
@@ -76,7 +76,6 @@ void timer_handler(void) {
       if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
         ftx_tick();
       }
-
     }
 #else
     ftx_tick();
@@ -108,7 +107,6 @@ void timer_handler(void) {
       ;
     }
   }
-
 }
 
 void  setup_timer(void) {
