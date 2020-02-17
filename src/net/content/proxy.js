@@ -9,6 +9,7 @@ const httpProxy = require('http-proxy');
 let proj_dir=path.dirname(path.dirname(path.dirname(__dirname)));
 let tff_dir=path.dirname(proj_dir)+"/tronferno-fhem";
 let build_dir=proj_dir+"/src/esp32/build";
+let cont_dir=__dirname
 let mcu = 'http://192.168.1.69:80';
 
 let server = express();
@@ -27,13 +28,13 @@ server.all("/*.json", (req, res) => {
 
 // static files of MCU HTTP server
 server.get("/index.html", (req, res) => {
-    res.sendFile(__dirname + '/tfmcu_dev.html');
+    res.sendFile(cont_dir + '/tfmcu_dev.html');
 });
 server.get("/tfmcu_dev.html", (req, res) => {
-    res.sendFile(__dirname + '/tfmcu_dev.html');
+    res.sendFile(cont_dir + '/tfmcu_dev.html');
 });
 server.get("/tfmcu_dev.js", (req, res) => {
-    res.sendFile(__dirname + '/tfmcu_dev.js');
+    res.sendFile(cont_dir + '/tfmcu_dev.js');
 });
 
 

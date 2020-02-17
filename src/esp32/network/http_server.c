@@ -9,7 +9,7 @@
 #include <esp_http_server.h>
 
 #include "user_config.h"
-#include "userio/http_server.h"
+#include "net/http_server.h"
 #include "userio/status_output.h"
 #include "userio/status_json.h"
 #include "config/config.h"

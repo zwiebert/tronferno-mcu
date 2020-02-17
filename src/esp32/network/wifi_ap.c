@@ -6,8 +6,8 @@
  */
 
 #include "user_config.h"
-#include "userio/ipnet.h"
-#include "userio/http_server.h"
+#include "net/ipnet.h"
+#include "net/http_server.h"
 
 #include <string.h>
 #include "freertos/FreeRTOS.h"

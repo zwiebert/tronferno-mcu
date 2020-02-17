@@ -15,7 +15,7 @@ SPI_SIZE_MAP	= 4
 
 #V=1
 # Basic project settings
-MODULES	=   src/main src/cli src/fernotron src/esp8266 src/esp8266/driver src/misc src/automatic src/shutter_positions src/motor_setup src/config src/userio src/debug src/storage
+MODULES	=   src/main src/cli src/fernotron src/esp8266 src/esp8266/driver src/misc src/automatic src/shutter_positions src/motor_setup src/config src/userio src/debug src/storage src/net
 LIBS	= c  gcc hal phy pp net80211 lwip wpa main crypto
 
 

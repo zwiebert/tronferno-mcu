@@ -16,7 +16,7 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-#include "userio/ipnet.h"
+#include "net/ipnet.h"
 #include "userio/inout.h"
 #include "main/common.h"
 #include "config/config.h"

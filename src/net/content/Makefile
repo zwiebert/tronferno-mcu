@@ -36,3 +36,8 @@ endif
 	cat $< | sed ${SED_OPTS} ${SED_OPTS_JS} >/tmp/tfmcu.js \
 && ${JSMIN} /tmp/tfmcu.js >$@ \
 && cat null.txt >>$@
+
+.PHONY: proxy
+
+proxy:
+	while true; do ./proxy.js; done

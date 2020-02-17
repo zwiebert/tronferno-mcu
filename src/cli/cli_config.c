@@ -12,8 +12,8 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "misc/stof.h"
-#include "userio/mqtt.h"
-#include "userio/http_server.h"
+#include "net/mqtt.h"
+#include "net/http_server.h"
 #include "automatic/astro.h"
 
 #define ENABLE_RESTART 1 // allow software reset

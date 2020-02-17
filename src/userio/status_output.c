@@ -28,9 +28,9 @@
 #include "main/cuid_auto_set.h"
 #include "misc/int_macros.h"
 #include "userio/inout.h"
-#include "userio/mqtt.h"
+#include "net/mqtt.h"
 #include "userio/status_json.h"
-#include "userio/ipnet.h"
+#include "net/ipnet.h"
 #include "firmware_update/ota.h"
 
 #define D(x)

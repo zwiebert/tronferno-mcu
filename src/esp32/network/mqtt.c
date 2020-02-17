@@ -5,8 +5,8 @@
  *      Author: bertw
  */
 #include "user_config.h"
-#include "userio/mqtt.h"
-#include "userio/mqtt_imp.h"
+#include "net/mqtt.h"
+#include "net/mqtt_imp.h"
 
 #include <stddef.h>
 #include <string.h>

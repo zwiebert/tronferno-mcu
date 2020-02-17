@@ -15,7 +15,7 @@
 #include "driver/gpio.h"
 #include "driver/periph_ctrl.h"
 
-#include "userio/ipnet.h"
+#include "net/ipnet.h"
 #include "config/config.h"
 
 #ifdef USE_LAN

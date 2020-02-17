@@ -12,7 +12,7 @@ endef
 $(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(tgt))))
 
 http_data :
-	cd src/userio/http_data && $(MAKE)
+	cd src/net/content && $(MAKE)
 	
 esp8266_build_cmd := make -C src/esp8266
 esp8266_tgts_auto := all clean flash app-flash flashinit flasherase spiffs
