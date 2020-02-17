@@ -45,6 +45,9 @@ static os_event_t user_procTaskQueue[user_procTaskQueueLen];
 #define io_procTaskPrio     0
 #define io_procTaskQueueLen 1
 
+void main_setup_ip_dependent() {
+
+}
 
 static void 
 user_procTask(os_event_t *events) {

@@ -69,7 +69,7 @@ const char help_parmConfig[]  =
 #ifdef ACCESS_GPIO
     "gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default\n"
 #endif
-    "astro-correction   modifies astro table: 0=average, 1=bright 2=dark"
+    "astro-correction   modifies astro table: 0=average, 1=bright 2=dark\n"
 //  "set-expert-password=\n"
 ;
 

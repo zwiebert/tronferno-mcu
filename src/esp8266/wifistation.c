@@ -12,6 +12,7 @@
 #include "time.h"
 
 #include "../userio/inout.h"
+#include "userio/ipnet.h"
 #include "main/rtc.h"
 
 
@@ -22,6 +23,7 @@
 #define D(x)
 #endif
 
+extern struct ip_addr ip4_address, ip4_gateway_address, ip4_netmask;
 
 
 // WIFI Station ////////////////////////////////////////
@@ -44,19 +46,39 @@ void wst_reconnect(void) {
   //wifi_station_connect();
 }
 
-void wifi_event_handler_cb (System_Event_t *event) {
+void wifi_handle_event_cb(System_Event_t *evt) {
+  D(printf("event %x\n", evt->event));
+  switch (evt->event) {
+  case EVENT_STAMODE_CONNECTED:
+    D(printf("connect to ssid %s, channel %d\n", evt->event_info.connected.ssid, evt->event_info.connected.channel));
+    break;
+  case EVENT_STAMODE_DISCONNECTED:
+    D(printf("disconnect from ssid %s, reason %d\n", evt->event_info.disconnected.ssid, evt->event_info.disconnected.reason));
+    ipnet_disconnected();
+    break;
+  case EVENT_STAMODE_AUTHMODE_CHANGE:
+    D(printf("mode: %d -> %d\n", evt->event_info.auth_change.old_mode, evt->event_info.auth_change.new_mode));
+    break;
+  case EVENT_STAMODE_GOT_IP:
+    D(printf("ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR, IP2STR(&evt->event_info.got_ip.ip), IP2STR(&evt->event_info.got_ip.mask), IP2STR(&evt->event_info.got_ip.gw)); printf("\n"));
+    ip4_address = evt->event_info.got_ip.ip;
+    ip4_gateway_address = evt->event_info.got_ip.gw;
+    ip4_netmask = evt->event_info.got_ip.mask;
 
+    ipnet_connected();
+    break;
+  case EVENT_SOFTAPMODE_STACONNECTED:
+    D(printf("station: " MACSTR "join, AID = %d\n", MAC2STR(evt->event_info.sta_connected.mac), evt->event_info.sta_connected.aid)); break;
+  case EVENT_SOFTAPMODE_STADISCONNECTED:
+    D(printf("station: " MACSTR "leave, AID = %d\n", MAC2STR(evt->event_info.sta_disconnected.mac), evt->event_info.sta_disconnected.aid)); break;
+  default:
+    break;
+  }
 }
-
-void
-ipnet_addr_as_string(char *buf, unsigned buf_len) {
-  strncpy(buf, "not implemented", buf_len);
-}
-
 
 void 
 setup_wifistation(void) {
   wifi_set_opmode(STATION_MODE);
   user_set_station_config();
-  wifi_set_event_handler_cb(wifi_event_handler_cb);
+  wifi_set_event_handler_cb(wifi_handle_event_cb);
 }
