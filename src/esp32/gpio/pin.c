@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "user_config.h"
+#include "app/proj_app_cfg.h"
 #include "../gpio/pin.h"
 
 #include "freertos/FreeRTOS.h"
@@ -17,9 +17,8 @@
 #include "driver/gpio.h"
 #include "string.h"
 
-#include "userio/inout.h"
+#include "txtio/inout.h"
 
-#include "fernotron/fer.h"
 #include "main/common.h"
 #include "config/config.h"
 
@@ -67,11 +66,11 @@ bool is_gpio_number_usable(int gpio_number, bool cli) {
   return  (gpioUsable & 1ULL<<gpio_number) != 0;
 }
 
-void IRAM_ATTR mcu_put_txPin(bool dat) {
+void IRAM_ATTR mcu_put_txPin(u8 dat) {
   GPIO_OUTPUT_SET(RFOUT_GPIO, dat);
 }
 
-bool IRAM_ATTR mcu_get_rxPin() {
+u8 IRAM_ATTR mcu_get_rxPin() {
     return GPIO_INPUT_GET(RFIN_GPIO);
 }
 

@@ -1,5 +1,5 @@
 #ifdef esp8266_user_config_h
-#error should only inlcuded by root user_config.h
+#error should only inlcuded by root fer_app_config.h
 #endif
 
 #define esp8266_user_config_h
@@ -59,5 +59,8 @@ extern const char *const build_time;
 // storage for SPIFFS, currently not used for anything
 #define C_SPIFFS_FLASH_ADDR  (C_DATA2_FLASH_ADDR + C_DATA2_FLASH_SIZE)
 #define C_SPIFFS_FLASH_SIZE   0x80000 // 128 sectors (500KB)
+
+#include "user_interface.h"
+#define IRAM_ATTR  __attribute__((section(".iram0.text")))
 
 

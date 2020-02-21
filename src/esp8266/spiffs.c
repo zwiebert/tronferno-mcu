@@ -6,7 +6,7 @@
 #include <osapi.h>
 #include <mem.h>
 
-#include <user_config.h>
+#include "app/proj_app_cfg.h"
 
 #if ENABLE_SPIFFS
 

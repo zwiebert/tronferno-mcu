@@ -1,5 +1,5 @@
 #include <string.h>
-#include "user_config.h"
+#include "app/proj_app_cfg.h"
 
 #include "main/rtc.h"
 

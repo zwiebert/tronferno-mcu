@@ -128,7 +128,7 @@ class AppState {
 		    case 1: s = '<strong style="animation: blink .75s linear 4;"> ...Scanning... </strong>'; break;
 		    case 2: s = '<strong style="background-color:red;">Time-Out! (no STOP-command received)</strong>'; break;
 		    case 3: s = '<strong style="background-color:green;">Success (cu-id has been saved)</strong>';
-			this.fetchConfig();
+			this.fetchMask(FETCH_CONFIG);
 			break;
 		    }
 
@@ -627,7 +627,7 @@ function onContentLoaded() {
         postAutomatic();
     };
     document.getElementById("csvb").onclick = () => postConfig();
-    document.getElementById("crlb").onclick = () => app_state.fetchConfig();
+    document.getElementById("crlb").onclick = () => app_state.fetchMask(FETCH_CONFIG);
 
     document.getElementById("mrtb").onclick = () => postMcuRestart();
 

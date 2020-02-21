@@ -1,5 +1,5 @@
 #ifdef ESP32_USER_CONFIG_H_
-#error should only inlcuded by root user_config.h
+#error should only inlcuded once
 #endif
 #define ESP32_USER_CONFIG_H_
 
@@ -32,4 +32,6 @@
 
 #define SAVE_TIMER_DATA_FUN save_timer_data_fs
 #define READ_TIMER_DATA_FUN read_timer_data_fs
+
+#include "esp_attr.h"
 

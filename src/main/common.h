@@ -2,18 +2,6 @@
 #define _common_h
 
 ////////////////////////
-// MCU dependent compiler attributes in common code
-#ifdef MCU_ESP8266
-#include "user_interface.h"
-#endif
-
-#ifdef MCU_ESP32
-#include "esp_attr.h"
-#else
-#define IRAM_ATTR  __attribute__((section(".iram0.text")))
-#endif
-
-////////////////////////
 
 #include <stdint.h>
 #include <stdbool.h>

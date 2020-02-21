@@ -1,25 +1,79 @@
+#include <fernotron/fer_rx_tx.h>
 #include <string.h>
 
-#include "../motor_setup/set_endpos.h"
-#include "../shutter_positions/current_state.h"
-#include "user_config.h"
+#include "fernotron_sep/set_endpos.h"
+#include "fernotron_pos/current_state.h"
+#include "app/proj_app_cfg.h"
 
 
-#include "automatic/timer_state.h"
+#include "fernotron_auto/timer_state.h"
 #include "cli/cli.h"
 #include "config/config.h"
-#include "fernotron/fer_code.h"
-#include "fernotron/fer_sender.h"
-#include "main/cuid_auto_set.h"
+#include "fernotron_cuas/cuid_auto_set.h"
 #include "debug/debug.h"
 #include "main/rtc.h"
-#include "main/pairings.h"
-#include "userio/status_output.h"
-#include "automatic/astro.h"
+#include "fernotron_alias/pairings.h"
+#include "userio_app/status_output.h"
+#include "fernotron_txtio/fer_print.h"
+#include "fernotron/astro.h"
+#include "fernotron/fer_msg_extension.h"
+#include "fernotron/hooks.h"
+#include "main/fernotron.h"
 
-void 
-loop(void) {
-  fers_loop();
+
+void fer_copyConfig() {
+  astro_cfg.geo_longitude = C.geo_longitude;
+  astro_cfg.geo_latitude = C.geo_latitude;
+  astro_cfg.geo_timezone = C.geo_timezone;
+  astro_cfg.astroCorrection = C.astroCorrection;
+}
+
+static void rawMessageReceived_cb(fmsg_type msg_type, const fsbT *fsb, const fer_msg *rxmsg) {
+  if (msg_type == MSG_TYPE_PLAIN || msg_type == MSG_TYPE_PLAIN_DOUBLE) {
+    io_puts("R:"), fmsg_print(rxmsg, msg_type, (C.app_verboseOutput >= vrbDebug));
+    io_puts((msg_type == MSG_TYPE_PLAIN_DOUBLE) ? "c:" : "C:"), fmsg_print_as_cmdline(rxmsg, msg_type);
+  }
+
+#ifndef FER_RECEIVER_MINIMAL
+
+  if (msg_type == MSG_TYPE_RTC || msg_type == MSG_TYPE_TIMER) {
+    io_puts("timer frame received\n"), fmsg_print(rxmsg, msg_type, (C.app_verboseOutput >= vrbDebug));
+  }
+#endif
+
+}
+
+static void plainMessageReceived_cb(const fsbT *fsb) {
+  cu_auto_set_check(fsb);
+#ifdef USE_PAIRINGS
+  pair_auto_set_check(fsb);
+#endif
+  { //TODO: improve shutter states
+    u8 g = 0, m = 0;
+
+    if (FSB_ADDR_IS_CENTRAL(fsb)) {
+      g = FSB_GET_GRP(fsb);
+      m = FSB_GET_MEMB(fsb);
+      if (m)
+        m -= 7;
+    }
+    currentState_Move(FSB_GET_DEVID(fsb), g, m, FSB_GET_CMD(fsb));
+  }
+}
+
+static void beforeFirstSend_cb(const fsbT *fsb) {
+ currentState_Move(FSB_GET_DEVID(fsb), FSB_GET_GRP(fsb), FSB_GET_MEMB(fsb) == 0 ? 0 : FSB_GET_MEMB(fsb)-7, FSB_GET_CMD(fsb));
+}
+
+static void beforeAnySend_cb(fmsg_type msg_type, const fsbT *fsb, const fer_msg *txmsg) {
+if (C.app_verboseOutput >= vrb1)
+  io_puts("S:"), fmsg_print(txmsg, C.app_verboseOutput >= vrb2 ? msg_type : MSG_TYPE_PLAIN, (C.app_verboseOutput >= vrbDebug));
+}
+
+void loop(void) {
+
+
+  fer_tx_loop();
 
 #if ENABLE_SET_ENDPOS
   sep_loop();
@@ -31,49 +85,10 @@ loop(void) {
   timer_state_loop();
   cu_auto_set_check_timeout();
 #ifdef USE_PAIRINGS
-        pair_auto_set_check_timeout();
+  pair_auto_set_check_timeout();
 #endif
 
-#ifdef FER_RECEIVER
-  if (MessageReceived != MSG_TYPE_NONE) {
-    switch (MessageReceived) {
-      case MSG_TYPE_PLAIN: {
-        bool isDouble = (0 == memcmp(&last_received_sender.data, rxmsg->cmd, 5));
-        memcpy(&last_received_sender.data, rxmsg->cmd, 5);
-        io_puts("R:"), fmsg_print(rxmsg, MessageReceived);
-        io_puts(isDouble ? "c:" : "C:"), fmsg_print_as_cmdline(rxmsg, MessageReceived);
-        cu_auto_set_check(&last_received_sender);
-#ifdef USE_PAIRINGS
-        pair_auto_set_check(&last_received_sender);
-#endif
-        { //TODO: improve shutter states
-          u8 g=0, m=0;
-
-          if (FRB_ADDR_IS_CENTRAL(rxmsg->cmd)) {
-            g = FRB_GET_GRP(rxmsg->cmd);
-            m = FRB_GET_MEMB(rxmsg->cmd);
-            if (m)
-            m -= 7;
-          }
-          currentState_Move(FRB_GET_DEVID(rxmsg->cmd), g, m, FRB_GET_CMD(rxmsg->cmd));
-        }
-      }
-      break;
-#ifndef	FER_RECEIVER_MINIMAL
-    case MSG_TYPE_RTC:
-    case MSG_TYPE_TIMER:
-      io_puts("timer frame received\n"), fmsg_print(rxmsg, MessageReceived);
-      break;
-#endif
-    }
-
-    if (!fmsg_verify_checksums(rxmsg, MessageReceived)) {
-      io_puts("checksum(s) wrong\n");
-    }
-
-    frx_clear();
-  }
-#endif
+  fer_rx_loop();
 
 #if defined USE_NTP && defined MCU_ESP8266
   bool  ntp_update_system_time(unsigned interval_seconds);
@@ -84,6 +99,11 @@ loop(void) {
 
 int 
 main_setup() {
+
+  ferHook_beforeFirstSend = beforeFirstSend_cb;
+  ferHook_beforeAnySend = beforeAnySend_cb;
+  ferHook_rawMessageReceived = rawMessageReceived_cb;
+  ferHook_plainMessageReceived = plainMessageReceived_cb;
 
   rtc_setup();
   fer_init_sender(&default_sender, C.fer_centralUnitID);
@@ -98,7 +118,6 @@ main_setup() {
 #endif
 
   so_output_message(SO_FW_START_MSG_PRINT, 0);
-  db_test_all_indicators(3);
   currentState_init();
 
   dbg_trace();

@@ -11,10 +11,9 @@
 #include <osapi.h>
 #include <gpio.h>
 
-#include "../userio/inout.h"
+#include "txtio/inout.h"
 #include "driver/uart.h"
 
-#include "fernotron/fer.h"
 #include "config/config.h"
 
 
@@ -49,11 +48,11 @@ bool  is_gpio_number_usable(int gpio_number, bool cli) {
   return false;
 }
 
-void IRAM_ATTR mcu_put_txPin(bool dat) {
-  GPIO_OUTPUT_SET(RFOUT_GPIO, dat);
+void IRAM_ATTR mcu_put_txPin(u8 level) {
+  GPIO_OUTPUT_SET(RFOUT_GPIO, level);
 }
 
-bool IRAM_ATTR mcu_get_rxPin() {
+u8 IRAM_ATTR mcu_get_rxPin() {
   return GPIO_INPUT_GET(GPIO_ID_PIN(RFIN_GPIO));
 }
 

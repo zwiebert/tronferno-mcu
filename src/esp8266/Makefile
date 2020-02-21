@@ -15,9 +15,20 @@ SPI_SIZE_MAP	= 4
 
 #V=1
 # Basic project settings
-MODULES	=   src/main src/cli src/fernotron src/esp8266 src/esp8266/driver src/misc src/automatic src/shutter_positions src/motor_setup src/config src/userio src/debug src/storage src/net
+COMPONENTS = storage net config cli cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto misc  txtio  userio userio_app app
+MODULES	=  src/main src/esp8266 src/esp8266/driver src/config src/debug
 LIBS	= c  gcc hal phy pp net80211 lwip wpa main crypto
 
+define GEN_COMPONENTS
+EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include $(SRC_BASE)/$(1)/$(2)/include/$(2)
+MODULES += $(1)/$(2)
+
+ifneq ("$(wildcard $(SRC_BASE)/$(1)/$(2)/esp8266)","")
+MODULES += $(1)/$(2)/esp8266
+endif
+
+endef
+$(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,src/components,$(component))))
 
 
  .PHONY: libmirom force

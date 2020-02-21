@@ -8,7 +8,7 @@
 #ifndef MAIN_OTA_H_
 #define MAIN_OTA_H_
 
-#include "user_config.h"
+#include "app/proj_app_cfg.h"
 
 #ifdef USE_LAN
 #define OTA_FWURL_MASTER "https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/master/firmware/esp32/tronferno-mcu-lan.bin"

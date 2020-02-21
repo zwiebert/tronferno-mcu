@@ -1,7 +1,7 @@
 #ifndef RTC_H_
 #define RTC_H_
 
-#include "user_config.h"
+#include "app/proj_app_cfg.h"
 #include <time.h>
 
 volatile time_t run_time_secs;
@@ -16,10 +16,10 @@ time_t time_iso2time(const char *dateTimeString);
 
 time_t rtc_timezone_in_secs();
 
-i8 get_weekDay(void);
-i16 get_yearDay(void);
+int8_t get_weekDay(void);
+int16_t get_yearDay(void);
 int get_dst(void);
-i16 rtc_get_next_minute(void); // get next minute_of_day or -1 until next minute begins
+int16_t rtc_get_next_minute(void); // get next minute_of_day or -1 until next minute begins
 
 void rtc_setup(void);
 

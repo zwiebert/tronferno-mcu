@@ -3,7 +3,7 @@
 mcus := esp32 esp8266 
 tgts := all clean
 
-default: esp32-all
+default: esp32-app
 
 define GEN_RULE
 .PHONY: $(1)
@@ -29,7 +29,7 @@ esp32_build_dir := -B $(BUILD_DIR_BASE)
 endif
 
 esp32_build_cmd := idf.py -C src/esp32 $(esp32_build_dir)
-esp32_tgts_auto := menuconfig clean
+esp32_tgts_auto := menuconfig clean app
 
 .PHONY: esp32-all-force esp32-rebuild
 .PHONY: esp32-all esp32-lan esp32-flash

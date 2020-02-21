@@ -13,11 +13,11 @@
 #include <os_type.h>
 #include <ets_sys.h>
 
-typedef i8 s8_t;
+typedef int8_t s8_t;
 typedef u8 u8_t;
-typedef i16 s16_t;
+typedef int16_t s16_t;
 typedef u16 u16_t;
-typedef i32 s32_t;
+typedef int32_t s32_t;
 typedef u32 u32_t;
 
 #define memcpy ets_memcpy

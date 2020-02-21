@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "user_config.h"
+#include "app/proj_app_cfg.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -9,10 +9,10 @@
 #include "nvs.h"
 #include "driver/gpio.h"
 
-#include "user_config.h"
+#include "app/proj_app_cfg.h"
 #include "main/gpinput.h"
 
-#include "shutter_positions/shutter_state.h"
+#include "fernotron_pos/shutter_state.h"
 #include "debug/debug.h"
 
 
