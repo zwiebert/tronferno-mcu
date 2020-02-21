@@ -10,7 +10,6 @@ extern char cmd_buf[CMD_BUF_SIZE];
 extern const char pin_state_args[];
 extern bool cli_isJson;
 
-
 #define MAX_PAR 20
 extern clpar par[MAX_PAR];
 

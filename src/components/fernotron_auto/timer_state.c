@@ -12,6 +12,7 @@
 #include "misc/int_macros.h"
 #include "time.h"
 #include "fernotron_pos/current_state.h"
+#include "fernotron_pos/shutter_state.h"
 
 
 #ifndef DISTRIBUTION
@@ -44,6 +45,7 @@ timer_to_minutes(minutes_t *result, const char *ts) {
   return true;
 }
 
+extern gm_bitmask_t manual_bits;
 
 bool 
 get_timer_minutes_2(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, struct tm *tm) {
@@ -165,6 +167,10 @@ get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
     for (g=0; g <= MAX_GRP; ++g) {
       for (m=0; m <= MAX_MBR; ++m) {
 	timer_minutes_t timi;
+
+  if (gm_GetBit(manual_bits, g, m)) {
+    continue;
+  }
 
 	if (pass != PASS_GET_EARLIEST_TIME &&  !GET_BIT(existing_members[g], m)) {
 	  // file not exists - copy parent and continue with next
