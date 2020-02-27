@@ -1,4 +1,5 @@
 
+#include "app/proj_app_cfg.h"
 #include "user_interface.h"
 #include <os_type.h>
 #include <ets_sys.h>
@@ -6,7 +7,6 @@
 #include <osapi.h>
 #include <mem.h>
 
-#include "app/proj_app_cfg.h"
 
 #if ENABLE_SPIFFS
 

@@ -16,5 +16,6 @@ int process_parmMcu(clpar p[], int len);
 int process_parmTimer(clpar p[], int len);
 int process_parmHelp(clpar p[], int len);
 int process_parmPair(clpar p[], int len);
+int process_parmShpref(clpar p[], int len);
 
 #endif /* CLI_CLI_APP_H_ */

@@ -17,6 +17,7 @@
 
 #include "net/ipnet.h"
 #include "config/config.h"
+#include "net/ethernet.h"
 
 #ifdef USE_LAN
 extern esp_ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
@@ -196,7 +197,7 @@ void ethernet_setup() {
     }
 }
 
-void ethernet_loop() {
+void ethernet_loop(void) {
   if (ethernet_connected) {
       ipnet_connected();
       ethernet_connected = false;

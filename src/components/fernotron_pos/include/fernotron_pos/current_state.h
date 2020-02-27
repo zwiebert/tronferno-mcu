@@ -14,6 +14,7 @@
 #include "shutter_state.h"
 
 int currentState_getShutterPct(uint32_t a, uint8_t g, uint8_t m);
+int currentState_getMovingPct(uint32_t a, uint8_t g, uint8_t m);
 int currentState_modifyShutterPositions(gm_bitmask_t mm, uint8_t pct);
 int currentState_printShutterPositions(void);
 

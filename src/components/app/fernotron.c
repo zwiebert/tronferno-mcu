@@ -18,7 +18,7 @@
 #include "fernotron/astro.h"
 #include "fernotron/fer_msg_extension.h"
 #include "fernotron/hooks.h"
-#include "main/fernotron.h"
+#include "app/fernotron.h"
 
 
 void fer_copyConfig() {

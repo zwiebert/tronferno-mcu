@@ -18,10 +18,9 @@
 
 #include "config/config.h"
 #include "main/rtc.h"
-#include "main/interrupt_timer.h"
-
+#include "fernotron/fer_timings.h"
 #include "fernotron/int_timer.h"
-
+#include "app/timer.h"
 
 void mcu_delay_us(u16 us) {
   ets_delay_us(us);
@@ -146,7 +145,7 @@ static void IRAM_ATTR timer1_handler(void *args) {
 
 }
 
-void setup_timer(void) {
+void intTimer_setup(void) {
   timer1_start();
 }
 

@@ -16,7 +16,7 @@
 #include "net/http_server.h"
 #include "fernotron/astro.h"
 #include "fernotron/fer_rx_tx.h"
-#include "main/fernotron.h"
+#include "app/fernotron.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 

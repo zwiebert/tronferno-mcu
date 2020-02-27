@@ -28,11 +28,11 @@
 void loop(void);
 void tcps_loop(void);
 
-extern void setup_timer(void);
+extern void intTimer_setup(void);
 extern void setup_serial(u32 baudrate);
 extern void setup_notImplemented(void);
 extern void setup_pin(void);
-void setup_wifistation(void);
+void wifistation_setup(void);
 void setup_dataFlash(void);
 void setup_dataFlash2(void);
 void setup_ntp(void);
@@ -171,7 +171,7 @@ user_init() {
   ferHook_rx_pin = mcu_get_rxPin;
   ferHook_tx_pin = mcu_put_txPin;
 
-  setup_wifistation();
+  wifistation_setup();
   setup_tcp_server();
   setup_udp();
 
@@ -180,7 +180,7 @@ user_init() {
   system_os_task(user_procTask, user_procTaskPrio, user_procTaskQueue, user_procTaskQueueLen);
   system_os_post(user_procTaskPrio, 0, 0);
 
-  setup_timer();
+  intTimer_setup();
 
   setup_dataFlash2();
 

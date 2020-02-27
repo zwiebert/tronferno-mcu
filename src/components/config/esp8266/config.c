@@ -10,7 +10,7 @@
 
 #include "esp8266/data_flash.h"
 
-
+#if 0
 config C = {
 	MY_FER_CENTRAL_UNIT_ID,
 	MY_MCU_UART_BAUD_RATE,
@@ -41,17 +41,18 @@ config C = {
   .ntp_server = MY_NTP_SERVER,
 #endif
 };
+#endif
 
 #if ENABLE_SPIFFS
-#include "main/config_spiffs.h"
-void  read_config(void) {
+#include "config/config_spiffs.h"
+void  mcu_read_config(uint32_t mask) {
   if (!config_read()) {
 #if LEGACY_STORAGE_READ
     read_data();  // FIXME: support old storage in parallel for some time
   }
 #endif
 }
-void  save_config(void) {
+void  mcu_save_config(uint32_t mask) {
   config_save();
 #if LEGACY_STORAGE_WRITE
   save_data(); // FIXME: support old storage in parallel for some time

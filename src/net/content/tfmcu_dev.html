@@ -155,11 +155,7 @@
   <body>
 
           <!-- Tab links -->
-<div class="tab">
-  <button class="tablinks" id="stb">Command</button>
-  <button class="tablinks" id="atb">Automatic</button>
-  <button class="tablinks" id="ctb">Configuration</button>
-  <button class="tablinks" id="ftb">Firmware-Update</button>
+<div id="tabBar" class="tab">
 </div>
 
     <div  class="container tabcontent">
@@ -179,7 +175,8 @@
         <br><button id="sdb" class="sb" type="button">&#x25bc;</button>
       </div>
 
-    <div id="autodiv" class="auto">
+      <div id="autodiv" class="auto">
+        <hr>
       <h3>Automatic</h3>
       <table>
         <tr id="tf_tr">
@@ -220,7 +217,35 @@
       <br>
       <button id="arlb" class="sb" type="button">Reload</button>
       <button id="asvb" class="sb" type="button">Save</button>
-    </div>
+      <br>
+
+
+      </div>
+
+      <div id="shprefdiv">
+        <hr>
+        <table>
+          <tr><td>up time in s/10:</td><td><input id="shpMvut" type="number" min="0" value="0"></td></tr>
+          <tr><td>down time in s/10:</td><td><input id="shpMvdt" type="number" min="0" value="0"></td></tr>
+        </table>
+        <button id="shp_clockStart" type="button">Start Clock</button>
+        <button id="shp_clockStop" type="button">Stop Clock</button>
+<br>
+        <button id="shp_reload" type="button">Reload</button>
+        <button id="shp_save" type="button">Save</button>
+      </div>
+
+      <div id="aliasdiv">
+        <hr>
+        <h4>experimental: aliased controllers (read only yet)</h4>
+        <select id="aliases" onchange="onAliasesChanged()"></select>
+        <div id="divPairAll"> </div>
+        <button id="alias_reload" type="button">Reload</button>
+        <button id="alias_save" type="button">Save</button>
+        <button id="alias_pair" type="button">Start Pairing</button>
+        <button id="alias_unpair" type="button">Start Un-Pairing</button>
+      </div>
+
     <div id="configdiv">
       <h3>Configuration</h3>
       <div  class="config" id="config-div">

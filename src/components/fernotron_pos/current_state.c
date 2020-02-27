@@ -399,16 +399,27 @@ currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd) {
   return 0;
 }
 
-#define MV_UP_10 26
-#define MV_DOWN_10 25
-#define MV_UP_TO1 60
-#define MV_DOWN_FROM1 50
+
+
+#define DEF_MV_UP_10 260
+#define DEF_MV_DOWN_10 250
+
+struct shutter_timings st_def = { DEF_MV_UP_10, DEF_MV_DOWN_10 };
 
 u16 currentState_mvCalcTime10(u8 g, u8 m, u8 curr_pct, u8 pct) {
   bool direction = curr_pct < pct;
   u8 pct_diff = direction ? pct - curr_pct : curr_pct - pct;
+  struct shutter_timings st = st_def;
+  shuPref_read_timings(&st, g, m);
 
-  u16 result = (direction ? pct_diff * MV_UP_10 : pct_diff * MV_DOWN_10) / 10;
+  if (st.move_up_tsecs == 0)
+     st.move_up_tsecs = st_def.move_up_tsecs;
+
+  if (st.move_down_tsecs == 0)
+     st.move_down_tsecs = st_def.move_down_tsecs;
+
+
+  u16 result = (direction ? pct_diff * st.move_up_tsecs : pct_diff * st.move_down_tsecs) / 100;
 #if 0
   if (curr_pct == 0 && direction)
     result += MV_UP_TO1;
@@ -421,12 +432,21 @@ u16 currentState_mvCalcTime10(u8 g, u8 m, u8 curr_pct, u8 pct) {
 
 u8 currentState_mvCalcPct(u8 g, u8 m, bool direction_up, u16 time_s10) {
   int pct = get_state(0, g, m);
+  struct shutter_timings st = st_def;
+  shuPref_read_timings(&st, g, m);
+
+  if (st.move_up_tsecs == 0)
+     st.move_up_tsecs = st_def.move_up_tsecs;
+
+  if (st.move_down_tsecs == 0)
+     st.move_down_tsecs = st_def.move_down_tsecs;
+
 
   if (pct == -1) {
     return direction_up ? PCT_UP : PCT_DOWN;// XXX
   }
 
-  int add = (direction_up ? 10 * time_s10 / MV_UP_10 : -10 * time_s10 / MV_DOWN_10);
+  int add = (direction_up ? 100 * time_s10 /  st.move_up_tsecs : -100 * time_s10 / st.move_down_tsecs);
   add += pct;
 
   if (add > 100)
@@ -437,7 +457,30 @@ u8 currentState_mvCalcPct(u8 g, u8 m, bool direction_up, u16 time_s10) {
     return add;
 }
 
+int currentState_getMovingPct(u32 a, u8 g, u8 m) {
+  if (!(a == 0 || a == C.fer_centralUnitID)) {
+    return -1;
+  }
 
+  u32 rt = run_time_10(0);
+  u8 i;
+  u8 mask = moving_mask;
+
+  for (i = 0; mask != 0; ++i, (mask >>= 1)) {
+    if (!(mask & 1))
+      continue;
+    struct mv *mv = &moving[i];
+    u16 time_s10 = rt - mv->start_time;
+    {
+      if (gm_GetBit(mv->mask, g, m)) {
+        u8 pct = currentState_mvCalcPct(g, m, mv->direction_up, time_s10);
+        return pct;
+      }
+    }
+
+  }
+  return currentState_getShutterPct(a, g, m);
+}
 
 // check if a moving shutter has reached its end position
 static void currentState_mvCheck() {

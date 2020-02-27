@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-#include "firmware_update/ota.h"
+#include "app/ota.h"
 #include "fernotron_sep/set_endpos.h"
 #include "fernotron_pos/current_state.h"
 #include "txtio/inout.h"
@@ -11,6 +11,7 @@
 #include "misc/bcd.h"
 #include "main/rtc.h"
 #include "cli_imp.h"
+#include "storage/spiffs_fs.h"
 
 const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #if ENABLE_SPIFFS
@@ -80,7 +81,16 @@ process_parmMcu(clpar p[], int len) {
         io_print_hex_8(ted.matching_members[i], true);
       }
       io_putlf();
-
+#ifdef MCU_ESP32
+    } else if (strcmp(key, "test-kvs") == 0) {
+      void kvs_test();
+      kvs_test();
+#endif
+#ifdef USE_PAIRINGS
+    } else if (strcmp(key, "dbp") == 0) {
+      bool pair_so_output_all_pairings(void);
+      pair_so_output_all_pairings();
+#endif
     } else if (strcmp(key, "cs") == 0) {
       currentState_printShutterPositions();
 #ifdef CONFIG_GPIO_SIZE

@@ -177,8 +177,8 @@
 
 #ifndef MY_NETWORK_CONNECTION
 #define MY_NETWORK_CONNECTION nwWlanAp
-#define MY_NETWORK_CONNECTION_OLD_USERS nwWlanSta
 #endif
+#define MY_NETWORK_CONNECTION_OLD_USERS nwWlanSta
 
 #ifndef MY_LAN_PHY
 #define MY_LAN_PHY lanPhyLAN8270
@@ -296,7 +296,10 @@ typedef struct {
 extern config C;
 
 
-
+// CONFIG_IGORE_MASK holds bits to always ignore when read/save config
+// so these options will not be persistent during restart
+//
+#define CONFIG_IGORE_MASK ((1<<CB_RECV)|(1<<CB_TRANSM))
 
 enum configItem {
 CB_RECV,
@@ -355,6 +358,7 @@ void read_config_item(enum configItem item);
 void read_config(uint32_t mask);
 
 
+void config_setup(void);
 
 
 

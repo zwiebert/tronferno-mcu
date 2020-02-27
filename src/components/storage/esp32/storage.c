@@ -95,7 +95,7 @@ delete_file(const char *path) {
   return true;
 }
 
-void setup_storage(void) {
+void storage_setup(void) {
   ESP_LOGI(TAG, "Initializing SPIFFS");
 
    esp_vfs_spiffs_conf_t conf = {

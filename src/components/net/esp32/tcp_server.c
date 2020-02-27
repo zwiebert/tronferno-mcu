@@ -25,6 +25,8 @@
 #include <errno.h>
 #include "txtio/inout.h"
 
+#include "tcp_server.h"
+
 #define TCP_HARD_TIMEOUT  (60 * 10)  // terminate connections to avoid dead connections piling up
 #define SERIAL_ECHO 1
 #define SERIAL_INPUT 1

@@ -1,6 +1,6 @@
 #include "app/proj_app_cfg.h"
 #ifdef USE_OTA
-#include "firmware_update/ota.h"
+#include "app/ota.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"

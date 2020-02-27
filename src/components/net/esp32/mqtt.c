@@ -154,7 +154,7 @@ void io_mqtt_stop_and_destroy(void) {
 }
 
 
-void setup_mqtt(void) {
+void io_mqtt_setup(void) {
   if (C.app_verboseOutput > 5) {
     ets_printf("\n\n----#####################################----------\n\n");
     ESP_LOGI(TAG, "[APP] Startup..");

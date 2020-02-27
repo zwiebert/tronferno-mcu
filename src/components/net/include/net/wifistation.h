@@ -8,7 +8,7 @@
 #ifndef USER_ESP32_MAIN_WIFISTATION_H_
 #define USER_ESP32_MAIN_WIFISTATION_H_
 
-void setup_wifistation(void);
-
+void wifistation_setup(void);
+void wifistation_loop(void);
 
 #endif /* USER_ESP32_MAIN_WIFISTATION_H_ */

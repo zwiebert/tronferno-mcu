@@ -103,7 +103,7 @@ process_parmSend(clpar p[], int len) {
 
   if (has_requested_position) {
     if (g != 0 && m != 0) {
-      int pos = currentState_getShutterPct(addr, g, m);
+      int pos = currentState_getMovingPct(addr, g, m);
       if (pos >= 0) {
         so_arg_gmp_t gmp = {g, m, pos};
         so_output_message(SO_POS_PRINT_GMP, &gmp);

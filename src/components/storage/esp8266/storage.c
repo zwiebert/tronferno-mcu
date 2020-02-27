@@ -13,6 +13,7 @@
 #include "config/config.h"
 #include "spiffs.h"
 #include "storage/storage.h"
+#include "storage/spiffs_fs.h"
 #include "debug/debug.h"
 
 #define TEST_THIS_MODULE 0

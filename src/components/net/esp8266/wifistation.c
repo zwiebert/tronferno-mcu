@@ -77,7 +77,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 }
 
 void 
-setup_wifistation(void) {
+wifistation_setup(void) {
   wifi_set_opmode(STATION_MODE);
   user_set_station_config();
   wifi_set_event_handler_cb(wifi_handle_event_cb);

@@ -1,0 +1,56 @@
+diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt unity/CMakeLists.txt
+--- /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt	2020-02-21 21:53:53.611006000 +0100
++++ unity/CMakeLists.txt	2020-02-27 02:10:48.544290000 +0100
+@@ -2,7 +2,11 @@
+ # CMakeLists in this exact order for cmake to work correctly
+ cmake_minimum_required(VERSION 3.5)
+ 
+-set(EXTRA_COMPONENT_DIRS "$ENV{IDF_PATH}/examples/cxx/experimental/experimental_cpp_component/")
++set(EXTRA_COMPONENT_DIRS "$ENV{HOME}/proj/mcu/tronferno-mcu/src/components")
+ 
+ include($ENV{IDF_PATH}/tools/cmake/project.cmake)
++
++#set(COMPONENTS $(COMPONENTS) unitiy key_value_store storage cli_app config net fernotron_pos fernotron_alias fernotron_cuas fernotron_sep fernotron_auto app userio_app fernotron_txtio txtio userio cli misc fernotron 
++#    bootloader esptool_py partition_table soc bootloader_support log spi_flash micro-ecc main efuse app_update driver esp_http_server esp_http_client esp_https_ota esp_netif esp_rom esp_wifi mqtt spiffs esp_eth)
++    
+ project(unit-test-app)
+diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/main/app_main.c unity/main/app_main.c
+--- /home/bertw/esp/esp-idf/tools/unit-test-app/main/app_main.c	2019-12-14 10:03:56.989231000 +0100
++++ unity/main/app_main.c	2020-02-27 02:15:19.695798000 +0100
+@@ -2,5 +2,7 @@
+ 
+ void app_main(void)
+ {
++  void unity_suiteSetUp(); //avoid weak linking problems by having our own name
++  unity_suiteSetUp();
+     test_main();
+ }
+diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_app.csv unity/partition_table_unit_test_app.csv
+--- /home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_app.csv	2019-12-14 10:03:56.989231000 +0100
++++ unity/partition_table_unit_test_app.csv	2020-02-27 01:46:55.620186000 +0100
+@@ -1,17 +1,11 @@
+-# Special partition table for unit test app
+-#
+-# Name,     Type, SubType, Offset,   Size, Flags
+-# Note: if you have increased the bootloader size, make sure to update the offsets to avoid overlap
+-nvs,        data, nvs,      0x9000,  0x4000
+-otadata,    data, ota,      0xd000,  0x2000
+-phy_init,   data, phy,      0xf000,  0x1000
+-factory,    0,    0,        0x10000, 0x260000
+-# these OTA partitions are used for tests, but can't fit real OTA apps in them
+-# (done this way to reduce total flash usage.)
+-ota_0,      0,    ota_0,    ,        64K
+-ota_1,      0,    ota_1,    ,        64K
+-# flash_test partition used for SPI flash tests, WL FAT tests, and SPIFFS tests
++# Name,   Type, SubType, Offset,  Size, Flags
++# Note: if you change the phy_init or app partition offset, make sure to change the offset in Kconfig.projbuild
++nvs,      data, nvs,     0x9000,  0x6000,
++phy_init, data, phy,     0xf000,  0x1000,
++ota_0,    app,  ota_0,   0x10000, 1M,
++storage,  data, spiffs, 0x110000, 0xF0000, 
++ota_1,    app,  ota_1,  0x200000, 1M,
++otadata,  data, ota,    0x300000, 0x2000,
+ flash_test, data, fat,      ,        528K
+ nvs_key,    data, nvs_keys, ,        0x1000, encrypted
+ 
+-# Note: still 1MB of a 4MB flash left free for some other purpose

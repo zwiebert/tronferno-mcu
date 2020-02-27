@@ -50,3 +50,27 @@ esp32-lan: http_data
 esp32-flash: http_data
 	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
 
+
+# unit testing
+.PHONY: test-all unity unity-clean
+
+COMPS := $(shell cd src/components && ls)
+#COMPS = fernotron_alias fernotron_auto txtio
+
+unity: unity/unity.txt
+
+unity-clean:
+	rm -r ./unity
+
+unity/unity.txt:
+	cp -upr $(IDF_PATH)/tools/unit-test-app unity
+	patch -s -p0 < unity.diff
+	touch unity/unity.txt
+test-all: unity
+	idf.py -C unity -T "$(COMPS)" reconfigure build
+test-clean: unity
+	idf.py -C unity clean
+test-flash: unity
+	idf.py -C unity --port /dev/ttyUSB0 flash
+
+	

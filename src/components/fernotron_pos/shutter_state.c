@@ -7,11 +7,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_system.h"
-#include "nvs_flash.h"
-#include "nvs.h"
+#include "key_value_store/kvs_wrapper.h"
 
 #define CFG_NAMESPACE "Tronferno"
 
@@ -28,24 +24,20 @@ typedef u8 u8a8[8];
 static int store (const char *name, u8a8 *gm, int count, bool write) {
   char nb[NB_SIZE] = NB_PFX;
   strncat (nb, name, NB_N);
-
-  esp_err_t err = 0;
-  nvs_handle handle;
+  bool success = false;
   size_t len = sizeof(*gm) * count;
 
-  if ((err = nvs_open(CFG_NAMESPACE, (write ? NVS_READWRITE : NVS_READONLY), &handle)) == ESP_OK) {
+
+  kvshT handle = kvs_open(CFG_NAMESPACE, write ? kvs_WRITE : kvs_READ);
+
+  if (handle) {
+    success = (kvs_rw_blob(handle, nb, gm, len, write));
     if (write) {
-      err = nvs_set_blob(handle, nb, gm, len);
-      nvs_commit(handle);
-    } else {
-
-      err = nvs_get_blob(handle, nb, gm, &len); //FIXME: check len?
+      kvs_commit(handle);
     }
-    nvs_close(handle);
+    kvs_close(handle);
   }
-
-
-  return err == ESP_OK;
+  return success;
 }
 
 int read_gm_bitmask(const char *name, const gm_bitmask_t gm, int count) {

@@ -25,6 +25,7 @@ extern const char *const build_time;
 #undef USE_OTA
 #undef USE_LAN
 #undef WLAN_AP
+#undef CONFIG_DICT
 
 #define CONFIG_GPIO_SIZE 17
 // SPIFFS is currently unused

@@ -12,6 +12,7 @@
 #include "user_interface.h"
 #include <os_type.h>
 #include <ets_sys.h>
+#include <stdint.h>
 
 typedef int8_t s8_t;
 typedef u8 u8_t;
@@ -19,6 +20,7 @@ typedef int16_t s16_t;
 typedef u16 u16_t;
 typedef int32_t s32_t;
 typedef u32 u32_t;
+
 
 #define memcpy ets_memcpy
 #define memset ets_memset

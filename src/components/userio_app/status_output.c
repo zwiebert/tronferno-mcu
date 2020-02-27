@@ -31,7 +31,7 @@
 #include "net/mqtt.h"
 #include "userio/status_json.h"
 #include "net/ipnet.h"
-#include "firmware_update/ota.h"
+#include "app/ota.h"
 
 #define D(x)
 
@@ -95,11 +95,10 @@ gk(so_msg_t so_key) {
   return NULL;
 }
 
-// pass only string literals as argument
-void so_out_x_open(const char *name_literal) {
-  if (so_cco) cli_out_set_x(name_literal);
+void so_out_x_open(const char *name) {
+  if (so_cco) cli_out_set_x(name);
   if (so_jco) {
-    sj_add_object(name_literal);
+    sj_add_object(name);
   }
 }
 
@@ -172,6 +171,7 @@ static void so_print_timer_as_text(u8 g, u8 m, bool wildcard);
 static void so_print_timer(u8 g, u8 m);
 static void so_print_gmbitmask(gm_bitmask_t mm);
 static void so_print_startup_info(void);
+static void so_gmbitmask_to_str(char *dst, gm_bitmask_t mm);
 
 void  so_output_message(so_msg_t mt, void *arg) {
   static u16 pras_msgid, cuas_msgid;
@@ -512,6 +512,25 @@ void  so_output_message(so_msg_t mt, void *arg) {
 break;
     /////////////////////////////////////////////////////////////////////////////////
 
+  case SO_SHPREF_begin:
+    so_out_x_open("shpref");
+    break;
+  case SO_SHPREF_end:
+    so_out_x_close();
+    break;
+
+  case SO_SHPREF_PRINT_GMT: {
+    so_arg_gmt_t *a = arg;
+    char buf[]="shp00";
+    buf[3] = '0' + a->g;
+    buf[4] = '0' + a->m;
+    so_out_x_open(buf);
+    so_out_x_reply_entry_sd("mvut", a->st->move_up_tsecs);
+    so_out_x_reply_entry_sd("mvdt", a->st->move_down_tsecs);
+    so_out_x_close();
+  }
+  break;
+
   case SO_POS_PRINT_GMP: {
     so_arg_gmp_t *a = arg;
     io_puts("A:position:");
@@ -546,12 +565,33 @@ break;
     io_puts("U:position:end;\n");
     break;
 
+  case SO_PAIR_begin:
+    so_out_x_open("pair");
+    break;
+  case SO_PAIR_end:
+    so_out_x_close();
+    break;
+  case SO_PAIR_ALL_begin:
+    so_out_x_open("all");
+    break;
+  case SO_PAIR_ALL_end:
+    so_out_x_close();
+    break;
+
   case SO_PAIR_PRINT_AMM: {
     so_arg_amm_t *a = arg;
-    io_puts("pair a="), so_print_gmbitmask(a->mm), io_puts(";\n");
+    io_puts("pair a="), io_print_hex(a->a, false), io_puts(" mm="), so_print_gmbitmask(a->mm), io_puts(";\n");
   }
     break;
 
+  case SO_PAIR_PRINT_KMM: {
+    so_arg_kmm_t *a = arg;
+    //io_puts("pair a="), io_puts(a->key), io_puts(" mm="), so_print_gmbitmask(a->mm), io_puts(";\n");
+    char buf[20];
+    so_gmbitmask_to_str(buf, a->mm);
+    so_out_x_reply_entry_ss(a->key, buf);
+  }
+    break;
 
   case SO_INET_PRINT_ADDRESS: {
     char buf[20];
@@ -717,6 +757,25 @@ static void  so_print_gmbitmask(gm_bitmask_t mm) {
     io_putx8(mm[g]);
     if (g < 7)
       io_putc(',');
+  }
+}
+
+static void so_gmbitmask_to_str(char *dst, gm_bitmask_t mm) {
+  i8 g;
+  bool leading_zeros = false;
+
+  for (g = 7; g >= 0; --g) {
+    if (leading_zeros && mm[g] == 0)
+      continue; // no leading zeros
+    leading_zeros = false;
+
+    if (mm[g] & 0xf0) {
+      itoa(mm[g], dst, 16);
+    } else {
+      *dst++ = '0';
+      itoa(mm[g], dst, 16);
+    }
+    dst = dst + strlen(dst);
   }
 }
 

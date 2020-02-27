@@ -26,7 +26,7 @@ void io_mqtt_subscribe(const char *topic, int qos);
 void io_mqtt_unsubscribe(const char *topic);
 void io_mqtt_publish(const char *topic, const char *data);
 
-
+void io_mqtt_setup(void);
 
 
 #else
@@ -35,7 +35,8 @@ void io_mqtt_publish(const char *topic, const char *data);
 #define io_mqtt_subscribe(topic, qos)
 #define io_mqtt_unsubscribe(topic)
 #define io_mqtt_publish(topic, data)
-#define io_mqtt_publish_gmp(gmp);
+#define io_mqtt_publish_gmp(gmp)
+#define setup_mqtt()
 #endif
 
 

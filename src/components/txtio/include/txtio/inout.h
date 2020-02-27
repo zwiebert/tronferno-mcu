@@ -4,6 +4,10 @@
 #include "stdbool.h"
 #include "stdint.h"
 
+
+void txtio_setup(void);
+
+
 extern char *itoa(int val, char *s, int radix);
 extern char *ltoa(long val, char *s, int radix);
 
@@ -56,4 +60,6 @@ bool  is_gpio_number_usable(int gpio_number, bool cli);
 void gpio_get_levels(unsigned long long gpio_mask, char *buf, int buf_size);
 
 #endif
+
+
 

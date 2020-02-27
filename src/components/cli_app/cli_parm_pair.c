@@ -34,9 +34,13 @@ int
 process_parmPair(clpar p[], int len) {
   int arg_idx;
 
+  so_output_message(SO_PAIR_begin, NULL);
+
   u32 addr = 0;
   u8 g = 0, m = 0, c = 0;
-  bool pair = false, unpair = false, read = false, scan = false;
+  bool pair = false, unpair = false, read = false, read_all = false,  scan = false;
+
+  struct shutter_timings st = {0, };
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -68,6 +72,9 @@ process_parmPair(clpar p[], int len) {
       } else if (strcmp(val, "read") == 0) {
         read = true;
         c = PC_read;
+      } else if (strcmp(val, "read_all") == 0) {
+        read_all = true;
+        c = PC_read;
 #if 0
       } else if (strncmp(key, "gpin", 4) == 0) {
         int gpio_number = atoi(key + 4);
@@ -85,6 +92,10 @@ process_parmPair(clpar p[], int len) {
     pair_auto_set(g, m, c, msgid, PRAS_TIMEOUT);
   }
 
+  if (read_all) {
+    pair_so_output_all_pairings();
+  }
+
   if (addr && (((pair || unpair) && g && m) || (read && !g && !m))) {
 
     if (pair || unpair) {
@@ -98,6 +109,10 @@ process_parmPair(clpar p[], int len) {
         so_output_message(SO_PAIR_PRINT_AMM, &amm);
       }
     }
+
   }
+
+  so_output_message(SO_PAIR_end, NULL);
+
   return 0;
 }

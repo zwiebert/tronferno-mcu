@@ -12,7 +12,13 @@ const FETCH_CONFIG = 1;
 const FETCH_AUTO = 2;
 const FETCH_POS = 4;
 const FETCH_VERSION = 8;
+const FETCH_ALIASES = 16;
+const FETCH_ALIASES_START_PAIRING = 32;
+const FETCH_ALIASES_START_UNPAIRING = 64;
+const FETCH_SHUTTER_PREFS = 128;
 
+const DIR_UP = 0;
+const DIR_DOWN = 1;
 
 function dbLog(msg) {
     console.log(msg);
@@ -25,30 +31,40 @@ class AppState {
         this.mM = Number.parseInt((localStorage.getItem("member") || "0"), 10);
         this.mTabVisibility = Number.parseInt((localStorage.getItem("tab_vis") || "1"), 10);
         this.mAuto = {link:{}, auto:{}};
+        this.mPair = {all:{}};
+        this.mShutterPrefs = {};
+        this.mPct = 0;
     }
 
     set tabVisibility(value) {
 	this.mTabVisibility = value;
         localStorage.setItem("tab_vis", value.toString());
-	tabSwitchVisibility(value);
+	navTabs_updHtml(parseInt(value));
     }
     get tabVisibility() {
         return 	this.mTabVisibility;
     }
 
-
     get g() {
         return this.mG;
     }
 
+    set pct(val) {
+    	this.mPct = val;
+        document.getElementById('spi').value = val;
+        shuPos_perFetch_posRecieved(val);
+    }
+    get pct() {
+    	return this.mPct;
+    }
     getAutoName() { return  "auto" + this.g.toString() + this.m.toString(); }
     getAutoObj() { let key = this.getAutoName(); return (key in this.mAuto.auto) ? this.mAuto.auto[key] : {}; }
     linkAutoObj() { this.mAuto.link = this.getAutoObj(); }
     gmChanged() {
         this.linkAutoObj();
-        this.updateAutomaticHtml();
+        this.automaticOptions_updHtml();
         dbLog(JSON.stringify(this));
-        this.fetchMask(FETCH_AUTO|FETCH_POS);
+        this.http_fetchByMask(FETCH_AUTO|FETCH_POS|FETCH_SHUTTER_PREFS);
     }
 
     set g(value) {
@@ -76,10 +92,26 @@ class AppState {
     set auto(obj) {
         this.mAuto.auto[this.getAutoName()] = obj;
         this.linkAutoObj();
-        this.updateAutomaticHtml();
+        this.automaticOptions_updHtml();
     }
 
-    updateAutomaticHtml() {
+    set aliases(value) {
+	this.mPair.all = value;
+        aliasControllers_updHtml();
+    }
+    get aliases() {
+        return 	this.mPair.all;
+    }
+    set shutterPrefs(obj) {
+        Object.assign(this.mShutterPrefs, obj);
+        console.log(this.mShutterPrefs);
+    }
+    get shutterPrefs() {
+        return this.mShutterPrefs;
+    }
+
+
+    automaticOptions_updHtml() {
         let auto = this.auto;
         document.getElementById('tfti').value = ("f" in auto) ? auto.f : "";
 
@@ -114,7 +146,7 @@ class AppState {
 
     }
 
-    handleFetchedData(obj) {
+    http_handleResponses(obj) {
         dbLog("reply-json: "+JSON.stringify(obj));
 
         if ("config" in obj) {
@@ -128,7 +160,7 @@ class AppState {
 		    case 1: s = '<strong style="animation: blink .75s linear 4;"> ...Scanning... </strong>'; break;
 		    case 2: s = '<strong style="background-color:red;">Time-Out! (no STOP-command received)</strong>'; break;
 		    case 3: s = '<strong style="background-color:green;">Success (cu-id has been saved)</strong>';
-			this.fetchMask(FETCH_CONFIG);
+			this.http_fetchByMask(FETCH_CONFIG);
 			break;
 		    }
 
@@ -139,21 +171,36 @@ class AppState {
 		    config.cuas = cuas_State;
 		}
             } else if (config_fetched) {
-                updateHtmlByConfigData(obj.config);
+                mcuConfig_updHtml(obj.config);
 		tfmcu_config = obj;
-		gmuUnpack();
+		usedMembers_updHtml();
             } else {
                 config_fetched = true;
-                document.getElementById("config-div").innerHTML = buildHtmlByConfigData(obj.config);
-                updateHtmlByConfigData(obj.config);
+                document.getElementById("config-div").innerHTML = mcuConfigTable_genHtml(obj.config);
+                mcuConfig_updHtml(obj.config);
 		tfmcu_config = obj;
-		gmuUnpack();
+		usedMembers_updHtml();
+                document.getElementById("divPairAll").innerHTML = aliasTable_genHtml();
             }
 
         }
 
         if ("position" in obj) {
-            document.getElementById('spi').value = obj.position.p;
+
+            this.pct = obj.position.p;
+        }
+
+        if ("pair" in obj) {
+            if ("all" in obj.pair) {
+                this.aliases = obj.pair.all;
+            }
+        }
+
+        if ("shpref" in obj) {
+            this.shutterPrefs = obj.shpref;
+            console.log("shpref");
+            shutterPrefs_updHtml();
+
         }
 
 	if ("mcu" in obj) {
@@ -180,7 +227,7 @@ class AppState {
                     e.innerHTML = "<strong>OTA has failed<br><br></strong>";
                     break;
                 case 3: // done
-                    e.innerHTML = '<strong>OTA has succeeded <button type="button" onClick="postMcuRestart()">Reboot</button><br><br></strong>';
+                    e.innerHTML = '<strong>OTA has succeeded <button type="button" onClick="req_mcuRestart()">Reboot</button><br><br></strong>';
                     break;
                 }
                 if (netota_isInProgress && mcu["ota-state"] != 1) {
@@ -201,7 +248,7 @@ class AppState {
 
 
 
-    fetchMask(mask) {
+    http_fetchByMask(mask) {
         let tfmcu = {to:"tfmcu"};
 
         if (mask & FETCH_CONFIG)
@@ -225,24 +272,273 @@ class AppState {
                 p: "?",
             };
 
+        if (mask & FETCH_ALIASES)
+            tfmcu.pair = {
+                c: "read_all"
+            };
+
+        if (mask & FETCH_ALIASES_START_PAIRING)
+            tfmcu.pair = {
+                a: "?",
+                g: this.g,
+                m: this.m,
+                c: "pair"
+            };
+        if (mask & FETCH_ALIASES_START_UNPAIRING)
+            tfmcu.pair = {
+                a: "?",
+                g: this.g,
+                m: this.m,
+                c: "unpair"
+            };
+
+        if (mask & FETCH_SHUTTER_PREFS)
+            tfmcu.shpref = {
+                g: this.g,
+                m: this.m,
+                c: "read",
+            };
+
         let url = base+'/cmd.json';
-        postData(url, tfmcu);
+        http_postRequest(url, tfmcu);
     }
 
     load() {
         this.g = this.mG;
         this.m = this.mM;
         this.tabIdx = this.mTabIdx;
-        this.fetchMask(FETCH_VERSION|FETCH_CONFIG);
+        this.http_fetchByMask(FETCH_VERSION|FETCH_CONFIG|FETCH_ALIASES);
         this.tabVisibility = this.mTabVisibility;
     }
 
 }
 
-let app_state;
+let ast;
+
+function shutterPrefs_updHtml() {
+    const key = "shp" + ast.g.toString() + ast.m.toString();
+    let pref = ast.shutterPrefs[key];
+    console.log(key, pref);
+    const mvut = document.getElementById("shpMvut");
+    const mvdt = document.getElementById("shpMvdt");
+
+    if (!pref) {
+        pref = {mvut:0, mvdt:0};
+    }
+
+    if (pref) {
+        mvut.value = pref.mvut;
+        mvdt.value = pref.mvdt;
+    }
+}
+
+function shutterPrefs_fromHtml_toMcu() {
+    const mvut = document.getElementById("shpMvut");
+    const mvdt = document.getElementById("shpMvdt");
 
 
-function buildConfigTableRowHtml(name,value) {
+    let tfmcu = {"to":"tfmcu", "shpref":{"g":ast.g, "m":ast.m, "c":"store"}};
+    let pref = tfmcu.shpref;
+
+    pref.mvut = mvut.value;
+    pref.mvdt = mvdt.value;
+
+    var url = base+'/cmd.json';
+    http_postRequest(url, tfmcu);
+}
+
+
+let shutterPrefs_stopClock = {
+    ms: 100,
+    direction:0,
+    ivId:0,
+    text_elem:null,
+    val:0,
+};
+
+function shutterPrefs_stopClock_tick() {
+    let spsc = shutterPrefs_stopClock;
+    let elem = document.getElementById(spsc.direction == DIR_UP ? "shpMvut": "shpMvdt");
+
+    spsc.val  += (spsc.ms / 100);
+    elem.value = spsc.val.toString();
+}
+
+function shutterPrefs_stopClock_start() {
+	let spsc = shutterPrefs_stopClock;
+
+    const pct = ast.pct;
+    if (pct === 0) {
+    	spsc.direction = DIR_UP;
+    	http_postShutterCommand('up');
+    } else if (pct === 100) {
+    	spsc.direction = DIR_DOWN;
+    	http_postShutterCommand('down');
+    } else {
+    	return;
+    }
+
+    spsc.val = 0;
+
+
+    if (!spsc.ivId) {
+    	spsc.ivId = setInterval(shutterPrefs_stopClock_tick, spsc.ms);
+    }
+}
+
+function shutterPrefs_stopClock_stop() {
+    let spsc = shutterPrefs_stopClock;
+
+    if (spsc.ivId) {
+        clearInterval(spsc.ivId);
+        spsc.ivId = 0;
+        ast.pct = spsc.direction == DIR_UP ? 100 : 0;
+        console.log ("pct: ", ast.pct);
+    }
+}
+
+function aliasControllers_updHtml() {
+    const pad = ast.aliases;
+    const pas =  document.getElementById("aliases");
+    const pas_sel = pas.selectedIndex;
+     for(const key in pad) {
+        let exist = false;
+        for (let opt of pas.options) {
+            if (opt.text == key) {
+                exist = true;
+            }
+        }
+        if (!exist) {
+            let option = document.createElement("option");
+            option.text = key;
+            pas.add(option);
+        }
+    }
+    if (pas.options.length > 0) {
+
+        pas.selectedIndex = (pas_sel && pas_sel > 0) ? pas_sel : "0";
+        onAliasesChanged();
+    }
+}
+
+const shuPos_perFetch = {
+    ivId: 0,
+    ms: 1000,
+    last_pct: 0,
+    last_last_pct: 0,
+};
+
+function shuPos_perFetch_posRecieved(pct) {
+    const sppf = shuPos_perFetch;
+    if (sppf.ivId) {
+	sppf.last_last_pct = sppf.last_pct;
+	sppf.last_pct = pct;
+    }
+}
+
+function shuPos_perFetch_tick() {
+    const sppf = shuPos_perFetch;
+    const pct = ast.pct;
+    if (pct === sppf.last_pct && sppf.last_pct === sppf.last_last_pct) {
+	clearInterval(sppf.ivId);
+	sppf.ivId = 0;
+	return;
+    }
+    ast.http_fetchByMask(FETCH_POS);
+}
+
+function shuPos_perFetch_start() {
+	dbLog("perFetch_start");
+    let sppf = shuPos_perFetch;
+    if (!sppf.ivId)   {
+	sppf.ivId = setInterval(shuPos_perFetch_tick, sppf.ms);
+	sppf.last_pct = -1;
+	sppf.last_last_pct = -2;
+    ast.http_fetchByMask(FETCH_POS);
+    }
+}
+
+function onAliasesChanged() {
+    const pas =  document.getElementById("aliases");
+    if (pas.selectedIndex >= 0) {
+        const key = pas.options[pas.selectedIndex].text;
+        aliasTable_updHtml(key);
+    }
+}
+
+function onAliasesApply() {
+    const pas =  document.getElementById("aliases");
+    if (pas.selectedIndex >= 0) {
+        const key = pas.options[pas.selectedIndex].text;
+        aliasTable_fromHtml(key);
+    }
+}
+function onAliasesReload() {
+  ast.http_fetchByMask(FETCH_ALIASES);
+}
+
+
+
+function aliasTable_updHtml(key){
+    const val = ast.aliases[key];
+
+    for(let g=1; g <= 7; ++g) {
+        const gb = val.substr(14-(2*g), 2);
+        const gn = parseInt(gb, 16);
+        for (let m=1; m<=7; ++m) {
+            const isAliased = (gn & (1 << m)) != 0;
+            document.getElementById("cbAlias_" + g.toString() + m.toString()).checked = isAliased;
+            if (isAliased) {
+
+                console.log("aliased: ", g, m);
+            }
+        }
+    }
+}
+
+function aliasTable_fromHtml(key){
+    let val = "00";
+
+    for(let g=1; g <= 7; ++g) {
+        let gn = 0;
+        for (let m=1; m<=7; ++m) {
+            const isAliased = document.getElementById("cbAlias_" + g.toString() + m.toString()).checked;
+            if (isAliased) {
+                gn |= (1 << m);
+            }
+        }
+        const hex =  gn.toString(16);
+        val = hex+val;
+        if (hex.length < 2)
+            val = '0'+val;
+
+    }
+    console.log(key, val);
+    ast.aliases[key] = val;
+}
+
+
+
+function aliasTable_genHtml() {
+    let html = "";
+    html += '<table><tr><th></th>';
+
+    for (let m=1; m <= 7; ++m) {
+        html+='<th>m'+m.toString()+'</th>';
+    }
+    html+= '</tr>';
+    for (let g=1; g <= 7; ++g) {
+        html += "<tr><th>g"+g.toString()+'</th>';
+        for (let m=1; m <=7; ++m) {
+            html += '<td><input id="cbAlias_' + g.toString() + m.toString() + '" type="checkbox"></td>';
+        }
+        html += '</tr>\n';
+    }
+    html += '</table>';
+    return html;
+}
+
+function configTr_genHtml(name,value) {
     if (name.endsWith("-enable")) {
         dbLog("value: "+value);
         return '<td><label class="config-label">'+name+
@@ -257,7 +553,7 @@ function buildConfigTableRowHtml(name,value) {
             '</label></td><td><select  class="config-input" id="cfg_'+name+'">'+
                '<option value="wlan">Connect to existing WLAN</option>'+
                '<option value="ap">WLAN-AP at 192.168.4.1 (ssid=tronferno/pw=tronferno)</option>'+
-               '<option value="lan">Connect to Ethernet</option>'+ //dev-no-lan-delete-line
+               '<option value="lan">Connect to Ethernet</option>'+ // dev-no-lan-delete-line
             '</select></td>';
     } else if (name === 'lan-phy') {
 	        return '<td><label class="config-label">'+name+
@@ -278,8 +574,9 @@ function buildConfigTableRowHtml(name,value) {
 
 }
 
-function gmuUnpack() {
-    let val = document.getElementById("cfg_gm-used").value; //HEX string! not a number!
+function usedMembers_updHtml() {
+    let val = document.getElementById("cfg_gm-used").value; // HEX string! not a
+															// number!
     while(val.length < 8)
         val = "0"+val;
     dbLog("val: "+val);
@@ -299,7 +596,7 @@ function gmuUnpack() {
     dbLog(gu);
 }
 
-function gmuPack() {
+function usedMembers_fromHtml() {
     let val = "";
 
     let written = false; // to skip leading zeros
@@ -317,16 +614,16 @@ function gmuPack() {
     document.getElementById("cfg_gm-used").value = val;
 }
 
-function buildHtmlByConfigData(cfg) {
+function mcuConfigTable_genHtml(cfg) {
     var html ="<table class=\"conf-table\";\">";
     Object.keys(cfg).forEach (function (key, idx) {
-        html += '<tr id="cfg_'+key+'_tr">'+buildConfigTableRowHtml(key, cfg[key])+'</tr>'+"\n";
+        html += '<tr id="cfg_'+key+'_tr">'+configTr_genHtml(key, cfg[key])+'</tr>'+"\n";
     });
     html +='</table>';
     return html;
 }
 
-function updateHtmlByConfigData(cfg) {
+function mcuConfig_updHtml(cfg) {
     Object.keys(cfg).forEach (function (key, idx) {
         let el = document.getElementById('cfg_'+key);
 
@@ -340,59 +637,62 @@ function updateHtmlByConfigData(cfg) {
     });
 }
 
-function postData(url = '', data = {}) {
+function http_postRequest(url = '', data = {}) {
     // Default options are marked with *
     dbLog("post-json: "+JSON.stringify(data));
     return fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
-        //mode: "no-cors", // no-cors, cors, *same-origin  //dev-delete-line//
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        // mode: "no-cors", // no-cors, cors, *same-origin //dev-delete-line//
+        cache: "no-cache", // *default, no-cache, reload, force-cache,
+							// only-if-cached
        // credentials: "same-origin", // include, *same-origin, omit
         headers: {
             "Content-Type": "application/json",
         },
         redirect: "follow", // manual, *follow, error
         referrer: "no-referrer", // no-referrer, *client
-        body: JSON.stringify(data), // body data type must match "Content-Type" header
+        body: JSON.stringify(data), // body data type must match "Content-Type"
+									// header
     })
         .then(response => {
             if(response.ok) {
                 response.json().then(json => {
-                    app_state.handleFetchedData(json);
+                    ast.http_handleResponses(json);
                 });
             }
         });
 }
 
-function postMcuRestart() {
+function req_mcuRestart() {
     var json = { to:"tfmcu", config: { restart:"1" } };
     var url = base+'/cmd.json';
-    postData(url, json);
+    http_postRequest(url, json);
+    setTimeout(function(){ location.reload(); }, 10000);
 }
 
 
-function postCuasStatus() {
+function req_cuasStatus() {
     var json = { to:"tfmcu", config: { cuas:"?" } };
     var url = base+'/cmd.json';
-    postData(url, json);
+    http_postRequest(url, json);
 }
 
-function postCuasStart() {
+function req_cuasStart() {
     var json = { to:"tfmcu", config: { cu:"auto" } };
     var url = base+'/cmd.json';
-    postData(url, json);
+    http_postRequest(url, json);
     cuas_State = 0;
-    cuas_Interval = window.setInterval(postCuasStatus, 1000);
+    cuas_Interval = window.setInterval(req_cuasStatus, 1000);
 }
 
 
 
-function postConfig() {
+function mcuConfig_fromHtml_toMcu() {
     let tfmcu = Object.assign({},tfmcu_config);
     var cfg = tfmcu.config;
     var new_cfg = {};
     var has_changed = false;
-    gmuPack();
+    usedMembers_fromHtml();
     Object.keys(cfg).forEach (function (key, idx) {
         let new_val = 0;
         let el = document.getElementById('cfg_'+key);
@@ -420,14 +720,14 @@ function postConfig() {
         dbLog(JSON.stringify(tfmcu));
         var url = base+'/cmd.json';
         dbLog("url: "+url);
-        postData(url, tfmcu);
+        http_postRequest(url, tfmcu);
     }
 }
 
-function postSendCommand(c=document.getElementById('send-c').value) {
+function http_postShutterCommand(c=document.getElementById('send-c').value) {
     var tfmcu = {to:"tfmcu"};
-    let g = app_state.g.toString();
-    let m = app_state.m.toString();
+    let g = ast.g.toString();
+    let m = ast.m.toString();
 
     var send = {
         g: g,
@@ -438,7 +738,9 @@ function postSendCommand(c=document.getElementById('send-c').value) {
     dbLog(JSON.stringify(tfmcu));
     var url = base+'/cmd.json';
     dbLog("url: "+url);
-    postData(url, tfmcu);
+    http_postRequest(url, tfmcu);
+    
+    shuPos_perFetch_start();
 }
 
 var netota_intervalID = 0;
@@ -451,26 +753,28 @@ function netota_FetchFeedback() {
     };
     let url = base+'/cmd.json';
     dbLog("url: "+url);
-    postData(url, netmcu);
+    http_postRequest(url, netmcu);
 }
 
-function netFirmwareOTA(fwUrl) {
+const otaName_master = 'github-master';
+const otaName_beta = 'github-beta';
+function netFirmwareOTA(ota_name) {
     if (netota_isInProgress)
         return;
     var netmcu = {to:"tfmcu"};
     netmcu.mcu = {
-	ota: fwUrl
+	ota: ota_name
     };
     let url = base+'/cmd.json';
     dbLog("url: "+url);
-    postData(url, netmcu);
+    http_postRequest(url, netmcu);
     netota_intervalID = setInterval(netota_FetchFeedback, 1000);
     netota_isInProgress = true;
     document.getElementById("netota_controls").style.display = "none";
 }
 
 function getGuIdx() {
-    let val = app_state.g;
+    let val = ast.g;
 
     for(let i=0; i < gu.length; ++i)
         if (gu[i] == val)
@@ -479,9 +783,9 @@ function getGuIdx() {
 }
 
 function onGPressed() {
-    let val = app_state.g;
+    let val = ast.g;
 
-    gu_idx = getGuIdx(); //FIXME
+    gu_idx = getGuIdx(); // FIXME
 
     ++gu_idx;
     if (gu_idx >= gu.length)
@@ -489,23 +793,23 @@ function onGPressed() {
 
     val = gu[gu_idx];
 
-    app_state.g = val;
+    ast.g = val;
     if (val == 1)
-        app_state.m = 1;
+        ast.m = 1;
 }
 
 
 function onMPressed() {
-    let val = app_state.m;
+    let val = ast.m;
 
     ++val;
-    gu_idx = getGuIdx(); //FIXME
+    gu_idx = getGuIdx(); // FIXME
     let g  = gu[gu_idx];
 
     if (val > gmu[g])
         val = 0;
 
-    app_state.m = val;
+    ast.m = val;
 }
 
 function onPosPressed() {
@@ -516,24 +820,24 @@ function onPosPressed() {
         let tfmcu = {to:"tfmcu"};
 
         tfmcu.send = {
-            g: app_state.g,
-            m: app_state.m,
+            g: ast.g,
+            m: ast.m,
             p: pct,
         };
 
         let url = base+'/cmd.json';
-        postData(url, tfmcu);
-
+        http_postRequest(url, tfmcu);
+        shuPos_perFetch_start();
 }
 
-function postAutomatic() {
+function req_automatic() {
     let url = base+'/cmd.json';
     let tfmcu = { to:"tfmcu", timer: { }};
     let auto = tfmcu.timer;
     let has_daily = false, has_weekly = false, has_astro = false;
 
-    auto.g = app_state.g;
-    auto.m = app_state.m;
+    auto.g = ast.g;
+    auto.m = ast.m;
 
     let f = "i";
     f += document.getElementById('tmci').checked ? "M" : "m";
@@ -557,10 +861,10 @@ function postAutomatic() {
     }
 
     dbLog(JSON.stringify(tfmcu));
-    postData(url, tfmcu);
+    http_postRequest(url, tfmcu);
 }
 
-function clearAutomatic() {
+function clearAuto_updHtml() {
     document.getElementById('tfti').value = "";
     document.getElementById('tduti').value = "";
     document.getElementById('tddti').value = "";
@@ -574,78 +878,104 @@ function clearAutomatic() {
     document.getElementById('tmci').checked = false;
 }
 
-let tabs = [
-    { 'mask':1, 'button_id':'stb', 'div_id':['senddiv'] },
-    { 'mask':2, 'button_id':'atb', 'div_id':['senddiv', 'autodiv'] },
-    { 'mask':4, 'button_id':'ctb', 'div_id':['configdiv'] },
-    { 'mask':8, 'button_id':'ftb', 'div_id':['id-fwDiv'] }
+const tabs = [
+    { 'text':'Command', 'div_id':['senddiv'] },
+    { 'text':'Automatic', 'div_id':['senddiv', 'autodiv'] },
+    { 'text':'Config', 'div_id':['configdiv'] },
+    { 'text':'Firmware', 'div_id':['id-fwDiv'] },
+    { 'text':'Position-Config', 'div_id':['senddiv', 'aliasdiv', 'shprefdiv'] },
 ];
+let div_ids = [];
 
-
-//FIXME: enabling a single tab button with multiple bits in a mask makes no sense and does not work
-function tabSwitchVisibility(mask) {
+function navTabs_updHtml(idx) {
     const NONE = "none";
     const SHOW = "";
     const BGC1 = "hsl(220, 60%, 60%)";
     const BGC0 = "#eee";
 
-    for (let i=0; i < tabs.length; ++i) {
-        for (let k=0; k < tabs[i].div_id.length; ++k) {
-            if (!(mask & tabs[i].mask)) {
-                document.getElementById(tabs[i].div_id[k]).style.display = NONE;
-            }
-        }
-        document.getElementById(tabs[i].button_id).style.backgroundColor =  (mask & tabs[i].mask) ? BGC1 : BGC0;
-    }
+    if (!(0 <= idx && idx < tabs.length))
+        idx = 0;
 
     for (let i=0; i < tabs.length; ++i) {
-        for (let k=0; k < tabs[i].div_id.length; ++k) {
-            if ((mask & tabs[i].mask)) {
-                document.getElementById(tabs[i].div_id[k]).style.display = SHOW;
-            }
-        }
+        document.getElementById('tabbt'+i.toString()).style.backgroundColor =  (i == idx) ? BGC1 : BGC0;
+    }
+
+    for (let div_id of div_ids) {
+        document.getElementById(div_id).style.display = tabs[idx].div_id.includes(div_id) ? SHOW : NONE;
     }
 }
 
+function onNavTab(idx) {
+   ast.tabVisibility = idx;
+}
+
+function navTabs_genHtml() {
+	let html = '';
+    for (let i=0; i < tabs.length; ++i) {
+    	const tab = tabs[i];
+        html += '<button class="tablinks" id="tabbt'+i.toString()+'" onClick="onNavTab('+i.toString()+')">'+tab.text+'</button>\n';
+
+        for (let k=0; k < tabs[i].div_id.length; ++k) {
+            const div_id = tabs[i].div_id[k];
+            if (!div_ids.includes(div_id)) {
+                div_ids.push(div_id);
+            }
+        }
+    }
+    document.getElementById('tabBar').innerHTML = html;
+    console.log(div_ids);
+}
+
+
 function onContentLoaded() {
-    app_state = new AppState();
-    app_state.load();
+    navTabs_genHtml();
+
+    ast = new AppState();
+    ast.load();
 
     document.getElementById("sgb").onclick = () => onGPressed();
     document.getElementById("smb").onclick = () => onMPressed();
-    document.getElementById("sub").onclick = () => postSendCommand('up');
-    document.getElementById("ssb").onclick = () => postSendCommand('stop');
-    document.getElementById("sdb").onclick = () => postSendCommand('down');
+    document.getElementById("sub").onclick = () => http_postShutterCommand('up');
+    document.getElementById("ssb").onclick = () => http_postShutterCommand('stop');
+    document.getElementById("sdb").onclick = () => http_postShutterCommand('down');
     document.getElementById("spb").onclick = () => onPosPressed();
 
-    document.getElementById("arlb").onclick = () => app_state.fetchMask(FETCH_AUTO);
+
+    document.getElementById("shp_reload").onclick = () => shutterPrefs_updHtml();
+    document.getElementById("shp_save").onclick = () => shutterPrefs_fromHtml_toMcu();
+    document.getElementById("shp_clockStart").onclick = () => shutterPrefs_stopClock_start();
+    document.getElementById("shp_clockStop").onclick = () => shutterPrefs_stopClock_stop();
+
+    document.getElementById("alias_reload").onclick = () => onAliasesReload();
+    document.getElementById("alias_save").onclick = () => onAliasesApply();
+    document.getElementById("alias_pair").onclick = () => ast.http_fetchByMask(FETCH_ALIASES_START_PAIRING);
+    document.getElementById("alias_unpair").onclick = () => ast.http_fetchByMask(FETCH_ALIASES_START_UNPAIRING);
+
+
+    document.getElementById("arlb").onclick = () => ast.http_fetchByMask(FETCH_AUTO);
     document.getElementById("asvb").onclick = () => {
-        // disable button for 5 seconds while data is being sent to shutter motor by RF
+        // disable button for 5 seconds while data is being sent to shutter
+		// motor by RF
         document.getElementById("asvb").disabled = true;
         setTimeout(() => { document.getElementById("asvb").disabled = false; }, 5000);
 
-        postAutomatic();
+        req_automatic();
     };
-    document.getElementById("csvb").onclick = () => postConfig();
-    document.getElementById("crlb").onclick = () => app_state.fetchMask(FETCH_CONFIG);
+    document.getElementById("csvb").onclick = () => mcuConfig_fromHtml_toMcu();
+    document.getElementById("crlb").onclick = () => ast.http_fetchByMask(FETCH_CONFIG);
 
-    document.getElementById("mrtb").onclick = () => postMcuRestart();
+    document.getElementById("mrtb").onclick = () => req_mcuRestart();
 
-    document.getElementById("netota").onclick = () => netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);//dev-distro-delete-line//
-    document.getElementById("netota_master").onclick = () => netFirmwareOTA('github-master');
-    document.getElementById("netota_beta").onclick = () => netFirmwareOTA('github-beta');
+    document.getElementById("netota").onclick = () => netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);// dev-distro-delete-line//
+    document.getElementById("netota_master").onclick = () => netFirmwareOTA(otaName_master);
+    document.getElementById("netota_beta").onclick = () => netFirmwareOTA(otaName_beta);
 
 
-    for (let i=0; i < tabs.length; ++i) {
-        let tab = tabs[i];
-        document.getElementById(tab.button_id).onclick = () => app_state.tabVisibility = tab.mask;
-    }
-
-    document.getElementById("id_cuasb").onclick = () => postCuasStart();
+    document.getElementById("id_cuasb").onclick = () => req_cuasStart();
 }
 
 /*
-Local Variables:
-compile-command: "jshint tfmcu_dev.js"
-End:
-*/
+ Local Variables:
+ compile-command: "jshint tfmcu_dev.js"
+ End:
+ */

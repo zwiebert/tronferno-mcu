@@ -18,6 +18,7 @@ extern const char help_parmTimer[] ;
 extern const char help_parmConfig[] ;
 extern const char help_parmMcu[] ;
 extern const char help_parmPair[] ;
+extern const char help_parmShpref[] ;
 extern const char help_parmHelp[] ;
 
 extern uint16_t msgid;
@@ -38,6 +39,8 @@ void cli_msg_ready(void);
 bool config_receiver(const char *val);
 bool config_transmitter(const char *val);
 
+int asc2bool(const char *s);
+bool  asc2u8(const char *s, uint8_t *n, uint8_t limit);
 
 void cli_print_json(const char *json); //FIXME
 

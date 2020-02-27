@@ -132,6 +132,7 @@ static struct parm_handler handlers[] = {
 #ifdef USE_PAIRINGS
                       { "pair", process_parmPair, help_parmPair},
 #endif
+                      { "shpref", process_parmShpref, help_parmShpref},
   };
 
 const struct parm_handlers parm_handlers = {

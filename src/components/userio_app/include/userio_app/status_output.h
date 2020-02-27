@@ -12,6 +12,7 @@
 #include <stdbool.h>
 
 #include "fernotron_pos/shutter_state.h"
+#include "fernotron_pos/shutter_prefs.h"
 #include "userio/status_output.h"
 
 
@@ -46,7 +47,9 @@ typedef enum {
 
   SO_POS_begin, SO_POS_PRINT_GMP, SO_POS_PRINT, SO_POS_PRINT_MMP, SO_POS_end,
 
-  SO_PAIR_PRINT_AMM,
+  SO_SHPREF_begin, SO_SHPREF_PRINT_GMT, SO_SHPREF_end,
+
+  SO_PAIR_begin, SO_PAIR_ALL_begin, SO_PAIR_PRINT_AMM, SO_PAIR_PRINT_KMM, SO_PAIR_ALL_end, SO_PAIR_end,
 
   SO_INET_PRINT_ADDRESS,
 
@@ -57,6 +60,12 @@ typedef enum {
 
 
 } so_msg_t;
+
+typedef struct {
+  uint8_t g, m;
+  struct shutter_timings *st;
+} so_arg_gmt_t;
+
 
 typedef struct {
   uint8_t g, m;
@@ -76,7 +85,15 @@ typedef struct {
   uint8_t *mm; //gm_bitmask_t *
 } so_arg_amm_t;
 
+typedef struct {
+  const char *key;
+  uint8_t *mm; //gm_bitmask_t *
+} so_arg_kmm_t;
+
 void so_output_message(so_msg_t mt, void *arg);
 so_msg_t so_parse_config_key(const char *k);
+//void so_out_x_open(const char *name);
+//void so_out_x_close();
+
 
 #endif /* USER_MAIN_STATUS_OUTPUT_H_ */
