@@ -4,12 +4,19 @@
 #include "fernotron_pos/shutter_state.h"
 #include "fernotron/fsb.h"
 
+#include <stdlib.h>
+#include "stdbool.h"
+
 enum pair_cmds { PC_none, PC_pair, PC_unpair, PC_read };
 
 bool pair_controller(uint32_t controller, uint8_t g, uint8_t m, bool unpair);
-bool pair_rmController(uint32_t a);
 
-bool read_pairings(gm_bitmask_t *gm, uint32_t a);
+
+
+bool pair_setControllerPairings(uint32_t controller, gm_bitmask_t *gm);
+bool pair_getControllerPairings(uint32_t controller, gm_bitmask_t *gm);
+bool pair_rmController(uint32_t controller);
+
 bool pair_so_output_all_pairings(void);
 
 // start listening on RF for controller to pair/unpair

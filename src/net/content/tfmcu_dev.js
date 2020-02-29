@@ -95,6 +95,10 @@ class AppState {
         this.automaticOptions_updHtml();
     }
 
+    aliases_add(key, val) {
+        this.mPair.all[key] = val;
+        aliasControllers_updHtml();
+    }
     set aliases(value) {
 	this.mPair.all = value;
         aliasControllers_updHtml();
@@ -191,8 +195,12 @@ class AppState {
         }
 
         if ("pair" in obj) {
-            if ("all" in obj.pair) {
-                this.aliases = obj.pair.all;
+            const pair = obj.pair;
+            if ("all" in pair) {
+                this.aliases = pair.all;
+            }
+            if ("a" in pair && "mm" in pair) {
+                this.aliases_add(pair.a, pair.mm);
             }
         }
 
@@ -421,6 +429,17 @@ function aliasControllers_updHtml() {
     }
 }
 
+function aliasControllers_fromHtml() { // XXX
+    const pad = ast.aliases;
+    const pas =  document.getElementById("aliases");
+    const pas_sel = pas.selectedIndex;
+
+    for (let opt of pas.options) {
+        const key = opt.text;
+        aliasTable_fromHtml(key);
+    }
+}
+
 const shuPos_perFetch = {
     ivId: 0,
     ms: 1000,
@@ -470,7 +489,7 @@ function onAliasesApply() {
     const pas =  document.getElementById("aliases");
     if (pas.selectedIndex >= 0) {
         const key = pas.options[pas.selectedIndex].text;
-        aliasTable_fromHtml(key);
+        aliasTable_fromHtml_toMcu(key);
     }
 }
 function onAliasesReload() {
@@ -482,22 +501,28 @@ function onAliasesReload() {
 function aliasTable_updHtml(key){
     const val = ast.aliases[key];
 
+    let chunks = [];
+
+    for (let i = 0, charsLength = val.length; i < charsLength; i += 2) {
+        chunks.unshift(val.substring(i, i + 2));
+    }
+
+    const g_max = chunks.length - 1;
+
     for(let g=1; g <= 7; ++g) {
-        const gb = val.substr(14-(2*g), 2);
-        const gn = parseInt(gb, 16);
+
+        const gn = (g > g_max) ? 0 : parseInt(chunks[g], 16);
+
         for (let m=1; m<=7; ++m) {
             const isAliased = (gn & (1 << m)) != 0;
             document.getElementById("cbAlias_" + g.toString() + m.toString()).checked = isAliased;
-            if (isAliased) {
-
-                console.log("aliased: ", g, m);
-            }
         }
     }
 }
 
 function aliasTable_fromHtml(key){
     let val = "00";
+    let null_run = 0;
 
     for(let g=1; g <= 7; ++g) {
         let gn = 0;
@@ -507,17 +532,33 @@ function aliasTable_fromHtml(key){
                 gn |= (1 << m);
             }
         }
-        const hex =  gn.toString(16);
-        val = hex+val;
-        if (hex.length < 2)
-            val = '0'+val;
+        if (gn == 0) {
+            ++null_run;
+        } else {
+            for (;null_run > 0; --null_run) {
+                val = "00"+val;
+            }
+            const hex =  gn.toString(16);
+            val = hex+val;
+            if (hex.length < 2)
+                val = '0'+val;
+        }
 
     }
-    console.log(key, val);
-    ast.aliases[key] = val;
+    console.log("at_fromHtml", key, val);
+    //ast.aliases[key] = val;
+    return val;
 }
 
+function aliasTable_fromHtml_toMcu(key){
+    const val = aliasTable_fromHtml(key);
 
+    let tfmcu = {"to":"tfmcu", "pair":{"a":key, "mm":val, "c":"store"}};
+
+    var url = base+'/cmd.json';
+    http_postRequest(url, tfmcu);
+
+}
 
 function aliasTable_genHtml() {
     let html = "";
@@ -739,7 +780,7 @@ function http_postShutterCommand(c=document.getElementById('send-c').value) {
     var url = base+'/cmd.json';
     dbLog("url: "+url);
     http_postRequest(url, tfmcu);
-    
+
     shuPos_perFetch_start();
 }
 

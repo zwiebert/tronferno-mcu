@@ -593,6 +593,16 @@ break;
   }
     break;
 
+  case SO_PAIR_PRINT_KMM_SINGLE: {
+    so_arg_kmm_t *a = arg;
+    //io_puts("pair a="), io_puts(a->key), io_puts(" mm="), so_print_gmbitmask(a->mm), io_puts(";\n");
+    char buf[20];
+    so_gmbitmask_to_str(buf, a->mm);
+    so_out_x_reply_entry_ss("a", a->key);
+    so_out_x_reply_entry_ss("mm", buf);
+  }
+    break;
+
   case SO_INET_PRINT_ADDRESS: {
     char buf[20];
     ipnet_addr_as_string(buf, 20);
@@ -762,7 +772,7 @@ static void  so_print_gmbitmask(gm_bitmask_t mm) {
 
 static void so_gmbitmask_to_str(char *dst, gm_bitmask_t mm) {
   i8 g;
-  bool leading_zeros = false;
+  bool leading_zeros = true;
 
   for (g = 7; g >= 0; --g) {
     if (leading_zeros && mm[g] == 0)
@@ -776,6 +786,10 @@ static void so_gmbitmask_to_str(char *dst, gm_bitmask_t mm) {
       itoa(mm[g], dst, 16);
     }
     dst = dst + strlen(dst);
+  }
+  if (leading_zeros) {
+    *dst++ = '0';
+    *dst++ = '0';
   }
 }
 

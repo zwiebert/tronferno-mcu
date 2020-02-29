@@ -100,7 +100,7 @@ currentState_setShutterPct(u32 a, u8 g, u8 m, u8 pct) {
 #ifdef USE_PAIRINGS
   if (!(a == 0 || a == C.fer_centralUnitID)) {
     gm_bitmask_t gm;
-    if (read_pairings(&gm, a))
+    if (pair_getControllerPairings(a, &gm))
     for (g=1; g <= GRP_MAX; ++g) {
       for (m=1; m <= MBR_MAX; ++m) {
         if (gm_GetBit(gm, g, m)) {
@@ -297,7 +297,7 @@ currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd) {
 #ifdef USE_PAIRINGS
   if (!(a == 0 || a == C.fer_centralUnitID)) {
     gm_bitmask_t gm;
-    if (read_pairings(&gm, a))
+    if (pair_getControllerPairings(a, &gm))
       for (g = 1; g <= GRP_MAX; ++g) {
         for (m = 1; m <= MBR_MAX; ++m) {
           if (gm_GetBit(gm, g, m)) {

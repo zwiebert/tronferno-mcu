@@ -33,12 +33,16 @@ const char help_parmPair[] = ""
 int 
 process_parmPair(clpar p[], int len) {
   int arg_idx;
+  int i;
 
   so_output_message(SO_PAIR_begin, NULL);
 
   u32 addr = 0;
+  const char *addr_as_string = "";
   u8 g = 0, m = 0, c = 0;
-  bool pair = false, unpair = false, read = false, read_all = false,  scan = false;
+  gm_bitmask_t mm = {0,};
+  bool has_mm = false;
+  bool pair = false, unpair = false, read = false, read_all = false,  scan = false, store = false;
 
   struct shutter_timings st = {0, };
 
@@ -50,8 +54,11 @@ process_parmPair(clpar p[], int len) {
     } else if (strcmp(key, "a") == 0) {
       if (*val == '?')
         scan = true;
-      else
+      else {
         addr = val ? strtol(val, NULL, 16) : 0;
+        if (val)
+          addr_as_string = val;
+      }
     } else if (strcmp(key, "g") == 0) {
       fer_grp group;
       if (!asc2group(val, &group) || group == 0)
@@ -62,6 +69,12 @@ process_parmPair(clpar p[], int len) {
       if (!asc2memb(val, &memb) || memb == 0)
         return reply_failure();
       m = memb - 7;
+    } else if (strcmp(key, "mm") == 0) {
+      uint64_t n = strtoll(val, 0, 16);
+      for (i=0;n; ++i, (n >>= 8)) {
+        mm[i] = n & 0xff;
+      }
+       has_mm = true;
     } else if (strcmp(key, "c") == 0) {
       if (strcmp(val, "unpair") == 0) {
         unpair = true;
@@ -75,6 +88,9 @@ process_parmPair(clpar p[], int len) {
       } else if (strcmp(val, "read_all") == 0) {
         read_all = true;
         c = PC_read;
+      } else if (strcmp(val, "store") == 0) {
+        store = true;
+
 #if 0
       } else if (strncmp(key, "gpin", 4) == 0) {
         int gpio_number = atoi(key + 4);
@@ -85,6 +101,15 @@ process_parmPair(clpar p[], int len) {
 
     } else {
       reply_failure();
+    }
+  }
+
+  if (store && has_mm) {
+    if (pair_setControllerPairings(addr, &mm)) {
+      so_arg_kmm_t kmm = {addr_as_string, mm };
+      so_output_message(SO_PAIR_PRINT_KMM_SINGLE, &kmm);
+    } else {
+      read = true;
     }
   }
 
@@ -104,7 +129,7 @@ process_parmPair(clpar p[], int len) {
 
     if (read) {
       gm_bitmask_t gm;
-      if (read_pairings(&gm, addr)) {
+      if (pair_getControllerPairings(addr, &gm)) {
         so_arg_amm_t amm = {addr, &gm[0] };
         so_output_message(SO_PAIR_PRINT_AMM, &amm);
       }

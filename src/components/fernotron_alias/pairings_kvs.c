@@ -18,7 +18,7 @@
 #define DL
 #endif
 
-//#define NVS_BUG_WA
+#define NVS_BUG_WA
 
 #define CFG_NAMESPACE "Tronferno"
 #define CFG_PARTNAME "nvs"
@@ -27,6 +27,20 @@
 extern char *itoa(int val, char *s, int radix);
 extern char *ltoa(long val, char *s, int radix);
   
+static void  fixController(const char *key, gm_bitmask_t *gm) {
+  // there seems to be existing keys which cannot be found by iteration.
+  // to fix this: erase and create them new here.
+  if (!kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, key, 0)) {
+    kvshT handle;
+    if ((handle = kvs_open(CFG_NAMESPACE, kvs_WRITE))) {
+      kvs_erase_key(handle, key);
+      kvs_rw_blob(handle, key, gm, sizeof(*gm), true);
+      kvs_commit(handle);
+      kvs_close(handle);
+    }
+  }
+}
+
 
 static bool read_controller(gm_bitmask_t *gm, const char *key) {
   bool success = false;
@@ -52,11 +66,8 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
     gm_bitmask_t gm;
     if (!kvs_rw_blob(handle, key, &gm, sizeof gm, false)) {
       memset(gm, 0, sizeof gm);
-    } else {
-#ifdef NVS_BUG_WA
-      success = kvs_erase_key(handle, key); // XXX: nvs-bug workaround (without nvs_erase_key an existing key can no longer be found by nvs_entry_next() after nvs_set_blob()
-#endif
     }
+
     PUT_BIT(gm[g], m, !remove);
 
     bool not_empty = false;
@@ -78,17 +89,45 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
     }
 
     kvs_close(handle);
+#ifdef NVS_BUG_WA
+    if (not_empty && result) {
+      fixController(key, &gm);
+    }
+#endif
   }
 
+
   return result;
+}
+
+#define a2key(a)     char key[] = KEY_PREFIX "10abcd"; ltoa(a, &key[sizeof(KEY_PREFIX) - 1], 16);
+
+
+
+
+bool pair_setControllerPairings(uint32_t controller, gm_bitmask_t *mm) {
+  bool success = false;
+  a2key(controller);
+
+  kvshT handle = kvs_open(CFG_NAMESPACE, kvs_WRITE);
+  if (handle) {
+    success = kvs_rw_blob(handle, key, mm, sizeof *mm, true) && kvs_commit(handle);
+    kvs_close(handle);
+#ifdef NVS_BUG_WA
+    if (success) {
+      fixController(key, mm);
+    }
+#endif
+  }
+
+  return success;
 }
 
 bool pair_rmController(uint32_t a) {
   bool success = false;
   kvshT handle;
 
-  char key[] = "cpair_10abcd";
-  ltoa(a, key+6, 16);
+  a2key(a);
 
   handle = kvs_open(CFG_NAMESPACE, kvs_READ_WRITE);
   if (handle) {
@@ -111,26 +150,17 @@ pair_controller(u32 controller, u8 g, u8 m, bool unpair) {
   return success;
 }
 
-bool read_pairings(gm_bitmask_t *gm, u32 a) {
+
+bool pair_getControllerPairings(u32 a, gm_bitmask_t *gm) {
   precond(gm && (a & 0xff000000) == 0);
 
-  char key[] = KEY_PREFIX "10abcd";
-  ltoa(a, &key[sizeof(KEY_PREFIX) - 1], 16);
+  a2key(a);
+
 
   bool success = read_controller(gm, key);
 #ifdef NVS_BUG_WA
   if (success) {
-    // there seems to be existing keys which cannot be found by iteration.
-    // to fix this: erase and create them new here.
-    if (!kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, key, 0)) {
-      kvshT handle;
-      if ((handle = kvs_open(CFG_NAMESPACE, kvs_WRITE))) {
-        kvs_erase_key(handle, key);
-        kvs_rw_blob(handle, key, gm, sizeof(*gm), true);
-        kvs_commit(handle);
-        kvs_close(handle);
-      }
-    }
+    fixController(key, gm);
   }
 #endif
   return success;

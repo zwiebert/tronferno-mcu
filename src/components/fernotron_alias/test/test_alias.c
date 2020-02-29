@@ -19,7 +19,7 @@ bool succ;
 static void g(unsigned a, uint8_t g, uint8_t m, bool unpair) {
   succ = pair_controller(a, g, m, unpair);
   TEST_ASSERT_TRUE(succ);
-  succ = read_pairings(&gm, a);
+  succ = pair_getControllerPairings(a, &gm);
   TEST_ASSERT_TRUE(succ);
 
   gm_PutBit(gme, g, m, !unpair);
@@ -28,7 +28,7 @@ static void g(unsigned a, uint8_t g, uint8_t m, bool unpair) {
 
 static void f() {
   succ = pair_rmController(A);
-  succ = read_pairings(&gm, A);
+  succ = pair_getControllerPairings(A, &gm);
   TEST_ASSERT_FALSE(succ);
 
   CLR_GM(gme);

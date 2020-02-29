@@ -224,26 +224,28 @@
 
       <div id="shprefdiv">
         <hr>
+        <h4>shutter up/down run times in tenths of seconds</h4>
+        <button id="shp_clockStart" type="button">Start Clock</button>
+        <button id="shp_clockStop" type="button">Stop Clock</button>
+<br>
         <table>
           <tr><td>up time in s/10:</td><td><input id="shpMvut" type="number" min="0" value="0"></td></tr>
           <tr><td>down time in s/10:</td><td><input id="shpMvdt" type="number" min="0" value="0"></td></tr>
         </table>
-        <button id="shp_clockStart" type="button">Start Clock</button>
-        <button id="shp_clockStop" type="button">Stop Clock</button>
-<br>
         <button id="shp_reload" type="button">Reload</button>
         <button id="shp_save" type="button">Save</button>
       </div>
 
       <div id="aliasdiv">
         <hr>
-        <h4>experimental: aliased controllers (read only yet)</h4>
+        <h4>aliased controllers</h4>
+        <button id="alias_pair" type="button">Start Pairing</button>
+        <button id="alias_unpair" type="button">Start Un-Pairing</button>
+<br>
         <select id="aliases" onchange="onAliasesChanged()"></select>
         <div id="divPairAll"> </div>
         <button id="alias_reload" type="button">Reload</button>
         <button id="alias_save" type="button">Save</button>
-        <button id="alias_pair" type="button">Start Pairing</button>
-        <button id="alias_unpair" type="button">Start Un-Pairing</button>
       </div>
 
     <div id="configdiv">
