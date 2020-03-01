@@ -40,7 +40,10 @@ Fernotron sendet und empfängt auf 434 MHz (433,92 MHz exakt).
   
 Der ESP32-Controller je nach Bedarf durch verschiedene Geräte bedient werden
   
-##### Web-Browser (unfertig)
+##### Web-Browser
+WLAN-Accespoint:
+  per default ist nach dem flashen ein WLAN-Accespoint aktiv: SSID=tronferno Passwort=tronferno  IP-Adresse: 192.168.4.1 
+WLAN Station (Verbindung mit AP/Router)
 1. Der in der Firmware integrierte Web-Server muss zuerst mit http-enable=1 aktiviert werden (z.B. mit dem menutool aus dem Firmware-ZIP)
 2. IP4 Adresse des ESP32 in Broswer-Adressleiste eingeben.
         
@@ -55,7 +58,7 @@ Der ESP32-Controller je nach Bedarf durch verschiedene Geräte bedient werden
 ##### Android-App Tronferno
 * GitHub: [tronferno-andro](https://github.com/zwiebert/tronferno-andro)
            
-##### Terminal-Programm (USB oder TCP/IP)
+##### Terminal-Programm (USB oder TCP/IP Port 7777)
 * Lokal-Echo sollte im Terminalprogramm aktiviert werden um die eigenen Eingaben sehen zu können
      
      

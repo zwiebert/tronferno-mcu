@@ -1,9 +1,13 @@
-.PHONY: clean all rebuild http_data
+.PHONY: clean all rebuild http_data print-help
 
 mcus := esp32 esp8266 
 tgts := all clean
 
-default: esp32-app
+default: print-help
+
+print-help:
+	@cat docs/make_help.txt
+
 
 define GEN_RULE
 .PHONY: $(1)

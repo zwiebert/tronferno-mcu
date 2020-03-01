@@ -3,32 +3,15 @@
 
 * Prepare Hardware:
   * ESP32 board connected to your PC-USB.
-  * RF receiver connected to esp-GPIO number 17
-  * RF transmitter connected to esp-GPIO number 22
-  * End-position-Button connected to esp-GPIO number (TODO)
+  * RF receiver connected to esp-GPIO number 17 (15 with Ethernet boards)
+  * RF transmitter connected to esp-GPIO number 22 (16 with Ethernet boards)
+  * Set-end-position-button connected to esp-GPIO number 6
 
 
-* Install esp-idf and set IDF_PATH environment variable (usually "~/esp/esp-idf")
+* Install esp-idf and run esp-idf/export.sh
 
-* open a shell in sub-directory user/esp32:
-  * run: make menuconfig  (configure MCU, if needed)
-  * make flash        (flash MCU)
-  * make monitor      (FIXME: this terminal has no local echo!)
-
-* optional: pre-configure your private data in new file user/sensitive/defaults.h which should contain:
-```
-#define MY_FER_CENTRAL_UNIT_ID 0x80****
-#define MY_MCU_ATMEGA328_BAUD_RATE 38400
-#define MY_MCU_ESP8266_BAUD_RATE 115200
-#define MY_GEO_LONGITUDE +13.****
-#define MY_GEO_LATITUDE +52.****
-#define MY_GEO_TZ CET-1CEST-2,M3.5.0,M10.5.0
-#define MY_WIFI_SSID "*******"
-#define MY_WIFI_PASSWORD "************"
-```
-
-* build and flash on Linux shell from main directory
+* open a shell in topmost directory and type make to see targets
 
 
-        make esp32-flash       #writes our firmware program
+
 

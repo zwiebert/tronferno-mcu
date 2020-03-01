@@ -176,7 +176,11 @@
 #endif
 
 #ifndef MY_NETWORK_CONNECTION
+#ifdef USE_LAN
+#define MY_NETWORK_CONNECTION nwLan
+#else
 #define MY_NETWORK_CONNECTION nwWlanAp
+#endif
 #endif
 #define MY_NETWORK_CONNECTION_OLD_USERS nwWlanSta
 

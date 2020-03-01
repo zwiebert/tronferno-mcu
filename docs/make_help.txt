@@ -1,0 +1,36 @@
+To build and flash ESP32/esp-idf:
+
+  $ make esp32-flash port=/dev/ttyUSBx
+
+To build and flash ESP8266/nonos:
+
+  $ make esp8266-flash ESPPORT=/dev/ttyUSBx
+
+
+Variables:
+
+port=  ESP32 USB port to flash to (default: /dev/ttyUSB0)
+ESPPORT= ESP8266 port to flash to (default: /dev/ttyUSB0)
+ESPTOOL= ESP8266 path to esptool.py  (dfault: esptool.py)
+
+BUILD_DIR_BASE=  build dir for esp32 or esp8266
+TEST_BUILD_DIR_BASE=  build dir for esp32 unit tests
+
+
+Targets:
+
+clean:
+
+esp32-all:   build esp32 firmware
+esp32-clean: delete built esp32 files
+esp32-lan:   build esp32 firmware with LAN support
+esp32-flash: build and flash
+
+esp32-test-build: build test firmware
+esp32-test-flash: build and flash test firmware
+esp32-test-run: run python script to check test results
+
+
+esp8266-erase:       optional erases flash. any configuration data and stored files are lost
+esp8266-flashinit:   required after erase. rewrites some calibration and blank data (can fix a boot-loop)
+esp8266-flash:       build and flash
