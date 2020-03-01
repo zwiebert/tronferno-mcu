@@ -19,7 +19,7 @@
 
 ## Required Hardware
 
-See the [hardware](hardware.md) document.
+See the [hardware](docs/hardware.md) document.
 
 
 ## Related Repositories
@@ -38,8 +38,6 @@ See the [hardware](hardware.md) document.
   * Quickstart-Manual: [deutsch](docs/starter-de.md)
 
   * [CLI reference manual](https://github.com/zwiebert/tronferno-mcu/blob/master/docs/CLI.md) in the docs folder.
-
-  * Buld/Flash information: [docs](https://github.com/zwiebert/tronferno-mcu/blob/master/docs/)/mcu_*.md
 
 
 ### History
