@@ -4,7 +4,7 @@
 * Password: tronferno
 * IP-address: 192.168.4.1
 * Webserver is always enabled
-* CLI: config network=wlan-ap;
+* CLI: config network=ap;
 
 ### WLAN Station
 * IP-address: DHCP
