@@ -31,28 +31,25 @@ Ein ESP32 Board wird benötigt. Die Firmware kann mittels Linux- oder Windows-PC
 #### Funkmodule
 
 Fernotron sendet und empfängt auf 434 MHz (433,92 MHz exakt).
+
+Siehe: [hardware](hardware.md)
         
-* Ein 434 MHz Sender (z.B. FS1000A) wird benötigt um Fernotron Geräte zu steuern. Anschluss an GPIO_22  
-* Ein 434 MHz Empfänger (z.B. RXB6) ist optional: Anschluss an GPIO_17. Damit können Fernotron-Sender empfangen werden.
   
+#### Benutzerschnittstellen
   
-#### Ansteuerung
-  
-Der ESP32-Controller je nach Bedarf durch verschiedene Geräte bedient werden
   
 ##### Web-Browser
-* Ein WLAN-Accespoint ist per default ist nach dem flashen ein WLAN-Accespoint aktiv: SSID=tronferno Passwort=tronferno  IP-Adresse: 192.168.4.1 
 
-* WLAN Station (Verbindung mit AP/Router): Der Web-Server muss mit http-enable=1 aktiviert werden (z.B. mit dem menutool aus dem Firmware-ZIP)
+* [network](network.md)
+* [HTTP](http.md)
 
-* [Webserver-Doc](webserver.md)
 
         
      
-##### FHEM-Homeserver (USB oder TCP/IP)
+##### FHEM-Homeserver Modul (USB oder TCP/IP)
 * GitHub: [tronferno-fhem](https://github.com/zwiebert/tronferno-fhem)
      
-##### Homeserver die MQTT unterstützen (z.B. OpenHAB)
+##### Homeserver die MQTT unterstützen (OpenHAB, FHEM, ...)
 * MQTT muss dazu (z.B. mit dem menutool) aktiviert und konfiguriert werden
 * [weitere Infos](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md)
      
