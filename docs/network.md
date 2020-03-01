@@ -21,6 +21,6 @@
 * CLI: config network=lan http-enable=1;
 
   
-####More Info
+#### More Info
   * [MCU configuration](mcu_config.md)
   

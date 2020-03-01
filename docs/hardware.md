@@ -33,6 +33,6 @@ super-heterodyne receiver, like the RXB6, does not have this issue.
   * SDK/toolchain: avr-libc, avr-gcc, avrispII programmer hardware with avrdude
   
   
-####More Info
+#### More Info
   * [GPIO pin numbers](pins.md)
   

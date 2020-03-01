@@ -58,7 +58,7 @@ Siehe: [hardware](hardware.md)
 * Lokal-Echo sollte im Terminalprogramm aktiviert werden um die eigenen Eingaben sehen zu können
      
      
-####Mehr Info
+#### Mehr Info
   * [GPIO pin numbers](pins.md)
   * [hardware](hardware.md)
   * [configuration](mcu_config.md)

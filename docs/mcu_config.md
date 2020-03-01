@@ -1,4 +1,4 @@
-#####Configuration using built-in [web-server](webserver.md)
+##### Configuration using built-in [web-server](webserver.md)
 
 ![ScreenShot](img/tfmcu_config.png)
 
@@ -31,7 +31,7 @@
 <hr>
 
 
-#####Configuration using [command-line-interface](CLI.md) on serial terminal or TCP port 7777 terminal
+##### Configuration using [command-line-interface](CLI.md) on serial terminal or TCP port 7777 terminal
 
 ```
 'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported
@@ -64,14 +64,14 @@ astro-correction   modifies astro table: 0=average, 1=bright 2=dark
 
 <hr>
 
-#####Configuration using FHEM homeserver module from [tronferno-fhem](https://github.com/zwiebert/tronferno-fhem)
+##### Configuration using FHEM homeserver module from [tronferno-fhem](https://github.com/zwiebert/tronferno-fhem)
 
 <hr>
 
-#####Configuration using tfmenutool.py from [tronferno-mcu-bin](https://github.com/zwiebert/tronferno-mcu-bin)
+##### Configuration using tfmenutool.py from [tronferno-mcu-bin](https://github.com/zwiebert/tronferno-mcu-bin)
 
 <hr>
 
-#####Configuration using Tronferno Android App from [tronferno-andro](https://github.com/zwiebert/tronferno-andro)
+##### Configuration using Tronferno Android App from [tronferno-andro](https://github.com/zwiebert/tronferno-andro)
 
 
