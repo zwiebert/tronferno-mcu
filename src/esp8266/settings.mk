@@ -29,12 +29,15 @@ SDK_TOOLS	?= $(HOME)/esp/ESP8266_NONOS_SDK/tools
 EXTRA_BASE	?= $(HOME)/esp/ESP8266_NONOS_SDK/third_party
 
 # esptool path and port
-ESPTOOL		?= python $(HOME)/esp/esp-idf/components/esptool_py/esptool/esptool.py
+ESPTOOL		?= esptool.py
 ESPPORT		?= /dev/ttyUSB0
 endif
 
 # Baud rate for programmer
 ESPBAUD		?= 115200
+
+ESPTOOL += --chip esp8266
+
 
 # BOOT = none
 # BOOT = old - boot_v1.1

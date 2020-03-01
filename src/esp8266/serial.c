@@ -12,7 +12,7 @@
 #include <osapi.h>
 #include <gpio.h>
 
-#include "../userio/inout.h"
+#include "txtio/inout.h"
 #include "driver/uart.h"
 
 
@@ -36,7 +36,7 @@ void rx_copy(u8 *start, u8 *end) {
   }
 }
 
-static int ICACHE_FLASH_ATTR es_io_getc(void) {
+static int  es_io_getc(void) {
   int result = -1;
 
   if (head != tail) {
@@ -47,7 +47,7 @@ static int ICACHE_FLASH_ATTR es_io_getc(void) {
   return result;
 }
 
-void ICACHE_FLASH_ATTR
+void 
 setup_serial(u32 baudrate) {
   // Configure the UART
   uart_init(baudrate, baudrate); // FIXME: the baud_rate parameter has no effect

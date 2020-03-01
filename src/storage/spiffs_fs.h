@@ -14,7 +14,7 @@
 #include "spiffs.h"
 
 extern spiffs fs;
-#define fs_A (&fs + 0)  // fs_A - our flash file system. sizes is configured in user_config.h
+#define fs_A (&fs + 0)  // fs_A - our flash file system. sizes is configured in fer_app_config.h
 
 bool spiffs_format_fs(spiffs *fs);  // unmout, format, mount. returns success
 
