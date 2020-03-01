@@ -1,6 +1,8 @@
 * Configuration
 
 ![ScreenShot](img/tfmcu_config.png)
+<br>
+See [configuration](mcu_config.md)
 <hr>
 
 * Send Commands
