@@ -19,6 +19,8 @@ def parse_test_output():
             return OK
         if (line == "FAIL\r\n"):
             return FAIL
+        if (":FAIL:" in line):
+            print(line);
     return NONE
 
 

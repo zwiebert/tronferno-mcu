@@ -22,6 +22,41 @@ int res;
 const char *NS = "testing";
 const char *asdfg = "asdfg", *asdf = "asdf", *asdfge = "asdfge";
 
+struct b { char data[8]; };
+
+
+
+static void test_for_foreach_bug() {
+  struct b b = { .data = { 0, 1, 2, 3, 4, 5, 6, 7 } };
+  const char *k1 = "blob_1", *k2 = "blob_2", *k3 = "blob_3";
+
+  //---------------------------
+  handle = kvs_open(NS, kvs_WRITE);
+  TEST_ASSERT_NOT_NULL(handle);
+
+  succ = kvs_rw_blob(handle, k1, &b, sizeof b, true);
+  TEST_ASSERT_TRUE(succ);
+  succ = kvs_commit(handle);
+  TEST_ASSERT_TRUE(succ);
+  kvs_close(handle);
+
+  res = kvs_foreach(NS, KVS_TYPE_BLOB, k1, 0);
+  TEST_ASSERT_EQUAL(res, 1);
+  //-------------------------------
+  handle = kvs_open(NS, kvs_WRITE);
+  TEST_ASSERT_NOT_NULL(handle);
+
+  succ = kvs_rw_blob(handle, k1, &b, sizeof b, true);
+  TEST_ASSERT_TRUE(succ);
+  succ = kvs_commit(handle);
+  TEST_ASSERT_TRUE(succ);
+  kvs_close(handle);
+
+  res = kvs_foreach(NS, KVS_TYPE_BLOB, k1, 0);
+  TEST_ASSERT_EQUAL(res, 1);
+  //--------------------------------
+}
+
 static void g(uint8_t g, uint8_t m) {
   handle = kvs_open(NS, kvs_WRITE);
   TEST_ASSERT_NOT_NULL(handle);
@@ -84,4 +119,5 @@ static void f() {
 
 TEST_CASE("kvs", "[kvs]") {
   f();
+  test_for_foreach_bug();
 }
