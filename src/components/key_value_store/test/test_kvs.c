@@ -57,6 +57,29 @@ static void test_for_foreach_bug() {
   //--------------------------------
 }
 
+static void test_set_get_default() {
+  handle = kvs_open(NS, kvs_READ_WRITE);
+  TEST_ASSERT_NOT_NULL(handle);
+  succ = kvs_erase_key(handle, asdf);
+  succ = kvs_commit(handle);
+  TEST_ASSERT_TRUE(succ);
+
+  int8_t res = kvs_get_i8(handle, asdf, 3, &succ);
+  TEST_ASSERT_FALSE(succ);
+  TEST_ASSERT_EQUAL(3, res);
+
+  succ = kvs_set_i8(handle, asdf, 42);
+  TEST_ASSERT_TRUE(succ);
+  succ = kvs_commit(handle);
+  TEST_ASSERT_TRUE(succ);
+
+  res = kvs_get_i8(handle, asdf, 3, &succ);
+  TEST_ASSERT_TRUE(succ);
+  TEST_ASSERT_EQUAL(42, res);
+
+  kvs_close(handle);
+}
+
 static void g(uint8_t g, uint8_t m) {
   handle = kvs_open(NS, kvs_WRITE);
   TEST_ASSERT_NOT_NULL(handle);
@@ -120,4 +143,5 @@ static void f() {
 TEST_CASE("kvs", "[kvs]") {
   f();
   test_for_foreach_bug();
+  test_set_get_default();
 }

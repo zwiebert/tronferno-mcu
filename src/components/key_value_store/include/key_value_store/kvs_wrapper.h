@@ -28,24 +28,24 @@ unsigned kvs_rw_str(kvshT handle, const char *key, void *src_or_dst, unsigned le
 
 
 bool kvs_set_i8(kvshT handle, const char *key, int8_t val);
-int8_t kvs_get_i8(kvshT handle, const char *key, bool *res_success);
+int8_t kvs_get_i8(kvshT handle, const char *key, int8_t default_val, bool *res_success);
 bool kvs_set_u8(kvshT handle, const char *key, uint8_t val);
-uint8_t kvs_get_u8(kvshT handle, const char *key, bool *res_success);
+uint8_t kvs_get_u8(kvshT handle, const char *key, uint8_t default_val, bool *res_success);
 
 bool kvs_set_i16(kvshT handle, const char *key, int16_t val);
-int16_t kvs_get_i16(kvshT handle, const char *key, bool *res_success);
+int16_t kvs_get_i16(kvshT handle, const char *key, int16_t default_val, bool *res_success);
 bool kvs_set_u16(kvshT handle, const char *key, uint16_t val);
-uint16_t kvs_get_u16(kvshT handle, const char *key, bool *res_success);
+uint16_t kvs_get_u16(kvshT handle, const char *key, uint16_t default_val, bool *res_success);
 
 bool kvs_set_i32(kvshT handle, const char *key, int32_t val);
-int32_t kvs_get_i32(kvshT handle, const char *key, bool *res_success);
+int32_t kvs_get_i32(kvshT handle, const char *key, int32_t default_val, bool *res_success);
 bool kvs_set_u32(kvshT handle, const char *key, uint32_t val);
-uint32_t kvs_get_u32(kvshT handle, const char *key, bool *res_success);
+uint32_t kvs_get_u32(kvshT handle, const char *key, uint32_t default_val, bool *res_success);
 
 bool kvs_set_i64(kvshT handle, const char *key, int64_t val);
-int64_t kvs_get_i64(kvshT handle, const char *key, bool *res_success);
+int64_t kvs_get_i64(kvshT handle, const char *key, int64_t default_val, bool *res_success);
 bool kvs_set_u64(kvshT handle, const char *key, uint64_t val);
-uint64_t kvs_get_u64(kvshT handle, const char *key, bool *res_success);
+uint64_t kvs_get_u64(kvshT handle, const char *key, uint64_t default_val, bool *res_success);
 
 
 typedef enum {

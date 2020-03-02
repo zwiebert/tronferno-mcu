@@ -45,7 +45,7 @@ static void nvsBlob(void *handle, const char *key, void *dst, size_t dst_len, bo
 #define nvs_s(mbit, key,val) if (GET_BIT(mask,mbit)) { nvsStr(handle, key, val, sizeof val, write); }
 #define nvs_b(mbit, key,val) if (GET_BIT(mask,mbit)) { nvsBlob(handle, key, &val, sizeof val, write); }
 
-#define nvs_dt(DT, mbit, key, val) if (GET_BIT(mask,mbit)) { if (write) { kvs_set_##DT(handle, key, val); } else { bool succ=false; DT tmp = kvs_get_##DT(handle, key, &succ); if (succ) val = tmp; } }
+#define nvs_dt(DT, mbit, key, val) if (GET_BIT(mask,mbit)) { if (write) { kvs_set_##DT(handle, key, val); } else { val = kvs_get_##DT(handle, key, val, 0); } }
 #define nvs_i8(mbit, key,val) nvs_dt(i8, mbit, key, val)
 #define nvs_u32(mbit, key,val) nvs_dt(u32, mbit, key, val)
 
