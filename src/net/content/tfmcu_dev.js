@@ -108,7 +108,6 @@ class AppState {
     }
     set shutterPrefs(obj) {
         Object.assign(this.mShutterPrefs, obj);
-        console.log(this.mShutterPrefs);
     }
     get shutterPrefs() {
         return this.mShutterPrefs;
@@ -136,7 +135,6 @@ class AppState {
         down_elem.value = "";
 
         if ("daily" in auto) {
-            dbLog("------");
             let d = auto.daily;
             let l = auto.daily.length;
             up_elem.value = d.startsWith("-") ? "" : d.substring(0,2)+":"+d.substring(2,4);
@@ -161,7 +159,7 @@ class AppState {
 		    let s = "";
 		    switch(config.cuas) {
 		    case 0: s = ""; break;
-		    case 1: s = '<strong style="animation: blink .75s linear 4;"> ...Scanning... </strong>'; break;
+		    case 1: s = '<strong style="animation: blink .75s linear 4;"> ...Scanning...(press STOP on Central Unit) </strong>'; break;
 		    case 2: s = '<strong style="background-color:red;">Time-Out! (no STOP-command received)</strong>'; break;
 		    case 3: s = '<strong style="background-color:green;">Success (cu-id has been saved)</strong>';
 			this.http_fetchByMask(FETCH_CONFIG);
@@ -206,7 +204,6 @@ class AppState {
 
         if ("shpref" in obj) {
             this.shutterPrefs = obj.shpref;
-            console.log("shpref");
             shutterPrefs_updHtml();
 
         }
@@ -312,10 +309,10 @@ class AppState {
     }
 
     load() {
-        this.g = this.mG;
-        this.m = this.mM;
+        document.getElementById("sgi").value = this.mG ? this.mG : "A";
+        document.getElementById("smi").value = this.mM ? this.mM : "A";
         this.tabIdx = this.mTabIdx;
-        this.http_fetchByMask(FETCH_VERSION|FETCH_CONFIG|FETCH_ALIASES);
+        this.http_fetchByMask(FETCH_VERSION|FETCH_CONFIG|FETCH_ALIASES|FETCH_AUTO);
         this.tabVisibility = this.mTabVisibility;
     }
 
@@ -326,7 +323,6 @@ let ast;
 function shutterPrefs_updHtml() {
     const key = "shp" + ast.g.toString() + ast.m.toString();
     let pref = ast.shutterPrefs[key];
-    console.log(key, pref);
     const mvut = document.getElementById("shpMvut");
     const mvdt = document.getElementById("shpMvdt");
 
@@ -401,7 +397,6 @@ function shutterPrefs_stopClock_stop() {
         clearInterval(spsc.ivId);
         spsc.ivId = 0;
         ast.pct = spsc.direction == DIR_UP ? 100 : 0;
-        console.log ("pct: ", ast.pct);
     }
 }
 
@@ -467,7 +462,6 @@ function shuPos_perFetch_tick() {
 }
 
 function shuPos_perFetch_start() {
-	dbLog("perFetch_start");
     let sppf = shuPos_perFetch;
     if (!sppf.ivId)   {
 	sppf.ivId = setInterval(shuPos_perFetch_tick, sppf.ms);
@@ -545,8 +539,7 @@ function aliasTable_fromHtml(key){
         }
 
     }
-    console.log("at_fromHtml", key, val);
-    //ast.aliases[key] = val;
+    //console.log("at_fromHtml", key, val);
     return val;
 }
 
@@ -581,7 +574,6 @@ function aliasTable_genHtml() {
 
 function configTr_genHtml(name,value) {
     if (name.endsWith("-enable")) {
-        dbLog("value: "+value);
         return '<td><label class="config-label">'+name+
             '</label></td><td><input class="config-input cb" type="checkbox" id="cfg_'+name+
             '" name="'+name +'"' + (value ? " checked" : "") +'></td>';
@@ -593,7 +585,7 @@ function configTr_genHtml(name,value) {
 	        return '<td><label class="config-label">'+name+
             '</label></td><td><select  class="config-input" id="cfg_'+name+'">'+
                '<option value="wlan">Connect to existing WLAN</option>'+
-               '<option value="ap">WLAN-AP at 192.168.4.1 (ssid=tronferno/pw=tronferno)</option>'+
+               '<option value="ap">AP (192.168.4.1, ssid/pw=tronferno)</option>'+
                '<option value="lan">Connect to Ethernet</option>'+ // dev-no-lan-delete-line
             '</select></td>';
     } else if (name === 'lan-phy') {
@@ -607,6 +599,13 @@ function configTr_genHtml(name,value) {
 	        return '<td><label class="config-label">'+name+
             '</label></td><td><input class="config-input" type="number" min="-1" max="36" id="cfg_'+name+
             '" name="'+name+'" value="'+value+'"></td>';
+    } else if (name === 'astro-correction') {
+	return '<td><label class="config-label">'+name+
+            '</label></td><td><select  class="config-input" id="cfg_'+name+'">'+
+            '<option value="0">average</option>'+
+            '<option value="1">not too late or dark</option>'+
+            '<option value="2">not too early or bright</option>'+
+            '</select></td>';
     } else {
         return '<td><label class="config-label">'+name+
             '</label></td><td><input class="config-input text" type="text" id="cfg_'+name+
@@ -616,11 +615,10 @@ function configTr_genHtml(name,value) {
 }
 
 function usedMembers_updHtml() {
-    let val = document.getElementById("cfg_gm-used").value; // HEX string! not a
-															// number!
+    let val = document.getElementById("cfg_gm-used").value; // HEX string! not a number!
+
     while(val.length < 8)
         val = "0"+val;
-    dbLog("val: "+val);
 
     let g=1;
     gmu = [0];
@@ -633,8 +631,6 @@ function usedMembers_updHtml() {
         gmu.push(mct);
         document.getElementById(id).value = val[i];
     }
-    dbLog(gmu);
-    dbLog(gu);
 }
 
 function usedMembers_fromHtml() {
@@ -856,8 +852,6 @@ function onMPressed() {
 function onPosPressed() {
     let pct = document.getElementById("spi").value;
 
-    console.log("pct="+pct.toString());
-
         let tfmcu = {to:"tfmcu"};
 
         tfmcu.send = {
@@ -964,7 +958,6 @@ function navTabs_genHtml() {
         }
     }
     document.getElementById('tabBar').innerHTML = html;
-    console.log(div_ids);
 }
 
 

@@ -1,8 +1,8 @@
 #### MQTT Topics you can send to:
 
 * tfmcu/+/cmd - Commands like up, down, stop
-
-    * The plus sign represents the ID of the shutter:
+     * The plus sign represents the ID of the shutter:
+    
 ```
        tfmcu/23/cmd       # member 3 of group 2
        tfmcu/102030/cmd   # 6 digit hex-ID
@@ -11,17 +11,18 @@
 
 * tfmcu/+/pct - percentages 100 for open, 0 for close
 
-    * the plus sign means the same as in tfmcu/+/cmd above
+     * the plus sign means the same as in tfmcu/+/cmd above
+ 
+     * currently only numbers 100 or 0 can be sent. All numbers between are rejected.
+    
 
-    * currently only numbers 100 or 0 can be sent. All numbers between are rejected.
+* tfmcu/cli  - All [CLI](CLI.md) commands can be send here
 
-* tfmcu/cli  - All CLI commands can be send here
+     * Don't terminate commands with a semicolon (like in USB-CLI)
 
-    * Don't terminate commands with a semicolon (like in USB-CLI)
+     * Don't send multiple commands at once separated by semicolon
 
-    * Don't send multiple commands at once separated by semicolon
-
-    * You can prepend all commands with the word "cli". This gives access to all
+     * You can prepend all commands with the word "cli". This gives access to all
     CLI commands. Only the commands send, timer, config can be used without the cli prefix.
 
 

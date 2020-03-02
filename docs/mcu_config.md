@@ -37,7 +37,7 @@
 'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported
 
 cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID
-rtc=(ISO_TIME|?)   set local time it NTP is not working.;
+rtc=(ISO_TIME|?)   set local time if NTP not working
 baud=(N|?)         serial baud rate
 wlan-ssid=(SSID|?)
 wlan-password=PW

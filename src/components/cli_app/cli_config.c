@@ -30,8 +30,10 @@ const char pin_state_args[] = "dipo ?01t";
 const char help_parmConfig[]  =
     "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
     "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID\n"
-    "rtc=(ISO_TIME|?)   set local time it NTP is not working.;\n"
+    "rtc=(ISO_TIME|?)   set local time if NTP not working\n"
+#ifndef MCU_ESP32
     "baud=(N|?)         serial baud rate\n"
+#endif
 #ifdef USE_WLAN
     "wlan-ssid=(SSID|?)\n"
     "wlan-password=PW\n"
@@ -169,14 +171,12 @@ process_parmConfig(clpar p[], int len) {
 
         }
           break;
-
         case SO_CFG_BAUD: {
           u32 baud = strtoul(val, NULL, 10);
           C.mcu_serialBaud = baud;
           save_config_item(CB_BAUD);
         }
           break;
-
         case SO_CFG_VERBOSE: {
           NODEFAULT();
           enum verbosity level = atoi(val);

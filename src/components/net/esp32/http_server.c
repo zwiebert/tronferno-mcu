@@ -149,9 +149,9 @@ static httpd_handle_t start_webserver(void) {
   }
 
   ESP_LOGI(TAG, "Registering URI handlers");
-  httpd_register_uri_handler(server, &uri_cmd_json);
-  httpd_register_uri_handler(server, &uri_tfmcu_js);
-  httpd_register_uri_handler(server, &uri_tfmcu_html);
+  ESP_ERROR_CHECK(httpd_register_uri_handler(server, &uri_cmd_json));
+  ESP_ERROR_CHECK(httpd_register_uri_handler(server, &uri_tfmcu_js));
+  ESP_ERROR_CHECK(httpd_register_uri_handler(server, &uri_tfmcu_html));
 
   return server;
 }

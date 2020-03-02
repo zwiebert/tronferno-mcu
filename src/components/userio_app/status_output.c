@@ -275,7 +275,9 @@ void  so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_CFG_BAUD:
+#ifndef MCU_ESP32
     so_out_x_reply_entry_l(mt, C.mcu_serialBaud);
+#endif
     break;
   case SO_CFG_RTC:
     if (rtc_get_by_string(buf)) {
