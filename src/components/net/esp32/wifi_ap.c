@@ -8,6 +8,7 @@
 #include "app/proj_app_cfg.h"
 #include "net/ipnet.h"
 #include "net/http_server.h"
+#include "net/tcp_server.h"
 
 #include <string.h>
 #include "freertos/FreeRTOS.h"
@@ -76,6 +77,7 @@ void wifiAp_setup()
              EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
 
     hts_enable_http_server(true);
+    setup_tcp_server();
 }
 
 
