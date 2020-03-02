@@ -6,7 +6,7 @@
 //#define DEBUG 1
 #endif
 
-#define APP_VERSION "0.8.2-beta"
+#define APP_VERSION "0.9"
 
 
 #define FER_TRANSMITTER
