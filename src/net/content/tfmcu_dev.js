@@ -312,7 +312,9 @@ class AppState {
         document.getElementById("sgi").value = this.mG ? this.mG : "A";
         document.getElementById("smi").value = this.mM ? this.mM : "A";
         this.tabIdx = this.mTabIdx;
-        this.http_fetchByMask(FETCH_VERSION|FETCH_CONFIG|FETCH_ALIASES|FETCH_AUTO);
+        this.http_fetchByMask(FETCH_CONFIG);
+        this.http_fetchByMask(FETCH_VERSION);
+        this.http_fetchByMask(FETCH_ALIASES|FETCH_AUTO);
         this.tabVisibility = this.mTabVisibility;
     }
 
