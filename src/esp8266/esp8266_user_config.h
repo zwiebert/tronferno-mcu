@@ -1,7 +1,4 @@
-#ifdef esp8266_user_config_h
-#error should only inlcuded by root fer_app_config.h
-#endif
-
+#ifndef esp8266_user_config_h
 #define esp8266_user_config_h
 
 #define MCU_TYPE "esp8266"
@@ -64,4 +61,5 @@ extern const char *const build_time;
 #include "user_interface.h"
 #define IRAM_ATTR  __attribute__((section(".iram0.text")))
 
+#endif
 

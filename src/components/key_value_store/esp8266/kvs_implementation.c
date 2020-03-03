@@ -43,7 +43,7 @@ bool kvs_set_##DT (kvshT handle, const char *key, DT val) { \
 } \
 
 #define GET_DT_FUN(DT) \
-DT kvs_get_##DT(kvshT handle, const char *key, bool *res_success) { \
+DT kvs_get_##DT(kvshT handle, const char *key, DT default_val, bool *res_success) { \
   if (res_success) *res_success = false; \
   return 0; \
 } \
