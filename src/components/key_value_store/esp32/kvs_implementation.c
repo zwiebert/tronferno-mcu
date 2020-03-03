@@ -81,14 +81,14 @@ bool kvs_set_##DT (kvshT handle, const char *key, DT val) { \
 } \
 
 #define GET_DT_FUN(DT) \
-DT kvs_get_##DT(kvshT handle, const char *key, bool *res_success) { \
+DT kvs_get_##DT(kvshT handle, const char *key, DT default_val, bool *res_success) { \
   DT temp; \
   if (ESP_OK == nvs_get_##DT(VP2H(handle), key, &temp)) { \
     if (res_success)*res_success = true; \
     return temp; \
   } \
   if (res_success) *res_success = false; \
-  return 0; \
+  return default_val; \
 } \
 
 #define SET_GET_DT_FUN(dt) SET_DT_FUN(dt) GET_DT_FUN(dt);

@@ -9,12 +9,13 @@
 #ifndef CLI_H_
 #define CLI_H_
 
+#include "userio/status_output.h"
 
 // user interface
 char *get_commandline(void);
 char *set_commandline(const char *src, uint8_t len); // copy src  (e.g. from mqtt event) to writable buffer
-void cli_process_cmdline(char *line);
-void cli_process_json(char *json);
+void cli_process_cmdline(char *line, so_target_bits tgt);
+void cli_process_json(char *json, so_target_bits tgt);
 void cli_loop(void);
 
 // implementation interface
@@ -60,7 +61,6 @@ int reply_failure(void);
 bool reply(bool success);
 bool  asc2uint8_t(const char *s, uint8_t *n, uint8_t limit);
 int process_parm(clpar p[], int len);
-void cli_process_cmdline(char *line);
 void cli_loop(void);
 void cli_print_json(const char *json); //FIXME
 

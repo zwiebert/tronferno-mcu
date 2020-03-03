@@ -9,6 +9,7 @@
 #include "userio/status_json.h"
 #include "fernotron_alias/pairings.h"
 #include "cli_app/cli_imp.h"
+#include "cli/mutex.h"
 
 #ifndef DISTRIBUTION
 #define DB_INFO 0
@@ -118,10 +119,14 @@ currentState_setShutterPct(u32 a, u8 g, u8 m, u8 pct) {
   if (0 <= position && position <= 100) {
     if (a == 0 || a == C.fer_centralUnitID) {
       so_arg_gmp_t gmp = { g, m, position };
-      sj_open_root_object("tfmcu");
-      so_output_message(SO_POS_PRINT_GMP, &gmp);  // FIXME: better use bit mask?
-      sj_close_root_object();
-      cli_print_json(sj_get_json());
+      if (mutex_cliTake()) {
+        if (sj_open_root_object("tfmcu")) {
+          so_output_message(SO_POS_PRINT_GMP, &gmp);  // FIXME: better use bit mask?
+          sj_close_root_object();
+          cli_print_json(sj_get_json());
+        }
+        mutex_cliGive();
+      }
     }
   }
 
@@ -504,11 +509,15 @@ static void currentState_mvCheck() {
               gm_ClrBit(mv->mask, g, m);
             } else {
               remaining = true;
-              so_arg_gmp_t gmp = {g, m, pct};
-              sj_open_root_object("tfmcu");
-              so_output_message(SO_POS_PRINT_GMP, &gmp);
-              sj_close_root_object();
-              cli_print_json(sj_get_json());
+              if (mutex_cliTake()) {
+                so_arg_gmp_t gmp = { g, m, pct };
+                if (sj_open_root_object("tfmcu")) {
+                  so_output_message(SO_POS_PRINT_GMP, &gmp);
+                  sj_close_root_object();
+                  cli_print_json(sj_get_json());
+                }
+                mutex_cliGive();
+              }
             }
           }
         }

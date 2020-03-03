@@ -31,11 +31,10 @@ endef
 $(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,src/components,$(component))))
 
 ## libc, libcirom
- .PHONY: libcirom
-LIBC_A := $(SDK_LIBDIR)/libc.a
+LIBC_A := $(SDK_BASE)/lib/libc.a
 LIBCIROM_A := $(BUILD_BASE)/libcirom.a
 LIBS += cirom
-GEN_LIBS += libcirom
+GEN_LIBS += $(LIBCIROM_A)
 
 $(LIBCIROM_A) : $(LIBC_A)
 	$(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal $(<) $(@);
@@ -46,7 +45,7 @@ $(LIBCIROM_A) : $(LIBC_A)
 LIBM_A := $(HOME)/esp/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/sysroot/lib/libm.a
 LIBMIROM_A := $(BUILD_BASE)/libmirom.a
 LIBS += mirom
-GEN_LIBS += libmirom
+GEN_LIBS += $(LIBMIROM_A)
 
 ifeq ($(WINDOWS),1)
 #GEN_LIBS +=
