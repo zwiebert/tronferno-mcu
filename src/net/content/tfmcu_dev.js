@@ -312,7 +312,9 @@ class AppState {
         document.getElementById("sgi").value = this.mG ? this.mG : "A";
         document.getElementById("smi").value = this.mM ? this.mM : "A";
         this.tabIdx = this.mTabIdx;
-        this.http_fetchByMask(FETCH_VERSION|FETCH_CONFIG|FETCH_ALIASES|FETCH_AUTO);
+        this.http_fetchByMask(FETCH_CONFIG);
+        this.http_fetchByMask(FETCH_VERSION);
+        this.http_fetchByMask(FETCH_ALIASES|FETCH_AUTO);
         this.tabVisibility = this.mTabVisibility;
     }
 
@@ -331,8 +333,8 @@ function shutterPrefs_updHtml() {
     }
 
     if (pref) {
-        mvut.value = pref.mvut;
-        mvdt.value = pref.mvdt;
+        mvut.value = (parseFloat(pref.mvut) / 10.0).toString();
+        mvdt.value = (parseFloat(pref.mvdt) / 10.0).toString();
     }
 }
 
@@ -344,8 +346,8 @@ function shutterPrefs_fromHtml_toMcu() {
     let tfmcu = {"to":"tfmcu", "shpref":{"g":ast.g, "m":ast.m, "c":"store"}};
     let pref = tfmcu.shpref;
 
-    pref.mvut = mvut.value;
-    pref.mvdt = mvdt.value;
+    pref.mvut = Math.floor((parseFloat(mvut.value) * 10)).toString();
+    pref.mvdt = Math.floor((parseFloat(mvdt.value) * 10)).toString();
 
     var url = base+'/cmd.json';
     http_postRequest(url, tfmcu);
@@ -365,7 +367,7 @@ function shutterPrefs_stopClock_tick() {
     let elem = document.getElementById(spsc.direction == DIR_UP ? "shpMvut": "shpMvdt");
 
     spsc.val  += (spsc.ms / 100);
-    elem.value = spsc.val.toString();
+    elem.value = (spsc.val / 10.0).toString();
 }
 
 function shutterPrefs_stopClock_start() {
@@ -392,7 +394,7 @@ function shutterPrefs_stopClock_start() {
 
 function shutterPrefs_stopClock_stop() {
     let spsc = shutterPrefs_stopClock;
-
+	http_postShutterCommand('stop');
     if (spsc.ivId) {
         clearInterval(spsc.ivId);
         spsc.ivId = 0;
@@ -917,8 +919,9 @@ const tabs = [
     { 'text':'Command', 'div_id':['senddiv'] },
     { 'text':'Automatic', 'div_id':['senddiv', 'autodiv'] },
     { 'text':'Config', 'div_id':['configdiv'] },
+    { 'text':'Positions', 'div_id':['senddiv', 'aliasdiv', 'shprefdiv'] },
     { 'text':'Firmware', 'div_id':['id-fwDiv'] },
-    { 'text':'Position-Config', 'div_id':['senddiv', 'aliasdiv', 'shprefdiv'] },
+
 ];
 let div_ids = [];
 

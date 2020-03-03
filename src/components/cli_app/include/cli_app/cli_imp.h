@@ -42,6 +42,4 @@ bool config_transmitter(const char *val);
 int asc2bool(const char *s);
 bool  asc2u8(const char *s, uint8_t *n, uint8_t limit);
 
-void cli_print_json(const char *json); //FIXME
-
 #endif

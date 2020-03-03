@@ -33,6 +33,8 @@ u8 sf_head_, sf_tail_;
 #define sf_Succ(a) ((((u8)(a))+1) & (sf_SIZE-1))
 #define sf_isEmpty() (sf_head_ == sf_tail)
 #define sf_isFull()  (sf_head_ == (((sf_tail+1) & (sf_SIZE-1))))
+
+#ifdef UNUSED_STATIC_FUNCTION
 static fsbT *sf_shift() {
   if (sf_isEmpty())
     return 0;
@@ -40,6 +42,7 @@ static fsbT *sf_shift() {
   sf_incrHead();
   return fsb;
 }
+#endif
 
 static bool   sf_append(const fsbT *fsb, fmsg_type msgType, u32 s10, u8 repeats) {
   if (sf_isFull())

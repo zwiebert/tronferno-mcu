@@ -15,14 +15,14 @@ static SemaphoreHandle_t cli_mutex;
 void mutex_setup() {
 
   /* Create a mutex type semaphore. */
-  cli_mutex = xSemaphoreCreateMutex();
+  cli_mutex = xSemaphoreCreateRecursiveMutex();
 
   assert(cli_mutex);
 
 }
 
 bool mutex_cliTake() {
-  if (xSemaphoreTake(cli_mutex, portMAX_DELAY)) {
+  if (xSemaphoreTakeRecursive(cli_mutex, portMAX_DELAY)) {
     return true;
   } else {
    //XXX restart MCU or something
@@ -31,5 +31,5 @@ bool mutex_cliTake() {
   }
 }
 void mutex_cliGive() {
-  xSemaphoreGive(cli_mutex);
+  xSemaphoreGiveRecursive(cli_mutex);
 }
