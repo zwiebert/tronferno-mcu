@@ -1,9 +1,11 @@
 .PHONY: clean all rebuild http_data print-help
 
-mcus := esp32 esp8266 
-tgts := all clean
+mcus := esp32 esp8266
+tgts := all
 
 default: print-help
+
+clean : unity-clean esp32-fullclean esp8266-clean
 
 print-help:
 	@cat docs/make_help.txt
@@ -17,7 +19,7 @@ $(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(tgt))))
 
 http_data :
 	cd src/net/content && $(MAKE)
-	
+
 esp8266_build_cmd := make -C src/esp8266
 esp8266_tgts_auto := all clean flash app-flash flashinit flasherase spiffs
 
@@ -33,7 +35,7 @@ esp32_build_dir := -B $(BUILD_DIR_BASE)
 endif
 
 esp32_build_cmd := idf.py -C src/esp32 $(esp32_build_dir)
-esp32_tgts_auto := menuconfig clean app
+esp32_tgts_auto := menuconfig clean fullclean app
 
 .PHONY: esp32-all-force esp32-rebuild
 .PHONY: esp32-all esp32-lan esp32-flash
@@ -42,7 +44,7 @@ esp32_tgts_auto := menuconfig clean app
 
 define GEN_RULE
 .PHONY: esp32-$(1)
-esp32-$(1): http_data
+esp32-$(1):
 	$(esp32_build_cmd) $(1)
 endef
 $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
@@ -70,8 +72,8 @@ COMPS := $(shell cd src/components && ls)
 unity: unity/unity.txt
 
 unity-clean:
-	rm -r ./unity
-	
+	-rm -r ./unity
+
 port ?= /dev/ttyUSB0
 
 unity/unity.txt:
@@ -85,8 +87,6 @@ esp32-test-clean: unity
 esp32-test-flash: unity
 	$(esp32_test_build_cmd) --port $(port) flash
 esp32-test-run:
-	python3 test/run_tests.py $(port) 
-	
-test-all: esp32-test-build esp32-test-flash esp32-test-run
+	python3 test/run_tests.py $(port)
 
-	
+test-all: esp32-test-build esp32-test-flash esp32-test-run
