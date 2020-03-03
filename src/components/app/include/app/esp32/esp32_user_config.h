@@ -1,6 +1,4 @@
-#ifdef ESP32_USER_CONFIG_H_
-#error should only inlcuded once
-#endif
+#ifndef ESP32_USER_CONFIG_H_
 #define ESP32_USER_CONFIG_H_
 
 #define MCU_TYPE "esp32"
@@ -34,4 +32,6 @@
 #define READ_TIMER_DATA_FUN read_timer_data_fs
 
 #include "esp_attr.h"
+
+#endif
 

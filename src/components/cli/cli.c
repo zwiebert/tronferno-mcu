@@ -17,6 +17,7 @@
 #include "txtio/inout.h"
 #include "mutex.h"
 #include "fernotron_sep/set_endpos.h" // XXX
+#include "userio/status_json.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 #define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
@@ -84,42 +85,41 @@ int process_parmHelp(clpar p[], int len);
 
 extern const char help_parmHelp[];
 
-int
-process_parm(clpar p[], int len) {
+int process_parm(clpar p[], int len) {
   int i;
   int result = -1;
 
-  if (mutex_cliTake()) {
-
-    // if in sep mode, don't accept commands FIXME
-    if (sep_is_enabled()) {
-      sep_disable();
-      reply_message(0, "error: CLI is disabled in set-endposition-mode\n");
-    } else {
-      for (i = 0; i < parm_handlers.count; ++i)  {
-        if (strcmp(p[0].key, parm_handlers.handlers[i].parm) == 0) {
-          result = parm_handlers.handlers[i].process_parmX(p, len);
-          break;
-        }
+  // if in sep mode, don't accept commands FIXME
+  if (sep_is_enabled()) {
+    sep_disable();
+    reply_message(0, "error: CLI is disabled in set-endposition-mode\n");
+  } else {
+    for (i = 0; i < parm_handlers.count; ++i) {
+      if (strcmp(p[0].key, parm_handlers.handlers[i].parm) == 0) {
+        result = parm_handlers.handlers[i].process_parmX(p, len);
+        break;
       }
     }
-    mutex_cliGive();
   }
 
   return result;
 }
 
-void
-cli_process_cmdline(char *line) {
+void cli_process_cmdline(char *line, so_target_bits tgt) {
   dbg_vpf(db_printf("process_cmdline: %s\n", line));
   cli_isJson = false;
+  so_tgt_set(tgt);
 
   int n = parse_commandline(line);
   if (n < 0) {
     reply_failure();
   } else {
-    process_parm(par, n);
+    if (sj_open_root_object("tfmcu")) {
+      process_parm(par, n);
+      sj_close_root_object();
+    }
   }
+  so_tgt_default();
 }
 
 int
@@ -184,21 +184,22 @@ process_parmHelp(clpar p[], int len) {
 bool cli_isJson;
 
 
-void  cli_loop(void) {
+void cli_loop(void) {
   char *cmdline;
   static bool ready;
   if ((cmdline = get_commandline())) {
-    so_tgt_set(SO_TGT_CLI);
-    if (cmdline[0] == '{') {
+    if (mutex_cliTake()) {
+      if (cmdline[0] == '{') {
+        cli_process_json(cmdline, SO_TGT_CLI);
+      } else {
 
-     cli_process_json(cmdline);
-    } else {
+        io_putlf();
+        cli_process_cmdline(cmdline, SO_TGT_CLI);
+        cli_msg_ready();
+      }
 
-      io_putlf();
-      cli_process_cmdline(cmdline);
-      cli_msg_ready();
+      mutex_cliGive();
     }
-    so_tgt_default();
   } else if (!ready) {
     cli_msg_ready();
     ready = true;

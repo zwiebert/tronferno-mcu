@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include "userio_app/status_output.h"
 #include "userio/status_json.h"
+#include "cli/mutex.h"
 
 #else
 #include <string.h>
@@ -191,27 +192,32 @@ parse_json(char *name, char *s) {
 }
 
 #ifndef TEST_MODULE
-void cli_process_json(char *json) {
+void cli_process_json(char *json, so_target_bits tgt) {
   cli_isJson = true;
+
+  so_tgt_set(tgt);
 
   dbg_vpf(db_printf("process_json: %s\n", json));
 
   char *name, *cmd_obj;
 
-  sj_open_root_object("tfmcu");
-  while ((cmd_obj = json_get_command_object(json, &name, &json))) {
-    int n = parse_json(name, cmd_obj);
-    if (n < 0) {
-      reply_failure();
-    } else {
-      process_parm(par, n);
+  if (sj_open_root_object("tfmcu")) {
+    while ((cmd_obj = json_get_command_object(json, &name, &json))) {
+      int n = parse_json(name, cmd_obj);
+      if (n < 0) {
+        reply_failure();
+      } else {
+        process_parm(par, n);
+      }
     }
+    sj_close_root_object();
   }
-  sj_close_root_object();
+
   if (so_tgt_test(SO_TGT_CLI)) {
     cli_print_json(sj_get_json());
   }
 
+  so_tgt_default();
 }
 
 void 

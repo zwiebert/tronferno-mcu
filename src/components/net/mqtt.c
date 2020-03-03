@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "cli/cli.h"
+#include "cli/mutex.h"
 #include "userio/status_json.h"
 #include "userio_app/status_output.h"
 
@@ -100,56 +101,59 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
     return; // all topics start with this
   }
 
-  so_tgt_set(SO_TGT_MQTT);
+  if (mutex_cliTake()) {
+    if (topic_endsWith(topic, topic_len, TOPIC_PCT_END)) {
+      char *line = set_commandline("x", 1);
+      const char *addr = topic + (sizeof TOPIC_ROOT - 1);
+      int addr_len = topic_len - ((sizeof TOPIC_ROOT - 1) + (sizeof TOPIC_PCT_END - 1));
 
-  if (topic_endsWith(topic, topic_len, TOPIC_PCT_END)) {
-    char *line = set_commandline("x", 1);
-    const char *addr = topic + (sizeof TOPIC_ROOT - 1);
-    int addr_len = topic_len - ((sizeof TOPIC_ROOT - 1) + (sizeof TOPIC_PCT_END -1));
-
-    if (addr_len == 2) {
-      sprintf(line, "send g=%c m=%c p=%.*s", addr[0], addr[1], data_len, data);
-    } else if (addr_len == 6) {
-      sprintf(line, "send a=%.*s p=%.*s", 6, addr, data_len, data);
-    } else if (addr_len == 8) {
-      sprintf(line, "send a=%.*s g=%c m=%c p=%.*s", 6, addr, addr[6], addr[7], data_len, data);
-    } else {
-      return;  // wrong topic format in wildcard
-    }
-    cli_process_cmdline(line);
-
-  } else if (topic_endsWith(topic, topic_len, TOPIC_CMD_END)) {
-    char *line = set_commandline("x", 1);
-    const char *addr = topic + (sizeof TOPIC_ROOT - 1);
-    int addr_len = topic_len - ((sizeof TOPIC_ROOT - 1) + (sizeof TOPIC_CMD_END -1));
-
-    if (addr_len == 2) {
-      sprintf(line, "send g=%c m=%c c=%.*s", addr[0], addr[1], data_len, data);
-    } else if (addr_len == 6) {
-      sprintf(line, "send a=%.*s c=%.*s", 6, addr, data_len, data);
-    } else if (addr_len == 8) {
-      sprintf(line, "send a=%.*s g=%c m=%c c=%.*s", 6, addr, addr[6], addr[7], data_len, data);
-    } else {
-      return;  // wrong topic format in wildcard
-    }
-    cli_process_cmdline(line);
-
-  } else if (strlen(TOPIC_CLI) == topic_len && 0 == strncmp(topic, TOPIC_CLI, topic_len)) {
-    if (strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
-      char *line;
-      if ((line = set_commandline(data + TAG_CLI_LEN, data_len - TAG_CLI_LEN))) {
-        cli_process_cmdline(line);
+      if (addr_len == 2) {
+        sprintf(line, "send g=%c m=%c p=%.*s", addr[0], addr[1], data_len, data);
+      } else if (addr_len == 6) {
+        sprintf(line, "send a=%.*s p=%.*s", 6, addr, data_len, data);
+      } else if (addr_len == 8) {
+        sprintf(line, "send a=%.*s g=%c m=%c p=%.*s", 6, addr, addr[6], addr[7], data_len, data);
+      } else {
+        goto RETURN;
+        // wrong topic format in wildcard
       }
-    } else if ((0 == strncmp(data, TAG_SEND, TAG_SEND_LEN)) || (0 == strncmp(data, TAG_CONFIG, TAG_CONFIG_LEN))
-        || (0 == strncmp(data, TAG_TIMER, TAG_TIMER_LEN))) {
-      char *line;
-      if ((line = set_commandline(data, data_len))) {
-        cli_process_cmdline(line);
+      cli_process_cmdline(line, SO_TGT_MQTT);
+
+    } else if (topic_endsWith(topic, topic_len, TOPIC_CMD_END)) {
+      char *line = set_commandline("x", 1);
+      const char *addr = topic + (sizeof TOPIC_ROOT - 1);
+      int addr_len = topic_len - ((sizeof TOPIC_ROOT - 1) + (sizeof TOPIC_CMD_END - 1));
+
+      if (addr_len == 2) {
+        sprintf(line, "send g=%c m=%c c=%.*s", addr[0], addr[1], data_len, data);
+      } else if (addr_len == 6) {
+        sprintf(line, "send a=%.*s c=%.*s", 6, addr, data_len, data);
+      } else if (addr_len == 8) {
+        sprintf(line, "send a=%.*s g=%c m=%c c=%.*s", 6, addr, addr[6], addr[7], data_len, data);
+      } else {
+        goto RETURN;
+        // wrong topic format in wildcard
+      }
+      cli_process_cmdline(line, SO_TGT_MQTT);
+
+    } else if (strlen(TOPIC_CLI) == topic_len && 0 == strncmp(topic, TOPIC_CLI, topic_len)) {
+      if (strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
+        char *line;
+        if ((line = set_commandline(data + TAG_CLI_LEN, data_len - TAG_CLI_LEN))) {
+          cli_process_cmdline(line, SO_TGT_MQTT);
+        }
+      } else if ((0 == strncmp(data, TAG_SEND, TAG_SEND_LEN)) || (0 == strncmp(data, TAG_CONFIG, TAG_CONFIG_LEN))
+          || (0 == strncmp(data, TAG_TIMER, TAG_TIMER_LEN))) {
+        char *line;
+        if ((line = set_commandline(data, data_len))) {
+          cli_process_cmdline(line, SO_TGT_MQTT);
+        }
       }
     }
+
+    RETURN:
+    mutex_cliGive();
   }
-
-  so_tgt_default();
 }
 
 #endif // USE_MQTT

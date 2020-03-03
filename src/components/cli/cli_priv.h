@@ -54,7 +54,6 @@ bool config_transmitter(const char *val);
 bool reply(bool success);
 bool  asc2u8(const char *s, uint8_t *n, uint8_t limit);
 int process_parm(clpar p[], int len);
-void cli_process_cmdline(char *line);
 void cli_loop(void);
 
 void cli_print_json(const char *json); //FIXME
