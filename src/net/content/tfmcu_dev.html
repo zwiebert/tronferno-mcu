@@ -224,13 +224,13 @@
 
       <div id="shprefdiv">
         <hr>
-        <h4>shutter up/down run times in tenths of seconds</h4>
+        <h4>Shutter Config</h4>
         <button id="shp_clockStart" type="button">Start Clock</button>
         <button id="shp_clockStop" type="button">Stop Clock</button>
 <br>
         <table>
-          <tr><td>up time in s/10:</td><td><input id="shpMvut" type="number" min="0" value="0"></td></tr>
-          <tr><td>down time in s/10:</td><td><input id="shpMvdt" type="number" min="0" value="0"></td></tr>
+          <tr><td>move-up duration (secs):</td><td><input id="shpMvut" type="number" min="0" value="0" step="0.1"></td></tr>
+          <tr><td>move-down duration (secs):</td><td><input id="shpMvdt" type="number" min="0" value="0" step="0.1"></td></tr>
         </table>
         <button id="shp_reload" type="button">Reload</button>
         <button id="shp_save" type="button">Save</button>
