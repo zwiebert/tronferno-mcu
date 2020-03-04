@@ -27,7 +27,7 @@ static int json_idx;
 static char *json_buf;
 static u16 json_buf_size;
 
-#define BUF (json_buf)
+#define BUF (json_buf+0)
 #define BUF_SIZE (json_buf_size)
 #define USE_CALLBACK (!json_buf && sj_callback_onClose_ifNotEmpty)
 #define DO_CALLBACK() sj_callback_onClose_ifNotEmpty(BUF);
@@ -40,14 +40,15 @@ bool sj_realloc_buffer(size_t buf_size) {
   if (buf_size > BUF_MAX_SIZE)
     return false;
 
-  json_buf = realloc(json_buf, buf_size);
+  void *m = realloc(json_buf, buf_size);
 
-  assert(json_buf); //XXX
-  if (!json_buf) {
+  assert(m); //XXX
+  if (!m) {
     return false;
     io_puts("ERROR: sj_realloc_buffer: out of memory\n");
   }
 
+  json_buf = m;
   json_buf_size = buf_size;
   return true;
 }

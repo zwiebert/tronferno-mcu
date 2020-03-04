@@ -455,7 +455,8 @@ function shuPos_perFetch_posRecieved(pct) {
 function shuPos_perFetch_tick() {
     const sppf = shuPos_perFetch;
     const pct = ast.pct;
-    if (pct === sppf.last_pct && sppf.last_pct === sppf.last_last_pct) {
+    if ((ast.g == 0 || ast.m == 0)
+    		|| (pct === sppf.last_pct && sppf.last_pct === sppf.last_last_pct)) {
 	clearInterval(sppf.ivId);
 	sppf.ivId = 0;
 	return;
@@ -464,6 +465,9 @@ function shuPos_perFetch_tick() {
 }
 
 function shuPos_perFetch_start() {
+    if (ast.g == 0 || ast.m == 0)
+    	return;
+    	
     let sppf = shuPos_perFetch;
     if (!sppf.ivId)   {
 	sppf.ivId = setInterval(shuPos_perFetch_tick, sppf.ms);
@@ -778,7 +782,6 @@ function http_postShutterCommand(c=document.getElementById('send-c').value) {
     var url = base+'/cmd.json';
     dbLog("url: "+url);
     http_postRequest(url, tfmcu);
-
     shuPos_perFetch_start();
 }
 
