@@ -69,14 +69,14 @@
       background-color: #eee;
       display: grid;
       width: 100%;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: repeat(6, 1fr);
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-rows: repeat(5, 1fr);
       grid-template-areas:
-      "gi pi mi"
-      "gb pl mb"
-      ".  ub ."
-      ".  sb ."
-      ".  db ."
+      "gi pi mi pr"
+      "gb pl mb pr"
+      ".  ub .  pr"
+      ".  sb .  pr"
+      ".  db .  pr"
       ;
       justify-items: center;
       align-items: center;
@@ -110,8 +110,9 @@
       .sb {width: 5em; margin: 2px; }
 
       #sgb, #smb { border-radius: 40%; }
-      #sgi,  #smi { width: 2.5em; height: 2em; text-align: center; }
+      #sgi, #spi, #smi { width: 2.5em; height: 2em; text-align: center; }
       #sgb, #smb { width: 2em; height: 2em; }
+      #spr { height: 4em; }
 
       #ssb { font-size: 60%;  font-stretch: ultra-condensed; height: 4em; border-radius: 100% }
       #sub, #sdb { font-size: 125%; border-radius: 100% }
@@ -125,6 +126,7 @@
       #sub { grid-area: ub; }
       #ssb { grid-area: sb; }
       #sdb { grid-area: db; }
+      #spr { grid-area: pr; }
 
       .conf-table label { padding: 2px; width: 50vw; margin-right: 6px;}
       .conf-table .text { width: 100%; }
@@ -148,7 +150,11 @@
       100% { opacity: 0; }
       }
 
-
+    input[type="range"] {
+        #position: absolute;
+        #top: 40%;
+        transform: rotate(270deg);
+    }
 
     </style>
   </head>
@@ -164,7 +170,8 @@
       <div id="senddiv" class="send">
 
         <input id="sgi" type = "text" name = "g" value="A">
-        <input id="spi" type = "range" min="0" max="100" name = "p" value="100">
+        <input id="spi" type = "number" min="0" max="100" name = "p" value="100">
+       	<input id="spr" type = "range" min="0" max="100" name = "p" value="100">
         <input id="smi" type = "text" name = "m" value="A">
         <br>
         <button id="sgb" type="button">G</button>
@@ -305,7 +312,10 @@
         <li><label><button id="netota" type="button">Do flash firmware from given URL</button> <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:3000/tronferno-mcu.bin"> </label><br><br></li> <!--dev-distro-delete-line-->
       </ul>
       </div>
+      <div id="netota_progress_div">
       <span id="netota_feedback"></span>
+      <progress id="netota_progress_bar" value="0" max="30">70 %</progress>
+      </div>
 
       <h4>Firmware Info</h4>
       <ul>

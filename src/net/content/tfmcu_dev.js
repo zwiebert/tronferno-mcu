@@ -52,6 +52,7 @@ class AppState {
     set pct(val) {
     	this.mPct = val;
         document.getElementById('spi').value = val;
+        document.getElementById('spr').value = val;
         shuPos_perFetch_posRecieved(val);
     }
     get pct() {
@@ -226,13 +227,15 @@ class AppState {
                     e.innerHTML = "";
                     break;
                 case 1: // run
-                    e.innerHTML = "<strong>OTA is running " + (++netota_progressCounter).toString() + "<br><br></strong>";
+                    e.innerHTML = "<strong>Firmware is updating...<br></strong>";
+                    document.getElementById("netota_progress_bar").value = (++netota_progressCounter).toString();
                     break;
                 case 2: // fail
                     e.innerHTML = "<strong>OTA has failed<br><br></strong>";
                     break;
                 case 3: // done
                     e.innerHTML = '<strong>OTA has succeeded <button type="button" onClick="req_mcuRestart()">Reboot</button><br><br></strong>';
+                    document.getElementById("netota_progress_bar").value = document.getElementById("netota_progress_bar").max;
                     break;
                 }
                 if (netota_isInProgress && mcu["ota-state"] != 1) {
@@ -706,11 +709,37 @@ function http_postRequest(url = '', data = {}) {
         });
 }
 
+
+const reload_Progress = {
+	    ivId: 0,
+	    ms: 1000,
+	    count: 10,
+	    counter: 0,
+	};
+function req_reloadTick() {
+    const rpr = reload_Progress;
+    
+    if (++rpr.counter > rpr.count) {
+    	location.reload();
+    	clearInterval(rpr.ivId); // may be useless after reload...
+    } else {
+        document.getElementById("netota_progress_bar").value = rpr.counter;
+    }
+}
+function req_reloadStart() {
+    const rpr = reload_Progress;
+	rpr.ivId = setInterval(req_reloadTick, rpr.ms);
+    document.getElementById("netota_progress_bar").max = rpr.count;
+    document.getElementById("netota_feedback").innerHTML = "<strong>Wait for MCU to restart...</strong><br>"
+}
+
+
 function req_mcuRestart() {
     var json = { to:"tfmcu", config: { restart:"1" } };
     var url = base+'/cmd.json';
     http_postRequest(url, json);
-    setTimeout(function(){ location.reload(); }, 10000);
+    req_reloadStart();
+    //setTimeout(function(){ location.reload(); }, 10000);
 }
 
 
@@ -854,11 +883,10 @@ function onMPressed() {
     ast.m = val;
 }
 
-function onPosPressed() {
-    let pct = document.getElementById("spi").value;
-
-        let tfmcu = {to:"tfmcu"};
-
+function onPos(pct) { 
+  console.log("onPos", pct);
+	
+  let tfmcu = {to:"tfmcu"};
         tfmcu.send = {
             g: ast.g,
             m: ast.m,
@@ -978,7 +1006,8 @@ function onContentLoaded() {
     document.getElementById("sub").onclick = () => http_postShutterCommand('up');
     document.getElementById("ssb").onclick = () => http_postShutterCommand('stop');
     document.getElementById("sdb").onclick = () => http_postShutterCommand('down');
-    document.getElementById("spb").onclick = () => onPosPressed();
+    document.getElementById("spb").onclick = () => onPos(document.getElementById("spi").value);
+    document.getElementById("spr").onchange = () => onPos(document.getElementById("spr").value);
 
 
     document.getElementById("shp_reload").onclick = () => shutterPrefs_updHtml();
