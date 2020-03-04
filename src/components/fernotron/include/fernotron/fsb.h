@@ -5,8 +5,25 @@
 #include "fer_msg_basic.h"
 #include "misc/int_macros.h"
 
-typedef struct fsb {
+#ifdef XX__GNUC__
+#define ENUMBF(type)
+__extension__ type
+#else
+#define ENUMBF(type) unsigned
+#endif
+
+typedef union fsb {
   uint8_t data[5];
+  struct {
+    uint8_t addr[3];
+
+    ENUMBF(fer_memb) memb : 4;
+    unsigned tgl : 4;
+
+    ENUMBF(fer_cmd) cmd : 4;
+    ENUMBF(fer_grp) grp : 4;
+
+  } __attribute__((__packed__)) sd;
 } fsbT;
 
 #define FSB_ADDR_IS_CENTRAL(fsb)  (((fsb)->data[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)
@@ -18,19 +35,19 @@ typedef struct fsb {
 #define FSB_PUT_DEVID(fsb, devID) (((fsb)->data[fer_dat_ADDR_2] = GET_BYTE_2(devID)), ((fsb)->data[fer_dat_ADDR_1] = GET_BYTE_1(devID)), ((fsb)->data[fer_dat_ADDR_0] = GET_BYTE_0(devID)))
 #define FSB_GET_DEVID(fsb) (((uint32_t)(fsb)->data[fer_dat_ADDR_2] << 16) | (uint16_t)((fsb)->data[fer_dat_ADDR_1] << 8) | ((fsb)->data[fer_dat_ADDR_0]))
 
-#define FSB_GET_CMD(fsb)          (GET_LOW_NIBBLE((fsb)->data[fer_dat_GRP_and_CMD]))
-#define FSB_PUT_CMD(fsb,val)      (PUT_LOW_NIBBLE((fsb)->data[fer_dat_GRP_and_CMD], val))
+#define FSB_GET_CMD(fsb)          ((fer_cmd)(fsb)->sd.cmd)
+#define FSB_PUT_CMD(fsb,val)      ((fsb)->sd.cmd = (val))
 
-#define FSB_GET_TGL(fsb)          (GET_HIGH_NIBBLE((fsb)->data[fer_dat_TGL_and_MEMB]))
-#define FSB_PUT_TGL(fsb,val)      (PUT_HIGH_NIBBLE((fsb)->data[fer_dat_TGL_and_MEMB], val))
+#define FSB_GET_TGL(fsb)          ((fsb)->sd.tgl)
+#define FSB_PUT_TGL(fsb,val)      ((fsb)->sd.tgl = (val))
 
-#define FSB_GET_GRP(fsb)          (GET_HIGH_NIBBLE((fsb)->data[fer_dat_GRP_and_CMD]))
-#define FSB_PUT_GRP(fsb,val)      (PUT_HIGH_NIBBLE((fsb)->data[fer_dat_GRP_and_CMD], val))
+#define FSB_GET_GRP(fsb)          ((fer_grp)(fsb)->sd.grp)
+#define FSB_PUT_GRP(fsb,val)      ((fsb)->sd.grp = (val))
 
-#define FSB_GET_MEMB(fsb)         (GET_LOW_NIBBLE((fsb)->data[fer_dat_TGL_and_MEMB]))
-#define FSB_PUT_MEMB(fsb,val)     (PUT_LOW_NIBBLE((fsb)->data[fer_dat_TGL_and_MEMB], val))
+#define FSB_GET_MEMB(fsb)         ((fer_memb)(fsb)->sd.memb)
+#define FSB_PUT_MEMB(fsb,val)     ((fsb)->sd.memb = (val))
 
-#define FSB_PUT_DATA(fsb,idx,val)     ((fsb)->data[(idx)] = (val))
+#define FSB_PUT_DATA(fsb,idx,val) ((fsb)->data[(idx)] = (val))
 
 #define FSB_TOGGLE(fsb) fer_update_tglNibble(fsb)
 
