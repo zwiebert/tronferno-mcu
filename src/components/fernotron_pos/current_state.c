@@ -191,6 +191,140 @@ currentState_printShutterPositions() {
 extern volatile u32 run_time_s10;
 #define run_time_10(x) (run_time_s10 + 0)
 
+
+
+void f(int mvi, u8 g, u8 m, u32 rt) {
+  struct mv *mv = &moving[mvi];
+  int gi;
+
+  gm_ClrBit(moving[mvi].mask, g, m);
+  currentState_setShutterPct(0, g, m, currentState_mvCalcPct(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
+  bool remaining = false;
+  for (gi = 0; gi < 8; ++gi) {
+    if (mv->mask[gi]) {
+      remaining = true;
+      break;
+    }
+  }
+  if (!remaining) {
+    CLR_BIT(moving_mask, mvi);
+  }
+}
+
+static void start_moving(int mvi, u8 g, u8 m, u32 rt, bool direction) {
+  gm_SetBit(moving[mvi].mask, g, m);
+  moving[mvi].direction_up = direction;
+  SET_BIT(moving_mask, mvi);
+  moving[mvi].start_time = rt;
+}
+
+static void start_moving_mm(int mvi, gm_bitmask_t mm, u32 rt, bool direction) {
+  u8 g;
+  for (g = 1; g <= GRP_MAX; ++g) {
+    moving[mvi].mask[g] = mm[g];
+  }
+  moving[mvi].direction_up = direction;
+  SET_BIT(moving_mask, mvi);
+  moving[mvi].start_time = rt;
+}
+
+static void stop_moving(int mvi, u8 g, u8 m, u32 rt) {
+  struct mv *mv = &moving[mvi];
+  int gi;
+  gm_ClrBit(moving[mvi].mask, g, m);
+  currentState_setShutterPct(0, g, m, currentState_mvCalcPct(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
+  bool remaining = false;
+  for (gi = 0; gi < 8; ++gi) {
+    if (mv->mask[gi]) {
+      remaining = true;
+      break;
+    }
+  }
+  if (!remaining) {
+    CLR_BIT(moving_mask, mvi);
+  }
+}
+
+static void stop_moving_mm(int mvi, gm_bitmask_t mm, u32 rt) {
+  struct mv *mv = &moving[mvi];
+  int m, g, mi;
+  bool remaining = false;
+
+  for (g = 1; g <= GRP_MAX; ++g) {
+    for (m = 1; m <= MBR_MAX; ++m) {
+      if (!gm_GetBit(mm, g, m))
+        continue;
+
+      gm_ClrBit(moving[mvi].mask, g, m);
+      currentState_setShutterPct(0, g, m, currentState_mvCalcPct(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
+    }
+    if (mv->mask[g]) {
+      remaining = true;
+    }
+  }
+  if (!remaining) {
+    CLR_BIT(moving_mask, mvi);
+  }
+}
+
+
+static int add_to_existing_movement_mm(gm_bitmask_t mm, u32 rt, bool direction) {
+  u8 mvi, g;
+
+  for (mvi = 0; mvi < mv_SIZE; ++mvi) {
+    if (GET_BIT(moving_mask, mvi) && direction == moving[mvi].direction_up && rt == moving[mvi].start_time) {
+      // add to an in-use bitmask, if having same start_time and direction
+      for (g = 1; g <= GRP_MAX; ++g) {
+        moving[mvi].mask[g] |= mm[g];
+      }
+      return mvi;
+    }
+  }
+  return -1;
+}
+
+static int add_to_new_movement_mm(gm_bitmask_t mm, u32 rt, bool direction) {
+  u8 mvi;
+
+  for (mvi = 0; mvi < mv_SIZE; ++mvi) {
+    if (GET_BIT(moving_mask, mvi))
+      continue;
+
+    start_moving_mm(mvi, mm, rt, direction);
+    return mvi;
+  }
+  return -1;
+}
+
+
+static int add_to_existing_movement(u8 g, u8 m, u32 rt, bool direction) {
+  u8 mvi;
+
+  for (mvi = 0; mvi < mv_SIZE; ++mvi) {
+    if (GET_BIT(moving_mask, mvi) && direction == moving[mvi].direction_up && rt == moving[mvi].start_time) {
+      gm_SetBit(moving[mvi].mask, g, m);
+      return mvi;
+    }
+  }
+
+  return -1;
+}
+
+static int add_to_new_movement(u8 g, u8 m, u32 rt, bool direction) {
+  u8 mvi;
+
+  for (mvi = 0; mvi < mv_SIZE; ++mvi) {
+    if (GET_BIT(moving_mask, mvi))
+      continue;
+
+    start_moving(mvi, g, m, rt, direction);
+    break;
+  }
+
+  return -1;
+}
+
+
 // register moving related commands sent to a shutter to keep track of its changing position
 int 
 currentState_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
@@ -221,8 +355,8 @@ currentState_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
   }
 
   if (isMoving) {
-    for (g=1; g <= GRP_MAX; ++g) {
-      for (m=1; m <= MBR_MAX; ++m) {
+    for (g = 1; g <= GRP_MAX; ++g) {
+      for (m = 1; m <= MBR_MAX; ++m) {
         if (gm_GetBit(mm, g, m)) {
           u8 currPct = get_state(0, g, m);
           if ((direction && currPct == PCT_UP) || (!direction && currPct == PCT_DOWN))
@@ -240,54 +374,28 @@ currentState_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
         continue;
 
       for (g = 1; g <= GRP_MAX; ++g) {
-        for (m=1; m <= MBR_MAX; ++m) {
+        if (!mv->mask[g] || !mm[g])
+          continue;
+        for (m = 1; m <= MBR_MAX; ++m) {
           if (!gm_GetBit(mv->mask, g, m))
-            goto next_i;
+            continue;
+          if (!gm_GetBit(mm, g, m))
+            continue;
 
           if (isMoving && mv->direction_up == direction) {
-            return 0; // already moving in right direction
-          } else {
-            gm_ClrBit(moving[mvi].mask, g, m);
-            currentState_setShutterPct(0, g, m, currentState_mvCalcPct(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
-            bool remaining = false;
-            for (gi = 0; gi < 8; ++gi) {
-              if (mv->mask[gi]) {
-                remaining = true;
-                break;
-              }
-            }
-            if (!remaining) {
-              CLR_BIT(moving_mask, mvi);
-            }
+            gm_ClrBit(mm, g, m);// already moving in right direction (XXX: is writing to argument ok?)
+            continue;
           }
+          stop_moving(mvi, g, m, rt);
         }
       }
-      next_i: ;
     }
   }
 
   if (isMoving) {
-    for (mvi = 0; mvi < mv_SIZE; ++mvi) {
-      if (GET_BIT(moving_mask, mvi) && direction == moving[mvi].direction_up && rt == moving[mvi].start_time) {
-        // add to an in-use bitmask, if having same start_time and direction
-        for (g = 1; g <= GRP_MAX; ++g) {
-          moving[mvi].mask[g] |= mm[g];
-        }
-        break;
-      }
-      if (GET_BIT(moving_mask, mvi))
-        continue;
-
-      // add to empty bitmask
-      for (g = 1; g <= GRP_MAX; ++g) {
-        moving[mvi].mask[g] = mm[g];
-      }
-      moving[mvi].direction_up = direction;
-      SET_BIT(moving_mask, mvi);
-      moving[mvi].start_time = rt;
-      break;
+    if (add_to_existing_movement_mm(mm, rt, direction) < 0) {
+      add_to_new_movement_mm(mm, rt, direction);
     }
-
   }
 
   return 0;
@@ -362,41 +470,16 @@ currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd) {
 
       if (!(GET_BIT(moving_mask, mvi) && gm_GetBit(mv->mask, g, m)))
         continue;
-
-      if (isMoving && mv->direction_up == direction) {
+      if (isMoving && mv->direction_up == direction)
         return 0; // already moving in right direction
-      } else {
-        gm_ClrBit(moving[mvi].mask, g, m);
-        currentState_setShutterPct(0, g, m, currentState_mvCalcPct(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
-        bool remaining = false;
-        for (gi = 0; gi < 8; ++gi) {
-          if (mv->mask[gi]) {
-            remaining = true;
-            break;
-          }
-        }
-        if (!remaining) {
-          CLR_BIT(moving_mask, mvi);
-        }
-      }
+
+      stop_moving(mvi, g, m, rt);
     }
   }
 
   if (isMoving) {
-    for (mvi = 0; mvi < mv_SIZE; ++mvi) {
-      if (GET_BIT(moving_mask, mvi) && direction == moving[mvi].direction_up && rt == moving[mvi].start_time) {
-        gm_SetBit(moving[mvi].mask, g, m);
-        break;
-      }
-
-      if (GET_BIT(moving_mask, mvi))
-        continue;
-
-      gm_SetBit(moving[mvi].mask, g, m);
-      moving[mvi].direction_up = direction;
-      SET_BIT(moving_mask, mvi);
-      moving[mvi].start_time = rt;
-      break;
+    if (add_to_existing_movement(g, m, rt, direction) < 0) {
+      add_to_new_movement(g, m, rt, direction);
     }
 
   }

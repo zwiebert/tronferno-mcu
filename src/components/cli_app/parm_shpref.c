@@ -24,6 +24,9 @@
 const char help_parmShpref[] = ""
     "g=[0-7]   0  group number\n"
     "m=[0-7]   0  group member number\n"
+    "mvut      duration to move from 0% (down) to 100% (up) in s/10\n"
+    "mvdt      duration to move from 100% to 0% (up) in s/10\n"
+    "mvspdt    duration to move from 100% to sun-position in s/10\n"
 ;
 
 int process_parmShpref(clpar p[], int len) {
@@ -35,6 +38,7 @@ int process_parmShpref(clpar p[], int len) {
   u8 g = 0, m = 0, c = 0;
 
   bool store = false, read = false;
+  bool haveMvut = false, haveMvdt = false, haveMvspdt = false;
 
   struct shutter_timings st = { 0, };
 
@@ -54,9 +58,15 @@ int process_parmShpref(clpar p[], int len) {
 
     } else if (strcmp(key, "mvut") == 0) {
       st.move_up_tsecs = atoi(val);
+      haveMvut = true;
 
     } else if (strcmp(key, "mvdt") == 0) {
       st.move_down_tsecs = atoi(val);
+      haveMvdt = true;
+
+    } else if (strcmp(key, "mvspdt") == 0) {
+      st.move_sundown_tsecs = atoi(val);
+      haveMvspdt = true;
 
     } else if (strcmp(key, "c") == 0) {
       if (strcmp(val, "store") == 0) {
@@ -71,6 +81,15 @@ int process_parmShpref(clpar p[], int len) {
   }
 
   if (store) {
+    struct shutter_timings rt = {0,};
+    if (shuPref_read_timings(&rt, g, m)) {
+      if (!haveMvut)
+        st.move_up_tsecs = rt.move_up_tsecs;
+      if (!haveMvdt)
+        st.move_down_tsecs = rt.move_down_tsecs;
+      if (!haveMvspdt)
+        st.move_sundown_tsecs = rt.move_sundown_tsecs;
+    }
     if(shuPref_save_timings(&st, g, m))
       read = true;
   }
