@@ -69,6 +69,7 @@ class AppState {
         dbLog(JSON.stringify(this));
         if (gmc_fetch)
             this.http_fetchByMask(gmc_fetch);
+        aliasPaired_updHtml();
     }
 
     set g(value) {
@@ -232,7 +233,7 @@ class AppState {
                 let e = document.getElementById("netota_progress_div");
                 switch(mcu["ota-state"]) {
                 case 0: // none
-                   
+
                     break;
                 case 1: // run
                     document.getElementById("netota_progress_bar").value = (++netota_progressCounter).toString();
@@ -435,10 +436,10 @@ function aliasControllers_updHtml() {
         }
     }
     if (pas.options.length > 0) {
-
         pas.selectedIndex = (pas_sel && pas_sel > 0) ? pas_sel : "0";
         onAliasesChanged();
     }
+    aliasPaired_updHtml();
 }
 
 function aliasControllers_fromHtml() { // XXX
@@ -495,9 +496,20 @@ function onAliasesChanged() {
     const pas =  document.getElementById("aliases");
     if (pas.selectedIndex >= 0) {
         const key = pas.options[pas.selectedIndex].text;
+        document.getElementById("paired").value = key;
         aliasTable_updHtml(key);
     }
 }
+
+function onPairedChanged() {
+    let pas =  document.getElementById("paired");
+    if (pas.selectedIndex >= 0) {
+        const key = pas.options[pas.selectedIndex].text;
+        document.getElementById("aliases").value = key;
+        aliasTable_updHtml(key);
+    }
+}
+
 
 function onAliasesApply() {
     const pas =  document.getElementById("aliases");
@@ -510,8 +522,45 @@ function onAliasesReload() {
     ast.http_fetchByMask(FETCH_ALIASES);
 }
 
+function alias_isKeyPairedToM(key, g, m) {
+    const val = ast.aliases[key];
 
+    let chunks = [];
 
+    for (let i = 0, charsLength = val.length; i < charsLength; i += 2) {
+        chunks.unshift(val.substring(i, i + 2));
+    }
+
+    const g_max = chunks.length - 1;
+
+    if (g > g_max)
+        return false;
+
+    const b = parseInt(chunks[g],16);
+    console.log("b", b);
+
+    return (b & (1 << m)) != 0;
+
+}
+
+function aliasPaired_updHtml() {
+    const g = ast.g;
+    const m = ast.m;
+    const pas =  document.getElementById("paired");
+
+    for(let i=pas.options.length-1; i >= 0; --i)
+        pas.remove(i);
+    console.log(ast.aliases);
+    for (let key in ast.aliases) {
+        console.log("key",key);
+        if (!alias_isKeyPairedToM(key, g, m))
+            continue;
+
+        let option = document.createElement("option");
+        option.text = key;
+        pas.add(option);
+    }
+}
 function aliasTable_updHtml(key){
     const val = ast.aliases[key];
 
@@ -575,7 +624,7 @@ function aliasTable_fromHtml_toMcu(key){
 
 function aliasTable_genHtml() {
     let html = "";
-    html += '<table><tr><th></th>';
+    html += '<table id="aliasTable"><tr><th></th>';
 
     for (let m=1; m <= 7; ++m) {
         html+='<th>m'+m.toString()+'</th>';
@@ -758,16 +807,16 @@ function req_reloadStart() {
     const rpr = reload_Progress;
     let e = null;
     for (let div of rpr.divs) {
-	console.log("div", div);
-	let e = document.getElementById(div);
-	if (e.offsetParent === null)
-	    continue;
+        console.log("div", div);
+        let e = document.getElementById(div);
+        if (e.offsetParent === null)
+            continue;
 
-	let html = '<strong>Wait for MCU to restart...</strong><br>';
-	html += '<progress id="reload_progress_bar" value="0" max="'+rpr.count.toString()+'">0%</progress>';
-	e.innerHTML = html;
+        let html = '<strong>Wait for MCU to restart...</strong><br>';
+        html += '<progress id="reload_progress_bar" value="0" max="'+rpr.count.toString()+'">0%</progress>';
+        e.innerHTML = html;
         rpr.ivId = setInterval(req_reloadTick, rpr.ms);
-	break;
+        break;
     }
 
 }
