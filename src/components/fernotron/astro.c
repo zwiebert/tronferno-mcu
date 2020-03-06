@@ -15,6 +15,7 @@
 #include "astro.h"
 #include "misc/sun.h"
 #include "misc/bcd.h"
+#include "debug/debug.h"
 
 struct astro_cfg astro_cfg;
 #define C astro_cfg

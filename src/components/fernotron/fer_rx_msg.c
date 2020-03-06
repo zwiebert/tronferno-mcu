@@ -8,6 +8,7 @@
 #include "fernotron/fer_msg.h"
 #include "fer.h"
 #include "timer_data.h"
+#include "debug/debug.h"
 
 void (*ferHook_rawMessageReceived)(fmsg_type msg_type, fsbT *fsb, fer_msg *fmsg);
 

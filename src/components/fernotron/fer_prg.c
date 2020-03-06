@@ -9,6 +9,7 @@
 #include "astro.h"
 #include <string.h>
 #include "fer_app_cfg.h"
+#include "debug/debug.h"
 
 #include "fer.h"
 //#include "main/rtc.h"

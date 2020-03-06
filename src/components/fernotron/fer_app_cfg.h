@@ -39,24 +39,6 @@ typedef int32_t i32;
 #define IRAM_ATTR
 #endif
 
-#ifdef DISTRIBUTION
-#define assert(x)
-#define precond(x)
-#define postcond(x)
-#elif defined MCU_ESP8266
-#define assert(x)
-#define precond(x)
-#define postcond(x)
-#elif defined MCU_ESP32
-#include <assert.h>
-#define precond(x) assert(x)
-#define postcond(x) assert(x)
-#else
-#define assert(x)
-#define precond(x)
-#define postcond(x)
-#endif
-
 #define USE_STATIC_PINS
 
 #ifdef USE_STATIC_PINS

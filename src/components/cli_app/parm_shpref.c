@@ -34,8 +34,7 @@ int process_parmShpref(clpar p[], int len) {
 
   so_output_message(SO_SHPREF_begin, NULL);
 
-  u32 addr = 0;
-  u8 g = 0, m = 0, c = 0;
+  u8 g = 0, m = 0;
 
   bool store = false, read = false;
   bool haveMvut = false, haveMvdt = false, haveMvspdt = false;

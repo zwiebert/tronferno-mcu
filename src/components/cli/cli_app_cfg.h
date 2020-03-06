@@ -32,26 +32,4 @@ typedef int32_t i32;
 #define IRAM_ATTR
 #endif
 
-#ifdef DISTRIBUTION
-#define assert(x)
-#define precond(x)
-#define postcond(x)
-#elif defined MCU_ESP8266
-#define assert(x)
-#define precond(x)
-#define postcond(x)
-#elif defined MCU_ESP32
-#include <assert.h>
-#define precond(x) assert(x)
-#define postcond(x) assert(x)
-#else
-#define assert(x)
-#define precond(x)
-#define postcond(x)
-#endif
-
-
-#define dbg_vpf(x)
-
-
 #endif /* COMPONENTS_CLI_CLI_APP_CONFIG_H_ */

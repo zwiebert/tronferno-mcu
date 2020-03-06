@@ -150,8 +150,6 @@ get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
 
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
-  i16 day_of_year = tm->tm_yday + 1;
-  int dst = tm->tm_isdst ? 1 : 0;
   minutes_t minutes_now = tm->tm_hour * 60 + tm->tm_min;
 
 

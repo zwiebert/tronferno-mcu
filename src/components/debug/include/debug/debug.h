@@ -88,6 +88,7 @@ void db_test_all_indicators(uint8_t nmb_flashs);
 #define if_verbose_do(x) do { if (C.app_verboseOutput >= vrbDebug) { x; } } while(0)
 
 #if defined db_printf && ! defined DISTRIBUTION
+#include "config/config.h"
 #define dbg_vpf(x) do { if (C.app_verboseOutput >= vrbDebug) { x; } } while(0)
 #else
 #define dbg_vpf(x)

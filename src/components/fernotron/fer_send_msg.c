@@ -3,7 +3,7 @@
 #include "fer_app_cfg.h"
 #include "fer.h"
 #include "fer_rx_tx.h"
-
+#include "debug/debug.h"
 
 volatile bool is_sendMsgPending;
 volatile u16 wordsToSend;

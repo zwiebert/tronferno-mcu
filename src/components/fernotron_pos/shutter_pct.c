@@ -245,9 +245,10 @@ static void stop_moving(int mvi, u8 g, u8 m, u32 rt) {
   }
 }
 
+#ifdef UNUSED_STATIC_FUNCTION
 static void stop_moving_mm(int mvi, gm_bitmask_t mm, u32 rt) {
   struct mv *mv = &moving[mvi];
-  int m, g, mi;
+  int m, g;
   bool remaining = false;
 
   for (g = 1; g <= GRP_MAX; ++g) {
@@ -266,7 +267,7 @@ static void stop_moving_mm(int mvi, gm_bitmask_t mm, u32 rt) {
     CLR_BIT(moving_mask, mvi);
   }
 }
-
+#endif
 
 static int add_to_existing_movement_mm(gm_bitmask_t mm, u32 rt, bool direction) {
   u8 mvi, g;
@@ -331,7 +332,7 @@ ferPos_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
 
 
   u32 rt = run_time_10(0);
-  int mvi, gi;
+  int mvi;
   u8 g, m;
 
   bool isMoving = false, direction = false, isStopping = false;
@@ -437,7 +438,7 @@ ferPos_mMove(u32 a, u8 g, u8 m, fer_cmd cmd) {
   }
 
   u32 rt = run_time_10(0);
-  int mvi, gi;
+  int mvi;
   bool isMoving = false, direction = false, isStopping = false;
 
   switch (cmd) {

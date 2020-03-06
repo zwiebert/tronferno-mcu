@@ -72,7 +72,6 @@ process_parmTimer(clpar p[], int len) {
   time_t timer = time(NULL);
   bool f_modify = false;
   bool f_no_send = false;
-  bool send_ok = false;
   timer_data_t tdr;
   timer_data_t tda = td_initializer;
   u8 mn = 0;
