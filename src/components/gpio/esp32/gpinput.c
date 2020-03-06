@@ -12,7 +12,7 @@
 #include "app/proj_app_cfg.h"
 #include "gpio/gpinput.h"
 
-#include "fernotron_pos/shutter_state.h"
+#include "fernotron_pos/shutter_pct.h"
 #include "debug/debug.h"
 
 

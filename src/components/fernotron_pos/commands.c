@@ -5,8 +5,9 @@
  *      Author: bertw
  */
 
+#include "fernotron/fer_msg_basic.h"
 #include "fernotron_pos/commands.h"
-#include "fernotron_pos/current_state.h"
+#include "fernotron_pos/shutter_pct.h"
 #include "app/proj_app_cfg.h"
 #include "fernotron/fer_rx_tx.h"
 #include "cli_app/cli_imp.h"
@@ -38,7 +39,7 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   fer_memb memb = m == 0 ? 0 : m + 7;
 
   if (g > 0 && m > 0) {
-    curr_pct = currentState_getShutterPct(a, g, m);
+    curr_pct = ferPos_mGetPct(a, g, m);
   }
 
   fsbT *fsb = get_sender_by_addr(a);
@@ -60,7 +61,7 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     FSB_PUT_CMD(fsb, fc);
     fer_send_msg(fsb, MSG_TYPE_PLAIN, repeats);
   } else if (curr_pct >= 0) {
-    u16 stop_delay = currentState_mvCalcTime10(g, m, curr_pct, pct);
+    u16 stop_delay = ferPos_mCalcMoveDuration_fromPctDiff(g, m, curr_pct, pct);
     if (stop_delay == 0)
       return false;
     fc = (pct < curr_pct) ? fer_cmd_DOWN : fer_cmd_UP;
@@ -69,8 +70,8 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   } else {
     FSB_PUT_CMD(fsb, fer_cmd_UP);
     fer_send_msg(fsb, MSG_TYPE_PLAIN, repeats);
-    u16 delay = currentState_mvCalcTime10(g, m, 0, 100);
-    u16 stop_delay = currentState_mvCalcTime10(g, m, 100, pct);
+    u16 delay = ferPos_mCalcMoveDuration_fromPctDiff(g, m, 0, 100);
+    u16 stop_delay = ferPos_mCalcMoveDuration_fromPctDiff(g, m, 100, pct);
     if (stop_delay == 0)
       return false;
     FSB_PUT_CMD(fsb, fer_cmd_DOWN);

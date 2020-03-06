@@ -82,7 +82,7 @@ int process_parmShpref(clpar p[], int len) {
 
   if (store) {
     struct shutter_timings rt = {0,};
-    if (shuPref_read_timings(&rt, g, m)) {
+    if (ferPos_prefByM_load(&rt, g, m)) {
       if (!haveMvut)
         st.move_up_tsecs = rt.move_up_tsecs;
       if (!haveMvdt)
@@ -90,12 +90,12 @@ int process_parmShpref(clpar p[], int len) {
       if (!haveMvspdt)
         st.move_sundown_tsecs = rt.move_sundown_tsecs;
     }
-    if(shuPref_save_timings(&st, g, m))
+    if(ferPos_prefByM_store(&st, g, m))
       read = true;
   }
 
   if (read) {
-    if (shuPref_read_timings(&st, g, m)) {
+    if (ferPos_prefByM_load(&st, g, m)) {
       so_arg_gmt_t arg;
       arg.g = g;
       arg.m = m;

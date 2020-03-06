@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "fernotron_pos/shutter_state.h"
+#include "fernotron_pos/shutter_pct.h"
 #include "fernotron_pos/shutter_prefs.h"
 #include "userio/status_output.h"
 

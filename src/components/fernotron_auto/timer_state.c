@@ -11,8 +11,8 @@
 #include "debug/debug.h"
 #include "misc/int_macros.h"
 #include "time.h"
-#include "fernotron_pos/current_state.h"
-#include "fernotron_pos/shutter_state.h"
+#include "fernotron_pos/shutter_pct.h"
+#include "fernotron_pos/shutter_pct.h"
 
 
 #ifndef DISTRIBUTION
@@ -246,7 +246,7 @@ timer_state_loop(void) {
 	continue;
 #endif
       }
-      currentState_mmMove(te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
+      ferPos_mmMove(te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
       //currentState_modifyShutterPositions(te->matching_members, te_is_up(te) ? 100 : 0);
     }
   }
