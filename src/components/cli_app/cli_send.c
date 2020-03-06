@@ -4,7 +4,7 @@
 
 #include "fernotron_sep/set_endpos.h"
 #include "fernotron_pos/commands.h"
-#include "fernotron_pos/current_state.h"
+#include "fernotron_pos/shutter_pct.h"
 #include "txtio/inout.h"
 #include "app/proj_app_cfg.h"
 #include "fernotron_auto/timer_state.h"
@@ -103,13 +103,13 @@ process_parmSend(clpar p[], int len) {
 
   if (has_requested_position) {
     if (g != 0 && m != 0) {
-      int pos = currentState_getMovingPct(addr, g, m);
+      int pos = ferPos_mGetMovingPct(addr, g, m);
       if (pos >= 0) {
         so_arg_gmp_t gmp = {g, m, pos};
         so_output_message(SO_POS_PRINT_GMP, &gmp);
       }
     } else {
-      currentState_printShutterPositions();
+      ferPos_printAllPcts();
     }
   } else {
     if (has_sep) { // enable hardware buttons to set end position

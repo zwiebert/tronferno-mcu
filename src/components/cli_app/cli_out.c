@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "fernotron_sep/set_endpos.h"
-#include "fernotron_pos/current_state.h"
+#include "fernotron_pos/shutter_pct.h"
 #include "config/config.h"
 #include "fernotron_auto/timer_state.h"
 #include "misc/bcd.h"

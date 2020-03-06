@@ -16,7 +16,7 @@ extern volatile u32 run_time_s10;
 #define run_time_10(x) (run_time_s10 + 0)
 
 u8 sf_toggle;
-#define sf_SIZE 8
+#define sf_SIZE 16
 struct sf {
   fsbT fsb;
   u32 s10; // timer in 1 secs

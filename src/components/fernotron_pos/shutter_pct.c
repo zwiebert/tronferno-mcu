@@ -1,4 +1,4 @@
-#include "fernotron_pos/current_state.h"
+#include "fernotron_pos/shutter_pct.h"
 
 #include "app/proj_app_cfg.h"
 
@@ -38,7 +38,7 @@ struct mv {
 u8 moving_mask;
 
 
-static u8 pos_map[8][8];
+static shutterGroupPositionsT pos_map[8];
 static u8  pos_map_changed;
 enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 #define pm_getPct(g,m) (pos_map[(g)][(m)]+0)
@@ -85,7 +85,7 @@ set_state(u32 a, int g, int m, int position) {
 }
 
 int 
-currentState_getShutterPct(u32 a, u8 g, u8 m) {
+ferPos_mGetPct(u32 a, u8 g, u8 m) {
   precond(g <= 7 && m <= 7);
 
   return get_state(a, g, m);
@@ -93,7 +93,7 @@ currentState_getShutterPct(u32 a, u8 g, u8 m) {
 
 
 int 
-currentState_setShutterPct(u32 a, u8 g, u8 m, u8 pct) {
+ferPos_mSetPct(u32 a, u8 g, u8 m, u8 pct) {
   int position = pct;
   precond(g <= 7 && m <= 7);
 
@@ -106,7 +106,7 @@ currentState_setShutterPct(u32 a, u8 g, u8 m, u8 pct) {
       for (m=1; m <= MBR_MAX; ++m) {
         if (gm_GetBit(gm, g, m)) {
           // recursion for each paired g/m
-          currentState_setShutterPct(0, g, m, pct);
+          ferPos_mSetPct(0, g, m, pct);
         }
       }
     }
@@ -137,13 +137,13 @@ currentState_setShutterPct(u32 a, u8 g, u8 m, u8 pct) {
 }
 
 int 
-currentState_modifyShutterPositions(gm_bitmask_t mm, u8 p) {
+ferPos_mmSetPcts(gm_bitmask_t mm, u8 p) {
   u8 g, m;
 
   for (g = 1; g <= GRP_MAX; ++g) {
     for (m = 1; m <= MBR_MAX; ++m) {
       if (GET_BIT(mm[g], m)) {
-        currentState_setShutterPct(0, g, m, p);
+        ferPos_mSetPct(0, g, m, p);
       }
     }
   }
@@ -151,7 +151,7 @@ currentState_modifyShutterPositions(gm_bitmask_t mm, u8 p) {
 }
 
 int 
-currentState_printShutterPositions() {
+ferPos_printAllPcts() {
   u8 g, m, g2, m2;
   gm_bitmask_t msk = {0,};
 
@@ -198,7 +198,7 @@ void f(int mvi, u8 g, u8 m, u32 rt) {
   int gi;
 
   gm_ClrBit(moving[mvi].mask, g, m);
-  currentState_setShutterPct(0, g, m, currentState_mvCalcPct(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
+  ferPos_mSetPct(0, g, m, ferPos_mCalcMovePct_fromDirectionAndDuration(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
   bool remaining = false;
   for (gi = 0; gi < 8; ++gi) {
     if (mv->mask[gi]) {
@@ -232,7 +232,7 @@ static void stop_moving(int mvi, u8 g, u8 m, u32 rt) {
   struct mv *mv = &moving[mvi];
   int gi;
   gm_ClrBit(moving[mvi].mask, g, m);
-  currentState_setShutterPct(0, g, m, currentState_mvCalcPct(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
+  ferPos_mSetPct(0, g, m, ferPos_mCalcMovePct_fromDirectionAndDuration(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
   bool remaining = false;
   for (gi = 0; gi < 8; ++gi) {
     if (mv->mask[gi]) {
@@ -256,7 +256,7 @@ static void stop_moving_mm(int mvi, gm_bitmask_t mm, u32 rt) {
         continue;
 
       gm_ClrBit(moving[mvi].mask, g, m);
-      currentState_setShutterPct(0, g, m, currentState_mvCalcPct(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
+      ferPos_mSetPct(0, g, m, ferPos_mCalcMovePct_fromDirectionAndDuration(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
     }
     if (mv->mask[g]) {
       remaining = true;
@@ -327,7 +327,7 @@ static int add_to_new_movement(u8 g, u8 m, u32 rt, bool direction) {
 
 // register moving related commands sent to a shutter to keep track of its changing position
 int 
-currentState_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
+ferPos_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
 
 
   u32 rt = run_time_10(0);
@@ -403,7 +403,7 @@ currentState_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
 
 
 int 
-currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd) {
+ferPos_mMove(u32 a, u8 g, u8 m, fer_cmd cmd) {
   precond(g <= 7 && m <= 7);
 
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, cmd=%d\n", __func__, a, (int)g, (int)m, (int)cmd));
@@ -415,7 +415,7 @@ currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd) {
         for (m = 1; m <= MBR_MAX; ++m) {
           if (gm_GetBit(gm, g, m)) {
             // recursion for each paired g/m
-            currentState_Move(0, g, m, cmd);
+            ferPos_mMove(0, g, m, cmd);
           }
         }
       }
@@ -433,7 +433,7 @@ currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd) {
     } else {
       mm[g] = 0xfe;
     }
-    return currentState_mmMove(mm, cmd);
+    return ferPos_mmMove(mm, cmd);
   }
 
   u32 rt = run_time_10(0);
@@ -492,13 +492,13 @@ currentState_Move(u32 a, u8 g, u8 m, fer_cmd cmd) {
 #define DEF_MV_UP_10 260
 #define DEF_MV_DOWN_10 250
 
-struct shutter_timings st_def = { DEF_MV_UP_10, DEF_MV_DOWN_10 };
+struct shutter_timings st_def = { DEF_MV_UP_10, DEF_MV_DOWN_10, 0 };
 
-u16 currentState_mvCalcTime10(u8 g, u8 m, u8 curr_pct, u8 pct) {
+u16 ferPos_mCalcMoveDuration_fromPctDiff(u8 g, u8 m, u8 curr_pct, u8 pct) {
   bool direction = curr_pct < pct;
   u8 pct_diff = direction ? pct - curr_pct : curr_pct - pct;
   struct shutter_timings st = st_def;
-  shuPref_read_timings(&st, g, m);
+  ferPos_prefByM_load(&st, g, m);
 
   if (st.move_up_tsecs == 0)
      st.move_up_tsecs = st_def.move_up_tsecs;
@@ -518,10 +518,10 @@ u16 currentState_mvCalcTime10(u8 g, u8 m, u8 curr_pct, u8 pct) {
 }
 
 
-u8 currentState_mvCalcPct(u8 g, u8 m, bool direction_up, u16 time_s10) {
+u8 ferPos_mCalcMovePct_fromDirectionAndDuration(u8 g, u8 m, bool direction_up, u16 time_s10) {
   int pct = get_state(0, g, m);
   struct shutter_timings st = st_def;
-  shuPref_read_timings(&st, g, m);
+  ferPos_prefByM_load(&st, g, m);
 
   if (st.move_up_tsecs == 0)
      st.move_up_tsecs = st_def.move_up_tsecs;
@@ -545,7 +545,7 @@ u8 currentState_mvCalcPct(u8 g, u8 m, bool direction_up, u16 time_s10) {
     return add;
 }
 
-int currentState_getMovingPct(u32 a, u8 g, u8 m) {
+int ferPos_mGetMovingPct(u32 a, u8 g, u8 m) {
   if (!(a == 0 || a == C.fer_centralUnitID)) {
     return -1;
   }
@@ -561,13 +561,13 @@ int currentState_getMovingPct(u32 a, u8 g, u8 m) {
     u16 time_s10 = rt - mv->start_time;
     {
       if (gm_GetBit(mv->mask, g, m)) {
-        u8 pct = currentState_mvCalcPct(g, m, mv->direction_up, time_s10);
+        u8 pct = ferPos_mCalcMovePct_fromDirectionAndDuration(g, m, mv->direction_up, time_s10);
         return pct;
       }
     }
 
   }
-  return currentState_getShutterPct(a, g, m);
+  return ferPos_mGetPct(a, g, m);
 }
 
 // check if a moving shutter has reached its end position
@@ -586,9 +586,9 @@ static void currentState_mvCheck() {
       for (g = 1; g < 8; ++g) {
         for (m = 1; m < 8; ++m) {
           if (gm_GetBit(mv->mask, g, m)) {
-            u8 pct = currentState_mvCalcPct(g, m, mv->direction_up, time_s10);
+            u8 pct = ferPos_mCalcMovePct_fromDirectionAndDuration(g, m, mv->direction_up, time_s10);
             if ((mv->direction_up && pct == PCT_UP) || (!mv->direction_up && pct == PCT_DOWN)) {
-              currentState_setShutterPct(0, g, m, pct);
+              ferPos_mSetPct(0, g, m, pct);
               gm_ClrBit(mv->mask, g, m);
             } else {
               remaining = true;
@@ -614,7 +614,7 @@ static void currentState_mvCheck() {
 
 
 
-void currentState_loop() {
+void ferPos_loop() {
   static int next_s10;
   if (moving_mask && next_s10 < run_time_10()) {
     next_s10 = run_time_10() + 20;
@@ -629,16 +629,16 @@ void currentState_loop() {
 
     for (g=0; mask; ++g, (mask >>=1)) {
       if (mask&1)
-        save_g_positions(g, pos_map[g]);
+        ferPoas_pctsByGroup_store(g, pos_map[g]);
     }
   }
 }
 
-void currentState_init() {
+void ferPos_init() {
   u8 g, m;
 
   for (g=0; g < 8; ++g) {
-    read_g_positions(g, pos_map[g]);
+    ferPos_pctsByGroup_load(g, pos_map[g]);
     if (pm_getPct(g,0) >= pm_INVALID)
       pm_setGroupUnused(g);
     for (m=1; m < 8; ++m) {

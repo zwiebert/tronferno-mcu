@@ -9,7 +9,7 @@
 #include "fernotron_alias/pairings.h"
 
 #include "fernotron_sep/set_endpos.h"
-#include "fernotron_pos/current_state.h"
+#include "fernotron_pos/shutter_pct.h"
 #include "main/rtc.h"
 #include "userio_app/status_output.h"
 

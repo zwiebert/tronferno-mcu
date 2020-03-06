@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-#include "fernotron_pos/shutter_state.h"
+#include "fernotron_pos/shutter_pct.h"
 #include "cli_imp.h"
 #include "cli_fer.h"
 #include "main/common.h"

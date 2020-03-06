@@ -20,9 +20,9 @@ struct shutter_timings {
 };
 
 
-bool shuPref_save_timings(struct shutter_timings *src, uint8_t g, uint8_t m);
-bool shuPref_read_timings(struct shutter_timings *dst, uint8_t g, uint8_t m);
-bool shuPref_read_timings_wildcard(struct shutter_timings *dst, uint8_t *g, uint8_t *m);
+bool ferPos_prefByM_store(struct shutter_timings *src, uint8_t g, uint8_t m);
+bool ferPos_prefByM_load(struct shutter_timings *dst, uint8_t g, uint8_t m);
+bool ferPos_prefByWildcard_load(struct shutter_timings *dst, uint8_t *g, uint8_t *m);
 
 
 #endif /* COMPONENTS_FERNOTRON_POS_INCLUDE_FERNOTRON_POS_SHUTTER_PREFS_H_ */

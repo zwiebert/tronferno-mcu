@@ -4,7 +4,7 @@
 
 #include "app/ota.h"
 #include "fernotron_sep/set_endpos.h"
-#include "fernotron_pos/current_state.h"
+#include "fernotron_pos/shutter_pct.h"
 #include "txtio/inout.h"
 #include "userio_app/status_output.h"
 #include "fernotron_auto/timer_state.h"
@@ -92,7 +92,7 @@ process_parmMcu(clpar p[], int len) {
       pair_so_output_all_pairings();
 #endif
     } else if (strcmp(key, "cs") == 0) {
-      currentState_printShutterPositions();
+      ferPos_printAllPcts();
 #ifdef CONFIG_GPIO_SIZE
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);

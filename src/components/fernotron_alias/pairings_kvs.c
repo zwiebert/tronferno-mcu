@@ -3,7 +3,7 @@
 #include "fernotron_alias/pairings.h"
 #include <stdio.h>
 #include <string.h>
-#include "fernotron_pos/shutter_state.h"
+#include "fernotron_pos/shutter_pct.h"
 #include "userio_app/status_output.h"
 #include "key_value_store/kvs_wrapper.h"
 

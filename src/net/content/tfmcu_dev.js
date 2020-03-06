@@ -7,6 +7,7 @@ var tfmcu_config = {};
 let config_fetched = false;
 let cuas_Interval;
 let cuas_State = 0;
+let gmc_fetch = 0;
 
 const FETCH_CONFIG = 1;
 const FETCH_AUTO = 2;
@@ -16,6 +17,7 @@ const FETCH_ALIASES = 16;
 const FETCH_ALIASES_START_PAIRING = 32;
 const FETCH_ALIASES_START_UNPAIRING = 64;
 const FETCH_SHUTTER_PREFS = 128;
+const FETCH_GMU = 256;
 
 const DIR_UP = 0;
 const DIR_DOWN = 1;
@@ -37,12 +39,12 @@ class AppState {
     }
 
     set tabVisibility(value) {
-	this.mTabVisibility = value;
+        this.mTabVisibility = value;
         localStorage.setItem("tab_vis", value.toString());
-	navTabs_updHtml(parseInt(value));
+        navTabs_updHtml(parseInt(value));
     }
     get tabVisibility() {
-        return 	this.mTabVisibility;
+        return  this.mTabVisibility;
     }
 
     get g() {
@@ -50,12 +52,13 @@ class AppState {
     }
 
     set pct(val) {
-    	this.mPct = val;
+        this.mPct = val;
         document.getElementById('spi').value = val;
+        document.getElementById('spr').value = val;
         shuPos_perFetch_posRecieved(val);
     }
     get pct() {
-    	return this.mPct;
+        return this.mPct;
     }
     getAutoName() { return  "auto" + this.g.toString() + this.m.toString(); }
     getAutoObj() { let key = this.getAutoName(); return (key in this.mAuto.auto) ? this.mAuto.auto[key] : {}; }
@@ -64,7 +67,8 @@ class AppState {
         this.linkAutoObj();
         this.automaticOptions_updHtml();
         dbLog(JSON.stringify(this));
-        this.http_fetchByMask(FETCH_AUTO|FETCH_POS|FETCH_SHUTTER_PREFS);
+        if (gmc_fetch)
+            this.http_fetchByMask(gmc_fetch);
     }
 
     set g(value) {
@@ -100,11 +104,11 @@ class AppState {
         aliasControllers_updHtml();
     }
     set aliases(value) {
-	this.mPair.all = value;
+        this.mPair.all = value;
         aliasControllers_updHtml();
     }
     get aliases() {
-        return 	this.mPair.all;
+        return  this.mPair.all;
     }
     set shutterPrefs(obj) {
         Object.assign(this.mShutterPrefs, obj);
@@ -141,8 +145,8 @@ class AppState {
             down_elem.value = d.endsWith("-") ? "" : d.substring(l-4,l-2)+":"+d.substring(l-2);
         }
         if ("asmin" in auto) {
-	    document.getElementById("id_astroTime").innerHTML = "(today: "+ Math.floor((auto.asmin/60)).toString().padStart(2,'0') + ":" + (auto.asmin%60).toString().padStart(2,'0') + ")";
-	} else {
+            document.getElementById("id_astroTime").innerHTML = "(today: "+ Math.floor((auto.asmin/60)).toString().padStart(2,'0') + ":" + (auto.asmin%60).toString().padStart(2,'0') + ")";
+        } else {
             document.getElementById("id_astroTime").innerHTML = "";
         }
 
@@ -152,37 +156,41 @@ class AppState {
         dbLog("reply-json: "+JSON.stringify(obj));
 
         if ("config" in obj) {
-	    let config = obj.config;
+            let config = obj.config;
 
-	    if ("cuas" in config) {
-		if (config.cuas != cuas_State) {
-		    let s = "";
-		    switch(config.cuas) {
-		    case 0: s = ""; break;
-		    case 1: s = '<strong style="animation: blink .75s linear 4;"> ...Scanning...(press STOP on Central Unit) </strong>'; break;
-		    case 2: s = '<strong style="background-color:red;">Time-Out! (no STOP-command received)</strong>'; break;
-		    case 3: s = '<strong style="background-color:green;">Success (cu-id has been saved)</strong>';
-			this.http_fetchByMask(FETCH_CONFIG);
-			break;
-		    }
+            if ("cuas" in config) {
+                if (config.cuas != cuas_State) {
+                    let s = "";
+                    switch(config.cuas) {
+                    case 0: s = ""; break;
+                    case 1: s = '<strong style="animation: blink .75s linear 4;"> ...Scanning...(press STOP on Central Unit) </strong>'; break;
+                    case 2: s = '<strong style="background-color:red;">Time-Out! (no STOP-command received)</strong>'; break;
+                    case 3: s = '<strong style="background-color:green;">Success (cu-id has been saved)</strong>';
+                        this.http_fetchByMask(FETCH_CONFIG);
+                        break;
+                    }
 
-		    if (config.cuas > 1) {
-			window.clearInterval(cuas_Interval);
-		    }
-		    document.getElementById("id_cuasStatus").innerHTML = s;
-		    config.cuas = cuas_State;
-		}
+                    if (config.cuas > 1) {
+                        window.clearInterval(cuas_Interval);
+                    }
+                    document.getElementById("id_cuasStatus").innerHTML = s;
+                    config.cuas = cuas_State;
+                }
+            } else if (!config_fetched && "gm-used" in config && !("cu" in config)) {
+                tfmcu_config = Object.assign(tfmcu_config, config);
+                usedMembers_fromConfig();
+                console.log("tfmcu_config", tfmcu_config);
             } else if (config_fetched) {
                 mcuConfig_updHtml(obj.config);
-		tfmcu_config = obj;
-		usedMembers_updHtml();
+                tfmcu_config = obj;
+                usedMembers_updHtml();
             } else {
                 config_fetched = true;
                 document.getElementById("config-div").innerHTML = mcuConfigTable_genHtml(obj.config);
                 mcuConfig_updHtml(obj.config);
-		tfmcu_config = obj;
-		usedMembers_updHtml();
-                document.getElementById("divPairAll").innerHTML = aliasTable_genHtml();
+                tfmcu_config = obj;
+                usedMembers_updHtml();
+
             }
 
         }
@@ -200,6 +208,7 @@ class AppState {
             if ("a" in pair && "mm" in pair) {
                 this.aliases_add(pair.a, pair.mm);
             }
+
         }
 
         if ("shpref" in obj) {
@@ -208,17 +217,17 @@ class AppState {
 
         }
 
-	if ("mcu" in obj) {
-	    let mcu = obj.mcu;
-	    if ("chip" in mcu) {
-		document.getElementById("id_chip").innerHTML = mcu.chip;
-	    }
-	    if ("firmware" in mcu) {
-		document.getElementById("id_firmware").innerHTML = mcu.firmware;
-	    }
-	    if ("build-time" in mcu) {
-		document.getElementById("id_buildTime").innerHTML = mcu["build-time"];
-	    }
+        if ("mcu" in obj) {
+            let mcu = obj.mcu;
+            if ("chip" in mcu) {
+                document.getElementById("id_chip").innerHTML = mcu.chip;
+            }
+            if ("firmware" in mcu) {
+                document.getElementById("id_firmware").innerHTML = mcu.firmware;
+            }
+            if ("build-time" in mcu) {
+                document.getElementById("id_buildTime").innerHTML = mcu["build-time"];
+            }
             if ("ota-state" in mcu) {
                 let e = document.getElementById("netota_feedback");
                 switch(mcu["ota-state"]) {
@@ -226,13 +235,15 @@ class AppState {
                     e.innerHTML = "";
                     break;
                 case 1: // run
-                    e.innerHTML = "<strong>OTA is running " + (++netota_progressCounter).toString() + "<br><br></strong>";
+                    e.innerHTML = "<strong>Firmware is updating...<br></strong>";
+                    document.getElementById("netota_progress_bar").value = (++netota_progressCounter).toString();
                     break;
                 case 2: // fail
                     e.innerHTML = "<strong>OTA has failed<br><br></strong>";
                     break;
                 case 3: // done
                     e.innerHTML = '<strong>OTA has succeeded <button type="button" onClick="req_mcuRestart()">Reboot</button><br><br></strong>';
+                    document.getElementById("netota_progress_bar").value = document.getElementById("netota_progress_bar").max;
                     break;
                 }
                 if (netota_isInProgress && mcu["ota-state"] != 1) {
@@ -244,7 +255,7 @@ class AppState {
 
             }
 
-	}
+        }
 
         if (this.getAutoName() in obj) {
             this.auto = obj[this.getAutoName()];
@@ -258,6 +269,9 @@ class AppState {
 
         if (mask & FETCH_CONFIG)
             tfmcu.config = { all: "?" };
+
+        if (mask & FETCH_GMU)
+            tfmcu.config = { 'gm-used': "?" };
 
         if (mask & FETCH_VERSION)
             tfmcu.mcu = { version:"?" };
@@ -312,9 +326,7 @@ class AppState {
         document.getElementById("sgi").value = this.mG ? this.mG : "A";
         document.getElementById("smi").value = this.mM ? this.mM : "A";
         this.tabIdx = this.mTabIdx;
-        this.http_fetchByMask(FETCH_CONFIG);
-        this.http_fetchByMask(FETCH_VERSION);
-        this.http_fetchByMask(FETCH_ALIASES|FETCH_AUTO);
+        this.http_fetchByMask(FETCH_GMU);
         this.tabVisibility = this.mTabVisibility;
     }
 
@@ -371,30 +383,30 @@ function shutterPrefs_stopClock_tick() {
 }
 
 function shutterPrefs_stopClock_start() {
-	let spsc = shutterPrefs_stopClock;
+    let spsc = shutterPrefs_stopClock;
 
     const pct = ast.pct;
     if (pct === 0) {
-    	spsc.direction = DIR_UP;
-    	http_postShutterCommand('up');
+        spsc.direction = DIR_UP;
+        http_postShutterCommand('up');
     } else if (pct === 100) {
-    	spsc.direction = DIR_DOWN;
-    	http_postShutterCommand('down');
+        spsc.direction = DIR_DOWN;
+        http_postShutterCommand('down');
     } else {
-    	return;
+        return;
     }
 
     spsc.val = 0;
 
 
     if (!spsc.ivId) {
-    	spsc.ivId = setInterval(shutterPrefs_stopClock_tick, spsc.ms);
+        spsc.ivId = setInterval(shutterPrefs_stopClock_tick, spsc.ms);
     }
 }
 
 function shutterPrefs_stopClock_stop() {
     let spsc = shutterPrefs_stopClock;
-	http_postShutterCommand('stop');
+    http_postShutterCommand('stop');
     if (spsc.ivId) {
         clearInterval(spsc.ivId);
         spsc.ivId = 0;
@@ -403,10 +415,14 @@ function shutterPrefs_stopClock_stop() {
 }
 
 function aliasControllers_updHtml() {
+    if (document.getElementById("divPairAll").innerHTML.length < 20) {
+        document.getElementById("divPairAll").innerHTML = aliasTable_genHtml();
+    }
+
     const pad = ast.aliases;
     const pas =  document.getElementById("aliases");
     const pas_sel = pas.selectedIndex;
-     for(const key in pad) {
+    for(const key in pad) {
         let exist = false;
         for (let opt of pas.options) {
             if (opt.text == key) {
@@ -447,33 +463,32 @@ const shuPos_perFetch = {
 function shuPos_perFetch_posRecieved(pct) {
     const sppf = shuPos_perFetch;
     if (sppf.ivId) {
-	sppf.last_last_pct = sppf.last_pct;
-	sppf.last_pct = pct;
+        sppf.last_last_pct = sppf.last_pct;
+        sppf.last_pct = pct;
     }
 }
 
 function shuPos_perFetch_tick() {
     const sppf = shuPos_perFetch;
     const pct = ast.pct;
-    if ((ast.g == 0 || ast.m == 0)
-    		|| (pct === sppf.last_pct && sppf.last_pct === sppf.last_last_pct)) {
-	clearInterval(sppf.ivId);
-	sppf.ivId = 0;
-	return;
+    if ((ast.g == 0 || ast.m == 0) || (pct === sppf.last_pct && sppf.last_pct === sppf.last_last_pct)) {
+        clearInterval(sppf.ivId);
+        sppf.ivId = 0;
+        return;
     }
     ast.http_fetchByMask(FETCH_POS);
 }
 
 function shuPos_perFetch_start() {
     if (ast.g == 0 || ast.m == 0)
-    	return;
-    	
+        return;
+
     let sppf = shuPos_perFetch;
     if (!sppf.ivId)   {
-	sppf.ivId = setInterval(shuPos_perFetch_tick, sppf.ms);
-	sppf.last_pct = -1;
-	sppf.last_last_pct = -2;
-    ast.http_fetchByMask(FETCH_POS);
+        sppf.ivId = setInterval(shuPos_perFetch_tick, sppf.ms);
+        sppf.last_pct = -1;
+        sppf.last_last_pct = -2;
+        ast.http_fetchByMask(FETCH_POS);
     }
 }
 
@@ -493,7 +508,7 @@ function onAliasesApply() {
     }
 }
 function onAliasesReload() {
-  ast.http_fetchByMask(FETCH_ALIASES);
+    ast.http_fetchByMask(FETCH_ALIASES);
 }
 
 
@@ -584,29 +599,29 @@ function configTr_genHtml(name,value) {
             '</label></td><td><input class="config-input cb" type="checkbox" id="cfg_'+name+
             '" name="'+name +'"' + (value ? " checked" : "") +'></td>';
     } else if (name === 'verbose') {
-	        return '<td><label class="config-label">'+name+
+        return '<td><label class="config-label">'+name+
             '</label></td><td><input class="config-input" type="number" min="0" max="5" id="cfg_'+name+
             '" name="'+name+'" value="'+value+'"></td>';
     } else if (name === 'network') {
-	        return '<td><label class="config-label">'+name+
+        return '<td><label class="config-label">'+name+
             '</label></td><td><select  class="config-input" id="cfg_'+name+'">'+
-               '<option value="wlan">Connect to existing WLAN</option>'+
-               '<option value="ap">AP (192.168.4.1, ssid/pw=tronferno)</option>'+
-               '<option value="lan">Connect to Ethernet</option>'+ // dev-no-lan-delete-line
+            '<option value="wlan">Connect to existing WLAN</option>'+
+            '<option value="ap">AP (192.168.4.1, ssid/pw=tronferno)</option>'+
+            '<option value="lan">Connect to Ethernet</option>'+ // dev-no-lan-delete-line
             '</select></td>';
     } else if (name === 'lan-phy') {
-	        return '<td><label class="config-label">'+name+
+        return '<td><label class="config-label">'+name+
             '</label></td><td><select  class="config-input" id="cfg_'+name+'">'+
-               '<option value="lan8270">LAN8270</option>'+
-               '<option value="rtl8201">RTL8201</option>'+
-               '<option value="ip101">IP101</option>'+
+            '<option value="lan8270">LAN8270</option>'+
+            '<option value="rtl8201">RTL8201</option>'+
+            '<option value="ip101">IP101</option>'+
             '</select></td>';
     } else if (name === 'lan-pwr-gpio') {
-	        return '<td><label class="config-label">'+name+
+        return '<td><label class="config-label">'+name+
             '</label></td><td><input class="config-input" type="number" min="-1" max="36" id="cfg_'+name+
             '" name="'+name+'" value="'+value+'"></td>';
     } else if (name === 'astro-correction') {
-	return '<td><label class="config-label">'+name+
+        return '<td><label class="config-label">'+name+
             '</label></td><td><select  class="config-input" id="cfg_'+name+'">'+
             '<option value="0">average</option>'+
             '<option value="1">not too late or dark</option>'+
@@ -618,6 +633,22 @@ function configTr_genHtml(name,value) {
             '" name="'+name+'" value="'+value+'"></td>';
     }
 
+}
+
+function usedMembers_fromConfig() {
+
+    let s = tfmcu_config["gm-used"];
+
+    let sa = s ? s.split('').reverse() : [];
+
+    gu = [0];
+    for(let g=1; g < 8; ++g) {
+        let um = sa[g] ? sa[g] : 0;
+        if (um) {
+            gu.push(g);
+        }
+        gmu[g] = um;
+    }
 }
 
 function usedMembers_updHtml() {
@@ -687,15 +718,15 @@ function http_postRequest(url = '', data = {}) {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         // mode: "no-cors", // no-cors, cors, *same-origin //dev-delete-line//
         cache: "no-cache", // *default, no-cache, reload, force-cache,
-							// only-if-cached
-       // credentials: "same-origin", // include, *same-origin, omit
+        // only-if-cached
+        // credentials: "same-origin", // include, *same-origin, omit
         headers: {
             "Content-Type": "application/json",
         },
         redirect: "follow", // manual, *follow, error
         referrer: "no-referrer", // no-referrer, *client
         body: JSON.stringify(data), // body data type must match "Content-Type"
-									// header
+        // header
     })
         .then(response => {
             if(response.ok) {
@@ -706,11 +737,37 @@ function http_postRequest(url = '', data = {}) {
         });
 }
 
+
+const reload_Progress = {
+    ivId: 0,
+    ms: 1000,
+    count: 10,
+    counter: 0,
+};
+function req_reloadTick() {
+    const rpr = reload_Progress;
+
+    if (++rpr.counter > rpr.count) {
+        location.reload();
+        clearInterval(rpr.ivId); // may be useless after reload...
+    } else {
+        document.getElementById("netota_progress_bar").value = rpr.counter;
+    }
+}
+function req_reloadStart() {
+    const rpr = reload_Progress;
+    rpr.ivId = setInterval(req_reloadTick, rpr.ms);
+    document.getElementById("netota_progress_bar").max = rpr.count;
+    document.getElementById("netota_feedback").innerHTML = "<strong>Wait for MCU to restart...</strong><br>"
+}
+
+
 function req_mcuRestart() {
     var json = { to:"tfmcu", config: { restart:"1" } };
     var url = base+'/cmd.json';
     http_postRequest(url, json);
-    setTimeout(function(){ location.reload(); }, 10000);
+    req_reloadStart();
+    //setTimeout(function(){ location.reload(); }, 10000);
 }
 
 
@@ -791,7 +848,7 @@ var netota_progressCounter = 0;
 function netota_FetchFeedback() {
     var netmcu = {to:"tfmcu"};
     netmcu.mcu = {
-	"ota":"?"
+        "ota":"?"
     };
     let url = base+'/cmd.json';
     dbLog("url: "+url);
@@ -805,7 +862,7 @@ function netFirmwareOTA(ota_name) {
         return;
     var netmcu = {to:"tfmcu"};
     netmcu.mcu = {
-	ota: ota_name
+        ota: ota_name
     };
     let url = base+'/cmd.json';
     dbLog("url: "+url);
@@ -854,20 +911,19 @@ function onMPressed() {
     ast.m = val;
 }
 
-function onPosPressed() {
-    let pct = document.getElementById("spi").value;
+function onPos(pct) {
+    console.log("onPos", pct);
 
-        let tfmcu = {to:"tfmcu"};
+    let tfmcu = {to:"tfmcu"};
+    tfmcu.send = {
+        g: ast.g,
+        m: ast.m,
+        p: pct,
+    };
 
-        tfmcu.send = {
-            g: ast.g,
-            m: ast.m,
-            p: pct,
-        };
-
-        let url = base+'/cmd.json';
-        http_postRequest(url, tfmcu);
-        shuPos_perFetch_start();
+    let url = base+'/cmd.json';
+    http_postRequest(url, tfmcu);
+    shuPos_perFetch_start();
 }
 
 function req_automatic() {
@@ -919,11 +975,11 @@ function clearAuto_updHtml() {
 }
 
 const tabs = [
-    { 'text':'Command', 'div_id':['senddiv'] },
-    { 'text':'Automatic', 'div_id':['senddiv', 'autodiv'] },
-    { 'text':'Config', 'div_id':['configdiv'] },
-    { 'text':'Positions', 'div_id':['senddiv', 'aliasdiv', 'shprefdiv'] },
-    { 'text':'Firmware', 'div_id':['id-fwDiv'] },
+    { 'text':'Command', 'div_id':['senddiv'], fetch_gm:FETCH_POS},
+    { 'text':'Automatic', 'div_id':['senddiv', 'autodiv'], fetch_gm:FETCH_AUTO|FETCH_POS },
+    { 'text':'Config', 'div_id':['configdiv'], fetch:FETCH_CONFIG },
+    { 'text':'Positions', 'div_id':['senddiv', 'aliasdiv', 'shprefdiv'], fetch:FETCH_ALIASES, fetch_gm:FETCH_POS|FETCH_SHUTTER_PREFS },
+    { 'text':'Firmware', 'div_id':['id-fwDiv'], fetch_init:FETCH_VERSION},
 
 ];
 let div_ids = [];
@@ -944,16 +1000,37 @@ function navTabs_updHtml(idx) {
     for (let div_id of div_ids) {
         document.getElementById(div_id).style.display = tabs[idx].div_id.includes(div_id) ? SHOW : NONE;
     }
+
+    const nt = tabs[idx];
+
+    let fetch = 0;
+
+    if ('fetch_init' in nt) {
+        fetch |= nt.fetch_init;
+    }
+    if ('fetch' in nt) {
+        fetch |= nt.fetch;
+    }
+    if ('fetch_gm' in nt) {
+        fetch |= nt.fetch_gm;
+        gmc_fetch = nt.fetch_gm;
+    } else {
+        gmc_fetch = 0;
+    }
+
+    if (fetch) {
+        ast.http_fetchByMask(fetch);
+    }
 }
 
 function onNavTab(idx) {
-   ast.tabVisibility = idx;
+    ast.tabVisibility = idx;
 }
 
 function navTabs_genHtml() {
-	let html = '';
+    let html = '';
     for (let i=0; i < tabs.length; ++i) {
-    	const tab = tabs[i];
+        const tab = tabs[i];
         html += '<button class="tablinks" id="tabbt'+i.toString()+'" onClick="onNavTab('+i.toString()+')">'+tab.text+'</button>\n';
 
         for (let k=0; k < tabs[i].div_id.length; ++k) {
@@ -978,7 +1055,8 @@ function onContentLoaded() {
     document.getElementById("sub").onclick = () => http_postShutterCommand('up');
     document.getElementById("ssb").onclick = () => http_postShutterCommand('stop');
     document.getElementById("sdb").onclick = () => http_postShutterCommand('down');
-    document.getElementById("spb").onclick = () => onPosPressed();
+    document.getElementById("spb").onclick = () => onPos(document.getElementById("spi").value);
+    document.getElementById("spr").onchange = () => onPos(document.getElementById("spr").value);
 
 
     document.getElementById("shp_reload").onclick = () => shutterPrefs_updHtml();
@@ -995,7 +1073,7 @@ function onContentLoaded() {
     document.getElementById("arlb").onclick = () => ast.http_fetchByMask(FETCH_AUTO);
     document.getElementById("asvb").onclick = () => {
         // disable button for 5 seconds while data is being sent to shutter
-		// motor by RF
+        // motor by RF
         document.getElementById("asvb").disabled = true;
         setTimeout(() => { document.getElementById("asvb").disabled = false; }, 5000);
 
@@ -1015,7 +1093,7 @@ function onContentLoaded() {
 }
 
 /*
- Local Variables:
- compile-command: "jshint tfmcu_dev.js"
- End:
- */
+  Local Variables:
+  compile-command: "jshint tfmcu_dev.js"
+  End:
+*/

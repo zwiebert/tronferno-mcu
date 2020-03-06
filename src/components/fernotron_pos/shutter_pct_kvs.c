@@ -13,7 +13,7 @@
 
 #include "app/proj_app_cfg.h"
 #include "config/config.h"
-#include "fernotron_pos/shutter_state.h"
+#include "fernotron_pos/shutter_pct.h"
 
 #define NB_SIZE 30
 #define NB_PFX "GMBM_"
@@ -40,11 +40,11 @@ static int store (const char *name, u8a8 *gm, int count, bool write) {
   return success;
 }
 
-int read_gm_bitmask(const char *name, const gm_bitmask_t gm, int count) {
+int ferPos_gmByName_load(const char *name, const gm_bitmask_t gm, int count) {
   return store (name, (u8a8 *)gm, count, false);
 }
 
-int save_gm_bitmask(const char *name, gm_bitmask_t gm, int count) {
+int ferPos_gmByName_store(const char *name, gm_bitmask_t gm, int count) {
   return store (name, (u8a8 *)gm, count, true);
 }
 
@@ -55,12 +55,12 @@ static char *g_to_name(u8 g, char *buf) {
   return buf;
 }
 
- int read_g_positions(u8 g, const shutterGroupPositionsT positions) {
+ int ferPos_pctsByGroup_load(u8 g, const shutterGroupPositionsT positions) {
    char buf[8];
   return store (g_to_name(g, buf), (u8a8 *)positions, 1, false);
 }
 
-int save_g_positions(u8 g, shutterGroupPositionsT positions) {
+int ferPoas_pctsByGroup_store(u8 g, shutterGroupPositionsT positions) {
   char buf[8];
   return store (g_to_name(g, buf), (u8a8 *)positions, 1, true);
 }
