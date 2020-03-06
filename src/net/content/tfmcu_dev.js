@@ -229,21 +229,20 @@ class AppState {
                 document.getElementById("id_buildTime").innerHTML = mcu["build-time"];
             }
             if ("ota-state" in mcu) {
-                let e = document.getElementById("netota_feedback");
+                let e = document.getElementById("netota_progress_div");
                 switch(mcu["ota-state"]) {
                 case 0: // none
-                    e.innerHTML = "";
+                   
                     break;
                 case 1: // run
-                    e.innerHTML = "<strong>Firmware is updating...<br></strong>";
                     document.getElementById("netota_progress_bar").value = (++netota_progressCounter).toString();
                     break;
                 case 2: // fail
-                    e.innerHTML = "<strong>OTA has failed<br><br></strong>";
+                    e.innerHTML += "<br><strong>Update failed<br><br></strong>";
                     break;
                 case 3: // done
-                    e.innerHTML = '<strong>OTA has succeeded <button type="button" onClick="req_mcuRestart()">Reboot</button><br><br></strong>';
                     document.getElementById("netota_progress_bar").value = document.getElementById("netota_progress_bar").max;
+                    e.innerHTML += '<br><strong>Update succeeded <button type="button" onClick="req_mcuRestart()">Reboot MCU</button><br><br></strong>';
                     break;
                 }
                 if (netota_isInProgress && mcu["ota-state"] != 1) {
@@ -743,6 +742,7 @@ const reload_Progress = {
     ms: 1000,
     count: 10,
     counter: 0,
+    divs: ["netota_restart_div", "config_restart_div" ],
 };
 function req_reloadTick() {
     const rpr = reload_Progress;
@@ -751,14 +751,25 @@ function req_reloadTick() {
         location.reload();
         clearInterval(rpr.ivId); // may be useless after reload...
     } else {
-        document.getElementById("netota_progress_bar").value = rpr.counter;
+        document.getElementById("reload_progress_bar").value = rpr.counter;
     }
 }
 function req_reloadStart() {
     const rpr = reload_Progress;
-    rpr.ivId = setInterval(req_reloadTick, rpr.ms);
-    document.getElementById("netota_progress_bar").max = rpr.count;
-    document.getElementById("netota_feedback").innerHTML = "<strong>Wait for MCU to restart...</strong><br>"
+    let e = null;
+    for (let div of rpr.divs) {
+	console.log("div", div);
+	let e = document.getElementById(div);
+	if (e.offsetParent === null)
+	    continue;
+
+	let html = '<strong>Wait for MCU to restart...</strong><br>';
+	html += '<progress id="reload_progress_bar" value="0" max="'+rpr.count.toString()+'">0%</progress>';
+	e.innerHTML = html;
+        rpr.ivId = setInterval(req_reloadTick, rpr.ms);
+	break;
+    }
+
 }
 
 
@@ -867,6 +878,7 @@ function netFirmwareOTA(ota_name) {
     let url = base+'/cmd.json';
     dbLog("url: "+url);
     http_postRequest(url, netmcu);
+    document.getElementById("netota_progress_div").innerHTML = "<strong>Firmware is updating...<br></strong>" + '<progress id="netota_progress_bar" value="0" max="30">70 %</progress>';
     netota_intervalID = setInterval(netota_FetchFeedback, 1000);
     netota_isInProgress = true;
     document.getElementById("netota_controls").style.display = "none";

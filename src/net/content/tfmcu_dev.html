@@ -290,7 +290,7 @@
       <button id="csvb" type="button">Save</button>
       <br><br>
       <button id="mrtb" type="button">Restart MCU</button><br>
-
+      <div id="config_restart_div"></div>
 
       <section>
       <h1>Configuration-Wizards</h1>
@@ -312,10 +312,8 @@
         <li><label><button id="netota" type="button">Do flash firmware from given URL</button> <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:3000/tronferno-mcu.bin"> </label><br><br></li> <!--dev-distro-delete-line-->
       </ul>
       </div>
-      <div id="netota_progress_div">
-      <span id="netota_feedback"></span>
-      <progress id="netota_progress_bar" value="0" max="30">70 %</progress>
-      </div>
+      <div id="netota_progress_div"></div>
+      <div id="netota_restart_div"></div>
 
       <h4>Firmware Info</h4>
       <ul>
