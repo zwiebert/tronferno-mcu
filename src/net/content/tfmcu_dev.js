@@ -76,14 +76,29 @@ class AppState {
         this.mG = value;
         localStorage.setItem("group", value.toString());
         document.getElementById("sgi").value = value ? value : "A";
+
+        if (value === 0) {
+            document.getElementById("smi").value = "";
+        } else {
+            if (this.mM > gmu[value]) {
+                value = gmu[value];
+                this.mM = value;
+                localStorage.setItem("member", value.toString());
+                document.getElementById("smi").value = value ? value : "A";
+            } else {
+                document.getElementById("smi").value = this.mM ? this.mM : "A";
+            }
+        }
         this.gmChanged();
     }
 
     get m() {
-        return this.mM;
+        return this.mG === 0 ? 0 : this.mM;
     }
 
     set m(value) {
+        if (this.mG == 0)
+            return;
         this.mM = value;
         localStorage.setItem("member", value.toString());
         document.getElementById("smi").value = value ? value : "A";
@@ -954,8 +969,6 @@ function onGPressed() {
     val = gu[gu_idx];
 
     ast.g = val;
-    if (val == 1)
-        ast.m = 1;
 }
 
 
