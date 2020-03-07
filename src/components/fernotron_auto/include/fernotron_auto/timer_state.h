@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "fernotron_pos/shutter_pct.h"
+#include "fernotron/types.h"
+
 
 enum { ASTRO_MINTS,
        DAILY_UP_MINTS, DAILY_DOWN_MINTS,

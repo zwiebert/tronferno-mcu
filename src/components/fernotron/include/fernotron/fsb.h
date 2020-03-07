@@ -5,25 +5,9 @@
 #include "fer_msg_basic.h"
 #include "misc/int_macros.h"
 
-#ifdef XX__GNUC__
-#define ENUMBF(type)
-__extension__ type
-#else
-#define ENUMBF(type) unsigned
-#endif
-
 typedef union fsb {
   uint8_t data[5];
-  struct {
-    uint8_t addr[3];
-
-    ENUMBF(fer_memb) memb : 4;
-    unsigned tgl : 4;
-
-    ENUMBF(fer_cmd) cmd : 4;
-    ENUMBF(fer_grp) grp : 4;
-
-  } __attribute__((__packed__)) sd;
+  struct fer_cmd sd;
 } fsbT;
 
 #define FSB_ADDR_IS_CENTRAL(fsb)  (((fsb)->data[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)

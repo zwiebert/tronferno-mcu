@@ -2,12 +2,7 @@
 #ifndef PROJ_APP_CONFIG_H_
 #define PROJ_APP_CONFIG_H_
 
-#ifndef DISTRIBUTION
-//#define DEBUG 1
-#endif
-
 #define APP_VERSION "0.9.2"
-
 
 #define FER_TRANSMITTER
 #define FER_RECEIVER

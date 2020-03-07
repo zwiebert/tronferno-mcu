@@ -13,6 +13,10 @@
 #include "fer_msg_basic.h"
 #include "fer_timings.h"
 
+
+
+
+
 ////////////// programming frame /////////////////////
 //18 rows each 9 columns
 
@@ -87,6 +91,8 @@ enum fpr4 {
   fpr4_T_daily_down_hour,
   fpr4_checksum
 };
+
+
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -170,24 +176,104 @@ extern uint8_t bcd2dec(uint8_t bcd);
 #define FPR_CS_WIDTH 1
 
 
+typedef uint8_t fer_cmd_bd[FER_CMD_BYTE_CT];
+typedef uint8_t fer_rtc_bd[FER_PRG_BYTE_CT];
+typedef uint8_t last_byte_data[FER_PRG_BYTE_CT];
+typedef uint8_t fer_astro_bd[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];
+typedef uint8_t fer_wdtimer_bd[FPR_TIMER_HEIGHT][FER_PRG_BYTE_CT];
 
-typedef uint8_t cmd_byte_data[FER_CMD_BYTE_CT];
-typedef uint8_t rtc_byte_data[FER_PRG_BYTE_CT];
+
+struct fer_rtc_sd {
+  uint8_t secs, mint, hour;
+  uint8_t wDayMask;
+  uint8_t days, mont, wday;
+  union {
+    uint8_t bd;
+    struct {
+      uint8_t random : 1;
+      uint8_t unused_1 : 1;
+      uint8_t dst : 1;
+      uint8_t unused_3 : 1;
+      uint8_t unused_4 : 1;
+      uint8_t unused_5 : 1;
+      uint8_t unused_6 : 1;
+      uint8_t sunAuto : 1;
+    } __attribute__((__packed__)) bits;
+  } __attribute__((__packed__)) flags;
+  uint8_t checkSum;
+};
+
+union fer_rtc {
+  fer_rtc_bd bd;
+  struct fer_rtc_sd sd;
+};
+
+struct fer_time {
+  uint8_t mint, hour;
+};
+
+struct fer_timer {
+  struct fer_time  up;
+  struct fer_time  down;
+};
+
+struct fer_timer_row {
+  struct fer_timer  timers[2];
+  uint8_t checkSum;
+};
+
+union fer_wdtimer {
+  fer_wdtimer_bd bd;
+
+  struct fer_timer_row  rows_arr[4];
+
+  struct {
+    struct fer_timer_row sun_mon, tue_wed, thu_fri, sat_daily;
+  } __attribute__((__packed__)) rows;
+
+  struct {
+    struct fer_timer sun, mon;
+    uint8_t cs0;
+    struct fer_timer tue, wed;
+    uint8_t cs1;
+    struct fer_timer thu, fri;
+    uint8_t cs2;
+    struct fer_timer sat, daily;
+    uint8_t cs3;
+  } __attribute__((__packed__)) days;
+};
+
+
+union fer_astro_row {
+  uint8_t bd[FER_PRG_BYTE_CT];
+  struct {
+    struct fer_time times[4];
+    uint8_t checkSum;
+  } __attribute__((__packed__)) sd;
+};
+
+union fer_astro {
+  fer_astro_bd bd;
+  union fer_astro_row rows[FPR_ASTRO_HEIGHT];
+};
+
 typedef uint8_t last_byte_data[FER_PRG_BYTE_CT];
 typedef uint8_t astro_byte_data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];
-typedef uint8_t wdtimer_byte_data[FPR_TIMER_HEIGHT][FER_PRG_BYTE_CT];
+
+
 
 typedef struct fer_msg {
-  cmd_byte_data cmd;
-  rtc_byte_data rtc;
-  wdtimer_byte_data wdtimer;
+  union fer_cmd_row cmd;
+  union fer_rtc rtc;
+  union fer_wdtimer wdtimer;
   astro_byte_data astro;
   last_byte_data last;
 }__attribute__((__packed__)) fer_msg;
 
 
-#define BYTES_MSG_PLAIN  sizeof (cmd_byte_data)
-#define BYTES_MSG_RTC    BYTES_MSG_PLAIN + sizeof (rtc_byte_data)
+
+#define BYTES_MSG_PLAIN  sizeof (fer_cmd_bd)
+#define BYTES_MSG_RTC    BYTES_MSG_PLAIN + sizeof (fer_rtc_bd)
 #define BYTES_MSG_TIMER  sizeof (fer_msg)
 
 

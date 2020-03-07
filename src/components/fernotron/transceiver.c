@@ -126,7 +126,7 @@ volatile u8 MessageReceived;
 
 #define rbuf (&message_buffer)
 
-#define rxbuf_current_byte() (&rbuf->cmd[0] + received_byte_ct)
+#define rxbuf_current_byte() (&rbuf->cmd.bd[0] + received_byte_ct)
 static u16 received_byte_ct;
 static u16 bytesToReceive;
 #define getBytesToReceive() (bytesToReceive + 0)
@@ -270,8 +270,8 @@ static void  IRAM_ATTR frx_tick_receive_message() {
     switch (getBytesToReceive()) {
 
     case BYTES_MSG_PLAIN:
-      if ((!error && fer_OK == frx_verify_cmd(rbuf->cmd))) {
-        if (FRB_GET_CMD(rbuf->cmd) == fer_cmd_Program && FRB_ADDR_IS_CENTRAL(rbuf->cmd)) {
+      if ((!error && fer_OK == frx_verify_cmd(rbuf->cmd.bd))) {
+        if (FRB_GET_CMD(rbuf->cmd.bd) == fer_cmd_Program && FRB_ADDR_IS_CENTRAL(rbuf->cmd.bd)) {
           bytesToReceive = BYTES_MSG_RTC;
         } else {
           MessageReceived = MSG_TYPE_PLAIN;
@@ -282,7 +282,7 @@ static void  IRAM_ATTR frx_tick_receive_message() {
       break;
 
     case BYTES_MSG_RTC:
-      if (FRB_GET_FPR0_IS_RTC_ONLY(rbuf->rtc)) {
+      if (FRB_GET_FPR0_IS_RTC_ONLY(rbuf->rtc.bd)) {
         MessageReceived = MSG_TYPE_RTC;
 
       } else {
@@ -387,7 +387,7 @@ static bool  IRAM_ATTR ftx_send_message() {
     // send preamble
     ftx_update_output_preamble();
     if ((preamble_done = advancePreCounter())) {
-      dtSendBuf = make_Word(txmsg->cmd[0], 0);
+      dtSendBuf = make_Word(txmsg->cmd.bd[0], 0);
     }
   } else {
     // send data words + stop bits
@@ -402,7 +402,7 @@ static bool  IRAM_ATTR ftx_send_message() {
           stop_done = preamble_done = false;
           return true; // done
         } else {
-          dtSendBuf = make_Word(txmsg->cmd[CountWords / 2], CountWords); // load next word
+          dtSendBuf = make_Word(txmsg->cmd.bd[CountWords / 2], CountWords); // load next word
         }
       }
     }

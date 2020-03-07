@@ -10,12 +10,9 @@
 
 #include "main/common.h"
 #include "fernotron/fer_rx_tx.h"
+#include "fernotron/types.h"
 
-typedef uint8_t gm_bitmask_t[8];
-#define gm_PutBit(gm, g, m, val) PUT_BIT(gm[(g)], (m), (val))
-#define gm_ClrBit(gm, g, m) CLR_BIT(gm[(g)], (m))
-#define gm_GetBit(gm, g, m) GET_BIT(gm[(g)], (m))
-#define gm_SetBit(gm, g, m) SET_BIT(gm[(g)], (m))
+
 
 typedef uint8_t shutterGroupPositionsT[8];
 
@@ -39,9 +36,7 @@ void ferPos_init(void);
 
 // load/store
 
-// read/save one or more elements of type gm_bitmask_t
-int ferPos_gmByName_load(const char *name, const gm_bitmask_t gm, int count);
-int ferPos_gmByName_store(const char *name, gm_bitmask_t gm, int count);
+
 
 int ferPos_pctsByGroup_load(uint8_t g, const shutterGroupPositionsT positions);
 int ferPoas_pctsByGroup_store(uint8_t g, shutterGroupPositionsT positions);

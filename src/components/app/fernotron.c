@@ -109,14 +109,6 @@ main_setup() {
   fer_init_sender(&default_sender, C.fer_centralUnitID);
   astro_init_and_reinit();
 
-#ifdef DEBUG
-  if (test_modules()) {
-    io_puts("self-test: ok\n");
-  } else {
-    io_puts("self-test: fail\n");
-  }
-#endif
-
   so_output_message(SO_FW_START_MSG_PRINT, 0);
   ferPos_init();
 

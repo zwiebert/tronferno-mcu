@@ -2,6 +2,7 @@
 #ifndef FER_H
 #define FER_H
 
+#include <stdint.h>
 #include <time.h>
 #include "include/fernotron/fer_msg_basic.h"
 #include "include/fernotron/fer_msg_extension.h"

@@ -1,4 +1,7 @@
+#include <string.h>
+
 #include "fernotron_pos/shutter_pct.h"
+#include "fernotron_pos/shutter_prefs.h"
 
 #include "app/proj_app_cfg.h"
 
@@ -648,5 +651,24 @@ void ferPos_init() {
     }
 
   }
+}
+
+typedef u8 u8a8[8];
+
+
+static char *g_to_name(u8 g, char *buf) {
+  strcpy(buf, "PMAP_Gx");
+  buf[6] = '0' + g;
+  return buf;
+}
+
+int ferPos_pctsByGroup_load(u8 g, const shutterGroupPositionsT positions) {
+  char buf[8];
+  return fer_gmByName_load(g_to_name(g, buf), (gm_bitmask_t*) positions, 1);
+}
+
+int ferPoas_pctsByGroup_store(u8 g, shutterGroupPositionsT positions) {
+  char buf[8];
+  return fer_gmByName_store(g_to_name(g, buf), (gm_bitmask_t*) positions, 1);
 }
 

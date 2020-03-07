@@ -8,6 +8,10 @@
 #ifndef USER_MAIN_FER_TRANSCEIVER_H_
 #define USER_MAIN_FER_TRANSCEIVER_H_
 
+#include <stdint.h>
+#include "stdbool.h"
+
+
 extern volatile bool has_cmdReceived;
 extern volatile bool has_prgReceived;
 extern volatile uint8_t MessageReceived;

@@ -5,7 +5,8 @@
 
 #ifdef MCU_ESP8266
 // FIXME: don't want link an entire libc just for assert()
-#define assert(x)
+#define assert(x) do { if (x) {} else { mcu_restart(); }} while(0)
+//#define assert(x)
 #else
 #include <assert.h>
 #endif
@@ -94,20 +95,6 @@ void db_test_all_indicators(uint8_t nmb_flashs);
 #define dbg_vpf(x)
 #endif
 
-
-// testing modules
-#define TEST_MODULE_ASTRO 1
-#define TEST_MODULE_RTC 1
-#define TEST_MODULE_FER_PRG 1
-#define TEST_MODULE_CONFIG 1
-#define TEST_MODULE_CLI 1
-
-bool test_modules(void);
-bool testModule_astro(void);
-bool testModule_rtc(void);
-bool testModule_fer_prg(void);
-bool testModule_config(void);
-bool testModule_cli(void);
 
 
 #endif /* DEBUG_H_ */

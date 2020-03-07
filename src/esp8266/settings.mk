@@ -25,6 +25,9 @@ else
 SDK_BASE	?= $(HOME)/esp/ESP8266_NONOS_SDK
 SDK_TOOLS	?= $(HOME)/esp/ESP8266_NONOS_SDK/tools
 
+OSDK_LIB_DIR  ?= $(HOME)/esp/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/sysroot/lib/
+
+
 # Extra libs, include and ld file
 EXTRA_BASE	?= $(HOME)/esp/ESP8266_NONOS_SDK/third_party
 

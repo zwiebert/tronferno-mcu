@@ -6,13 +6,6 @@
 extern const char *const build_time;
 #define ISO_BUILD_TIME build_time
 
-#ifdef DEBUG
-#undef FER_TRANSMITTER
-#undef FER_RECEIVER
-#undef USE_NTP
-#undef USE_WLAN
-#endif
-
 #undef USE_MQTT
 #undef USE_PAIRINGS
 #undef USE_HTTP
