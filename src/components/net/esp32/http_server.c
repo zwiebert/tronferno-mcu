@@ -13,6 +13,7 @@
 #include "userio_app/status_output.h"
 #include "userio/status_json.h"
 #include "config/config.h"
+#include "cli_app/cli_imp.h"
 
 
 static const char *TAG="APP";
@@ -99,7 +100,7 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   return ESP_OK;
 }
 
-httpd_uri_t uri_cmd_json = { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json, .user_ctx = NULL };
+
 
 
 // handler for getting file /tfmcu.js
@@ -116,7 +117,7 @@ static esp_err_t handle_uri_tfmcu_js(httpd_req_t *req) {
   return ESP_OK;
 }
 
-httpd_uri_t uri_tfmcu_js = { .uri = "/tfmcu.js", .method = HTTP_GET, .handler = handle_uri_tfmcu_js, .user_ctx = (void*) text_tfmcu_js, };
+
 
 
 // handler for getting file /tfmcu.html
@@ -133,14 +134,58 @@ static esp_err_t handle_uri_tfmcu_html(httpd_req_t *req) {
   return ESP_OK;
 }
 
-httpd_uri_t uri_tfmcu_html = { .uri = "/", .method = HTTP_GET, .handler = handle_uri_tfmcu_html, .user_ctx = (void*) text_tfmcu_html, };
+// handler for getting doc texts
+// NOTE: using post, because uri-slots are very limited
+
+static struct  {
+  const char *key, *txt;
+} help_txt_map [] = {
+  { "cliparm_send", help_parmSend},
+  { "cliparm_auto", help_parmTimer},
+  { "cliparm_config", help_parmConfig},
+  { "cliparm_mcu", help_parmMcu},
+  { "cliparm_pair", help_parmPair},
+  { "cliparm_shpref", help_parmShpref},
+  { "cliparm_help", help_parmHelp},
+};
+
+static esp_err_t handle_uri_doc_post(httpd_req_t *req) {
+  int i;
+  char buf[64];
+  int ret, remaining = req->content_len;
+
+  if (!check_access_allowed(req))
+    return ESP_FAIL;
+
+  if ((ret = httpd_req_recv(req, buf, MIN(remaining, sizeof(buf)))) <= 0) {
+    return ESP_FAIL;
+  }
+
+  for (i = 0; i < sizeof(help_txt_map) / sizeof(help_txt_map[0]); ++i) {
+    if (strncmp(buf, help_txt_map[i].key, ret) == 0) {
+      httpd_resp_sendstr(req, help_txt_map[i].txt);
+      httpd_resp_set_type(req, "text/plain;charset=\"ISO-8859-1\"");
+      return ESP_OK;
+    }
+  }
+  return ESP_FAIL;
+}
+
+
+const httpd_uri_t httpd_uris[] = {
+    { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json, .user_ctx = NULL, },
+    { .uri = "/", .method = HTTP_GET, .handler = handle_uri_tfmcu_html, .user_ctx = (void*) text_tfmcu_html, },
+    { .uri = "/tfmcu.js", .method = HTTP_GET, .handler = handle_uri_tfmcu_js, .user_ctx = (void*) text_tfmcu_js, },
+    { .uri = "/doc", .method = HTTP_POST, .handler = handle_uri_doc_post, .user_ctx = NULL, },
+};
+
 
 
 static httpd_handle_t start_webserver(void) {
+  int i;
   httpd_handle_t server = NULL;
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
   config.max_open_sockets = 6;
-
 
   ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
   if (httpd_start(&server, &config) != ESP_OK) {
@@ -149,9 +194,9 @@ static httpd_handle_t start_webserver(void) {
   }
 
   ESP_LOGI(TAG, "Registering URI handlers");
-  ESP_ERROR_CHECK(httpd_register_uri_handler(server, &uri_cmd_json));
-  ESP_ERROR_CHECK(httpd_register_uri_handler(server, &uri_tfmcu_js));
-  ESP_ERROR_CHECK(httpd_register_uri_handler(server, &uri_tfmcu_html));
+  for (i = 0; i < sizeof(httpd_uris) / sizeof(httpd_uri_t); ++i) {
+    ESP_ERROR_CHECK(httpd_register_uri_handler(server, &httpd_uris[i]));
+  }
 
   return server;
 }
