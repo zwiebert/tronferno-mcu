@@ -7,6 +7,8 @@
 #include "app/proj_app_cfg.h"
 
 #include "fernotron_auto/timer_data.h"
+//#include "fernotron_pos/shutter_pct.h"
+#include "fernotron_pos/shutter_prefs.h"
 #include "userio_app/status_output.h"
 #ifdef USE_JSON
 #include "userio/status_json.h"
@@ -21,6 +23,7 @@
 #include "fernotron_auto/timer_state.h"
 #include "cli_app/cli_imp.h" // FIXME?
 #include "cli_app/cli_config.h"
+#include "cli_app/cli_fer.h"
 #include "config/config.h"
 #include "main/common.h"
 #include "fernotron_alias/pairings.h"
@@ -646,7 +649,6 @@ static void  so_print_timer_as_text(u8 g, u8 m, bool wildcard) {
   timer_data_t tdr;
   char buf[10];
   u8 g_res = g, m_res = m;
-  extern gm_bitmask_t manual_bits; //FIXME
   // read_gm_bitmask("MANU", &manual_bits, 1); //FIXME: not needed
   bool f_manual = GET_BIT(manual_bits[g], m);
 

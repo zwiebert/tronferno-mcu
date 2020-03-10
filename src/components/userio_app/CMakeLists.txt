@@ -6,4 +6,4 @@ if(DEFINED ENV{DISTRO})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
 endif()
 
-idf_component_register(SRCS ${srcs} INCLUDE_DIRS . "./include" PRIV_INCLUDE_DIRS "./include/userio_app" REQUIRES userio PRIV_REQUIRES fernotron app)
+idf_component_register(SRCS ${srcs} INCLUDE_DIRS . "./include" PRIV_INCLUDE_DIRS "./include/userio_app" REQUIRES userio PRIV_REQUIRES fernotron app fernotron_pos)

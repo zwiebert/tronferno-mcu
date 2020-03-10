@@ -69,20 +69,36 @@ class AppState {
         dbLog(JSON.stringify(this));
         if (gmc_fetch)
             this.http_fetchByMask(gmc_fetch);
+        aliasPaired_updHtml();
     }
 
     set g(value) {
         this.mG = value;
         localStorage.setItem("group", value.toString());
         document.getElementById("sgi").value = value ? value : "A";
+
+        if (value === 0) {
+            document.getElementById("smi").value = "";
+        } else {
+            if (this.mM > gmu[value]) {
+                value = gmu[value];
+                this.mM = value;
+                localStorage.setItem("member", value.toString());
+                document.getElementById("smi").value = value ? value : "A";
+            } else {
+                document.getElementById("smi").value = this.mM ? this.mM : "A";
+            }
+        }
         this.gmChanged();
     }
 
     get m() {
-        return this.mM;
+        return this.mG === 0 ? 0 : this.mM;
     }
 
     set m(value) {
+        if (this.mG == 0)
+            return;
         this.mM = value;
         localStorage.setItem("member", value.toString());
         document.getElementById("smi").value = value ? value : "A";
@@ -229,21 +245,20 @@ class AppState {
                 document.getElementById("id_buildTime").innerHTML = mcu["build-time"];
             }
             if ("ota-state" in mcu) {
-                let e = document.getElementById("netota_feedback");
+                let e = document.getElementById("netota_progress_div");
                 switch(mcu["ota-state"]) {
                 case 0: // none
-                    e.innerHTML = "";
+
                     break;
                 case 1: // run
-                    e.innerHTML = "<strong>Firmware is updating...<br></strong>";
                     document.getElementById("netota_progress_bar").value = (++netota_progressCounter).toString();
                     break;
                 case 2: // fail
-                    e.innerHTML = "<strong>OTA has failed<br><br></strong>";
+                    e.innerHTML += "<br><strong>Update failed<br><br></strong>";
                     break;
                 case 3: // done
-                    e.innerHTML = '<strong>OTA has succeeded <button type="button" onClick="req_mcuRestart()">Reboot</button><br><br></strong>';
                     document.getElementById("netota_progress_bar").value = document.getElementById("netota_progress_bar").max;
+                    e.innerHTML += '<br><strong>Update succeeded <button type="button" onClick="req_mcuRestart()">Reboot MCU</button><br><br></strong>';
                     break;
                 }
                 if (netota_isInProgress && mcu["ota-state"] != 1) {
@@ -436,10 +451,10 @@ function aliasControllers_updHtml() {
         }
     }
     if (pas.options.length > 0) {
-
         pas.selectedIndex = (pas_sel && pas_sel > 0) ? pas_sel : "0";
         onAliasesChanged();
     }
+    aliasPaired_updHtml();
 }
 
 function aliasControllers_fromHtml() { // XXX
@@ -496,9 +511,20 @@ function onAliasesChanged() {
     const pas =  document.getElementById("aliases");
     if (pas.selectedIndex >= 0) {
         const key = pas.options[pas.selectedIndex].text;
+        document.getElementById("paired").value = key;
         aliasTable_updHtml(key);
     }
 }
+
+function onPairedChanged() {
+    let pas =  document.getElementById("paired");
+    if (pas.selectedIndex >= 0) {
+        const key = pas.options[pas.selectedIndex].text;
+        document.getElementById("aliases").value = key;
+        aliasTable_updHtml(key);
+    }
+}
+
 
 function onAliasesApply() {
     const pas =  document.getElementById("aliases");
@@ -511,8 +537,45 @@ function onAliasesReload() {
     ast.http_fetchByMask(FETCH_ALIASES);
 }
 
+function alias_isKeyPairedToM(key, g, m) {
+    const val = ast.aliases[key];
 
+    let chunks = [];
 
+    for (let i = 0, charsLength = val.length; i < charsLength; i += 2) {
+        chunks.unshift(val.substring(i, i + 2));
+    }
+
+    const g_max = chunks.length - 1;
+
+    if (g > g_max)
+        return false;
+
+    const b = parseInt(chunks[g],16);
+    console.log("b", b);
+
+    return (b & (1 << m)) != 0;
+
+}
+
+function aliasPaired_updHtml() {
+    const g = ast.g;
+    const m = ast.m;
+    const pas =  document.getElementById("paired");
+
+    for(let i=pas.options.length-1; i >= 0; --i)
+        pas.remove(i);
+    console.log(ast.aliases);
+    for (let key in ast.aliases) {
+        console.log("key",key);
+        if (!alias_isKeyPairedToM(key, g, m))
+            continue;
+
+        let option = document.createElement("option");
+        option.text = key;
+        pas.add(option);
+    }
+}
 function aliasTable_updHtml(key){
     const val = ast.aliases[key];
 
@@ -576,7 +639,7 @@ function aliasTable_fromHtml_toMcu(key){
 
 function aliasTable_genHtml() {
     let html = "";
-    html += '<table><tr><th></th>';
+    html += '<table id="aliasTable"><tr><th></th>';
 
     for (let m=1; m <= 7; ++m) {
         html+='<th>m'+m.toString()+'</th>';
@@ -743,6 +806,7 @@ const reload_Progress = {
     ms: 1000,
     count: 10,
     counter: 0,
+    divs: ["netota_restart_div", "config_restart_div" ],
 };
 function req_reloadTick() {
     const rpr = reload_Progress;
@@ -751,14 +815,25 @@ function req_reloadTick() {
         location.reload();
         clearInterval(rpr.ivId); // may be useless after reload...
     } else {
-        document.getElementById("netota_progress_bar").value = rpr.counter;
+        document.getElementById("reload_progress_bar").value = rpr.counter;
     }
 }
 function req_reloadStart() {
     const rpr = reload_Progress;
-    rpr.ivId = setInterval(req_reloadTick, rpr.ms);
-    document.getElementById("netota_progress_bar").max = rpr.count;
-    document.getElementById("netota_feedback").innerHTML = "<strong>Wait for MCU to restart...</strong><br>"
+    let e = null;
+    for (let div of rpr.divs) {
+        console.log("div", div);
+        let e = document.getElementById(div);
+        if (e.offsetParent === null)
+            continue;
+
+        let html = '<strong>Wait for MCU to restart...</strong><br>';
+        html += '<progress id="reload_progress_bar" value="0" max="'+rpr.count.toString()+'">0%</progress>';
+        e.innerHTML = html;
+        rpr.ivId = setInterval(req_reloadTick, rpr.ms);
+        break;
+    }
+
 }
 
 
@@ -867,6 +942,7 @@ function netFirmwareOTA(ota_name) {
     let url = base+'/cmd.json';
     dbLog("url: "+url);
     http_postRequest(url, netmcu);
+    document.getElementById("netota_progress_div").innerHTML = "<strong>Firmware is updating...<br></strong>" + '<progress id="netota_progress_bar" value="0" max="30">70 %</progress>';
     netota_intervalID = setInterval(netota_FetchFeedback, 1000);
     netota_isInProgress = true;
     document.getElementById("netota_controls").style.display = "none";
@@ -893,8 +969,6 @@ function onGPressed() {
     val = gu[gu_idx];
 
     ast.g = val;
-    if (val == 1)
-        ast.m = 1;
 }
 
 

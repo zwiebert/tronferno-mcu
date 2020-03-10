@@ -16,6 +16,7 @@
 #include "misc/sun.h"
 #include "misc/bcd.h"
 #include "debug/debug.h"
+#include "misc/int_macros.h"
 
 struct astro_cfg astro_cfg;
 #define C astro_cfg
@@ -239,38 +240,6 @@ void astro_init_and_reinit() {
 
 
 /////////////////////////////////////////////////////////////////////////////////////
-#if TEST_MODULE_ASTRO
-u8 data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];
-
-bool 
-testModule_astro()
-{
-  double rise, set;
-  u16 doy = 172;
-  calc_sunrise_sunset(&rise, &set, C.geo_timezone, doy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
-  
-  astro_write_data(data, 0);
-  ets_printf("test calc_minutes\n");
-  int ct=0;
-  struct tm tm;
-  for(tm.tm_mon=0; tm.tm_mon < 12; ++tm.tm_mon)
-    for (tm.tm_mday=1; tm.tm_mday <= 30; ++tm.tm_mday) {
-      u16 min = astro_calc_minutes(&tm);
-      ets_printf("%02d:%02d, %s", min / 60, min %60, (ct++ % 16? "": "\n"));
-    }
-  ets_printf("\n------------------------\n");
-  ct = 0; int ct2 = 0;
-  for(tm.tm_mon=0; tm.tm_mon < 12; ++tm.tm_mon)
-    for (tm.tm_mday=1; tm.tm_mday <= 30; ++tm.tm_mday) {
-      u16 min = astro_calc_minutes(&tm);
-      if (!(ct2++ % 4))
-        ets_printf("%02d:%02d, %s", min / 60, min %60, (++ct % 4? "": "\n"));
-    }
-
-  return rise != set; //XXX: ???
-}
-
-#endif
 
 
 

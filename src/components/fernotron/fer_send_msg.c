@@ -149,7 +149,7 @@ bool  fer_send_queued_msg() {
     send_ct = 0;
   }
 
-  memcpy(txmsg->cmd, fsb->data, 5);
+  memcpy(txmsg->cmd.bd, fsb->data, 5);
   fmsg_create_checksums(txmsg, msgType);
 
   if (ferHook_beforeAnySend)

@@ -8,6 +8,10 @@
 #ifndef USER_MAIN_FER_PRG_H_
 #define USER_MAIN_FER_PRG_H_
 
+#include <stdint.h>
+#include "fsb.h"
+#include "fer_msg_extension.h"
+
 void fmsg_create_checksums(struct fer_msg *m, fmsg_type t);
 bool fmsg_verify_checksums(const struct fer_msg *m, fmsg_type t);
 void fmsg_init_data(fer_msg *msg);

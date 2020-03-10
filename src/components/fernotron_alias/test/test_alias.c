@@ -8,6 +8,7 @@
 #include "unity.h"
 #include "fernotron_alias/pairings.h"
 #include "txtio/inout.h"
+#include <string.h>
 
 #define A 0x101234
 gm_bitmask_t gm, gme;

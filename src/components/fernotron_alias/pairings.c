@@ -1,15 +1,10 @@
 #include <string.h>
 
 #include "app/proj_app_cfg.h"
-
 #include "fernotron_auto/timer_state.h"
-#include "cli/cli.h"
-
+#include "fernotron/fer_rx_tx.h"
 #include "misc/bcd.h"
 #include "fernotron_alias/pairings.h"
-
-#include "fernotron_sep/set_endpos.h"
-#include "fernotron_pos/shutter_pct.h"
 #include "main/rtc.h"
 #include "userio_app/status_output.h"
 

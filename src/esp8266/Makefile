@@ -17,7 +17,7 @@ SPI_SIZE_MAP	= 4
 # Basic project settings
 COMPONENTS = debug gpio key_value_store storage net config cli cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto misc  txtio  userio userio_app app
 MODULES	=  src/esp8266 src/esp8266/driver
-LIBS	=  gcc hal phy pp net80211 lwip wpa main crypto
+LIBS   =  gcc hal phy pp net80211 lwip wpa main crypto
 
 define GEN_COMPONENTS
 EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include $(SRC_BASE)/$(1)/$(2)/include/$(2)
@@ -30,6 +30,7 @@ endif
 endef
 $(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,src/components,$(component))))
 
+ifeq (1,1)
 ## libc, libcirom
 LIBC_A := $(SDK_BASE)/lib/libc.a
 LIBCIROM_A := $(BUILD_BASE)/libcirom.a
@@ -38,11 +39,14 @@ GEN_LIBS += $(LIBCIROM_A)
 
 $(LIBCIROM_A) : $(LIBC_A)
 	$(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal $(<) $(@);
+else
+LIBS += c
+endif
 
  .PHONY: libmirom force
 
 ## libm, libmirom
-LIBM_A := $(HOME)/esp/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/sysroot/lib/libm.a
+LIBM_A := $(OSDK_LIB_DIR)/libm.a
 LIBMIROM_A := $(BUILD_BASE)/libmirom.a
 LIBS += mirom
 GEN_LIBS += $(LIBMIROM_A)

@@ -67,6 +67,34 @@ typedef enum {
 	fer_memb_M7       // member number 7
 } fer_memb;
 
+#ifdef XX__GNUC__
+#define ENUMBF(type)
+__extension__ type
+#else
+#define ENUMBF(type) uint8_t
+#endif
+
+struct fer_cmd {
+  uint8_t addr[3];
+
+  ENUMBF(fer_memb) memb :4;
+  uint8_t tgl :4;
+
+  ENUMBF(fer_cmd) cmd :4;
+  ENUMBF(fer_grp) grp :4;
+};
+
+union fer_cmd_row {
+  uint8_t bd[6];
+
+  struct {
+    struct fer_cmd  cmd;
+    uint8_t checkSum;
+  } __attribute__((__packed__)) sd;
+
+};
+
+
 // high nibble of data[fer_dat_ADDR_2]
 ////// device type
 #define FER_ADDR_TYPE_PlainSender  0x10

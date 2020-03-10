@@ -75,10 +75,10 @@ bool fer_rx_loop() {
     fmsg_type msgType = MessageReceived;
 
     if (msgType == MSG_TYPE_PLAIN) {
-      if (0 == memcmp(&last_received_sender.data, rxmsg->cmd, 5)) {
+      if (0 == memcmp(&last_received_sender.data, rxmsg->cmd.bd, 5)) {
         msgType = MSG_TYPE_PLAIN_DOUBLE;
       } else {
-        memcpy(&last_received_sender.data, rxmsg->cmd, 5);
+        memcpy(&last_received_sender.data, rxmsg->cmd.bd, 5);
       }
     }
 

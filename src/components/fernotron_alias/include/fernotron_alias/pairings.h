@@ -1,8 +1,8 @@
 #ifndef pairings_h_
 #define pairings_h_
 
-#include "fernotron_pos/shutter_pct.h"
 #include "fernotron/fsb.h"
+#include "fernotron/types.h"
 
 #include <stdlib.h>
 #include "stdbool.h"
