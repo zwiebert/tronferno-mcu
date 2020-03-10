@@ -57,7 +57,7 @@ get_timer_minutes_2(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard,
   int i;
 
   // weekly strings starts with monday, not sunday
-  u8 weekday = (tm->tm_wday == 0) ? 7 : tm->tm_wday - 1;
+  u8 weekday = (tm->tm_wday == 0) ? 6 : tm->tm_wday - 1;
 
   if (!read_timer_data(&td, group, member, wildcard))
     return false;
