@@ -5,11 +5,11 @@ JSMIN ?= python -m jsmin
 
 SED_OPTS_HTML =  -e 's/tfmcu_dev.js/\/tfmcu.js/'
 SED_OPTS_JS =
-SED_OPTS = -e '/dev-delete-line/d'
+SED_OPTS = -E -e '/dev-delete-line/d'
 
 ifdef DISTRO
 ifeq ($(DISTRO),1)
-SED_OPTS +=  -e '/dev-distro-delete-line/d'
+SED_OPTS +=  -e '/dev-distro-delete-line/d' -e '/^\s*\bdbLog\b.*;/d'
 endif
 endif
 
