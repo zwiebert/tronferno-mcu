@@ -48,7 +48,7 @@ timer_to_minutes(minutes_t *result, const char *ts) {
 extern gm_bitmask_t manual_bits;
 
 bool 
-get_timer_minutes_2(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, struct tm *tm) {
+get_timer_minutes_tm(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, struct tm *tm) {
 
   precond(timi && group && member);
 
@@ -121,7 +121,7 @@ bool
 get_timer_minutes(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard) {
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
-  return get_timer_minutes_2(timi, group, member, wildcard, tm);
+  return get_timer_minutes_tm(timi, group, member, wildcard, tm);
 }
 
 minutes_t
@@ -186,7 +186,7 @@ get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
 	  continue;
 	}
 
-	if (get_timer_minutes_2(&timi, &g, &m, false, tm)) {
+	if (get_timer_minutes_tm(&timi, &g, &m, false, tm)) {
 	  SET_BIT(existing_members[g], m);
 	  if (pass == PASS_GET_EARLIEST_TIME) {
 	    minutes_t temp = timi_get_earliest(&timi, minutes_now);
