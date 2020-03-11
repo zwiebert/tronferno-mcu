@@ -18,6 +18,7 @@
 #include "mutex.h"
 #include "fernotron_sep/set_endpos.h" // XXX
 #include "userio/status_json.h"
+#include "debug/debug.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 #define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)

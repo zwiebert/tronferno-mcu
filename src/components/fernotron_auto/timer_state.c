@@ -11,8 +11,8 @@
 #include "debug/debug.h"
 #include "misc/int_macros.h"
 #include "time.h"
-#include "fernotron_pos/current_state.h"
-#include "fernotron_pos/shutter_state.h"
+#include "fernotron_pos/shutter_pct.h"
+
 
 
 #ifndef DISTRIBUTION
@@ -48,7 +48,7 @@ timer_to_minutes(minutes_t *result, const char *ts) {
 extern gm_bitmask_t manual_bits;
 
 bool 
-get_timer_minutes_2(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, struct tm *tm) {
+get_timer_minutes_tm(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, struct tm *tm) {
 
   precond(timi && group && member);
 
@@ -57,7 +57,7 @@ get_timer_minutes_2(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard,
   int i;
 
   // weekly strings starts with monday, not sunday
-  u8 weekday = (tm->tm_wday == 0) ? 7 : tm->tm_wday - 1;
+  u8 weekday = (tm->tm_wday == 0) ? 6 : tm->tm_wday - 1;
 
   if (!read_timer_data(&td, group, member, wildcard))
     return false;
@@ -121,7 +121,7 @@ bool
 get_timer_minutes(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard) {
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
-  return get_timer_minutes_2(timi, group, member, wildcard, tm);
+  return get_timer_minutes_tm(timi, group, member, wildcard, tm);
 }
 
 minutes_t
@@ -150,8 +150,6 @@ get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
 
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
-  i16 day_of_year = tm->tm_yday + 1;
-  int dst = tm->tm_isdst ? 1 : 0;
   minutes_t minutes_now = tm->tm_hour * 60 + tm->tm_min;
 
 
@@ -188,7 +186,7 @@ get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
 	  continue;
 	}
 
-	if (get_timer_minutes_2(&timi, &g, &m, false, tm)) {
+	if (get_timer_minutes_tm(&timi, &g, &m, false, tm)) {
 	  SET_BIT(existing_members[g], m);
 	  if (pass == PASS_GET_EARLIEST_TIME) {
 	    minutes_t temp = timi_get_earliest(&timi, minutes_now);
@@ -246,8 +244,7 @@ timer_state_loop(void) {
 	continue;
 #endif
       }
-      currentState_mmMove(te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
-      //currentState_modifyShutterPositions(te->matching_members, te_is_up(te) ? 100 : 0);
+      ferPos_mmMove(te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
     }
   }
 }

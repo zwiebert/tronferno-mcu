@@ -13,6 +13,7 @@
 #include "userio_app/status_output.h"
 #include "userio/status_json.h"
 #include "config/config.h"
+#include "cli_app/cli_imp.h"
 
 
 static const char *TAG="APP";
@@ -23,7 +24,7 @@ static const char *TAG="APP";
 #define HTTP_PW C.http_password
 #define HTTP_PW_LEN  (strlen(HTTP_PW))
 
-static bool compare_up(const char *up, size_t up_len) {
+static bool verify_userName_and_passWord(const char *up, size_t up_len) {
 
   if (HTTP_USER_LEN + 1 + HTTP_PW_LEN != up_len)
     return false;
@@ -31,7 +32,7 @@ static bool compare_up(const char *up, size_t up_len) {
   return strncmp(HTTP_USER, up, HTTP_USER_LEN) == 0 && strncmp(HTTP_PW, up + (up_len - HTTP_PW_LEN), HTTP_PW_LEN) == 0;
 }
 
-static bool test_authorization(httpd_req_t *req) {
+static bool verify_authorization(httpd_req_t *req) {
   bool login_ok = false;
   char *login = 0;
 
@@ -42,7 +43,7 @@ static bool test_authorization(httpd_req_t *req) {
       unsigned char dst[128];
       size_t olen = 0;
       if (0 == mbedtls_base64_decode(dst, sizeof dst, &olen, (unsigned char*) login + 6, login_len - 6))
-        login_ok = compare_up((char*)dst, olen);
+        login_ok = verify_userName_and_passWord((char*)dst, olen);
     }
 
     free(login);
@@ -52,7 +53,7 @@ static bool test_authorization(httpd_req_t *req) {
 }
 
 static bool is_access_allowed(httpd_req_t *req) {
-  return (*HTTP_USER == '\0' && *HTTP_PW == '\0') || test_authorization(req);
+  return (*HTTP_USER == '\0' && *HTTP_PW == '\0') || verify_authorization(req);
 }
 
 static void reqest_authorization(httpd_req_t *req) {
@@ -71,9 +72,7 @@ static bool check_access_allowed(httpd_req_t *req) {
 }
 
 
-
-// handle post request to /cmd.json
-
+////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   char buf[256];
   int ret, remaining = req->content_len;
@@ -85,26 +84,15 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
     return ESP_FAIL;
   }
 
-  {
-#define JS_SIZE 512
-    if (sj_realloc_buffer(JS_SIZE)) {
-      hts_query(HQT_NONE, buf, ret); // parse and process received command
-      httpd_resp_set_type(req, "application/json");
-      httpd_resp_sendstr(req, sj_get_json());
-      ets_printf("cmd-response: <%s>\n", sj_get_json());
-      sj_free_buffer();
-    }
-  }
+  hts_query(HQT_NONE, buf, ret); // parse and process received command
+
+  httpd_resp_set_type(req, "application/json");
+  httpd_resp_sendstr(req, sj_get_json());
+
+  sj_free_buffer();
 
   return ESP_OK;
 }
-
-httpd_uri_t uri_cmd_json = { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json, .user_ctx = NULL };
-
-
-// handler for getting file /tfmcu.js
-
-extern const u8 text_tfmcu_js[] asm("_binary_tfmcu_js_start");
 
 static esp_err_t handle_uri_tfmcu_js(httpd_req_t *req) {
   if (!check_access_allowed(req))
@@ -116,13 +104,6 @@ static esp_err_t handle_uri_tfmcu_js(httpd_req_t *req) {
   return ESP_OK;
 }
 
-httpd_uri_t uri_tfmcu_js = { .uri = "/tfmcu.js", .method = HTTP_GET, .handler = handle_uri_tfmcu_js, .user_ctx = (void*) text_tfmcu_js, };
-
-
-// handler for getting file /tfmcu.html
-
-extern const u8 text_tfmcu_html[] asm("_binary_tfmcu_html_start");
-
 static esp_err_t handle_uri_tfmcu_html(httpd_req_t *req) {
   if (!check_access_allowed(req))
     return ESP_FAIL;
@@ -133,14 +114,58 @@ static esp_err_t handle_uri_tfmcu_html(httpd_req_t *req) {
   return ESP_OK;
 }
 
-httpd_uri_t uri_tfmcu_html = { .uri = "/", .method = HTTP_GET, .handler = handle_uri_tfmcu_html, .user_ctx = (void*) text_tfmcu_html, };
+static esp_err_t handle_uri_doc_post(httpd_req_t *req) {
+  int i;
+  char buf[64];
+  int ret, remaining = req->content_len;
+
+  static struct  {
+    const char *key, *txt;
+  } help_txt_map [] = {
+    { "cliparm_send", help_parmSend},
+    { "cliparm_auto", help_parmTimer},
+    { "cliparm_config", help_parmConfig},
+    { "cliparm_mcu", help_parmMcu},
+    { "cliparm_pair", help_parmPair},
+    { "cliparm_shpref", help_parmShpref},
+    { "cliparm_help", help_parmHelp},
+  };
+
+  if (!check_access_allowed(req))
+    return ESP_FAIL;
+
+  if ((ret = httpd_req_recv(req, buf, MIN(remaining, sizeof(buf)))) <= 0) {
+    return ESP_FAIL;
+  }
+
+  for (i = 0; i < sizeof(help_txt_map) / sizeof(help_txt_map[0]); ++i) {
+    if (strncmp(buf, help_txt_map[i].key, ret) == 0) {
+      httpd_resp_sendstr(req, help_txt_map[i].txt);
+      httpd_resp_set_type(req, "text/plain;charset=\"ISO-8859-1\"");
+      return ESP_OK;
+    }
+  }
+  return ESP_FAIL;
+}
+
+////////////////////////// URI definitions ////////////////////////////////
+extern const u8 text_tfmcu_html[] asm("_binary_tfmcu_html_start");
+extern const u8 text_tfmcu_js[] asm("_binary_tfmcu_js_start");
+
+static const httpd_uri_t httpd_uris[] = {
+    { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json, .user_ctx = NULL, },
+    { .uri = "/", .method = HTTP_GET, .handler = handle_uri_tfmcu_html, .user_ctx = (void*) text_tfmcu_html, },
+    { .uri = "/tfmcu.js", .method = HTTP_GET, .handler = handle_uri_tfmcu_js, .user_ctx = (void*) text_tfmcu_js, },
+    { .uri = "/doc", .method = HTTP_POST, .handler = handle_uri_doc_post, .user_ctx = NULL, },
+};
+
 
 
 static httpd_handle_t start_webserver(void) {
+  int i;
   httpd_handle_t server = NULL;
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
   config.max_open_sockets = 6;
-
 
   ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
   if (httpd_start(&server, &config) != ESP_OK) {
@@ -149,17 +174,20 @@ static httpd_handle_t start_webserver(void) {
   }
 
   ESP_LOGI(TAG, "Registering URI handlers");
-  ESP_ERROR_CHECK(httpd_register_uri_handler(server, &uri_cmd_json));
-  ESP_ERROR_CHECK(httpd_register_uri_handler(server, &uri_tfmcu_js));
-  ESP_ERROR_CHECK(httpd_register_uri_handler(server, &uri_tfmcu_html));
+  for (i = 0; i < sizeof(httpd_uris) / sizeof(httpd_uri_t); ++i) {
+    ESP_ERROR_CHECK(httpd_register_uri_handler(server, &httpd_uris[i]));
+  }
 
   return server;
 }
 
-static httpd_handle_t server;
 
-///////// public ///////////////////
+
+///////// public interface ///////////////////
+
 void hts_enable_http_server(bool enable) {
+  static httpd_handle_t server;
+
   if (enable && !server) {
     server = start_webserver();
   }

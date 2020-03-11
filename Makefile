@@ -17,15 +17,18 @@ $(1): $$(addsuffix -$(1),$(mcus))
 endef
 $(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(tgt))))
 
-http_data :
-	cd src/net/content && $(MAKE)
+.PHONY: http_content http_proxy
+http_content :
+	cd src/net/content && make
+http_proxy:
+	cd src/net/content && make proxy
 
 esp8266_build_cmd := make -C src/esp8266
 esp8266_tgts_auto := all clean flash app-flash flashinit flasherase spiffs
 
 define GEN_RULE
 .PHONY: esp8266-$(1)
-esp8266-$(1): http_data
+esp8266-$(1): http_content
 	$(esp8266_build_cmd) $(1)
 endef
 $(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
@@ -49,11 +52,11 @@ esp32-$(1):
 endef
 $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
-esp32-all: http_data
+esp32-all: http_content
 	$(esp32_build_cmd) reconfigure all
-esp32-lan: http_data
+esp32-lan: http_content
 	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
-esp32-flash: http_data
+esp32-flash: http_content
 	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
 
 

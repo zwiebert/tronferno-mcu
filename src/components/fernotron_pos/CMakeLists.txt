@@ -1,4 +1,4 @@
-set(srcs commands.c current_state.c shutter_state.c shutter_prefs_kvs.c) 
+set(srcs commands.c shutter_pct.c shutter_prefs_kvs.c) 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 

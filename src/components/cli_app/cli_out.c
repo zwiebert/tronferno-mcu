@@ -1,16 +1,9 @@
 #include "app/proj_app_cfg.h"
-
-
 #include <string.h>
-
-#include "fernotron_sep/set_endpos.h"
-#include "fernotron_pos/current_state.h"
 #include "config/config.h"
-#include "fernotron_auto/timer_state.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "userio_app/status_output.h"
-#include "fernotron_auto/timer_data.h"
 #include "cli_app.h"
 
 

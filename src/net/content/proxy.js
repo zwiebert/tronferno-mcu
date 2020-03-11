@@ -20,6 +20,9 @@ let proxy = httpProxy.createProxyServer();
 server.all("/*.json", (req, res) => {
     proxy.web(req, res, { target: mcu });
 });
+server.all("/doc", (req, res) => {
+    proxy.web(req, res, { target: mcu });
+});
 
 
 // serve some files
@@ -36,7 +39,12 @@ server.get("/tfmcu_dev.html", (req, res) => {
 server.get("/tfmcu_dev.js", (req, res) => {
     res.sendFile(cont_dir + '/tfmcu_dev.js');
 });
-
+server.get("/tfmcu.html", (req, res) => {
+  res.sendFile(cont_dir + '/tfmcu.html');
+});
+server.get("/tfmcu.js", (req, res) => {
+  res.sendFile(cont_dir + '/tfmcu.js');
+});
 
 
 // ESP32 firware image for OTA update

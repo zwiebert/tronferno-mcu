@@ -9,8 +9,9 @@
 #define FERNOTRON_FER_API_H_
 
 #include "fer_app_cfg.h"
-#include "include/fernotron/fer_msg_basic.h"
-#include "include/fernotron/timer_data.h"
+#include "fernotron/fer_msg_basic.h"
+#include "fernotron/timer_data.h"
+#include "fernotron/fsb.h"
 #include "time.h"
 
 bool send_rtc_message(fsbT *fsb, time_t rtc);

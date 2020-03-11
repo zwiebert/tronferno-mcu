@@ -6,20 +6,13 @@
  */
 
 #include "app/proj_app_cfg.h"
-
-
 #include <string.h>
-
-#include "fernotron_sep/set_endpos.h"
-#include "fernotron_pos/current_state.h"
 #include "config/config.h"
-#include "fernotron_auto/timer_state.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
-//#include "userio_app/status_output.h"
-#include "fernotron_auto/timer_data.h"
 #include "cli_app.h"
 #include "userio/status_json.h"
+#include "fernotron/fsb.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 #define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
@@ -144,15 +137,4 @@ const struct parm_handlers parm_handlers = {
 
 bool cli_isJson;
 
-#if TEST_MODULE_CLI
-bool testModule_cli() {
-  char cl[] = "timer g=5 astro=0;";  //"timer g=2 m=2 weekly=08222000++++10552134+";
-  int n = parse_commandline(cl);
-  if (n > 0)
-    if (sj_open_root_object("tfmcu")) {
-      process_parm(par, n);
-      sj_close_root_object();
-    }
-  return n != -1;
-}
-#endif
+

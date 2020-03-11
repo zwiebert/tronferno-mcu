@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "fernotron_sep/set_endpos.h"
-#include "fernotron_pos/current_state.h"
+#include "fernotron_pos/shutter_pct.h"
 #include "userio_app/status_output.h"
 #include "app/proj_app_cfg.h"
 #include "fernotron_auto/timer_state.h"
@@ -72,7 +72,6 @@ process_parmTimer(clpar p[], int len) {
   time_t timer = time(NULL);
   bool f_modify = false;
   bool f_no_send = false;
-  bool send_ok = false;
   timer_data_t tdr;
   timer_data_t tda = td_initializer;
   u8 mn = 0;
@@ -163,10 +162,10 @@ process_parmTimer(clpar p[], int len) {
   bool f_manual = false;
 
   if (is_timer_frame) {
-    read_gm_bitmask("MANU", manual_bits, 1);
+    fer_gmByName_load("MANU", &manual_bits, 1);
     if (f_disableManu || f_enableManu) {
       PUT_BIT(manual_bits[group], mn, f_enableManu);
-      save_gm_bitmask("MANU", manual_bits, 1);
+      fer_gmByName_store("MANU", &manual_bits, 1);
     }
     f_manual = GET_BIT(manual_bits[group], mn);
   }

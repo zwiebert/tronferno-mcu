@@ -12,6 +12,7 @@
 #include "stdbool.h"
 
 #include "fernotron/fer_timings.h"
+#include "fernotron/fsb.h"
 #include "fernotron/fer_msg_extension.h"
 #include "misc/int_macros.h"
 #include "txtio/inout.h"
@@ -24,24 +25,27 @@ typedef uint32_t u32;
 typedef int32_t i32;
 
 
+// diagnostic output
+static void frb_printPacket(const union fer_cmd_row *cmd);
+static void fpr_printPrgPacketInfo(uint8_t d[FER_PRG_PACK_CT][FER_PRG_BYTE_CT], bool rtc_only);
 
-void frb_printPacket(const u8 *dg) {
+static void frb_printPacket(const union fer_cmd_row *cmd) {
   int i;
 
   for (i = 0; i < FER_CMD_BYTE_CT; ++i) {
-    io_print_hex_8(dg[i], true);
+    io_print_hex_8(cmd->bd[i], true);
   }
   io_putlf();
 }
 
-void 
+static void
 printTimerStamp(u8 d[18][9], int row, int col) {
   printBCD(d[row][col+1]);
   io_puts(":");
   printBCD(d[row][col]);
 }
 
-void  fpr_printPrgPacketInfo(u8 d[FER_PRG_PACK_CT][FER_PRG_BYTE_CT], bool rtc_only) {
+static void  fpr_printPrgPacketInfo(u8 d[FER_PRG_PACK_CT][FER_PRG_BYTE_CT], bool rtc_only) {
   int row, col;
 
 const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
@@ -98,12 +102,12 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 }
 
 //cast data (message after cmd) to byte array
-#define fmsg_get_data(msg) ((u8(*)[FER_PRG_BYTE_CT])(msg)->rtc)
+#define fmsg_get_data(msg) ((u8(*)[FER_PRG_BYTE_CT])(msg)->rtc.bd)
 typedef u8(*fmsg_data)[FER_PRG_BYTE_CT];
 
 void  fmsg_print(const fer_msg *msg, fmsg_type t, bool verbose) {
 
-  frb_printPacket(msg->cmd);
+  frb_printPacket(&msg->cmd);
 
 #ifndef FER_RECEIVER_MINIMAL
   if (t == MSG_TYPE_RTC || t == MSG_TYPE_TIMER) {

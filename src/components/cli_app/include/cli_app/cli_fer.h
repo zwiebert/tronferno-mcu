@@ -18,5 +18,6 @@ bool asc2group(const char *s, fer_grp *grp);
 bool asc2memb(const char *s, fer_memb *memb);
 
 
+extern gm_bitmask_t manual_bits;
 
 #endif /* CLI_CLI_FER_H_ */

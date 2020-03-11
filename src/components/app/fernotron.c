@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "fernotron_sep/set_endpos.h"
-#include "fernotron_pos/current_state.h"
+#include "fernotron_pos/shutter_pct.h"
 #include "app/proj_app_cfg.h"
 
 
@@ -57,12 +57,12 @@ static void plainMessageReceived_cb(const fsbT *fsb) {
       if (m)
         m -= 7;
     }
-    currentState_Move(FSB_GET_DEVID(fsb), g, m, FSB_GET_CMD(fsb));
+    ferPos_mMove(FSB_GET_DEVID(fsb), g, m, FSB_GET_CMD(fsb));
   }
 }
 
 static void beforeFirstSend_cb(const fsbT *fsb) {
- currentState_Move(FSB_GET_DEVID(fsb), FSB_GET_GRP(fsb), FSB_GET_MEMB(fsb) == 0 ? 0 : FSB_GET_MEMB(fsb)-7, FSB_GET_CMD(fsb));
+ ferPos_mMove(FSB_GET_DEVID(fsb), FSB_GET_GRP(fsb), FSB_GET_MEMB(fsb) == 0 ? 0 : FSB_GET_MEMB(fsb)-7, FSB_GET_CMD(fsb));
 }
 
 static void beforeAnySend_cb(fmsg_type msg_type, const fsbT *fsb, const fer_msg *txmsg) {
@@ -80,7 +80,7 @@ void loop(void) {
 #endif
 
   cli_loop();
-  currentState_loop();
+  ferPos_loop();
 
   timer_state_loop();
   cu_auto_set_check_timeout();
@@ -109,16 +109,8 @@ main_setup() {
   fer_init_sender(&default_sender, C.fer_centralUnitID);
   astro_init_and_reinit();
 
-#ifdef DEBUG
-  if (test_modules()) {
-    io_puts("self-test: ok\n");
-  } else {
-    io_puts("self-test: fail\n");
-  }
-#endif
-
   so_output_message(SO_FW_START_MSG_PRINT, 0);
-  currentState_init();
+  ferPos_init();
 
   dbg_trace();
   return 0;

@@ -176,13 +176,4 @@ rtc_setup() {
 #endif
 }
 
-#if TEST_MODULE_RTC
-bool testModule_rtc()
-{
-  char s[20]; bool result;
-  result = rtc_set_by_string("2017-09-07T13:22:33");
-  result = rtc_get_by_string(s);
-  return result;
-}
 
-#endif

@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-#include "fernotron_pos/shutter_state.h"
+#include "fernotron_pos/shutter_pct.h"
 #include "cli_imp.h"
 #include "cli_fer.h"
 #include "main/common.h"
@@ -43,8 +43,6 @@ process_parmPair(clpar p[], int len) {
   gm_bitmask_t mm = {0,};
   bool has_mm = false;
   bool pair = false, unpair = false, read = false, read_all = false,  scan = false, store = false;
-
-  struct shutter_timings st = {0, };
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
