@@ -699,7 +699,7 @@ function usedMembers_fromConfig() {
 
   gu = [0];
   for(let g=1; g < 8; ++g) {
-    let um = sa[g] ? sa[g] : 0;
+    let um = sa[g] ? parseInt(sa[g]) : 0;
     if (um) {
       gu.push(g);
     }
