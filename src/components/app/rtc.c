@@ -5,6 +5,9 @@
 
 
 #include <time.h>
+#ifdef POSIX_TIME
+#include <sys/time.h>
+#endif
 #include "config/config.h"
 #include "main/common.h"
 
@@ -16,7 +19,8 @@ void set_system_time(time_t timestamp);
 void  rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t source) {
   rtc_last_time_source = source;
 #ifdef POSIX_TIME
-  //FIXME: not implemented yet
+  struct timeval tv = {.tv_sec = stamp, .tv_usec = 0 };
+  settimeofday(&tv, NULL);
 #else
   set_system_time(stamp);
 #endif
