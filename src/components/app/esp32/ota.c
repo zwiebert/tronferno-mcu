@@ -68,9 +68,6 @@ void simple_ota_example_task(void * pvParameter) {
   esp_err_t ret = esp_https_ota(&config);
   if (ret == ESP_OK) {
     state = ota_DONE;
-#if DISTRIBUTION
-    esp_restart();
-#endif
   } else {
     state = ota_FAIL;
     // ESP_LOGE(TAG, "Firmware upgrade failed");
