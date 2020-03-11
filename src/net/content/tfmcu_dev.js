@@ -1,11 +1,9 @@
-var base = '';
 var gmu = [0,1,2,3,4,5,6,7];
 var gu = [0,1,2,3,4,5,6,7];
 var gu_idx = 0;
 
 let cuas_Interval;
 let cuas_State = 0;
-let gmc_fetch = 0;
 
 const FETCH_CONFIG = 1;
 const FETCH_AUTO = 2;
@@ -17,12 +15,10 @@ const FETCH_ALIASES_START_UNPAIRING = 64;
 const FETCH_SHUTTER_PREFS = 128;
 const FETCH_GMU = 256;
 
-const DIR_UP = 0;
-const DIR_DOWN = 1;
+const UP = 0;
+const DOWN = 1;
 
-function dbLog(msg) {
-  console.log(msg);
-}
+function dbLog(msg) {  console.log(msg); }
 
 class AppState {
 
@@ -36,6 +32,7 @@ class AppState {
     this.mPct = 0;
     this.docs = {};
     this.tfmcu_config = {};
+    this.gmc_fetch = 0;
   }
 
   set tabVisibility(value) {
@@ -67,8 +64,8 @@ class AppState {
     this.linkAutoObj();
     this.automaticOptions_updHtml();
     dbLog(JSON.stringify(this));
-    if (gmc_fetch)
-      this.http_fetchByMask(gmc_fetch);
+    if (this.gmc_fetch)
+      this.http_fetchByMask(this.gmc_fetch);
     aliasPaired_updHtml();
   }
 
@@ -199,7 +196,7 @@ class AppState {
       } else if ("gm-used" in config && !("cu" in config)) {
         this.tfmcu_config = Object.assign(this.tfmcu_config, config);
         usedMembers_fromConfig();
-        console.log("tfmcu_config", this.tfmcu_config);
+        dbLog("tfmcu_config: " + JSON.stringify(this.tfmcu_config));
       } else {
         document.getElementById("config-div").innerHTML = mcuConfigTable_genHtml(obj.config);
         mcuConfig_updHtml(obj.config);
@@ -332,7 +329,7 @@ class AppState {
         c: "read",
       };
 
-    let url = base+'/cmd.json';
+    let url = '/cmd.json';
     http_postRequest(url, tfmcu);
   }
 
@@ -375,7 +372,7 @@ function shutterPrefs_fromHtml_toMcu() {
   pref.mvut = Math.floor((parseFloat(mvut.value) * 10)).toString();
   pref.mvdt = Math.floor((parseFloat(mvdt.value) * 10)).toString();
 
-  var url = base+'/cmd.json';
+  var url = '/cmd.json';
   http_postRequest(url, tfmcu);
 }
 
@@ -390,7 +387,7 @@ let shutterPrefs_stopClock = {
 
 function shutterPrefs_stopClock_tick() {
   let spsc = shutterPrefs_stopClock;
-  let elem = document.getElementById(spsc.direction == DIR_UP ? "shpMvut": "shpMvdt");
+  let elem = document.getElementById(spsc.direction == UP ? "shpMvut": "shpMvdt");
 
   spsc.val  += (spsc.ms / 100);
   elem.value = (spsc.val / 10.0).toString();
@@ -401,10 +398,10 @@ function shutterPrefs_stopClock_start() {
 
   const pct = ast.pct;
   if (pct === 0) {
-    spsc.direction = DIR_UP;
+    spsc.direction = UP;
     http_postShutterCommand('up');
   } else if (pct === 100) {
-    spsc.direction = DIR_DOWN;
+    spsc.direction = DOWN;
     http_postShutterCommand('down');
   } else {
     return;
@@ -424,7 +421,7 @@ function shutterPrefs_stopClock_stop() {
   if (spsc.ivId) {
     clearInterval(spsc.ivId);
     spsc.ivId = 0;
-    ast.pct = spsc.direction == DIR_UP ? 100 : 0;
+    ast.pct = spsc.direction == UP ? 100 : 0;
   }
 }
 
@@ -551,7 +548,6 @@ function alias_isKeyPairedToM(key, g, m) {
     return false;
 
   const b = parseInt(chunks[g],16);
-  console.log("b", b);
 
   return (b & (1 << m)) != 0;
 
@@ -564,9 +560,7 @@ function aliasPaired_updHtml() {
 
   for(let i=pas.options.length-1; i >= 0; --i)
     pas.remove(i);
-  console.log(ast.aliases);
   for (let key in ast.aliases) {
-    console.log("key",key);
     if (!alias_isKeyPairedToM(key, g, m))
       continue;
 
@@ -631,7 +625,7 @@ function aliasTable_fromHtml_toMcu(key){
 
   let tfmcu = {"to":"tfmcu", "pair":{"a":key, "mm":val, "c":"store"}};
 
-  var url = base+'/cmd.json';
+  var url = '/cmd.json';
   http_postRequest(url, tfmcu);
 
 }
@@ -705,7 +699,7 @@ function usedMembers_fromConfig() {
 
   gu = [0];
   for(let g=1; g < 8; ++g) {
-    let um = sa[g] ? sa[g] : 0;
+    let um = sa[g] ? parseInt(sa[g]) : 0;
     if (um) {
       gu.push(g);
     }
@@ -800,7 +794,7 @@ function http_postRequest(url = '', data = {}) {
 }
 
 function http_postDocRequest(name) {
-  let url = base+'/doc';
+  let url = '/doc';
   // Default options are marked with *
   return fetch(url, {
     method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -829,7 +823,7 @@ function http_postDocRequest(name) {
 const reload_Progress = {
   ivId: 0,
   ms: 1000,
-  count: 10,
+  count: 12,
   counter: 0,
   divs: ["netota_restart_div", "config_restart_div" ],
 };
@@ -847,7 +841,6 @@ function req_reloadStart() {
   const rpr = reload_Progress;
   let e = null;
   for (let div of rpr.divs) {
-    console.log("div", div);
     let e = document.getElementById(div);
     if (e.offsetParent === null)
       continue;
@@ -864,7 +857,7 @@ function req_reloadStart() {
 
 function req_mcuRestart() {
   var json = { to:"tfmcu", config: { restart:"1" } };
-  var url = base+'/cmd.json';
+  var url = '/cmd.json';
   http_postRequest(url, json);
   req_reloadStart();
   //setTimeout(function(){ location.reload(); }, 10000);
@@ -873,13 +866,13 @@ function req_mcuRestart() {
 
 function req_cuasStatus() {
   var json = { to:"tfmcu", config: { cuas:"?" } };
-  var url = base+'/cmd.json';
+  var url = '/cmd.json';
   http_postRequest(url, json);
 }
 
 function req_cuasStart() {
   var json = { to:"tfmcu", config: { cu:"auto" } };
-  var url = base+'/cmd.json';
+  var url = '/cmd.json';
   http_postRequest(url, json);
   cuas_State = 0;
   cuas_Interval = window.setInterval(req_cuasStatus, 1000);
@@ -918,7 +911,7 @@ function mcuConfig_fromHtml_toMcu() {
     tfmcu.config = new_cfg;
 
     dbLog(JSON.stringify(tfmcu));
-    var url = base+'/cmd.json';
+    var url = '/cmd.json';
     dbLog("url: "+url);
     http_postRequest(url, tfmcu);
   }
@@ -936,7 +929,7 @@ function http_postShutterCommand(c=document.getElementById('send-c').value) {
   };
   tfmcu.send = send;
   dbLog(JSON.stringify(tfmcu));
-  var url = base+'/cmd.json';
+  var url = '/cmd.json';
   dbLog("url: "+url);
   http_postRequest(url, tfmcu);
   shuPos_perFetch_start();
@@ -950,7 +943,7 @@ function netota_FetchFeedback() {
   netmcu.mcu = {
     "ota":"?"
   };
-  let url = base+'/cmd.json';
+  let url = '/cmd.json';
   dbLog("url: "+url);
   http_postRequest(url, netmcu);
 }
@@ -964,7 +957,7 @@ function netFirmwareOTA(ota_name) {
   netmcu.mcu = {
     ota: ota_name
   };
-  let url = base+'/cmd.json';
+  let url = '/cmd.json';
   dbLog("url: "+url);
   http_postRequest(url, netmcu);
   document.getElementById("netota_progress_div").innerHTML = "<strong>Firmware is updating...<br></strong>" + '<progress id="netota_progress_bar" value="0" max="30">70 %</progress>';
@@ -1011,8 +1004,6 @@ function onMPressed() {
 }
 
 function onPos(pct) {
-  console.log("onPos", pct);
-
   let tfmcu = {to:"tfmcu"};
   tfmcu.send = {
     g: ast.g,
@@ -1020,13 +1011,13 @@ function onPos(pct) {
     p: pct,
   };
 
-  let url = base+'/cmd.json';
+  let url = '/cmd.json';
   http_postRequest(url, tfmcu);
   shuPos_perFetch_start();
 }
 
 function req_automatic() {
-  let url = base+'/cmd.json';
+  let url = '/cmd.json';
   let tfmcu = { to:"tfmcu", timer: { }};
   let auto = tfmcu.timer;
   let has_daily = false, has_weekly = false, has_astro = false;
@@ -1112,9 +1103,9 @@ function navTabs_updHtml(idx) {
   }
   if ('fetch_gm' in nt) {
     fetch |= nt.fetch_gm;
-    gmc_fetch = nt.fetch_gm;
+    ast.gmc_fetch = nt.fetch_gm;
   } else {
-    gmc_fetch = 0;
+    ast.gmc_fetch = 0;
   }
 
   if (fetch) {
@@ -1184,7 +1175,7 @@ function onContentLoaded() {
 
   document.getElementById("mrtb").onclick = () => req_mcuRestart();
 
-  document.getElementById("netota").onclick = () => netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);// dev-distro-delete-line//
+  document.getElementById("netota").onclick = () => netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);//dev-distro-delete-line//
   document.getElementById("netota_master").onclick = () => netFirmwareOTA(otaName_master);
   document.getElementById("netota_beta").onclick = () => netFirmwareOTA(otaName_beta);
 
