@@ -54,6 +54,20 @@ time_to_bcd(u8 *bcdMinutes, u8 *bcdHours, double time, bool force_even_minutes) 
 
 static u16 astro_minutes[48];
 
+static int astroTableIndex_from_tm(const struct tm *tm) {
+  int m = tm->tm_mon + 1;
+  int d = tm->tm_mday;
+
+  int feb = m > 2 ? -2 : 0; // february has only 28 days
+
+  int idx = ((m - 1) * 30 + feb + d + 2) / 4 + 2;
+  if (idx < 0 || idx > 47)
+    idx = ((6 - (m - 1)) * 30 - d + 1) / 4 + 48 - 5;
+  if (idx < 0)
+    idx = idx * -1;
+  return idx;
+}
+
 void astro_populate_astroMinutes_from_astroBcd() {
   u8 row, col, midx=0;
 
@@ -69,20 +83,9 @@ void astro_populate_astroMinutes_from_astroBcd() {
     }
   }
 }
+
 u16 astro_calc_minutes(const struct tm *tm) {
-  i16 old_yd, yd = old_yd = (tm->tm_mon * 30 + tm->tm_mday);
-  i16 idx;
-
-  if (1 <= yd && yd <= 173) {
-    idx = (yd + 2) / 4 + 2;
-    yd = 352 - (4 * idx);
-  } else {
-    idx = abs((352 - yd) / 4);
-    yd = yd / 4 * 4;
-  }
-
-//  ets_printf("idx: %d, yd: %d (old: %d)\n", idx, yd, old_yd);
-
+  int idx = astroTableIndex_from_tm(tm);
   assert(0 <= idx && idx <= 47);
   return astro_minutes[idx];
 }
