@@ -1,10 +1,3 @@
-var gmu = [0,1,2,3,4,5,6,7];
-var gu = [0,1,2,3,4,5,6,7];
-var gu_idx = 0;
-
-let cuas_Interval;
-let cuas_State = 0;
-
 const FETCH_CONFIG = 1;
 const FETCH_AUTO = 2;
 const FETCH_POS = 4;
@@ -25,6 +18,7 @@ class AppState {
   constructor() {
     this.mG = Number.parseInt((localStorage.getItem("group") || "0"), 10);
     this.mM = Number.parseInt((localStorage.getItem("member") || "0"), 10);
+    this.mGmu = localStorage.getItem("gmu") || [0,1,2,3,4,5,6,7];
     this.mTabVisibility = Number.parseInt((localStorage.getItem("tab_vis") || "1"), 10);
     this.mAuto = {link:{}, auto:{}};
     this.mPair = {all:{}};
@@ -33,6 +27,14 @@ class AppState {
     this.docs = {};
     this.tfmcu_config = {};
     this.gmc_fetch = 0;
+    this.load_fetch = FETCH_GMU;
+  }
+
+  load() {
+    gm_updHtml();
+    this.tabIdx = this.mTabIdx;
+    this.http_fetchByMask(this.load_fetch);
+    this.tabVisibility = this.mTabVisibility;
   }
 
   set tabVisibility(value) {
@@ -40,12 +42,9 @@ class AppState {
     localStorage.setItem("tab_vis", value.toString());
     navTabs_updHtml(parseInt(value));
   }
+
   get tabVisibility() {
     return  this.mTabVisibility;
-  }
-
-  get g() {
-    return this.mG;
   }
 
   set pct(val) {
@@ -54,12 +53,17 @@ class AppState {
     document.getElementById('spr').value = val;
     shuPos_perFetch_posRecieved(val);
   }
+
   get pct() {
     return this.mPct;
   }
+
   getAutoName() { return  "auto" + this.g.toString() + this.m.toString(); }
+
   getAutoObj() { let key = this.getAutoName(); return (key in this.mAuto.auto) ? this.mAuto.auto[key] : {}; }
+
   linkAutoObj() { this.mAuto.link = this.getAutoObj(); }
+
   gmChanged() {
     this.linkAutoObj();
     this.automaticOptions_updHtml();
@@ -69,23 +73,36 @@ class AppState {
     aliasPaired_updHtml();
   }
 
+  get g() {
+    return this.mG;
+  }
+
+  g_next() {
+    for (let i = this.mG+1; i <= 7; ++i) {
+      if (this.mGmu[i] > 0) {
+        this.g = i;
+        return;
+      }
+    }
+    this.g = 0;
+  }
+
+  m_next() {
+    this.m = (this.mM >= this.gmu[this.g]) ? 0 : this.mM + 1;
+  }
+
   set g(value) {
     this.mG = value;
     localStorage.setItem("group", value.toString());
-    document.getElementById("sgi").value = value ? value : "A";
-
-    if (value === 0) {
-      document.getElementById("smi").value = "";
-    } else {
-      if (this.mM > gmu[value]) {
-        value = gmu[value];
+    if (value != 0) {
+      if (this.mM > this.gmu[value]) {
+        value = this.gmu[value];
         this.mM = value;
         localStorage.setItem("member", value.toString());
-        document.getElementById("smi").value = value ? value : "A";
-      } else {
-        document.getElementById("smi").value = this.mM ? this.mM : "A";
       }
     }
+
+    gm_updHtml();
     this.gmChanged();
   }
 
@@ -94,12 +111,22 @@ class AppState {
   }
 
   set m(value) {
-    if (this.mG == 0)
-      return;
-    this.mM = value;
-    localStorage.setItem("member", value.toString());
-    document.getElementById("smi").value = value ? value : "A";
-    this.gmChanged();
+    if (this.mG !== 0) {
+      this.mM = value;
+      localStorage.setItem("member", value.toString());
+      document.getElementById("smi").value = value ? value : "A";
+      gm_updHtml();
+      this.gmChanged();
+    }
+  }
+
+  get gmu() {
+    return this.mGmu;
+  }
+
+  set gmu(value) {
+    this.mGmu = value;
+    localStorage.setItem("gmu", value);
   }
 
   get auto() {
@@ -116,20 +143,23 @@ class AppState {
     this.mPair.all[key] = val;
     aliasControllers_updHtml();
   }
+
   set aliases(value) {
     this.mPair.all = value;
     aliasControllers_updHtml();
   }
+
   get aliases() {
     return  this.mPair.all;
   }
+
   set shutterPrefs(obj) {
     Object.assign(this.mShutterPrefs, obj);
   }
+
   get shutterPrefs() {
     return this.mShutterPrefs;
   }
-
 
   automaticOptions_updHtml() {
     let auto = this.auto;
@@ -189,19 +219,22 @@ class AppState {
           document.getElementById("id_cuasStatus").innerHTML = s;
           config.cuas = cuas_State;
         }
-      } else if (document.getElementById("cfg_table_id")) {
-        mcuConfig_updHtml(obj.config);
-        this.tfmcu_config = obj;
-        usedMembers_updHtml();
-      } else if ("gm-used" in config && !("cu" in config)) {
-        this.tfmcu_config = Object.assign(this.tfmcu_config, config);
-        usedMembers_fromConfig();
-        dbLog("tfmcu_config: " + JSON.stringify(this.tfmcu_config));
       } else {
-        document.getElementById("config-div").innerHTML = mcuConfigTable_genHtml(obj.config);
+        this.tfmcu_config = Object.assign(this.tfmcu_config, config);
+        if ("gm-used" in config) {
+          usedMembers_fromConfig();
+        }
+
+        if (!document.getElementById("cfg_table_id")) {
+          if ("cu" in config) {
+            document.getElementById("config-div").innerHTML = mcuConfigTable_genHtml(obj.config);
+          }
+        }
+      }
+
+      if (document.getElementById("cfg_table_id")) {
         mcuConfig_updHtml(obj.config);
-        this.tfmcu_config = obj;
-        usedMembers_updHtml();
+        usedMembers_updHtml_fromHtml();
       }
     }
 
@@ -333,17 +366,17 @@ class AppState {
     http_postRequest(url, tfmcu);
   }
 
-  load() {
-    document.getElementById("sgi").value = this.mG ? this.mG : "A";
-    document.getElementById("smi").value = this.mM ? this.mM : "A";
-    this.tabIdx = this.mTabIdx;
-    this.http_fetchByMask(FETCH_GMU);
-    this.tabVisibility = this.mTabVisibility;
-  }
-
 }
 
 let ast;
+
+function  gm_updHtml() {
+  const g = ast.g;
+  const m = ast.m;
+  document.getElementById("sgi").value = g ? g : "A";
+  document.getElementById("smi").value = g ? (m ? m : "A") : "";
+}
+
 
 function shutterPrefs_updHtml() {
   const key = "shp" + ast.g.toString() + ast.m.toString();
@@ -695,38 +728,33 @@ function usedMembers_fromConfig() {
 
   let s = ast.tfmcu_config["gm-used"];
 
+
   let sa = s ? s.split('').reverse() : [];
 
-  gu = [0];
+  let gmu = [0,1,2,3,4,5,6,7];
+
   for(let g=1; g < 8; ++g) {
     let um = sa[g] ? parseInt(sa[g]) : 0;
-    if (um) {
-      gu.push(g);
-    }
     gmu[g] = um;
   }
+
+  ast.gmu = gmu;
 }
 
-function usedMembers_updHtml() {
+function usedMembers_updHtml_fromHtml() {
   let val = document.getElementById("cfg_gm-used").value; // HEX string! not a number!
 
   while(val.length < 8)
     val = "0"+val;
 
   let g=1;
-  gmu = [0];
-  gu = [0];
   for(let i=6; i >= 0; --i,++g) {
     let id = "gmu"+(g.toString());
-    let mct = parseInt(val[i], 16);
-    if (mct)
-      gu.push(g);
-    gmu.push(mct);
     document.getElementById(id).value = val[i];
   }
 }
 
-function usedMembers_fromHtml() {
+function usedMembers_fromHtml_toHtml() {
   let val = "";
 
   let written = false; // to skip leading zeros
@@ -767,48 +795,65 @@ function mcuConfig_updHtml(cfg) {
   });
 }
 
+function fetchWithTimeout( url, data, timeout ) {
+  return new Promise( (resolve, reject) => {
+    // Set timeout timer
+    let timer = setTimeout(
+      () => reject( new Error('Request timed out') ),
+      timeout
+    );
+
+    fetch(url, data).then(
+      response => resolve( response ),
+      err => reject( err )
+    ).finally( () => clearTimeout(timer) );
+  });
+}
+
 function http_postRequest(url = '', data = {}) {
-  // Default options are marked with *
   dbLog("post-json: "+JSON.stringify(data));
-  return fetch(url, {
-    method: "POST", // *GET, POST, PUT, DELETE, etc.
-    // mode: "no-cors", // no-cors, cors, *same-origin //dev-delete-line//
-    cache: "no-cache", // *default, no-cache, reload, force-cache,
-    // only-if-cached
-    // credentials: "same-origin", // include, *same-origin, omit
+
+  const fetch_data = {
+    method: "POST",
+    cache: "no-cache",
     headers: {
       "Content-Type": "application/json",
     },
-    redirect: "follow", // manual, *follow, error
-    referrer: "no-referrer", // no-referrer, *client
-    body: JSON.stringify(data), // body data type must match "Content-Type"
-    // header
-  })
+    referrer: "no-referrer",
+    body: JSON.stringify(data),
+  };
+
+
+
+  return fetch(url, fetch_data)
+
     .then(response => {
-      if(response.ok) {
-        response.json().then(json => {
-          ast.http_handleResponses(json);
-        });
+      if(!response.ok) {
+        console.log("error");
+        throw new Error("network repsonse failed");
       }
+      return response.json();
+    })
+
+    .then((json) => ast.http_handleResponses(json))
+
+    .catch((error) => {
+      console.log("error: http_postRequest(): ", error);
     });
+
 }
 
 function http_postDocRequest(name) {
   let url = '/doc';
   // Default options are marked with *
   return fetch(url, {
-    method: "POST", // *GET, POST, PUT, DELETE, etc.
-    // mode: "no-cors", // no-cors, cors, *same-origin //dev-delete-line//
-    cache: "no-cache", // *default, no-cache, reload, force-cache,
-    // only-if-cached
-    // credentials: "same-origin", // include, *same-origin, omit
+    method: "POST",
+    cache: "no-cache",
     headers: {
       "Content-Type": "text/plain",
     },
-    redirect: "follow", // manual, *follow, error
-    referrer: "no-referrer", // no-referrer, *client
-    body: name, // body data type must match "Content-Type"
-    // header
+    referrer: "no-referrer",
+    body: name,
   })
     .then(response => {
       if(response.ok) {
@@ -864,6 +909,9 @@ function req_mcuRestart() {
 }
 
 
+let cuas_Interval;
+let cuas_State = 0;
+
 function req_cuasStatus() {
   var json = { to:"tfmcu", config: { cuas:"?" } };
   var url = '/cmd.json';
@@ -881,11 +929,11 @@ function req_cuasStart() {
 
 
 function mcuConfig_fromHtml_toMcu() {
-  let tfmcu = Object.assign({},ast.tfmcu_config);
-  var cfg = tfmcu.config;
+  const cfg = ast.tfmcu_config;
+
   var new_cfg = {};
   var has_changed = false;
-  usedMembers_fromHtml();
+  usedMembers_fromHtml_toHtml();
   Object.keys(cfg).forEach (function (key, idx) {
     let new_val = 0;
     let el = document.getElementById('cfg_'+key);
@@ -908,12 +956,8 @@ function mcuConfig_fromHtml_toMcu() {
 
   if (has_changed) {
     new_cfg.all = "?";
-    tfmcu.config = new_cfg;
-
-    dbLog(JSON.stringify(tfmcu));
     var url = '/cmd.json';
-    dbLog("url: "+url);
-    http_postRequest(url, tfmcu);
+    http_postRequest(url, { config: new_cfg });
   }
 }
 
@@ -966,41 +1010,12 @@ function netFirmwareOTA(ota_name) {
   document.getElementById("netota_controls").style.display = "none";
 }
 
-function getGuIdx() {
-  let val = ast.g;
-
-  for(let i=0; i < gu.length; ++i)
-    if (gu[i] == val)
-      return i;
-  return 0;
-}
-
 function onGPressed() {
-  let val = ast.g;
-
-  gu_idx = getGuIdx(); // FIXME
-
-  ++gu_idx;
-  if (gu_idx >= gu.length)
-    gu_idx = 0;
-
-  val = gu[gu_idx];
-
-  ast.g = val;
+  ast.g_next();
 }
-
 
 function onMPressed() {
-  let val = ast.m;
-
-  ++val;
-  gu_idx = getGuIdx(); // FIXME
-  let g  = gu[gu_idx];
-
-  if (val > gmu[g])
-    val = 0;
-
-  ast.m = val;
+  ast.m_next();
 }
 
 function onPos(pct) {
