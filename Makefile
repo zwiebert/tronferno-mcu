@@ -33,11 +33,13 @@ esp8266-$(1): http_content
 endef
 $(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
-ifdef BUILD_DIR_BASE
-esp32_build_dir := -B $(BUILD_DIR_BASE)
+ifndef BUILD_BASE
+esp32_build_cmd := idf.py -C src/esp32
+else
+esp32_build_cmd := idf.py -C src/esp32 -B $(BUILD_BASE)
 endif
 
-esp32_build_cmd := idf.py -C src/esp32 $(esp32_build_dir)
+
 esp32_tgts_auto := menuconfig clean fullclean app
 
 .PHONY: esp32-all-force esp32-rebuild
@@ -52,6 +54,7 @@ esp32-$(1):
 endef
 $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
+
 esp32-all: http_content
 	$(esp32_build_cmd) reconfigure all
 esp32-lan: http_content
@@ -60,36 +63,12 @@ esp32-flash: http_content
 	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
 
 
-# unit testing
-ifdef TEST_BUILD_DIR_BASE
-esp32_test_build_dir := -B $(TEST_BUILD_DIR_BASE)
-endif
+#unit testing
+esp32_test_tgts_auto := build clean flash run all
 
-esp32_test_build_cmd := idf.py -C unity $(esp32_test_build_dir)
-
-.PHONY: esp32-test-build esp32-test-clean esp32-test-flash esp32-test-run test-all unity unity-clean
-
-COMPS := $(shell cd src/components && ls)
-#COMPS = fernotron_alias fernotron_auto txtio
-
-unity: unity/unity.txt
-
-unity-clean:
-	-rm -r ./unity
-
-port ?= /dev/ttyUSB0
-
-unity/unity.txt:
-	cp -upr $(IDF_PATH)/tools/unit-test-app unity
-	patch -s -p0 < unity.diff
-	touch unity/unity.txt
-esp32-test-build: unity
-	$(esp32_test_build_cmd) -T "$(COMPS)" reconfigure build
-esp32-test-clean: unity
-	$(esp32_test_build_cmd) clean
-esp32-test-flash: unity
-	$(esp32_test_build_cmd) --port $(port) flash
-esp32-test-run:
-	python3 test/run_tests.py $(port)
-
-test-all: esp32-test-build esp32-test-flash esp32-test-run
+define GEN_RULE
+.PHONY: esp32-$(1)
+esp32-test-$(1):
+	make -C test/esp32 $(1)
+endef
+$(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
