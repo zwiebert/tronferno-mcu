@@ -11,7 +11,9 @@
 #include "userio_app/status_output.h"
 #include "userio/status_json.h"
 #include "fernotron_alias/pairings.h"
+#include "fernotron_auto/timer_data.h"
 #include "cli_app/cli_imp.h"
+#include "cli_app/cli_fer.h"
 #include "cli/mutex.h"
 
 #ifndef DISTRIBUTION
@@ -37,6 +39,7 @@ struct mv {
   gm_bitmask_t mask;
   u32 start_time;
   bool direction_up : 1; //down=false, up=true
+  bool sun_down : 1;
 } moving[mv_SIZE];
 u8 moving_mask;
 
@@ -50,6 +53,10 @@ enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 #define pm_isMemberUnused(g, m) (pm_getPct((g),(m)) == pm_MEMBER_UNUSED)
 #define pm_setGroupUnused(g) pm_setPct((g),0,pm_GROUP_UNUSED)
 #define pm_isGroupUnused(g) (pm_getPct((g),0) == pm_GROUP_UNUSED)
+
+static bool ferPos_mCalcSunStop(u8 g, u8 m, u16 time_s10);
+static bool ferPos_mSunReadyToMoveDown(u8 g, u8 m);
+
 
 static int 
 get_state(u32 a, int g, int m) {
@@ -194,39 +201,35 @@ ferPos_printAllPcts() {
 extern volatile u32 run_time_s10;
 #define run_time_10(x) (run_time_s10 + 0)
 
+static void start_new_moving_mm(int mvi, gm_bitmask_t mm, u32 rt, bool direction) {
+  u8 g;
 
+  moving[mvi] = (struct mv){};
 
-void f(int mvi, u8 g, u8 m, u32 rt) {
-  struct mv *mv = &moving[mvi];
-  int gi;
-
-  gm_ClrBit(moving[mvi].mask, g, m);
-  ferPos_mSetPct(0, g, m, ferPos_mCalcMovePct_fromDirectionAndDuration(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
-  bool remaining = false;
-  for (gi = 0; gi < 8; ++gi) {
-    if (mv->mask[gi]) {
-      remaining = true;
-      break;
-    }
+  for (g = 1; g <= GRP_MAX; ++g) {
+    moving[mvi].mask[g] = mm[g];
   }
-  if (!remaining) {
-    CLR_BIT(moving_mask, mvi);
-  }
-}
-
-static void start_moving(int mvi, u8 g, u8 m, u32 rt, bool direction) {
-  gm_SetBit(moving[mvi].mask, g, m);
   moving[mvi].direction_up = direction;
   SET_BIT(moving_mask, mvi);
   moving[mvi].start_time = rt;
 }
 
-static void start_moving_mm(int mvi, gm_bitmask_t mm, u32 rt, bool direction) {
-  u8 g;
+static void start_new_sunDownMoving_mm(int mvi, gm_bitmask_t mm, u32 rt) {
+  u8 g, m;
+
+  moving[mvi] = (struct mv ) { };
+
   for (g = 1; g <= GRP_MAX; ++g) {
+    for (m = 1; m <= MBR_MAX; ++m) {
+      if (gm_GetBit(mm, g, m)) {
+        if (!ferPos_mSunReadyToMoveDown(g, m))
+          gm_ClrBit(mm, g, m);
+      }
+    }
     moving[mvi].mask[g] = mm[g];
   }
-  moving[mvi].direction_up = direction;
+  moving[mvi].direction_up = false;
+  moving[mvi].sun_down = true;
   SET_BIT(moving_mask, mvi);
   moving[mvi].start_time = rt;
 }
@@ -287,6 +290,27 @@ static int add_to_existing_movement_mm(gm_bitmask_t mm, u32 rt, bool direction) 
   return -1;
 }
 
+static int add_to_existing_sunDownMovement_mm(gm_bitmask_t mm, u32 rt) {
+  u8 mvi, g, m;
+
+  for (mvi = 0; mvi < mv_SIZE; ++mvi) {
+    if (GET_BIT(moving_mask, mvi) && moving[mvi].sun_down && rt == moving[mvi].start_time) {
+      // add to an in-use bitmask, if having same start_time and direction
+      for (g = 1; g <= GRP_MAX; ++g) {
+        for (m = 1; m <= MBR_MAX; ++m) {
+          if (gm_GetBit(mm, g, m)) {
+            if (!ferPos_mSunReadyToMoveDown(g, m))
+              gm_ClrBit(mm, g, m);
+          }
+        }
+        moving[mvi].mask[g] |= mm[g];
+      }
+      return mvi;
+    }
+  }
+  return -1;
+}
+
 static int add_to_new_movement_mm(gm_bitmask_t mm, u32 rt, bool direction) {
   u8 mvi;
 
@@ -294,60 +318,46 @@ static int add_to_new_movement_mm(gm_bitmask_t mm, u32 rt, bool direction) {
     if (GET_BIT(moving_mask, mvi))
       continue;
 
-    start_moving_mm(mvi, mm, rt, direction);
+    start_new_moving_mm(mvi, mm, rt, direction);
     return mvi;
   }
   return -1;
 }
 
-
-static int add_to_existing_movement(u8 g, u8 m, u32 rt, bool direction) {
-  u8 mvi;
-
-  for (mvi = 0; mvi < mv_SIZE; ++mvi) {
-    if (GET_BIT(moving_mask, mvi) && direction == moving[mvi].direction_up && rt == moving[mvi].start_time) {
-      gm_SetBit(moving[mvi].mask, g, m);
-      return mvi;
-    }
-  }
-
-  return -1;
-}
-
-static int add_to_new_movement(u8 g, u8 m, u32 rt, bool direction) {
+static int add_to_new_sunMovement_mm(gm_bitmask_t mm, u32 rt) {
   u8 mvi;
 
   for (mvi = 0; mvi < mv_SIZE; ++mvi) {
     if (GET_BIT(moving_mask, mvi))
       continue;
 
-    start_moving(mvi, g, m, rt, direction);
-    break;
+    start_new_sunDownMoving_mm(mvi, mm, rt);
+    return mvi;
   }
-
   return -1;
 }
-
 
 // register moving related commands sent to a shutter to keep track of its changing position
 int 
 ferPos_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
-
-
   u32 rt = run_time_10(0);
   int mvi;
   u8 g, m;
 
-  bool isMoving = false, direction = false, isStopping = false;
+  bool isMoving = false, direction = false, isStopping = false, isSun = false;
 
   switch (cmd) {
   case fer_cmd_STOP:
     isStopping = true;
     break;
+  case fer_cmd_SunUP:
+    isSun = true;
   case fer_cmd_UP:
     isMoving = true;
     direction = 1;
     break;
+  case fer_cmd_SunDOWN:
+    isSun = true;
   case fer_cmd_DOWN:
     isMoving = true;
     direction = 0;
@@ -390,6 +400,7 @@ ferPos_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
             gm_ClrBit(mm, g, m);// already moving in right direction (XXX: is writing to argument ok?)
             continue;
           }
+
           stop_moving(mvi, g, m, rt);
         }
       }
@@ -397,9 +408,16 @@ ferPos_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
   }
 
   if (isMoving) {
-    if (add_to_existing_movement_mm(mm, rt, direction) < 0) {
-      add_to_new_movement_mm(mm, rt, direction);
+    if (isSun && !direction) {  // XXX: if sun-up check if we are in sun-down position
+      if (add_to_existing_sunDownMovement_mm(mm, rt) < 0) {
+        add_to_new_sunMovement_mm(mm, rt);
+      }
+    } else {
+      if (add_to_existing_movement_mm(mm, rt, direction) < 0) {
+        add_to_new_movement_mm(mm, rt, direction);
+      }
     }
+
   }
 
   return 0;
@@ -415,88 +433,33 @@ ferPos_mMove(u32 a, u8 g, u8 m, fer_cmd cmd) {
   if (!(a == 0 || a == C.fer_centralUnitID)) {
     gm_bitmask_t gm;
     if (pair_getControllerPairings(a, &gm))
-      for (g = 1; g <= GRP_MAX; ++g) {
-        for (m = 1; m <= MBR_MAX; ++m) {
-          if (gm_GetBit(gm, g, m)) {
-            // recursion for each paired g/m
-            ferPos_mMove(0, g, m, cmd);
-          }
-        }
-      }
+      return ferPos_mmMove(gm, cmd);
     return 0;
   }
 #endif
 
-
-  if (g == 0 || m == 0) {
-    gm_bitmask_t mm = { 0, };
-    if (g == 0) {
-      for (g = 1; g <= GRP_MAX; ++g) {
-        mm[g] = 0xfe;
-      }
-    } else {
+  gm_bitmask_t mm = { 0, };
+  if (g == 0) {
+    for (g = 1; g <= GRP_MAX; ++g) {
       mm[g] = 0xfe;
     }
-    return ferPos_mmMove(mm, cmd);
+  } else if (m == 0) {
+    mm[g] = 0xfe;
+  } else {
+    gm_SetBit(mm, g, m);
   }
 
-  u32 rt = run_time_10(0);
-  int mvi;
-  bool isMoving = false, direction = false, isStopping = false;
-
-  switch (cmd) {
-  case fer_cmd_STOP:
-    isStopping = true;
-    break;
-  case fer_cmd_UP:
-    isMoving = true;
-    direction = 1;
-    break;
-  case fer_cmd_DOWN:
-    isMoving = true;
-    direction = 0;
-    break;
-  default:
-    return -1;
-    break;
-
-  }
-
-  if (isMoving) {
-    u8 currPct = get_state(a, g, m);
-    if ((direction && currPct == PCT_UP) || (!direction && currPct == PCT_DOWN))
-      return -1; // cannot move beyond end point
-  }
-
-  if (moving_mask && (isStopping || isMoving)) {
-    for (mvi = 0; mvi < mv_SIZE; ++mvi) {
-      struct mv *mv = &moving[mvi];
-
-      if (!(GET_BIT(moving_mask, mvi) && gm_GetBit(mv->mask, g, m)))
-        continue;
-      if (isMoving && mv->direction_up == direction)
-        return 0; // already moving in right direction
-
-      stop_moving(mvi, g, m, rt);
-    }
-  }
-
-  if (isMoving) {
-    if (add_to_existing_movement(g, m, rt, direction) < 0) {
-      add_to_new_movement(g, m, rt, direction);
-    }
-
-  }
-
-  return 0;
+  return ferPos_mmMove(mm, cmd);
 }
 
 
 
 #define DEF_MV_UP_10 260
 #define DEF_MV_DOWN_10 250
+#define DEF_MV_SUN_DOWN_10 100
 
-struct shutter_timings st_def = { DEF_MV_UP_10, DEF_MV_DOWN_10, 0 };
+struct shutter_timings st_def = { DEF_MV_UP_10, DEF_MV_DOWN_10, DEF_MV_SUN_DOWN_10 };
+
 
 u16 ferPos_mCalcMoveDuration_fromPctDiff(u8 g, u8 m, u8 curr_pct, u8 pct) {
   bool direction = curr_pct < pct;
@@ -533,7 +496,6 @@ u8 ferPos_mCalcMovePct_fromDirectionAndDuration(u8 g, u8 m, bool direction_up, u
   if (st.move_down_tsecs == 0)
      st.move_down_tsecs = st_def.move_down_tsecs;
 
-
   if (pct == -1) {
     return direction_up ? PCT_UP : PCT_DOWN;// XXX
   }
@@ -549,6 +511,42 @@ u8 ferPos_mCalcMovePct_fromDirectionAndDuration(u8 g, u8 m, bool direction_up, u
     return add;
 }
 
+static bool ferPos_mCalcSunStop(u8 g, u8 m, u16 time_s10) {
+  int pct = get_state(0, g, m);
+
+  if (pct != 100) {
+    return true; // XXX: sun-down must start at 100%
+  }
+
+  struct shutter_timings st = st_def;
+  ferPos_prefByM_load(&st, g, m);
+
+  if (st.move_sundown_tsecs == 0)
+     st.move_sundown_tsecs = st_def.move_sundown_tsecs;
+
+  return (time_s10 > st.move_sundown_tsecs);
+}
+
+static bool ferPos_mSunReadyToMoveDown(u8 g, u8 m) {
+
+  if (get_state(0, g, m) != PCT_UP)
+    return false;
+
+  if (gm_GetBit(manual_bits, g, m))
+    return false;
+
+  if (ferPos_mCalcSunStop(g, m, 0))
+    return false;
+
+  timer_data_t td = {};
+  if (read_timer_data(&td, &g, &m, true)) {
+    if (!td_is_sun_auto(&td))
+      return false;
+  }
+
+  return true;
+}
+
 int ferPos_mGetMovingPct(u32 a, u8 g, u8 m) {
   if (!(a == 0 || a == C.fer_centralUnitID)) {
     return -1;
@@ -561,81 +559,107 @@ int ferPos_mGetMovingPct(u32 a, u8 g, u8 m) {
   for (i = 0; mask != 0; ++i, (mask >>= 1)) {
     if (!(mask & 1))
       continue;
-    struct mv *mv = &moving[i];
-    u16 time_s10 = rt - mv->start_time;
-    {
-      if (gm_GetBit(mv->mask, g, m)) {
-        u8 pct = ferPos_mCalcMovePct_fromDirectionAndDuration(g, m, mv->direction_up, time_s10);
-        return pct;
-      }
-    }
 
+    struct mv *mv = &moving[i];
+
+    if (gm_GetBit(mv->mask, g, m)) {
+      u16 time_s10 = rt - mv->start_time;
+      u8 pct = ferPos_mCalcMovePct_fromDirectionAndDuration(g, m, mv->direction_up, time_s10);
+      return pct;
+    }
   }
   return ferPos_mGetPct(a, g, m);
 }
 
+static void ferPos_markMovingAsComplete(struct mv *mv, u8 g, u8 m, u8 pct) {
+  ferPos_mSetPct(0, g, m, pct);
+  gm_ClrBit(mv->mask, g, m);
+}
+
+static void ferPos_printMovingPct(u8 g, u8 m, u8 pct) {
+  if (mutex_cliTake()) {
+    so_arg_gmp_t gmp = { g, m, pct };
+    if (sj_open_root_object("tfmcu")) {
+      so_output_message(SO_POS_PRINT_GMP, &gmp);
+      sj_close_root_object();
+      cli_print_json(sj_get_json());
+    }
+    mutex_cliGive();
+  }
+}
+
 // check if a moving shutter has reached its end position
-static void currentState_mvCheck() {
-  u32 rt = run_time_10(0);
-  u8 i, g, m;
+static void ferPos_mvCheck_mvi(u8 mvi) {
+  u8 g, m, pct;
+
+  struct mv *mv = &moving[mvi];
+  u16 time_s10 = run_time_10(0) - mv->start_time;
+  bool remaining = false;
+
+  for (g = 1; g < 8; ++g) {
+    for (m = 1; m < 8; ++m) {
+      if (!gm_GetBit(mv->mask, g, m))
+        continue;
+
+      pct = ferPos_mCalcMovePct_fromDirectionAndDuration(g, m, mv->direction_up, time_s10);
+
+      if ((mv->direction_up && pct == PCT_UP) || (!mv->direction_up && pct == PCT_DOWN)) {
+        ferPos_markMovingAsComplete(mv, g, m, pct);
+        continue;
+      }
+
+      if (mv->sun_down && ferPos_mCalcSunStop(g, m, time_s10)) {
+        ferPos_markMovingAsComplete(mv, g, m, pct);
+        continue;
+      }
+
+      remaining = true;
+      ferPos_printMovingPct(g, m, pct);
+    }
+  }
+
+  if (!remaining)
+    CLR_BIT(moving_mask, mvi);
+}
+
+static void ferPos_mvCheck() {
+  u8 i;
   u8 mask = moving_mask;
 
   for (i = 0; mask != 0; ++i, (mask >>= 1)) {
     if (!(mask & 1))
       continue;
-    struct mv *mv = &moving[i];
-    u16 time_s10 = rt - mv->start_time;
-   {
-      bool remaining = false;
-      for (g = 1; g < 8; ++g) {
-        for (m = 1; m < 8; ++m) {
-          if (gm_GetBit(mv->mask, g, m)) {
-            u8 pct = ferPos_mCalcMovePct_fromDirectionAndDuration(g, m, mv->direction_up, time_s10);
-            if ((mv->direction_up && pct == PCT_UP) || (!mv->direction_up && pct == PCT_DOWN)) {
-              ferPos_mSetPct(0, g, m, pct);
-              gm_ClrBit(mv->mask, g, m);
-            } else {
-              remaining = true;
-              if (mutex_cliTake()) {
-                so_arg_gmp_t gmp = { g, m, pct };
-                if (sj_open_root_object("tfmcu")) {
-                  so_output_message(SO_POS_PRINT_GMP, &gmp);
-                  sj_close_root_object();
-                  cli_print_json(sj_get_json());
-                }
-                mutex_cliGive();
-              }
-            }
-          }
-        }
-      }
-      if (!remaining) {
-        CLR_BIT(moving_mask, i);
-      }
-    }
+
+    ferPos_mvCheck_mvi(i);
   }
 }
 
 
-
-void ferPos_loop() {
-  static int next_s10;
-  if (moving_mask && next_s10 < run_time_10()) {
-    next_s10 = run_time_10() + 20;
-    currentState_mvCheck();
-  }
-
+static void ferPos_autoSavePositions_iv(int interval_ts) {
   static u32 next_save_pos;
   if (pos_map_changed && next_save_pos < run_time_10()) {
-    next_save_pos = run_time_10() + 100;
+    next_save_pos = run_time_10() + interval_ts;
     u8 g, mask = pos_map_changed;
     pos_map_changed = 0;
 
     for (g=0; mask; ++g, (mask >>=1)) {
       if (mask&1)
-        ferPoas_pctsByGroup_store(g, pos_map[g]);
+        ferPos_pctsByGroup_store(g, pos_map[g]);
     }
   }
+}
+
+static void ferPos_checkMv_iv(int interval_ts) {
+  static int next_s10;
+  if (moving_mask && next_s10 < run_time_10()) {
+    next_s10 = run_time_10() + interval_ts;
+    ferPos_mvCheck();
+  }
+}
+
+void ferPos_loop() {
+  ferPos_checkMv_iv(20);
+  ferPos_autoSavePositions_iv(100);
 }
 
 void ferPos_init() {
@@ -667,7 +691,7 @@ int ferPos_pctsByGroup_load(u8 g, const shutterGroupPositionsT positions) {
   return fer_gmByName_load(g_to_name(g, buf), (gm_bitmask_t*) positions, 1);
 }
 
-int ferPoas_pctsByGroup_store(u8 g, shutterGroupPositionsT positions) {
+int ferPos_pctsByGroup_store(u8 g, shutterGroupPositionsT positions) {
   char buf[8];
   return fer_gmByName_store(g_to_name(g, buf), (gm_bitmask_t*) positions, 1);
 }

@@ -39,6 +39,6 @@ void ferPos_init(void);
 
 
 int ferPos_pctsByGroup_load(uint8_t g, const shutterGroupPositionsT positions);
-int ferPoas_pctsByGroup_store(uint8_t g, shutterGroupPositionsT positions);
+int ferPos_pctsByGroup_store(uint8_t g, shutterGroupPositionsT positions);
 
 #endif /* USER_MAIN_CURRENT_STATE_H_ */
