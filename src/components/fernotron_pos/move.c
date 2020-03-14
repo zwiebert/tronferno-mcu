@@ -24,9 +24,39 @@
 
 #include "move.h"
 
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
+
+
 struct mv moving[mv_SIZE];
 u8 moving_mask;
 struct shutter_timings st_def = { DEF_MV_UP_10, DEF_MV_DOWN_10, DEF_MV_SUN_DOWN_10 };
+
+
+bool ferPos_mGetSt(struct shutter_timings *st, u8 g, u8 m) {
+  *st = st_def;
+
+  if (!ferPos_prefByM_load(st, g, m))
+    return false;
+
+  if (st->move_up_tsecs == 0)
+    st->move_up_tsecs = st_def.move_up_tsecs;
+
+  if (st->move_down_tsecs == 0)
+    st->move_down_tsecs = st_def.move_down_tsecs;
+
+  if (st->move_sundown_tsecs == 0)
+    st->move_sundown_tsecs = st_def.move_sundown_tsecs;
+
+  return true;
+}
+
+u8 ferPos_mGetSunPct(u8 g, u8 m) {
+  struct shutter_timings st;
+  ferPos_mGetSt(&st, g, m);
+  int pct = st.move_sundown_tsecs * 100 / st.move_down_tsecs;
+  return pct;
+}
 
 
 static void ferPos_printMovingPct(u8 g, u8 m, u8 pct) {
@@ -96,19 +126,15 @@ void ferPos_checkMv_iv(int interval_ts) {
   }
 }
 
-
 bool ferPos_mSunReadyToMoveDown(u8 g, u8 m) {
 
-  if (get_state(0, g, m) != PCT_UP)
+  if ( ferPos_mGetSunPct(g, m) >= get_state(0, g, m))
     return false;
 
   if (gm_GetBit(manual_bits, g, m))
     return false;
 
-  if (ferPos_mCalcSunStop(g, m, 0))
-    return false;
-
-  timer_data_t td = {};
+  timer_data_t td = { };
   if (read_timer_data(&td, &g, &m, true)) {
     if (!td_is_sun_auto(&td))
       return false;
@@ -117,34 +143,29 @@ bool ferPos_mSunReadyToMoveDown(u8 g, u8 m) {
   return true;
 }
 
+
+
 bool ferPos_mCalcSunStop(u8 g, u8 m, u16 time_s10) {
+  struct shutter_timings st;
+  ferPos_mGetSt(&st, g, m);
+
   int pct = get_state(0, g, m);
 
-  if (pct != 100) {
-    return true; // XXX: sun-down must start at 100%
-  }
+  int t = st.move_down_tsecs * (100 - pct) / 100;
 
-  struct shutter_timings st = st_def;
-  ferPos_prefByM_load(&st, g, m);
+  if (t + time_s10 >= st.move_sundown_tsecs)
+    return true;
 
-  if (st.move_sundown_tsecs == 0)
-     st.move_sundown_tsecs = st_def.move_sundown_tsecs;
-
-  return (time_s10 > st.move_sundown_tsecs);
+  return false;
 }
 
 u16 ferPos_mCalcMoveDuration_fromPctDiff(u8 g, u8 m, u8 curr_pct, u8 pct) {
   bool direction = curr_pct < pct;
   u8 pct_diff = direction ? pct - curr_pct : curr_pct - pct;
-  struct shutter_timings st = st_def;
-  ferPos_prefByM_load(&st, g, m);
 
-  if (st.move_up_tsecs == 0)
-     st.move_up_tsecs = st_def.move_up_tsecs;
 
-  if (st.move_down_tsecs == 0)
-     st.move_down_tsecs = st_def.move_down_tsecs;
-
+  struct shutter_timings st;
+  ferPos_mGetSt(&st, g, m);
 
   u16 result = (direction ? pct_diff * st.move_up_tsecs : pct_diff * st.move_down_tsecs) / 100;
 #if 0
@@ -160,14 +181,8 @@ u16 ferPos_mCalcMoveDuration_fromPctDiff(u8 g, u8 m, u8 curr_pct, u8 pct) {
 
 u8 ferPos_mCalcMovePct_fromDirectionAndDuration(u8 g, u8 m, bool direction_up, u16 time_s10) {
   int pct = get_state(0, g, m);
-  struct shutter_timings st = st_def;
-  ferPos_prefByM_load(&st, g, m);
-
-  if (st.move_up_tsecs == 0)
-     st.move_up_tsecs = st_def.move_up_tsecs;
-
-  if (st.move_down_tsecs == 0)
-     st.move_down_tsecs = st_def.move_down_tsecs;
+  struct shutter_timings st;
+  ferPos_mGetSt(&st, g, m);
 
   if (pct == -1) {
     return direction_up ? PCT_UP : PCT_DOWN;// XXX
@@ -210,4 +225,5 @@ int ferPos_mGetMovingPct(u32 a, u8 g, u8 m) {
   return ferPos_mGetPct(a, g, m);
 }
 
+#pragma GCC pop_options
 

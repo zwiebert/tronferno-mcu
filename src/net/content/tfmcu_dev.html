@@ -77,11 +77,11 @@
       grid-template-columns: 1fr 1fr 1fr 1fr;
       grid-template-rows: repeat(5, 1fr);
       grid-template-areas:
-      "gi pi mi pr"
-      "gb pl mb pr"
-      ".  ub .  pr"
-      ".  sb .  pr"
-      ".  db .  pr"
+      "gi  pi  mi pr"
+      "gb  pl  mb pr"
+      ".   ub  .  pr"
+      ".   sb  .  pr"
+      "pb  db  .  pr"
       ;
       justify-items: center;
       align-items: center;
@@ -158,6 +158,7 @@
       #ssb { grid-area: sb; }
       #sdb { grid-area: db; }
       #spr { grid-area: pr; }
+      #sspb { grid-area: pb; }
 
 
       .conf-table label { padding: 2px; width: 50vw; margin-right: 6px;}
@@ -210,6 +211,7 @@
         <br><button id="sub" class="sb" type="button">&#x25b2;</button>
         <br><button id="ssb" class="sb" type="button">STOP</button>
         <br><button id="sdb" class="sb" type="button">&#x25bc;</button>
+        <br><button id="sspb" class="sb" type="button">Sun</button>
       </div>
 <!--  ------------------------------------------------------------------------------ -->
       <div id="autodiv" class="auto">
@@ -286,6 +288,7 @@
         <table>
           <tr><td>move-up duration (secs):</td><td><input id="shpMvut" type="number" min="0" value="0" step="0.1"></td></tr>
           <tr><td>move-down duration (secs):</td><td><input id="shpMvdt" type="number" min="0" value="0" step="0.1"></td></tr>
+          <tr><td>sun-pos move-down duration (secs):</td><td><input id="shpSpMvdt" type="number" min="0" value="0" step="0.1"></td></tr>
         </table>
         <button id="shp_reload" type="button">Reload</button>
         <button id="shp_save" type="button">Save</button>

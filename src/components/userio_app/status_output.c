@@ -532,6 +532,7 @@ break;
     so_out_x_open(buf);
     so_out_x_reply_entry_sd("mvut", a->st->move_up_tsecs);
     so_out_x_reply_entry_sd("mvdt", a->st->move_down_tsecs);
+    so_out_x_reply_entry_sd("spmvdt", a->st->move_sundown_tsecs);
     so_out_x_close();
   }
   break;

@@ -383,27 +383,30 @@ function shutterPrefs_updHtml() {
   let pref = ast.shutterPrefs[key];
   const mvut = document.getElementById("shpMvut");
   const mvdt = document.getElementById("shpMvdt");
+  const spmvdt = document.getElementById("shpSpMvdt");
 
   if (!pref) {
-    pref = {mvut:0, mvdt:0};
+    pref = {mvut:0, mvdt:0, spmvdt:0 };
   }
 
   if (pref) {
     mvut.value = (parseFloat(pref.mvut) / 10.0).toString();
     mvdt.value = (parseFloat(pref.mvdt) / 10.0).toString();
+    spmvdt.value = (parseFloat(pref.spmvdt) / 10.0).toString();
   }
 }
 
 function shutterPrefs_fromHtml_toMcu() {
   const mvut = document.getElementById("shpMvut");
   const mvdt = document.getElementById("shpMvdt");
-
+  const spmvdt = document.getElementById("shpSpMvdt");
 
   let tfmcu = {"to":"tfmcu", "shpref":{"g":ast.g, "m":ast.m, "c":"store"}};
   let pref = tfmcu.shpref;
 
   pref.mvut = Math.floor((parseFloat(mvut.value) * 10)).toString();
   pref.mvdt = Math.floor((parseFloat(mvdt.value) * 10)).toString();
+  pref.spmvdt = Math.floor((parseFloat(spmvdt.value) * 10)).toString();
 
   var url = '/cmd.json';
   http_postRequest(url, tfmcu);
@@ -1161,6 +1164,7 @@ function onContentLoaded() {
   document.getElementById("sub").onclick = () => http_postShutterCommand('up');
   document.getElementById("ssb").onclick = () => http_postShutterCommand('stop');
   document.getElementById("sdb").onclick = () => http_postShutterCommand('down');
+  document.getElementById("sspb").onclick = () => http_postShutterCommand('sun-down');
   document.getElementById("spb").onclick = () => onPos(document.getElementById("spi").value);
   document.getElementById("spr").onchange = () => onPos(document.getElementById("spr").value);
 
