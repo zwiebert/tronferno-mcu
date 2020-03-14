@@ -10,6 +10,7 @@ const FETCH_GMU = 256;
 
 const UP = 0;
 const DOWN = 1;
+const SUN_DOWN = 2;
 
 function dbLog(msg) {  console.log(msg); }
 
@@ -423,7 +424,7 @@ let shutterPrefs_stopClock = {
 
 function shutterPrefs_stopClock_tick() {
   let spsc = shutterPrefs_stopClock;
-  let elem = document.getElementById(spsc.direction == UP ? "shpMvut": "shpMvdt");
+  let elem = document.getElementById(spsc.direction == UP ? "shpMvut":  spsc.direction == DOWN  ? "shpMvdt" : spsc.direction == SUN_DOWN ? "shpSpMvdt" : -1);
 
   spsc.val  += (spsc.ms / 100);
   elem.value = (spsc.val / 10.0).toString();
@@ -451,13 +452,41 @@ function shutterPrefs_stopClock_start() {
   }
 }
 
+function shutterPrefs_stopClock_do(direction) {
+  let spsc = shutterPrefs_stopClock;
+
+  if (spsc.ivId) {
+    shutterPrefs_stopClock_stop();
+  }
+  const pct = ast.pct;
+  
+  
+  if (direction === UP && pct === 0) {
+    spsc.direction = UP;
+    http_postShutterCommand('up');
+  } else if (direction === DOWN && pct === 100) {
+    spsc.direction = DOWN;
+    http_postShutterCommand('down');
+  } else if (direction === SUN_DOWN && pct === 100) {
+    spsc.direction = SUN_DOWN;
+    http_postShutterCommand('sun-down');
+  } else {
+    return;
+  }
+
+  spsc.val = 0;
+
+
+  if (!spsc.ivId) {
+    spsc.ivId = setInterval(shutterPrefs_stopClock_tick, spsc.ms);
+  }
+}
+
 function shutterPrefs_stopClock_stop() {
   let spsc = shutterPrefs_stopClock;
-  http_postShutterCommand('stop');
   if (spsc.ivId) {
     clearInterval(spsc.ivId);
     spsc.ivId = 0;
-    ast.pct = spsc.direction == UP ? 100 : 0;
   }
 }
 
@@ -519,8 +548,7 @@ function shuPos_perFetch_tick() {
   const sppf = shuPos_perFetch;
   const pct = ast.pct;
   if ((ast.g == 0 || ast.m == 0) || (pct === sppf.last_pct && sppf.last_pct === sppf.last_last_pct)) {
-    clearInterval(sppf.ivId);
-    sppf.ivId = 0;
+    shuPos_perFetch_stop();
     return;
   }
   ast.http_fetchByMask(FETCH_POS);
@@ -537,6 +565,12 @@ function shuPos_perFetch_start() {
     sppf.last_last_pct = -2;
     ast.http_fetchByMask(FETCH_POS);
   }
+}
+
+function shuPos_perFetch_stop() {
+  let sppf = shuPos_perFetch; 
+  clearInterval(sppf.ivId);
+  sppf.ivId = 0;
 }
 
 function onAliasesChanged() {
@@ -1171,8 +1205,9 @@ function onContentLoaded() {
 
   document.getElementById("shp_reload").onclick = () => shutterPrefs_updHtml();
   document.getElementById("shp_save").onclick = () => shutterPrefs_fromHtml_toMcu();
-  document.getElementById("shp_clockStart").onclick = () => shutterPrefs_stopClock_start();
-  document.getElementById("shp_clockStop").onclick = () => shutterPrefs_stopClock_stop();
+  document.getElementById("shp_MvutButton").onclick = () => shutterPrefs_stopClock_do(UP);
+  document.getElementById("shp_MvdtButton").onclick = () => shutterPrefs_stopClock_do(DOWN);
+  document.getElementById("shp_SpMvdtButton").onclick = () => shutterPrefs_stopClock_do(SUN_DOWN);
 
   document.getElementById("alias_reload").onclick = () => onAliasesReload();
   document.getElementById("alias_save").onclick = () => onAliasesApply();
