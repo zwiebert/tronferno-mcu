@@ -41,14 +41,24 @@ extern volatile u32 run_time_s10;
 
 
 
-int get_state(u32 a, int g, int m);
+int ferPos_getPct(u32 a, int g, int m);
 
 
-
-bool ferPos_mSunReadyToMoveDown(uint8_t g, uint8_t m);
+// general control for moving
 bool ferPos_mCalcSunStop(u8 g, u8 m, u16 time_s10);
-void ferPos_checkMv_iv(int interval_ts);
-void ferPos_markMovingAsComplete(struct mv *mv, u8 g, u8 m, u8 pct);
+void ferPos_mvCheck_mvi(u8 mvi);
+void ferPos_mvCheck_iv(int interval_ts);
 u16 ferPos_mCalcMoveDuration_fromPctDiff(u8 g, u8 m, u8 curr_pct, u8 pct);
+
+
+// start moving
+bool ferPos_mSunReadyToMoveDown(uint8_t g, uint8_t m);
+int ferPos_mMove(u32 a, u8 g, u8 m, fer_cmd cmd);
+int ferPos_mmMove(gm_bitmask_t mm, fer_cmd cmd);
+
+// stop moving
+void ferPos_markMovingAsComplete(struct mv *mv, u8 g, u8 m, u8 pct);
+void stop_moving(int mvi, u8 g, u8 m, u32 rt);
+
 
 #endif /* COMPONENTS_FERNOTRON_POS_SHUTTER_MOVEMENT_H_ */

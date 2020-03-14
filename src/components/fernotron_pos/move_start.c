@@ -62,22 +62,7 @@ static void start_new_sunDownMoving_mm(int mvi, gm_bitmask_t mm, u32 rt) {
   moving[mvi].start_time = rt;
 }
 
-static void stop_moving(int mvi, u8 g, u8 m, u32 rt) {
-  struct mv *mv = &moving[mvi];
-  int gi;
-  gm_ClrBit(moving[mvi].mask, g, m);
-  ferPos_mSetPct(0, g, m, ferPos_mCalcMovePct_fromDirectionAndDuration(g, m, mv->direction_up, rt - mv->start_time));  // update pct table now
-  bool remaining = false;
-  for (gi = 0; gi < 8; ++gi) {
-    if (mv->mask[gi]) {
-      remaining = true;
-      break;
-    }
-  }
-  if (!remaining) {
-    CLR_BIT(moving_mask, mvi);
-  }
-}
+
 
 #ifdef UNUSED_STATIC_FUNCTION
 static void stop_moving_mm(int mvi, gm_bitmask_t mm, u32 rt) {
@@ -117,6 +102,7 @@ static int add_to_existing_movement_mm(gm_bitmask_t mm, u32 rt, bool direction) 
   }
   return -1;
 }
+
 
 static int add_to_existing_sunDownMovement_mm(gm_bitmask_t mm, u32 rt) {
   u8 mvi, g, m;
@@ -200,7 +186,7 @@ ferPos_mmMove(gm_bitmask_t mm, fer_cmd cmd) {
     for (g = 1; g <= GRP_MAX; ++g) {
       for (m = 1; m <= MBR_MAX; ++m) {
         if (gm_GetBit(mm, g, m)) {
-          u8 currPct = get_state(0, g, m);
+          u8 currPct = ferPos_getPct(0, g, m);
           if ((direction && currPct == PCT_UP) || (!direction && currPct == PCT_DOWN))
             gm_ClrBit(mm, g, m); // cannot move beyond end point
         }

@@ -52,7 +52,7 @@ class AppState {
     this.mPct = val;
     document.getElementById('spi').value = val;
     document.getElementById('spr').value = val;
-    shuPos_perFetch_posRecieved(val);
+    shuPos_pctFetch_posRecieved(val);
   }
 
   get pct() {
@@ -430,54 +430,29 @@ function shutterPrefs_stopClock_tick() {
   elem.value = (spsc.val / 10.0).toString();
 }
 
-function shutterPrefs_stopClock_start() {
-  let spsc = shutterPrefs_stopClock;
-
-  const pct = ast.pct;
-  if (pct === 0) {
-    spsc.direction = UP;
-    http_postShutterCommand('up');
-  } else if (pct === 100) {
-    spsc.direction = DOWN;
-    http_postShutterCommand('down');
-  } else {
-    return;
-  }
-
-  spsc.val = 0;
-
-
-  if (!spsc.ivId) {
-    spsc.ivId = setInterval(shutterPrefs_stopClock_tick, spsc.ms);
-  }
-}
-
 function shutterPrefs_stopClock_do(direction) {
   let spsc = shutterPrefs_stopClock;
 
   if (spsc.ivId) {
     shutterPrefs_stopClock_stop();
+    return;
   }
-  const pct = ast.pct;
   
-  
-  if (direction === UP && pct === 0) {
+  if (direction === UP) {
     spsc.direction = UP;
     http_postShutterCommand('up');
-  } else if (direction === DOWN && pct === 100) {
+  } else if (direction === DOWN) {
     spsc.direction = DOWN;
     http_postShutterCommand('down');
-  } else if (direction === SUN_DOWN && pct === 100) {
+  } else if (direction === SUN_DOWN) {
     spsc.direction = SUN_DOWN;
     http_postShutterCommand('sun-down');
   } else {
     return;
   }
-
-  spsc.val = 0;
-
-
+  
   if (!spsc.ivId) {
+    spsc.val = 0;
     spsc.ivId = setInterval(shutterPrefs_stopClock_tick, spsc.ms);
   }
 }
@@ -529,46 +504,46 @@ function aliasControllers_fromHtml() { // XXX
   }
 }
 
-const shuPos_perFetch = {
+const shuPos_pctFetch = {
   ivId: 0,
   ms: 1000,
   last_pct: 0,
   last_last_pct: 0,
 };
 
-function shuPos_perFetch_posRecieved(pct) {
-  const sppf = shuPos_perFetch;
+function shuPos_pctFetch_posRecieved(pct) {
+  const sppf = shuPos_pctFetch;
   if (sppf.ivId) {
     sppf.last_last_pct = sppf.last_pct;
     sppf.last_pct = pct;
   }
 }
 
-function shuPos_perFetch_tick() {
-  const sppf = shuPos_perFetch;
+function shuPos_pctFetch_tick() {
+  const sppf = shuPos_pctFetch;
   const pct = ast.pct;
   if ((ast.g == 0 || ast.m == 0) || (pct === sppf.last_pct && sppf.last_pct === sppf.last_last_pct)) {
-    shuPos_perFetch_stop();
+    shuPos_pctFetch_stop();
     return;
   }
   ast.http_fetchByMask(FETCH_POS);
 }
 
-function shuPos_perFetch_start() {
+function shuPos_pctFetch_start() {
   if (ast.g == 0 || ast.m == 0)
     return;
 
-  let sppf = shuPos_perFetch;
+  let sppf = shuPos_pctFetch;
   if (!sppf.ivId)   {
-    sppf.ivId = setInterval(shuPos_perFetch_tick, sppf.ms);
+    sppf.ivId = setInterval(shuPos_pctFetch_tick, sppf.ms);
     sppf.last_pct = -1;
     sppf.last_last_pct = -2;
     ast.http_fetchByMask(FETCH_POS);
   }
 }
 
-function shuPos_perFetch_stop() {
-  let sppf = shuPos_perFetch; 
+function shuPos_pctFetch_stop() {
+  let sppf = shuPos_pctFetch; 
   clearInterval(sppf.ivId);
   sppf.ivId = 0;
 }
@@ -1013,7 +988,7 @@ function http_postShutterCommand(c=document.getElementById('send-c').value) {
   var url = '/cmd.json';
   dbLog("url: "+url);
   http_postRequest(url, tfmcu);
-  shuPos_perFetch_start();
+  shuPos_pctFetch_start();
 }
 
 var netota_intervalID = 0;
@@ -1065,7 +1040,7 @@ function onPos(pct) {
 
   let url = '/cmd.json';
   http_postRequest(url, tfmcu);
-  shuPos_perFetch_start();
+  shuPos_pctFetch_start();
 }
 
 function req_automatic() {

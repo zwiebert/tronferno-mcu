@@ -51,7 +51,7 @@ enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 
 
 int
-get_state(u32 a, int g, int m) {
+ferPos_getPct(u32 a, int g, int m) {
   precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
 
   if (m != 0 && !pm_isGroupUnused(g) && !pm_isMemberUnused(g,0))
@@ -90,7 +90,7 @@ int
 ferPos_mGetPct(u32 a, u8 g, u8 m) {
   precond(g <= 7 && m <= 7);
 
-  return get_state(a, g, m);
+  return ferPos_getPct(a, g, m);
 }
 
 
@@ -212,7 +212,7 @@ static void ferPos_autoSavePositions_iv(int interval_ts) {
 
 
 void ferPos_loop() {
-  ferPos_checkMv_iv(20);
+  ferPos_mvCheck_iv(20);
   ferPos_autoSavePositions_iv(100);
 }
 
