@@ -135,7 +135,7 @@ bool  fer_send_queued_msg() {
 
   static unsigned send_ct;
 
-  if (send_ct == 0) {
+  if (send_ct++ == 0) {
     sf_toggle = fer_tglNibble_ctUp(sf_toggle, 1);
     FSB_PUT_TGL(&sf[sf_head].fsb, sf_toggle);
     if (msgType == MSG_TYPE_PLAIN) {
