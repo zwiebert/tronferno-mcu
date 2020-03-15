@@ -35,15 +35,18 @@ $(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 ifndef BUILD_BASE
 esp32_build_cmd := idf.py -C src/esp32
+esp32_build_dir := src/esp32/build
 else
 esp32_build_cmd := idf.py -C src/esp32 -B $(BUILD_BASE)
+esp32_build_dir := $(BUILD_BASE)
 endif
 
+esp32_ocd_sh :=  sh $(realpath ./src/esp32/esp32_ocd.sh)
 
 esp32_tgts_auto := menuconfig clean fullclean app
 
 .PHONY: esp32-all-force esp32-rebuild
-.PHONY: esp32-all esp32-lan esp32-flash
+.PHONY: esp32-all esp32-lan esp32-flash esp32-flash-ocd
 
 
 
@@ -61,7 +64,15 @@ esp32-lan: http_content
 	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
 esp32-flash: http_content
 	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
-
+	
+esp32-flash-ocd: http_content
+	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash)
+esp32-flash-app-ocd: http_content
+	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash_app)
+esp32-ocd:
+	$(esp32_ocd_sh) server
+esp32-ocd-loop:
+	$(esp32_ocd_sh) server_loop
 
 #unit testing
 esp32_test_tgts_auto := build clean flash run all
