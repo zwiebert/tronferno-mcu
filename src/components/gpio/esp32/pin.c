@@ -30,7 +30,7 @@
 #define RFIN_GPIO GPIO_NUM_17
 #else
 #define RFOUT_GPIO GPIO_NUM_16
-#define RFIN_GPIO GPIO_NUM_15 //XXX
+#define RFIN_GPIO GPIO_NUM_15 //XXX: used by JTAG?
 #endif
 
 #define BUTTON_GPIO GPIO_NUM_6

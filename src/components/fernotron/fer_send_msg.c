@@ -13,7 +13,7 @@ void (*ferHook_beforeFirstSend)(const fsbT *fsb);
 void (*ferHook_beforeAnySend)(fmsg_type msg_type, const fsbT *fsb, const fer_msg *fmsg);
 
 extern volatile u32 run_time_s10;
-#define run_time_10(x) (run_time_s10 + 0)
+#define get_now_time_ts(x) (run_time_s10 + 0)
 
 u8 sf_toggle;
 #define sf_SIZE 16
@@ -81,7 +81,7 @@ fer_tx_loop() {
   if (is_sendMsgPending)
     return false;
 
-  if (!sf_isEmpty() && sf[sf_head].s10 <= run_time_10(0)) {
+  if (!sf_isEmpty() && sf[sf_head].s10 <= get_now_time_ts(0)) {
 #ifdef XXX_TOGGLE_STOP_REPEATS  // disabled because it blocks the receiver instead of making sure the stop is received //FIXME: not really true!?
     if (FSB_GET_CMD(&send_fsb[sf_head]) == fer_cmd_STOP) {
       fer_update_tglNibble(&send_fsb);
@@ -119,7 +119,7 @@ bool  fer_send_delayed_msg(const fsbT *fsb, fmsg_type msgType, u16 delay, i8 rep
   if (sf_isFull())
     return false;
 
-  sf_append(fsb, msgType, delay + run_time_10(0), repeats);
+  sf_append(fsb, msgType, delay + get_now_time_ts(0), repeats);
   return true;
 
 }
