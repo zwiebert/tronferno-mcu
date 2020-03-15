@@ -61,7 +61,7 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     FSB_PUT_CMD(fsb, fc);
     fer_send_msg(fsb, MSG_TYPE_PLAIN, repeats);
   } else if (curr_pct >= 0) {
-    u16 stop_delay = ferPos_mCalcMoveDuration_fromPctDiff(g, m, curr_pct, pct);
+    u16 stop_delay = ferPos_calcMoveDuration_fromPctDiff_m(g, m, curr_pct, pct);
     if (stop_delay == 0)
       return false;
     fc = (pct < curr_pct) ? fer_cmd_DOWN : fer_cmd_UP;
@@ -70,8 +70,8 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   } else {
     FSB_PUT_CMD(fsb, fer_cmd_UP);
     fer_send_msg(fsb, MSG_TYPE_PLAIN, repeats);
-    u16 delay = ferPos_mCalcMoveDuration_fromPctDiff(g, m, 0, 100);
-    u16 stop_delay = ferPos_mCalcMoveDuration_fromPctDiff(g, m, 100, pct);
+    u16 delay = ferPos_calcMoveDuration_fromPctDiff_m(g, m, 0, 100);
+    u16 stop_delay = ferPos_calcMoveDuration_fromPctDiff_m(g, m, 100, pct);
     if (stop_delay == 0)
       return false;
     FSB_PUT_CMD(fsb, fer_cmd_DOWN);

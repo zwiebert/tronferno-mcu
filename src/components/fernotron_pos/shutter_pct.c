@@ -198,8 +198,8 @@ ferPos_printAllPcts() {
 
 static void ferPos_autoSavePositions_iv(int interval_ts) {
   static u32 next_save_pos;
-  if (pos_map_changed && next_save_pos < run_time_10()) {
-    next_save_pos = run_time_10() + interval_ts;
+  if (pos_map_changed && next_save_pos < get_now_time_ts()) {
+    next_save_pos = get_now_time_ts() + interval_ts;
     u8 g, mask = pos_map_changed;
     pos_map_changed = 0;
 
