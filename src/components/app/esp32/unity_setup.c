@@ -7,10 +7,32 @@
 
 #include "key_value_store/kvs_wrapper.h"
 #include "storage/storage.h"
+#include "txtio/inout.h"
+#include "config/config.h"
+#include "fernotron_pos/shutter_pct.h"
+#include "fernotron/astro.h"
+#include "cli/mutex.h"
+
+int unit_testing;
+
+void mcu_init(void);
 
 void unity_suiteSetUp() {
 
+  unit_testing = 1;
+
+#if 0
+ mcu_init();
+#else
+  //config_setup();
+
+  mutex_setup();
   kvs_setup();
+  txtio_setup();
   storage_setup();
+  ferPos_init();
+  astro_init_and_reinit();
+
+#endif
 
 }

@@ -15,7 +15,7 @@ gm_bitmask_t gm, gme;
 const gm_bitmask_t gmz;
 bool succ;
 #define SIZE_GM sizeof (gm_bitmask_t)
-#define CLR_GM(gm) memset(gm, 0, sizeof (gm_bitmask_t))
+
 
 static int pair_and_read_back(unsigned a, uint8_t g, uint8_t m, bool unpair) {
   if (!pair_controller(a, g, m, unpair))
@@ -23,7 +23,7 @@ static int pair_and_read_back(unsigned a, uint8_t g, uint8_t m, bool unpair) {
   if (!pair_getControllerPairings(a, &gm))
     return -2;
 
-  gm_PutBit(gme, g, m, !unpair);
+  gm_PutBit(&gme, g, m, !unpair);
   return 0;
 }
 
@@ -32,7 +32,7 @@ static void test_pair_multiple_members() {
   pair_rmController(A);
   TEST_ASSERT_FALSE(pair_getControllerPairings(A, &gm));
 
-  CLR_GM(gme);
+  gm_Clear(&gme);
 
   TEST_ASSERT_EQUAL(0, pair_and_read_back(A, 1, 2, false));
   TEST_ASSERT_EQUAL_HEX8_ARRAY(gme, gm, SIZE_GM);

@@ -64,14 +64,14 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
   if (handle) {
     gm_bitmask_t gm;
     if (!kvs_rw_blob(handle, key, &gm, sizeof gm, false)) {
-      memset(gm, 0, sizeof gm);
+      gm_Clear(&gm);
     }
 
-    PUT_BIT(gm[g], m, !remove);
+    gm_PutBit(&gm, g, m, !remove);
 
     bool not_empty = false;
     for (g = 0; g <= 7; ++g)
-      if (gm[g] != 0) {
+      if (gm_GetByte(&gm, g) != 0) {
         not_empty = true;
         break;
       }
@@ -168,7 +168,7 @@ bool pair_getControllerPairings(u32 a, gm_bitmask_t *gm) {
 kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type) {
     so_arg_kmm_t arg;
     gm_bitmask_t gm;
-    arg.mm = gm;
+    arg.mm = &gm;
 
     arg.key = &key[sizeof(KEY_PREFIX) - 1];
     read_controller(&gm, key);

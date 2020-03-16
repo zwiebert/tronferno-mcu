@@ -3,6 +3,10 @@
 
 #include "app/proj_app_cfg.h"
 
+extern int unit_testing;
+#define UNIT_TEST (unit_testing+0)
+
+
 #ifdef MCU_ESP8266
 // FIXME: don't want link an entire libc just for assert()
 #define assert(x) do { if (x) {} else { mcu_restart(); }} while(0)

@@ -103,13 +103,13 @@ process_parmSend(clpar p[], int len) {
 
   if (has_requested_position) {
     if (g != 0 && m != 0) {
-      int pos = ferPos_mGetMovingPct(addr, g, m);
+      int pos = ferPos_getPct_whileMoving(addr, g, m);
       if (pos >= 0) {
         so_arg_gmp_t gmp = {g, m, pos};
         so_output_message(SO_POS_PRINT_GMP, &gmp);
       }
     } else {
-      ferPos_printAllPcts();
+      ferPos_printPctsAll();
     }
   } else {
     if (has_sep) { // enable hardware buttons to set end position

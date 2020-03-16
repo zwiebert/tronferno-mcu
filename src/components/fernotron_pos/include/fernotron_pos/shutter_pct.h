@@ -16,19 +16,20 @@
 
 typedef uint8_t shutterGroupPositionsT[8];
 
-int ferPos_mGetPct(uint32_t a, uint8_t g, uint8_t m);
-int ferPos_mGetMovingPct(uint32_t a, uint8_t g, uint8_t m);
+int ferPos_getPct(uint32_t a, uint8_t g, uint8_t m);
+int ferPos_setPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct);
+int ferPos_setPcts(gm_bitmask_t *mm, uint8_t pct);
 
-int ferPos_printAllPcts(void);
-
-int ferPos_move_m(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd);
-int ferPos_move_mm(gm_bitmask_t mm, fer_cmd cmd);
-
-int ferPos_mSetPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct);
-int ferPos_mmSetPcts(gm_bitmask_t mm, uint8_t pct);
+int ferPos_getPct_whileMoving(uint32_t a, uint8_t g, uint8_t m);
 
 uint16_t ferPos_calcMoveDuration_fromPctDiff_m(uint8_t g, uint8_t m, uint8_t curr_pct, uint8_t pct);
-uint8_t  ferPos_calcMovePct_fromDirectionAndDuration_m(uint8_t g, uint8_t m, bool direction_up, uint16_t time_s10);
+uint8_t  ferPos_getPct_afterDuration(uint8_t g, uint8_t m, bool direction_up, uint16_t duration_ts);
+
+int ferPos_printPctsAll(void);
+
+
+int ferPos_registerMovingShutter(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd);
+int ferPos_registerMovingShutters(gm_bitmask_t *mm, fer_cmd cmd);
 
 void ferPos_loop(void);
 void ferPos_init(void);
