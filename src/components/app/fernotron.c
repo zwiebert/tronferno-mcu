@@ -57,12 +57,12 @@ static void plainMessageReceived_cb(const fsbT *fsb) {
       if (m)
         m -= 7;
     }
-    ferPos_move_m(FSB_GET_DEVID(fsb), g, m, FSB_GET_CMD(fsb));
+    ferPos_registerMovingShutter(FSB_GET_DEVID(fsb), g, m, FSB_GET_CMD(fsb));
   }
 }
 
 static void beforeFirstSend_cb(const fsbT *fsb) {
- ferPos_move_m(FSB_GET_DEVID(fsb), FSB_GET_GRP(fsb), FSB_GET_MEMB(fsb) == 0 ? 0 : FSB_GET_MEMB(fsb)-7, FSB_GET_CMD(fsb));
+ ferPos_registerMovingShutter(FSB_GET_DEVID(fsb), FSB_GET_GRP(fsb), FSB_GET_MEMB(fsb) == 0 ? 0 : FSB_GET_MEMB(fsb)-7, FSB_GET_CMD(fsb));
 }
 
 static void beforeAnySend_cb(fmsg_type msg_type, const fsbT *fsb, const fer_msg *txmsg) {

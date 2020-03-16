@@ -104,7 +104,7 @@ process_parmPair(clpar p[], int len) {
 
   if (store && has_mm) {
     if (pair_setControllerPairings(addr, &mm)) {
-      so_arg_kmm_t kmm = {addr_as_string, mm };
+      so_arg_kmm_t kmm = {addr_as_string, &mm };
       so_output_message(SO_PAIR_PRINT_KMM_SINGLE, &kmm);
     } else {
       read = true;
@@ -128,7 +128,7 @@ process_parmPair(clpar p[], int len) {
     if (read) {
       gm_bitmask_t gm;
       if (pair_getControllerPairings(addr, &gm)) {
-        so_arg_amm_t amm = {addr, &gm[0] };
+        so_arg_amm_t amm = {addr, &gm };
         so_output_message(SO_PAIR_PRINT_AMM, &amm);
       }
     }

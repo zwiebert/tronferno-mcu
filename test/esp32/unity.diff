@@ -6,8 +6,9 @@ diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt unity/CMake
  cmake_minimum_required(VERSION 3.5)
 
 -set(EXTRA_COMPONENT_DIRS "$ENV{IDF_PATH}/examples/cxx/experimental/experimental_cpp_component/")
+-
 +set(EXTRA_COMPONENT_DIRS "$ENV{HOME}/proj/mcu/tronferno-mcu/src/components")
-
++set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DUNIT_TESTING")
  include($ENV{IDF_PATH}/tools/cmake/project.cmake)
  project(unit-test-app)
 diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/main/app_main.c unity/main/app_main.c

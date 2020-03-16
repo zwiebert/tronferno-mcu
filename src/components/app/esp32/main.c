@@ -45,7 +45,7 @@ void main_setup_ip_dependent() {
 
 
 
-static void
+void
 mcu_init() {
 
   kvs_setup();

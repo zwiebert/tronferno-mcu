@@ -21,6 +21,12 @@ def parse_test_output():
             return FAIL
         if (":FAIL:" in line):
             print(line);
+        if ("assert failed!" in line):
+            print(line);
+            return FAIL
+        if ("Guru Meditation Error:" in line):
+            print(line);
+            return FAIL
     return NONE
 
 
