@@ -2,7 +2,7 @@
 #ifndef PROJ_APP_CONFIG_H_
 #define PROJ_APP_CONFIG_H_
 
-#define APP_VERSION "0.9.4"
+#define APP_VERSION "0.9.5"
 
 #define FER_TRANSMITTER
 #define FER_RECEIVER

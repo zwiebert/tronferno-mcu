@@ -17,38 +17,50 @@ bool succ;
 #define SIZE_GM sizeof (gm_bitmask_t)
 #define CLR_GM(gm) memset(gm, 0, sizeof (gm_bitmask_t))
 
-static void g(unsigned a, uint8_t g, uint8_t m, bool unpair) {
-  succ = pair_controller(a, g, m, unpair);
-  TEST_ASSERT_TRUE(succ);
-  succ = pair_getControllerPairings(a, &gm);
-  TEST_ASSERT_TRUE(succ);
+static int pair_and_read_back(unsigned a, uint8_t g, uint8_t m, bool unpair) {
+  if (!pair_controller(a, g, m, unpair))
+    return -1;
+  if (!pair_getControllerPairings(a, &gm))
+    return -2;
 
   gm_PutBit(gme, g, m, !unpair);
-  TEST_ASSERT_EQUAL_HEX8_ARRAY(gme, gm, SIZE_GM);
+  return 0;
 }
 
-static void f() {
-  succ = pair_rmController(A);
-  succ = pair_getControllerPairings(A, &gm);
-  TEST_ASSERT_FALSE(succ);
+static void test_pair_multiple_members() {
+
+  pair_rmController(A);
+  TEST_ASSERT_FALSE(pair_getControllerPairings(A, &gm));
 
   CLR_GM(gme);
 
-  g(A, 1, 2, false);
-  g(A, 1, 3, false);
-  g(A, 1, 3, true);
-  g(A, 4, 5, false);
-  g(A, 4, 6, false);
-  g(A, 4, 5, true);
-  g(A, 4, 6, true);
+  TEST_ASSERT_EQUAL(0, pair_and_read_back(A, 1, 2, false));
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(gme, gm, SIZE_GM);
 
-  succ = pair_rmController(A);
-  TEST_ASSERT_TRUE(succ);
+  TEST_ASSERT_EQUAL(0, pair_and_read_back(A, 1, 3, false));
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(gme, gm, SIZE_GM);
+
+  TEST_ASSERT_EQUAL(0, pair_and_read_back(A, 1, 3, true));
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(gme, gm, SIZE_GM);
+
+  TEST_ASSERT_EQUAL(0, pair_and_read_back(A, 4, 5, false));
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(gme, gm, SIZE_GM);
+
+  TEST_ASSERT_EQUAL(0, pair_and_read_back(A, 4, 6, false));
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(gme, gm, SIZE_GM);
+
+  TEST_ASSERT_EQUAL(0, pair_and_read_back(A, 4, 5, true));
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(gme, gm, SIZE_GM);
+
+  TEST_ASSERT_EQUAL(0, pair_and_read_back(A, 4, 6, true));
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(gme, gm, SIZE_GM);
+
+  TEST_ASSERT_TRUE(pair_rmController(A));
 }
 
 
 
 TEST_CASE("pair multiple members", "[fernotron_alias]")
 {
-     f();
+  test_pair_multiple_members();
 }

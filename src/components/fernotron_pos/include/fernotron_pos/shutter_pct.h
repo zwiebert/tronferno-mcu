@@ -21,14 +21,14 @@ int ferPos_mGetMovingPct(uint32_t a, uint8_t g, uint8_t m);
 
 int ferPos_printAllPcts(void);
 
-int ferPos_mMove(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd);
-int ferPos_mmMove(gm_bitmask_t mm, fer_cmd cmd);
+int ferPos_move_m(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd);
+int ferPos_move_mm(gm_bitmask_t mm, fer_cmd cmd);
 
 int ferPos_mSetPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct);
 int ferPos_mmSetPcts(gm_bitmask_t mm, uint8_t pct);
 
-uint16_t ferPos_mCalcMoveDuration_fromPctDiff(uint8_t g, uint8_t m, uint8_t curr_pct, uint8_t pct);
-uint8_t  ferPos_mCalcMovePct_fromDirectionAndDuration(uint8_t g, uint8_t m, bool direction_up, uint16_t time_s10);
+uint16_t ferPos_calcMoveDuration_fromPctDiff_m(uint8_t g, uint8_t m, uint8_t curr_pct, uint8_t pct);
+uint8_t  ferPos_calcMovePct_fromDirectionAndDuration_m(uint8_t g, uint8_t m, bool direction_up, uint16_t time_s10);
 
 void ferPos_loop(void);
 void ferPos_init(void);
@@ -39,6 +39,6 @@ void ferPos_init(void);
 
 
 int ferPos_pctsByGroup_load(uint8_t g, const shutterGroupPositionsT positions);
-int ferPoas_pctsByGroup_store(uint8_t g, shutterGroupPositionsT positions);
+int ferPos_pctsByGroup_store(uint8_t g, shutterGroupPositionsT positions);
 
 #endif /* USER_MAIN_CURRENT_STATE_H_ */

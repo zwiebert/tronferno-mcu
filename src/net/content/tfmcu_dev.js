@@ -10,6 +10,7 @@ const FETCH_GMU = 256;
 
 const UP = 0;
 const DOWN = 1;
+const SUN_DOWN = 2;
 
 function dbLog(msg) {  console.log(msg); }
 
@@ -51,7 +52,7 @@ class AppState {
     this.mPct = val;
     document.getElementById('spi').value = val;
     document.getElementById('spr').value = val;
-    shuPos_perFetch_posRecieved(val);
+    shuPos_pctFetch_posRecieved(val);
   }
 
   get pct() {
@@ -383,27 +384,30 @@ function shutterPrefs_updHtml() {
   let pref = ast.shutterPrefs[key];
   const mvut = document.getElementById("shpMvut");
   const mvdt = document.getElementById("shpMvdt");
+  const mvspdt = document.getElementById("shpSpMvdt");
 
   if (!pref) {
-    pref = {mvut:0, mvdt:0};
+    pref = {mvut:0, mvdt:0, spmvdt:0 };
   }
 
   if (pref) {
     mvut.value = (parseFloat(pref.mvut) / 10.0).toString();
     mvdt.value = (parseFloat(pref.mvdt) / 10.0).toString();
+    mvspdt.value = (parseFloat(pref.mvspdt) / 10.0).toString();
   }
 }
 
 function shutterPrefs_fromHtml_toMcu() {
   const mvut = document.getElementById("shpMvut");
   const mvdt = document.getElementById("shpMvdt");
-
+  const mvspdt = document.getElementById("shpSpMvdt");
 
   let tfmcu = {"to":"tfmcu", "shpref":{"g":ast.g, "m":ast.m, "c":"store"}};
   let pref = tfmcu.shpref;
 
   pref.mvut = Math.floor((parseFloat(mvut.value) * 10)).toString();
   pref.mvdt = Math.floor((parseFloat(mvdt.value) * 10)).toString();
+  pref.mvspdt = Math.floor((parseFloat(mvspdt.value) * 10)).toString();
 
   var url = '/cmd.json';
   http_postRequest(url, tfmcu);
@@ -420,41 +424,44 @@ let shutterPrefs_stopClock = {
 
 function shutterPrefs_stopClock_tick() {
   let spsc = shutterPrefs_stopClock;
-  let elem = document.getElementById(spsc.direction == UP ? "shpMvut": "shpMvdt");
+  let elem = document.getElementById(spsc.direction == UP ? "shpMvut":  spsc.direction == DOWN  ? "shpMvdt" : spsc.direction == SUN_DOWN ? "shpSpMvdt" : -1);
 
   spsc.val  += (spsc.ms / 100);
   elem.value = (spsc.val / 10.0).toString();
 }
 
-function shutterPrefs_stopClock_start() {
+function shutterPrefs_stopClock_do(direction) {
   let spsc = shutterPrefs_stopClock;
 
-  const pct = ast.pct;
-  if (pct === 0) {
+  if (spsc.ivId) {
+    shutterPrefs_stopClock_stop();
+    return;
+  }
+  
+  if (direction === UP) {
     spsc.direction = UP;
     http_postShutterCommand('up');
-  } else if (pct === 100) {
+  } else if (direction === DOWN) {
     spsc.direction = DOWN;
     http_postShutterCommand('down');
+  } else if (direction === SUN_DOWN) {
+    spsc.direction = SUN_DOWN;
+    http_postShutterCommand('sun-down');
   } else {
     return;
   }
-
-  spsc.val = 0;
-
-
+  
   if (!spsc.ivId) {
+    spsc.val = 0;
     spsc.ivId = setInterval(shutterPrefs_stopClock_tick, spsc.ms);
   }
 }
 
 function shutterPrefs_stopClock_stop() {
   let spsc = shutterPrefs_stopClock;
-  http_postShutterCommand('stop');
   if (spsc.ivId) {
     clearInterval(spsc.ivId);
     spsc.ivId = 0;
-    ast.pct = spsc.direction == UP ? 100 : 0;
   }
 }
 
@@ -497,43 +504,48 @@ function aliasControllers_fromHtml() { // XXX
   }
 }
 
-const shuPos_perFetch = {
+const shuPos_pctFetch = {
   ivId: 0,
   ms: 1000,
   last_pct: 0,
   last_last_pct: 0,
 };
 
-function shuPos_perFetch_posRecieved(pct) {
-  const sppf = shuPos_perFetch;
+function shuPos_pctFetch_posRecieved(pct) {
+  const sppf = shuPos_pctFetch;
   if (sppf.ivId) {
     sppf.last_last_pct = sppf.last_pct;
     sppf.last_pct = pct;
   }
 }
 
-function shuPos_perFetch_tick() {
-  const sppf = shuPos_perFetch;
+function shuPos_pctFetch_tick() {
+  const sppf = shuPos_pctFetch;
   const pct = ast.pct;
   if ((ast.g == 0 || ast.m == 0) || (pct === sppf.last_pct && sppf.last_pct === sppf.last_last_pct)) {
-    clearInterval(sppf.ivId);
-    sppf.ivId = 0;
+    shuPos_pctFetch_stop();
     return;
   }
   ast.http_fetchByMask(FETCH_POS);
 }
 
-function shuPos_perFetch_start() {
+function shuPos_pctFetch_start() {
   if (ast.g == 0 || ast.m == 0)
     return;
 
-  let sppf = shuPos_perFetch;
+  let sppf = shuPos_pctFetch;
   if (!sppf.ivId)   {
-    sppf.ivId = setInterval(shuPos_perFetch_tick, sppf.ms);
+    sppf.ivId = setInterval(shuPos_pctFetch_tick, sppf.ms);
     sppf.last_pct = -1;
     sppf.last_last_pct = -2;
     ast.http_fetchByMask(FETCH_POS);
   }
+}
+
+function shuPos_pctFetch_stop() {
+  let sppf = shuPos_pctFetch; 
+  clearInterval(sppf.ivId);
+  sppf.ivId = 0;
 }
 
 function onAliasesChanged() {
@@ -976,7 +988,7 @@ function http_postShutterCommand(c=document.getElementById('send-c').value) {
   var url = '/cmd.json';
   dbLog("url: "+url);
   http_postRequest(url, tfmcu);
-  shuPos_perFetch_start();
+  shuPos_pctFetch_start();
 }
 
 var netota_intervalID = 0;
@@ -1028,7 +1040,7 @@ function onPos(pct) {
 
   let url = '/cmd.json';
   http_postRequest(url, tfmcu);
-  shuPos_perFetch_start();
+  shuPos_pctFetch_start();
 }
 
 function req_automatic() {
@@ -1161,14 +1173,16 @@ function onContentLoaded() {
   document.getElementById("sub").onclick = () => http_postShutterCommand('up');
   document.getElementById("ssb").onclick = () => http_postShutterCommand('stop');
   document.getElementById("sdb").onclick = () => http_postShutterCommand('down');
+  document.getElementById("sspb").onclick = () => http_postShutterCommand('sun-down');
   document.getElementById("spb").onclick = () => onPos(document.getElementById("spi").value);
   document.getElementById("spr").onchange = () => onPos(document.getElementById("spr").value);
 
 
   document.getElementById("shp_reload").onclick = () => shutterPrefs_updHtml();
   document.getElementById("shp_save").onclick = () => shutterPrefs_fromHtml_toMcu();
-  document.getElementById("shp_clockStart").onclick = () => shutterPrefs_stopClock_start();
-  document.getElementById("shp_clockStop").onclick = () => shutterPrefs_stopClock_stop();
+  document.getElementById("shp_MvutButton").onclick = () => shutterPrefs_stopClock_do(UP);
+  document.getElementById("shp_MvdtButton").onclick = () => shutterPrefs_stopClock_do(DOWN);
+  document.getElementById("shp_SpMvdtButton").onclick = () => shutterPrefs_stopClock_do(SUN_DOWN);
 
   document.getElementById("alias_reload").onclick = () => onAliasesReload();
   document.getElementById("alias_save").onclick = () => onAliasesApply();

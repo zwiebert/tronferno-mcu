@@ -244,7 +244,7 @@ timer_state_loop(void) {
 	continue;
 #endif
       }
-      ferPos_mmMove(te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
+      ferPos_move_mm(te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
     }
   }
 }
