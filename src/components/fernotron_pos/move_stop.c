@@ -34,11 +34,11 @@ bool ferPos_freeMvIfUnused_mvi(int mvi) {
   int gi;
   for (gi = 0; gi < 8; ++gi) {
     if (moving[mvi].mask[gi]) {
-      CLR_BIT(moving_mask, mvi);
-      return true;
+      return false;
     }
   }
-  return false;
+  CLR_BIT(moving_mask, mvi);
+  return true;
 }
 
 void ferPos_stop_mvi(int mvi, u8 g, u8 m, u32 now_ts) {

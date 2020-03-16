@@ -103,9 +103,10 @@ static int ferPos_filter_mm(gm_bitmask_t *mm, struct filter *filter) {
             }
           }
 
-          ++remaining;
+
           continue;
           filter_out:
+          --remaining;
           gm_ClrBit(mm, g, m);
         }
       }
