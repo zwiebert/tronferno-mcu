@@ -47,8 +47,8 @@ enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 
 
 int
-ferPos_getPct(u32 a, int g, int m) {
-  precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
+ferPos_getPct(u32 a, u8 g, u8 m) {
+  precond(g <= 7 && m <= 7);
 
   if (m != 0 && !pm_isGroupUnused(g) && !pm_isMemberUnused(g,0))
     return pm_getPct(g, 0);
@@ -83,15 +83,7 @@ set_state(u32 a, int g, int m, int position) {
 }
 
 int 
-ferPos_mGetPct(u32 a, u8 g, u8 m) {
-  precond(g <= 7 && m <= 7);
-
-  return ferPos_getPct(a, g, m);
-}
-
-
-int 
-ferPos_mSetPct(u32 a, u8 g, u8 m, u8 pct) {
+ferPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   int position = pct;
   precond(g <= 7 && m <= 7);
 
@@ -104,7 +96,7 @@ ferPos_mSetPct(u32 a, u8 g, u8 m, u8 pct) {
       for (m=1; m <= MBR_MAX; ++m) {
         if (gm_GetBit(gm, g, m)) {
           // recursion for each paired g/m
-          ferPos_mSetPct(0, g, m, pct);
+          ferPos_setPct(0, g, m, pct);
         }
       }
     }
@@ -133,13 +125,13 @@ ferPos_mSetPct(u32 a, u8 g, u8 m, u8 pct) {
 }
 
 int 
-ferPos_mmSetPcts(gm_bitmask_t mm, u8 p) {
+ferPos_setPcts(gm_bitmask_t mm, u8 p) {
   u8 g, m;
 
   for (g = 1; g <= GRP_MAX; ++g) {
     for (m = 1; m <= MBR_MAX; ++m) {
       if (GET_BIT(mm[g], m)) {
-        ferPos_mSetPct(0, g, m, p);
+        ferPos_setPct(0, g, m, p);
       }
     }
   }
@@ -147,7 +139,7 @@ ferPos_mmSetPcts(gm_bitmask_t mm, u8 p) {
 }
 
 int 
-ferPos_printAllPcts() {
+ferPos_printPctsAll() {
   u8 g, m, g2, m2;
   gm_bitmask_t msk = {0,};
 
@@ -184,12 +176,6 @@ ferPos_printAllPcts() {
   return 0;
 }
 
-
-
-
-
-
-
 static void ferPos_autoSavePositions_iv(int interval_ts) {
   static u32 next_save_pos;
   if (pos_map_changed && next_save_pos < get_now_time_ts()) {
@@ -206,7 +192,7 @@ static void ferPos_autoSavePositions_iv(int interval_ts) {
 
 
 void ferPos_loop() {
-  ferPos_mvCheck_iv(20);
+  ferPos_checkStatus_whileMoving_periodic(20);
   ferPos_autoSavePositions_iv(100);
 }
 

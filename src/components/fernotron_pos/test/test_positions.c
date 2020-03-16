@@ -16,9 +16,15 @@
 void   test_set_get_pct() {
   int pct;
 
-  ferPos_mSetPct(0, 2, 3, 42);
-  pct = ferPos_mGetPct(0, 2, 3);
+  ferPos_setPct(0, 2, 3, 42);
+  pct = ferPos_getPct(0, 2, 3);
   TEST_ASSERT_EQUAL(42,pct);
+  pct = ferPos_getPct_afterDuration(2, 3, false, 0);
+  TEST_ASSERT_EQUAL(42,pct);
+  pct = ferPos_getPct_afterDuration(2, 3, false, 1000);
+  TEST_ASSERT_EQUAL(0,pct);
+  pct = ferPos_getPct_afterDuration(2, 3, true, 1000);
+  TEST_ASSERT_EQUAL(100,pct);
 }
 
 

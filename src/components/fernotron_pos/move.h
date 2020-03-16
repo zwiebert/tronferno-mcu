@@ -47,23 +47,20 @@ extern struct shutter_timings st_def;
 extern volatile u32 run_time_s10;
 #define get_now_time_ts(x) (run_time_s10 + 0)
 
-// static positions
-int ferPos_getPct(u32 a, int g, int m);
-
 // general control for moving
-bool ferPos_mCalcSunStop(u8 g, u8 m, u16 time_s10);
+bool ferPos_shouldStop_sunDown(u8 g, u8 m, u16 time_s10);
 void ferPos_mvCheck_mvi(u8 mvi);
 int ferPos_mvCheck_mv(struct mv *mv, unsigned now_time_ts);
-void ferPos_mvCheck_iv(int interval_ts);
+void ferPos_checkStatus_whileMoving_periodic(int interval_ts);
 u16 ferPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct);
 bool ferPos_freeMvIfUnused_mvi(int mvi);
 struct mv* ferPos_getFreeMv();
 
 
 // start moving
-bool ferPos_sunReadyToMoveDown_m(uint8_t g, uint8_t m);
-int ferPos_move_m(u32 a, u8 g, u8 m, fer_cmd cmd);
-int ferPos_move_mm(gm_bitmask_t mm, fer_cmd cmd);
+bool ferPos_shouldMove_sunDown(uint8_t g, uint8_t m);
+int ferPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_cmd cmd);
+int ferPos_registerMovingShutters(gm_bitmask_t mm, fer_cmd cmd);
 
 // stop moving
 void ferPos_stop_mv(struct mv *mv, u8 g, u8 m, u8 pct);

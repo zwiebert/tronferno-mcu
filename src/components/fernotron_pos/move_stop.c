@@ -26,7 +26,7 @@
 #include "move.h"
 
 void ferPos_stop_mv(struct mv *mv, u8 g, u8 m, u8 pct) {
-  ferPos_mSetPct(0, g, m, pct);
+  ferPos_setPct(0, g, m, pct);
   gm_ClrBit(mv->mask, g, m);
 }
 
@@ -44,7 +44,7 @@ bool ferPos_freeMvIfUnused_mvi(int mvi) {
 void ferPos_stop_mvi(int mvi, u8 g, u8 m, u32 now_time_ts) {
   struct mv *mv = &moving[mvi];
 
-  u8 pct = ferPos_calcMovePct_fromDirectionAndDuration_m(g, m, mv_dirUp(mv), now_time_ts - mv->start_time);
+  u8 pct = ferPos_getPct_afterDuration(g, m, mv_dirUp(mv), now_time_ts - mv->start_time);
 
   ferPos_stop_mv(mv, g, m, pct);
   ferPos_freeMvIfUnused_mvi(mvi);
@@ -91,7 +91,7 @@ void ferPos_stop_mvi_mm(int mvi, gm_bitmask_t mm, u32 rt) {
         continue;
 
       gm_ClrBit(moving[mvi].mask, g, m);
-      ferPos_mSetPct(0, g, m, ferPos_calcMovePct_fromDirectionAndDuration_m(g, m, mv_dirUp(mv), rt - mv->start_time));  // update pct table now
+      ferPos_setPct(0, g, m, ferPos_getPct_afterDuration(g, m, mv_dirUp(mv), rt - mv->start_time));  // update pct table now
     }
     if (mv->mask[g]) {
       remaining = true;

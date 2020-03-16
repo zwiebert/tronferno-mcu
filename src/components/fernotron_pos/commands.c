@@ -39,7 +39,7 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   fer_memb memb = m == 0 ? 0 : m + 7;
 
   if (g > 0 && m > 0) {
-    curr_pct = ferPos_mGetPct(a, g, m);
+    curr_pct = ferPos_getPct(a, g, m);
   }
 
   fsbT *fsb = get_sender_by_addr(a);

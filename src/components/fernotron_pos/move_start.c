@@ -68,7 +68,7 @@ static int ferPos_filter_mm(gm_bitmask_t mm, struct filter *filter) {
     for (m = 1; m <= MBR_MAX; ++m) {
       if (gm_GetBit(mm, g, m)) {
 
-        if (filter->sun_not_ready_to_move_down && !ferPos_sunReadyToMoveDown_m(g, m))
+        if (filter->sun_not_ready_to_move_down && !ferPos_shouldMove_sunDown(g, m))
           goto filter_out;
 
         if (filter->destination_already_reached) {
@@ -166,7 +166,7 @@ static struct mv* add_to_new_movement_mm(gm_bitmask_t mm, u32 rt, enum direction
 }
 
 // register moving related commands sent to a shutter to keep track of its changing position
-int ferPos_move_mm(gm_bitmask_t mm, fer_cmd cmd) {
+int ferPos_registerMovingShutters(gm_bitmask_t mm, fer_cmd cmd) {
   u32 rt = get_now_time_ts(0);
   int mvi;
   u8 g, m;
@@ -223,7 +223,7 @@ int ferPos_move_mm(gm_bitmask_t mm, fer_cmd cmd) {
 }
 
 
-int ferPos_move_m(u32 a, u8 g, u8 m, fer_cmd cmd) {
+int ferPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_cmd cmd) {
   precond(g <= 7 && m <= 7);
 
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, cmd=%d\n", __func__, a, (int)g, (int)m, (int)cmd));
@@ -231,7 +231,7 @@ int ferPos_move_m(u32 a, u8 g, u8 m, fer_cmd cmd) {
   if (!(a == 0 || a == C.fer_centralUnitID)) {
     gm_bitmask_t gm;
     if (pair_getControllerPairings(a, &gm))
-      return ferPos_move_mm(gm, cmd);
+      return ferPos_registerMovingShutters(gm, cmd);
     return 0;
   }
 #endif
@@ -247,6 +247,6 @@ int ferPos_move_m(u32 a, u8 g, u8 m, fer_cmd cmd) {
     gm_SetBit(mm, g, m);
   }
 
-  return ferPos_move_mm(mm, cmd);
+  return ferPos_registerMovingShutters(mm, cmd);
 }
 
