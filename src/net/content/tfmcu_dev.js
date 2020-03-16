@@ -384,7 +384,7 @@ function shutterPrefs_updHtml() {
   let pref = ast.shutterPrefs[key];
   const mvut = document.getElementById("shpMvut");
   const mvdt = document.getElementById("shpMvdt");
-  const spmvdt = document.getElementById("shpSpMvdt");
+  const mvspdt = document.getElementById("shpSpMvdt");
 
   if (!pref) {
     pref = {mvut:0, mvdt:0, spmvdt:0 };
@@ -393,21 +393,21 @@ function shutterPrefs_updHtml() {
   if (pref) {
     mvut.value = (parseFloat(pref.mvut) / 10.0).toString();
     mvdt.value = (parseFloat(pref.mvdt) / 10.0).toString();
-    spmvdt.value = (parseFloat(pref.spmvdt) / 10.0).toString();
+    mvspdt.value = (parseFloat(pref.mvspdt) / 10.0).toString();
   }
 }
 
 function shutterPrefs_fromHtml_toMcu() {
   const mvut = document.getElementById("shpMvut");
   const mvdt = document.getElementById("shpMvdt");
-  const spmvdt = document.getElementById("shpSpMvdt");
+  const mvspdt = document.getElementById("shpSpMvdt");
 
   let tfmcu = {"to":"tfmcu", "shpref":{"g":ast.g, "m":ast.m, "c":"store"}};
   let pref = tfmcu.shpref;
 
   pref.mvut = Math.floor((parseFloat(mvut.value) * 10)).toString();
   pref.mvdt = Math.floor((parseFloat(mvdt.value) * 10)).toString();
-  pref.spmvdt = Math.floor((parseFloat(spmvdt.value) * 10)).toString();
+  pref.mvspdt = Math.floor((parseFloat(mvspdt.value) * 10)).toString();
 
   var url = '/cmd.json';
   http_postRequest(url, tfmcu);
