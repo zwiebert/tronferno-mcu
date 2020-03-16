@@ -9,6 +9,7 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
+#include "debug/debug.h"
 
 static SemaphoreHandle_t cli_mutex;
 

@@ -22,6 +22,9 @@ unity-clean:
 
 port ?= /dev/ttyUSB0
 
+esp32_ocd_sh :=  sh $(realpath ./esp32_ocd.sh)
+
+
 $(unity_dir)/unity.stamp:
 	mkdir -p $(unity_dir)
 	cp -upr $(IDF_PATH)/tools/unit-test-app/* $(unity_dir)
@@ -37,4 +40,17 @@ flash: unity
 run:
 	python3 ./run_tests.py $(port)
 
+
+
+flash-ocd: unity
+	(cd $(build_dir) && $(esp32_ocd_sh) flash)
+flash-app-ocd: unity
+	(cd $(build_dir) && $(esp32_ocd_sh) flash_app)
+ocd:
+	$(esp32_ocd_sh) server
+ocd-loop:
+	$(esp32_ocd_sh) server_loop
+
 all: build flash run
+
+all-ocd: build flash-app-ocd run

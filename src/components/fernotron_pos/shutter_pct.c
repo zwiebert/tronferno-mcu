@@ -34,10 +34,6 @@
 #define MBR_MAX 7
 
 
-
-
-
-
 static shutterGroupPositionsT pos_map[8];
 static u8  pos_map_changed;
 
@@ -115,8 +111,6 @@ ferPos_mSetPct(u32 a, u8 g, u8 m, u8 pct) {
     return 0;
   }
 #endif
-
-
 
   if (0 <= position && position <= 100) {
     if (a == 0 || a == C.fer_centralUnitID) {

@@ -13,4 +13,6 @@
 bool mutex_cliTake();
 void mutex_cliGive();
 
+void mutex_setup();
+
 #endif /* SRC_ESP32_MAIN_MUTEX_H_ */

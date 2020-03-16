@@ -64,7 +64,7 @@ esp32-lan: http_content
 	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
 esp32-flash: http_content
 	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
-	
+
 esp32-flash-ocd: http_content
 	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash)
 esp32-flash-app-ocd: http_content
@@ -75,7 +75,7 @@ esp32-ocd-loop:
 	$(esp32_ocd_sh) server_loop
 
 #unit testing
-esp32_test_tgts_auto := build clean flash run all
+esp32_test_tgts_auto := build clean flash run all all-ocd flash-ocd flash-app-ocd
 
 define GEN_RULE
 .PHONY: esp32-$(1)
