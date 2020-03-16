@@ -5,7 +5,7 @@ tgts := all
 
 default: print-help
 
-clean : unity-clean esp32-fullclean esp8266-clean
+clean : esp32-test-clean esp32-fullclean esp8266-clean
 
 print-help:
 	@cat docs/make_help.txt
