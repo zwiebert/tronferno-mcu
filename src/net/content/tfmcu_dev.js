@@ -387,7 +387,7 @@ function shutterPrefs_updHtml() {
   const mvspdt = document.getElementById("shpSpMvdt");
 
   if (!pref) {
-    pref = {mvut:0, mvdt:0, spmvdt:0 };
+    pref = {mvut:0, mvdt:0, mvspdt:0 };
   }
 
   if (pref) {
