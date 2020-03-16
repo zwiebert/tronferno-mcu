@@ -18,7 +18,7 @@ typedef uint8_t shutterGroupPositionsT[8];
 
 int ferPos_getPct(uint32_t a, uint8_t g, uint8_t m);
 int ferPos_setPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct);
-int ferPos_setPcts(gm_bitmask_t mm, uint8_t pct);
+int ferPos_setPcts(gm_bitmask_t *mm, uint8_t pct);
 
 int ferPos_getPct_whileMoving(uint32_t a, uint8_t g, uint8_t m);
 
@@ -29,7 +29,7 @@ int ferPos_printPctsAll(void);
 
 
 int ferPos_registerMovingShutter(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd);
-int ferPos_registerMovingShutters(gm_bitmask_t mm, fer_cmd cmd);
+int ferPos_registerMovingShutters(gm_bitmask_t *mm, fer_cmd cmd);
 
 void ferPos_loop(void);
 void ferPos_init(void);

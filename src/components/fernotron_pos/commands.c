@@ -5,6 +5,7 @@
  *      Author: bertw
  */
 
+#include "fernotron/fsb.h"
 #include "fernotron/fer_msg_basic.h"
 #include "fernotron_pos/commands.h"
 #include "fernotron_pos/shutter_pct.h"
@@ -30,8 +31,8 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
 
   if (m == 0) {
     gm_bitmask_t gm = {0,};
-    gm[g] = 0xfe;
-    return commands_moveShutterMaskToPct(a, gm, pct, repeats);
+    gm_SetByte(&gm, g, 0xfe);
+    return commands_moveShutterMaskToPct(a, &gm, pct, repeats);
   }
 
   fer_cmd fc = fer_cmd_None;
@@ -81,7 +82,7 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   return true;
 }
 
-bool   commands_moveShutterMaskToPct(u32 a, gm_bitmask_t gm, u8 pct, u8 repeats) {
+bool   commands_moveShutterMaskToPct(u32 a, gm_bitmask_t *gm, u8 pct, u8 repeats) {
   u8 g, m;
 
   for (g=1; g <= GRP_MAX; ++g) {

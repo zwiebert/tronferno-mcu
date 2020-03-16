@@ -172,9 +172,9 @@ void so_out_x_reply_entry_f(so_msg_t key, float val, int n) {
 static void so_print_timer_event_minutes(u8 g, u8 m);
 static void so_print_timer_as_text(u8 g, u8 m, bool wildcard);
 static void so_print_timer(u8 g, u8 m);
-static void so_print_gmbitmask(gm_bitmask_t mm);
+static void so_print_gmbitmask(gm_bitmask_t *mm);
 static void so_print_startup_info(void);
-static void so_gmbitmask_to_str(char *dst, gm_bitmask_t mm);
+static void so_gmbitmask_to_str(char *dst, gm_bitmask_t *mm);
 
 void  so_output_message(so_msg_t mt, void *arg) {
   static u16 pras_msgid, cuas_msgid;
@@ -765,30 +765,30 @@ static void  so_print_timer(u8 g, u8 m) {
 
 }
 
-static void  so_print_gmbitmask(gm_bitmask_t mm) {
+static void  so_print_gmbitmask(gm_bitmask_t *mm) {
   u8 g;
 
   for (g = 0; g < 8; ++g) {
-    io_putx8(mm[g]);
+    io_putx8(gm_GetByte(mm, g));
     if (g < 7)
       io_putc(',');
   }
 }
 
-static void so_gmbitmask_to_str(char *dst, gm_bitmask_t mm) {
+static void so_gmbitmask_to_str(char *dst, gm_bitmask_t *mm) {
   i8 g;
   bool leading_zeros = true;
 
   for (g = 7; g >= 0; --g) {
-    if (leading_zeros && mm[g] == 0)
+    if (leading_zeros && gm_GetByte(mm, g) == 0)
       continue; // no leading zeros
     leading_zeros = false;
 
-    if (mm[g] & 0xf0) {
-      itoa(mm[g], dst, 16);
+    if (gm_GetByte(mm, g) & 0xf0) {
+      itoa(gm_GetByte(mm, g), dst, 16);
     } else {
       *dst++ = '0';
-      itoa(mm[g], dst, 16);
+      itoa(gm_GetByte(mm, g), dst, 16);
     }
     dst = dst + strlen(dst);
   }

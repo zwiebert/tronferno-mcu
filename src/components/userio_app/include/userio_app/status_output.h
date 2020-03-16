@@ -10,10 +10,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-
-//#include "fernotron_pos/shutter_pct.h"
-//#include "fernotron_pos/shutter_prefs.h"
 #include "userio/status_output.h"
+#include "fernotron/types.h"
 
 
 
@@ -72,7 +70,7 @@ typedef struct {
 } so_arg_gm_t;
 
 typedef struct {
-  uint8_t *mm; //gm_bitmask_t *
+  gm_bitmask_t *mm;
   uint8_t p;
 } so_arg_mmp_t;
 
@@ -82,12 +80,12 @@ typedef struct {
 
 typedef struct {
   uint32_t a;
-  uint8_t *mm; //gm_bitmask_t *
+  gm_bitmask_t *mm;
 } so_arg_amm_t;
 
 typedef struct {
   const char *key;
-  uint8_t *mm; //gm_bitmask_t *
+  gm_bitmask_t *mm;
 } so_arg_kmm_t;
 
 void so_output_message(so_msg_t mt, void *arg);

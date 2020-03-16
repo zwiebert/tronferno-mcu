@@ -94,7 +94,7 @@ ferPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
     if (pair_getControllerPairings(a, &gm))
     for (g=1; g <= GRP_MAX; ++g) {
       for (m=1; m <= MBR_MAX; ++m) {
-        if (gm_GetBit(gm, g, m)) {
+        if (gm_GetBit(&gm, g, m)) {
           // recursion for each paired g/m
           ferPos_setPct(0, g, m, pct);
         }
@@ -125,12 +125,12 @@ ferPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
 }
 
 int 
-ferPos_setPcts(gm_bitmask_t mm, u8 p) {
+ferPos_setPcts(gm_bitmask_t *mm, u8 p) {
   u8 g, m;
 
   for (g = 1; g <= GRP_MAX; ++g) {
     for (m = 1; m <= MBR_MAX; ++m) {
-      if (GET_BIT(mm[g], m)) {
+      if (gm_GetBit(mm, g, m)) {
         ferPos_setPct(0, g, m, p);
       }
     }
@@ -150,7 +150,7 @@ ferPos_printPctsAll() {
     for (m=0; m < 8; ++m) {
       if (pm_isMemberUnused(g,m))
         continue; //
-      if (gm_GetBit(msk, g, 0) || gm_GetBit(msk, g, m))
+      if (gm_GetBit(&msk, g, 0) || gm_GetBit(&msk, g, m))
         continue; // was already processed by a previous pass
 
       u8 pct = pm_getPct(g,m);
@@ -158,8 +158,8 @@ ferPos_printPctsAll() {
       for (g2=g; g2 < 8; ++g2) {
         for (m2=0; m2 < 8; ++m2) {
           if (pm_getPct(g2,m2) == pct) {
-            gm_SetBit(pos_msk, g2, m2); // mark as being equal to pct
-            gm_SetBit(msk, g2, m2); // mark as already processed
+            gm_SetBit(&pos_msk, g2, m2); // mark as being equal to pct
+            gm_SetBit(&msk, g2, m2); // mark as already processed
             if (m2 == 0) {
               goto next_g2;  // all group members have the same pct value because m==0 is used
             }
@@ -168,7 +168,7 @@ ferPos_printPctsAll() {
         next_g2:;
       }
 
-      so_arg_mmp_t mmp = { pos_msk, pct };
+      so_arg_mmp_t mmp = { &pos_msk, pct };
       so_output_message(SO_POS_PRINT_MMP, &mmp);
     }
   }

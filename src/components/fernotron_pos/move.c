@@ -83,15 +83,15 @@ static void ferPos_printMovingPct(u8 g, u8 m, u8 pct) {
 }
 
 // check if a moving shutter has reached its end position
-int ferPos_mvCheck_mv(struct mv *mv, unsigned now_time_ts) {
+int ferPos_mvCheck_mv(struct mv *mv, unsigned now_ts) {
   u8 g, m, pct;
   int stopped_count = 0;
 
-  u16 duration_ts = now_time_ts - mv->start_time;
+  u16 duration_ts = now_ts - mv->start_time;
 
   for (g = 1; g < 8; ++g) {
     for (m = 1; m < 8; ++m) {
-      if (!gm_GetBit(mv->mask, g, m))
+      if (!gm_GetBit(&mv->mask, g, m))
         continue;
 
       pct = ferPos_getPct_afterDuration(g, m, mv_dirUp(mv), duration_ts);
@@ -172,7 +172,7 @@ bool ferPos_shouldMove_sunDown(u8 g, u8 m) {
   if (pct_curr <= pct_sun)
     return false;
 
-  if (gm_GetBit(manual_bits, g, m))
+  if (gm_GetBit(&manual_bits, g, m))
     return false;
 
   timer_data_t td = { };
@@ -228,7 +228,7 @@ int ferPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
     return -1;
   }
 
-  u32 rt = get_now_time_ts(0);
+  u32 now_ts = get_now_time_ts(0);
   u8 i;
   u8 mask = moving_mask;
 
@@ -238,9 +238,9 @@ int ferPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
 
     struct mv *mv = &moving[i];
 
-    if (gm_GetBit(mv->mask, g, m)) {
-      u16 time_s10 = rt - mv->start_time;
-      u8 pct = ferPos_getPct_afterDuration(g, m, mv_dirUp(mv), time_s10);
+    if (gm_GetBit(&mv->mask, g, m)) {
+      u16 duration_ts = now_ts - mv->start_time;
+      u8 pct = ferPos_getPct_afterDuration(g, m, mv_dirUp(mv), duration_ts);
       return pct;
     }
   }

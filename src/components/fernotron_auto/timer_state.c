@@ -166,7 +166,7 @@ get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
       for (m=0; m <= MAX_MBR; ++m) {
 	timer_minutes_t timi;
 
-  if (gm_GetBit(manual_bits, g, m)) {
+  if (gm_GetBit(&manual_bits, g, m)) {
     continue;
   }
 
@@ -244,7 +244,7 @@ timer_state_loop(void) {
 	continue;
 #endif
       }
-      ferPos_registerMovingShutters(te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
+      ferPos_registerMovingShutters(&te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
     }
   }
 }
