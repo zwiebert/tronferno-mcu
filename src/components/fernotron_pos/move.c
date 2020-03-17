@@ -138,7 +138,7 @@ bool periodic(unsigned interval_ts, unsigned *state) {
   unsigned now = get_now_time_ts();
 
   if (*state < now) {
-    *state = now;
+    *state = now + interval_ts;
     return true;
   }
   return false;
