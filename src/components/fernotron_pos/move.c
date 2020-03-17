@@ -39,8 +39,6 @@
 
 
 
-struct mv moving[mv_SIZE];
-u8 moving_mask;
 struct shutter_timings st_def = { DEF_MV_UP_10, DEF_MV_DOWN_10, DEF_MV_SUN_DOWN_10 };
 
 
@@ -94,9 +92,9 @@ int ferPos_mvCheck_mv(struct mv *mv, unsigned now_ts) {
       if (!gm_GetBit(&mv->mask, g, m))
         continue;
 
-      pct = ferPos_getPct_afterDuration(g, m, mv_dirUp(mv), duration_ts);
+      pct = ferPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), duration_ts);
 
-      if ((mv_dirUp(mv) && pct == PCT_UP) || (!mv_dirUp(mv) && pct == PCT_DOWN)) {
+      if ((direction_isUp(mv->dir) && pct == PCT_UP) || (!direction_isUp(mv->dir) && pct == PCT_DOWN)) {
         ferPos_stop_mv(mv, g, m, pct);
         ++stopped_count;
         continue;
@@ -115,22 +113,17 @@ int ferPos_mvCheck_mv(struct mv *mv, unsigned now_ts) {
 }
 
 
-void ferPos_mvCheck_mvi(u8 mvi) {
-  if (ferPos_mvCheck_mv(&moving[mvi], get_now_time_ts(0))) {
-    ferPos_freeMvIfUnused_mvi(mvi);
-  }
+void ferPos_mvCheck_mvi(struct mv *mv) {
+  if (ferPos_mvCheck_mv(mv, get_now_time_ts(0)))
+    if (gm_isAllClear(&mv->mask))
+      mv_free(mv);
 }
 
 
 static void ferPos_checkStatus_whileMoving() {
-  u8 i;
-  u8 mask = moving_mask;
-
-  for (i = 0; mask != 0; ++i, (mask >>= 1)) {
-    if (!(mask & 1))
-      continue;
-
-    ferPos_mvCheck_mvi(i);
+  struct mv *mv;
+  for (mv = mv_getFirst(); mv; mv = mv_getNext(mv)) {
+    ferPos_mvCheck_mvi(mv);
   }
 }
 
@@ -146,7 +139,7 @@ bool periodic(unsigned interval_ts, unsigned *state) {
 
 void ferPos_checkStatus_whileMoving_periodic(int interval_ts) {
   static unsigned next_ts;
-  if (moving_mask && periodic(interval_ts, &next_ts)) {
+  if (mv_getFirst() && periodic(interval_ts, &next_ts)) {
     ferPos_checkStatus_whileMoving();
   }
 }
@@ -184,9 +177,6 @@ bool ferPos_shouldMove_sunDown(u8 g, u8 m) {
   return true;
 }
 
-
-
-
 u16 ferPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct) {
   bool direction = curr_pct < pct;
   u8 pct_diff = direction ? pct - curr_pct : curr_pct - pct;
@@ -207,10 +197,10 @@ u8 ferPos_getPct_afterDuration(u8 g, u8 m, bool direction_up, u16 duration_ts) {
   ferPos_mGetSt(&st, g, m);
 
   if (pct == -1) {
-    return direction_up ? PCT_UP : PCT_DOWN;// XXX
+    return direction_up ? PCT_UP : PCT_DOWN; // XXX
   }
 
-  int add = (direction_up ? 100 * duration_ts /  st.move_up_tsecs : -100 * duration_ts / st.move_down_tsecs);
+  int add = (direction_up ? 100 * duration_ts / st.move_up_tsecs : -100 * duration_ts / st.move_down_tsecs);
   add += pct;
 
   if (add > 100)
@@ -221,26 +211,18 @@ u8 ferPos_getPct_afterDuration(u8 g, u8 m, bool direction_up, u16 duration_ts) {
     return add;
 }
 
-
-
 int ferPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
   if (!(a == 0 || a == C.fer_centralUnitID)) {
     return -1;
   }
 
   u32 now_ts = get_now_time_ts(0);
-  u8 i;
-  u8 mask = moving_mask;
 
-  for (i = 0; mask != 0; ++i, (mask >>= 1)) {
-    if (!(mask & 1))
-      continue;
-
-    struct mv *mv = &moving[i];
-
+  struct mv *mv;
+  for (mv = mv_getFirst(); mv; mv = mv_getNext(mv)) {
     if (gm_GetBit(&mv->mask, g, m)) {
       u16 duration_ts = now_ts - mv->start_time;
-      u8 pct = ferPos_getPct_afterDuration(g, m, mv_dirUp(mv), duration_ts);
+      u8 pct = ferPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), duration_ts);
       return pct;
     }
   }
