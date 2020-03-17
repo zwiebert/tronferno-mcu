@@ -36,7 +36,7 @@ void main_setup_ip_dependent() {
 #ifdef USE_NTP
     setup_ntp();
 #endif
-    setup_tcp_server();
+    tcps_startServer();
 #ifdef USE_MQTT
     io_mqtt_setup();
 #endif
@@ -93,7 +93,7 @@ mcu_init() {
 #endif
   //setup_udp();
   intTimer_setup();
-  storage_setup();
+  stor_setup();
   main_setup();
 
 }

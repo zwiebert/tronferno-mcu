@@ -119,8 +119,8 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
 
   for (i = 0; i < FPR_ASTRO_HEIGHT; ++i) {
     for (j = 0; j < 4; ++j) {
-      calc_sunrise_sunset(NULL, &duskf, C.geo_timezone + (mint_offset / 60.0f), dayf, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
-      calc_sunrise_sunset(NULL, &duskr, C.geo_timezone + (mint_offset / 60.0f), dayr, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+      sun_calculateDuskDawn(NULL, &duskf, C.geo_timezone + (mint_offset / 60.0f), dayf, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+      sun_calculateDuskDawn(NULL, &duskr, C.geo_timezone + (mint_offset / 60.0f), dayr, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
 
       switch (C.astroCorrection) {
       case acAverage:
@@ -172,7 +172,7 @@ u16 astro_calc_minutes(const struct tm *tm) {
   assert(0 <= idx && idx <= 47);
 
   double dayofy = yd * 1.0139;
-  calc_sunrise_sunset(NULL, &dusk, C.geo_timezone + (tm->tm_isdst ? 1 : 0), dayofy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+  sun_calculateDuskDawn(NULL, &dusk, C.geo_timezone + (tm->tm_isdst ? 1 : 0), dayofy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
   u16 minutes = dusk * 60;
   return minutes;
 }
@@ -187,7 +187,7 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
     double dusk;
     double dayofy = (4 * yd--) * 1.0139; // 360 => 365 days per year
 
-    calc_sunrise_sunset(NULL, &dusk, C.geo_timezone + (mint_offset / 60.0f), dayofy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+    sun_calculateDuskDawn(NULL, &dusk, C.geo_timezone + (mint_offset / 60.0f), dayofy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
     time_to_bcd(&dst[i][j * 2], &dst[i][j * 2 + 1], dusk, true);
     }
   }
@@ -216,7 +216,7 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
 
   for (i = 0; i < FPR_ASTRO_HEIGHT; ++i) {
     for (j = 0; j < 4; ++j) {
-      calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + (mint_offset / 60.0f), get_yday(month, mday), C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+      sun_calculateDuskDawn(NULL, &sunset, C.geo_timezone + (mint_offset / 60.0f), get_yday(month, mday), C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
 
       time_to_bcd(&dst[i][j * 2], &dst[i][j * 2 + 1], sunset, true);
 

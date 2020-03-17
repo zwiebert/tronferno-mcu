@@ -15,7 +15,7 @@
  * horizon - horizon (in rad) to calculate twilight
  */
 void 
-calc_sunrise_sunset(double *sunrise, double *sunset, double timezone, double day_of_year, double longitude_deg, double latitude_deg, double horizon) {
+sun_calculateDuskDawn(double *sunrise, double *sunset, double timezone, double day_of_year, double longitude_deg, double latitude_deg, double horizon) {
 
   double latitude = M_PI * latitude_deg / 180;
 

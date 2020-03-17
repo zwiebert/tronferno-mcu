@@ -317,7 +317,7 @@ static void modify_io_fun(bool add_connection) {
 }
 
 void
-setup_tcp_server(void) {
+tcps_startServer(void) {
   u8 i;
 
   for (i=0; i < TCPS_CCONN_MAX; ++i) {

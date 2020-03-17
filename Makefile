@@ -1,4 +1,4 @@
-.PHONY: clean all rebuild http_data print-help
+.PHONY: clean all test rebuild http_data print-help
 
 mcus := esp32 esp8266
 tgts := all
@@ -6,6 +6,7 @@ tgts := all
 default: print-help
 
 clean : esp32-test-clean esp32-fullclean esp8266-clean
+	make -C test/esp32 clean
 
 print-help:
 	@cat docs/make_help.txt

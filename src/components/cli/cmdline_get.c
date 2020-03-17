@@ -1,7 +1,8 @@
 #include "cli_app_cfg.h"
-#include "cli_priv.h"
+
 #include "txtio/inout.h"
 #include "stdbool.h"
+#include "cli/cli.h"
 
 char cmd_buf[CMD_BUF_SIZE];
 

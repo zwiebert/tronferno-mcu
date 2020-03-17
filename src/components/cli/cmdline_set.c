@@ -6,7 +6,8 @@
  */
 
 #include "cli_app_cfg.h"
-#include "cli_priv.h"
+#include "cli/cli.h"
+
 #include <string.h>
 
 char * 

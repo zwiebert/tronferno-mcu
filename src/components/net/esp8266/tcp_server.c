@@ -436,7 +436,7 @@ tcps_loop(void) {
 }
 
 void 
-setup_tcp_server(void) {
+tcps_startServer(void) {
   // create tcp server
   struct espconn *pesp_conn = os_zalloc((uint32 )sizeof(struct espconn));
   int result = 0;

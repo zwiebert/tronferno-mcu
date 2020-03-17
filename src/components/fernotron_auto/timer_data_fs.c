@@ -41,12 +41,12 @@ gm_to_file_name (u8 g, u8 m) {
 }
 
 static bool  save_data2(timer_data_t *p, const char *file_name) {
-  return write_to_file(file_name, p, sizeof (timer_data_t));
+  return stor_fileWrite(file_name, p, sizeof (timer_data_t));
 }
 
 
 static bool  read_data2(timer_data_t *p, const char *file_name) {
-  return read_from_file(file_name, p, sizeof (timer_data_t));
+  return stor_fileRead(file_name, p, sizeof (timer_data_t));
 }
 
 static int  delete_shadowded_files(u8 group, u8 memb) {
@@ -55,7 +55,7 @@ static int  delete_shadowded_files(u8 group, u8 memb) {
   for (g = 0; g <= 7; ++g) {
     for (m = 0; m <= 7; ++m) {
       if ((group == 0 || group == g) && (memb == 0 || memb == m)) {
-        if (delete_file(gm_to_file_name(g, m))) {
+        if (stor_fileDelete(gm_to_file_name(g, m))) {
           DB2(printf("shadow deleted: g=%d, m=%d, fid=%s\n", (int)g, (int)m, gm_to_file_name(g, m)));
           ++result;
         }

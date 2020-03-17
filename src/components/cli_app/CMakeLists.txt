@@ -1,4 +1,12 @@
-set(srcs cli.c  cli_config.c  cli_json.c  cli_mcu.c  cli_out.c  cli_parm_pair.c parm_shpref.c cli_send.c  cli_timer.c)
+set(srcs cli.c  cli_out.c
+    parm_help.c
+    parm_alias.c
+    parm_auto.c
+    parm_cmd.c
+    parm_config.c
+    parm_mcu.c
+    parm_shpref.c
+)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 

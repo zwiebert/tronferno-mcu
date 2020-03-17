@@ -46,7 +46,7 @@
 ///////////// implement read/ write from storage.h ////////////////////////
 
 bool
-write_to_file(const char *path, const void *src, size_t len) {
+stor_fileWrite(const char *path, const void *src, size_t len) {
    char complete_path[strlen(BASE_PATH) + 1 + strlen(path) + 1];
    strcpy(complete_path, BASE_PATH "/");
    strcat(complete_path, path);
@@ -67,7 +67,7 @@ write_to_file(const char *path, const void *src, size_t len) {
 }
 
 bool
-read_from_file(const char *path, void *dst, size_t len) {
+stor_fileRead(const char *path, void *dst, size_t len) {
   char complete_path[strlen(BASE_PATH) + 1 + strlen(path) + 1];
   strcpy(complete_path, BASE_PATH "/");
   strcat(complete_path, path);
@@ -85,7 +85,7 @@ read_from_file(const char *path, void *dst, size_t len) {
 }
 
 bool
-delete_file(const char *path) {
+stor_fileDelete(const char *path) {
   char complete_path[strlen(BASE_PATH) + 1 + strlen(path) + 1];
   strcpy(complete_path, BASE_PATH "/");
   strcat(complete_path, path);
@@ -95,7 +95,7 @@ delete_file(const char *path) {
   return true;
 }
 
-void storage_setup(void) {
+void stor_setup(void) {
   ESP_LOGI(TAG, "Initializing SPIFFS");
 
    esp_vfs_spiffs_conf_t conf = {

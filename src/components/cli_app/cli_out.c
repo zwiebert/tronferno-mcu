@@ -21,8 +21,8 @@ static void  cli_out_top_tag(void) {
 }
 
 static void  cli_out_reply_tag(void) {
-  if (msgid) {
-    io_puts("reply="), io_putd(msgid), io_puts(": ");
+  if (cli_msgid) {
+    io_puts("reply="), io_putd(cli_msgid), io_puts(": ");
   } else {
     io_puts("reply: ");
   }
@@ -134,9 +134,9 @@ void  msg_print(const char *msg, const char *tag) {
     return;
   if (msg)
     io_puts(msg);
-  if (msgid) {
+  if (cli_msgid) {
     io_putc('@');
-    io_putd(msgid);
+    io_putd(cli_msgid);
   }
   if (tag) {
     io_putc(':');
@@ -145,13 +145,13 @@ void  msg_print(const char *msg, const char *tag) {
   io_puts(": ");
 }
 
-void  warning_unknown_option(const char *key) {
+void  cli_warning_optionUnknown(const char *key) {
   if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
   msg_print("warning", "unknown-option"), io_puts(key), io_putc('\n');
 }
 
-void  reply_print(const char *tag) {
+void  cli_reply_print(const char *tag) {
   if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
   msg_print("reply", tag);
@@ -160,7 +160,7 @@ void  reply_print(const char *tag) {
 void  reply_message(const char *tag, const char *msg) {
   if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
-  reply_print(tag);
+  cli_reply_print(tag);
   if (msg)
     io_puts(msg);
   io_putlf();
@@ -173,15 +173,15 @@ void  cli_msg_ready(void) {
 }
 
 void  reply_id_message(u16 id, const char *tag, const char *msg) {
-  u16 old_id = msgid;
+  u16 old_id = cli_msgid;
   if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
     return;
 
-  msgid = id;
-  reply_print(tag);
+  cli_msgid = id;
+  cli_reply_print(tag);
   if (msg)
     io_puts(msg);
   io_putlf();
-  msgid = old_id;
+  cli_msgid = old_id;
 }
 

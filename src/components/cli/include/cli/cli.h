@@ -10,6 +10,8 @@
 #define CLI_H_
 
 #include "userio/status_output.h"
+#include "stdint.h"
+#include "stdbool.h"
 
 // user interface
 char *get_commandline(void);
@@ -37,11 +39,17 @@ struct parm_handlers {
 
 extern const struct parm_handlers parm_handlers; // defined by app
 
+extern uint16_t cli_msgid;
+#define MAX_PAR 20
+extern clpar cli_par[MAX_PAR];
+extern bool cli_isJson;
 
+#define CMD_BUF_SIZE 128
+extern char cmd_buf[CMD_BUF_SIZE];
 
 void print_enr(void);
 void msg_print(const char *msg, const char *tag);
-void reply_print(const char *tag);
+void cli_reply_print(const char *tag);
 void reply_message(const char *tag, const char *msg);
 void reply_id_message(uint16_t id, const char *tag, const char *msg);
 
@@ -51,16 +59,16 @@ void cli_out_x_reply_entry(const char *key, const char *val, int len);
 
 
 /* cli.c */
-void warning_unknown_option(const char *key);
+void cli_warning_optionUnknown(const char *key);
 void cli_msg_ready(void);
 char *get_commandline(void);
 int asc2bool(const char *s);
-int parse_commandline(char *cl);
-void reply_success(void);
-int reply_failure(void);
-bool reply(bool success);
+int cli_parseCommandline(char *cl);
+void cli_replySuccess(void);
+int cli_replyFailure(void);
+bool cli_replyResult(bool success);
 bool  asc2uint8_t(const char *s, uint8_t *n, uint8_t limit);
-int process_parm(clpar p[], int len);
+int cli_processParameters(clpar p[], int len);
 void cli_loop(void);
 void cli_print_json(const char *json); //FIXME
 
