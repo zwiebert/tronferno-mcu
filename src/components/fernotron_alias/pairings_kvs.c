@@ -69,12 +69,7 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
 
     gm_PutBit(&gm, g, m, !remove);
 
-    bool not_empty = false;
-    for (g = 0; g <= 7; ++g)
-      if (gm_GetByte(&gm, g) != 0) {
-        not_empty = true;
-        break;
-      }
+    bool not_empty = !gm_isAllClear(&gm);
 
     if (not_empty) {
       success = kvs_rw_blob(handle, key, &gm, sizeof gm, true);
