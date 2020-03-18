@@ -16,7 +16,7 @@
 
 #include "txtio/inout.h"
 #include "driver/uart.h"
-#include "fernotron/hooks.h"
+#include "fernotron/callbacks.h"
 
 
 
@@ -167,9 +167,6 @@ user_init() {
   setup_ntp();
 #endif
   setup_pin();
-
-  ferHook_rx_pin = mcu_get_rxPin;
-  ferHook_tx_pin = mcu_put_txPin;
 
   wifistation_setup();
   tcps_startServer();

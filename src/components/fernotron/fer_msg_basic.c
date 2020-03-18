@@ -1,5 +1,5 @@
 #include "fer_app_cfg.h"
-#include "fernotron/fer_msg_basic.h"
+#include "fernotron/fer_msg_plain.h"
 #include "fernotron/fsb.h"
 
 void 

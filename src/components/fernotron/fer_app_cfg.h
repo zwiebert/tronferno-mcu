@@ -39,13 +39,4 @@ typedef int32_t i32;
 #define IRAM_ATTR
 #endif
 
-#define USE_STATIC_PINS
-
-#ifdef USE_STATIC_PINS
-void mcu_put_txPin(uint8_t level);
-uint8_t   mcu_get_rxPin();
-#define FER_GET_RX_PIN  mcu_get_rxPin
-#define FER_PUT_TX_PIN mcu_put_txPin
-#endif
-
 #endif /* COMPONENTS_FERNOTRON_FER_APP_CFG_H_ */

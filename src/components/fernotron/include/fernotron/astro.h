@@ -9,7 +9,7 @@
 #ifndef ASTRO_H_
 #define ASTRO_H_
 
-#include "fernotron/fer_msg_extension.h"
+#include "fernotron/fer_msg_attachment.h"
 #include "time.h"
 
 enum astroCorrection {
@@ -26,7 +26,7 @@ extern struct astro_cfg {
 void astro_write_data(astro_byte_data d, int mint_offset);
 
 // calculate astro time like the motor does
-uint16_t  astro_calc_minutes(const struct tm *tm);
+uint16_t astro_calc_minutes(const struct tm *tm);
 
 void astro_init_and_reinit(void);
 

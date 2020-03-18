@@ -2,36 +2,6 @@
 #include "app/fernotron.h"
 #include <ctype.h>
 
-void mcu_read_config(u32 mask);
-void mcu_save_config(u32 mask);
-
-void read_config(u32 mask) {
-  mcu_read_config(mask);
-  fer_copyConfig();
-}
-
-void save_config(u32 mask) {
-  fer_copyConfig();
-  mcu_save_config(mask);
-}
-
-
-void save_config_item(enum configItem item) {
-  save_config(1UL << item);
-}
-
-void read_config_item(enum configItem item) {
-  read_config(1UL << item);
-}
-
-void save_config_all() {
-  save_config(~0UL);
-}
-
-void read_config_all() {
-  read_config(~0UL);
-}
-
 config C = {
   .fer_centralUnitID = MY_FER_CENTRAL_UNIT_ID,
   .mcu_serialBaud = MY_MCU_UART_BAUD_RATE,
@@ -97,3 +67,31 @@ void cfg_tz2timezone(void) {
   C.geo_timezone = tz2offset(C.geo_tz);
 }
 #endif
+
+
+void read_config(u32 mask) {
+  mcu_read_config(mask);
+  fer_copyConfig();
+}
+
+void save_config(u32 mask) {
+  fer_copyConfig();
+  mcu_save_config(mask);
+}
+
+
+void save_config_item(enum configItem item) {
+  save_config(1UL << item);
+}
+
+void read_config_item(enum configItem item) {
+  read_config(1UL << item);
+}
+
+void save_config_all() {
+  save_config(~0UL);
+}
+
+void read_config_all() {
+  read_config(~0UL);
+}

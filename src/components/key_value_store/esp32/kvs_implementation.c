@@ -138,52 +138,6 @@ int kvs_foreach(const char *name_space, kvs_type_t type, const char *key_match, 
   return count;
 }
 
-kvshT th;
-const char *ns = "test";
-
-static void test_write_u16(const char *key, u16 val) {
-  if ((th = kvs_open(ns, kvs_READ_WRITE))) {
-    kvs_set_u16(th, key, val);
-    kvs_commit(th);
-    kvs_close(th);
-  }
-}
-
-static void test_write_blob(const char *key) {
-  if ((th = kvs_open(ns, kvs_READ_WRITE))) {
-    char buf[8] = "abcdefg";
-    kvs_rw_blob(th, key, buf, sizeof buf, true);
-    kvs_commit(th);
-    kvs_close(th);
-  }
-}
-
-void kvs_test() {
-int count1, count2;
-  test_write_u16("u16",42);
-  count1 = kvs_foreach(ns, KVS_TYPE_U16, 0, 0);
-  test_write_u16("u16", 43);
-  count2 = kvs_foreach(ns, KVS_TYPE_U16, 0, 0);
-  ets_printf("kvs_test: %d %d\n====================================\n", count1, count2);
-
-  test_write_blob("cpair_10abc4");
-  test_write_blob("cpair_10abc5");
-
-  count1 = kvs_foreach(ns, KVS_TYPE_BLOB, 0, 0);
-
-  test_write_blob("cpair_10abc1");
-  test_write_blob("cpair_10abc2");
-  test_write_blob("cpair_10abc3");
-  test_write_blob("cpair_10abc4");
-  test_write_blob("cpair_10abc5");
-  test_write_blob("cpair_10abc6");
-  test_write_blob("cpair_10abc7");
-
-  count2 = kvs_foreach(ns, KVS_TYPE_BLOB, 0, 0);
-
-  ets_printf("kvs_test: %d %d\n====================================\n", count1, count2);
-}
-
 void kvs_setup(void) {
   esp_err_t err = nvs_flash_init();
   if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {

@@ -17,8 +17,8 @@
 #include "main/rtc.h"
 #include "app/fernotron.h"
 
-#include "fernotron/fer_rx_tx.h"
-#include "fernotron/fer_msg_extension.h"
+#include "fernotron/fer_msg_rx.h"
+#include "fernotron/fer_msg_attachment.h"
 
 
 static cuas_state_T cuas_state;

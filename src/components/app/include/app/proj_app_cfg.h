@@ -38,14 +38,4 @@
 
 #include "main/common.h"
 
-#ifndef FER_GET_RX_PIN
-#define FER_GET_RX_PIN() mcu_get_rxPin()
-bool mcu_get_rxPin(void);
-#endif
-
-#ifndef FER_PUT_TX_PIN
-#define FER_PUT_TX_PIN(on) mcu_put_txPin(on)
-void mcu_put_txPin(bool);
-#endif
-
 #endif /* PROJ_APP_CONFIG_H_ */

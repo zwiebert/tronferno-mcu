@@ -2,7 +2,7 @@
 
 #include "app/proj_app_cfg.h"
 #include "fernotron_auto/timer_state.h"
-#include "fernotron/fer_rx_tx.h"
+#include "fernotron/fer_msg_rx.h"
 #include "misc/bcd.h"
 #include "fernotron_alias/pairings.h"
 #include "main/rtc.h"

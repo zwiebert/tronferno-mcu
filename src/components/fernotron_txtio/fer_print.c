@@ -11,9 +11,9 @@
 #include <stdint.h>
 #include "stdbool.h"
 
-#include "fernotron/fer_timings.h"
+#include "fernotron/fer_radio_timings.h"
 #include "fernotron/fsb.h"
-#include "fernotron/fer_msg_extension.h"
+#include "fernotron/fer_msg_attachment.h"
 #include "misc/int_macros.h"
 #include "txtio/inout.h"
 
@@ -105,7 +105,7 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 #define fmsg_get_data(msg) ((u8(*)[FER_PRG_BYTE_CT])(msg)->rtc.bd)
 typedef u8(*fmsg_data)[FER_PRG_BYTE_CT];
 
-void  fmsg_print(const fer_msg *msg, fmsg_type t, bool verbose) {
+void  fmsg_print(const fer_rawMsg *msg, fmsg_type t, bool verbose) {
 
   frb_printPacket(&msg->cmd);
 
@@ -127,7 +127,7 @@ void  fmsg_print(const fer_msg *msg, fmsg_type t, bool verbose) {
 #endif
 }
 
-void  fmsg_print_as_cmdline(const fer_msg *msg, fmsg_type t) {
+void  fmsg_print_as_cmdline(const fer_rawMsg *msg, fmsg_type t) {
   const fsbT *fsb = (fsbT*) msg;
 
   if (t != MSG_TYPE_PLAIN)

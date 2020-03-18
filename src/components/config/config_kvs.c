@@ -5,13 +5,6 @@
  *      Author: bertw
  */
 
-
-/*
- * config_defaults.c
- *
- *  Created on: 16.09.2017
- *      Author: bertw
- */
 #include "app/proj_app_cfg.h"
 
 

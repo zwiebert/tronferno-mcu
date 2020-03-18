@@ -9,13 +9,12 @@
 #define USER_MAIN_FER_SENDER_H_
 
 #include "stdbool.h"
+#include <stdint.h>
 
-#include "fer.h"
+#include "fernotron/fsb.h"
 
 // true while sending in progress
-extern volatile bool is_sendMsgPending;
-
-
+extern volatile bool ftx_messageToSend_isReady;
 
 // send short or long messages (data already in send-buffer)
 bool fer_send_msg(const fsbT *fsb, fmsg_type msgType, int8_t repeats);

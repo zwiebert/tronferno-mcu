@@ -18,8 +18,9 @@
 
 #include "config/config.h"
 #include "main/rtc.h"
-#include "fernotron/fer_timings.h"
+#include "fernotron/fer_radio_timings.h"
 #include "fernotron/int_timer.h"
+#include "fernotron/fer_radio_trx.h"
 #include "app/timer.h"
 
 void mcu_delay_us(u16 us) {

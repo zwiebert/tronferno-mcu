@@ -5,7 +5,7 @@
 *  Author: bertw
 */
 
-#include <fernotron/fer_msg_basic.h>
+#include <fernotron/fer_msg_plain.h>
 #include <stdlib.h>
 #include <math.h>
 

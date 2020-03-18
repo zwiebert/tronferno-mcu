@@ -1,19 +1,16 @@
-#include <fernotron/fer_msg_basic.h>
+#include <fernotron/fer_msg_plain.h>
+#include <fernotron/fer_msg_rx.h>
+#include "fernotron/fer_radio_trx.h"
 #include <string.h>
 #include "fer_app_cfg.h"
-#include "fer.h"
-#include "fer_rx_tx.h"
+#include "fer_rawmsg_buffer.h"
+#include "fer_msg_tx.h"
 #include "debug/debug.h"
-
-volatile bool is_sendMsgPending;
-volatile u16 wordsToSend;
+#include "app/timer.h"
 
 bool fer_send_queued_msg(void);
-void (*ferHook_beforeFirstSend)(const fsbT *fsb);
-void (*ferHook_beforeAnySend)(fmsg_type msg_type, const fsbT *fsb, const fer_msg *fmsg);
-
-extern volatile u32 run_time_s10;
-#define get_now_time_ts(x) (run_time_s10 + 0)
+void (*ferCb_beforeFirstSend)(const fsbT *fsb);
+void (*ferCb_beforeAnySend)(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *fmsg);
 
 u8 sf_toggle;
 #define sf_SIZE 16
@@ -70,7 +67,7 @@ static bool   sf_append(const fsbT *fsb, fmsg_type msgType, u32 s10, u8 repeats)
 
 bool 
 fers_is_ready(void) {
-  if (is_sendMsgPending)
+  if (ftx_messageToSend_isReady)
     return false;
 
   return true;
@@ -78,7 +75,7 @@ fers_is_ready(void) {
 
 bool 
 fer_tx_loop() {
-  if (is_sendMsgPending)
+  if (ftx_messageToSend_isReady)
     return false;
 
   if (!sf_isEmpty() && sf[sf_head].s10 <= get_now_time_ts(0)) {
@@ -125,7 +122,7 @@ bool  fer_send_delayed_msg(const fsbT *fsb, fmsg_type msgType, u16 delay, i8 rep
 }
 
 bool  fer_send_queued_msg() {
-  if (is_sendMsgPending)
+  if (ftx_messageToSend_isReady)
     return false;
   if (sf_isEmpty())
     return false;
@@ -139,8 +136,8 @@ bool  fer_send_queued_msg() {
     sf_toggle = fer_tglNibble_ctUp(sf_toggle, 1);
     FSB_PUT_TGL(&sf[sf_head].fsb, sf_toggle);
     if (msgType == MSG_TYPE_PLAIN) {
-      if (ferHook_beforeFirstSend)
-        ferHook_beforeFirstSend(fsb);
+      if (ferCb_beforeFirstSend)
+        ferCb_beforeFirstSend(fsb);
     }
   }
 
@@ -150,16 +147,16 @@ bool  fer_send_queued_msg() {
   }
 
   memcpy(txmsg->cmd.bd, fsb->data, 5);
-  fmsg_create_checksums(txmsg, msgType);
+  fmsg_raw_checksumsCreate(txmsg, msgType);
 
-  if (ferHook_beforeAnySend)
-    ferHook_beforeAnySend(msgType, fsb, txmsg);
+  if (ferCb_beforeAnySend)
+    ferCb_beforeAnySend(msgType, fsb, txmsg);
 
 
 
-  wordsToSend = 2 * ((msgType == MSG_TYPE_PLAIN) ? BYTES_MSG_PLAIN : (msgType == MSG_TYPE_RTC) ? BYTES_MSG_RTC : BYTES_MSG_TIMER);
+  ftx_messageToSend_wordCount = 2 * ((msgType == MSG_TYPE_PLAIN) ? BYTES_MSG_PLAIN : (msgType == MSG_TYPE_RTC) ? BYTES_MSG_RTC : BYTES_MSG_TIMER);
 
-  is_sendMsgPending = true;
+  ftx_messageToSend_isReady = true;
 
 
   return true;

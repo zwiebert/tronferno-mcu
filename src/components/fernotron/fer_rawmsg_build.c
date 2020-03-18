@@ -5,20 +5,20 @@
  *  Author: bertw
  */
 
-#include <fernotron/fer_msg_basic.h>
+#include <fernotron/fer_msg_plain.h>
 #include "astro.h"
 #include <string.h>
 #include "fer_app_cfg.h"
 #include "debug/debug.h"
 
-#include "fer.h"
+#include "fer_rawmsg_buffer.h"
 //#include "main/rtc.h"
 //#include "fernotron_auto/astro.h"
 //#include "config/config.h"
 #include "misc/bcd.h"
 
 /* verify all checksums of message in place. */
-bool  fmsg_verify_checksums(const struct fer_msg *m, fmsg_type t) {
+bool  fmsg_raw_checksumsVerify(const struct fer_raw_msg *m, fmsg_type t) {
 	int line, column;
 	u8 checksum = 0;
 
@@ -73,7 +73,7 @@ bool  fmsg_verify_checksums(const struct fer_msg *m, fmsg_type t) {
 
 
 /* create all checksums of message in place. */
-void  fmsg_create_checksums(struct fer_msg *m, fmsg_type t) {
+void  fmsg_raw_checksumsCreate(struct fer_raw_msg *m, fmsg_type t) {
 	int line, column;
 	u8 checksum = 0;
 
@@ -175,7 +175,7 @@ static void  write_flags(u8 *dst, u8 flags, u8 mask) {
 
 
 
-static void  write_lastline(fsbT *fsb, u8 d[FER_PRG_BYTE_CT]) {
+static void  write_lastline(const fsbT *fsb, u8 d[FER_PRG_BYTE_CT]) {
 	d[0] = 0x00;
 	d[1] = fsb->data[fer_dat_ADDR_2];
 	d[2] = fsb->data[fer_dat_ADDR_1];
@@ -189,25 +189,25 @@ static void  write_lastline(fsbT *fsb, u8 d[FER_PRG_BYTE_CT]) {
 
 
 
-void  fmsg_init_data(struct fer_msg *m) {
+void  fmsg_raw_init(struct fer_raw_msg *m) {
 	memset(&m->rtc, 0, sizeof (m->rtc));
 	disable_timer(m->wdtimer.bd, FPR_TIMER_HEIGHT + FPR_ASTRO_HEIGHT);
 }
-void  fmsg_write_rtc(fer_msg *msg, time_t rtc, bool rtc_only) {
+void  fmsg_raw_from_rtc(fer_rawMsg *msg, time_t rtc, bool rtc_only) {
    write_rtc(&msg->rtc, rtc, rtc_only);
 }
-void  fmsg_write_flags(fer_msg *msg, u8 flags, u8 mask) {
+void  fmsg_raw_from_flags(fer_rawMsg *msg, u8 flags, u8 mask) {
   write_flags(&msg->rtc.sd.flags.bd, flags, mask);
 }
-void  fmsg_write_wtimer(fer_msg *msg, const u8 *wtimer_data) {
+void  fmsg_raw_from_weeklyTimer(fer_rawMsg *msg, const u8 *wtimer_data) {
   write_wtimer(msg->wdtimer.bd, wtimer_data);
 }
-void  fmsg_write_dtimer(fer_msg *msg, const u8 *dtimer_data) {
+void  fmsg_raw_from_dailyTimer(fer_rawMsg *msg, const u8 *dtimer_data) {
   write_dtimer(&msg->wdtimer.bd[3][FPR_DAILY_START_COL], dtimer_data);
 }
-void  fmsg_write_astro(fer_msg *msg, int mint_offset) {
+void  fmsg_raw_from_astro(fer_rawMsg *msg, int mint_offset) {
   astro_write_data(msg->astro, mint_offset);
 }
-void  fmsg_write_lastline(fer_msg *msg, fsbT *fsb) {
+void  fmsg_raw_footerCreate(fer_rawMsg *msg, const fsbT *fsb) {
 	write_lastline(fsb, msg->last);
 }    

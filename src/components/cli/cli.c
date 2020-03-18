@@ -6,29 +6,20 @@
  */
 
 #include "cli_app_cfg.h"
-
-
-#include <string.h>
-
 #include "misc/bcd.h"
 #include "cli.h"
 #include "userio/status_output.h"
 #include "txtio/inout.h"
 #include "mutex.h"
-#include "fernotron_sep/set_endpos.h" // XXX
 #include "userio/status_json.h"
 #include "debug/debug.h"
 
-#define ENABLE_RESTART 1 // allow software reset
-#define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
-#define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
+#include <string.h>
 
 u16 cli_msgid;
+bool cli_isJson;
 
-typedef void (*void_fun_ptr)(void);
-
-int
-asc2bool(const char *s) {
+int asc2bool(const char *s) {
   if (!s)
     return 1; // default value for key without value
 
@@ -43,21 +34,16 @@ asc2bool(const char *s) {
 
 }
 
-void
-cli_replySuccess() {
+void cli_replySuccess() {
   reply_message(0, "ok");
 }
 
-int
-cli_replyFailure() {
+int cli_replyFailure() {
   reply_message(0, "error");
   return -1;
 }
 
-
-
-bool
-cli_replyResult(bool success) {
+bool cli_replyResult(bool success) {
   if (success)
     cli_replySuccess();
   else
@@ -65,8 +51,7 @@ cli_replyResult(bool success) {
   return success;
 }
 
-
-bool  asc2u8(const char *s, u8 *n, u8 limit) {
+bool asc2u8(const char *s, u8 *n, u8 limit) {
   if (s) {
     int g = atoi(s);
     if (0 <= g && g <= limit) {
@@ -76,12 +61,6 @@ bool  asc2u8(const char *s, u8 *n, u8 limit) {
   }
   return false;
 }
-
-
-
-
-bool cli_isJson;
-
 
 void cli_loop(void) {
   char *cmdline;

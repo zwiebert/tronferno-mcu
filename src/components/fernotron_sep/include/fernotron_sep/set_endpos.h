@@ -6,6 +6,7 @@
  */
 
 #include "fernotron/fsb.h"
+#include "stdbool.h"
 
 #ifndef USER_MAIN_SET_ENDPOS_H_
 #define USER_MAIN_SET_ENDPOS_H_

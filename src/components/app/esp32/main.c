@@ -13,7 +13,7 @@
 #include "gpio/pin.h"
 #include "net/wifistation.h"
 #include "config/config.h"
-#include "fernotron/hooks.h"
+#include "fernotron/callbacks.h"
 #include "fernotron_txtio/fer_print.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "config/config.h"
@@ -84,8 +84,6 @@ mcu_init() {
   wifistation_setup();
 #endif
   setup_pin();
-  ferHook_rx_pin = mcu_get_rxPin;
-  ferHook_tx_pin = mcu_put_txPin;
 
 #ifdef USE_MUTEX
   void mutex_setup(void);
