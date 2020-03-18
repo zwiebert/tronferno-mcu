@@ -10,7 +10,7 @@
 
 #define LONGITUDE_DEG_TO_HOUR(longitude)    ((longitude)*0.06666133376)
 
-void calc_sunrise_sunset(double *sunrise, double *sunset, double timezone, double day_of_year, double longitude_deg, double latitude_deg, double horizon);
+void sun_calculateDuskDawn(double *sunrise, double *sunset, double timezone, double day_of_year, double longitude_deg, double latitude_deg, double horizon);
 
 
 #endif

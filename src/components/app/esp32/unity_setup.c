@@ -29,7 +29,7 @@ void unity_suiteSetUp() {
   mutex_setup();
   kvs_setup();
   txtio_setup();
-  storage_setup();
+  stor_setup();
   ferPos_init();
   astro_init_and_reinit();
 

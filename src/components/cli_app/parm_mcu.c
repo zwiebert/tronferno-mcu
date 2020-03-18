@@ -13,7 +13,7 @@
 #include "cli_imp.h"
 #include "storage/spiffs_fs.h"
 
-const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
+const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #if ENABLE_SPIFFS
     "spiffs=(format|test)\n"
 #endif
@@ -166,7 +166,7 @@ process_parmMcu(clpar p[], int len) {
       }
 #endif
     } else {
-      warning_unknown_option(key);
+      cli_warning_optionUnknown(key);
     }
 
   }

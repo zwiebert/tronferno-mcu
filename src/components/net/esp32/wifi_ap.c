@@ -77,7 +77,7 @@ void wifiAp_setup()
              EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
 
     hts_enable_http_server(true);
-    setup_tcp_server();
+    tcps_startServer();
 }
 
 

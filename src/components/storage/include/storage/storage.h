@@ -11,10 +11,10 @@
 #include "stdbool.h"
 #include "stddef.h"
 
-bool write_to_file(const char *path, const void *src, size_t len);
-bool read_from_file(const char *path, void *src, size_t len);
-bool delete_file(const char *path);
+bool stor_fileWrite(const char *path, const void *src, size_t len);
+bool stor_fileRead(const char *path, void *src, size_t len);
+bool stor_fileDelete(const char *path);
 
-void storage_setup(void);
+void stor_setup(void);
 
 #endif /* USER_MAIN_STORAGE_H_ */

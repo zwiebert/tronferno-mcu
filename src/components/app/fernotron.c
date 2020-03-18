@@ -112,15 +112,8 @@ main_setup() {
   so_output_message(SO_FW_START_MSG_PRINT, 0);
   ferPos_init();
 
-  dbg_trace();
+  
   return 0;
 
 }
 
-#ifdef TEST_MODULE_FERNOTRON
-
-bool testModule_fernotron ()
-{
-
-}
-#endif  // self test

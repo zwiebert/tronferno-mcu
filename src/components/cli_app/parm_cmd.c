@@ -19,7 +19,7 @@
 
 #define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
-const char help_parmSend[]  =
+const char cli_help_parmSend[]  =
     "a=(0|ID)  0  hex ID of sender or receiver.\n"
     "g=[0-7]   0  group number\n"
     "m=[0-7]   0  group member number\n"
@@ -59,20 +59,20 @@ process_parmSend(clpar p[], int len) {
       if (0 <= arg && arg <= 7) {
          g = arg;
       } else {
-        return reply_failure();
+        return cli_replyFailure();
       }
     } else if (strcmp(key, "m") == 0) {
       int arg = atoi(val);
       if (0 <= arg && arg <= 7) {
          m = arg;
       } else {
-        return reply_failure();
+        return cli_replyFailure();
       }
     } else if (strcmp(key, "r") == 0) {
       NODEFAULT();
       repeats = atoi(val);
       if (!(repeats <= 10)) {
-        return reply_failure();
+        return cli_replyFailure();
       }
     } else if (strcmp(key, "p") == 0) {
       NODEFAULT();
@@ -81,25 +81,23 @@ process_parmSend(clpar p[], int len) {
       } else {
         pct = atoi(val);
         if (!(0 <= pct && pct <= 100))
-          return reply_failure();
+          return cli_replyFailure();
       }
     } else if (strcmp(key, "c") == 0) {
       NODEFAULT();
       if (*val == '?') {
         has_requested_position = true;
       } else if (!cli_parm_to_ferCMD(val, &cmd)) {
-        return reply_failure();
+        return cli_replyFailure();
       }
     } else if (strcmp(key, "SEP") == 0) {
       set_end_pos = asc2bool(val);
       if (set_end_pos != 1)
       set_end_pos = 0;  // force disable
     } else {
-      warning_unknown_option(key);
+      cli_warning_optionUnknown(key);
     }
   }
-
-
 
   if (has_requested_position) {
     if (g != 0 && m != 0) {
@@ -120,9 +118,9 @@ process_parmSend(clpar p[], int len) {
     } else if (has_pct) {
       commands_moveShutterToPct(addr, g, m, pct, repeats);
     } else if (has_cmd) {
-      reply(commands_sendShutterCommand(addr, g, m, cmd, repeats));
+      cli_replyResult(commands_sendShutterCommand(addr, g, m, cmd, repeats));
     } else {
-      reply_failure();
+      cli_replyFailure();
     }
   }
   return 0;

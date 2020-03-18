@@ -1,11 +1,11 @@
 #include "cli_app_cfg.h"
+#include "cli/cli.h"
 #include "string.h"
-#include "cli_priv.h"
 #include <ctype.h>
 #include <stdlib.h>
 
 
-clpar par[MAX_PAR];
+clpar cli_par[MAX_PAR];
 
 static char * 
 skip_leading_whitespace(char *s) {
@@ -31,9 +31,9 @@ find_next_whitespace_or_eol(char *s) {
 }
 
 int 
-parse_commandline(char *cl) {
+cli_parseCommandline(char *cl) {
   int p;
-  msgid = 0;
+  cli_msgid = 0;
 
   for (p = 0; p < MAX_PAR; ++p) {
     bool isValQuoted = false;
@@ -47,7 +47,7 @@ parse_commandline(char *cl) {
     }
 
     // first word is the key
-    par[p].key = cl;
+    cli_par[p].key = cl;
 
     // skip the key
     cl = find_next_space_eq_eol(cl);
@@ -57,7 +57,7 @@ parse_commandline(char *cl) {
     // no val follows the key. set val to NULL (interpreted as default)
     case '\0':
     case ' ':
-      par[p].val = NULL;
+      cli_par[p].val = NULL;
       continue;
 
       // got val for the key
@@ -79,7 +79,7 @@ parse_commandline(char *cl) {
       }
 
       // start of val
-      par[p].val = cl;
+      cli_par[p].val = cl;
 
       // end of val
       if (isValQuoted) {
@@ -101,8 +101,8 @@ parse_commandline(char *cl) {
 
       // found global option
       // process it here and remove the key/val
-      if (strcmp(par[p].key, "mid") == 0) {
-        msgid = atoi(par[p].val);
+      if (strcmp(cli_par[p].key, "mid") == 0) {
+        cli_msgid = atoi(cli_par[p].val);
         --p;
       }
 

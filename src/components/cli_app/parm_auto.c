@@ -38,7 +38,7 @@ const char * const timer_keys[] = { "weekly", "daily", "astro", "rtc-only", "ran
 #define FLAG_TRUE 1
 #define HAS_FLAG(v) (v >= 0)
 
-const char help_parmTimer[]  =
+const char cli_help_parmTimer[]  =
     "daily=T        set daily timer\n"
     "weekly=TTTTTTT set weekly timer\n"
     "astro[=N]      enables civil dusk timer +- minutes offset\n"
@@ -110,10 +110,10 @@ process_parmTimer(clpar p[], int len) {
       if (tmp) addr = tmp;
     } else if (strcmp(key, "g") == 0) {
       if (!asc2group(val, &group))
-        return reply_failure();
+        return cli_replyFailure();
     } else if (strcmp(key, "m") == 0) {
       if (!asc2memb(val, &memb))
-        return reply_failure();
+        return cli_replyFailure();
 
       mn = memb ? (memb - 7) : 0;
     } else if (strcmp(key, "rtc") == 0) {
@@ -149,10 +149,10 @@ process_parmTimer(clpar p[], int len) {
       }
     } else {
       if (strcmp(key, "rs") == 0) {
-        reply_failure();
+        cli_replyFailure();
         return -1;
       }
-      warning_unknown_option(key);
+      cli_warning_optionUnknown(key);
     }
   }
 
@@ -209,11 +209,11 @@ process_parmTimer(clpar p[], int len) {
 
   if (!f_no_send) {
      if (flag_rtc_only == FLAG_TRUE) {
-      reply(send_rtc_message(fsb, timer));
+      cli_replyResult(send_rtc_message(fsb, timer));
     } else if (f_manual) {
-      reply(send_empty_timer_message(fsb, timer));
+      cli_replyResult(send_empty_timer_message(fsb, timer));
     } else {
-      reply(send_timer_message(fsb, timer, &tda));
+      cli_replyResult(send_timer_message(fsb, timer, &tda));
     }
   }
 

@@ -122,13 +122,13 @@ static esp_err_t handle_uri_doc_post(httpd_req_t *req) {
   static struct  {
     const char *key, *txt;
   } help_txt_map [] = {
-    { "cliparm_send", help_parmSend},
-    { "cliparm_auto", help_parmTimer},
-    { "cliparm_config", help_parmConfig},
-    { "cliparm_mcu", help_parmMcu},
-    { "cliparm_pair", help_parmPair},
-    { "cliparm_shpref", help_parmShpref},
-    { "cliparm_help", help_parmHelp},
+    { "cliparm_send", cli_help_parmSend},
+    { "cliparm_auto", cli_help_parmTimer},
+    { "cliparm_config", cli_help_parmConfig},
+    { "cliparm_mcu", cli_help_parmMcu},
+    { "cliparm_pair", cli_help_parmPair},
+    { "cliparm_shpref", cli_help_parmShpref},
+    { "cliparm_help", cli_help_parmHelp},
   };
 
   if (!check_access_allowed(req))

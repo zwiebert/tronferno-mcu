@@ -22,7 +22,7 @@
 
 #define PRAS_TIMEOUT 15
 
-const char help_parmPair[] = ""
+const char cli_help_parmPair[] = ""
     "a=(?|ID) 0  controller to pair. '?' starts auto-scan\n"
     "g=[0-7]   0  group number\n"
     "m=[0-7]   0  group member number\n"
@@ -60,12 +60,12 @@ process_parmPair(clpar p[], int len) {
     } else if (strcmp(key, "g") == 0) {
       fer_grp group;
       if (!asc2group(val, &group) || group == 0)
-        return reply_failure();
+        return cli_replyFailure();
       g = group;
     } else if (strcmp(key, "m") == 0) {
       fer_memb memb;
       if (!asc2memb(val, &memb) || memb == 0)
-        return reply_failure();
+        return cli_replyFailure();
       m = memb - 7;
     } else if (strcmp(key, "mm") == 0) {
       uint64_t n = strtoll(val, 0, 16);
@@ -98,7 +98,7 @@ process_parmPair(clpar p[], int len) {
       }
 
     } else {
-      reply_failure();
+      cli_replyFailure();
     }
   }
 
@@ -112,7 +112,7 @@ process_parmPair(clpar p[], int len) {
   }
 
   if (scan) {
-    pair_auto_set(g, m, c, msgid, PRAS_TIMEOUT);
+    pair_auto_set(g, m, c, cli_msgid, PRAS_TIMEOUT);
   }
 
   if (read_all) {
@@ -122,7 +122,7 @@ process_parmPair(clpar p[], int len) {
   if (addr && (((pair || unpair) && g && m) || (read && !g && !m))) {
 
     if (pair || unpair) {
-      reply(pair_controller(addr, g, m, unpair));
+      cli_replyResult(pair_controller(addr, g, m, unpair));
     }
 
     if (read) {

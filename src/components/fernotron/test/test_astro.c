@@ -24,7 +24,7 @@ test_astro()  // FIXME: this does not really tests anything
 {
   double rise, set;
   u16 doy = 172;
-  calc_sunrise_sunset(&rise, &set, C.geo_timezone, doy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+  sun_calculateDuskDawn(&rise, &set, C.geo_timezone, doy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
 
   astro_write_data(data, 0);
   ets_printf("test calc_minutes\n");

@@ -17,6 +17,11 @@ ifndef FLAVOR_LAN
 SED_OPTS += -e '/dev-no-lan-delete-line/d'
 endif
 
+outfiles := tfmcu.html tfmcu.js tfmcu_html.c tfmcu_js.c
+
+.PHONY: clean
+clean:
+	-rm $(outfiles)
 
 # convert HTML or Javascript to C source const char array
 %_html.c : %.html
@@ -26,7 +31,7 @@ endif
 
 #adapt development HTML file for usage in MCU webserver
 %.html : %_dev.html
-	cat $< | sed  ${SED_OPTS} ${SED_OPTS_HTML} | ${HTMLMIN} >$@ 
+	cat $< | sed  ${SED_OPTS} ${SED_OPTS_HTML} | ${HTMLMIN} >$@
 
 #adapt development Javascript file for usage in MCU webserver
 %.js : %_dev.js

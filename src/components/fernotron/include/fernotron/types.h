@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include "stdbool.h"
+#include "misc/int_macros.h"
 
 typedef uint8_t gm_bitmask_t[8];
 

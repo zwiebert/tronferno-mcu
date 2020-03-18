@@ -27,7 +27,7 @@
 const char pin_state_args[] = "dipo ?01t";
 #endif
 
-const char help_parmConfig[]  =
+const char cli_help_parmConfig[]  =
     "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
     "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID\n"
     "rtc=(ISO_TIME|?)   set local time if NTP not working\n"
@@ -120,18 +120,18 @@ process_parmConfig(clpar p[], int len) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
     if (key == NULL || val == NULL) {  // don't allow any default values in config
-      return reply_failure();
+      return cli_replyFailure();
     } else if (strcmp(key, "pw") == 0) {
       if (val && strcmp(C.app_configPassword, val) == 0) {
         pw_ok = true;
         so_output_message(SO_CFGPASSWD_OK, NULL);
       } else {
         so_output_message(SO_CFGPASSWD_WRONG, NULL);
-        return reply_failure();
+        return cli_replyFailure();
       }
     } else if (!pw_ok) {
       so_output_message(SO_CFGPASSWD_MISSING, NULL);
-      return reply_failure();
+      return cli_replyFailure();
 
 
 #if ENABLE_RESTART
@@ -150,19 +150,19 @@ process_parmConfig(clpar p[], int len) {
         switch (so_key) {
 
         case SO_CFG_RTC: {
-          reply(val ? rtc_set_by_string(val) : false);
+          cli_replyResult(val ? rtc_set_by_string(val) : false);
         }
           break;
 
         case SO_CFG_CU: {
           if (strcmp(val, "auto") == 0) {
-            cu_auto_set(msgid, 60);
-            reply_success();
+            cu_auto_set(cli_msgid, 60);
+            cli_replySuccess();
           } else {
             u32 cu = (strcmp(val, "auto-old") == 0) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
 
             if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
-              return reply_failure();
+              return cli_replyFailure();
             }
             FSB_PUT_DEVID(&default_sender, cu);
             C.fer_centralUnitID = cu;
@@ -207,7 +207,7 @@ process_parmConfig(clpar p[], int len) {
             }
           }
           if (!success)
-            reply_failure();
+            cli_replyFailure();
         }
         break;
 #endif
@@ -217,7 +217,7 @@ process_parmConfig(clpar p[], int len) {
             strcpy (C.wifi_SSID, val);
             save_config_item(CB_WIFI_SSID);
           } else {
-            reply_failure();
+            cli_replyFailure();
           }
         }
         break;
@@ -227,7 +227,7 @@ process_parmConfig(clpar p[], int len) {
             strcpy (C.wifi_password, val);
             save_config_item(CB_WIFI_PASSWD);
           } else {
-            reply_failure();
+            cli_replyFailure();
           }
         }
         break;
@@ -246,7 +246,7 @@ process_parmConfig(clpar p[], int len) {
              }
            }
            if (!success)
-             reply_failure();
+             cli_replyFailure();
          }
          break;
         case SO_CFG_LAN_PWR_GPIO: {
@@ -263,7 +263,7 @@ process_parmConfig(clpar p[], int len) {
             strcpy (C.ntp_server, val);
             save_config_item(CB_NTP_SERVER);
           } else {
-            reply_failure();
+            cli_replyFailure();
           }
         }
         break;
@@ -282,7 +282,7 @@ process_parmConfig(clpar p[], int len) {
             strcpy (C.mqtt_password, val);
             save_config_item(CB_MQTT_PASSWD);
           } else {
-            reply_failure();
+            cli_replyFailure();
           }
 
         }
@@ -293,7 +293,7 @@ process_parmConfig(clpar p[], int len) {
             strcpy (C.mqtt_user, val);
             save_config_item(CB_MQTT_USER);
           } else {
-            reply_failure();
+            cli_replyFailure();
           }
         }
         break;
@@ -303,7 +303,7 @@ process_parmConfig(clpar p[], int len) {
             strcpy (C.mqtt_url, val);
             save_config_item(CB_MQTT_URL);
           } else {
-            reply_failure();
+            cli_replyFailure();
           }
         }
         break;
@@ -322,7 +322,7 @@ process_parmConfig(clpar p[], int len) {
             strcpy (C.http_password, val);
             save_config_item(CB_HTTP_PASSWD);
           } else {
-            reply_failure();
+            cli_replyFailure();
           }
 
         }
@@ -333,7 +333,7 @@ process_parmConfig(clpar p[], int len) {
             strcpy (C.http_user, val);
             save_config_item(CB_HTTP_USER);
           } else {
-            reply_failure();
+            cli_replyFailure();
           }
         }
         break;
@@ -383,7 +383,7 @@ process_parmConfig(clpar p[], int len) {
           } else if (strcmp(val, "1") == 0) {
             C.geo_dST = dstAlways;
           } else {
-            warning_unknown_option(key);
+            cli_warning_optionUnknown(key);
           }
           rtc_setup();
           save_config_item(CB_DST);
@@ -473,22 +473,22 @@ process_parmConfig(clpar p[], int len) {
         strcpy (C.app_configPassword, val);
         save_config_item(CB_CFG_PASSWD);
       } else {
-        reply_failure();
+        cli_replyFailure();
       }
 
     } else if (strcmp(key, "receiver") == 0) {
-      reply(config_receiver(val));
+      cli_replyResult(config_receiver(val));
 
     } else if (strcmp(key, "transmitter") == 0) {
-      reply(config_transmitter(val));
+      cli_replyResult(config_transmitter(val));
 
     } else {
       ++errors;
-      warning_unknown_option(key);
+      cli_warning_optionUnknown(key);
     }
   }
 
   so_output_message(SO_CFG_end, NULL);
-  reply(errors==0);
+  cli_replyResult(errors==0);
   return 0;
 }

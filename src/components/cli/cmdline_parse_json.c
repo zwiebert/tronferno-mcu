@@ -5,11 +5,13 @@
  *      Author: bertw
  */
 
-#ifndef TEST_MODULE
+#include "cli/cli_json.h"
+#include "cli/cli.h"
+
 #include "app/proj_app_cfg.h"
 #include "config/config.h"
 #include "string.h"
-#include "cli_imp.h"
+
 #include <ctype.h>
 #include "debug/debug.h"
 #include <stdlib.h>
@@ -17,25 +19,6 @@
 #include "userio/status_json.h"
 #include "cli/mutex.h"
 
-#else
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <assert.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
-#define postcond(x) assert((x))
-#define 
-int msgid;
-
-typedef struct {
-  char *key;
-  char *val;
-} clpar;
-#define MAX_PAR 20
-clpar par[MAX_PAR];
-#endif
 
 // like get command line:
 static int parse_json_find_next_obj(const char *s, int *key, int *key_len, int *obj, int *obj_len) {
@@ -118,18 +101,18 @@ char *json_get_command_object(char *s, char **ret_name, char **next) {
   return NULL;
 }
 
-int 
+int
 parse_json(char *name, char *s) {
   int p;
-  msgid = 0;
+  cli_msgid = 0;
   int start = 0, i, k, n;
   int result = 1;
-  par[0].key = name;
-  par[0].val = "";
+  cli_par[0].key = name;
+  cli_par[0].val = "";
 
   for (p = 1; p < MAX_PAR; ++p) {
-    par[p].key = 0;
-    par[p].val = 0;
+    cli_par[p].key = 0;
+    cli_par[p].val = 0;
     int q1 = -1, q2 = -1;
     int v1 = -1, v2 = -1;
 
@@ -166,13 +149,13 @@ parse_json(char *name, char *s) {
                 }
               }
 
-              par[p].key = &s[q1 + 1];
+              cli_par[p].key = &s[q1 + 1];
               s[q2] = '\0';
-              par[p].val = &s[is_quoted ? v1 + 1 : v1];
+              cli_par[p].val = &s[is_quoted ? v1 + 1 : v1];
               s[v2] = '\0';
 
-              if (strcmp(par[p].key, "mid") == 0) {
-                msgid = atoi(par[p].val);
+              if (strcmp(cli_par[p].key, "mid") == 0) {
+                cli_msgid = atoi(cli_par[p].val);
                 --p;
               } else {
                 ++result;
@@ -191,58 +174,9 @@ parse_json(char *name, char *s) {
   return result;
 }
 
-#ifndef TEST_MODULE
-void cli_process_json(char *json, so_target_bits tgt) {
-  cli_isJson = true;
-
-  so_tgt_set(tgt);
-
-  dbg_vpf(db_printf("process_json: %s\n", json));
-
-  char *name, *cmd_obj;
-
-  if (sj_open_root_object("tfmcu")) {
-    while ((cmd_obj = json_get_command_object(json, &name, &json))) {
-      int n = parse_json(name, cmd_obj);
-      if (n < 0) {
-        reply_failure();
-      } else {
-        process_parm(par, n);
-      }
-    }
-    sj_close_root_object();
-  }
-
-  if (so_tgt_test(SO_TGT_CLI)) {
-    cli_print_json(sj_get_json());
-  }
-
-  so_tgt_default();
-}
 
 void 
 cli_print_json(const char *json) {
     io_puts(json), io_putlf();
 }
 
-#else
-
-//char json[] = "{ \"to\": \"tfmcu\", \"config\": { \"cu\": \"801234\",\"baud\": 115200,\"longitude\": 13.5,\"latitude\": 52.6,\"timezone\": 1.0,\"tz\": \"\",\"verbose\": 5,\"mqtt-enable\": 1,\"mqtt-url\": \"mqtt://192.168.1.42:7777\",\"mqtt-user\": \"mqusr\",\"mqtt-password\": \"mqpw\" } }";
-
-char json[] = "{\"to\":\"tfmcu\",\"timer\":{\"g\":1,\"m\":0,\"f\":\"imDwArs\",\"daily\":\"0700\",\"astro\":0}}";
-int main() {
-  char *name;
-  char *cmd_obj = json_get_command_object(json, &name);
-
-  printf("name: %s, obj: %s\n", name, cmd_obj);
-
-  if (cmd_obj) {
-    int len = parse_json(name, cmd_obj);
-    for (int i = 0; i < len; ++i)
-    printf("key: %s, val: %s\n", par[i].key, par[i].val);
-
-  }
-
-  return 0;
-}
-#endif
