@@ -10,7 +10,7 @@ idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS . "./include"
     PRIV_INCLUDE_DIRS "./include/http_server_content"
-    REQUIRES net 
-    PRIV_REQUIRES app cli userio misc net
+    REQUIRES ""
+    PRIV_REQUIRES net config cli_app userio userio_app misc
     EMBED_TXTFILES "./webapp/tfmcu.html" "./webapp/tfmcu.js"
    )

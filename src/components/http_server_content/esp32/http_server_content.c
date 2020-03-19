@@ -2,13 +2,11 @@
 #include <esp_event.h>
 #include <esp_log.h>
 #include <esp_system.h>
-#include <nvs_flash.h>
 #include <sys/param.h>
 #include <mbedtls/base64.h>
 
 #include <esp_http_server.h>
 
-#include "app/proj_app_cfg.h"
 #include "net/http_server.h"
 #include "userio_app/status_output.h"
 #include "userio/status_json.h"

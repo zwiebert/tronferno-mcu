@@ -9,6 +9,7 @@
 #define SRC_USERIO_HTTP_SERVER_H_
 
 #include "app/proj_app_cfg.h"
+#include "stdbool.h"
 
 typedef enum { HQT_NONE, } hts_query_t;
 
