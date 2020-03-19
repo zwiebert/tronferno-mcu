@@ -20,9 +20,9 @@ $(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(tgt))))
 
 .PHONY: http_content http_proxy
 http_content :
-	cd src/net/content && make
+	cd src/components/http_server_content/webapp && make
 http_proxy:
-	cd src/net/content && make proxy
+	cd src/components/http_server_content/webapp && make proxy
 
 esp8266_build_cmd := make -C src/esp8266
 esp8266_tgts_auto := all clean flash app-flash flashinit flasherase spiffs

@@ -6,7 +6,7 @@ const path = require('path');
 const express = require('express');
 const httpProxy = require('http-proxy');
 
-let proj_dir=path.dirname(path.dirname(path.dirname(__dirname)));
+let proj_dir=path.dirname(path.dirname(path.dirname(path.dirname(__dirname))));
 let tff_dir=path.dirname(proj_dir)+"/tronferno-fhem";
 let build_dir=proj_dir+"/src/esp32/build";
 let cont_dir=__dirname
