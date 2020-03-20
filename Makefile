@@ -34,6 +34,7 @@ esp8266-$(1): http_content
 endef
 $(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
+
 ifdef V
 esp32_build_opt_verbose = -v
 endif
@@ -44,8 +45,6 @@ else
 esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C src/esp32 -B $(BUILD_BASE)
 esp32_build_dir := $(BUILD_BASE)
 endif
-
-
 esp32_ocd_sh :=  sh $(realpath ./src/esp32/esp32_ocd.sh)
 
 esp32_tgts_auto := menuconfig clean fullclean app

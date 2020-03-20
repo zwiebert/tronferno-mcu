@@ -3,7 +3,6 @@
 #include "config/config.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
-#include "userio_app/status_output.h"
 #include "cli_app.h"
 #include "misc/int_types.h"
 
@@ -22,9 +21,9 @@ static void  cli_out_top_tag(void) {
 
 static void  cli_out_reply_tag(void) {
   if (cli_msgid) {
-    io_puts("reply="), io_putd(cli_msgid), io_puts(": ");
+    io_puts("cli_replyResult="), io_putd(cli_msgid), io_puts(": ");
   } else {
-    io_puts("reply: ");
+    io_puts("cli_replyResult: ");
   }
 }
 
@@ -124,64 +123,4 @@ void  cli_out_mcu_reply_entry(const char *key, const char *val, int len) {
   cli_out_entry(cli_out_start_mcu_reply, key, val, len);
 }
 
-int ENR; // error number
-void  print_enr(void) {
-  io_puts("enr: "), io_putd(ENR), io_putlf();
-}
-
-void  msg_print(const char *msg, const char *tag) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
-    return;
-  if (msg)
-    io_puts(msg);
-  if (cli_msgid) {
-    io_putc('@');
-    io_putd(cli_msgid);
-  }
-  if (tag) {
-    io_putc(':');
-    io_puts(tag);
-  }
-  io_puts(": ");
-}
-
-void  cli_warning_optionUnknown(const char *key) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
-    return;
-  msg_print("warning", "unknown-option"), io_puts(key), io_putc('\n');
-}
-
-void  cli_reply_print(const char *tag) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
-    return;
-  msg_print("reply", tag);
-}
-
-void  reply_message(const char *tag, const char *msg) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
-    return;
-  cli_reply_print(tag);
-  if (msg)
-    io_puts(msg);
-  io_putlf();
-}
-
-void  cli_msg_ready(void) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
-    return;
-  io_puts("\nready:\n");
-}
-
-void  reply_id_message(u16 id, const char *tag, const char *msg) {
-  u16 old_id = cli_msgid;
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
-    return;
-
-  cli_msgid = id;
-  cli_reply_print(tag);
-  if (msg)
-    io_puts(msg);
-  io_putlf();
-  cli_msgid = old_id;
-}
 

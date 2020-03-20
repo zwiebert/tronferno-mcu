@@ -35,7 +35,7 @@ extern void setup_pin(void);
 void wifistation_setup(void);
 void setup_dataFlash(void);
 void setup_dataFlash2(void);
-void setup_ntp(void);
+void ntp_setup(void);
 void setup_spiffs(void);
 
 // main loop task
@@ -164,7 +164,7 @@ user_init() {
 
   setup_notImplemented();
 #ifdef USE_NTP
-  setup_ntp();
+  ntp_setup();
 #endif
   setup_pin();
 
