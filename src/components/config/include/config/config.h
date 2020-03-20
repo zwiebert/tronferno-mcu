@@ -8,12 +8,12 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "txtio/inout.h"
 #include "fernotron/astro.h"
 #include "config_defaults.h"
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 enum dst {
   dstNone, dstEU, dstUS, dstAlways,
@@ -155,8 +155,8 @@ void config_setup(void);
 
 
 
-void mcu_read_config(u32 mask); //IMPLEMENT_ME
-void mcu_save_config(u32 mask); //IMPLEMENT_ME
+void mcu_read_config(uint32_t mask); //IMPLEMENT_ME
+void mcu_save_config(uint32_t mask); //IMPLEMENT_ME
 
 #endif /* CONFIG_H_ */
 

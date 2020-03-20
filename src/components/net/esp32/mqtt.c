@@ -4,7 +4,7 @@
  *  Created on: 16.03.2019
  *      Author: bertw
  */
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "net/mqtt.h"
 #include "net/mqtt_imp.h"
 

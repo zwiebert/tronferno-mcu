@@ -4,13 +4,14 @@
  *  Created on: 26.03.2019
  *      Author: bertw
  */
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #ifdef USE_HTTP
 #include "http_server.h"
 #include <string.h>
 #include "cli/cli.h"
 #include "cli/mutex.h"
 #include "userio_app/status_output.h"
+#include "debug/debug.h"
 
 
 #define CMD_TAG "cmd="

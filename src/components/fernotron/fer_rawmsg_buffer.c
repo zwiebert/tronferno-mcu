@@ -10,7 +10,7 @@
 #include "fer_rawmsg_buffer.h"
 #include "int_timer.h"
 #include "stdbool.h"
-#include "main/common.h"
+#include "app/common.h"
 
 struct fer_raw_msg message_buffer;
 

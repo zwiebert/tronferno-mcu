@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "timer_state.h"
 #include "fernotron_auto/timer_data.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 #include "fernotron/astro.h"
 #include "config/config.h"
 #include "debug/debug.h"

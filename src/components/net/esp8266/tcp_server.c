@@ -12,7 +12,7 @@
 #include "time.h"
 
 #include "txtio/inout.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 
 #define TCP_HARD_TIMEOUT  (60 * 10)  // terminate connections to avoid dead connections piling up
 #define PUTC_LINE_BUFFER 1

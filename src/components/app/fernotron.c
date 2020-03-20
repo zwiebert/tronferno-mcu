@@ -2,7 +2,7 @@
 
 #include "fernotron_sep/set_endpos.h"
 #include "fernotron_pos/shutter_pct.h"
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 
 #include "fernotron_auto/timer_state.h"
@@ -10,7 +10,7 @@
 #include "config/config.h"
 #include "fernotron_cuas/cuid_auto_set.h"
 #include "debug/debug.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 #include "fernotron_alias/pairings.h"
 #include "userio_app/status_output.h"
 #include "fernotron_txtio/fer_print.h"

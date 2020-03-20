@@ -1,8 +1,9 @@
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "net/ipnet.h"
 #include "userio_app/status_output.h"
 #include "config/config.h"
+#include "misc/int_types.h"
 
 extern u32 ip4_address, ip4_gateway_address, ip4_netmask;
 

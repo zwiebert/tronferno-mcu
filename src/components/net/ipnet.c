@@ -5,12 +5,12 @@
  *      Author: bertw
  */
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "ipnet.h"
 #include "userio_app/status_output.h"
 #include "http_server.h"
 #include "config/config.h"
-
+#include "misc/int_types.h"
 
 void main_setup_ip_dependent(void);
 

@@ -1,12 +1,12 @@
 #include <fernotron/fer_msg_plain.h>
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include <string.h>
 
 #include "fernotron_pos/shutter_pct.h"
 #include "cli_imp.h"
 #include "cli_fer.h"
-#include "main/common.h"
+#include "app/common.h"
 #include "fernotron_alias/pairings.h"
 #include "userio_app/status_output.h"
 

@@ -1,4 +1,4 @@
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #ifdef USE_OTA
 #include "app/ota.h"
 #include "freertos/FreeRTOS.h"
@@ -15,6 +15,7 @@
 
 #include "nvs.h"
 #include "nvs_flash.h"
+#include "misc/int_types.h"
 
 static const char *TAG = "simple_ota_example";
 extern const u8 server_cert_pem_start[] asm("_binary_ca_cert_pem_start");

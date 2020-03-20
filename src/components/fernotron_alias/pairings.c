@@ -1,12 +1,14 @@
 #include <string.h>
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "fernotron_auto/timer_state.h"
 #include "fernotron/fer_msg_rx.h"
 #include "misc/bcd.h"
 #include "fernotron_alias/pairings.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 #include "userio_app/status_output.h"
+#include "debug/debug.h"
+#include "misc/int_types.h"
 
 #if defined DISTRIBUTION || 0
 #define D(x) x

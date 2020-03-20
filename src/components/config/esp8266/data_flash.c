@@ -12,7 +12,7 @@
  *  Created on: 16.09.2017
  *      Author: bertw
  */
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "esp8266/data_flash.h"
 
 #include "user_interface.h"

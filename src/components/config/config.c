@@ -1,5 +1,6 @@
 #include "config.h"
 #include "app/fernotron.h"
+#include "misc/int_types.h"
 #include <ctype.h>
 
 config C = {

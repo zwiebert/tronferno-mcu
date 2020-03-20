@@ -1,4 +1,4 @@
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #ifdef USE_WLAN
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
@@ -18,7 +18,7 @@
 
 #include "net/ipnet.h"
 #include "txtio/inout.h"
-#include "main/common.h"
+#include "app/common.h"
 #include "config/config.h"
 
 #define printf io_printf_fun

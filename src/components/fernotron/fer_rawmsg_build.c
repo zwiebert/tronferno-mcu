@@ -12,7 +12,7 @@
 #include "debug/debug.h"
 
 #include "fer_rawmsg_buffer.h"
-//#include "main/rtc.h"
+//#include "app/rtc.h"
 //#include "fernotron_auto/astro.h"
 //#include "config/config.h"
 #include "misc/bcd.h"

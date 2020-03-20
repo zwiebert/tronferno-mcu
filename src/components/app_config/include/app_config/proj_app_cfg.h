@@ -27,15 +27,14 @@
 #if defined MCU_ESP8266
 #include "../../esp8266/esp8266_user_config.h"
 #elif defined MCU_ESP32
-#include "app/esp32/esp32_user_config.h"
+#include "app_config/esp32/esp32_user_config.h"
 #else
 #define IRAM_ATTR
 #error "no supported MCU"
 #endif
 
+#include "misc/int_types.h"
 
 #define ENABLE_SET_ENDPOS 1
-
-#include "main/common.h"
 
 #endif /* PROJ_APP_CONFIG_H_ */

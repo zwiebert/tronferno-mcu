@@ -1,13 +1,13 @@
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include <string.h>
 #include "fernotron/fer_msg_rx.h"
 #include "fernotron_sep/set_endpos.h"
 #include "fernotron_pos/shutter_pct.h"
 #include "userio_app/status_output.h"
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "fernotron_auto/timer_state.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 #include "fernotron/fer_msg_attachment.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"

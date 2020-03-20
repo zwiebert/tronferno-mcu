@@ -3,9 +3,9 @@
 #include <fernotron/fer_msg_tx.h>
 #include "fernotron/fer_radio_trx.h"
 #include "fernotron/fer_rawmsg_buffer.h"
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
-#include "main/rtc.h"
+#include "app/rtc.h"
 #include "txtio/inout.h"
 #include "userio_app/status_output.h"
 

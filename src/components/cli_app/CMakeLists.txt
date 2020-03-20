@@ -19,4 +19,5 @@ idf_component_register(
     INCLUDE_DIRS . "./include" 
     PRIV_INCLUDE_DIRS "./include/cli_app" 
     REQUIRES cli fernotron userio_app 
-    PRIV_REQUIRES net app misc userio txtio fernotron_alias fernotron_pos)
+    PRIV_REQUIRES net app misc userio txtio fernotron_alias fernotron_pos debug
+)

@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "user_interface.h"
 #include <os_type.h>
@@ -20,7 +20,7 @@
 
 
 
-#include "main/common.h"
+#include "app/common.h"
 #include "config/config.h"
 
 #define printf ets_uart_printf

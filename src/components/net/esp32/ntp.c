@@ -12,7 +12,7 @@
 #include <esp32/rom/ets_sys.h>
 #include <string.h>
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #ifdef USE_NTP
 #include "config/config.h"
 #include "esp_event.h"

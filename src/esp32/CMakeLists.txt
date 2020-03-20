@@ -11,8 +11,8 @@ set(COMPONENTS
 
     app userio_app net debug gpio key_value_store storage cli_app config  txtio misc
 
-	bootloader esptool_py partition_table soc bootloader_support log spi_flash micro-ecc main efuse
-    app_update driver esp_http_client esp_https_ota esp_netif esp_rom esp_wifi  spiffs esp_eth)
+	bootloader esptool_py partition_table soc log spi_flash micro-ecc main efuse driver esp_rom  
+)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 

@@ -13,7 +13,7 @@
 
 #include "txtio/inout.h"
 #include "net/ipnet.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 
 
 #define printf io_printf_fun

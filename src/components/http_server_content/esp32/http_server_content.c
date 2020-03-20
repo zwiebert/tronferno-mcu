@@ -12,7 +12,7 @@
 #include "userio/status_json.h"
 #include "config/config.h"
 #include "cli_app/cli_imp.h"
-
+#include "misc/int_types.h"
 
 bool check_access_allowed(httpd_req_t *req); //XXX move this to a header file
 

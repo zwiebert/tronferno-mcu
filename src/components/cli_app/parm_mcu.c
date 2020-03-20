@@ -1,4 +1,4 @@
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include <string.h>
 
@@ -9,9 +9,10 @@
 #include "userio_app/status_output.h"
 #include "fernotron_auto/timer_state.h"
 #include "misc/bcd.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 #include "cli_imp.h"
 #include "storage/spiffs_fs.h"
+#include "debug/debug.h"
 
 const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #if ENABLE_SPIFFS

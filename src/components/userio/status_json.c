@@ -16,6 +16,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "userio_app_cfg.h"
+#include "misc/int_types.h"
 
 char *ftoa(float f, char *buf, int n);
 

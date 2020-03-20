@@ -8,9 +8,11 @@
 #ifndef COMPONENTS_APP_INCLUDE_APP_TIMER_H_
 #define COMPONENTS_APP_INCLUDE_APP_TIMER_H_
 
+#include <stdint.h>
+
 void intTimer_setup(void);
 
-extern volatile u32 run_time_s10;
+extern volatile uint32_t run_time_s10;
 #define get_now_time_ts(x) (run_time_s10 + 0)
 
 

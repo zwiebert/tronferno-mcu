@@ -12,7 +12,7 @@
 #include "time.h"
 
 #include "txtio/inout.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 
 #define printf io_printf_fun
 #ifndef DISTRIBUTION

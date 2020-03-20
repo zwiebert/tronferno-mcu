@@ -15,7 +15,7 @@ SPI_SIZE_MAP	= 4
 
 #V=1
 # Basic project settings
-COMPONENTS = debug gpio key_value_store storage net config cli cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto misc  txtio  userio userio_app app
+COMPONENTS = debug gpio key_value_store storage net config cli cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto misc  txtio  userio userio_app app app_config
 MODULES	=  src/esp8266 src/esp8266/driver
 LIBS   =  gcc hal phy pp net80211 lwip wpa main crypto
 

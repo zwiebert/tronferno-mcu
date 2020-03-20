@@ -6,7 +6,7 @@
 #include "nvs_flash.h"
 
 #include "time.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 #include <string.h>
 
 #include "freertos/FreeRTOS.h"
@@ -26,6 +26,7 @@
 #include "txtio/inout.h"
 
 #include "tcp_server.h"
+#include "misc/int_types.h"
 
 #define TCP_HARD_TIMEOUT  (60 * 10)  // terminate connections to avoid dead connections piling up
 #define SERIAL_ECHO 1

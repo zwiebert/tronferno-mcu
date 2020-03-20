@@ -8,7 +8,7 @@
 
 #include <esp_http_server.h>
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "net/http_server.h"
 #include "userio_app/status_output.h"
 #include "userio/status_json.h"

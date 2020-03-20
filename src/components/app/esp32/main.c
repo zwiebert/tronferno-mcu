@@ -1,4 +1,4 @@
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "freertos/FreeRTOS.h"
 
 #include "esp_wifi.h"
@@ -23,6 +23,7 @@
 #include "net/wifistation.h"
 #include "net/ethernet.h"
 #include "app/timer.h"
+#include "app/common.h"
 
 void setup_ntp(void);
 
@@ -93,7 +94,6 @@ mcu_init() {
   intTimer_setup();
   stor_setup();
   main_setup();
-
 }
 
 void appEsp32_main(void) {

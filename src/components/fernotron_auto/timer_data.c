@@ -4,9 +4,10 @@
  *  Created on: 08.09.2018
  *      Author: bertw
  */
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "timer_data.h"
 #include "timer_data_fs.h"
+#include "misc/int_types.h"
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 bool timer_data_changed;

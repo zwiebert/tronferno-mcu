@@ -9,7 +9,7 @@
 #include "fernotron_pos/shutter_pct.h"
 #include "fernotron_pos/shutter_prefs.h"
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "config/config.h"
 #include "debug/debug.h"

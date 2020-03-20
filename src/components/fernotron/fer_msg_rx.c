@@ -10,6 +10,7 @@
 #include "fer_rawmsg_buffer.h"
 #include "timer_data.h"
 #include "debug/debug.h"
+#include <string.h>
 
 
 void (*ferCb_rawMessageReceived)(fmsg_type msg_type, fsbT *fsb, fer_rawMsg *fmsg);

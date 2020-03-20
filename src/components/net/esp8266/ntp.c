@@ -15,10 +15,11 @@
 #include <mem.h>
 
 #include "config/config.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 #include "config/config.h"
 #include <sntp.h>
 #include "txtio/inout.h"
+#include "misc/int_types.h"
 
 extern int ets_uart_printf(const char *fmt, ...);
 #define printf ets_uart_printf
