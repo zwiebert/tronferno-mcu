@@ -5,22 +5,25 @@
  *      Author: bertw
  */
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include "esp_timer.h"
 
 #include "esp_sleep.h"
+#include <esp32/rom/ets_sys.h>
 
 #include "txtio/inout.h"
 #include "sdkconfig.h"
 
 #include "config/config.h"
-#include "main/rtc.h"
-#include "fernotron/fer_timings.h"
+#include "app/rtc.h"
+#include "fernotron/fer_radio_timings.h"
 #include "fernotron/int_timer.h"
+#include "fernotron/fer_radio_trx.h"
 #include "app/timer.h"
+#include "misc/int_types.h"
 
 void mcu_delay_us(u16 us) {
   ets_delay_us(us);

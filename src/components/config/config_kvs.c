@@ -5,19 +5,13 @@
  *      Author: bertw
  */
 
-
-/*
- * config_defaults.c
- *
- *  Created on: 16.09.2017
- *      Author: bertw
- */
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 
 #include "config/config.h"
 #include "misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
+#include "misc/int_types.h"
 
 #define D(x) 
 

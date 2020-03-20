@@ -19,10 +19,4 @@
 #define US_TO_TICKS(us) ((us) / TICK_PERIOD_US)
 #define MS_TO_TICKS(ms) ((ms) / TICK_PERIOD_MS)
 
-
-// tick should be called from stable timer interrupt
-// do a bit of work each tick
-void frx_tick(void);  // call it from timer tick interrupt
-void ftx_tick(void);  // call it from timer tick interrupt
-
 #endif /* COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_INT_TIMER_H_ */

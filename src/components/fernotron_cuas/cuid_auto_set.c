@@ -6,19 +6,19 @@
  */
 
 #include <string.h>
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "cuid_auto_set.h"
 
 #include "cli/cli.h"
 #include "config/config.h"
-#include "main/common.h"
+#include "app/common.h"
 #include "userio_app/status_output.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 #include "app/fernotron.h"
 
-#include "fernotron/fer_rx_tx.h"
-#include "fernotron/fer_msg_extension.h"
+#include "fernotron/fer_msg_rx.h"
+#include "fernotron/fer_msg_attachment.h"
 
 
 static cuas_state_T cuas_state;

@@ -8,7 +8,7 @@
 #include "unity.h"
 #include "stdbool.h"
 
-#include "main/rtc.h"
+#include "app/rtc.h"
 
 
 void test_rtc()

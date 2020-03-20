@@ -3,6 +3,7 @@
 
 
 #include <fernotron/fsb.h>
+#include "stdbool.h"
 
 typedef enum  { CUAS_NONE, CUAS_SCANNING, CUAS_TIME_OUT, CUAS_SUCCESS } cuas_state_T;
 

@@ -1,9 +1,9 @@
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "fernotron_pos/shutter_prefs.h"
 #include "cli_imp.h"
 #include "userio_app/status_output.h"
-
+#include "misc/int_types.h"
 #include <string.h>
 
 #if defined DISTRIBUTION || 0
@@ -19,11 +19,11 @@
 #define FER_G_MAX 7
 #define FER_M_MAX 7
 
-#define PRAS_TIMEOUT 15
 
 const char cli_help_parmShpref[] = ""
     "g=[0-7]   0  group number\n"
     "m=[0-7]   0  group member number\n"
+    "c=(store|read)"
     "mvut      duration to move from 0% (down) to 100% (up) in s/10\n"
     "mvdt      duration to move from 100% to 0% (up) in s/10\n"
     "mvspdt    duration to move from 100% to sun-position in s/10\n"

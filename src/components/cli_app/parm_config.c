@@ -1,4 +1,4 @@
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "cli_app/cli_config.h"
 #include <string.h>
@@ -6,17 +6,19 @@
 #include "fernotron_sep/set_endpos.h"
 #include "userio_app/status_output.h"
 #include "fernotron_cuas/cuid_auto_set.h"
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "config/config.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "misc/stof.h"
 #include "net/mqtt.h"
 #include "net/http_server.h"
 #include "fernotron/astro.h"
-#include "fernotron/fer_rx_tx.h"
+#include "fernotron/fer_msg_rx.h"
 #include "app/fernotron.h"
+#include "app/common.h"
+#include "misc/int_types.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 

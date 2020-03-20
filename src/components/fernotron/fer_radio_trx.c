@@ -1,11 +1,11 @@
-#include <fernotron/fer_msg_basic.h>
+#include <fernotron/fer_msg_plain.h>
 #include "int_timer.h"
 #include <stdlib.h>
-#include "hooks.h"
+#include "callbacks.h"
 
 #include "fer_app_cfg.h"
-#include "fer.h"
-#include "pins.h"
+#include "fer_rawmsg_buffer.h"
+#include "fernotron/extern.h"
 
 //  the same timings relative to ticks of interrupt frequency
 #define FER_PRE_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_DCK)
@@ -26,28 +26,6 @@
 #define FER_BIT_LONG_TCK        DATA_CLOCK_TO_TICKS(FER_BIT_LONG_DCK)
 #define FER_BIT_SAMP_POS_TCK    DATA_CLOCK_TO_TICKS(FER_BIT_SAMP_POS_DCK)
 
-struct fer_msg message_buffer;
-
-#ifndef FER_RECEIVER
-bool  recv_lockBuffer(bool enableLock) {
-  return true;
-}
-#else
-static volatile u8 requestLock;
-static volatile bool isLocked;
-
-bool  recv_lockBuffer(bool enableLock) {
-  if (enableLock) {
-    requestLock++;
-    do {
-      mcu_delay_us(100);
-    } while (!isLocked);
-  } else {
-    requestLock--;
-  }
-  return true;
-}
-#endif
 
 /////////////////////////// interrupt code //////////////////////
 #if defined FER_RECEIVER || defined FER_TRANSMITTER
@@ -122,7 +100,7 @@ static int error;
 
 // flags
 
-volatile u8 MessageReceived;
+volatile u8 frx_messageReceived;
 
 #define rbuf (&message_buffer)
 
@@ -258,7 +236,7 @@ void IRAM_ATTR  frx_clear(void) {
   CountTicks = CountBits = CountWords = 0;
   preBits = 0;
   error = 0;
-  MessageReceived = 0;
+  frx_messageReceived = 0;
   received_byte_ct = 0;
   bytesToReceive = BYTES_MSG_PLAIN;
 
@@ -274,7 +252,7 @@ static void  IRAM_ATTR frx_tick_receive_message() {
         if (FRB_GET_CMD(rbuf->cmd.bd) == fer_cmd_Program && FRB_ADDR_IS_CENTRAL(rbuf->cmd.bd)) {
           bytesToReceive = BYTES_MSG_RTC;
         } else {
-          MessageReceived = MSG_TYPE_PLAIN;
+          frx_messageReceived = MSG_TYPE_PLAIN;
         }
       } else {
         frx_clear();
@@ -283,7 +261,7 @@ static void  IRAM_ATTR frx_tick_receive_message() {
 
     case BYTES_MSG_RTC:
       if (FRB_GET_FPR0_IS_RTC_ONLY(rbuf->rtc.bd)) {
-        MessageReceived = MSG_TYPE_RTC;
+        frx_messageReceived = MSG_TYPE_RTC;
 
       } else {
         bytesToReceive = BYTES_MSG_TIMER;
@@ -291,7 +269,7 @@ static void  IRAM_ATTR frx_tick_receive_message() {
       break;
 
     case BYTES_MSG_TIMER:
-      MessageReceived = MSG_TYPE_TIMER;
+      frx_messageReceived = MSG_TYPE_TIMER;
     }
   }
 }
@@ -299,12 +277,12 @@ static void  IRAM_ATTR frx_tick_receive_message() {
 void  IRAM_ATTR frx_tick() {
 
   // sample input pin and detect input edge
-  rx_input = FER_GET_RX_PIN();
+  rx_input = mcu_get_rxPin();
   input_edge = (old_rx_input == rx_input) ? 0 : (IS_P_INPUT ? +1 : -1);
   old_rx_input = rx_input;
 
   // receive and decode input
-  if (!(MessageReceived || is_sendMsgPending || isLocked)) {
+  if (!(frx_messageReceived || ftx_messageToSend_isReady || msgBuf_isLocked)) {
 
     if ((prgTickCount && !--prgTickCount) || (IS_P_INPUT && nTicks > veryLongPauseLow_Len)) {
       frx_clear();
@@ -314,12 +292,12 @@ void  IRAM_ATTR frx_tick() {
 
   }
 
-  if (requestLock) {
-    if (!isLocked)
+  if (msgBuf_requestLock) {
+    if (!msgBuf_isLocked)
       frx_clear();
-    isLocked = true;
+    msgBuf_isLocked = true;
   } else {
-    isLocked = false;
+    msgBuf_isLocked = false;
   }
 
   // measure the time between input edges
@@ -353,7 +331,8 @@ void  IRAM_ATTR frx_tick() {
 
 
 static bool tx_output;   // output line
-extern volatile u16 wordsToSend;
+volatile u16 ftx_messageToSend_wordCount;
+volatile bool ftx_messageToSend_isReady;
 
 #define make_Word fer_add_word_parity
 #define init_counter() (CountTicks = CountBits = CountWords = 0)
@@ -397,7 +376,7 @@ static bool  IRAM_ATTR ftx_send_message() {
       // bit sent
       if ((ct_incr(CountBits, FER_CMD_BIT_CT + FER_STP_BIT_CT))) {
         // word + stop sent
-        if (ct_incr(CountWords, wordsToSend)) {
+        if (ct_incr(CountWords, ftx_messageToSend_wordCount)) {
           // line sent
           stop_done = preamble_done = false;
           return true; // done
@@ -413,22 +392,22 @@ static bool  IRAM_ATTR ftx_send_message() {
 static void  IRAM_ATTR ftx_tick_send_message() {
 
   bool done = ftx_send_message();
-  FER_PUT_TX_PIN(tx_output);
+  mcu_put_txPin(tx_output);
 
   if (done) {
-    is_sendMsgPending = false;
+    ftx_messageToSend_isReady = false;
     init_counter();
-    FER_PUT_TX_PIN(0);
+    mcu_put_txPin(0);
 
-    if (wordsToSend >= (2 * BYTES_MSG_RTC)) {
-     --requestLock; // the same as calling recv_lockBuffer(false);
+    if (ftx_messageToSend_wordCount >= (2 * BYTES_MSG_RTC)) {
+     --msgBuf_requestLock; // the same as calling recv_lockBuffer(false);
     }
   }
 }
 
 void IRAM_ATTR  ftx_tick(void) {
 
-  if (is_sendMsgPending) {
+  if (ftx_messageToSend_isReady) {
     ftx_tick_send_message();
   }
 }

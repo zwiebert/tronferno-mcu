@@ -6,12 +6,7 @@
  */
 
 #include "cli_app_cfg.h"
-
-
-#include <string.h>
-
 #include "misc/bcd.h"
-
 #include "cli.h"
 #include "cli_json.h"
 #include "userio/status_output.h"
@@ -20,6 +15,8 @@
 #include "fernotron_sep/set_endpos.h" // XXX
 #include "userio/status_json.h"
 #include "debug/debug.h"
+
+#include <string.h>
 
 int process_parmHelp(clpar p[], int len);
 

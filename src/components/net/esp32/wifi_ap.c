@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "net/ipnet.h"
 #include "net/http_server.h"
 #include "net/tcp_server.h"
@@ -21,6 +21,7 @@
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
+#include "misc/int_types.h"
 
 /* The examples use WiFi configuration that you can set via project configuration menu.
 

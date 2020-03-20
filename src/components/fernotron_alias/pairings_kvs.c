@@ -1,11 +1,12 @@
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "fernotron_alias/pairings.h"
 #include <stdio.h>
 #include <string.h>
 #include "userio_app/status_output.h"
 #include "key_value_store/kvs_wrapper.h"
-
+#include "misc/int_types.h"
+#include "debug/debug.h"
 
 #ifndef DISTRIBUTION
 #define D(x)

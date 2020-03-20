@@ -14,7 +14,7 @@
  */
 
 #include "unity.h"
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include <string.h>
 #include "userio/status_json.h"
 #include "cli/cli_json.h"

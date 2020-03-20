@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "user_interface.h"
 #include <os_type.h>
@@ -16,11 +16,11 @@
 
 #include "txtio/inout.h"
 #include "driver/uart.h"
-#include "fernotron/hooks.h"
+#include "fernotron/callbacks.h"
 
 
 
-#include "main/common.h"
+#include "app/common.h"
 #include "config/config.h"
 
 #define printf ets_uart_printf
@@ -167,9 +167,6 @@ user_init() {
   setup_ntp();
 #endif
   setup_pin();
-
-  ferHook_rx_pin = mcu_get_rxPin;
-  ferHook_tx_pin = mcu_put_txPin;
 
   wifistation_setup();
   tcps_startServer();

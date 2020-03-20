@@ -20,9 +20,9 @@ $(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(tgt))))
 
 .PHONY: http_content http_proxy
 http_content :
-	cd src/net/content && make
+	cd src/components/http_server_content/webapp && make
 http_proxy:
-	cd src/net/content && make proxy
+	cd src/components/http_server_content/webapp && make proxy
 
 esp8266_build_cmd := make -C src/esp8266
 esp8266_tgts_auto := all clean flash app-flash flashinit flasherase spiffs
@@ -34,13 +34,17 @@ esp8266-$(1): http_content
 endef
 $(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
+ifdef V
+esp32_build_opt_verbose = -v
+endif
 ifndef BUILD_BASE
-esp32_build_cmd := idf.py -C src/esp32
+esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C src/esp32 
 esp32_build_dir := src/esp32/build
 else
-esp32_build_cmd := idf.py -C src/esp32 -B $(BUILD_BASE)
+esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C src/esp32 -B $(BUILD_BASE)
 esp32_build_dir := $(BUILD_BASE)
 endif
+
 
 esp32_ocd_sh :=  sh $(realpath ./src/esp32/esp32_ocd.sh)
 
@@ -84,3 +88,9 @@ esp32-test-$(1):
 	make -C test/esp32 $(1)
 endef
 $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
+
+IPADDR ?= 192.168.1.65
+
+tcpterm:
+	socat -d -d -v pty,link=/tmp/ttyVirtual0,raw,echo=0,unlink-close,waitslave tcp:$(IPADDR):7777,forever,reuseaddr&
+	gtkterm -p /tmp/ttyVirtual0 -c tcpterm

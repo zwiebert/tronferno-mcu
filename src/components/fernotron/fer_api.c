@@ -1,10 +1,8 @@
 #include "fer_api.h"
 #include "misc/bcd.h"
-#include "fer.h"
+#include "fer_rawmsg_buffer.h"
 #include "misc/int_macros.h"
 #include <string.h>
-
-u32 fer_centralUnit;
 
 bool
 timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
@@ -52,51 +50,51 @@ timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
 }
 
 bool fill_rtc_buf(fsbT *fsb, time_t rtc) {
-  if (!recv_lockBuffer(true))
+  if (!ftrx_lockBuffer(true))
     return false;
 
-  fmsg_init_data(txmsg);
-  fmsg_write_rtc(txmsg, rtc, true);
+  fmsg_raw_init(txmsg);
+  fmsg_raw_from_rtc(txmsg, rtc, true);
   return true;
 }
 
 bool fill_timer_buf(fsbT *fsb, time_t rtc, timer_data_t *tdr) {
 
-  if (!recv_lockBuffer(true))
+  if (!ftrx_lockBuffer(true))
     return false;
 
-  fmsg_init_data(txmsg);
+  fmsg_raw_init(txmsg);
 
-  fmsg_write_rtc(txmsg, rtc, false);
+  fmsg_raw_from_rtc(txmsg, rtc, false);
 
 
   if (td_is_weekly(tdr)) {
     u8 weekly_data[FPR_TIMER_STAMP_WIDTH * 7];
     if (!timerString2bcd(tdr->weekly, weekly_data, sizeof weekly_data))
       return false;
-    fmsg_write_wtimer(txmsg, weekly_data);
+    fmsg_raw_from_weeklyTimer(txmsg, weekly_data);
   }
 
   if (td_is_daily(tdr)) {
     u8 daily_data[FPR_TIMER_STAMP_WIDTH];
     if (!timerString2bcd(tdr->daily, daily_data, sizeof daily_data))
       return false;
-    fmsg_write_dtimer(txmsg, daily_data);
+    fmsg_raw_from_dailyTimer(txmsg, daily_data);
   }
 
   if (td_is_astro(tdr)) {
-    fmsg_write_astro(txmsg, tdr->astro);
+    fmsg_raw_from_astro(txmsg, tdr->astro);
   }
 
   if (td_is_random(tdr)) {
-    fmsg_write_flags(txmsg, BIT(flag_Random), BIT(flag_Random));
+    fmsg_raw_from_flags(txmsg, BIT(flag_Random), BIT(flag_Random));
   }
 
   if (td_is_sun_auto(tdr)) {
-    fmsg_write_flags(txmsg, BIT(flag_SunAuto), BIT(flag_SunAuto));
+    fmsg_raw_from_flags(txmsg, BIT(flag_SunAuto), BIT(flag_SunAuto));
   }
 
-  fmsg_write_lastline(txmsg, fsb);
+  fmsg_raw_footerCreate(txmsg, fsb);
 
   return true;
 }

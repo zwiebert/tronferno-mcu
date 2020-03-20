@@ -9,11 +9,10 @@
 #define COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_FER_RX_TX_H_
 
 #include "fsb.h"
-#include "fer_msg_basic.h"
+#include "fer_msg_plain.h"
 #include "timer_data.h"
 #include <time.h>
 
-extern volatile bool is_sendMsgPending;
 extern fsbT last_received_sender;
 
 bool fer_tx_loop(void);
@@ -28,13 +27,12 @@ bool send_rtc_message(fsbT *fsb, time_t rtc);
 bool send_timer_message(fsbT *fsb, time_t rtc, timer_data_t *td);
 bool send_empty_timer_message(fsbT *fsb, time_t rtc);
 
-
 uint8_t fer_tglNibble_ctUp(uint8_t toggle_nibble, int step);
-fsbT *get_fsb(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd);
+fsbT* get_fsb(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd);
 
-
-bool recv_lockBuffer(bool enableLock);  // blocks receiver access to shared buffer when transmitting
-
-
+// tick should be called from stable timer interrupt
+// do a bit of work each tick
+void frx_tick(void);  // call it from timer tick interrupt
+void ftx_tick(void);  // call it from timer tick interrupt
 
 #endif /* COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_FER_RX_TX_H_ */

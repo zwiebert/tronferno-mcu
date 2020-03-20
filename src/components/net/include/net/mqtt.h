@@ -8,7 +8,7 @@
 #ifndef SRC_USERIO_MQTT_H_
 #define SRC_USERIO_MQTT_H_
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "userio_app/status_output.h"
 
 void io_mqtt_enable(bool enable);

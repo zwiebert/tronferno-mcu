@@ -8,10 +8,7 @@
 #include "cli/cli.h"
 #include "txtio/inout.h"
 #include "debug/debug.h"
-
-
-extern const char cli_help_parmHelp[];
-
+#include "cli_app/cli_imp.h"
 
 int process_parmHelp(clpar p[], int len) {
   int i;

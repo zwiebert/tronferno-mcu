@@ -1,1 +1,1 @@
-extern float stof(const char* s);
+float stof(const char* s);

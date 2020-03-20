@@ -1,7 +1,7 @@
 #ifndef DEBUG_H_
 #define DEBUG_H_
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 extern int unit_testing;
 #define UNIT_TEST (unit_testing+0)

@@ -7,14 +7,13 @@
 
 #include "unity.h"
 
-#include <fernotron/fer_msg_basic.h>
+#include <fernotron/fer_msg_plain.h>
 #include "astro.h"
 #include "misc/sun.h"
 #include <string.h>
 #include "../fer_app_cfg.h"
 #include "debug/debug.h"
-
-#include "../fer.h"
+#include "fernotron/fer_rawmsg_build.h"
 #include "misc/bcd.h"
 
 static u8 data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];

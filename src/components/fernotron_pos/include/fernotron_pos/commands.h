@@ -8,7 +8,7 @@
 #ifndef SRC_SHUTTER_POSITIONS_COMMANDS_H_
 #define SRC_SHUTTER_POSITIONS_COMMANDS_H_
 
-#include "fernotron/fer_msg_basic.h"
+#include "fernotron/fer_msg_plain.h"
 #include <stdint.h>
 #include "stdbool.h"
 #include "shutter_pct.h"

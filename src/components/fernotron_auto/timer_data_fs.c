@@ -4,13 +4,12 @@
  *  Created on: 08.09.2018
  *      Author: bertw
  */
-#include "app/proj_app_cfg.h"
-
+#include "app_config/proj_app_cfg.h"
 #include "timer_data_fs.h"
-
-
 #include "config/config.h"
 #include "storage/storage.h"
+#include "misc/int_types.h"
+#include "debug/debug.h"
 
 #define TEST_THIS_MODULE 0
 

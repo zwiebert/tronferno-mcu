@@ -7,8 +7,8 @@
 
 #include "kvs_wrapper.h"
 
-#include "app/proj_app_cfg.h"
-
+#include "app_config/proj_app_cfg.h"
+#include "misc/int_types.h"
 
 struct kvs_handle {
 

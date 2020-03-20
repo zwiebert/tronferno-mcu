@@ -8,9 +8,8 @@
 #ifndef USER_MAIN_CURRENT_STATE_H_
 #define USER_MAIN_CURRENT_STATE_H_
 
-#include "main/common.h"
-#include "fernotron/fer_rx_tx.h"
 #include "fernotron/types.h"
+#include "fernotron/fer_msg_plain.h"
 
 
 

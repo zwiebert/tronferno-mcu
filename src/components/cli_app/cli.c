@@ -5,7 +5,7 @@
  *  Author: bertw
  */
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include <string.h>
 #include "config/config.h"
 #include "misc/bcd.h"
@@ -14,9 +14,6 @@
 #include "userio/status_json.h"
 #include "fernotron/fsb.h"
 
-#define ENABLE_RESTART 1 // allow software reset
-#define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
-#define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
 fsbT default_sender;
 

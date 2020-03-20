@@ -6,14 +6,16 @@
  */
 
 #include "fernotron/fsb.h"
-#include "fernotron/fer_msg_basic.h"
+#include "fernotron/fer_msg_plain.h"
+#include "fernotron/fer_msg_rx.h"
 #include "fernotron_pos/commands.h"
 #include "fernotron_pos/shutter_pct.h"
-#include "app/proj_app_cfg.h"
-#include "fernotron/fer_rx_tx.h"
+#include "app_config/proj_app_cfg.h"
+
 #include "cli_app/cli_imp.h"
 #include "cli_app/cli_fer.h"
 #include "config/config.h"
+#include "debug/debug.h"
 
 #define GRP_COUNT 7
 #define MBR_COUNT 7

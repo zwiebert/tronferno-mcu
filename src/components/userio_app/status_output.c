@@ -4,7 +4,7 @@
  *  Created on: 13.03.2019
  *      Author: bertw
  */
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "fernotron_auto/timer_data.h"
 //#include "fernotron_pos/shutter_pct.h"
@@ -25,9 +25,9 @@
 #include "cli_app/cli_config.h"
 #include "cli_app/cli_fer.h"
 #include "config/config.h"
-#include "main/common.h"
+#include "app/common.h"
 #include "fernotron_alias/pairings.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 #include "fernotron_cuas/cuid_auto_set.h"
 #include "misc/int_macros.h"
 #include "txtio/inout.h"

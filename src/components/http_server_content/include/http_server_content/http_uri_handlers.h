@@ -1,0 +1,13 @@
+/*
+ * uri_handlers.h
+ *
+ *  Created on: 19.03.2020
+ *      Author: bertw
+ */
+
+#ifndef COMPONENTS_HTTP_SERVER_CONTENT_INCLUDE_HTTP_SERVER_CONTENT_URI_HANDLERS_H_
+#define COMPONENTS_HTTP_SERVER_CONTENT_INCLUDE_HTTP_SERVER_CONTENT_URI_HANDLERS_H_
+
+void hts_register_uri_handlers(httpd_handle_t server);
+
+#endif /* COMPONENTS_HTTP_SERVER_CONTENT_INCLUDE_HTTP_SERVER_CONTENT_URI_HANDLERS_H_ */

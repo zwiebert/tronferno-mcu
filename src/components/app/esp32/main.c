@@ -1,4 +1,4 @@
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "freertos/FreeRTOS.h"
 
 #include "esp_wifi.h"
@@ -13,7 +13,7 @@
 #include "gpio/pin.h"
 #include "net/wifistation.h"
 #include "config/config.h"
-#include "fernotron/hooks.h"
+#include "fernotron/callbacks.h"
 #include "fernotron_txtio/fer_print.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "config/config.h"
@@ -23,6 +23,7 @@
 #include "net/wifistation.h"
 #include "net/ethernet.h"
 #include "app/timer.h"
+#include "app/common.h"
 
 void setup_ntp(void);
 
@@ -84,8 +85,6 @@ mcu_init() {
   wifistation_setup();
 #endif
   setup_pin();
-  ferHook_rx_pin = mcu_get_rxPin;
-  ferHook_tx_pin = mcu_put_txPin;
 
 #ifdef USE_MUTEX
   void mutex_setup(void);
@@ -95,7 +94,6 @@ mcu_init() {
   intTimer_setup();
   stor_setup();
   main_setup();
-
 }
 
 void appEsp32_main(void) {
