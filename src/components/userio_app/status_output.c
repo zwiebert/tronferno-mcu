@@ -249,7 +249,6 @@ void  so_output_message(so_msg_t mt, void *arg) {
   /////////////////////////////////////////////////////////////////////////////////
   case SO_CFG_all: {
     bool old_out_js = out_js, old_out_cli = out_cli;
-    char *json_buf = NULL;
 
     if (arg) {
       const char *f;
@@ -266,12 +265,11 @@ void  so_output_message(so_msg_t mt, void *arg) {
         }
 
     }
-    if (!out_js || ((json_buf = malloc(256)))) {
-      for (i = SO_CFG_begin+1; i < SO_CFG_end; ++i) {
-        so_output_message(i, NULL);
-      }
-      free(json_buf);
+
+    for (i = SO_CFG_begin + 1; i < SO_CFG_end; ++i) {
+      so_output_message(i, NULL);
     }
+
     out_js = old_out_js;
     out_cli = old_out_cli;
   }
