@@ -15,6 +15,7 @@
 #include "debug/debug.h"
 #include "fernotron/fer_rawmsg_build.h"
 #include "misc/bcd.h"
+#include "config/config.h"
 
 static u8 data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];
 
