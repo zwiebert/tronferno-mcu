@@ -83,7 +83,7 @@ esp32_test_tgts_auto := build clean flash run all all-ocd flash-ocd flash-app-oc
 
 define GEN_RULE
 .PHONY: esp32-$(1)
-esp32-test-$(1):
+esp32-test-$(1): http_content
 	make -C test/esp32 $(1)
 endef
 $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
