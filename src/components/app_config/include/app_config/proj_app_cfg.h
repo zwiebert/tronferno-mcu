@@ -37,4 +37,8 @@
 
 #define ENABLE_SET_ENDPOS 1
 
+#ifndef CONFIG_LOG_DEFAULT_LEVEL
+#define CONFIG_LOG_DEFAULT_LEVEL 3
+#endif
+
 #endif /* PROJ_APP_CONFIG_H_ */

@@ -1,0 +1,3 @@
+[submodule "components-mcu"]
+	path = components-mcu
+	url = https://github.com/zwiebert/components-mcu.git

@@ -29,7 +29,11 @@ MODULES += $(1)/$(2)/esp8266
 endif
 
 endef
-$(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,src/compshare,$(component))))
+ifneq (,$(wildcard $(SRC_BASE)/local))
+$(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,local/components-mcu/components,$(component))))
+else
+$(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,components-mcu/components,$(component))))
+endif
 $(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,src/components,$(component))))
 
 ifeq (1,1)
