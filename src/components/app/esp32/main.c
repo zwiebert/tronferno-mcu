@@ -19,13 +19,13 @@
 #include "config/config.h"
 #include "storage/storage.h"
 #include "net/tcp_server.h"
-#include "net/mqtt.h"
+#include "net/mqtt/app/mqtt.h"
 #include "net/wifistation.h"
 #include "net/ethernet.h"
 #include "app/timer.h"
 #include "app/common.h"
 
-void setup_ntp(void);
+void ntp_setup(void);
 
 
 
@@ -35,11 +35,11 @@ void main_setup_ip_dependent() {
   if (!once) {
     once = 1;
 #ifdef USE_NTP
-    setup_ntp();
+    ntp_setup();
 #endif
     tcps_startServer();
 #ifdef USE_MQTT
-    io_mqtt_setup();
+    io_mqttApp_setup();
 #endif
   }
 }
@@ -75,7 +75,7 @@ mcu_init() {
 #ifdef USE_LAN
   case nwLan:
     esp_netif_init();
-    ethernet_setup();
+    ethernet_setup(C.lan_phy, C.lan_pwr_gpio);
 #endif
     break;
   default:

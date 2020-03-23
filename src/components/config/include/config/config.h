@@ -11,7 +11,8 @@
 #include "app_config/proj_app_cfg.h"
 #include "txtio/inout.h"
 #include "fernotron/astro.h"
-#include "config_defaults.h"
+
+#include "net/ethernet.h"
 
 #include "app_config/proj_app_cfg.h"
 
@@ -34,12 +35,6 @@ enum rtclock {
 enum verbosity {
   vrbNone, vrb1, vrb2, vrb3, vrb4, vrbDebug
 };
-
-#ifdef USE_LAN
-enum lanPhy {
-  lanPhyNone, lanPhyLAN8270, lanPhyRTL8201, lanPhyIP101, lanPhyLEN,
-};
-#endif
 
 #ifdef USE_NETWORK
 enum nwConnection {

@@ -7,8 +7,7 @@
 
 #include <esp_http_server.h>
 
-#include "net/http_server.h"
-#include "userio_app/status_output.h"
+#include "net/http/server/http_server.h"
 #include "userio/status_json.h"
 #include "config/config.h"
 #include "cli_app/cli_imp.h"

@@ -12,8 +12,12 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "misc/stof.h"
-#include "net/mqtt.h"
-#include "net/http_server.h"
+#ifdef USE_MQTT
+#include "net/mqtt/app/mqtt.h"
+#endif
+#ifdef USE_HTTP
+#include "net/http/server/http_server.h"
+#endif
 #include "fernotron/astro.h"
 #include "fernotron/fer_msg_rx.h"
 #include "app/fernotron.h"

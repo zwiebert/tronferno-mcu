@@ -90,8 +90,6 @@ typedef struct {
 
 void so_output_message(so_msg_t mt, void *arg);
 so_msg_t so_parse_config_key(const char *k);
-//void so_out_x_open(const char *name);
-//void so_out_x_close();
 
 
 #endif /* USER_MAIN_STATUS_OUTPUT_H_ */

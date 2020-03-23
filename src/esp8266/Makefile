@@ -15,7 +15,8 @@ SPI_SIZE_MAP	= 4
 
 #V=1
 # Basic project settings
-COMPONENTS = debug gpio key_value_store storage net config cli cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto misc  txtio  userio userio_app app app_config
+COMPSHARE = txtio net debug cli key_value_store misc userio net_mqtt net_http_server storage
+COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app 
 MODULES	=  src/esp8266 src/esp8266/driver
 LIBS   =  gcc hal phy pp net80211 lwip wpa main crypto
 
@@ -28,6 +29,7 @@ MODULES += $(1)/$(2)/esp8266
 endif
 
 endef
+$(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,src/compshare,$(component))))
 $(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,src/components,$(component))))
 
 ifeq (1,1)

@@ -13,7 +13,7 @@ build_cmd := idf.py -C $(build_dir)/unity -B $(build_dir)
 
 .PHONY: build clean flash run all unity unity-clean
 
-COMPS := $(shell cd ../../src/components && ls)
+COMPS := $(shell cd ../../src/components && ls) $(shell cd ../../src/compshare && ls)
 
 unity: $(unity_dir)/unity.stamp
 

@@ -1,9 +1,12 @@
-set(srcs fernotron.c esp32/timer.c esp32/portable.c esp32/ota.c esp32/main.c rtc.c esp32/unity_setup.c) 
+set(srcs fernotron.c esp32/timer.c esp32/ota.c esp32/main.c rtc.c esp32/unity_setup.c) 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 
 if(DEFINED ENV{DISTRO})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
+endif()
+if(DEFINED ENV{FLAVOR_LAN})
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFLAVOR_LAN")
 endif()
 
 idf_component_register(

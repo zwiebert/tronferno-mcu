@@ -9,6 +9,8 @@
 
 
 #include "config/config.h"
+#include "config_defaults.h"
+
 #include "misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
