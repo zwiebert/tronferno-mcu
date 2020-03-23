@@ -1,0 +1,3 @@
+[submodule "components-mcu"]
+	path = components-mcu
+	url = /home/bertw/proj/mcu/components-mcu/.git

@@ -29,7 +29,7 @@ MODULES += $(1)/$(2)/esp8266
 endif
 
 endef
-$(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,src/compshare,$(component))))
+$(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,components-mcu/components,$(component))))
 $(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,src/components,$(component))))
 
 ifeq (1,1)
