@@ -12,7 +12,7 @@ COMP_DIRS := $(realpath ../../src/components ../../components-mcu/components ../
 COMPS := $(foreach dir,$(COMP_DIRS),$(shell cd $(dir) && ls))
 
 
-build_cmd := env COMP_DIRS="$(COMP_DIRS)" idf.py -C $(build_dir)/unity -B $(build_dir)
+build_cmd := env COMP_DIRS="$(COMP_DIRS)" idf.py -C $(build_dir)/unity -B $(build_dir) -G Ninja
 
 .PHONY: build clean flash run all unity unity-clean
 

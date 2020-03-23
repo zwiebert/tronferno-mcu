@@ -34,19 +34,21 @@ esp8266-$(1): http_content
 endef
 $(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
-
+####### ESP32 build command ############
+esp32_build_opts := -G Ninja -C src/esp32
 ifdef V
-esp32_build_opt_verbose = -v
+esp32_build_opts += -v
 endif
 ifndef BUILD_BASE
-esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C src/esp32 
 esp32_build_dir := src/esp32/build
 else
-esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C src/esp32 -B $(BUILD_BASE)
+esp32_build_opts += -B $(BUILD_BASE)
 esp32_build_dir := $(BUILD_BASE)
 endif
-esp32_ocd_sh :=  sh $(realpath ./src/esp32/esp32_ocd.sh)
+esp32_build_cmd := idf.py $(esp32_build_opts)
 
+
+######### ESP32 Targets ##################
 esp32_tgts_auto := menuconfig clean fullclean app
 
 .PHONY: esp32-all-force esp32-rebuild
@@ -69,6 +71,9 @@ esp32-lan: http_content
 esp32-flash: http_content
 	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
 
+########### OpenOCD ###################
+esp32_ocd_sh :=  sh $(realpath ./src/esp32/esp32_ocd.sh)
+
 esp32-flash-ocd: http_content
 	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash)
 esp32-flash-app-ocd: http_content
@@ -78,7 +83,7 @@ esp32-ocd:
 esp32-ocd-loop:
 	$(esp32_ocd_sh) server_loop
 
-#unit testing
+########### Unit Testing ###############
 esp32_test_tgts_auto := build clean flash run all all-ocd flash-ocd flash-app-ocd
 
 define GEN_RULE
@@ -88,6 +93,8 @@ esp32-test-$(1): http_content
 endef
 $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
+
+############# TCP Terminal ##############
 IPADDR ?= 192.168.1.65
 
 tcpterm:
