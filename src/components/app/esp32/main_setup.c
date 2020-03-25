@@ -47,8 +47,10 @@ void mcu_init() {
 #ifdef USE_TCPS
   lfPer_setBit(lf_loopTcpServer);
 #endif
+#ifdef USE_TCPS_TASK
+#endif
   frx_cbRegister_msgReceived(lfa_frxMsgReceived_cb);
-  lfPer_setBit(lf_loopFerRx);
+  lfPer_setBit(lf_loopFerTx);
 #if ENABLE_SET_ENDPOS
   lfPer_setBit(lf_loopFerSep);
 #endif
