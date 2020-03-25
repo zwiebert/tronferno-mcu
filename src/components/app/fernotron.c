@@ -71,6 +71,7 @@ if (C.app_verboseOutput >= vrb1)
   io_puts("S:"), fmsg_print(txmsg, C.app_verboseOutput >= vrb2 ? msg_type : MSG_TYPE_PLAIN, (C.app_verboseOutput >= vrbDebug));
 }
 
+#ifndef MCU_ESP32
 void loop(void) {
 
 
@@ -96,7 +97,7 @@ void loop(void) {
   ntp_update_system_time(SECS_PER_DAY);
 #endif
 }
-
+#endif
 
 int 
 main_setup() {

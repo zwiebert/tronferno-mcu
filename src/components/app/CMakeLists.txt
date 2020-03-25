@@ -1,4 +1,4 @@
-set(srcs fernotron.c esp32/timer.c esp32/ota.c esp32/main.c rtc.c esp32/unity_setup.c) 
+set(srcs fernotron.c esp32/timer.c esp32/ota.c esp32/main.c esp32/main_setup.c esp32/main_loop.c rtc.c esp32/unity_setup.c) 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 
