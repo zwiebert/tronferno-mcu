@@ -991,6 +991,7 @@ function http_postShutterCommand(c=document.getElementById('send-c').value) {
   shuPos_pctFetch_start();
 }
 
+// ----------------- firmware div ---------------
 var netota_intervalID = 0;
 var netota_isInProgress = false;
 var netota_progressCounter = 0;
@@ -1022,6 +1023,7 @@ function netFirmwareOTA(ota_name) {
   document.getElementById("netota_controls").style.display = "none";
 }
 
+// ------------ cmd div --------------
 function onGPressed() {
   ast.g_next();
 }
@@ -1043,6 +1045,7 @@ function onPos(pct) {
   shuPos_pctFetch_start();
 }
 
+// -------------  auto div -------------------------------
 function req_automatic() {
   let url = '/cmd.json';
   let tfmcu = { to:"tfmcu", timer: { }};
@@ -1091,6 +1094,7 @@ function clearAuto_updHtml() {
   document.getElementById('tmci').checked = false;
 }
 
+//--------------- nav tabs ------------------
 const tabs = [
   { 'text':'Command', 'div_id':['senddiv'], fetch_gm:FETCH_POS},
   { 'text':'Automatic', 'div_id':['senddiv', 'autodiv'], fetch_gm:FETCH_AUTO|FETCH_POS },
@@ -1160,7 +1164,7 @@ function navTabs_genHtml() {
   document.getElementById('tabBar').innerHTML = html;
 }
 
-
+// ----------------------------------------
 function onContentLoaded() {
   navTabs_genHtml();
 
