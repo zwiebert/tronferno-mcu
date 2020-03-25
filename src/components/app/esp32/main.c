@@ -20,6 +20,7 @@
 #include "storage/storage.h"
 #include "net/tcp_server.h"
 #include "net/mqtt/app/mqtt.h"
+#include "net/wifi_ap.h"
 #include "net/wifistation.h"
 #include "net/ethernet.h"
 #include "app/timer.h"
@@ -58,7 +59,6 @@ mcu_init() {
   ESP_ERROR_CHECK(esp_event_loop_create_default());
 
 #ifdef USE_NETWORK
-  void wifiAp_setup(void);
   switch (C.network) {
 #ifdef USE_WLAN
   case nwWlanSta:
@@ -69,7 +69,7 @@ mcu_init() {
 #ifdef USE_WLAN_AP
   case nwWlanAp:
     esp_netif_init();
-    wifiAp_setup();
+    wifiAp_setup("tronferno", "tronferno");
     break;
 #endif
 #ifdef USE_LAN

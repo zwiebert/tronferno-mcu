@@ -21,6 +21,7 @@
 #include "cli_app/cli_imp.h"
 #include "cli_app/cli_fer.h"
 #include "cli/mutex.h"
+#include "misc/time/periodic.h"
 
 #include "move.h"
 
@@ -127,19 +128,9 @@ static void ferPos_checkStatus_whileMoving() {
   }
 }
 
-bool periodic(unsigned interval_ts, unsigned *state) {
-  unsigned now = get_now_time_ts();
-
-  if (*state < now) {
-    *state = now + interval_ts;
-    return true;
-  }
-  return false;
-}
-
 void ferPos_checkStatus_whileMoving_periodic(int interval_ts) {
   static unsigned next_ts;
-  if (mv_getFirst() && periodic(interval_ts, &next_ts)) {
+  if (mv_getFirst() && periodic_ts(interval_ts, &next_ts)) {
     ferPos_checkStatus_whileMoving();
   }
 }
