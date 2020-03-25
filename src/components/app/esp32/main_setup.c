@@ -7,6 +7,9 @@ void lfa_lostIpAddr_cb() {
   lf_setBit(lf_lostIpAddr);
 }
 
+void IRAM_ATTR lfa_frxMsgReceived_cb(void) {
+  lf_setBit(lf_loopFerRx);
+}
 
 void main_setup_ip_dependent() {
   static int once;
@@ -44,7 +47,7 @@ void mcu_init() {
 #ifdef USE_TCPS
   lfPer_setBit(lf_loopTcpServer);
 #endif
-  lfPer_setBit(lf_loopFerTx);
+  frx_cbRegister_msgReceived(lfa_frxMsgReceived_cb);
   lfPer_setBit(lf_loopFerRx);
 #if ENABLE_SET_ENDPOS
   lfPer_setBit(lf_loopFerSep);

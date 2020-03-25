@@ -11,6 +11,7 @@
 #include "fernotron/callbacks.h"
 #include "fernotron/fer_msg_rx.h"
 #include "fernotron/fer_msg_tx.h"
+#include "fernotron/fer_radio_trx.h"
 #include "fernotron_alias/pairings.h"
 #include "fernotron_auto/timer_state.h"
 #include "fernotron_cuas/cuid_auto_set.h"
@@ -91,7 +92,8 @@ void lfa_createWifiAp(void);
 void lfa_syncStm32Time(void);
 void lfa_gotIpAddr(void);
 void lfa_lostIpAddr(void);
-void stm32loop(void);
+void lfa_frxMsgReceived_cb(void);
+
 void loop(void);
 void tmr_checkNetwork_start();
 void tmr_loopPeriodic_start();
@@ -99,7 +101,6 @@ void tmr_pingLoop_start();
 void loop_eventBits_setup();
 u32 loop_eventBits_wait();
 
-void stm32_checkForInput();
 void main_setup_ip_dependent();
 void mcu_init();
 

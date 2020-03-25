@@ -24,4 +24,8 @@ void frx_clear(void); // call it after received data buffers has been processed 
 void frx_tick(void);  // call it from timer tick interrupt
 void ftx_tick(void);  // call it from timer tick interrupt
 
+typedef void (*frx_cb)(void); // callback must have IRAM_ATTR!
+void frx_cbRegister_msgReceived(frx_cb cb);
+//void frx_cbRegister_lostIpAddr(frx_cb cb);
+
 #endif /* USER_MAIN_FER_TRANSCEIVER_H_ */

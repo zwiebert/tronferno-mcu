@@ -101,6 +101,7 @@ static int error;
 // flags
 
 volatile u8 frx_messageReceived;
+volatile static frx_cb msgReceived_cb;
 
 #define rbuf (&message_buffer)
 
@@ -109,6 +110,10 @@ static u16 received_byte_ct;
 static u16 bytesToReceive;
 #define getBytesToReceive() (bytesToReceive + 0)
 #define hasAllBytesReceived() (bytesToReceive <= received_byte_ct)
+
+void frx_cbRegister_msgReceived(frx_cb cb) {
+  msgReceived_cb = cb;
+}
 
 static void  IRAM_ATTR frx_incr_received_bytes(void) {
   if (received_byte_ct <= bytesToReceive) { // FIXME:
@@ -242,7 +247,7 @@ void IRAM_ATTR  frx_clear(void) {
 
 }
 
-static void  IRAM_ATTR frx_tick_receive_message() {
+static void IRAM_ATTR frx_tick_receive_message() {
   if (frx_receive_message()) {
 
     switch (getBytesToReceive()) {
@@ -271,6 +276,8 @@ static void  IRAM_ATTR frx_tick_receive_message() {
     case BYTES_MSG_TIMER:
       frx_messageReceived = MSG_TYPE_TIMER;
     }
+    if (msgReceived_cb)
+      msgReceived_cb();
   }
 }
 
