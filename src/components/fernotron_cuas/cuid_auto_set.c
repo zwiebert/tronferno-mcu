@@ -20,7 +20,6 @@
 #include "fernotron/fer_msg_rx.h"
 #include "fernotron/fer_msg_attachment.h"
 
-
 static cuas_state_T cuas_state;
 
 cuas_state_T cuas_getState() {
@@ -30,7 +29,7 @@ cuas_state_T cuas_getState() {
 static bool cuas_active;
 static time_t end_time;
 
-bool  cu_auto_set(u16 id, unsigned timeout_secs) {
+bool cu_auto_set(u16 id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
 
@@ -44,25 +43,23 @@ bool  cu_auto_set(u16 id, unsigned timeout_secs) {
   return false;
 }
 
-bool  cu_auto_set_check_timeout() {
+void cu_auto_set_check_timeout() {
   if (end_time == 0)
-    return false;
+    return;
 
   if (end_time < run_time(NULL)) {
-      end_time = 0;
-      so_output_message(SO_CUAS_TIMEOUT, NULL);
-      cuas_state = CUAS_TIME_OUT;
-      cuas_active = false;
-      return true;
-    }
-  return false;
+    end_time = 0;
+    so_output_message(SO_CUAS_TIMEOUT, NULL);
+    cuas_state = CUAS_TIME_OUT;
+    cuas_active = false;
+  }
 }
 
-bool  cu_auto_set_check(const fsbT *fsb) {
+bool cu_auto_set_check(const fsbT *fsb) {
   if (end_time == 0)
     return false;
 
- if (FSB_ADDR_IS_CENTRAL(fsb)) {
+  if (FSB_ADDR_IS_CENTRAL(fsb)) {
     u32 cu = FSB_GET_DEVID(fsb);
     FSB_PUT_DEVID(&default_sender, cu);
     C.fer_centralUnitID = cu;

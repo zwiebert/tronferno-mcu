@@ -41,18 +41,16 @@ bool  pair_auto_set(u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
   return false;
 }
 
-bool  pair_auto_set_check_timeout(void) {
+void pair_auto_set_check_timeout(void) {
   if (end_time == 0)
-    return false;
+    return;
 
   if (end_time < run_time(NULL)) {
     end_time = 0;
     so_output_message(SO_PRAS_STOP_LISTENING, NULL);
     so_output_message(SO_PRAS_TIMEOUT, NULL);
     pras_active = false;
-    return true;
   }
-  return false;
 }
 
 bool  pair_auto_set_check(const fsbT *fsb) {

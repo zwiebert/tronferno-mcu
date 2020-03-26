@@ -14,7 +14,7 @@
 
 bool sep_enable(fsbT *fsb);
 void sep_disable(void);
-bool sep_loop(void);
+void sep_loop(void);
 bool sep_is_enabled(void);
 
 #endif /* USER_MAIN_SET_ENDPOS_H_ */
