@@ -23,7 +23,9 @@ unity-clean:
 
 port ?= /dev/ttyUSB0
 
-
+.PHONY: diff
+diff:
+	cd $(unity_dir) && diff -ruN $(IDF_PATH)/tools/unit-test-app .
 
 $(unity_dir)/unity.stamp:
 	mkdir -p $(unity_dir)
