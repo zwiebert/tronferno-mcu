@@ -41,6 +41,8 @@ flash: unity
 	$(build_cmd) --port $(port) flash
 run:
 	python3 ./run_tests.py $(port)
+monitor: unity
+	$(build_cmd) --port $(port) monitor
 
 all: build flash run
 
