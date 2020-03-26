@@ -7,6 +7,7 @@
 #include "fer_msg_tx.h"
 #include "debug/debug.h"
 #include "app/timer.h"
+#include "app/loop.h"
 
 bool fer_send_queued_msg(void);
 void (*ferCb_beforeFirstSend)(const fsbT *fsb);
@@ -65,6 +66,9 @@ static bool   sf_append(const fsbT *fsb, fmsg_type msgType, u32 s10, u8 repeats)
   return false;
 }
 
+int ftx_get_msgPendingCount() { return (sf_tail_ + sf_SIZE - sf_head_) & (sf_SIZE - 1); }
+
+
 bool 
 fers_is_ready(void) {
   if (ftx_messageToSend_isReady)
@@ -73,12 +77,9 @@ fers_is_ready(void) {
   return true;
 }
 
-bool 
+void
 fer_tx_loop() {
-  if (ftx_messageToSend_isReady)
-    return false;
-
-  if (!sf_isEmpty() && sf[sf_head].s10 <= get_now_time_ts(0)) {
+  if (!ftx_messageToSend_isReady && !sf_isEmpty() && sf[sf_head].s10 <= get_now_time_ts(0)) {
 #ifdef XXX_TOGGLE_STOP_REPEATS  // disabled because it blocks the receiver instead of making sure the stop is received //FIXME: not really true!?
     if (FSB_GET_CMD(&send_fsb[sf_head]) == fer_cmd_STOP) {
       fer_update_tglNibble(&send_fsb);
@@ -87,7 +88,7 @@ fer_tx_loop() {
     fer_send_queued_msg();
   }
 
-  return true;
+  fer_send_checkQuedState();
 }
 
 
@@ -117,15 +118,24 @@ bool  fer_send_delayed_msg(const fsbT *fsb, fmsg_type msgType, u16 delay, i8 rep
     return false;
 
   sf_append(fsb, msgType, delay + get_now_time_ts(0), repeats);
-  return true;
 
+  fer_send_checkQuedState();
+  return true;
 }
 
-bool  fer_send_queued_msg() {
+void fer_send_checkQuedState() {
+  void lfa_loopFerTx_cb(void);
   if (ftx_messageToSend_isReady)
-    return false;
+    return;
   if (sf_isEmpty())
-    return false;
+    return;
+
+  loop_setBit_txLoop();
+}
+
+bool fer_send_queued_msg() {
+  precond(!ftx_messageToSend_isReady);
+  precond(!sf_isEmpty());
 
   const fsbT *fsb = &sf[sf_head].fsb;
   fmsg_type msgType = sf[sf_head].mt;
@@ -152,12 +162,9 @@ bool  fer_send_queued_msg() {
   if (ferCb_beforeAnySend)
     ferCb_beforeAnySend(msgType, fsb, txmsg);
 
-
-
   ftx_messageToSend_wordCount = 2 * ((msgType == MSG_TYPE_PLAIN) ? BYTES_MSG_PLAIN : (msgType == MSG_TYPE_RTC) ? BYTES_MSG_RTC : BYTES_MSG_TIMER);
 
   ftx_messageToSend_isReady = true;
-
 
   return true;
 }

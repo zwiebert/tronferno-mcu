@@ -1,11 +1,13 @@
+#include "app_config/proj_app_cfg.h"
 #include <fernotron/fer_msg_plain.h>
 #include "int_timer.h"
 #include <stdlib.h>
 #include "callbacks.h"
-
 #include "fer_app_cfg.h"
 #include "fer_rawmsg_buffer.h"
+#include "fer_msg_tx.h"
 #include "fernotron/extern.h"
+#include "app/loop.h"
 
 //  the same timings relative to ticks of interrupt frequency
 #define FER_PRE_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_DCK)
@@ -101,7 +103,6 @@ static int error;
 // flags
 
 volatile u8 frx_messageReceived;
-volatile static frx_cb msgReceived_cb;
 
 #define rbuf (&message_buffer)
 
@@ -110,10 +111,6 @@ static u16 received_byte_ct;
 static u16 bytesToReceive;
 #define getBytesToReceive() (bytesToReceive + 0)
 #define hasAllBytesReceived() (bytesToReceive <= received_byte_ct)
-
-void frx_cbRegister_msgReceived(frx_cb cb) {
-  msgReceived_cb = cb;
-}
 
 static void  IRAM_ATTR frx_incr_received_bytes(void) {
   if (received_byte_ct <= bytesToReceive) { // FIXME:
@@ -276,8 +273,6 @@ static void IRAM_ATTR frx_tick_receive_message() {
     case BYTES_MSG_TIMER:
       frx_messageReceived = MSG_TYPE_TIMER;
     }
-    if (msgReceived_cb)
-      msgReceived_cb();
   }
 }
 
@@ -320,6 +315,10 @@ void  IRAM_ATTR frx_tick() {
     pTicks = 0;
   } else if (dataEdge) {
     nTicks = 0;
+  }
+
+  if (frx_messageReceived != MSG_TYPE_NONE) {
+    loop_setBit_rxLoop_fromISR(true);
   }
 }
 
@@ -403,12 +402,14 @@ static void  IRAM_ATTR ftx_tick_send_message() {
 
   if (done) {
     ftx_messageToSend_isReady = false;
+
     init_counter();
     mcu_put_txPin(0);
 
     if (ftx_messageToSend_wordCount >= (2 * BYTES_MSG_RTC)) {
      --msgBuf_requestLock; // the same as calling recv_lockBuffer(false);
     }
+    loop_setBit_txLoop_fromISR(true);
   }
 }
 

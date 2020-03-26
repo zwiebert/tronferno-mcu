@@ -32,6 +32,7 @@
 #else
 #define IRAM_ATTR
 #error "no supported MCU"
+#include "esp_attr.h"  // XXX: because just defining IRAM_ATTR empty will not work for eclipse..
 #endif
 
 #include "misc/int_types.h"

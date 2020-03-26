@@ -72,7 +72,7 @@ static void notify_messageReceived(fmsg_type msg_type) {
   }
 }
 
-bool fer_rx_loop() {
+void fer_rx_loop() {
 #ifdef FER_RECEIVER
   if (frx_messageReceived != MSG_TYPE_NONE) {
     fmsg_type msgType = frx_messageReceived;
@@ -91,5 +91,4 @@ bool fer_rx_loop() {
     }
   }
 #endif
-  return true;
 }

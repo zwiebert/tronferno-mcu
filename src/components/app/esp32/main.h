@@ -48,11 +48,14 @@
 #ifdef USE_EG
 extern EventGroupHandle_t loop_event_group;
 #define lf_setBits(v) xEventGroupSetBits(loop_event_group, (v))
+void lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield);
 #else
 #define lf_setBits(v) (loop_flags |= (v))
+#define lf_setBits_ISR(v,y) lf_setBits((v))
 #endif
 
 #define lf_setBit(v)  lf_setBits(1<<(v))
+#define lf_setBit_ISR(v, yield)  lf_setBits_ISR((1<<(v)), yield)
 #define lfPer_setBits(v) (loop_flags_periodic |= (v))
 #define lfPer_setBit(v)  lfPer_setBits(1<<(v))
 
@@ -93,6 +96,8 @@ void lfa_syncStm32Time(void);
 void lfa_gotIpAddr(void);
 void lfa_lostIpAddr(void);
 void lfa_frxMsgReceived_cb(void);
+void lfa_loopFerTx_cb(void);
+
 
 void loop(void);
 void tmr_checkNetwork_start();
