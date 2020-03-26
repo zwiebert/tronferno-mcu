@@ -48,7 +48,7 @@ const char cli_help_parmConfig[]  =
     "network=(wlan|ap|lan) ap opens wlan access-point at 192.168.4.1 (restart required)\n"
 #endif
 #ifdef USE_NTP
-    "ntp-server=(dhcp|IP4ADDR|NAME) default: ntp.pool.org (TODO: implement list of servers)\n"
+    "ntp-server=(gateway|dhcp|IP4ADDR|NAME) default: gateway\n"
 #endif
 #ifdef USE_MQTT
      "mqtt-enable=(0|1) enable MQTT\n"
