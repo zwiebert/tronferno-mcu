@@ -11,6 +11,7 @@
 #define USE_WLAN
 #define USE_WLAN_AP
 #define USE_LAN
+#define USE_TCPS
 #define USE_MQTT
 #define USE_HTTP
 #define CONFIG_BLOB
@@ -31,6 +32,7 @@
 #else
 #define IRAM_ATTR
 #error "no supported MCU"
+#include "esp_attr.h"  // XXX: because just defining IRAM_ATTR empty will not work for eclipse..
 #endif
 
 #include "misc/int_types.h"
@@ -40,5 +42,11 @@
 #ifndef CONFIG_LOG_DEFAULT_LEVEL
 #define CONFIG_LOG_DEFAULT_LEVEL 3
 #endif
+
+//#define USE_EG  //XXX using eventgroup causes SIGTRAP exception
+#define USE_AP_FALLBACK
+#define CHECK_NETWORK_INTERVAL 15
+#define LOOP_PERIODIC_INTERVAL_MS 100
+#define LOOP_INTERVAL_MS 25
 
 #endif /* PROJ_APP_CONFIG_H_ */

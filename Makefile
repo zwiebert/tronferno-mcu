@@ -34,8 +34,10 @@ esp8266-$(1): http_content
 endef
 $(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
+
 ####### ESP32 build command ############
-esp32_build_opts := -G Ninja -C src/esp32
+PORT ?= /dev/ttyUSB0
+esp32_build_opts := -G Ninja -C src/esp32 -p $(PORT)
 ifdef V
 esp32_build_opts += -v
 endif
@@ -49,7 +51,7 @@ esp32_build_cmd := idf.py $(esp32_build_opts)
 
 
 ######### ESP32 Targets ##################
-esp32_tgts_auto := menuconfig clean fullclean app
+esp32_tgts_auto := menuconfig clean fullclean app flash monitor
 
 .PHONY: esp32-all-force esp32-rebuild
 .PHONY: esp32-all esp32-lan esp32-flash esp32-flash-ocd
@@ -68,15 +70,13 @@ esp32-all: http_content
 	$(esp32_build_cmd) reconfigure all
 esp32-lan: http_content
 	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
-esp32-flash: http_content
-	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
 
 ########### OpenOCD ###################
 esp32_ocd_sh :=  sh $(realpath ./src/esp32/esp32_ocd.sh)
 
 esp32-flash-ocd: http_content
 	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash)
-esp32-flash-app-ocd: http_content
+esp32-flash-app-ocd:
 	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash_app)
 esp32-ocd:
 	$(esp32_ocd_sh) server

@@ -96,7 +96,7 @@
 #ifdef CONFIG_MY_NTP_SERVER
 #define MY_NTP_SERVER CONFIG_MY_NTP_SERVER
 #else
-#define MY_NTP_SERVER "pool.ntp.org"
+#define MY_NTP_SERVER "gateway"
 #endif
 #endif
 

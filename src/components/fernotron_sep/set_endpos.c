@@ -130,7 +130,7 @@ sep_enable(fsbT *fsb) {
   return false;
 }
 
-bool 
+void
 sep_loop(void) {
   if (sep_buttons_enabled && !ftx_messageToSend_isReady) {
     const bool up_pin = BUTT_UP;
@@ -138,7 +138,7 @@ sep_loop(void) {
 
     if (up_pin && down_pin) {  // emergency stop
       sep_disable();
-      return false;
+      return;
     }
 
     if (!up_pressed && !down_pressed) {
@@ -150,7 +150,7 @@ sep_loop(void) {
         TIMEOUT_SET();
       } else if (IS_TIMEOUT_REACHED()) {
         sep_disable();
-        return false;
+        return;
       }
     } else {
       if (up_pressed && !(up_pressed = up_pin)) {
@@ -161,5 +161,5 @@ sep_loop(void) {
       }
     }
   }
-  return true;
+  return;
 }

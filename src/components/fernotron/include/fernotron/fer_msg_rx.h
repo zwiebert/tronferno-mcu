@@ -15,8 +15,7 @@
 
 extern fsbT last_received_sender;
 
-bool fer_tx_loop(void);
-bool fer_rx_loop(void);
+void fer_rx_loop(void);
 
 // send short or long messages (data already in send-buffer)
 bool fer_send_msg(const fsbT *fsb, fmsg_type msgType, int8_t repeats);

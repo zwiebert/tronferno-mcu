@@ -18,11 +18,16 @@ extern volatile bool ftx_messageToSend_isReady;
 
 // send short or long messages (data already in send-buffer)
 bool fer_send_msg(const fsbT *fsb, fmsg_type msgType, int8_t repeats);
-bool fer_send_delayed_msg(const fsbT *fsb, fmsg_type msgType, uint16_t delay, int8_t repeats);
-bool fer_send_msg_with_stop(const fsbT *fsb, uint16_t delay, uint16_t stopDelay, int8_t repeats);
+bool fer_send_delayed_msg(const fsbT *fsb, fmsg_type msgType, uint16_t delay_ts, int8_t repeats);
+bool fer_send_msg_with_stop(const fsbT *fsb, uint16_t delay_ts, uint16_t stopDelay_ts, int8_t repeats);
 
 // send repeats from this loop
-bool fer_tx_loop(void);
+void fer_tx_loop(void);
+
+
+int ftx_get_msgPendingCount();
+
+void fer_send_checkQuedState(void);
 
 #endif /* USER_MAIN_FER_SENDER_H_ */
 
