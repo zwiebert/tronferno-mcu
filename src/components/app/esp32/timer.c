@@ -89,7 +89,9 @@ void timer1_start() {
 
 
 //////////////////////////////////////////////////////////////////////////
-volatile u32 run_time_s10;
+#ifndef USE_ESP_GET_TIME
+volatile u32 run_time_s_, run_time_ts_;
+#endif
 
 static void IRAM_ATTR timer1_handler(void *args) {
   int timer_idx = (int) args;
@@ -118,23 +120,21 @@ static void IRAM_ATTR timer1_handler(void *args) {
   }
 #endif
 
+#ifndef USE_ESP_GET_TIME
   {
-    static u32 s10_ticks;
+    static u32 s10_ticks = TICK_FREQ_HZ / 10;
+    static int8_t s_ticks = 10;
 
     if (s10_ticks-- == 0) {
       s10_ticks = TICK_FREQ_HZ / 10;
-      ++run_time_s10;
+      ++run_time_ts_;
+      if (!s_ticks--) {
+        s_ticks = 10;
+        ++run_time_s_;
+      }
     }
   }
-
-  {
-    static u32 rtc_ticks;
-
-    if (rtc_ticks-- == 0) {
-      rtc_ticks = TICK_FREQ_HZ + MS_TO_TICKS(C.app_rtcAdjust);
-      rtc_tick();
-    }
-  }
+#endif
 
 
   /* Clear the interrupt
@@ -144,8 +144,6 @@ static void IRAM_ATTR timer1_handler(void *args) {
     /* After the alarm has been triggered
     we need enable it again, so it is triggered the next time */
   TIMERG0.hw_timer[timer_idx].config.alarm_en = TIMER_ALARM_EN;
-
-
 }
 
 void intTimer_setup(void) {

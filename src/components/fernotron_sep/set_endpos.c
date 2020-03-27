@@ -39,8 +39,8 @@ static fer_cmd sep_cmd;
 static time_t end_time;
 
 #define TIMEOUT_SECS 30  // disable set position mode after being idle for N seconds
-#define TIMEOUT_SET() (end_time = run_time(NULL) + TIMEOUT_SECS)
-#define IS_TIMEOUT_REACHED() (end_time < run_time(NULL) || (end_time > (run_time(NULL) + TIMEOUT_SECS + 1)))
+#define TIMEOUT_SET() (end_time = run_time_s() + TIMEOUT_SECS)
+#define IS_TIMEOUT_REACHED() (end_time < run_time_s() || (end_time > (run_time_s() + TIMEOUT_SECS + 1)))
 
 #define D(x)
 

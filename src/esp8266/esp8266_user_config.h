@@ -10,12 +10,15 @@ extern const char *const build_time;
 #undef USE_PAIRINGS
 #undef USE_HTTP
 //#undef USE_JSON
-#undef USE_MUTEX
+#undef USE_CLI_MUTEX
 #undef USE_NETWORK
 #undef USE_OTA
 #undef USE_LAN
 #undef WLAN_AP
 #undef CONFIG_DICT
+#undef USE_FREERTOS
+
+#undef USE_ESP_GET_TIME
 
 #define CONFIG_GPIO_SIZE 17
 // SPIFFS is currently unused
@@ -53,6 +56,8 @@ extern const char *const build_time;
 
 #include "user_interface.h"
 #define IRAM_ATTR  __attribute__((section(".iram0.text")))
+
+
 
 #endif
 

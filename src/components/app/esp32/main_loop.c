@@ -10,14 +10,23 @@ uint32_t loop_flags_periodic;
 
 typedef void (*lfa_funT)(void);
 
-static const lfa_funT lfa_table[lf_Len] = { lfa_gotIpAddr, lfa_lostIpAddr,
+static const lfa_funT lfa_table[lf_Len] = {
+#ifdef USE_NETWORK
+    lfa_gotIpAddr, lfa_lostIpAddr,
+#endif
 #if defined USE_AP_FALLBACK || defined USE_WLAN_AP
     lfa_createWifiAp,
 #endif
 #ifdef USE_TCPS
     tcps_loop,
 #endif
-    cli_loop, fer_tx_loop, fer_rx_loop,
+    cli_loop,
+#ifdef FER_TRANSMITTER
+    fer_tx_loop,
+#endif
+#ifdef FER_RECEIVER
+    fer_rx_loop,
+#endif
 #if ENABLE_SET_ENDPOS
     sep_loop,
 #endif

@@ -27,9 +27,6 @@ extern struct shutter_timings st_def;
 #define DEF_MV_DOWN_10 250
 #define DEF_MV_SUN_DOWN_10 100
 
-extern volatile u32 run_time_s10;
-#define get_now_time_ts(x) (run_time_s10 + 0)
-
 // general control for moving
 bool ferPos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts);
 void ferPos_mvCheck_mvi(struct mv *mv);

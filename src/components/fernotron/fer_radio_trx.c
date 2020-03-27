@@ -1,4 +1,5 @@
 #include "app_config/proj_app_cfg.h"
+
 #include <fernotron/fer_msg_plain.h>
 #include "int_timer.h"
 #include <stdlib.h>
@@ -318,7 +319,7 @@ void  IRAM_ATTR frx_tick() {
   }
 
   if (frx_messageReceived != MSG_TYPE_NONE) {
-    loop_setBit_rxLoop_fromISR(true);
+    frx_MSG_RECEIVED_cb();
   }
 }
 
@@ -409,7 +410,7 @@ static void  IRAM_ATTR ftx_tick_send_message() {
     if (ftx_messageToSend_wordCount >= (2 * BYTES_MSG_RTC)) {
      --msgBuf_requestLock; // the same as calling recv_lockBuffer(false);
     }
-    loop_setBit_txLoop_fromISR(true);
+    ftx_MSG_TRANSMITTED_cb();
   }
 }
 

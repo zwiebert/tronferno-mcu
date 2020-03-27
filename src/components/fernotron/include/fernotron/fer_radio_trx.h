@@ -28,4 +28,12 @@ typedef void (*frx_cb)(void); // callback must have IRAM_ATTR!
 void frx_cbRegister_msgReceived(frx_cb cb);
 //void frx_cbRegister_lostIpAddr(frx_cb cb);
 
+#ifndef frx_MSG_RECEIVED_cb
+#define frx_MSG_RECEIVED_cb() // do nothing
+#endif
+
+#ifndef ftx_MSG_TRANSMITTED_cb
+#define ftx_MSG_TRANSMITTED_cb() // do nothing
+#endif
+
 #endif /* USER_MAIN_FER_TRANSCEIVER_H_ */

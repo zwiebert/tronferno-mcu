@@ -33,7 +33,7 @@ bool  pair_auto_set(u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
     pras_g = g;
     pras_m = m;
     pras_c = c;
-    end_time = run_time(NULL) + timeout_secs;
+    end_time = run_time_s() + timeout_secs;
     last_received_sender.data[0] = 0;
     pras_active = true;
     so_output_message(SO_PRAS_START_LISTENING, &id);
@@ -45,7 +45,7 @@ void pair_auto_set_check_timeout(void) {
   if (end_time == 0)
     return;
 
-  if (end_time < run_time(NULL)) {
+  if (end_time < run_time_s()) {
     end_time = 0;
     so_output_message(SO_PRAS_STOP_LISTENING, NULL);
     so_output_message(SO_PRAS_TIMEOUT, NULL);

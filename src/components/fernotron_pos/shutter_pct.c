@@ -15,6 +15,7 @@
 #include "cli_app/cli_imp.h"
 #include "cli_app/cli_fer.h"
 #include "cli/mutex.h"
+#include "misc/time/run_time.h"
 
 #include "move.h"
 

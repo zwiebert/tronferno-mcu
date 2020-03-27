@@ -8,6 +8,7 @@
 #include "config/config.h"
 #include "debug/debug.h"
 #include "misc/int_macros.h"
+#include "misc/time/run_time.h"
 #include "userio_app/status_output.h"
 #include "userio/status_json.h"
 #include "fernotron_alias/pairings.h"
@@ -122,7 +123,7 @@ static struct mv* add_to_new_movement_mm(gm_bitmask_t *mm, u32 now_ts, enum dire
 
 // register moving related commands sent to a shutter to keep track of its changing position
 int ferPos_registerMovingShutters(gm_bitmask_t *mm, fer_cmd cmd) {
-  u32 now_ts = get_now_time_ts(0);
+  u32 now_ts = get_now_time_ts();
 
   enum direction dir = DIRECTION_NONE;
   struct filter filter = { };

@@ -18,11 +18,14 @@
 #define CONFIG_DICT
 #define ACCESS_GPIO
 #define POSIX_TIME 1
+#define USE_ESP_GET_TIME
 #define MDR_TIME
 #define USE_PAIRINGS
 #define USE_JSON
-#define USE_MUTEX
+#define USE_CLI_MUTEX
 #define USE_OTA
+
+#define USE_FREERTOS
 
 
 #if defined MCU_ESP8266

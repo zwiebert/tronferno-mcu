@@ -1,24 +1,31 @@
 #include "main.h"
 
+#ifdef USE_NETWORK
 void lfa_gotIpAddr_cb() {
   lf_setBit(lf_gotIpAddr);
 }
 void lfa_lostIpAddr_cb() {
   lf_setBit(lf_lostIpAddr);
 }
+#endif
 
+#ifdef FER_TRANSMITTER
 void loop_setBit_txLoop() {
   lf_setBit(lf_loopFerTx);
 }
 void IRAM_ATTR loop_setBit_txLoop_fromISR(bool yield) {
   lf_setBit_ISR(lf_loopFerTx, yield);
 }
+#endif
+
+#ifdef FER_RECEIVER
 void loop_setBit_rxLoop() {
   lf_setBit(lf_loopFerRx);
 }
 void IRAM_ATTR loop_setBit_rxLoop_fromISR(bool yield) {
   lf_setBit_ISR(lf_loopFerRx, yield);
 }
+#endif
 
 void main_setup_ip_dependent() {
   static int once;
@@ -58,7 +65,9 @@ void mcu_init() {
 #endif
 #ifdef USE_TCPS_TASK
 #endif
+#ifdef FER_TRANSMITTER
   lfPer_setBit(lf_loopFerTx);
+#endif
 #if ENABLE_SET_ENDPOS
   lfPer_setBit(lf_loopFerSep);
 #endif
@@ -69,9 +78,9 @@ void mcu_init() {
 #endif
   lfPer_setBit(lf_loopFerPos);
 
+#ifdef USE_NETWORK
   ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
   ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
-#ifdef USE_NETWORK
   switch (C.network) {
 #ifdef USE_WLAN
   case nwWlanSta:
@@ -94,15 +103,14 @@ void mcu_init() {
   default:
     break;
   }
-#else
-  wifistation_setup();
 #endif
+
   setup_pin();
 
 #ifdef USE_AP_FALLBACK
   tmr_checkNetwork_start();
 #endif
-#ifdef USE_MUTEX
+#ifdef USE_CLI_MUTEX
   void mutex_setup(void);
   mutex_setup();
 #endif

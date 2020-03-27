@@ -8,6 +8,7 @@
 #include "debug/debug.h"
 #include "app/timer.h"
 #include "app/loop.h"
+#include "misc/time/run_time.h"
 
 bool fer_send_queued_msg(void);
 void (*ferCb_beforeFirstSend)(const fsbT *fsb);
@@ -79,7 +80,7 @@ fers_is_ready(void) {
 
 void
 fer_tx_loop() {
-  if (!ftx_messageToSend_isReady && !sf_isEmpty() && sf[sf_head].s10 <= get_now_time_ts(0)) {
+  if (!ftx_messageToSend_isReady && !sf_isEmpty() && sf[sf_head].s10 <= get_now_time_ts()) {
 #ifdef XXX_TOGGLE_STOP_REPEATS  // disabled because it blocks the receiver instead of making sure the stop is received //FIXME: not really true!?
     if (FSB_GET_CMD(&send_fsb[sf_head]) == fer_cmd_STOP) {
       fer_update_tglNibble(&send_fsb);
@@ -117,7 +118,7 @@ bool  fer_send_delayed_msg(const fsbT *fsb, fmsg_type msgType, u16 delay, i8 rep
   if (sf_isFull())
     return false;
 
-  sf_append(fsb, msgType, delay + get_now_time_ts(0), repeats);
+  sf_append(fsb, msgType, delay + get_now_time_ts(), repeats);
 
   fer_send_checkQuedState();
   return true;

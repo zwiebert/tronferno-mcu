@@ -60,7 +60,9 @@ void lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield);
 #define lfPer_setBit(v)  lfPer_setBits(1<<(v))
 
 enum loop_flagbits {
+#ifdef USE_NETWORK
   lf_gotIpAddr, lf_lostIpAddr,
+#endif
 #if defined USE_AP_FALLBACK || defined USE_WLAN_AP
   lf_createWifiAp,
 #endif
@@ -68,8 +70,12 @@ enum loop_flagbits {
   lf_loopTcpServer,
 #endif
   lf_loopCli,
+#ifdef FER_TRANSMITTER
   lf_loopFerTx,
+#endif
+#ifdef FER_RECEIVER
   lf_loopFerRx,
+#endif
 #if ENABLE_SET_ENDPOS
   lf_loopFerSep,
 #endif
@@ -92,12 +98,8 @@ extern bool wifi_ap_active;
 extern SemaphoreHandle_t uart_mutex;
 
 void lfa_createWifiAp(void);
-void lfa_syncStm32Time(void);
 void lfa_gotIpAddr(void);
 void lfa_lostIpAddr(void);
-void lfa_frxMsgReceived_cb(void);
-void lfa_loopFerTx_cb(void);
-
 
 void loop(void);
 void tmr_checkNetwork_start();

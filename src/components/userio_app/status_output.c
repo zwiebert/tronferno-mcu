@@ -59,7 +59,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_MCU_RUN_TIME: {
-    so_out_x_reply_entry_sl("run-time", run_time());
+    so_out_x_reply_entry_sl("run-time", run_time_s());
 
   }
     break;
