@@ -191,12 +191,3 @@ void  mcu_restart(void) {
   };
 }
 
-void loop_setBit_txLoop() {
-}
-void loop_setBit_txLoop_fromISR(bool yield) {
-}
-
-void loop_setBit_rxLoop() {
-}
-void loop_setBit_rxLoop_fromISR(bool yield) {
-}

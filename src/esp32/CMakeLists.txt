@@ -12,8 +12,10 @@ set(COMPONENTS
     app userio_app net net_mqtt_app net_http_server debug gpio key_value_store storage cli_app config  txtio misc
 
 	bootloader esptool_py partition_table soc log spi_flash micro-ecc main efuse driver esp_rom  
+
 )
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 project(tronferno-mcu esptool_py)
+

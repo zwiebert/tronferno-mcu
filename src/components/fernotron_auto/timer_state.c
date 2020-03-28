@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
-
 #include "app_config/proj_app_cfg.h"
 
 #include "timer_state.h"
@@ -13,6 +10,8 @@
 #include "time.h"
 #include "fernotron_pos/shutter_pct.h"
 
+#include <stdlib.h>
+#include <string.h>
 
 
 #ifndef DISTRIBUTION
@@ -129,8 +128,8 @@ timi_get_earliest(timer_minutes_t *timi, minutes_t now) {
   u8 i;
   minutes_t last = MINUTES_DISABLED;
   for (i=0; i < SIZE_MINTS; ++i) {
-    if (timi->minutes[i] < now)
-      continue; // timer in the past
+    if (timi->minutes[i] <= now)
+      continue; // timer not in future
 
     last = MIN(last, timi->minutes[i]);
   }
@@ -214,37 +213,4 @@ get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
     }
   }
   return true;
-}
-
-void 
-timer_state_loop(void) {
-  static bool initialized;
-  static timer_event_t teud[2], *teu=&teud[0], *ted=&teud[1], *te;
-  int k;
-
-  i16 new_minute = rtc_get_next_minute();
-
-  // FIXME: should also check for changed rtc and longitude/latitude/tz settings
-  if (new_minute == 0 || !initialized || timer_data_changed) {
-    get_next_timer_event(teu, ted);
-    initialized = true;
-    timer_data_changed = false;
-  }
-
-  if (new_minute < 0)
-    return;
-
-
-  for (k=0; k < 2; ++k) {
-    te = &teud[k];
-    if (te->next_event != MINUTES_DISABLED) {
-      if (te->next_event != new_minute) {
-	initialized = false;
-#if DB_INFO < 5
-	continue;
-#endif
-      }
-      ferPos_registerMovingShutters(&te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
-    }
-  }
 }

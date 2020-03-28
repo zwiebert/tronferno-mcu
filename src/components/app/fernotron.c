@@ -5,7 +5,7 @@
 #include "app_config/proj_app_cfg.h"
 
 
-#include "fernotron_auto/timer_state.h"
+#include "fernotron_auto/timer_state_loop.h"
 #include "cli/cli.h"
 #include "config/config.h"
 #include "fernotron_cuas/cuid_auto_set.h"
@@ -77,7 +77,7 @@ void loop(void) {
 
   fer_tx_loop();
 
-#if ENABLE_SET_ENDPOS
+#ifdef USE_SEP
   sep_loop();
 #endif
 

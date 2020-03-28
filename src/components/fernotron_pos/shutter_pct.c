@@ -79,7 +79,7 @@ set_state(u32 a, int g, int m, int position) {
   pm_setPct(g,m,position);
 
   SET_BIT(pos_map_changed, g);
-
+  fpos_POSITIONS_UNSAVED_cb();
   return 0;
 }
 
@@ -188,12 +188,17 @@ static void ferPos_autoSavePositions_iv(int interval_ts) {
       if (mask&1)
         ferPos_pctsByGroup_store(g, pos_map[g]);
     }
+    fpos_POSTIONS_SAVED_cb();
   }
 }
 
 
 void ferPos_loop() {
   ferPos_checkStatus_whileMoving_periodic(20);
+  ferPos_autoSavePositions_iv(100);
+}
+
+void ferPos_loopAutoSave() {
   ferPos_autoSavePositions_iv(100);
 }
 

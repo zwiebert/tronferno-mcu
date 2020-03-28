@@ -10,6 +10,10 @@
 #include "fernotron/extern.h"
 #include "app/loop.h"
 
+#ifndef MCU_ESP8266
+#include "esp_attr.h" //XXX: for eclipse
+#endif
+
 //  the same timings relative to ticks of interrupt frequency
 #define FER_PRE_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_DCK)
 #define FER_PRE_WIDTH_MIN_TCK   DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_MIN_DCK)
@@ -319,7 +323,7 @@ void  IRAM_ATTR frx_tick() {
   }
 
   if (frx_messageReceived != MSG_TYPE_NONE) {
-    frx_MSG_RECEIVED_cb();
+    frx_MSG_RECEIVED_ISR_cb();
   }
 }
 
@@ -410,7 +414,7 @@ static void  IRAM_ATTR ftx_tick_send_message() {
     if (ftx_messageToSend_wordCount >= (2 * BYTES_MSG_RTC)) {
      --msgBuf_requestLock; // the same as calling recv_lockBuffer(false);
     }
-    ftx_MSG_TRANSMITTED_cb();
+    ftx_MSG_TRANSMITTED_ISR_cb();
   }
 }
 

@@ -10,7 +10,7 @@
 
 #include "fernotron/types.h"
 #include "fernotron/fer_msg_plain.h"
-
+#include "app_config/callbacks.h"
 
 
 typedef uint8_t shutterGroupPositionsT[8];
@@ -40,5 +40,15 @@ void ferPos_init(void);
 
 int ferPos_pctsByGroup_load(uint8_t g, const shutterGroupPositionsT positions);
 int ferPos_pctsByGroup_store(uint8_t g, shutterGroupPositionsT positions);
+
+
+void ferPos_loopAutoSave();
+
+#ifndef fpos_POSITIONS_UNSAVED_cb
+#define  fpos_POSITIONS_UNSAVED_cb()
+#endif
+#ifndef fpos_POSTIONS_SAVED_cb
+#define  fpos_POSTIONS_SAVED_cb()
+#endif
 
 #endif /* USER_MAIN_CURRENT_STATE_H_ */

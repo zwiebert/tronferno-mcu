@@ -32,9 +32,6 @@
 #define READ_TIMER_DATA_FUN read_timer_data_fs
 
 #include "esp_attr.h"
-#include "esp32_callbacks.h"
-
-
 
 #endif
 

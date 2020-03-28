@@ -11,6 +11,8 @@
 #include "stdbool.h"
 #include <stdint.h>
 #include "fernotron/types.h"
+#include "fernotron/fer_msg_plain.h"
+#include "app_config/callbacks.h"
 
 #include "move_buf.h"
 
@@ -45,5 +47,15 @@ void ferPos_stop_mv(struct mv *mv, u8 g, u8 m, u8 pct);
 void ferPos_stop_mvi(struct mv *mv, u8 g, u8 m, u32 now_ts);
 void ferPos_stop_mm(gm_bitmask_t *mm, u32 now_ts);
 void ferPos_stop_mvi_mm(struct mv *mv, gm_bitmask_t *mm, u32 now_ts);
+
+
+void ferPos_loopCheckMoving();
+
+#ifndef fpos_HAS_MOVING_cb
+#define  fpos_HAS_MOVING_cb()
+#endif
+#ifndef fpos_HAS_NO_MOVING_cb
+#define  fpos_HAS_NO_MOVING_cb()
+#endif
 
 #endif /* COMPONENTS_FERNOTRON_POS_SHUTTER_MOVEMENT_H_ */

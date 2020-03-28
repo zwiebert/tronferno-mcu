@@ -69,9 +69,17 @@ static bool   sf_append(const fsbT *fsb, fmsg_type msgType, u32 s10, u8 repeats)
 
 int ftx_get_msgPendingCount() { return (sf_tail_ + sf_SIZE - sf_head_) & (sf_SIZE - 1); }
 
+static void fer_send_checkQuedState() {
+  if (ftx_messageToSend_isReady)
+    return;
+  if (sf_isEmpty())
+    return;
+
+  ftx_READY_TO_TRANSMIT_cb();
+}
 
 bool 
-fers_is_ready(void) {
+ftx_is_ready(void) {
   if (ftx_messageToSend_isReady)
     return false;
 
@@ -124,15 +132,7 @@ bool  fer_send_delayed_msg(const fsbT *fsb, fmsg_type msgType, u16 delay, i8 rep
   return true;
 }
 
-void fer_send_checkQuedState() {
-  void lfa_loopFerTx_cb(void);
-  if (ftx_messageToSend_isReady)
-    return;
-  if (sf_isEmpty())
-    return;
 
-  loop_setBit_txLoop();
-}
 
 bool fer_send_queued_msg() {
   precond(!ftx_messageToSend_isReady);

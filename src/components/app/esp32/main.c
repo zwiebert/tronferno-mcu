@@ -5,6 +5,7 @@
 #include "freertos/semphr.h"
 #include <lwip/apps/sntp.h>
 #include <lwip/apps/sntp_opts.h>
+#include <esp_attr.h>
 
 SemaphoreHandle_t uart_mutex;
 i32 boot_counter;

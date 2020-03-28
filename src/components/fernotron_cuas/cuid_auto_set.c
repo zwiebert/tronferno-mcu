@@ -39,6 +39,7 @@ bool cu_auto_set(u16 id, unsigned timeout_secs) {
     cuas_active = true;
     so_output_message(SO_CUAS_START, &id);
     cuas_state = CUAS_SCANNING;
+    cuas_ENABLE_cb();
   }
   return false;
 }
@@ -52,6 +53,7 @@ void cu_auto_set_check_timeout() {
     so_output_message(SO_CUAS_TIMEOUT, NULL);
     cuas_state = CUAS_TIME_OUT;
     cuas_active = false;
+    cuas_DISABLE_cb();
   }
 }
 
@@ -68,6 +70,7 @@ bool cu_auto_set_check(const fsbT *fsb) {
     cuas_state = CUAS_SUCCESS;
     save_config_item(CB_CUID);
     cuas_active = false;
+    cuas_DISABLE_cb();
     return true;
   }
 

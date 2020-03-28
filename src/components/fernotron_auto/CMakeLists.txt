@@ -1,4 +1,4 @@
-set(srcs timer_data.c  timer_data_fs.c  timer_state.c) 
+set(srcs timer_data.c  timer_data_fs.c  timer_state.c timer_state_loop.c) 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 

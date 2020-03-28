@@ -221,6 +221,10 @@ int ferPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
   return ferPos_getPct(a, g, m);
 }
 
+void ferPos_loopCheckMoving() {
+  ferPos_checkStatus_whileMoving_periodic(20);
+}
+
 #ifdef NO_OPT
 #pragma GCC pop_options
 #endif

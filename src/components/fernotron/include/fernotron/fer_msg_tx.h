@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include "fernotron/fsb.h"
+#include "app_config/callbacks.h"
 
 // true while sending in progress
 extern volatile bool ftx_messageToSend_isReady;
@@ -27,7 +28,9 @@ void fer_tx_loop(void);
 
 int ftx_get_msgPendingCount();
 
-void fer_send_checkQuedState(void);
+#ifndef ftx_READY_TO_TRANSMIT_cb
+#define ftx_READY_TO_TRANSMIT_cb()
+#endif
 
 #endif /* USER_MAIN_FER_SENDER_H_ */
 
