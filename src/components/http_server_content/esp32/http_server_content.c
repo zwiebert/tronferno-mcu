@@ -12,6 +12,7 @@
 #include "config/config.h"
 #include "cli_app/cli_imp.h"
 #include "misc/int_types.h"
+#include "cli/mutex.h"
 
 bool check_access_allowed(httpd_req_t *req); //XXX move this to a header file
 
@@ -29,12 +30,15 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
     return ESP_FAIL;
   }
 
-  hts_query(HQT_NONE, buf, ret); // parse and process received command
+  if (mutex_cliTake()) {
+    hts_query(HQT_NONE, buf, ret); // parse and process received command
 
-  httpd_resp_set_type(req, "application/json");
-  httpd_resp_sendstr(req, sj_get_json());
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_sendstr(req, sj_get_json());
 
-  sj_free_buffer();
+    sj_free_buffer();
+    mutex_cliGive();
+  }
 
   return ESP_OK;
 }
