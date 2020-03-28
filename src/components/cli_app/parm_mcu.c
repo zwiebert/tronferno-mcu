@@ -14,6 +14,11 @@
 #include "storage/spiffs_fs.h"
 #include "debug/debug.h"
 
+#ifdef USE_FREERTOS
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#endif
+
 const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #if ENABLE_SPIFFS
     "spiffs=(format|test)\n"
@@ -66,6 +71,12 @@ process_parmMcu(clpar p[], int len) {
         gm.m = val[1] - '0';
         so_output_message(SO_ASTRO_MINUTES_PRINT, &gm);
       }
+#ifdef USE_FREERTOS
+    } else if (strcmp(key, "stack") == 0) {
+      int n = atoi(val);
+      int words = uxTaskGetStackHighWaterMark(NULL);
+      ets_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
+#endif
     } else if (strcmp(key, "te") == 0) {
       int i;
 

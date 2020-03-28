@@ -33,8 +33,5 @@
 
 #include "esp_attr.h"
 
-
-
-
 #endif
 

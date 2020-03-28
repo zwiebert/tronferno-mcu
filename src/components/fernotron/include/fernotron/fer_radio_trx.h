@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include "stdbool.h"
+#include "app_config/callbacks.h"
 
 extern volatile uint8_t frx_messageReceived;
 
@@ -24,8 +25,18 @@ void frx_clear(void); // call it after received data buffers has been processed 
 void frx_tick(void);  // call it from timer tick interrupt
 void ftx_tick(void);  // call it from timer tick interrupt
 
-typedef void (*frx_cb)(void); // callback must have IRAM_ATTR!
-void frx_cbRegister_msgReceived(frx_cb cb);
-//void frx_cbRegister_lostIpAddr(frx_cb cb);
+
+
+// event notification callback functions
+
+// called from ISR when frx_messageReceived is set
+#ifndef frx_MSG_RECEIVED_ISR_cb
+#define frx_MSG_RECEIVED_ISR_cb() // do nothing
+#endif
+
+// called from ISR when ftx_messageToSend_isReady is set
+#ifndef ftx_MSG_TRANSMITTED_ISR_cb
+#define ftx_MSG_TRANSMITTED_ISR_cb() // do nothing
+#endif
 
 #endif /* USER_MAIN_FER_TRANSCEIVER_H_ */

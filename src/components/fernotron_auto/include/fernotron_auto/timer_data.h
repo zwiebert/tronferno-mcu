@@ -9,6 +9,7 @@
 #define USER_MAIN_TIMER_DATA_H_
 
 #include "fernotron/timer_data.h"
+#include "app_config/callbacks.h"
 
 // save and read timer data on flash memory
 // group  0...7
@@ -22,5 +23,8 @@ bool read_timer_data(timer_data_t *p, uint8_t *group, uint8_t *member, bool wild
 extern bool timer_data_changed; // set by save_timer_data - cleared by code reading it
 
 
+#ifndef fau_TIMER_DATA_CHANGE_cb
+#define fau_TIMER_DATA_CHANGE_cb()
+#endif
 
 #endif /* USER_MAIN_TIMER_DATA_H_ */

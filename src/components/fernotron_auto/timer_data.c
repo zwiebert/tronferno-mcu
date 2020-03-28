@@ -14,8 +14,10 @@ bool timer_data_changed;
 
 
 bool  save_timer_data(timer_data_t *p, u8 g, u8 m) {
+  bool result = SAVE_TIMER_DATA_FUN(p, g, m);
   timer_data_changed = true;
-  return SAVE_TIMER_DATA_FUN(p, g, m);
+  fau_TIMER_DATA_CHANGE_cb();
+  return result;
 }
 
 bool  read_timer_data(timer_data_t *p, u8 *g, u8 *m, bool wildcard) {

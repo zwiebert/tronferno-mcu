@@ -18,25 +18,24 @@
 #define CONFIG_DICT
 #define ACCESS_GPIO
 #define POSIX_TIME 1
+#define USE_ESP_GET_TIME
 #define MDR_TIME
 #define USE_PAIRINGS
+#define USE_CUAS
 #define USE_JSON
-#define USE_MUTEX
+#define USE_CLI_MUTEX
 #define USE_OTA
 
+#define USE_FREERTOS
 
-#if defined MCU_ESP8266
-#include "../../esp8266/esp8266_user_config.h"
-#elif defined MCU_ESP32
-#include "app_config/esp32/esp32_user_config.h"
-#else
-#define IRAM_ATTR
-#error "no supported MCU"
-#include "esp_attr.h"  // XXX: because just defining IRAM_ATTR empty will not work for eclipse..
-#endif
+
+
+
+#include "callbacks.h"
 
 #include "misc/int_types.h"
 
+#define USE_SEP
 #define ENABLE_SET_ENDPOS 1
 
 #ifndef CONFIG_LOG_DEFAULT_LEVEL
@@ -48,5 +47,18 @@
 #define CHECK_NETWORK_INTERVAL 15
 #define LOOP_PERIODIC_INTERVAL_MS 100
 #define LOOP_INTERVAL_MS 25
+
+
+
+
+#if defined MCU_ESP8266
+#include "../../esp8266/esp8266_user_config.h"
+#elif defined MCU_ESP32
+#include "app_config/esp32/esp32_user_config.h"
+#else
+#define IRAM_ATTR
+#error "no supported MCU"
+#endif
+
 
 #endif /* PROJ_APP_CONFIG_H_ */

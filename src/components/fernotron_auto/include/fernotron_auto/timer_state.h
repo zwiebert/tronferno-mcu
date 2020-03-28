@@ -49,6 +49,6 @@ typedef struct {
 
 bool get_next_timer_event(timer_event_t *up, timer_event_t *down);
 
-void timer_state_loop(void);
+
 
 #endif

@@ -15,7 +15,7 @@
 #define MDR_TIME
 #define USE_PAIRINGS
 #define USE_JSON
-#define USE_MUTEX
+#define USE_CLI_MUTEX
 
 #include "app_config/proj_app_cfg.h"
 

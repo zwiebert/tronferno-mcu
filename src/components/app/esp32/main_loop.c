@@ -10,27 +10,43 @@ uint32_t loop_flags_periodic;
 
 typedef void (*lfa_funT)(void);
 
-static const lfa_funT lfa_table[lf_Len] = { lfa_gotIpAddr, lfa_lostIpAddr,
+static const lfa_funT lfa_table[lf_Len] = {
+#ifdef USE_NETWORK
+    lfa_gotIpAddr, lfa_lostIpAddr,
+#endif
+#ifdef USE_NTP
+    lfa_ntpSync,
+#endif
 #if defined USE_AP_FALLBACK || defined USE_WLAN_AP
     lfa_createWifiAp,
 #endif
 #ifdef USE_TCPS
     tcps_loop,
 #endif
-    cli_loop, fer_tx_loop, fer_rx_loop,
-#if ENABLE_SET_ENDPOS
+    cli_loop,
+#ifdef FER_TRANSMITTER
+    fer_tx_loop,
+#endif
+#ifdef FER_RECEIVER
+    fer_rx_loop,
+#endif
+#ifdef USE_SEP
     sep_loop,
 #endif
-    ferPos_loop, timer_state_loop, cu_auto_set_check_timeout,
+    ferPos_loop, timer_state_loop, fau_getnextTimerEvent,
+#ifdef USE_CUAS
+    cu_auto_set_check_timeout,
+#endif
 #ifdef USE_PAIRINGS
     pair_auto_set_check_timeout,
 #endif
+    ferPos_loopAutoSave, ferPos_loopCheckMoving,
 };
 
 #ifndef USE_EG
 void loop_checkFlags() {
   u32 lf = loop_flags;
-  for (int i = 0; lf; ++i, (lf >>= 1)) {
+  for (enum loop_flagbits i = 0; lf; ++i, (lf >>= 1)) {
     if (!GET_BIT(lf, 0))
       continue;
 
@@ -51,7 +67,7 @@ u32 loop_eventBits_wait() {
 
 void loop_eventBits_check() {
   u32 lf = loop_eventBits_wait();
-  for (int i = 0; lf; ++i, (lf >>= 1)) {
+  for (enum loop_flagbits i = 0; lf; ++i, (lf >>= 1)) {
     if (!GET_BIT(lf, 0))
       continue;
 

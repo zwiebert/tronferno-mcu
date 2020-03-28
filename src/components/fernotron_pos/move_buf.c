@@ -5,6 +5,7 @@
  *      Author: bertw
  */
 
+#include "move.h"
 #include "move_buf.h"
 
 #include "stdbool.h"
@@ -43,6 +44,7 @@ struct mv* mv_calloc() {
     SET_BIT(moving_mask, mvi);
     moving[mvi] = (struct mv ) { };
     return &moving[mvi];
+    fpos_HAS_MOVING_cb();
   }
   return 0;
 }
@@ -50,5 +52,7 @@ struct mv* mv_calloc() {
 void mv_free(struct mv *mv) {
   int mvi = mv - moving;
   CLR_BIT(moving_mask, mvi);
+  if (!moving_mask)
+    fpos_HAS_NO_MOVING_cb();
 }
 

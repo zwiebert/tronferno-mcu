@@ -22,6 +22,7 @@
 #include "cli_app/cli_fer.h"
 #include "cli/mutex.h"
 #include "misc/time/periodic.h"
+#include "misc/time/run_time.h"
 
 #include "move.h"
 
@@ -115,7 +116,7 @@ int ferPos_mvCheck_mv(struct mv *mv, unsigned now_ts) {
 
 
 void ferPos_mvCheck_mvi(struct mv *mv) {
-  if (ferPos_mvCheck_mv(mv, get_now_time_ts(0)))
+  if (ferPos_mvCheck_mv(mv, get_now_time_ts()))
     if (gm_isAllClear(&mv->mask))
       mv_free(mv);
 }
@@ -207,7 +208,7 @@ int ferPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
     return -1;
   }
 
-  u32 now_ts = get_now_time_ts(0);
+  u32 now_ts = get_now_time_ts();
 
   struct mv *mv;
   for (mv = mv_getFirst(); mv; mv = mv_getNext(mv)) {
@@ -218,6 +219,10 @@ int ferPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
     }
   }
   return ferPos_getPct(a, g, m);
+}
+
+void ferPos_loopCheckMoving() {
+  ferPos_checkStatus_whileMoving_periodic(20);
 }
 
 #ifdef NO_OPT

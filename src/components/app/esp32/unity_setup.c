@@ -27,8 +27,9 @@ void unity_suiteSetUp() {
  mcu_init();
 #else
   //config_setup();
-
+#ifdef USE_EG
   loop_eventBits_setup();
+#endif
   mutex_setup();
   kvs_setup();
   txtio_setup();

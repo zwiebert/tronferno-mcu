@@ -13,7 +13,7 @@
 #include "fernotron/fer_msg_tx.h"
 #include "fernotron/fer_radio_trx.h"
 #include "fernotron_alias/pairings.h"
-#include "fernotron_auto/timer_state.h"
+#include "fernotron_auto/timer_state_loop.h"
 #include "fernotron_cuas/cuid_auto_set.h"
 #include "fernotron_sep/set_endpos.h"
 #include "fernotron_txtio/fer_print.h"
@@ -42,6 +42,7 @@
 #include <esp_event.h>
 #include <esp_system.h>
 #include <esp_wifi.h>
+#include <esp_sntp.h>
 #include <string.h>
 
 #define KEY_BOOT_COUNTER "BOOT_CT"
@@ -57,10 +58,18 @@ void lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield);
 #define lf_setBit(v)  lf_setBits(1<<(v))
 #define lf_setBit_ISR(v, yield)  lf_setBits_ISR((1<<(v)), yield)
 #define lfPer_setBits(v) (loop_flags_periodic |= (v))
+#define lfPer_clrBits(v) (loop_flags_periodic &= ~(v))
 #define lfPer_setBit(v)  lfPer_setBits(1<<(v))
+#define lfPer_clrBit(v)  lfPer_clrBits(1<<(v))
+
 
 enum loop_flagbits {
+#ifdef USE_NETWORK
   lf_gotIpAddr, lf_lostIpAddr,
+#endif
+#ifdef USE_NTP
+  lf_ntpSyncTime,
+#endif
 #if defined USE_AP_FALLBACK || defined USE_WLAN_AP
   lf_createWifiAp,
 #endif
@@ -68,17 +77,25 @@ enum loop_flagbits {
   lf_loopTcpServer,
 #endif
   lf_loopCli,
+#ifdef FER_TRANSMITTER
   lf_loopFerTx,
+#endif
+#ifdef FER_RECEIVER
   lf_loopFerRx,
-#if ENABLE_SET_ENDPOS
+#endif
+#ifdef USE_SEP
   lf_loopFerSep,
 #endif
   lf_loopFerPos,
   lf_loopFerTimerState,
+  lf_loopFauTimerDataHasChanged,
+#ifdef USE_CUAS
   lf_checkCuasTimeout,
+#endif
 #ifdef USE_PAIRINGS
   lf_checkPairingTimeout,
 #endif
+  lf_loopPosAutoSave, lf_loopPosCheckMoving,
 
   //-------------
   lf_Len
@@ -92,12 +109,9 @@ extern bool wifi_ap_active;
 extern SemaphoreHandle_t uart_mutex;
 
 void lfa_createWifiAp(void);
-void lfa_syncStm32Time(void);
 void lfa_gotIpAddr(void);
 void lfa_lostIpAddr(void);
-void lfa_frxMsgReceived_cb(void);
-void lfa_loopFerTx_cb(void);
-
+void lfa_ntpSync(void);
 
 void loop(void);
 void tmr_checkNetwork_start();

@@ -34,11 +34,12 @@ bool cu_auto_set(u16 id, unsigned timeout_secs) {
     return false;
 
   if (timeout_secs > 0) {
-    end_time = run_time(NULL) + timeout_secs;
+    end_time = run_time_s() + timeout_secs;
     last_received_sender.data[0] = 0;
     cuas_active = true;
     so_output_message(SO_CUAS_START, &id);
     cuas_state = CUAS_SCANNING;
+    cuas_ENABLE_cb();
   }
   return false;
 }
@@ -47,11 +48,12 @@ void cu_auto_set_check_timeout() {
   if (end_time == 0)
     return;
 
-  if (end_time < run_time(NULL)) {
+  if (end_time < run_time_s()) {
     end_time = 0;
     so_output_message(SO_CUAS_TIMEOUT, NULL);
     cuas_state = CUAS_TIME_OUT;
     cuas_active = false;
+    cuas_DISABLE_cb();
   }
 }
 
@@ -68,6 +70,7 @@ bool cu_auto_set_check(const fsbT *fsb) {
     cuas_state = CUAS_SUCCESS;
     save_config_item(CB_CUID);
     cuas_active = false;
+    cuas_DISABLE_cb();
     return true;
   }
 

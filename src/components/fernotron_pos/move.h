@@ -11,6 +11,8 @@
 #include "stdbool.h"
 #include <stdint.h>
 #include "fernotron/types.h"
+#include "fernotron/fer_msg_plain.h"
+#include "app_config/callbacks.h"
 
 #include "move_buf.h"
 
@@ -26,9 +28,6 @@ extern struct shutter_timings st_def;
 #define DEF_MV_UP_10 260
 #define DEF_MV_DOWN_10 250
 #define DEF_MV_SUN_DOWN_10 100
-
-extern volatile u32 run_time_s10;
-#define get_now_time_ts(x) (run_time_s10 + 0)
 
 // general control for moving
 bool ferPos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts);
@@ -48,5 +47,15 @@ void ferPos_stop_mv(struct mv *mv, u8 g, u8 m, u8 pct);
 void ferPos_stop_mvi(struct mv *mv, u8 g, u8 m, u32 now_ts);
 void ferPos_stop_mm(gm_bitmask_t *mm, u32 now_ts);
 void ferPos_stop_mvi_mm(struct mv *mv, gm_bitmask_t *mm, u32 now_ts);
+
+
+void ferPos_loopCheckMoving();
+
+#ifndef fpos_HAS_MOVING_cb
+#define  fpos_HAS_MOVING_cb()
+#endif
+#ifndef fpos_HAS_NO_MOVING_cb
+#define  fpos_HAS_NO_MOVING_cb()
+#endif
 
 #endif /* COMPONENTS_FERNOTRON_POS_SHUTTER_MOVEMENT_H_ */

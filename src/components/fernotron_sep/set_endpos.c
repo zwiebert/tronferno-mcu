@@ -1,9 +1,12 @@
+#include "app_config/proj_app_cfg.h"
+#include "set_endpos.h"
+
 #include <fernotron/fer_msg_plain.h>
 #include <fernotron/fer_msg_attachment.h>
 #include <fernotron/fer_msg_tx.h>
 #include "fernotron/fer_radio_trx.h"
 #include "fernotron/fer_rawmsg_buffer.h"
-#include "app_config/proj_app_cfg.h"
+
 
 #include "app/rtc.h"
 #include "txtio/inout.h"
@@ -18,7 +21,9 @@
 //
 // if 0, only normal up/down commands are used for testing.
 // German: wenn 0, werden ungefährliche hoch/runter kommandos gesendet (zum Testen)
+#ifndef ENABLE_SET_ENDPOS
 #define ENABLE_SET_ENDPOS 1
+#endif
 //
 // DANGER ZONE
 //////////////////////////////////////////////////////////////////
@@ -39,8 +44,8 @@ static fer_cmd sep_cmd;
 static time_t end_time;
 
 #define TIMEOUT_SECS 30  // disable set position mode after being idle for N seconds
-#define TIMEOUT_SET() (end_time = run_time(NULL) + TIMEOUT_SECS)
-#define IS_TIMEOUT_REACHED() (end_time < run_time(NULL) || (end_time > (run_time(NULL) + TIMEOUT_SECS + 1)))
+#define TIMEOUT_SET() (end_time = run_time_s() + TIMEOUT_SECS)
+#define IS_TIMEOUT_REACHED() (end_time < run_time_s() || (end_time > (run_time_s() + TIMEOUT_SECS + 1)))
 
 #define D(x)
 
@@ -88,6 +93,7 @@ sep_send_up(void) {
 void 
 sep_disable(void) {
   if (sep_buttons_enabled) {
+    sep_DISABLE_cb();
     sep_send_stop();  // don't remove this line
     so_output_message(SO_SEP_DISABLE, 0);
     up_pressed = down_pressed = false;
@@ -125,6 +131,7 @@ sep_enable(fsbT *fsb) {
     sep_buttons_enabled = true;
     ftrx_lockBuffer(true); // make sure we have the transceiver for ourselves (or at least block large data being send or received)
     TIMEOUT_SET();
+    sep_ENABLE_cb();
     return true;
   }
   return false;
@@ -132,7 +139,7 @@ sep_enable(fsbT *fsb) {
 
 void
 sep_loop(void) {
-  if (sep_buttons_enabled && !ftx_messageToSend_isReady) {
+  if (sep_buttons_enabled) {
     const bool up_pin = BUTT_UP;
     const bool down_pin = BUTT_DOWN;
 
