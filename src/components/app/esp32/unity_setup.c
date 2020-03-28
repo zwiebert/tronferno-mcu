@@ -13,6 +13,8 @@
 #include "fernotron/astro.h"
 #include "cli/mutex.h"
 
+ void loop_eventBits_setup();
+
 int unit_testing;
 
 void mcu_init(void);
@@ -26,6 +28,7 @@ void unity_suiteSetUp() {
 #else
   //config_setup();
 
+  loop_eventBits_setup();
   mutex_setup();
   kvs_setup();
   txtio_setup();
