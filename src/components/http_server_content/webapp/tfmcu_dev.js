@@ -1101,6 +1101,7 @@ const tabs = [
   { 'text':'Config', 'div_id':['configdiv'], fetch:FETCH_CONFIG },
   { 'text':'Positions', 'div_id':['senddiv', 'aliasdiv', 'shprefdiv'], fetch:FETCH_ALIASES, fetch_gm:FETCH_POS|FETCH_SHUTTER_PREFS },
   { 'text':'Firmware', 'div_id':['id-fwDiv'], fetch_init:FETCH_VERSION},
+  { 'text':'Tests', 'div_id':['testsdiv'], },//dev-distro-delete-line//
 
 ];
 let div_ids = [];
@@ -1216,6 +1217,35 @@ function onContentLoaded() {
   document.getElementById("id_cuasb").onclick = () => req_cuasStart();
 }
 
+//dev-distro-delete-begin/
+// ----------------- tests ----------------------
+
+const test_cmds = ['up', 'down', 'stop'];
+function get_randomCmd() {
+  const idx = Math.floor(Math.random() * (test_cmds.length-.01));
+  return test_cmds[idx];
+}
+
+function test_randomCmd() {
+  const cmd = get_randomCmd();
+  console.log(cmd);
+  http_postShutterCommand(cmd);
+}
+let test_randomCmd_interval = 0;
+function testPressed(enable) {
+  
+  if (test_randomCmd_interval) {
+    clearInterval(test_randomCmd_interval);
+    test_randomCmd_interval = 0;
+  }
+  
+  if (enable) {
+  ast.g = 7;
+  ast.m = 1;
+  test_randomCmd_interval = setInterval(test_randomCmd, 1000);
+  }
+}
+///dev-distro-delete-end/
 /*
   Local Variables:
   compile-command: "jshint tfmcu_dev.js"

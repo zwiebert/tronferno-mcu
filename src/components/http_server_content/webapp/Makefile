@@ -9,7 +9,7 @@ SED_OPTS = -E -e '/dev-delete-line/d'
 
 ifdef DISTRO
 ifeq ($(DISTRO),1)
-SED_OPTS +=  -e '/dev-distro-delete-line/d' -e '/^\s*\bdbLog\b.*;/d'
+SED_OPTS +=  -e '/dev-distro-delete-line/d' -e '/^\s*\bdbLog\b.*;/d'   -e '/dev-distro-delete-begin/,/dev-distro-delete-end/d'
 endif
 endif
 
