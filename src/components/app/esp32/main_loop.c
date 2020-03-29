@@ -33,7 +33,7 @@ static const lfa_funT lfa_table[lf_Len] = {
 #ifdef USE_SEP
     sep_loop,
 #endif
-    ferPos_loop, timer_state_loop, fau_getnextTimerEvent,
+    ferPos_loop, timer_state_loop_evt, fau_getnextTimerEvent,
 #ifdef USE_CUAS
     cu_auto_set_check_timeout,
 #endif
@@ -100,9 +100,9 @@ static void tmr_loopPeriodic_cb(TimerHandle_t xTimer) {
 void tmr_loopPeriodic_start() {
   TimerHandle_t tmr;
   int interval = pdMS_TO_TICKS(LOOP_PERIODIC_INTERVAL_MS);
-  tmr = xTimerCreate("PingLoopTimer", interval, pdTRUE, (void*) 0, tmr_loopPeriodic_cb);
+  tmr = xTimerCreate("PerLoopTimer", interval, pdTRUE, (void*) 0, tmr_loopPeriodic_cb);
   if (xTimerStart(tmr, 10 ) != pdPASS) {
-    printf("PingLoopTimer start error");
+    printf("PerLoopTimer start error");
   }
 }
 

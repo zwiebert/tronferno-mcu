@@ -42,8 +42,8 @@ void fau_getnextTimerEvent() {
   set_next_event();
 }
 
-#if 1
-void timer_state_loop(void) {
+
+void timer_state_loop_evt(void) {
   timer_event_t *te;
   bool get_new_event = false;
   int k;
@@ -67,7 +67,7 @@ void timer_state_loop(void) {
   if (get_new_event)
     fau_getnextTimerEvent();
 }
-#else
+
 void timer_state_loop(void) {
   static bool initialized;
   timer_event_t *teu = &teud[0], *ted = &teud[1], *te;
@@ -81,6 +81,7 @@ void timer_state_loop(void) {
     initialized = true;
     timer_data_changed = false;
   }
+
 
   if (new_minute < 0)
     return;
@@ -98,4 +99,4 @@ void timer_state_loop(void) {
     }
   }
 }
-#endif
+

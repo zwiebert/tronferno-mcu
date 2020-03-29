@@ -71,33 +71,7 @@ if (C.app_verboseOutput >= vrb1)
   io_puts("S:"), fmsg_print(txmsg, C.app_verboseOutput >= vrb2 ? msg_type : MSG_TYPE_PLAIN, (C.app_verboseOutput >= vrbDebug));
 }
 
-#ifndef MCU_ESP32
-void loop(void) {
 
-
-  fer_tx_loop();
-
-#ifdef USE_SEP
-  sep_loop();
-#endif
-
-  cli_loop();
-  ferPos_loop();
-
-  timer_state_loop();
-  cu_auto_set_check_timeout();
-#ifdef USE_PAIRINGS
-  pair_auto_set_check_timeout();
-#endif
-
-  fer_rx_loop();
-
-#if defined USE_NTP && defined MCU_ESP8266
-  bool  ntp_update_system_time(unsigned interval_seconds);
-  ntp_update_system_time(SECS_PER_DAY);
-#endif
-}
-#endif
 
 int 
 main_setup() {

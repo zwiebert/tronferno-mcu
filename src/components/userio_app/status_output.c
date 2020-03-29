@@ -126,11 +126,13 @@ void  so_output_message(so_msg_t mt, void *arg) {
   case SO_CFG_CU:
     so_out_x_reply_entry_lx(mt, C.fer_centralUnitID);
     break;
-#ifdef USE_NETWORK
+
   case SO_CFG_NETWORK:
+#ifdef USE_NETWORK
     so_out_x_reply_entry_s(mt, cfg_args_network[C.network]);
-    break;
 #endif
+    break;
+
 #ifdef USE_LAN
   case SO_CFG_LAN_PHY:
     so_out_x_reply_entry_s(mt, cfg_args_lanPhy[C.lan_phy]);

@@ -52,7 +52,7 @@
 
 
 #if defined MCU_ESP8266
-#include "../../esp8266/esp8266_user_config.h"
+#include "app_config/esp8266/esp8266_user_config.h"
 #elif defined MCU_ESP32
 #include "app_config/esp32/esp32_user_config.h"
 #else

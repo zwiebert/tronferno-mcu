@@ -143,6 +143,7 @@ enum pass { PASS_GET_EARLIEST_TIME, PASS_FILL_EVENTS, PASS_STOP};
 
 bool 
 get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
+  precond(teu && ted);
   u8 pass, g, m;
   minutes_t earliest = MINUTES_DISABLED;
   gm_bitmask_t existing_members = {0,};
@@ -150,7 +151,6 @@ get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
   minutes_t minutes_now = tm->tm_hour * 60 + tm->tm_min;
-
 
   memset((void*)teu, 0, sizeof *teu);
   teu->next_event = MINUTES_DISABLED;

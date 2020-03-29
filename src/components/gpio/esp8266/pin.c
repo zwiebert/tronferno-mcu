@@ -12,7 +12,6 @@
 #include <gpio.h>
 
 #include "txtio/inout.h"
-#include "driver/uart.h"
 
 #include "config/config.h"
 
@@ -50,6 +49,7 @@ bool  is_gpio_number_usable(int gpio_number, bool cli) {
 
 void IRAM_ATTR mcu_put_txPin(u8 level) {
   GPIO_OUTPUT_SET(RFOUT_GPIO, level);
+  //io_putc(level ? '1' : '0');
 }
 
 u8 IRAM_ATTR mcu_get_rxPin() {
