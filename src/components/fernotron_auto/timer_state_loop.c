@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static timer_event_t teud[0];
+static timer_event_t teud[2];
 
 time_t next_event;
 
