@@ -14,12 +14,21 @@ bool timer_data_changed;
 
 
 bool  save_timer_data(timer_data_t *p, u8 g, u8 m) {
-  bool result = SAVE_TIMER_DATA_FUN(p, g, m);
+  bool result = save_timer_data_fs(p, g, m);
+#ifdef LEGACY_STORAGE_2_WRITE
+  if (!result)
+    result = save_timer_data_old(p, g, m);
+#endif
   timer_data_changed = true;
   fau_TIMER_DATA_CHANGE_cb();
   return result;
 }
 
 bool  read_timer_data(timer_data_t *p, u8 *g, u8 *m, bool wildcard) {
-  return READ_TIMER_DATA_FUN(p, g, m, wildcard);
+  bool result = read_timer_data_fs(p, g, m, wildcard);
+#ifdef LEGACY_STORAGE_2_READ
+  if (!result)
+    result = read_timer_data_old(p, g, m, wildcard);
+#endif
+  return result;
 }

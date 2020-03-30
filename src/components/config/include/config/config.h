@@ -127,10 +127,14 @@ CB_TIZO,
 #ifdef USE_NTP
   CB_NTP_SERVER,
 #endif
-#ifdef USE_NETWORK
-  CB_NETWORK_CONNECTION, CB_LAN_PHY, CB_LAN_PWR_GPIO,
-#endif
   CB_ASTRO_CORRECTION,
+#ifdef USE_NETWORK
+  CB_NETWORK_CONNECTION,
+#endif
+#ifdef USE_LAN
+  CB_LAN_PHY, CB_LAN_PWR_GPIO,
+#endif
+
 
 //-----------
   CB_size

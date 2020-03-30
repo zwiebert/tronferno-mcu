@@ -43,7 +43,7 @@ config C = {
 };
 #endif
 
-#if ENABLE_SPIFFS
+#ifndef NO_SPIFFS
 #include "config/config_spiffs.h"
 void  mcu_read_config(uint32_t mask) {
   if (!config_read()) {

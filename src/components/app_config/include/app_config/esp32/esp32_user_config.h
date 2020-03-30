@@ -16,7 +16,7 @@
 //#undef USE_NTP
 //#undef USE_WLAN
 //#undef USE_MQTT
-
+#define NO_SPIFFS
 #undef CONFIG_BLOB
 //#undef ACCESS_GPIO
 #define CONFIG_GPIO_SIZE 40
@@ -28,8 +28,6 @@
 #undef USE_LAN
 #endif
 
-#define SAVE_TIMER_DATA_FUN save_timer_data_fs
-#define READ_TIMER_DATA_FUN read_timer_data_fs
 
 #include "esp_attr.h"
 

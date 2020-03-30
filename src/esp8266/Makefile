@@ -1,5 +1,5 @@
 SRC_BASE ?= ../..
-CPPFLAGS += -DMCU_ESP8266
+CPPFLAGS += -DMCU_ESP8266 #-I app_config/proj_app_cfg.h
 
 # Main settings includes
 include	 $(SRC_BASE)/src/esp8266/settings.mk
