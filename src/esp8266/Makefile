@@ -15,10 +15,11 @@ SPI_SIZE_MAP	= 4
 
 #V=1
 # Basic project settings
-COMPSHARE = txtio net debug cli key_value_store misc misc_time userio net_mqtt net_http_server storage
+COMPSHARE = txtio net debug cli key_value_store misc misc_time userio net_mqtt net_http_server storage storage/spiffs/src
 COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app 
 MODULES	=  src/esp8266 src/esp8266/driver
 LIBS   =  gcc hal phy pp net80211 lwip wpa main crypto
+EXTRA_INCDIR +=  ./
 
 define GEN_COMPONENTS
 EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include $(SRC_BASE)/$(1)/$(2)/include/$(2)
@@ -31,8 +32,10 @@ endif
 endef
 ifneq (,$(wildcard $(SRC_BASE)/local))
 $(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,local/components-mcu/components,$(component))))
+EXTRA_INCDIR += $(SRC_BASE)/local/components-mcu/components/storage/spiffs/src
 else
 $(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,components-mcu/components,$(component))))
+EXTRA_INCDIR += $(SRC_BASE)/components-mcu/components/storage/spiffs/src
 endif
 $(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,src/components,$(component))))
 
@@ -68,23 +71,6 @@ $(LIBMIROM_A) : $(LIBM_A)
 	$(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal $(<) $(@);
 ## end libm
 
-
-## spiffs.a, spiffsirom.a
-SPIFFS_SRC_DIR := $(SRC_BASE)/spiffs/src
-SPIFFS_BUILD_DIR := $(BUILD_BASE)/spiffs/src
-
-BUILD_DIRS += $(SPIFFS_BUILD_DIR)	
-SPIFFS_A := $(SPIFFS_BUILD_DIR)/spiffs.a
-SPIFFSIROM_A := $(SPIFFS_BUILD_DIR)/spiffsirom.a
-
-SPIFFS_SRC := $(wildcard $(SPIFFS_SRC_DIR)/*.c)
-SPIFFS_OBJ := $(patsubst %.c,$(SPIFFS_BUILD_DIR)/%.o,$(subst $(SPIFFS_SRC_DIR)/,,$(SPIFFS_SRC)))
-
-EXTRA_AR += $(SPIFFSIROM_A) 
-EXTRA_INCDIR += $(SRC_BASE)/spiffs/src  $(SRC_BASE)/src/esp8266
-GEN_LIBS += $(SPIFFSIROM_A)
-CPPFLAGS += -DCONFIG_BUILD_SPIFFS
-SUBMODULES += spiffs/src
 
 pso :
 	echo $(SPIFFS_OBJ)
