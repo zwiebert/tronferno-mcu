@@ -72,13 +72,22 @@ void cfg_tz2timezone(void) {
 
 
 void read_config(u32 mask) {
+#ifdef USE_CONFIG_KVS
+  config_read_kvs(mask);
+#else
   mcu_read_config(mask);
+#endif
   fer_copyConfig();
 }
 
 void save_config(u32 mask) {
   fer_copyConfig();
+#ifdef USE_CONFIG_KVS
+  config_save_kvs(mask);
+#else
   mcu_save_config(mask);
+#endif
+
 }
 
 

@@ -16,6 +16,7 @@
 #define USE_HTTP
 #define CONFIG_BLOB
 #define CONFIG_DICT
+#define USE_CONFIG_KVS
 #define ACCESS_GPIO
 #define POSIX_TIME 1
 #define USE_ESP_GET_TIME

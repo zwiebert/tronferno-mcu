@@ -15,7 +15,7 @@ extern const char *const build_time;
 #undef USE_OTA
 #undef USE_LAN
 #undef WLAN_AP
-#undef CONFIG_DICT
+//#undef USE_CONFIG_KVS
 #undef USE_FREERTOS
 
 #undef USE_ESP_GET_TIME

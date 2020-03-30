@@ -152,10 +152,13 @@ void read_config(uint32_t mask);
 
 void config_setup(void);
 
-
-
+#ifdef USE_CONFIG_KVS
+void config_read_kvs(uint32_t mask); //IMPLEMENT_ME
+void config_save_kvs(uint32_t mask); //IMPLEMENT_ME
+#else
 void mcu_read_config(uint32_t mask); //IMPLEMENT_ME
 void mcu_save_config(uint32_t mask); //IMPLEMENT_ME
+#endif
 
 #endif /* CONFIG_H_ */
 
