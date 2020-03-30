@@ -94,6 +94,12 @@ endef
 $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
+host-test-all:
+	make -C test/host all  --no-print-directory
+
+
+
+
 ############# TCP Terminal ##############
 IPADDR ?= 192.168.1.65
 
