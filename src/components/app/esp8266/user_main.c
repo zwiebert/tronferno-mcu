@@ -38,7 +38,9 @@ static os_event_t user_procTaskQueue[user_procTaskQueueLen];
 #define io_procTaskQueueLen 1
 
 void main_setup_ip_dependent() {
-
+#ifdef USE_NTP
+  ntp_setup();
+#endif
 }
 
 static void 

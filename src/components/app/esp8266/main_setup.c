@@ -47,9 +47,6 @@ user_init() {
   print_reset_info();
 
   setup_notImplemented();
-#ifdef USE_NTP
-  ntp_setup();
-#endif
   setup_pin();
   wifistation_setup();
   tcps_startServer();
