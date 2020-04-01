@@ -1,4 +1,4 @@
-.PHONY: all tests clean_out
+.PHONY: all tests clean_out init
 
 TESTS =  test_timer_state test_alias test_timer_data test_msg_tx test_prg test_kvs test_gm 
 
@@ -10,7 +10,7 @@ make = make --no-print-dir
 
 Q:=@
 
-all: clean_out
+all: clean_out init
 	@echo "\n### Making and running tests: " $(TESTS) "\n"
 	$(Q) $(make) -B tests
 	
@@ -19,6 +19,10 @@ $(TESTS):
 
 clean_out:
 	-rm -f build/test_*.out
+init:
+	mkdir -p build
+	mkdir -p test_env
+
 	
 tests = $(addsuffix .log,$(addprefix build/,$(TESTS)))
 tests: $(tests)
