@@ -9,8 +9,9 @@
 #include "unity.h"
 
 #include <string.h>
-#include "../fer_app_cfg.h"
-#include "debug/debug.h"
+//#include "../fer_app_cfg.h"
+//#include "debug/debug.h"
+#include "misc/int_types.h"
 #include "fernotron/types.h"
 
 gm_bitmask_t Gma, Gmb, Gmc = {1,2,4,8,16,32,64,128}, *gma=&Gma, *gmb=&Gmb, *gmc=&Gmc;

@@ -5,15 +5,21 @@
  *      Author: bertw
  */
 
-#include <string.h>
-#include "key_value_store/kvs_wrapper.h"
 
-#define CFG_NAMESPACE "Tronferno"
+#ifndef MCU_ESP8266
+#define CFG_NAMESPACE "Tronferno" // XXX: should rename, but don't want to lose existing data for now
+#else
+#define CFG_NAMESPACE "tf_gmbm"   // dedicated file, so all objects are same size
+#endif
 
 #include "app_config/proj_app_cfg.h"
 #include "config/config.h"
 #include "fernotron_pos/shutter_pct.h"
 #include "debug/debug.h"
+
+
+#include <string.h>
+#include "key_value_store/kvs_wrapper.h"
 
 #define NB_SIZE 30
 #define NB_PFX "GMBM_"

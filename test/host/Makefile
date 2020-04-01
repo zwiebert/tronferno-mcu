@@ -1,19 +1,29 @@
-.PHONY: all tests
+.PHONY: all tests clean_out
 
-TESTS = test_kvs
-tests = $(addprefix build/,$(TESTS))
+TESTS =  test_timer_state test_alias test_timer_data test_msg_tx test_prg test_kvs test_gm 
 
-all:
+.PHONY: $(TESTS)
+
+make = make --no-print-dir
+
+
+
+Q:=@
+
+all: clean_out
 	@echo "\n### Making and running tests: " $(TESTS) "\n"
-	@make -B tests
+	$(Q) $(make) -B tests
+	
+$(TESTS):
+	$(make) -B $(addsuffix .log,$(addprefix build/,$@))
 
+clean_out:
+	-rm -f build/test_*.out
+	
+tests = $(addsuffix .log,$(addprefix build/,$(TESTS)))
 tests: $(tests)
-
-print:
-	echo $(tests)
-
-
-unity_inc: $(realpath ./unity/src)
+	$(Q) grep -H IGNORE build/*.log || true
+	$(Q) grep -H FAIL build/*.log || true
 
 SRC_BASE=../..
 COMP_DIR=src/components
@@ -24,11 +34,10 @@ COMPSHARE_DIR=components-mcu/components
 endif
 COMPSHARE_PATH := $(SRC_BASE)/$(COMPSHARE_DIR)
 COMP_PATH := $(SRC_BASE)/$(COMP_DIR)
+EXTRA_INCDIR = test_runner #$(COPMSHARE_PATH)/storage/spiffs/src
 
 COMPSHARE = txtio net debug cli key_value_store misc misc_time userio net_mqtt net_http_server storage storage/spiffs/src
 COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app 
-EXTRA_INCDIR = test_runner #$(COPMSHARE_PATH)/storage/spiffs/src
-
 
 define GEN_COMPONENTS
 EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include $(SRC_BASE)/$(1)/$(2)/include/$(2)
@@ -37,17 +46,29 @@ ifneq ("$(wildcard $(SRC_BASE)/$(1)/$(2)/esp8266)","")
 MODULES += $(1)/$(2)/esp8266
 endif
 endef
-
 $(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,$(COMPSHARE_DIR),$(component))))
 $(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,$(COMP_DIR),$(component))))
 
 INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
 
-build/test_%:
-	@gcc -g3 -o $@   test_runner/weak.c $^ unity/src/unity.c test_runner/test_runner.c  $(INCLUDE) -DHOST_TESTING
-	@echo "## Run test: $@\n" && $@
+build/test_%.out:
+	$(Q) gcc -g3 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm
 
 
+%.log:%.out
+	$(Q) mkdir -p test_env
+	$(Q) cd ./test_env && echo "## Run test: $<\n" && ../$< >../$@ 2>&1
+	$(Q) grep -H IGNORE $@ || true
+	$(Q) grep -H FAIL $@ || true
 
+setup=test_runner/setup.c
 ################################
-build/test_kvs: $(COMPSHARE_PATH)/key_value_store/test/test_kvs.c $(COMPSHARE_PATH)/key_value_store/esp8266/kvs_posix.c
+build/test_kvs.out:  $(addprefix $(COMPSHARE_PATH)/key_value_store/,test/test_kvs.c esp8266/kvs_posix.c)
+build/test_gm.out:   $(addprefix $(COMP_PATH)/fernotron/,test/test_gm.c gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c)
+build/test_prg.out:  $(addprefix $(COMP_PATH)/fernotron/,test/test_prg.c astro.c fer_rawmsg_build.c) $(COMPSHARE_PATH)/misc/bcd.c $(COMPSHARE_PATH)/misc/sun.c
+build/test_msg_tx.out:  $(addprefix $(COMP_PATH)/fernotron/,test/test_msg_tx.c fer_msg_tx.c fer_msg_basic.c fer_rawmsg_buffer.c fer_rawmsg_build.c astro.c) $(addprefix $(COMPSHARE_PATH)/, misc/bcd.c misc/sun.c)
+build/test_timer_data.out:   $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_data.c timer_data.c timer_data_fs.c)  $(COMPSHARE_PATH)/storage/esp32/storage.c
+build/test_timer_state.out:  $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_state.c timer_state.c timer_data.c timer_data_fs.c) $(COMP_PATH)/fernotron/astro.c $(addprefix $(COMPSHARE_PATH)/, storage/esp8266/storage.c misc/bcd.c misc/sun.c)
+build/test_alias.out:  $(addprefix $(COMP_PATH)/fernotron_alias/,test/test_alias.c pairings_kvs.c) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c misc/esp32/itoa.c)
+
+

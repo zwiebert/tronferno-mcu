@@ -56,6 +56,9 @@
 #include "app_config/esp8266/esp8266_user_config.h"
 #elif defined MCU_ESP32
 #include "app_config/esp32/esp32_user_config.h"
+#elif defined TEST_HOST
+#define IRAM_ATTR
+#undef ACCESS_GPIO
 #else
 #define IRAM_ATTR
 #error "no supported MCU"

@@ -11,17 +11,15 @@
 #include "misc/int_types.h"
 #include "debug/debug.h"
 
-#define TEST_THIS_MODULE 0
-
-#if TEST_THIS_MODULE
-#define DB(x) x
-#define DB2(x)
-#else
+#ifndef TEST_HOST
+#define printf ets_printf
 #define DB(x) do { if (C.app_verboseOutput >= vrbDebug) { x; } } while(0)
 #define DB2(x) DB(x)
+#else
+#include <stdio.h>
+#define DB(x) x
+#define DB2(x)
 #endif
-#define printf ets_printf
-
 
 
 ////////////////// private ///////////////////////////////////////////////////////////////

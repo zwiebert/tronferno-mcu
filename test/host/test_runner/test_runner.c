@@ -14,11 +14,13 @@ void unity_testcase_register(test_desc_t *desc) {
 }
 
 int main() {
+  setUp();
   for (int i = 0; i < MAX_TEST_COUNT; ++i) {
     test_desc_t *desc = &tests[i];
     if (desc->fn)
       if (TEST_PROTECT())
       (*desc->fn)();
   }
+  tearDown();
 }
 
