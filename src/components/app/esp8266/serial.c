@@ -4,6 +4,7 @@
  *  Created on: 13.09.2017
  *      Author: bertw
  */
+#include "app_config/proj_app_cfg.h"
 
 #include "user_interface.h"
 #include <os_type.h>
@@ -27,9 +28,9 @@ static int es_io_putc(char c) {
 
 #define RX_BUFSIZE 128
 static u8 buf[RX_BUFSIZE];
-static u8 head = 0, tail = 0;
+static volatile u8 head = 0, tail = 0;
 
-void rx_copy(u8 *start, u8 *end) {
+void IRAM_ATTR rx_copy(u8 *start, u8 *end) {
   while (start < end) {
     buf[tail++] = *start++;
     tail %= RX_BUFSIZE;
