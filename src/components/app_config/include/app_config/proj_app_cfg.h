@@ -29,9 +29,6 @@
 
 #define USE_FREERTOS
 
-
-#define ENABLE_SPIFFS 1
-
 #include "callbacks.h"
 
 #include "misc/int_types.h"

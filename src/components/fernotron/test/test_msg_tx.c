@@ -63,7 +63,7 @@ volatile bool ftx_messageToSend_isReady;
 volatile u16 ftx_messageToSend_wordCount;
 volatile uint32_t run_time_s_;
 volatile uint32_t run_time_ts_;
-uint32_t run_time_ts() {}
-uint32_t run_time_s() {}
+uint32_t run_time_ts() { return 0; }
+uint32_t run_time_s() { return 0; }
 void mcu_delay_us(u32 us) {}
 #endif

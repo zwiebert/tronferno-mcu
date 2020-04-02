@@ -3,6 +3,7 @@
 #include "app/fernotron.h"
 #include "misc/int_types.h"
 #include <ctype.h>
+#include <stdlib.h>
 
 config C = {
   .fer_centralUnitID = MY_FER_CENTRAL_UNIT_ID,
@@ -100,9 +101,9 @@ void read_config_item(enum configItem item) {
 }
 
 void save_config_all() {
-  save_config(~0UL);
+  save_config(CM_ALL);
 }
 
 void read_config_all() {
-  read_config(~0UL);
+  read_config(CM_ALL);
 }

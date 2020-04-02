@@ -1,6 +1,6 @@
 .PHONY: all tests clean_out init
 
-TESTS =  test_timer_state test_alias test_timer_data test_msg_tx test_prg test_kvs test_gm 
+TESTS =  test_config  test_timer_state test_alias test_timer_data test_msg_tx test_prg test_kvs test_gm 
 
 .PHONY: $(TESTS)
 
@@ -9,6 +9,7 @@ make = make --no-print-dir
 
 
 Q:=@
+grep_results := grep -H -e IGNORE -e FAIL -e Aborted 
 
 all: clean_out init
 	@echo "\n### Making and running tests: " $(TESTS) "\n"
@@ -19,6 +20,7 @@ $(TESTS):
 
 clean_out:
 	-rm -f build/test_*.out
+	-rm -f test_env/*
 init:
 	mkdir -p build
 	mkdir -p test_env
@@ -26,8 +28,7 @@ init:
 	
 tests = $(addsuffix .log,$(addprefix build/,$(TESTS)))
 tests: $(tests)
-	$(Q) grep -H IGNORE build/*.log || true
-	$(Q) grep -H FAIL build/*.log || true
+	$(Q) $(grep_results) build/*.log  || true
 
 SRC_BASE=../..
 COMP_DIR=src/components
@@ -56,17 +57,18 @@ $(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,$(COMP_DIR),$(com
 INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
 
 build/test_%.out:
-	$(Q) gcc -g3 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm
+	$(Q) gcc -g3 -Wall -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm
 
 
 %.log:%.out
 	$(Q) mkdir -p test_env
-	$(Q) cd ./test_env && echo "## Run test: $<\n" && ../$< >../$@ 2>&1
-	$(Q) grep -H IGNORE $@ || true
-	$(Q) grep -H FAIL $@ || true
+	$(Q) cd ./test_env && echo "** Run test: $<\n" && ../$< >../$@ 2>&1 || ($(grep_results) ../$@ && false)
+	$(Q) $(grep_results) $@ || true
+
 
 setup=test_runner/setup.c
 ################################
+build/test_config.out:   $(addprefix $(COMP_PATH)/config/,test/test_config.c config.c config_kvs.c config_stor.c esp8266/config.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c storage/esp8266/storage.c misc/esp32/itoa.c)
 build/test_kvs.out:  $(addprefix $(COMPSHARE_PATH)/key_value_store/,test/test_kvs.c esp8266/kvs_posix.c)
 build/test_gm.out:   $(addprefix $(COMP_PATH)/fernotron/,test/test_gm.c gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c)
 build/test_prg.out:  $(addprefix $(COMP_PATH)/fernotron/,test/test_prg.c astro.c fer_rawmsg_build.c) $(COMPSHARE_PATH)/misc/bcd.c $(COMPSHARE_PATH)/misc/sun.c

@@ -16,8 +16,11 @@
 #include "misc/int_types.h"
 
 #define D(x) 
-
+#ifdef MCU_ESP32
 #define CFG_NAMESPACE "Tronferno"
+#else
+#define CFG_NAMESPACE "config"
+#endif
 #define CFG_KEY "global.C"
 
 #ifdef CONFIG_DICT
@@ -68,7 +71,9 @@ static void rw_config(void *handle, u32 mask, bool write) {
   if (!write)
     cfg_tz2timezone();
 #endif
+#ifdef ACCESS_GPIO
   nvs_s(CB_GPIO, "C_GPIO", C.gpio);
+#endif
 #ifdef USE_MQTT
   nvs_s(CB_MQTT_URL, "C_MQTT_URL", C.mqtt_url);
   nvs_s(CB_MQTT_USER, "C_MQTT_USER", C.mqtt_user);

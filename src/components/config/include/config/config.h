@@ -140,6 +140,9 @@ CB_TIZO,
   CB_size
 };
 
+//#define CM_ALL ((uint32_t)((1UL<<CB_size)-1))
+#define CM_ALL ((uint32_t)~0UL)
+
 // save C to persistent storage
 void save_config_all();
 void save_config_item(enum configItem item);
