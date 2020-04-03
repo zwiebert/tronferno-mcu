@@ -11,6 +11,18 @@
 #include "app_config/proj_app_cfg.h"
 #include "txtio/inout.h"
 #include "fernotron/astro.h"
+#ifdef USE_MQTT
+#include "net/mqtt/mqtt.h"
+#endif
+#ifdef USE_WLAN
+#include "net/wifistation.h"
+#endif
+#ifdef USE_HTTP
+#include "net/http/server/http_server.h"
+#endif
+#ifdef USE_NTP
+#include "net/ntp.h"
+#endif
 
 #include "net/ethernet.h"
 
@@ -32,10 +44,6 @@ enum rtclock {
   rtcNone, rtcAvrTime
 };
 
-enum verbosity {
-  vrbNone, vrb1, vrb2, vrb3, vrb4, vrbDebug
-};
-
 #ifdef USE_NETWORK
 enum nwConnection {
   nwNone, nwWlanSta, nwWlanAp, nwLan, nwLEN,
@@ -45,6 +53,7 @@ enum nwConnection {
 #ifdef POSIX_TIME
 void cfg_tz2timezone(void);
 #endif
+
 
 typedef struct {
   uint32_t fer_centralUnitID, mcu_serialBaud;
@@ -62,8 +71,7 @@ typedef struct {
   uint32_t fer_usedMembers; // each of the nibbles 1-7 stands for a group. nibble 1 == group 1. nibble 0 = number of used Groups (stored for the front-end, not used here on the MCU)
 
 #ifdef USE_WLAN
-  char wifi_SSID[32];
-  char wifi_password[64];
+  struct cfg_wlan wifi;
 #endif
   char app_configPassword[16];
   char app_expertPassword[16];
@@ -74,30 +82,31 @@ typedef struct {
   char geo_tz[32];
 #endif
 #ifdef USE_MQTT
-  char mqtt_url[64];
-  char mqtt_user[16];
-  char mqtt_password[31];
-  int8_t mqtt_enable;
+  struct cfg_mqtt mqtt;
 #endif
 #ifdef USE_HTTP
-  char http_user[16];
-  char http_password[31];
-  int8_t http_enable;
+  struct cfg_http http;
 #endif
 #ifdef USE_NTP
-  char ntp_server[64];
+  struct cfg_ntp ntp;
 #endif
 #ifdef USE_NETWORK
   enum nwConnection network;
 #endif
 #ifdef USE_LAN
-  enum lanPhy lan_phy;
-  int8_t lan_pwr_gpio;
+  struct cfg_lan lan;
 #endif
   enum astroCorrection astroCorrection;
 } config;
 
 extern config C;
+
+#define cfg_getWlan() &C.wifi
+#define cfg_getLan() &C.lan
+#define cfg_getMqttClient() &C.mqtt
+#define cfg_getHttpServer() &C.http
+#define cfg_getNtpClient() &C.ntp
+#define cfg_getTxtio() (struct cfg_txtio *)&C.app_verboseOutput
 
 // CONFIG_IGORE_MASK holds bits to always ignore when read/save config
 // so these options will not be persistent during restart

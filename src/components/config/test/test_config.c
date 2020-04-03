@@ -37,13 +37,13 @@ static bool save_restore_item(enum configItem item, int count) {
      char buf[80];
      strncpy(buf, val, random);
      buf[random] = '\0';
-     strcpy(C.wifi_SSID, buf);
+     strcpy(C.wifi.SSID, buf);
      save_config_item(item);
-     strcpy (C.wifi_SSID, "------");
+     strcpy (C.wifi.SSID, "------");
      read_config_item(item);
      char msg_buf[80];
      make_msg(msg_buf, count);
-     TEST_ASSERT_EQUAL_STRING_MESSAGE(buf, C.wifi_SSID, msg_buf);
+     TEST_ASSERT_EQUAL_STRING_MESSAGE(buf, C.wifi.SSID, msg_buf);
    }
   break;
   case CB_WIFI_PASSWD:
@@ -52,13 +52,13 @@ static bool save_restore_item(enum configItem item, int count) {
      char buf[80];
      strncpy(buf, val, random);
      buf[random] = '\0';
-     strcpy(C.wifi_password, buf);
+     strcpy(C.wifi.password, buf);
      save_config_item(item);
-     strcpy (C.wifi_password, "------");
+     strcpy (C.wifi.password, "------");
      read_config_item(item);
      char msg_buf[80];
      make_msg(msg_buf, count);
-     TEST_ASSERT_EQUAL_STRING_MESSAGE(buf, C.wifi_password, msg_buf);
+     TEST_ASSERT_EQUAL_STRING_MESSAGE(buf, C.wifi.password, msg_buf);
    }
   break;
   default:

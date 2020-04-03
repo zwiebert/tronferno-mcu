@@ -18,8 +18,7 @@ config C = {
   vrbNone,  //verboseOutput
   .fer_usedMembers = MY_FER_GM_USE,
 #ifdef USE_WLAN
-  .wifi_SSID = MY_WIFI_SSID,
-  .wifi_password = MY_WIFI_PASSWORD,
+    .wifi = { .SSID = MY_WIFI_SSID, .password = MY_WIFI_PASSWORD, },
 #endif
   .app_configPassword = MY_APP_CONFIG_PASSWORD,
   .app_expertPassword = MY_APP_EXPERT_PASSWORD,
@@ -30,25 +29,19 @@ config C = {
   .geo_tz = MY_GEO_TZ,
 #endif
 #ifdef USE_MQTT
-  .mqtt_url = MY_MQTT_URL,
-  .mqtt_user = MY_MQTT_USER,
-  .mqtt_password = MY_MQTT_PASSWORD,
-  MY_MQTT_ENABLE,
+    .mqtt = { .url = MY_MQTT_URL, .user = MY_MQTT_USER, .password = MY_MQTT_PASSWORD, .enable = MY_MQTT_ENABLE, },
 #endif
 #ifdef USE_HTTP
-  .http_user = MY_HTTP_USER,
-  .http_password = MY_HTTP_PASSWORD,
-  .http_enable = MY_HTTP_ENABLE,
+    .http = { .user = MY_HTTP_USER, .password = MY_HTTP_PASSWORD, .enable = MY_HTTP_ENABLE, },
 #endif
 #ifdef USE_NTP
-  .ntp_server = MY_NTP_SERVER,
+  .ntp = { .server = MY_NTP_SERVER },
 #endif
 #ifdef USE_NETWORK
   .network = MY_NETWORK_CONNECTION,
 #endif
 #ifdef USE_LAN
-  .lan_phy = MY_LAN_PHY,
-  .lan_pwr_gpio = MY_LAN_PWR_GPIO,
+    .lan = { .phy = MY_LAN_PHY, .pwr_gpio = MY_LAN_PWR_GPIO, },
 #endif
   .astroCorrection = acAverage,
 };

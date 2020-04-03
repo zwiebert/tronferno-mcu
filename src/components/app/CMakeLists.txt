@@ -14,7 +14,7 @@ idf_component_register(
     INCLUDE_DIRS "./include" ../.. 
     PRIV_INCLUDE_DIRS "./include/app" "../../esp32" 
     REQUIRES userio main 
-    PRIV_REQUIRES fernotron gpio
+    PRIV_REQUIRES fernotron gpio net
                   esp_https_ota
     EMBED_TXTFILES ./esp32/ca_cert.pem
 )

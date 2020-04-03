@@ -32,7 +32,7 @@ void unity_suiteSetUp() {
 #endif
   mutex_setup();
   kvs_setup();
-  txtio_setup();
+  txtio_setup(cfg_getTxtio());
   stor_setup();
   ferPos_init();
   astro_init_and_reinit();

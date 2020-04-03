@@ -13,6 +13,6 @@ endif()
 idf_component_register(SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
     PRIV_INCLUDE_DIRS "./include/config" 
-    REQUIRES fernotron app txtio
+    REQUIRES fernotron app txtio net_mqtt
     PRIV_REQUIRES key_value_store
     )

@@ -135,10 +135,10 @@ void  so_output_message(so_msg_t mt, void *arg) {
 
 #ifdef USE_LAN
   case SO_CFG_LAN_PHY:
-    so_out_x_reply_entry_s(mt, cfg_args_lanPhy[C.lan_phy]);
+    so_out_x_reply_entry_s(mt, cfg_args_lanPhy[C.lan.phy]);
     break;
   case SO_CFG_LAN_PWR_GPIO:
-    so_out_x_reply_entry_d(mt, C.lan_pwr_gpio);
+    so_out_x_reply_entry_d(mt, C.lan.pwr_gpio);
     break;
 #else
   case SO_CFG_LAN_PHY:
@@ -147,29 +147,29 @@ void  so_output_message(so_msg_t mt, void *arg) {
 #endif
 #ifdef USE_WLAN
   case SO_CFG_WLAN_SSID:
-    so_out_x_reply_entry_s(mt, C.wifi_SSID);
+    so_out_x_reply_entry_s(mt, C.wifi.SSID);
     break;
   case SO_CFG_WLAN_PASSWORD:
-    so_out_x_reply_entry_s(mt, *C.wifi_password ? "*" : "");
+    so_out_x_reply_entry_s(mt, *C.wifi.password ? "*" : "");
     break;
 #endif
 #ifdef USE_NTP
   case SO_CFG_NTP_SERVER:
-    so_out_x_reply_entry_s(mt, C.ntp_server);
+    so_out_x_reply_entry_s(mt, C.ntp.server);
     break;
 #endif
 #ifdef USE_MQTT
   case SO_CFG_MQTT_ENABLE:
-    so_out_x_reply_entry_d(mt, C.mqtt_enable ? 1 : 0);
+    so_out_x_reply_entry_d(mt, C.mqtt.enable ? 1 : 0);
     break;
   case SO_CFG_MQTT_URL:
-    so_out_x_reply_entry_s(mt, C.mqtt_url);
+    so_out_x_reply_entry_s(mt, C.mqtt.url);
     break;
   case SO_CFG_MQTT_USER:
-    so_out_x_reply_entry_s(mt, C.mqtt_user);
+    so_out_x_reply_entry_s(mt, C.mqtt.user);
     break;
   case SO_CFG_MQTT_PASSWORD:
-    so_out_x_reply_entry_s(mt, *C.mqtt_password ? "*" : "");
+    so_out_x_reply_entry_s(mt, *C.mqtt.password ? "*" : "");
     break;
 #else
   case SO_CFG_MQTT_ENABLE:
@@ -181,13 +181,13 @@ void  so_output_message(so_msg_t mt, void *arg) {
 
 #ifdef USE_HTTP
   case SO_CFG_HTTP_ENABLE:
-    so_out_x_reply_entry_d(mt, C.http_enable ? 1 : 0);
+    so_out_x_reply_entry_d(mt, C.http.enable ? 1 : 0);
     break;
   case SO_CFG_HTTP_USER:
-    so_out_x_reply_entry_s(mt, C.http_user);
+    so_out_x_reply_entry_s(mt, C.http.user);
     break;
   case SO_CFG_HTTP_PASSWORD:
-    so_out_x_reply_entry_s(mt, *C.http_password ? "*" : "");
+    so_out_x_reply_entry_s(mt, *C.http.password ? "*" : "");
     break;
 #else
   case SO_CFG_HTTP_ENABLE:

@@ -21,7 +21,7 @@
 
 extern int ets_uart_printf(const char *fmt, ...);
 
-static int es_io_putc(char c) {
+int es_io_putc(char c) {
   ets_uart_printf("%c", c);
   return 1;
 }
@@ -37,7 +37,7 @@ void IRAM_ATTR rx_copy(u8 *start, u8 *end) {
   }
 }
 
-static int  es_io_getc(void) {
+int  es_io_getc(void) {
   int result = -1;
 
   if (head != tail) {
@@ -52,7 +52,4 @@ void
 setup_serial(u32 baudrate) {
   // Configure the UART
   uart_init(baudrate, baudrate); // FIXME: the baud_rate parameter has no effect
-  io_putc_fun = es_io_putc;
-  io_getc_fun = es_io_getc;
-  io_printf_fun = ets_uart_printf;
 }

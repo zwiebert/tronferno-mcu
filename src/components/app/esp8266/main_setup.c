@@ -13,15 +13,16 @@
 #include "fernotron/callbacks.h"
 #include "app/common.h"
 #include "config/config.h"
+#include "net/wifistation.h"
+#include "net/ntp.h"
+#include "config/config.h"
 
 extern void intTimer_setup(void);
 extern void setup_serial(u32 baudrate);
 extern void setup_notImplemented(void);
 extern void setup_pin(void);
-void wifistation_setup(void);
 void setup_dataFlash(void);
 void setup_dataFlash2(void);
-void ntp_setup(void);
 void setup_spiffs(void);
 void task_setup(void);
 
@@ -31,6 +32,7 @@ void
 user_init() {
   // load config and setup serial interface
   setup_serial(115200);
+  txtio_setup(cfg_getTxtio());
   io_puts("\r\n\r\n");
   io_puts("\r\n\r\n");
   io_puts("test io_puts...\n");
@@ -48,7 +50,7 @@ user_init() {
 
   setup_notImplemented();
   setup_pin();
-  wifistation_setup();
+  wifistation_setup(cfg_getWlan());
   tcps_startServer();
   setup_udp();
   main_setup();
