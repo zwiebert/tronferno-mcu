@@ -17,6 +17,7 @@
 #include "cli/mutex.h"
 #include "userio/status_json.h"
 #include "userio_app/status_output.h"
+#include "config/config.h"
 
 #define TOPIC_ROOT "tfmcu/"
 #define TOPIC_CLI TOPIC_ROOT "cli"
@@ -145,8 +146,8 @@ void io_mqttApp_published(int msg_id) {
 #endif
 
 
-void io_mqttApp_setup() {
-  io_mqtt_setup(CONFIG_MQTT_CLIENT_ID);
+void io_mqttApp_setup(struct cfg_mqtt *cfg_mqtt) {
+  io_mqtt_setup(CONFIG_MQTT_CLIENT_ID, cfg_mqtt);
 }
 
 #endif // USE_MQTT

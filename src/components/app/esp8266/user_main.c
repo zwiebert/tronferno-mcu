@@ -39,7 +39,7 @@ static os_event_t user_procTaskQueue[user_procTaskQueueLen];
 
 void main_setup_ip_dependent() {
 #ifdef USE_NTP
-  ntp_setup();
+  ntp_setup(cfg_getNtpClient());
 #endif
 }
 
