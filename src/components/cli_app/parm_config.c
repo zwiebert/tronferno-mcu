@@ -114,13 +114,17 @@ const char *const *cfg_args[SO_CFG_size] = {
 
 };
 
-
+#define set_optInt(cfg, new, cb) ((cfg != new) && ((cfg = new), save_config_item(cb), 1))
+#define set_optStr(cfg, new, cb) ((strcmp(cfg,new)) && ((strncpy(cfg,new,sizeof(cfg)), save_config_item(cb), 1)))
+#define isValid_optStr(cfg, new) (strlen(new) < sizeof(cfg))
 
 int 
 process_parmConfig(clpar p[], int len) {
   int arg_idx;
   int errors = 0;
   so_msg_t so_key = SO_NONE;
+
+  bool hasChanged_mqttClient = false, hasChanged_httpServer = false;
 
   so_output_message(SO_CFG_begin, NULL);
 
@@ -282,67 +286,63 @@ process_parmConfig(clpar p[], int len) {
 
 #ifdef USE_MQTT
         case SO_CFG_MQTT_ENABLE: {
-          C.mqtt.enable = (*val == '1') ? 1 : 0;
-          io_mqtt_enable(C.mqtt.enable);
-          save_config_item(CB_MQTT_ENABLE);
+          if (set_optInt(C.mqtt.enable, (*val == '1'), CB_MQTT_ENABLE))
+            hasChanged_mqttClient = true;
         }
-        break;
+          break;
 
         case SO_CFG_MQTT_PASSWORD: {
-          if (strlen(val) < sizeof (C.mqtt.password)) {
-            strcpy (C.mqtt.password, val);
-            save_config_item(CB_MQTT_PASSWD);
+          if (isValid_optStr(C.mqtt.password, val)) {
+            if (set_optStr(C.mqtt.password, val, CB_MQTT_PASSWD))
+              hasChanged_mqttClient = true;
           } else {
             cli_replyFailure();
           }
-
         }
-        break;
+          break;
 
         case SO_CFG_MQTT_USER: {
-          if (strlen(val) < sizeof (C.mqtt.user)) {
-            strcpy (C.mqtt.user, val);
-            save_config_item(CB_MQTT_USER);
+          if (isValid_optStr(C.mqtt.user, val)) {
+            if (set_optStr(C.mqtt.user, val, CB_MQTT_USER))
+              hasChanged_mqttClient = true;
           } else {
             cli_replyFailure();
           }
         }
-        break;
+          break;
 
         case SO_CFG_MQTT_URL: {
-          if (strlen(val) < sizeof (C.mqtt.url)) {
-            strcpy (C.mqtt.url, val);
-            save_config_item(CB_MQTT_URL);
+          if (isValid_optStr(C.mqtt.url, val)) {
+            if (set_optStr(C.mqtt.url, val, CB_MQTT_URL))
+              hasChanged_mqttClient = true;
           } else {
             cli_replyFailure();
           }
         }
-        break;
+          break;
 #endif //USE_MQTT
 
 #ifdef USE_HTTP
         case SO_CFG_HTTP_ENABLE: {
-          C.http.enable = (*val == '1') ? 1 : 0;
-          hts_enable_http_server(C.http.enable);
-          save_config_item(CB_HTTP_ENABLE);
+          if (set_optInt(C.http.enable, (*val == '1'), CB_HTTP_ENABLE))
+            hasChanged_httpServer = true;
         }
         break;
 
         case SO_CFG_HTTP_PASSWORD: {
-          if (strlen(val) < sizeof (C.http.password)) {
-            strcpy (C.http.password, val);
-            save_config_item(CB_HTTP_PASSWD);
+          if (isValid_optStr(C.http.password, val)) {
+            if (set_optStr(C.http.password, val, CB_HTTP_PASSWD))
+              hasChanged_httpServer = true;
           } else {
             cli_replyFailure();
           }
-
         }
         break;
 
         case SO_CFG_HTTP_USER: {
-          if (strlen(val) < sizeof (C.http.user)) {
-            strcpy (C.http.user, val);
-            save_config_item(CB_HTTP_USER);
+          if (isValid_optStr(C.http.user, val)) {
+            if (set_optStr(C.http.user, val, CB_HTTP_USER))
+              hasChanged_httpServer = true;
           } else {
             cli_replyFailure();
           }
@@ -498,7 +498,16 @@ process_parmConfig(clpar p[], int len) {
       cli_warning_optionUnknown(key);
     }
   }
-
+#ifdef USE_MQTT
+  if (hasChanged_mqttClient) {
+    io_mqttApp_setup(cfg_getMqttClient());
+  }
+#endif
+#ifdef USE_HTTP
+  if (hasChanged_httpServer) {
+    hts_setup(cfg_getHttpServer());
+  }
+#endif
   so_output_message(SO_CFG_end, NULL);
   cli_replyResult(errors==0);
   return 0;
