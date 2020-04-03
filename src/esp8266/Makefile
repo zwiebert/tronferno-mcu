@@ -18,11 +18,7 @@ SPI_SIZE_MAP	= 4
 
 # components, modules, libs
 COMP_DIR=src/components
-ifneq (,$(wildcard $(SRC_BASE)/../components-mcu))
-COMPSHARE_DIR=../components-mcu/components
-else
 COMPSHARE_DIR=components-mcu/components
-endif
 COMPSHARE_PATH := $(SRC_BASE)/$(COMPSHARE_DIR)
 COMP_PATH := $(SRC_BASE)/$(COMP_DIR)
 

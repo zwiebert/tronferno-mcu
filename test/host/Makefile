@@ -32,11 +32,7 @@ tests: $(tests)
 
 SRC_BASE=../..
 COMP_DIR=src/components
-ifneq (,$(wildcard $(SRC_BASE)/local))
-COMPSHARE_DIR=local/components-mcu/components
-else
 COMPSHARE_DIR=components-mcu/components
-endif
 COMPSHARE_PATH := $(SRC_BASE)/$(COMPSHARE_DIR)
 COMP_PATH := $(SRC_BASE)/$(COMP_DIR)
 EXTRA_INCDIR = test_runner #$(COPMSHARE_PATH)/storage/spiffs/src
