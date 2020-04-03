@@ -162,7 +162,7 @@ void mcu_init() {
 #ifdef USE_WLAN_AP
   case nwWlanAp:
     esp_netif_init();
-    wifiAp_setup("tronferno", "tronferno");
+    wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
     break;
 #endif
 #ifdef USE_LAN

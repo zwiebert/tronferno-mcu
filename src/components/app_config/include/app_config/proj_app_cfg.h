@@ -46,7 +46,8 @@
 #define LOOP_PERIODIC_INTERVAL_MS 100
 #define LOOP_INTERVAL_MS 25
 
-
+#define WIFI_AP_SSID "tronferno"
+#define WIFI_AP_PASSWD "tronferno"
 
 
 #if defined MCU_ESP8266
