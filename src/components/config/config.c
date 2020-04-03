@@ -3,6 +3,7 @@
 #include "app/fernotron.h"
 #include "misc/int_types.h"
 #include <ctype.h>
+#include <stdlib.h>
 
 config C = {
   .fer_centralUnitID = MY_FER_CENTRAL_UNIT_ID,
@@ -72,13 +73,22 @@ void cfg_tz2timezone(void) {
 
 
 void read_config(u32 mask) {
+#ifdef USE_CONFIG_KVS
+  config_read_kvs(mask);
+#else
   mcu_read_config(mask);
+#endif
   fer_copyConfig();
 }
 
 void save_config(u32 mask) {
   fer_copyConfig();
+#ifdef USE_CONFIG_KVS
+  config_save_kvs(mask);
+#else
   mcu_save_config(mask);
+#endif
+
 }
 
 
@@ -91,9 +101,9 @@ void read_config_item(enum configItem item) {
 }
 
 void save_config_all() {
-  save_config(~0UL);
+  save_config(CM_ALL);
 }
 
 void read_config_all() {
-  read_config(~0UL);
+  read_config(CM_ALL);
 }

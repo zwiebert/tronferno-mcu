@@ -1,3 +1,6 @@
 [submodule "components-mcu"]
 	path = components-mcu
 	url = https://github.com/zwiebert/components-mcu.git
+[submodule "test/unity"]
+	path = test/host/unity
+	url = https://github.com/ThrowTheSwitch/Unity.git

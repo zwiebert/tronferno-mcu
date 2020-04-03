@@ -64,3 +64,10 @@ TEST_CASE("pair multiple members", "[fernotron_alias]")
 {
   test_pair_multiple_members();
 }
+
+
+#ifdef TEST_HOST
+typedef int so_msg_t;
+void  so_output_message(so_msg_t mt, void *arg) {}
+#endif
+

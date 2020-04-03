@@ -189,6 +189,8 @@ AR		:= xtensa-lx106-elf-ar
 LD		:= xtensa-lx106-elf-gcc
 OBJCOPY		:= xtensa-lx106-elf-objcopy
 OBJDUMP		:= xtensa-lx106-elf-objdump
+SIZE        := xtensa-lx106-elf-size
+NM        := xtensa-lx106-elf-nm
 
 SRC_DIR		:= $(addprefix $(SRC_BASE)/,$(MODULES))
 BUILD_DIRS	+= $(addprefix $(BUILD_BASE)/,$(MODULES))
@@ -274,6 +276,8 @@ $(TARGET_OUT): $(APP_AR_IROM) $(GEN_LIBS)
 	$(Q) $(OBJCOPY) --only-section .irom0.text -O binary $@ eagle.app.v6.irom0text.bin
 	$(vecho) "objcopy done"
 	$(vecho) "Run gen_appbin"
+	#$(NM) --print-size --size-sort --radix=d $@
+	$(SIZE) -A -d $@
 ifeq ($(app), 0)
 	$(Q) python $(SDK_TOOLS)/gen_appbin.py $@ 0 $(mode) $(freqdiv) $(size_map) $(app)
 	$(Q) mv eagle.app.flash.bin $(FW_BASE)/eagle.flash.bin

@@ -7,7 +7,7 @@
 
 #include "app_config/proj_app_cfg.h"
 
-#if ENABLE_SPIFFS
+#ifndef NO_SPIFFS
 
 #include "config_spiffs.h"
 

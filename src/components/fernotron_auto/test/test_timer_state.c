@@ -4,7 +4,6 @@
  *  Created on: 10.03.2020
  *      Author: bertw
  */
-
 #include "unity.h"
 #include "fernotron_auto/timer_data.h"
 #include "fernotron_auto/timer_state.h"
@@ -22,6 +21,8 @@ static void setup_timer_data() {
   save_timer_data(&t2, 1, 2);
 
 }
+
+
 
 static int t2m(int hour, int minute) {
   return hour * 60 + minute;
@@ -161,3 +162,7 @@ TEST_CASE("calculate timer minutes", "[fernotron_auto]") {
   astro_init_and_reinit();
   test_timer_minutes();
 }
+
+#ifdef TEST_HOST
+gm_bitmask_t manual_bits;
+#endif

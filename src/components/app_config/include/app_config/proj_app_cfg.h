@@ -16,6 +16,7 @@
 #define USE_HTTP
 #define CONFIG_BLOB
 #define CONFIG_DICT
+#define USE_CONFIG_KVS
 #define ACCESS_GPIO
 #define POSIX_TIME 1
 #define USE_ESP_GET_TIME
@@ -27,9 +28,6 @@
 #define USE_OTA
 
 #define USE_FREERTOS
-
-
-
 
 #include "callbacks.h"
 
@@ -55,6 +53,9 @@
 #include "app_config/esp8266/esp8266_user_config.h"
 #elif defined MCU_ESP32
 #include "app_config/esp32/esp32_user_config.h"
+#elif defined TEST_HOST
+#define IRAM_ATTR
+#undef ACCESS_GPIO
 #else
 #define IRAM_ATTR
 #error "no supported MCU"

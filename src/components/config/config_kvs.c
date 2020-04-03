@@ -16,8 +16,11 @@
 #include "misc/int_types.h"
 
 #define D(x) 
-
+#ifdef MCU_ESP32
 #define CFG_NAMESPACE "Tronferno"
+#else
+#define CFG_NAMESPACE "config"
+#endif
 #define CFG_KEY "global.C"
 
 #ifdef CONFIG_DICT
@@ -61,13 +64,16 @@ static void rw_config(void *handle, u32 mask, bool write) {
   nvs_b(CB_LONGITUDE, "C_LONGITUDE", C.geo_longitude);
   nvs_b(CB_LATITUDE, "C_LATITUDE", C.geo_latitude);
 #ifndef POSIX_TIME
-    nvs_s(CB_TIZO, "C_TIZO", C.geo_timezone);
+    nvs_b(CB_TIZO, "C_TIZO", C.geo_timezone);
+    nvs_i8(CB_DST, "C_DST", C.geo_dST);
 #else
   nvs_s(CB_TZ, "C_TZ", C.geo_tz);
   if (!write)
     cfg_tz2timezone();
 #endif
+#ifdef ACCESS_GPIO
   nvs_s(CB_GPIO, "C_GPIO", C.gpio);
+#endif
 #ifdef USE_MQTT
   nvs_s(CB_MQTT_URL, "C_MQTT_URL", C.mqtt_url);
   nvs_s(CB_MQTT_USER, "C_MQTT_USER", C.mqtt_user);
@@ -98,7 +104,7 @@ static void rw_config(void *handle, u32 mask, bool write) {
 
 
 
-void mcu_read_config(u32 mask) {
+void config_read_kvs(u32 mask) {
  kvshT handle = kvs_open(CFG_NAMESPACE, kvs_READ);
  if (handle) {
    rw_config(handle, mask, false);
@@ -106,7 +112,7 @@ void mcu_read_config(u32 mask) {
  }
 }
 
-void mcu_save_config(u32 mask) {
+void config_save_kvs(u32 mask) {
   kvshT handle = kvs_open(CFG_NAMESPACE, kvs_WRITE);
 
   if (handle) {

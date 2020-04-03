@@ -8,6 +8,7 @@
 #include <fernotron/fer_msg_plain.h>
 #include <stdlib.h>
 #include <math.h>
+#include "stdbool.h"
 
 #include "fer_app_cfg.h"
 

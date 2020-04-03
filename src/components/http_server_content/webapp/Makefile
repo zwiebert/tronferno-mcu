@@ -1,7 +1,7 @@
 all: tfmcu.html tfmcu.js
 
 HTMLMIN ?= ~/.local/bin/htmlmin
-JSMIN ?= python -m jsmin
+JSMIN ?= /usr/bin/python -m jsmin
 
 SED_OPTS_HTML =  -e 's/tfmcu_dev.js/\/tfmcu.js/'
 SED_OPTS_JS =

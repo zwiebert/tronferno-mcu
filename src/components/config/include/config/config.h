@@ -127,14 +127,21 @@ CB_TIZO,
 #ifdef USE_NTP
   CB_NTP_SERVER,
 #endif
-#ifdef USE_NETWORK
-  CB_NETWORK_CONNECTION, CB_LAN_PHY, CB_LAN_PWR_GPIO,
-#endif
   CB_ASTRO_CORRECTION,
+#ifdef USE_NETWORK
+  CB_NETWORK_CONNECTION,
+#endif
+#ifdef USE_LAN
+  CB_LAN_PHY, CB_LAN_PWR_GPIO,
+#endif
+
 
 //-----------
   CB_size
 };
+
+//#define CM_ALL ((uint32_t)((1UL<<CB_size)-1))
+#define CM_ALL ((uint32_t)~0UL)
 
 // save C to persistent storage
 void save_config_all();
@@ -148,10 +155,13 @@ void read_config(uint32_t mask);
 
 void config_setup(void);
 
-
-
+#ifdef USE_CONFIG_KVS
+void config_read_kvs(uint32_t mask); //IMPLEMENT_ME
+void config_save_kvs(uint32_t mask); //IMPLEMENT_ME
+#else
 void mcu_read_config(uint32_t mask); //IMPLEMENT_ME
 void mcu_save_config(uint32_t mask); //IMPLEMENT_ME
+#endif
 
 #endif /* CONFIG_H_ */
 

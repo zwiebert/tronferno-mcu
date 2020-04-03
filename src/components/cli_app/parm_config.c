@@ -192,9 +192,10 @@ process_parmConfig(clpar p[], int len) {
         break;
 #ifdef USE_NETWORK
         case SO_CFG_NETWORK: {
+          int i;
           NODEFAULT();
           bool success = false;
-          for (int i=0; i < nwLEN; ++i) {
+          for (i=0; i < nwLEN; ++i) {
 #ifndef USE_LAN
             if (i == nwLan)  {
               continue;

@@ -1,5 +1,5 @@
 SRC_BASE ?= ../..
-CPPFLAGS += -DMCU_ESP8266
+CPPFLAGS += -DMCU_ESP8266 #-I app_config/proj_app_cfg.h
 
 # Main settings includes
 include	 $(SRC_BASE)/src/esp8266/settings.mk
@@ -15,28 +15,36 @@ SPI_SIZE_MAP	= 4
 
 #V=1
 # Basic project settings
-COMPSHARE = txtio net debug cli key_value_store misc misc_time userio net_mqtt net_http_server storage
+
+# components, modules, libs
+COMP_DIR=src/components
+ifneq (,$(wildcard $(SRC_BASE)/local))
+COMPSHARE_DIR=local/components-mcu/components
+else
+COMPSHARE_DIR=components-mcu/components
+endif
+COMPSHARE_PATH := $(SRC_BASE)/$(COMPSHARE_DIR)
+COMP_PATH := $(SRC_BASE)/$(COMP_DIR)
+
+COMPSHARE = txtio net debug cli key_value_store misc misc_time userio net_mqtt net_http_server storage storage/spiffs/src
 COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app 
-MODULES	=  src/esp8266 src/esp8266/driver
+MODULES	=  src/esp8266 src/esp8266/driver src/lib/time
 LIBS   =  gcc hal phy pp net80211 lwip wpa main crypto
+EXTRA_INCDIR +=  . $(COMPSHARE_PATH)/storage/spiffs/src $(SRC_BASE)/src/lib/time
+
 
 define GEN_COMPONENTS
 EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include $(SRC_BASE)/$(1)/$(2)/include/$(2)
 MODULES += $(1)/$(2)
-
 ifneq ("$(wildcard $(SRC_BASE)/$(1)/$(2)/esp8266)","")
 MODULES += $(1)/$(2)/esp8266
 endif
-
 endef
-ifneq (,$(wildcard $(SRC_BASE)/local))
-$(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,local/components-mcu/components,$(component))))
-else
-$(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,components-mcu/components,$(component))))
-endif
-$(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,src/components,$(component))))
+$(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,$(COMPSHARE_DIR),$(component))))
+$(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,$(COMP_DIR),$(component))))
 
-ifeq (1,1)
+
+ifeq (1,0)
 ## libc, libcirom
 LIBC_A := $(SDK_BASE)/lib/libc.a
 LIBCIROM_A := $(BUILD_BASE)/libcirom.a
@@ -67,59 +75,6 @@ endif
 $(LIBMIROM_A) : $(LIBM_A)
 	$(OBJCOPY) --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal $(<) $(@);
 ## end libm
-
-
-## spiffs.a, spiffsirom.a
-SPIFFS_SRC_DIR := $(SRC_BASE)/spiffs/src
-SPIFFS_BUILD_DIR := $(BUILD_BASE)/spiffs/src
-
-BUILD_DIRS += $(SPIFFS_BUILD_DIR)	
-SPIFFS_A := $(SPIFFS_BUILD_DIR)/spiffs.a
-SPIFFSIROM_A := $(SPIFFS_BUILD_DIR)/spiffsirom.a
-
-SPIFFS_SRC := $(wildcard $(SPIFFS_SRC_DIR)/*.c)
-SPIFFS_OBJ := $(patsubst %.c,$(SPIFFS_BUILD_DIR)/%.o,$(subst $(SPIFFS_SRC_DIR)/,,$(SPIFFS_SRC)))
-
-EXTRA_AR += $(SPIFFSIROM_A) 
-EXTRA_INCDIR += $(SRC_BASE)/spiffs/src  $(SRC_BASE)/src/esp8266
-GEN_LIBS += $(SPIFFSIROM_A)
-CPPFLAGS += -DCONFIG_BUILD_SPIFFS
-SUBMODULES += spiffs/src
-
-pso :
-	echo $(SPIFFS_OBJ)
-
-$(SPIFFS_A) : $(SPIFFS_OBJ)
-	$(vecho) "AR $@"
-	$(Q) $(AR) cru $@ $^
-## end spiffs.a
-
-
-## time.a, timeirom.a
-TIME_SRC_DIR := $(SRC_BASE)/src/lib/time
-TIME_BUILD_DIR := $(BUILD_BASE)/src/lib/time
-
-BUILD_DIRS += $(TIME_BUILD_DIR)
-TIME_A := $(TIME_BUILD_DIR)/time.a
-TIMEIROM_A := $(TIME_BUILD_DIR)/timeirom.a
-
-TIME_C_SRC := $(wildcard  $(TIME_SRC_DIR)/*.c)
-TIME_ASM_SRC := $(wildcard  $(TIME_SRC_DIR)/*.S)
-TIME_OBJ := $(patsubst %.c,$(TIME_BUILD_DIR)/%.o,$(subst $(TIME_SRC_DIR)/,,$(TIME_C_SRC)))
-TIME_OBJ += $(patsubst %.S,$(TIME_BUILD_DIR)/%.o,$(subst $(TIME_SRC_DIR)/,,$(TIME_ASM_SRC)))
-
-EXTRA_AR += $(TIMEIROM_A) 
-EXTRA_INCDIR += $(TIME_SRC_DIR)
-GEN_LIBS += $(TIMEIROM_A)
-
-$(TIME_A) : $(TIME_OBJ)
-	$(vecho) "AR $@"
-	$(Q) $(AR) cru $@ $^
-## end time.a
-
-# fetch submodule #FIXME:
-spiffs/src:
-	git submodule update --init --recursive
 
 ## make irom archive (move functions from RAM to Flash-ROM on ESP8266)
 %irom.a : %.a

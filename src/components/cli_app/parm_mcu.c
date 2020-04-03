@@ -11,7 +11,9 @@
 #include "misc/bcd.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
+#ifndef NO_SPIFFS
 #include "storage/spiffs_fs.h"
+#endif
 #include "debug/debug.h"
 
 #ifdef USE_FREERTOS
@@ -20,7 +22,7 @@
 #endif
 
 const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
-#if ENABLE_SPIFFS
+#ifndef NO_SPIFFS
     "spiffs=(format|test)\n"
 #endif
 #ifdef CONFIG_GPIO_SIZE
@@ -46,7 +48,7 @@ process_parmMcu(clpar p[], int len) {
         print_reset_info();
       }
 #endif
-#if ENABLE_SPIFFS
+#ifndef NO_SPIFFS
     } else if (strcmp(key, "spiffs") == 0) {
 
       if (strcmp(val, "format") == 0) {

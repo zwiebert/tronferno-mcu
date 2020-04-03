@@ -55,11 +55,9 @@ void timer_state_loop_evt(void) {
   for (k = 0; k < 2; ++k) {
     te = &teud[k];
     if (te->next_event != MINUTES_DISABLED) {
-      if (te->next_event != now_min) {
-#if DB_INFO < 5
+      if (te->next_event != now_min)
         continue;
-#endif
-      }
+
       ferPos_registerMovingShutters(&te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
       get_new_event = true;
     }
@@ -91,9 +89,7 @@ void timer_state_loop(void) {
     if (te->next_event != MINUTES_DISABLED) {
       if (te->next_event != new_minute) {
         initialized = false;
-#if DB_INFO < 5
         continue;
-#endif
       }
       ferPos_registerMovingShutters(&te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
     }
