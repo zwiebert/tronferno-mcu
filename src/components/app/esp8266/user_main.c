@@ -45,7 +45,7 @@ void main_setup_ip_dependent() {
 
 static void 
 user_procTask(os_event_t *events) {
-  tcps_loop();
+  tcpCli_loop();
   udp_loop();
   loop();
   ets_delay_us(1000);
