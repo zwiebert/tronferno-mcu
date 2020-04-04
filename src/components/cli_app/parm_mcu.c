@@ -102,7 +102,7 @@ process_parmMcu(clpar p[], int len) {
       pair_so_output_all_pairings();
 #endif
     } else if (strcmp(key, "cs") == 0) {
-      ferPos_printPctsAll();
+      statPos_printAllPcts();
 #ifdef CONFIG_GPIO_SIZE
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);

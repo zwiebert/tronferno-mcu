@@ -13,6 +13,7 @@
 #include "fernotron/types.h"
 #include "fernotron/fer_msg_plain.h"
 #include "app_config/callbacks.h"
+#include "positions_dynamic.h"
 
 #include "move_buf.h"
 
@@ -34,13 +35,13 @@ bool ferPos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts);
 void ferPos_mvCheck_mvi(struct mv *mv);
 int ferPos_mvCheck_mv(struct mv *mv, unsigned now_ts);
 void ferPos_checkStatus_whileMoving_periodic(int interval_ts);
-u16 ferPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct);
+u16 simPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct);
 
 
 // start moving
 bool ferPos_shouldMove_sunDown(uint8_t g, uint8_t m);
-int ferPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_cmd cmd);
-int ferPos_registerMovingShutters(gm_bitmask_t *mm, fer_cmd cmd);
+int simPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_cmd cmd);
+int simPos_registerMovingShutters(gm_bitmask_t *mm, fer_cmd cmd);
 
 // stop moving
 void ferPos_stop_mv(struct mv *mv, u8 g, u8 m, u8 pct);
@@ -49,13 +50,6 @@ void ferPos_stop_mm(gm_bitmask_t *mm, u32 now_ts);
 void ferPos_stop_mvi_mm(struct mv *mv, gm_bitmask_t *mm, u32 now_ts);
 
 
-void ferPos_loopCheckMoving();
 
-#ifndef fpos_HAS_MOVING_cb
-#define  fpos_HAS_MOVING_cb()
-#endif
-#ifndef fpos_HAS_NO_MOVING_cb
-#define  fpos_HAS_NO_MOVING_cb()
-#endif
 
 #endif /* COMPONENTS_FERNOTRON_POS_SHUTTER_MOVEMENT_H_ */

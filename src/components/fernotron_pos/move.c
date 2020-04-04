@@ -94,7 +94,7 @@ int ferPos_mvCheck_mv(struct mv *mv, unsigned now_ts) {
       if (!gm_GetBit(&mv->mask, g, m))
         continue;
 
-      pct = ferPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), duration_ts);
+      pct = simPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), duration_ts);
 
       if ((direction_isUp(mv->dir) && pct == PCT_UP) || (!direction_isUp(mv->dir) && pct == PCT_DOWN)) {
         ferPos_stop_mv(mv, g, m, pct);
@@ -140,7 +140,7 @@ bool ferPos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts) {
   struct shutter_timings st;
   ferPos_mGetSt(&st, g, m);
 
-  int pct = ferPos_getPct(0, g, m);
+  int pct = statPos_getPct(0, g, m);
 
   int t = st.move_down_tsecs * (100 - pct) / 100;
 
@@ -151,7 +151,7 @@ bool ferPos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts) {
 }
 
 bool ferPos_shouldMove_sunDown(u8 g, u8 m) {
-  u8 pct_curr = ferPos_getPct(0, g, m);
+  u8 pct_curr = statPos_getPct(0, g, m);
   u8 pct_sun = ferPos_mGetSunPct(g, m);
 
   if (pct_curr <= pct_sun)
@@ -169,7 +169,7 @@ bool ferPos_shouldMove_sunDown(u8 g, u8 m) {
   return true;
 }
 
-u16 ferPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct) {
+u16 simPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct) {
   bool direction = curr_pct < pct;
   u8 pct_diff = direction ? pct - curr_pct : curr_pct - pct;
 
@@ -183,8 +183,8 @@ u16 ferPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct) {
 
 
 
-u8 ferPos_getPct_afterDuration(u8 g, u8 m, bool direction_up, u16 duration_ts) {
-  int pct = ferPos_getPct(0, g, m);
+u8 simPos_getPct_afterDuration(u8 g, u8 m, bool direction_up, u16 duration_ts) {
+  int pct = statPos_getPct(0, g, m);
   struct shutter_timings st;
   ferPos_mGetSt(&st, g, m);
 
@@ -203,8 +203,8 @@ u8 ferPos_getPct_afterDuration(u8 g, u8 m, bool direction_up, u16 duration_ts) {
     return add;
 }
 
-int ferPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
-  if (!(a == 0 || a == C.fer_centralUnitID)) {
+int simPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
+  if (!(a == 0 || a == cfg_getCuId())) {
     return -1;
   }
 
@@ -214,11 +214,11 @@ int ferPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
   for (mv = mv_getFirst(); mv; mv = mv_getNext(mv)) {
     if (gm_GetBit(&mv->mask, g, m)) {
       u16 duration_ts = now_ts - mv->start_time;
-      u8 pct = ferPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), duration_ts);
+      u8 pct = simPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), duration_ts);
       return pct;
     }
   }
-  return ferPos_getPct(a, g, m);
+  return statPos_getPct(a, g, m);
 }
 
 void ferPos_loopCheckMoving() {

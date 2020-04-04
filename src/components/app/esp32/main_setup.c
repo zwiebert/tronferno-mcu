@@ -64,27 +64,19 @@ void loop_clrPerBit_cuasLoop(void) {
 }
 #endif
 
-void ferPos_loopAutoSave();
 void loop_setPerBit_loopAutoSave(void) {
   lfPer_setBit(lf_loopPosAutoSave);
 }
 void loop_clrPerBit_loopAutoSave(void) {
   lfPer_clrBit(lf_loopPosAutoSave);
 }
-#define  fpos_POSITIONS_UNSAVED_cb loop_setPerBit_loopAutoSave
-#define  fpos_POSTIONS_SAVED_cb loop_clrPerBit_loopAutoSave
 
-
-void ferPos_loopCheckMoving();
 void loop_setPerBit_loopCheckMoving(void) {
   lfPer_setBit(lf_loopPosCheckMoving);
 }
 void loop_clrPerBit_loopCheckMoving(void) {
   lfPer_clrBit(lf_loopPosCheckMoving);
 }
-#define  fpos_HAS_MOVING_cb loop_setPerBit_loopCheckMoving
-#define  fpos_HAS_NO_MOVING_cb loop_clrPerBit_loopCheckMoving
-
 
 
 void ntpApp_sync_time_cb(struct timeval *tv) {

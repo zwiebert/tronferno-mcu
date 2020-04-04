@@ -150,3 +150,11 @@ TEST_CASE("fer_msg modify data and verify checksums", "[fernotron]")
 {
   test_ferMsg_modData_andVerifyCS();
 }
+
+#ifdef TEST_HOST
+static struct cfg_astro cfg_astro =
+    { .geo_longitude = 13, .geo_latitude = 52, .geo_timezone = 1, .astroCorrection = acAverage, };
+void setUp() {
+  astro_init_and_reinit(&cfg_astro);
+}
+#endif

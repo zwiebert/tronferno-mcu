@@ -40,7 +40,7 @@ static const lfa_funT lfa_table[lf_Len] = {
 #ifdef USE_PAIRINGS
     pair_auto_set_check_timeout,
 #endif
-    ferPos_loopAutoSave, ferPos_loopCheckMoving,
+    statPos_loopAutoSave, ferPos_loopCheckMoving,
 };
 
 #ifndef USE_EG
