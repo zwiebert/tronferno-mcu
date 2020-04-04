@@ -13,7 +13,7 @@ bool wifi_ap_active;
 
 void lfa_createWifiAp() {
   esp_netif_init();
-  wifiAp_setup("rv", "12345678");
+  wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
   wifi_ap_active = true;
 }
 

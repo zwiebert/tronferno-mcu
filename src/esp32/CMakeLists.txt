@@ -7,7 +7,7 @@ set(PROJECT_NAME "tronferno-mcu")
 set(EXTRA_COMPONENT_DIRS ../../components-mcu/components ../components)
 
 set(COMPONENTS
-    fernotron fernotron_pos fernotron_alias fernotron_cuas fernotron_sep fernotron_auto fernotron_txtio
+    fernotron fernotron_pos fernotron_alias fernotron_cuas fernotron_sep fernotron_auto fernotron_txtio http_server_content
 
     app userio_app net net_mqtt_app net_http_server debug gpio key_value_store storage cli_app config  txtio misc
 
