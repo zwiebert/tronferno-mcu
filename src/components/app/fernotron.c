@@ -67,8 +67,11 @@ static void beforeFirstSend_cb(const fsbT *fsb) {
 }
 
 static void beforeAnySend_cb(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *txmsg) {
-if (C.app_verboseOutput >= vrb1)
-  io_puts("S:"), fmsg_print(txmsg, C.app_verboseOutput >= vrb2 ? msg_type : MSG_TYPE_PLAIN, (C.app_verboseOutput >= vrbDebug));
+  if (TXTIO_IS_VERBOSE(vrb1)) {
+    fmsg_type t = TXTIO_IS_VERBOSE(vrb2) ? msg_type : MSG_TYPE_PLAIN;
+    io_puts("S:"), fmsg_print(txmsg, t, TXTIO_IS_VERBOSE(vrbDebug));
+    io_puts("C:"), fmsg_print_as_cmdline(txmsg, t);
+  }
 }
 
 

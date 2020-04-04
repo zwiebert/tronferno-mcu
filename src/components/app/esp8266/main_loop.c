@@ -22,7 +22,7 @@
 #include "app/fernotron.h"
 
 void loop(void);
-void tcps_loop(void);
+void tcpCli_loop(void);
 
 
 #ifndef MCU_ESP32

@@ -11,7 +11,7 @@
 #define USE_WLAN
 #define USE_WLAN_AP
 #define USE_LAN
-#define USE_TCPS
+#define USE_TCPS_TASK
 #define USE_MQTT
 #define USE_HTTP
 #define CONFIG_BLOB

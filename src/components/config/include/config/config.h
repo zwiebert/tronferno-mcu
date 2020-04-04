@@ -25,8 +25,7 @@
 #endif
 
 #include "net/ethernet.h"
-
-#include "app_config/proj_app_cfg.h"
+#include "stdbool.h"
 
 enum dst {
   dstNone, dstEU, dstUS, dstAlways,
@@ -100,6 +99,7 @@ typedef struct {
 } config;
 
 extern config C;
+extern bool always_true, always_false;
 
 #define cfg_getWlan() &C.wifi
 #define cfg_getLan() &C.lan
@@ -107,6 +107,7 @@ extern config C;
 #define cfg_getHttpServer() &C.http
 #define cfg_getNtpClient() &C.ntp
 #define cfg_getTxtio() (struct cfg_txtio *)&C.app_verboseOutput
+#define cfg_getTcpsServer() (struct cfg_tcps *)&always_true
 
 // CONFIG_IGORE_MASK holds bits to always ignore when read/save config
 // so these options will not be persistent during restart

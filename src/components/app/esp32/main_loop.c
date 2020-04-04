@@ -21,7 +21,7 @@ static const lfa_funT lfa_table[lf_Len] = {
     lfa_createWifiAp,
 #endif
 #ifdef USE_TCPS
-    tcps_loop,
+    tcpCli_loop,
 #endif
     cli_loop,
 #ifdef FER_TRANSMITTER

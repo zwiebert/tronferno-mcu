@@ -108,7 +108,10 @@ void main_setup_ip_dependent() {
     io_mqttApp_setup(cfg_getMqttClient());
 #endif
 #ifdef USE_TCPS
-  tcps_startServer();
+  tcpCli_setup(cfg_getTcpsServer());
+#endif
+#ifdef USE_TCPS_TASK
+  tcpCli_setup_task(cfg_getTcpsServer());
 #endif
 #ifdef USE_HTTP
   hts_setup(cfg_getHttpServer());

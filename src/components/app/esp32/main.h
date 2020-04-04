@@ -26,7 +26,7 @@
 #include "net/ipnet.h"
 #include "net/mqtt/app/mqtt.h"
 #include "net/ntp.h"
-#include "net/tcp_server.h"
+#include "net/tcp_cli_server.h"
 #include "net/wifi_ap.h"
 #include "net/wifistation.h"
 #include "nvs_flash.h"

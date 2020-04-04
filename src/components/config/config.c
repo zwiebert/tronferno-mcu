@@ -5,6 +5,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+bool always_true = true;
+bool always_false;
+
 config C = {
   .fer_centralUnitID = MY_FER_CENTRAL_UNIT_ID,
   .mcu_serialBaud = MY_MCU_UART_BAUD_RATE,
