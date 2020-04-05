@@ -1,6 +1,6 @@
 .PHONY: all tests clean_out init
 
-TESTS =  test_config  test_timer_state test_alias test_timer_data test_msg_tx test_prg test_kvs test_gm 
+TESTS =  test_pos test_config  test_timer_state test_alias test_timer_data test_msg_tx test_prg test_kvs test_gm 
 
 .PHONY: $(TESTS)
 
@@ -53,7 +53,7 @@ $(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,$(COMP_DIR),$(com
 INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
 
 build/test_%.out:
-	$(Q) gcc -g3 -Wall -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm
+	$(Q) gcc -g3 -Wall -flto -O3 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm
 
 
 %.log:%.out
@@ -63,6 +63,8 @@ build/test_%.out:
 
 
 setup=test_runner/setup.c
+################################
+build/test_pos.out:   $(addprefix $(COMP_PATH)/fernotron_pos/,test/test_positions.c shutter_pct.c shutter_prefs_kvs.c move.c move_buf.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c)
 build/test_config.out:   $(addprefix $(COMP_PATH)/config/,test/test_config.c config.c config_kvs.c config_stor.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c storage/esp8266/storage.c misc/esp32/itoa.c)
 build/test_kvs.out:  $(addprefix $(COMPSHARE_PATH)/key_value_store/,test/test_kvs.c esp8266/kvs_posix.c)
 build/test_gm.out:   $(addprefix $(COMP_PATH)/fernotron/,test/test_gm.c gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c)

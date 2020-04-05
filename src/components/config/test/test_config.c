@@ -85,16 +85,15 @@ static void test_config_save_restore() {
 
 }
 
-config C;
 
+
+#ifdef TEST_HOST
+
+config C;
 
 TEST_CASE("test config save_restore", "[config]")
 {
   test_config_save_restore();
 }
+#endif
 
-void setUp() {
-
-}
-
-void fer_copyConfig() {}

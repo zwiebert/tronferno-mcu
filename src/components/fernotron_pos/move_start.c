@@ -49,7 +49,7 @@ static int ferPos_filter_mm(gm_bitmask_t *mm, struct filter *filter) {
       goto filter_out;
 
     if (filter->destination_already_reached) {
-      u8 currPct = ferPos_getPct(0, g, m);
+      u8 currPct = statPos_getPct(0, g, m);
       if ((direction_isUp(filter->dir) && currPct == PCT_UP) || (direction_isDown(filter->dir) && currPct == PCT_DOWN))
         goto filter_out;
     }
@@ -122,7 +122,7 @@ static struct mv* add_to_new_movement_mm(gm_bitmask_t *mm, u32 now_ts, enum dire
 }
 
 // register moving related commands sent to a shutter to keep track of its changing position
-int ferPos_registerMovingShutters(gm_bitmask_t *mm, fer_cmd cmd) {
+int simPos_registerMovingShutters(gm_bitmask_t *mm, fer_cmd cmd) {
   u32 now_ts = get_now_time_ts();
 
   enum direction dir = DIRECTION_NONE;
@@ -177,15 +177,15 @@ int ferPos_registerMovingShutters(gm_bitmask_t *mm, fer_cmd cmd) {
 }
 
 
-int ferPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_cmd cmd) {
+int simPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_cmd cmd) {
   precond(g <= 7 && m <= 7);
 
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, cmd=%d\n", __func__, a, (int)g, (int)m, (int)cmd));
 #ifdef USE_PAIRINGS
-  if (!(a == 0 || a == C.fer_centralUnitID)) {
+  if (!(a == 0 || a == cfg_getCuId())) {
     gm_bitmask_t gm;
     if (pair_getControllerPairings(a, &gm))
-      return ferPos_registerMovingShutters(&gm, cmd);
+      return simPos_registerMovingShutters(&gm, cmd);
     return 0;
   }
 #endif
@@ -201,6 +201,6 @@ int ferPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_cmd cmd) {
     gm_SetBit(&mm, g, m);
   }
 
-  return ferPos_registerMovingShutters(&mm, cmd);
+  return simPos_registerMovingShutters(&mm, cmd);
 }
 

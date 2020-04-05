@@ -3,6 +3,8 @@
 
 #include "proj_app_cfg.h"
 
+#ifndef TEST_HOST
+
 #ifdef MCU_ESP32
 #include "esp32/esp32_callbacks.h"
 #endif
@@ -11,5 +13,6 @@
 #include "esp8266/esp8266_callbacks.h"
 #endif
 
+#endif
 
 #endif /* COMPONENTS_APP_CONFIG_INCLUDE_APP_CONFIG_CALLBACKS_H_ */

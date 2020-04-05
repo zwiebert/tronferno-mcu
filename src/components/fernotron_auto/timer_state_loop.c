@@ -58,7 +58,7 @@ void timer_state_loop_evt(void) {
       if (te->next_event != now_min)
         continue;
 
-      ferPos_registerMovingShutters(&te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
+      simPos_registerMovingShutters(&te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
       get_new_event = true;
     }
   }
@@ -91,7 +91,7 @@ void timer_state_loop(void) {
         initialized = false;
         continue;
       }
-      ferPos_registerMovingShutters(&te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
+      simPos_registerMovingShutters(&te->matching_members, te_is_up(te) ? fer_cmd_UP : fer_cmd_DOWN);
     }
   }
 }

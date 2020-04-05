@@ -159,10 +159,15 @@ static void test_timer_minutes() {
 
 
 TEST_CASE("calculate timer minutes", "[fernotron_auto]") {
-  astro_init_and_reinit();
+
   test_timer_minutes();
 }
 
 #ifdef TEST_HOST
 gm_bitmask_t manual_bits;
+static struct cfg_astro cfg_astro =
+    { .geo_longitude = 13, .geo_latitude = 52, .geo_timezone = 1, .astroCorrection = acAverage, };
+void setUp() {
+  astro_init_and_reinit(&cfg_astro);
+}
 #endif

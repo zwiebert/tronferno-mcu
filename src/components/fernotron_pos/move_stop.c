@@ -26,14 +26,14 @@
 #include "move.h"
 
 void ferPos_stop_mv(struct mv *mv, u8 g, u8 m, u8 pct) {
-  ferPos_setPct(0, g, m, pct);
+  statPos_setPct(0, g, m, pct);
   gm_ClrBit(&mv->mask, g, m);
   if (gm_isAllClear(&mv->mask))
     mv_free(mv);
 }
 
 void ferPos_stop_mvi(struct mv *mv, u8 g, u8 m, u32 now_ts) {
-  u8 pct = ferPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), now_ts - mv->start_time);
+  u8 pct = simPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), now_ts - mv->start_time);
   ferPos_stop_mv(mv, g, m, pct);
 }
 
@@ -56,7 +56,7 @@ void ferPos_stop_mvi_mm(struct mv *mv, gm_bitmask_t *mm, u32 now_ts) {
 
   for ((g = 1), (m = ~0); gm_getNext(mm, &g, &m);) {
     gm_ClrBit(&mv->mask, g, m);
-    ferPos_setPct(0, g, m, ferPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), now_ts - mv->start_time));  // update pct table now
+    statPos_setPct(0, g, m, simPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), now_ts - mv->start_time));  // update pct table now
   }
 
   if (gm_isAllClear(&mv->mask)) {
