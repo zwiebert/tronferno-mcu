@@ -43,8 +43,8 @@ struct mv* mv_calloc() {
 
     SET_BIT(moving_mask, mvi);
     moving[mvi] = (struct mv ) { };
-    return &moving[mvi];
     fpos_HAS_MOVING_cb();
+    return &moving[mvi];
   }
   return 0;
 }
