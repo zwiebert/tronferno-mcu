@@ -50,6 +50,8 @@ void test_txq_repeats() {
   TEST_ASSERT_EQUAL(1, ftx_get_msgPendingCount());
   TEST_ASSERT_TRUE(ftx_messageToSend_isReady);
 
+  ftx_messageToSend_isReady = false;
+  fer_tx_loop();
 }
 
 
