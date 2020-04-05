@@ -15,6 +15,7 @@
 #include "config/config.h"
 #include "net/wifistation.h"
 #include "net/ntp.h"
+#include "net/tcp_cli_server.h"
 #include "config/config.h"
 
 extern void intTimer_setup(void);
@@ -23,7 +24,6 @@ extern void setup_notImplemented(void);
 extern void setup_pin(void);
 void setup_dataFlash(void);
 void setup_dataFlash2(void);
-void setup_spiffs(void);
 void task_setup(void);
 
 
@@ -51,7 +51,7 @@ user_init() {
   setup_notImplemented();
   setup_pin();
   wifistation_setup(cfg_getWlan());
-  tcps_startServer();
+  tcpCli_setup(cfg_getTcpsServer());
   setup_udp();
   main_setup();
   task_setup();
