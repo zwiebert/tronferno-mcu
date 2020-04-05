@@ -183,7 +183,7 @@ process_parmConfig(clpar p[], int len) {
               return cli_replyFailure();
             }
             FSB_PUT_DEVID(&default_sender, cu);
-            set_optInt(C.fer_centralUnitID, cu, CB_CUID);
+            set_optInt(cfg_getCuId(), cu, CB_CUID);
           }
 
         }
@@ -339,14 +339,14 @@ process_parmConfig(clpar p[], int len) {
 
         case SO_CFG_LONGITUDE: {
           float longitude = stof(val);
-          if (set_optInt(C.geo_longitude, longitude, CB_LONGITUDE))
+          if (set_optInt(C.astro.geo_longitude, longitude, CB_LONGITUDE))
             hasChanged_geo = true;
         }
         break;
 
         case SO_CFG_LATITUDE: {
           float latitude = stof(val);
-          if (set_optInt(C.geo_latitude, latitude, CB_LATITUDE))
+          if (set_optInt(C.astro.geo_latitude, latitude, CB_LATITUDE))
             hasChanged_geo = true;
         }
         break;
@@ -354,7 +354,7 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_TIMEZONE: {
 #ifndef POSIX_TIME
           float geo_timezone = stof(val);
-          if (set_optInt(C.geo_latitude, geo_timezone, CB_TIZO)) {
+          if (set_optInt(C.astro.geo_latitude, geo_timezone, CB_TIZO)) {
             hasChanged_geo = true;
             rtc_setup();
           }
@@ -403,8 +403,8 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_ASTRO_CORRECTION: {
           NODEFAULT();
           enum astroCorrection ac = atoi(val);
-          if (set_optInt(C.astroCorrection, ac, CB_ASTRO_CORRECTION))
-            astro_init_and_reinit();
+          if (set_optInt(C.astro.astroCorrection, ac, CB_ASTRO_CORRECTION))
+            hasChanged_geo = true;
         }
 
         break;
@@ -485,6 +485,10 @@ process_parmConfig(clpar p[], int len) {
       ++errors;
       cli_warning_optionUnknown(key);
     }
+  }
+
+  if (hasChanged_geo) {
+    astro_init_and_reinit(cfg_getAstro());
   }
 #ifdef USE_MQTT
   if (hasChanged_mqttClient) {

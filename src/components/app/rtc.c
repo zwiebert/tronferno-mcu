@@ -158,7 +158,7 @@ rtc_setup() {
 
 #else
 
-  set_zone(ONE_HOUR * C.geo_timezone); //* C.timezone);
+  set_zone(ONE_HOUR * C.astro.geo_timezone); //* C.timezone);
 
   switch (C.geo_dST) {
 

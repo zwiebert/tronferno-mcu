@@ -35,7 +35,7 @@ void unity_suiteSetUp() {
   txtio_setup(cfg_getTxtio());
   stor_setup();
   ferPos_init();
-  astro_init_and_reinit();
+  astro_init_and_reinit(cfg_getAstro());
 
 #endif
 

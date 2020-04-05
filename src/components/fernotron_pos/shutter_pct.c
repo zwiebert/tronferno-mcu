@@ -106,7 +106,7 @@ ferPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
 #endif
 
   if (0 <= position && position <= 100) {
-    if (a == 0 || a == C.fer_centralUnitID) {
+    if (a == 0 || a == cfg_getCuId()) {
       so_arg_gmp_t gmp = { g, m, position };
       if (mutex_cliTake()) {
         if (sj_open_root_object("tfmcu")) {

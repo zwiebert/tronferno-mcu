@@ -61,10 +61,10 @@ static void rw_config(void *handle, u32 mask, bool write) {
   nvs_s(CB_NTP_SERVER, "C_NTP_SERVER", C.ntp.server);
 #endif
   nvs_s(CB_CFG_PASSWD, "C_CFG_PASSWD", C.app_configPassword);
-  nvs_b(CB_LONGITUDE, "C_LONGITUDE", C.geo_longitude);
-  nvs_b(CB_LATITUDE, "C_LATITUDE", C.geo_latitude);
+  nvs_b(CB_LONGITUDE, "C_LONGITUDE", C.astro.geo_longitude);
+  nvs_b(CB_LATITUDE, "C_LATITUDE", C.astro.geo_latitude);
 #ifndef POSIX_TIME
-    nvs_b(CB_TIZO, "C_TIZO", C.geo_timezone);
+    nvs_b(CB_TIZO, "C_TIZO", C.astro.geo_timezone);
     nvs_i8(CB_DST, "C_DST", C.geo_dST);
 #else
   nvs_s(CB_TZ, "C_TZ", C.geo_tz);
@@ -96,7 +96,7 @@ static void rw_config(void *handle, u32 mask, bool write) {
   nvs_i8(CB_LAN_PWR_GPIO, "C_LAN_PWR_GPIO", C.lan.pwr_gpio);
 #endif
 
-  nvs_i8(CB_ASTRO_CORRECTION, "C_AST_COR", C.astroCorrection);
+  nvs_i8(CB_ASTRO_CORRECTION, "C_AST_COR", C.astro.astroCorrection);
   nvs_u32(CB_CUID, "C_CUID", C.fer_centralUnitID);
   nvs_u32(CB_USED_MEMBERS, "C_GMU", C.fer_usedMembers);
   nvs_u32(CB_BAUD, "C_BAUD", C.mcu_serialBaud);

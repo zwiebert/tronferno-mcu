@@ -124,7 +124,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
     }
     break;
   case SO_CFG_CU:
-    so_out_x_reply_entry_lx(mt, C.fer_centralUnitID);
+    so_out_x_reply_entry_lx(mt, cfg_getCuId());
     break;
 
   case SO_CFG_NETWORK:
@@ -197,15 +197,15 @@ void  so_output_message(so_msg_t mt, void *arg) {
 #endif
 
   case SO_CFG_LONGITUDE:
-    so_out_x_reply_entry_f(mt, C.geo_longitude, 5);
+    so_out_x_reply_entry_f(mt, C.astro.geo_longitude, 5);
     break;
   case SO_CFG_LATITUDE:
-    so_out_x_reply_entry_f(mt, C.geo_latitude, 5);
+    so_out_x_reply_entry_f(mt, C.astro.geo_latitude, 5);
     break;
 
   case SO_CFG_TIMEZONE:
 #ifndef POSIX_TIME
-    so_out_x_reply_entry_f(mt, C.geo_timezone, 5);
+    so_out_x_reply_entry_f(mt, C.astro.geo_timezone, 5);
 #endif
     break;
 
@@ -247,7 +247,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
     break;
 
     case SO_CFG_ASTRO_CORRECTION: {
-      so_out_x_reply_entry_l(mt, C.astroCorrection);
+      so_out_x_reply_entry_l(mt, C.astro.astroCorrection);
     }
     break;
 

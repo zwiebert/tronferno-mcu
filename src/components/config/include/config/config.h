@@ -24,6 +24,7 @@
 #include "net/ntp.h"
 #endif
 
+#include "fernotron/astro.h"
 #include "net/ethernet.h"
 #include "stdbool.h"
 
@@ -54,11 +55,10 @@ void cfg_tz2timezone(void);
 #endif
 
 
+
 typedef struct {
   uint32_t fer_centralUnitID, mcu_serialBaud;
-  float geo_longitude, geo_latitude;
-
-  float geo_timezone;
+  struct cfg_astro astro;
 #ifdef MDR_TIME
   enum dst geo_dST;
 #endif
@@ -95,12 +95,14 @@ typedef struct {
 #ifdef USE_LAN
   struct cfg_lan lan;
 #endif
-  enum astroCorrection astroCorrection;
+
 } config;
 
 extern config C;
 extern bool always_true, always_false;
 
+#ifndef TEST_HOST
+#define cfg_getAstro() &C.astro
 #define cfg_getWlan() &C.wifi
 #define cfg_getLan() &C.lan
 #define cfg_getMqttClient() &C.mqtt
@@ -108,6 +110,8 @@ extern bool always_true, always_false;
 #define cfg_getNtpClient() &C.ntp
 #define cfg_getTxtio() (struct cfg_txtio *)&C.app_verboseOutput
 #define cfg_getTcpsServer() (struct cfg_tcps *)&always_true
+#define cfg_getCuId() C.fer_centralUnitID
+#endif
 
 // CONFIG_IGORE_MASK holds bits to always ignore when read/save config
 // so these options will not be persistent during restart

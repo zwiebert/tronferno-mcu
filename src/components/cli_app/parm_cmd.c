@@ -34,7 +34,7 @@ int
 process_parmSend(clpar p[], int len) {
   int arg_idx;
 
-  u32 addr = C.fer_centralUnitID;
+  u32 addr = cfg_getCuId();
   u8 g = 0, m = 0;
   fer_cmd cmd = fer_cmd_None;
   int set_end_pos = -1;

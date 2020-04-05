@@ -24,7 +24,7 @@ test_astro()  // FIXME: this does not really tests anything
 {
   double rise, set;
   u16 doy = 172;
-  sun_calculateDuskDawn(&rise, &set, C.geo_timezone, doy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+  sun_calculateDuskDawn(&rise, &set, C.astro.geo_timezone, doy, C.astro.geo_longitude, C.astro.geo_latitude, CIVIL_TWILIGHT_RAD);
 
   astro_write_data(data, 0);
   ets_printf("test calc_minutes\n");
@@ -50,7 +50,7 @@ test_astro()  // FIXME: this does not really tests anything
 
 TEST_CASE("astro", "[app]")
 {
-     astro_init_and_reinit();
+     astro_init_and_reinit(cfg_getAstro());
      test_astro();
 }
 

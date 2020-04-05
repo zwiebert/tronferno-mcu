@@ -53,7 +53,7 @@ int process_parmTimer(clpar p[], int len) {
 
   fer_grp group = fer_grp_Broadcast;
   fer_memb memb = fer_memb_Broadcast;
-  u32 addr = C.fer_centralUnitID;
+  u32 addr = cfg_getCuId();
   ;
   u8 fpr0_mask = 0;
   i8 flag_rtc_only = FLAG_NONE;

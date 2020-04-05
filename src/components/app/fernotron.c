@@ -21,14 +21,6 @@
 #include "fernotron/callbacks.h"
 #include "app/fernotron.h"
 
-
-void fer_copyConfig() {
-  astro_cfg.geo_longitude = C.geo_longitude;
-  astro_cfg.geo_latitude = C.geo_latitude;
-  astro_cfg.geo_timezone = C.geo_timezone;
-  astro_cfg.astroCorrection = C.astroCorrection;
-}
-
 static void rawMessageReceived_cb(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *rxmsg) {
   if (msg_type == MSG_TYPE_PLAIN || msg_type == MSG_TYPE_PLAIN_DOUBLE) {
     io_puts("R:"), fmsg_print(rxmsg, msg_type, (C.app_verboseOutput >= vrbDebug));
@@ -85,8 +77,8 @@ main_setup() {
   ferCb_plainMessageReceived = plainMessageReceived_cb;
 
   rtc_setup();
-  fer_init_sender(&default_sender, C.fer_centralUnitID);
-  astro_init_and_reinit();
+  fer_init_sender(&default_sender, cfg_getCuId());
+  astro_init_and_reinit(cfg_getAstro());
 
   so_output_message(SO_FW_START_MSG_PRINT, 0);
   ferPos_init();

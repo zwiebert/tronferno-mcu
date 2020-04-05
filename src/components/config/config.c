@@ -11,9 +11,7 @@ bool always_false;
 config C = {
   .fer_centralUnitID = MY_FER_CENTRAL_UNIT_ID,
   .mcu_serialBaud = MY_MCU_UART_BAUD_RATE,
-  .geo_longitude = MY_GEO_LONGITUDE,
-  .geo_latitude = MY_GEO_LATITUDE,
-  .geo_timezone = MY_GEO_TIMEZONE,
+  .astro = { .geo_longitude = MY_GEO_LONGITUDE, .geo_latitude = MY_GEO_LATITUDE, .geo_timezone = MY_GEO_TIMEZONE, .astroCorrection = acAverage, },
   0, // app_rtcAdjust
   recvTick, // recv
   transmTick,// transm
@@ -46,7 +44,7 @@ config C = {
 #ifdef USE_LAN
     .lan = { .phy = MY_LAN_PHY, .pwr_gpio = MY_LAN_PWR_GPIO, },
 #endif
-  .astroCorrection = acAverage,
+
 };
 
 #ifdef POSIX_TIME
@@ -63,7 +61,7 @@ static double tz2offset(const char *tz) {
 }
 
 void cfg_tz2timezone(void) {
-  C.geo_timezone = tz2offset(C.geo_tz);
+  C.astro.geo_timezone = tz2offset(C.geo_tz);
 }
 #endif
 
@@ -74,11 +72,9 @@ void read_config(u32 mask) {
 #else
   mcu_read_config(mask);
 #endif
-  fer_copyConfig();
 }
 
 void save_config(u32 mask) {
-  fer_copyConfig();
 #ifdef USE_CONFIG_KVS
   config_save_kvs(mask);
 #else
