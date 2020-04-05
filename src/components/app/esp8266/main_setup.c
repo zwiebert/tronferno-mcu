@@ -22,8 +22,6 @@ extern void intTimer_setup(void);
 extern void setup_serial(u32 baudrate);
 extern void setup_notImplemented(void);
 extern void setup_pin(void);
-void setup_dataFlash(void);
-void setup_dataFlash2(void);
 void task_setup(void);
 
 
@@ -41,8 +39,7 @@ user_init() {
   stor_setup();
   kvs_setup();
 
-  setup_dataFlash();
-  read_config(~0);
+  read_config_all();
 
 
   // print debug info
@@ -56,5 +53,4 @@ user_init() {
   main_setup();
   task_setup();
   intTimer_setup();
-  setup_dataFlash2();
 }

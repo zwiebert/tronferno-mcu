@@ -80,7 +80,6 @@ void save_config(u32 mask) {
 #else
   mcu_save_config(mask);
 #endif
-
 }
 
 
