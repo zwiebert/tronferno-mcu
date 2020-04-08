@@ -99,7 +99,7 @@ typedef struct {
 } config;
 
 extern config C;
-extern bool always_true, always_false;
+extern const bool always_true, always_false;
 
 #ifndef TEST_HOST
 #define cfg_getAstro() &C.astro

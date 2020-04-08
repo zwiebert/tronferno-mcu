@@ -5,8 +5,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-bool always_true = true;
-bool always_false;
+const bool always_true = true;
+const bool always_false;
 
 config C = {
   .fer_centralUnitID = MY_FER_CENTRAL_UNIT_ID,
