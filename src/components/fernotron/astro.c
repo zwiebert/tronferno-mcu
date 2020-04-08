@@ -86,7 +86,7 @@ void astro_populate_astroMinutes_from_astroBcd() {
 u16 astro_calc_minutes(const struct tm *tm) {
   int idx = astroTableIndex_from_tm(tm);
   assert(0 <= idx && idx <= 47);
-  return astro_minutes[idx];
+  return astro_minutes[idx] + (tm->tm_isdst ? 60 : 0);
 }
 
 
