@@ -19,6 +19,7 @@
 // when saving data with group=0 or menber=0, all matching old data will be deleted. So g=0 m=0 will delete all other data, because it addresses all receivers
 bool save_timer_data(timer_data_t *p, uint8_t group, uint8_t member);
 bool read_timer_data(timer_data_t *p, uint8_t *group, uint8_t *member, bool wildcard);
+bool erase_timer_data(u8 g, u8 m);
 
 extern bool timer_data_changed; // set by save_timer_data - cleared by code reading it
 

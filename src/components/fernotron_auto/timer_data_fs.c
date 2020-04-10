@@ -64,6 +64,9 @@ static int  delete_shadowded_files(u8 group, u8 memb) {
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 
+bool erase_timer_data_fs(u8 g, u8 m) {
+  return delete_shadowded_files(g, m) > 0;
+}
 
 bool  save_timer_data_fs(timer_data_t *p, u8 g, u8 m) {
   bool result = false;

@@ -38,7 +38,8 @@ static void set_next_event() {
 }
 
 void fau_getnextTimerEvent() {
-  get_next_timer_event(&teud[0], &teud[1]);
+  time_t now_time = time(NULL);
+  get_next_timer_event(&teud[0], &teud[1], &now_time);
   set_next_event();
 }
 
@@ -75,7 +76,8 @@ void timer_state_loop(void) {
 
   // FIXME: should also check for changed rtc and longitude/latitude/tz settings
   if (new_minute == 0 || !initialized || timer_data_changed) {
-    get_next_timer_event(teu, ted);
+    time_t now_time = time(NULL);
+    get_next_timer_event(teu, ted, &now_time);
     initialized = true;
     timer_data_changed = false;
   }

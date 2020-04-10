@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "fernotron/types.h"
 
@@ -23,9 +24,9 @@ typedef struct {
 // return minute offsets of todays timer events
 // offsets are minutes after 00:00 hour.
 // offset == -1 means: no timer event exists for today
-bool get_timer_minutes(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard);
+bool get_timer_minutes(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard, const time_t *now_time);
 struct tm;
-bool get_timer_minutes_tm(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard, struct tm *tm);
+bool get_timer_minutes_tm(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard, const struct tm *tm);
 
 minutes_t timi_get_earliest(timer_minutes_t *timi, minutes_t now);
 
@@ -47,8 +48,8 @@ typedef struct {
 
 } timer_event_t;
 
-bool get_next_timer_event(timer_event_t *up, timer_event_t *down);
+bool get_next_timer_event(timer_event_t *up, timer_event_t *down, const time_t *now_time);
 
-
+bool get_next_timer_event_old(timer_event_t *up, timer_event_t *down, const time_t *now_time);
 
 #endif

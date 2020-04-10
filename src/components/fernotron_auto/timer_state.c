@@ -47,7 +47,7 @@ timer_to_minutes(minutes_t *result, const char *ts) {
 extern gm_bitmask_t manual_bits;
 
 bool 
-get_timer_minutes_tm(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, struct tm *tm) {
+get_timer_minutes_tm(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, const struct tm *tm) {
 
   precond(timi && group && member);
 
@@ -117,9 +117,8 @@ get_timer_minutes_tm(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard
 }
 
 bool 
-get_timer_minutes(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard) {
-  time_t timer = time(NULL);
-  struct tm *tm = localtime(&timer);
+get_timer_minutes(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, const time_t *now_time) {
+  struct tm *tm = localtime(now_time);
   return get_timer_minutes_tm(timi, group, member, wildcard, tm);
 }
 
@@ -141,74 +140,150 @@ timi_get_earliest(timer_minutes_t *timi, minutes_t now) {
 #define MAX_MBR 7
 enum pass { PASS_GET_EARLIEST_TIME, PASS_FILL_EVENTS, PASS_STOP};
 
-bool 
-get_next_timer_event(timer_event_t *teu, timer_event_t *ted) {
+bool get_next_timer_event(timer_event_t *teu, timer_event_t *ted, const time_t *now_time) {
   precond(teu && ted);
-  u8 pass, g, m;
+  u8 g, m;
   minutes_t earliest = MINUTES_DISABLED;
-  gm_bitmask_t existing_members = {0,};
+  gm_bitmask_t existing_members = { 0, };
 
-  time_t timer = time(NULL);
-  struct tm *tm = localtime(&timer);
-  minutes_t minutes_now = tm->tm_hour * 60 + tm->tm_min;
+  const struct tm *tm_now = localtime(now_time);
+  minutes_t minutes_now = tm_now->tm_hour * 60 + tm_now->tm_min;
 
-  memset((void*)teu, 0, sizeof *teu);
+  *teu = (timer_event_t ) { .next_event = MINUTES_DISABLED, .flags = BIT(tef_UP) };
+  *ted = (timer_event_t ) { .next_event = MINUTES_DISABLED, .flags = BIT(tef_DOWN) };
+
+  for (g = 0; g <= MAX_GRP; ++g) {
+    u8 um = 0x07 & (C.fer_usedMembers >> (g*4));
+    if (g > 0 && um == 0)
+      continue;
+    for (m = 0; m <= um; ++m) {
+      timer_minutes_t timi;
+
+      if (gm_GetBit(&manual_bits, g, m)) {
+        continue;
+      }
+      u8 g2 = g, m2 = m;
+      if (get_timer_minutes_tm(&timi, &g2, &m2, false, tm_now)) {
+        minutes_t temp = timi_get_earliest(&timi, minutes_now);
+        if (temp < earliest) {
+          gm_Clear(&existing_members);
+          earliest = temp;
+        }
+
+        if (temp == earliest) {
+          if (g != 0 && m != 0) {
+            gm_SetBit(&existing_members, g, m);
+          } else if (g == 0) {
+            int ig, im;
+            for (ig = 1; ig < MAX_GRP; ++ig) {
+              u8 um = 0x07 & (C.fer_usedMembers >> (ig*4));
+              for (im = 1; im <= um; ++im) {
+                gm_SetBit(&existing_members, ig, im);
+              }
+            }
+          } else if (m == 0) {
+            int im;
+            for (im = 1; im <= um; ++im) {
+              gm_SetBit(&existing_members, g, im);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (earliest == MINUTES_DISABLED) {
+    return false;
+  }
+
+  for ((g = 0), (m = ~0); gm_getNext(&existing_members, &g, &m);) {
+    timer_minutes_t timi;
+    u8 g2 = g, m2= m;
+    if (!get_timer_minutes_tm(&timi, &g2, &m2, true, tm_now))
+      continue; // should not happen
+
+    minutes_t temp = timi_get_earliest(&timi, minutes_now);
+    if (temp <= earliest) {
+
+      if (timi.minutes[DAILY_UP_MINTS] == earliest || timi.minutes[WEEKLY_UP_MINTS] == earliest) {
+        te_set_match(teu, g, m);
+        teu->next_event = earliest;
+      }
+      if (timi.minutes[ASTRO_MINTS] == earliest || timi.minutes[DAILY_DOWN_MINTS] == earliest || timi.minutes[WEEKLY_DOWN_MINTS] == earliest) {
+        te_set_match(ted, g, m);
+        ted->next_event = earliest;
+      }
+    }
+
+  }
+
+  return true;
+}
+
+bool get_next_timer_event_old(timer_event_t *teu, timer_event_t *ted, const time_t *now) {
+  precond(teu && ted);
+  enum pass pass;
+  u8 g, m;
+  minutes_t earliest = MINUTES_DISABLED;
+  gm_bitmask_t existing_members = { 0, };
+
+  struct tm *tm_now = localtime(now);
+  minutes_t minutes_now = tm_now->tm_hour * 60 + tm_now->tm_min;
+
+  memset((void*) teu, 0, sizeof *teu);
   teu->next_event = MINUTES_DISABLED;
   SET_BIT(teu->flags, tef_UP);
 
-  memset((void*)ted, 0, sizeof *ted);
+  memset((void*) ted, 0, sizeof *ted);
   ted->next_event = MINUTES_DISABLED;
   SET_BIT(ted->flags, tef_DOWN);
 
-  for (pass=0; pass < PASS_STOP; ++pass) {
-    for (g=0; g <= MAX_GRP; ++g) {
-      for (m=0; m <= MAX_MBR; ++m) {
-	timer_minutes_t timi;
+  for (pass = PASS_GET_EARLIEST_TIME; pass < PASS_STOP; ++pass) {
+    for (g = 0; g <= MAX_GRP; ++g) {
+      for (m = 0; m <= MAX_MBR; ++m) {
+        timer_minutes_t timi;
 
-  if (gm_GetBit(&manual_bits, g, m)) {
-    continue;
-  }
+        if (gm_GetBit(&manual_bits, g, m)) {
+          continue;
+        }
 
-	if (pass != PASS_GET_EARLIEST_TIME &&  !GET_BIT(existing_members[g], m)) {
-	  // file not exists - copy parent and continue with next
-	  if (g > 0 && m == 0) {
-	    if (te_match(teu, 0, 0))
-	      te_set_match(teu, g, 0); // copy parent g=0
-	    if (te_match(ted, 0, 0))
-	      te_set_match(ted, g, 0); // copy parent g=0
-	  } else if (g > 0 && m > 0) {
-	    if (te_match(teu, g, 0))
-	      te_set_match(teu, g, m); // copy parent g=1..7 m=0
-	    if (te_match(ted, g, 0))
-	      te_set_match(ted, g, m); // copy parent g=1..7 m=0
-	  }
-	  continue;
-	}
+        if (pass == PASS_FILL_EVENTS && !GET_BIT(existing_members[g], m)) {
+          // file not exists - copy parent and continue with next
+          if (g > 0 && m == 0) {
+            if (te_match(teu, 0, 0))
+              te_set_match(teu, g, 0); // copy parent g=0
+            if (te_match(ted, 0, 0))
+              te_set_match(ted, g, 0); // copy parent g=0
+          } else if (g > 0 && m > 0) {
+            if (te_match(teu, g, 0))
+              te_set_match(teu, g, m); // copy parent g=1..7 m=0
+            if (te_match(ted, g, 0))
+              te_set_match(ted, g, m); // copy parent g=1..7 m=0
+          }
+          continue;
+        }
 
-	if (get_timer_minutes_tm(&timi, &g, &m, false, tm)) {
-	  SET_BIT(existing_members[g], m);
-	  if (pass == PASS_GET_EARLIEST_TIME) {
-	    minutes_t temp = timi_get_earliest(&timi, minutes_now);
-	    earliest = MIN(earliest, temp);
-	    //if (temp != MINUTES_DISABLED) ets_printf("g=%u, m=%u, temp=%u - earliest=%u\n", g, m, temp, earliest);
-	  } else if (pass == PASS_FILL_EVENTS) {
-	    if (earliest == MINUTES_DISABLED) {
-	      return false;
-	    }
+        if (get_timer_minutes_tm(&timi, &g, &m, false, tm_now)) {
+          SET_BIT(existing_members[g], m);
+          if (pass == PASS_GET_EARLIEST_TIME) {
+            minutes_t temp = timi_get_earliest(&timi, minutes_now);
+            earliest = MIN(earliest, temp);
+            //if (temp != MINUTES_DISABLED) ets_printf("g=%u, m=%u, temp=%u - earliest=%u\n", g, m, temp, earliest);
+          } else if (pass == PASS_FILL_EVENTS) {
+            if (earliest == MINUTES_DISABLED) {
+              return false;
+            }
 
-	    if (timi.minutes[DAILY_UP_MINTS] == earliest
-		|| timi.minutes[WEEKLY_UP_MINTS] == earliest) {
-	      te_set_match(teu, g, m);
-	      teu->next_event = earliest;
-	    }
-	    if (timi.minutes[ASTRO_MINTS] == earliest
-		|| timi.minutes[DAILY_DOWN_MINTS] == earliest
-		|| timi.minutes[WEEKLY_DOWN_MINTS] == earliest) {
-	      te_set_match(ted, g, m);
-	      ted->next_event = earliest;
-	    }
-	  }
-	}
+            if (timi.minutes[DAILY_UP_MINTS] == earliest || timi.minutes[WEEKLY_UP_MINTS] == earliest) {
+              te_set_match(teu, g, m);
+              teu->next_event = earliest;
+            }
+            if (timi.minutes[ASTRO_MINTS] == earliest || timi.minutes[DAILY_DOWN_MINTS] == earliest || timi.minutes[WEEKLY_DOWN_MINTS] == earliest) {
+              te_set_match(ted, g, m);
+              ted->next_event = earliest;
+            }
+          }
+        }
       }
     }
   }

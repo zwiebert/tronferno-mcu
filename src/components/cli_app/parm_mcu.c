@@ -83,7 +83,8 @@ process_parmMcu(clpar p[], int len) {
       int i;
 
       timer_event_t teu, ted;
-      get_next_timer_event(&teu, &ted);
+      time_t now_time = time(NULL);
+      get_next_timer_event(&teu, &ted, &now_time);
       io_putd(teu.next_event), io_putlf();
       for (i = 0; i < 8; ++i) {
         io_print_hex_8(teu.matching_members[i], true);

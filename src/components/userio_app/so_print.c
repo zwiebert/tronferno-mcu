@@ -24,7 +24,7 @@
 #include "misc/ftoa.h"
 #include <string.h>
 #include <stdio.h>
-
+#include <time.h>
 
 
 void print_timer_event_minute(const char *label, minutes_t mins) {
@@ -37,7 +37,8 @@ void print_timer_event_minute(const char *label, minutes_t mins) {
 
 void  so_print_timer_event_minutes(u8 g, u8 m) {
   timer_minutes_t tm;
-  if (get_timer_minutes(&tm, &g, &m, true)) {
+  time_t now_time = time(NULL);
+  if (get_timer_minutes(&tm, &g, &m, true, &now_time)) {
     print_timer_event_minute("astro-down", tm.minutes[0]);
     print_timer_event_minute("daily-up", tm.minutes[1]);
     print_timer_event_minute("daily-down", tm.minutes[2]);
@@ -136,7 +137,8 @@ void  so_timer_to_json(u8 g, u8 m, bool wildcard) {
       sj_add_key_value_pair_d("astro", tdr.astro);
 
       timer_minutes_t tmi;
-      get_timer_minutes(&tmi, &g_res, &m_res, false);
+      time_t now_time = time(NULL);
+      get_timer_minutes(&tmi, &g_res, &m_res, false, &now_time);
       sj_add_key_value_pair_d("asmin", tmi.minutes[ASTRO_MINTS]);
     }
 

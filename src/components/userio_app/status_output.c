@@ -30,6 +30,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <time.h>
 
 #define D(x)
 
@@ -347,7 +348,8 @@ void  so_output_message(so_msg_t mt, void *arg) {
     so_arg_gm_t *a = arg;
     u8 g = a->g, m = a->m;
     timer_minutes_t tmi;
-    if (get_timer_minutes(&tmi, &g, &m, true)) {
+    time_t now_time = time(NULL);
+    if (get_timer_minutes(&tmi, &g, &m, true, &now_time)) {
       so_out_x_reply_entry_sl("astro-minute", tmi.minutes[ASTRO_MINTS]);
     }
 

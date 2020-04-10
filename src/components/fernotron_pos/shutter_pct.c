@@ -21,8 +21,8 @@
 
 #ifndef DISTRIBUTION
 #define DB_INFO 0
-#define DT(x)
-#define D(x)
+#define DT(x) x
+#define D(x) x
 #else
 #define DB_INFO 0
 #define DT(x)
@@ -63,7 +63,7 @@ statPos_getPct(u32 a, u8 g, u8 m) {
 static int 
 set_state(u32 a, int g, int m, int position) {
   u8  mi;
-  DT(ets_printf("%s: a=%lx, g=%d, m=%d, position=%d\n", __func__, a, g, m, position));
+  DT(db_printf("%s: a=%x, g=%d, m=%d, position=%d\n", __func__, a, g, m, position));
   precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
   precond(0 <= position && position <= 100);
 
@@ -89,7 +89,7 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   precond(g <= 7 && m <= 7);
 
 #ifndef TEST_HOST
-  DT(ets_printf("%s: a=%lx, g=%d, m=%d, cmd=%d\n", __func__, a, (int)g, (int)m, (int)cmd));
+  DT(ets_printf("%s: a=%lx, g=%d, m=%d, pct=%d\n", __func__, a, (int)g, (int)m, (int)pct));
 #ifdef USE_PAIRINGS
   if (!(a == 0 || a == cfg_getCuId())) {
     gm_bitmask_t gm;
@@ -180,16 +180,21 @@ statPos_printAllPcts() {
 }
 
 static void ferPos_autoSavePositions_iv(int interval_ts) {
+  DT(ets_printf("%s: interval_tx=%d\n", __func__, interval_ts));
   static u32 next_save_pos;
   if (pos_map_changed && next_save_pos < get_now_time_ts()) {
     next_save_pos = get_now_time_ts() + interval_ts;
     u8 g, mask = pos_map_changed;
     pos_map_changed = 0;
 
-    for (g=0; mask; ++g, (mask >>=1)) {
-      if (mask&1)
-        statPos_pctsByGroup_store(g, pos_map[g]);
+    for (g = 0; mask; ++g, (mask >>= 1)) {
+      if ((mask & 1) == 0)
+        continue;
+
+      statPos_pctsByGroup_store(g, pos_map[g]);
+      D(io_printf_v(vrbDebug, "autosave_pos: g=%d\n", (int)g));
     }
+
     fpos_POSTIONS_SAVED_cb();
   }
 }
