@@ -100,6 +100,10 @@ static void rw_config(void *handle, u32 mask, bool write) {
   nvs_u32(CB_CUID, "C_CUID", C.fer_centralUnitID);
   nvs_u32(CB_USED_MEMBERS, "C_GMU", C.fer_usedMembers);
   nvs_u32(CB_BAUD, "C_BAUD", C.mcu_serialBaud);
+
+  if (GET_BIT(mask, CB_USED_MEMBERS)) {
+    gm_fromNibbleCounters(&C.fer_usedMemberMask, C.fer_usedMembers);
+  }
 }
 
 

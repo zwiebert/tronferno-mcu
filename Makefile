@@ -95,7 +95,7 @@ $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
 host-test-all:
-	make -C test/host all  --no-print-directory
+	make -C test/host all_tests  --no-print-directory
 
 
 

@@ -24,7 +24,8 @@ typedef struct {
 // return minute offsets of todays timer events
 // offsets are minutes after 00:00 hour.
 // offset == -1 means: no timer event exists for today
-bool get_timer_minutes(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard, const time_t *now_time);
+bool get_timer_minutes(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard);
+bool get_timer_minutes_tim(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard, const time_t *now_time);
 struct tm;
 bool get_timer_minutes_tm(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard, const struct tm *tm);
 

@@ -107,3 +107,15 @@ bool gm_getNext(gm_bitmask_t *gm, u8 *gp, u8 *mp) {
   }
   return false;
 }
+
+
+void gm_fromNibbleCounters(gm_bitmask_t *gm, u32 um) {
+  int g, m;
+  gm_Clear(gm);
+  for (g=0; g < 8; ++g, (um >>=4)) {
+    u8 u = um & 0x07;
+    for (m=1; m <= u; ++m) {
+      gm_SetBit(gm,g,m);
+    }
+  }
+}

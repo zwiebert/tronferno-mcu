@@ -227,7 +227,7 @@ class AppState {
         }
 
         if (!document.getElementById("cfg_table_id")) {
-          if ("cu" in config) {
+          if ("verbose" in config) {
             document.getElementById("config-div").innerHTML = mcuConfigTable_genHtml(obj.config);
           }
         }

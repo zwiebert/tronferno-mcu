@@ -24,7 +24,7 @@
 #include "net/ntp.h"
 #endif
 
-#include "fernotron/astro.h"
+#include "fernotron/types.h"
 #include "net/ethernet.h"
 #include "stdbool.h"
 
@@ -68,6 +68,7 @@ typedef struct {
   enum rtclock app_rtc;
   enum verbosity app_verboseOutput;
   uint32_t fer_usedMembers; // each of the nibbles 1-7 stands for a group. nibble 1 == group 1. nibble 0 = number of used Groups (stored for the front-end, not used here on the MCU)
+  gm_bitmask_t fer_usedMemberMask;
 
 #ifdef USE_WLAN
   struct cfg_wlan wifi;
@@ -153,6 +154,8 @@ CB_TIZO,
 //-----------
   CB_size
 };
+
+
 
 //#define CM_ALL ((uint32_t)((1UL<<CB_size)-1))
 #define CM_ALL ((uint32_t)~0UL)

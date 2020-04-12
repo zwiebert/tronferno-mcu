@@ -32,4 +32,6 @@ int gm_countSetBits(gm_bitmask_t *gm);
 int fer_gmByName_load(const char *name, const gm_bitmask_t *gm, int count);
 int fer_gmByName_store(const char *name, gm_bitmask_t *gm, int count);
 
+void gm_fromNibbleCounters(gm_bitmask_t *gm, uint32_t um);
+
 #endif /* COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_TYPES_H_ */
