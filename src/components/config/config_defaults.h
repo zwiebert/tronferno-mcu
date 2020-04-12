@@ -148,6 +148,14 @@
 #endif
 #endif
 
+#ifndef MY_MQTT_CLIENT_ID
+#ifdef CONFIG_MY_MQTT_CLIENT_ID
+#define MY_MQTT_CLIENT_ID CONFIG_MY_MQTT_CLIENT_ID
+#else
+#define MY_MQTT_CLIENT_ID "tfmcu"
+#endif
+#endif
+
 #ifndef MY_HTTP_ENABLE
 #ifdef CONFIG_MY_HTTP_ENABLE
 #define MY_HTTP_ENABLE CONFIG_MY_HTTP_ENABLE

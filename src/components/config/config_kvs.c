@@ -78,6 +78,7 @@ static void rw_config(void *handle, u32 mask, bool write) {
   nvs_s(CB_MQTT_URL, "C_MQTT_URL", C.mqtt.url);
   nvs_s(CB_MQTT_USER, "C_MQTT_USER", C.mqtt.user);
   nvs_s(CB_MQTT_PASSWD, "C_MQTT_PASSWD", C.mqtt.password);
+  nvs_s(CB_MQTT_CLIENT_ID, "C_MQTT_CID", C.mqtt.client_id);
   nvs_i8(CB_MQTT_ENABLE, "C_MQTT_ENABLE", C.mqtt.enable);
 #endif
 #ifdef USE_HTTP

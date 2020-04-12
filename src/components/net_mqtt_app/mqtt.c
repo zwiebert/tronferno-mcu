@@ -139,15 +139,8 @@ void io_mqttApp_unsubscribed(const char *topic, int topic_len) {
 void io_mqttApp_published(int msg_id) {
 }
 
-#ifdef DISTRIBUTION
-#define CONFIG_MQTT_CLIENT_ID "tronferno42"
-#else
-#define CONFIG_MQTT_CLIENT_ID "tfdbg"
-#endif
-
-
 void io_mqttApp_setup(struct cfg_mqtt *cfg_mqtt) {
-  io_mqtt_setup(CONFIG_MQTT_CLIENT_ID, cfg_mqtt);
+  io_mqtt_setup(cfg_mqtt);
 }
 
 #endif // USE_MQTT

@@ -172,11 +172,15 @@ void  so_output_message(so_msg_t mt, void *arg) {
   case SO_CFG_MQTT_PASSWORD:
     so_out_x_reply_entry_s(mt, *C.mqtt.password ? "*" : "");
     break;
+  case SO_CFG_MQTT_CLIENT_ID:
+    so_out_x_reply_entry_s(mt, C.mqtt.client_id);
+    break;
 #else
   case SO_CFG_MQTT_ENABLE:
   case SO_CFG_MQTT_URL:
   case SO_CFG_MQTT_USER:
   case SO_CFG_MQTT_PASSWORD:
+  case SO_CFG_MQTT_CLIENT_ID:
     break;
 #endif
 
