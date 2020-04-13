@@ -16,9 +16,10 @@
 #include "driver/uart.h"
 
 #include "config/config.h"
-#include "main/rtc.h"
-#include "fernotron/fer_timings.h"
+#include "app/rtc.h"
+#include "fernotron/fer_radio_timings.h"
 #include "fernotron/int_timer.h"
+#include "fernotron/fer_radio_trx.h"
 
 
 
@@ -64,7 +65,7 @@ timer1Stop(void) {
   RTC_REG_WRITE(FRC1_CTRL_ADDRESS, 0);
 }
 //////////////////////////////////////////////////////////////////////////
-volatile u32 run_time_s10;
+volatile u32 run_time_s_, run_time_ts_;
 
 void IRAM_ATTR timer_handler(void) {
 
@@ -86,24 +87,26 @@ void IRAM_ATTR timer_handler(void) {
 #endif
 
   {
-    static u32 s10_ticks;
+    static u32 s10_ticks = TICK_FREQ_HZ / 10;
+    static int8_t s_ticks = 10;
 
     if (s10_ticks-- == 0) {
       s10_ticks = TICK_FREQ_HZ / 10;
-      ++run_time_s10;
-    }
-  }
+      ++run_time_ts_;
+      if (!s_ticks--) {
+        s_ticks = 10;
+        ++run_time_s_;
 
-  if (rtcAvrTime == C.app_rtc) {
-    static u32 rtc_ticks;
+#ifndef POSIX_TIME
+        extern volatile time_t __system_time;
+++__system_time;
+#endif
 
-    if (rtc_ticks-- == 0) {
-      rtc_ticks = TICK_FREQ_HZ + MS_TO_TICKS(C.app_rtcAdjust);
-      rtc_tick()
-      ;
+      }
     }
   }
 }
+
 
 void  intTimer_setup(void) {
   u32 ticks = F_CPU / TICK_FREQ_HZ;

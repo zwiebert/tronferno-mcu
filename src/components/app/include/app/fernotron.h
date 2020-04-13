@@ -11,7 +11,5 @@
 #include "fernotron/fsb.h"
 extern fsbT default_sender;
 
-void fer_copyConfig(void);
-
 
 #endif /* MAIN_FERNOTRON_H_ */

@@ -6,18 +6,17 @@
  */
 #include "unity.h"
 
-#include <fernotron/fer_msg_basic.h>
+#include <fernotron/fer_msg_plain.h>
 #include "astro.h"
 #include <string.h>
 #include "../fer_app_cfg.h"
 #include "debug/debug.h"
-
-#include "../fer.h"
+#include "fernotron/fer_rawmsg_build.h"
 #include "misc/bcd.h"
 
 
 
-static struct fer_msg  test_msg = {
+static struct fer_raw_msg  test_msg = {
     .cmd = { .bd = { 0x80, 0x49, 0x5d, 0x68, 0x2f, 0xbd, }},
 
     .rtc = { .bd = { 0x32, 0x51, 0x01, 0x04, 0x14, 0x08, 0x02, 0x86, 0xa6 }},
@@ -67,22 +66,22 @@ static void test_ferMsg_size() {
 
 static void test_ferMsg_verifyChecksums() {
   bool result;
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_PLAIN);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_RTC);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_TIMER);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
   TEST_ASSERT_TRUE(result);
 }
 
 static void test_ferMsg_writeChecksums() {
-  fmsg_create_checksums(&test_msg, MSG_TYPE_TIMER);
+  fmsg_raw_checksumsCreate(&test_msg, MSG_TYPE_TIMER);
 }
 
 static void test_ferMsg_writeData() {
-  fmsg_write_rtc(&test_msg, time(NULL), false);
-  fmsg_write_wtimer(&test_msg, testdat_wtimer);
-  fmsg_write_dtimer(&test_msg, testdat_wtimer);
+  fmsg_raw_from_rtc(&test_msg, time(NULL), false);
+  fmsg_raw_from_weeklyTimer(&test_msg, testdat_wtimer);
+  fmsg_raw_from_dailyTimer(&test_msg, testdat_wtimer);
   astro_write_data(test_msg.astro, 0);
 }
 
@@ -90,38 +89,38 @@ static void test_ferMsg_modData_andVerifyCS() {
   bool result;
 
   ++test_msg.astro[1][8];
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_PLAIN);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_RTC);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_TIMER);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
   TEST_ASSERT_FALSE(result);
   --test_msg.astro[1][8];
 
   ++test_msg.wdtimer.bd[1][8];
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_PLAIN);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_RTC);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_TIMER);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
   TEST_ASSERT_FALSE(result);
   --test_msg.wdtimer.bd[1][8];
 
   ++test_msg.rtc.bd[3];
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_PLAIN);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_RTC);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
   TEST_ASSERT_FALSE(result);
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_TIMER);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
   TEST_ASSERT_FALSE(result);
   --test_msg.rtc.bd[3];
 
   ++test_msg.cmd.bd[3];
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_PLAIN);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
   TEST_ASSERT_FALSE(result);
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_RTC);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
   TEST_ASSERT_FALSE(result);
-  result = fmsg_verify_checksums(&test_msg, MSG_TYPE_TIMER);
+  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
   TEST_ASSERT_FALSE(result);
   --test_msg.cmd.bd[3];
 }
@@ -151,3 +150,11 @@ TEST_CASE("fer_msg modify data and verify checksums", "[fernotron]")
 {
   test_ferMsg_modData_andVerifyCS();
 }
+
+#ifdef TEST_HOST
+static struct cfg_astro cfg_astro =
+    { .geo_longitude = 13, .geo_latitude = 52, .geo_timezone = 1, .astroCorrection = acAverage, };
+void setUp() {
+  astro_init_and_reinit(&cfg_astro);
+}
+#endif

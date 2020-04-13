@@ -1,30 +1,45 @@
-diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt unity/CMakeLists.txt
---- /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt	2020-02-21 21:53:53.611006000 +0100
-+++ unity/CMakeLists.txt	2020-02-27 02:10:48.544290000 +0100
-@@ -2,7 +2,7 @@
+cd ./build/unity && diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app .
+diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt ./CMakeLists.txt
+--- /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt	2020-03-26 20:41:38.470987000 +0100
++++ ./CMakeLists.txt	2020-03-26 22:10:45.759294999 +0100
+@@ -2,8 +2,8 @@
  # CMakeLists in this exact order for cmake to work correctly
  cmake_minimum_required(VERSION 3.5)
-
--set(EXTRA_COMPONENT_DIRS "$ENV{IDF_PATH}/examples/cxx/experimental/experimental_cpp_component/")
--
-+set(EXTRA_COMPONENT_DIRS "$ENV{HOME}/proj/mcu/tronferno-mcu/src/components")
+ 
+-set(EXTRA_COMPONENT_DIRS "$ENV{IDF_PATH}/examples/cxx/experimental/experimental_cpp_component/"
+-                         "$ENV{IDF_PATH}/examples/peripherals/rmt/ir_protocols/components")
++set(EXTRA_COMPONENT_DIRS $ENV{COMP_DIRS})
 +set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DUNIT_TESTING")
+ 
  include($ENV{IDF_PATH}/tools/cmake/project.cmake)
  project(unit-test-app)
-diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/main/app_main.c unity/main/app_main.c
+diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt.orig ./CMakeLists.txt.orig
+--- /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt.orig	1970-01-01 01:00:00.000000000 +0100
++++ ./CMakeLists.txt.orig	2020-03-26 22:10:45.759294999 +0100
+@@ -0,0 +1,9 @@
++# The following lines of boilerplate have to be in your project's
++# CMakeLists in this exact order for cmake to work correctly
++cmake_minimum_required(VERSION 3.5)
++
++set(EXTRA_COMPONENT_DIRS "$ENV{IDF_PATH}/examples/cxx/experimental/experimental_cpp_component/"
++                         "$ENV{IDF_PATH}/examples/peripherals/rmt/ir_protocols/components")
++
++include($ENV{IDF_PATH}/tools/cmake/project.cmake)
++project(unit-test-app)
+diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/main/app_main.c ./main/app_main.c
 --- /home/bertw/esp/esp-idf/tools/unit-test-app/main/app_main.c	2019-12-14 10:03:56.989231000 +0100
-+++ unity/main/app_main.c	2020-02-27 02:15:19.695798000 +0100
++++ ./main/app_main.c	2020-03-26 22:10:45.759294999 +0100
 @@ -2,5 +2,7 @@
-
+ 
  void app_main(void)
  {
 +  void unity_suiteSetUp(); //avoid weak linking problems by having our own name
 +  unity_suiteSetUp();
      test_main();
  }
-diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_app.csv unity/partition_table_unit_test_app.csv
+diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_app.csv ./partition_table_unit_test_app.csv
 --- /home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_app.csv	2019-12-14 10:03:56.989231000 +0100
-+++ unity/partition_table_unit_test_app.csv	2020-02-27 01:46:55.620186000 +0100
++++ ./partition_table_unit_test_app.csv	2020-03-26 22:10:45.763297000 +0100
 @@ -1,17 +1,11 @@
 -# Special partition table for unit test app
 -#
@@ -49,5 +64,6 @@ diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_
 +otadata,  data, ota,    0x300000, 0x2000,
  flash_test, data, fat,      ,        528K
  nvs_key,    data, nvs_keys, ,        0x1000, encrypted
-
+ 
 -# Note: still 1MB of a 4MB flash left free for some other purpose
+Makefile:28: recipe for target 'diff' failed

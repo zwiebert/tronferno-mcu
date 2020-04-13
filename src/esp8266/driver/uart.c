@@ -13,6 +13,7 @@
 #include <osapi.h>
 #include <c_types.h>
 #include "uart.h"
+#define IRAM_ATTR  __attribute__((section(".iram0.text")))
 
 #define UART0   0
 #define UART1   1
@@ -20,7 +21,7 @@
 // UartDev is defined and initialized in rom code.
 extern UartDevice UartDev;
 
-LOCAL void uart0_rx_intr_handler(void *para);
+LOCAL void IRAM_ATTR uart0_rx_intr_handler(void *para);
 
 /******************************************************************************
  * FunctionName : uart_config
@@ -30,7 +31,7 @@ LOCAL void uart0_rx_intr_handler(void *para);
  * Parameters   : uart_no, use UART0 or UART1 defined ahead
  * Returns      : NONE
 *******************************************************************************/
-LOCAL void 
+LOCAL void IRAM_ATTR
 uart_config(uint8 uart_no)
 {
     if (uart_no == UART1) {
@@ -70,7 +71,7 @@ uart_config(uint8 uart_no)
  * Parameters   : uint8 TxChar - character to tx
  * Returns      : OK
 *******************************************************************************/
-LOCAL STATUS 
+LOCAL STATUS IRAM_ATTR
 uart1_tx_one_char(uint8 TxChar)
 {
     while (true)
@@ -92,7 +93,7 @@ uart1_tx_one_char(uint8 TxChar)
  * Parameters   : char c - character to tx
  * Returns      : NONE
 *******************************************************************************/
-LOCAL void 
+LOCAL void IRAM_ATTR
 uart1_write_char(char c)
 {
     if (c == '\n') {
@@ -113,7 +114,7 @@ void rx_copy(u8 *start, u8 *end);
  * Parameters   : void *para - point to ETS_UART_INTR_ATTACH's arg
  * Returns      : NONE
 *******************************************************************************/
-LOCAL void
+LOCAL void IRAM_ATTR
 uart0_rx_intr_handler(void *para)
 {
     /* uart0 and uart1 intr combine togther, when interrupt occur, see reg 0x3ff20020, bit2, bit0 represents
@@ -164,7 +165,7 @@ uart0_rx_intr_handler(void *para)
  *                uint16 len - buffer len
  * Returns      :
 *******************************************************************************/
-void 
+void IRAM_ATTR
 uart0_tx_buffer(uint8 *buf, uint16 len)
 {
     uint16 i;

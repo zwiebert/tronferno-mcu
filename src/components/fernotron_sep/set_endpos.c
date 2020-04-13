@@ -1,9 +1,14 @@
-#include <fernotron/fer_msg_basic.h>
-#include <fernotron/fer_msg_extension.h>
-#include <fernotron/fer_rx_tx.h>
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
+#include "set_endpos.h"
 
-#include "main/rtc.h"
+#include <fernotron/fer_msg_plain.h>
+#include <fernotron/fer_msg_attachment.h>
+#include <fernotron/fer_msg_tx.h>
+#include "fernotron/fer_radio_trx.h"
+#include "fernotron/fer_rawmsg_buffer.h"
+
+
+#include "app/rtc.h"
 #include "txtio/inout.h"
 #include "userio_app/status_output.h"
 
@@ -16,7 +21,9 @@
 //
 // if 0, only normal up/down commands are used for testing.
 // German: wenn 0, werden ungefährliche hoch/runter kommandos gesendet (zum Testen)
+#ifndef ENABLE_SET_ENDPOS
 #define ENABLE_SET_ENDPOS 1
+#endif
 //
 // DANGER ZONE
 //////////////////////////////////////////////////////////////////
@@ -37,8 +44,8 @@ static fer_cmd sep_cmd;
 static time_t end_time;
 
 #define TIMEOUT_SECS 30  // disable set position mode after being idle for N seconds
-#define TIMEOUT_SET() (end_time = run_time(NULL) + TIMEOUT_SECS)
-#define IS_TIMEOUT_REACHED() (end_time < run_time(NULL) || (end_time > (run_time(NULL) + TIMEOUT_SECS + 1)))
+#define TIMEOUT_SET() (end_time = run_time_s() + TIMEOUT_SECS)
+#define IS_TIMEOUT_REACHED() (end_time < run_time_s() || (end_time > (run_time_s() + TIMEOUT_SECS + 1)))
 
 #define D(x)
 
@@ -86,11 +93,12 @@ sep_send_up(void) {
 void 
 sep_disable(void) {
   if (sep_buttons_enabled) {
+    sep_DISABLE_cb();
     sep_send_stop();  // don't remove this line
     so_output_message(SO_SEP_DISABLE, 0);
     up_pressed = down_pressed = false;
     sep_buttons_enabled = false;
-    recv_lockBuffer(false); // unblock transceiver
+    ftrx_lockBuffer(false); // unblock transceiver
   }
 }
 
@@ -121,22 +129,23 @@ sep_enable(fsbT *fsb) {
     so_output_message(SO_SEP_ENABLE, 0);
     sep_fsb = *fsb;
     sep_buttons_enabled = true;
-    recv_lockBuffer(true); // make sure we have the transceiver for ourselves (or at least block large data being send or received)
+    ftrx_lockBuffer(true); // make sure we have the transceiver for ourselves (or at least block large data being send or received)
     TIMEOUT_SET();
+    sep_ENABLE_cb();
     return true;
   }
   return false;
 }
 
-bool 
+void
 sep_loop(void) {
-  if (sep_buttons_enabled && !is_sendMsgPending) {
+  if (sep_buttons_enabled) {
     const bool up_pin = BUTT_UP;
     const bool down_pin = BUTT_DOWN;
 
     if (up_pin && down_pin) {  // emergency stop
       sep_disable();
-      return false;
+      return;
     }
 
     if (!up_pressed && !down_pressed) {
@@ -148,7 +157,7 @@ sep_loop(void) {
         TIMEOUT_SET();
       } else if (IS_TIMEOUT_REACHED()) {
         sep_disable();
-        return false;
+        return;
       }
     } else {
       if (up_pressed && !(up_pressed = up_pin)) {
@@ -159,5 +168,5 @@ sep_loop(void) {
       }
     }
   }
-  return true;
+  return;
 }

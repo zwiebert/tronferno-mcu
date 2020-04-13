@@ -1,12 +1,14 @@
 #include <string.h>
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "fernotron_auto/timer_state.h"
-#include "fernotron/fer_rx_tx.h"
+#include "fernotron/fer_msg_rx.h"
 #include "misc/bcd.h"
 #include "fernotron_alias/pairings.h"
-#include "main/rtc.h"
+#include "app/rtc.h"
 #include "userio_app/status_output.h"
+#include "debug/debug.h"
+#include "misc/int_types.h"
 
 #if defined DISTRIBUTION || 0
 #define D(x) x
@@ -31,26 +33,26 @@ bool  pair_auto_set(u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
     pras_g = g;
     pras_m = m;
     pras_c = c;
-    end_time = run_time(NULL) + timeout_secs;
+    end_time = run_time_s() + timeout_secs;
     last_received_sender.data[0] = 0;
     pras_active = true;
     so_output_message(SO_PRAS_START_LISTENING, &id);
+    pair_ENABLE_cb();
   }
   return false;
 }
 
-bool  pair_auto_set_check_timeout(void) {
+void pair_auto_set_check_timeout(void) {
   if (end_time == 0)
-    return false;
+    return;
 
-  if (end_time < run_time(NULL)) {
+  if (end_time < run_time_s()) {
     end_time = 0;
     so_output_message(SO_PRAS_STOP_LISTENING, NULL);
     so_output_message(SO_PRAS_TIMEOUT, NULL);
     pras_active = false;
-    return true;
+    pair_DISABLE_cb();
   }
-  return false;
 }
 
 bool  pair_auto_set_check(const fsbT *fsb) {
@@ -75,6 +77,7 @@ bool  pair_auto_set_check(const fsbT *fsb) {
     end_time = 0;
 
     pras_active = false;
+    pair_DISABLE_cb();
     return true;
   }
   return false;

@@ -9,6 +9,8 @@
 #define COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_TYPES_H_
 
 #include <stdint.h>
+#include "stdbool.h"
+#include "misc/int_macros.h"
 
 typedef uint8_t gm_bitmask_t[8];
 
@@ -21,8 +23,15 @@ typedef uint8_t gm_bitmask_t[8];
 #define gm_GetBit(gm, g, m) GET_BIT((*gm)[(g)], (m))
 #define gm_SetBit(gm, g, m) SET_BIT((*gm)[(g)], (m))
 
+bool gm_getNext(gm_bitmask_t *gm, uint8_t *gp, uint8_t *mp);
+
+bool gm_isAllClear(gm_bitmask_t *gm);
+int gm_countSetBits(gm_bitmask_t *gm);
+
 // read/save one or more elements of type gm_bitmask_t
 int fer_gmByName_load(const char *name, const gm_bitmask_t *gm, int count);
 int fer_gmByName_store(const char *name, gm_bitmask_t *gm, int count);
+
+void gm_fromNibbleCounters(gm_bitmask_t *gm, uint32_t um);
 
 #endif /* COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_TYPES_H_ */

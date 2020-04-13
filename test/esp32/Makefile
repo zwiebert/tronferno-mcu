@@ -8,12 +8,13 @@ endif
 
 
 unity_dir = $(build_dir)/unity
+COMP_DIRS := $(realpath ../../src/components ../../components-mcu/components ../../local/components-mcu/components)
+COMPS := $(foreach dir,$(COMP_DIRS),$(shell cd $(dir) && ls))
 
-build_cmd := idf.py -C $(build_dir)/unity -B $(build_dir)
+
+build_cmd := env COMP_DIRS="$(COMP_DIRS)" idf.py -C $(build_dir)/unity -B $(build_dir) -G Ninja
 
 .PHONY: build clean flash run all unity unity-clean
-
-COMPS := $(shell cd ../../src/components && ls)
 
 unity: $(unity_dir)/unity.stamp
 
@@ -22,8 +23,9 @@ unity-clean:
 
 port ?= /dev/ttyUSB0
 
-esp32_ocd_sh :=  sh $(realpath ./esp32_ocd.sh)
-
+.PHONY: diff
+diff:
+	cd $(unity_dir) && diff -ruN $(IDF_PATH)/tools/unit-test-app .
 
 $(unity_dir)/unity.stamp:
 	mkdir -p $(unity_dir)
@@ -39,8 +41,14 @@ flash: unity
 	$(build_cmd) --port $(port) flash
 run:
 	python3 ./run_tests.py $(port)
+monitor: unity
+	$(build_cmd) --port $(port) monitor
+
+all: build flash run
 
 
+##################### OpenOCD ###################
+esp32_ocd_sh :=  sh $(realpath ./esp32_ocd.sh)
 
 flash-ocd: unity
 	(cd $(build_dir) && $(esp32_ocd_sh) flash)
@@ -50,7 +58,5 @@ ocd:
 	$(esp32_ocd_sh) server
 ocd-loop:
 	$(esp32_ocd_sh) server_loop
-
-all: build flash run
 
 all-ocd: build flash-app-ocd run

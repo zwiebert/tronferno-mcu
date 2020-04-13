@@ -1,7 +1,7 @@
 #include <string.h>
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
-#include "main/rtc.h"
+#include "app/rtc.h"
 
 
 #include <time.h>
@@ -9,7 +9,7 @@
 #include <sys/time.h>
 #endif
 #include "config/config.h"
-#include "main/common.h"
+#include "app/common.h"
 
 rtc_time_source_t rtc_last_time_source;
 
@@ -158,8 +158,7 @@ rtc_setup() {
 
 #else
 
-  set_zone(ONE_HOUR * C.geo_timezone); //* C.timezone);
- //obsolete: set_position(C.geo_latitude * ONE_DEGREE, C.geo_longitude * ONE_DEGREE);
+  set_zone(ONE_HOUR * C.astro.geo_timezone); //* C.timezone);
 
   switch (C.geo_dST) {
 

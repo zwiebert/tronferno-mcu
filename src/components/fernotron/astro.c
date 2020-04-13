@@ -5,9 +5,10 @@
 *  Author: bertw
 */
 
-#include <fernotron/fer_msg_basic.h>
+#include <fernotron/fer_msg_plain.h>
 #include <stdlib.h>
 #include <math.h>
+#include "stdbool.h"
 
 #include "fer_app_cfg.h"
 
@@ -18,9 +19,7 @@
 #include "debug/debug.h"
 #include "misc/int_macros.h"
 
-struct astro_cfg astro_cfg;
-#define C astro_cfg
-
+const struct cfg_astro *astro_cfg;
 
 
 /*
@@ -87,7 +86,7 @@ void astro_populate_astroMinutes_from_astroBcd() {
 u16 astro_calc_minutes(const struct tm *tm) {
   int idx = astroTableIndex_from_tm(tm);
   assert(0 <= idx && idx <= 47);
-  return astro_minutes[idx];
+  return astro_minutes[idx] + (tm->tm_isdst ? 60 : 0);
 }
 
 
@@ -119,10 +118,10 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
 
   for (i = 0; i < FPR_ASTRO_HEIGHT; ++i) {
     for (j = 0; j < 4; ++j) {
-      calc_sunrise_sunset(NULL, &duskf, C.geo_timezone + (mint_offset / 60.0f), dayf, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
-      calc_sunrise_sunset(NULL, &duskr, C.geo_timezone + (mint_offset / 60.0f), dayr, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+      sun_calculateDuskDawn(NULL, &duskf, astro_cfg->geo_timezone + (mint_offset / 60.0f), dayf, astro_cfg->geo_longitude, astro_cfg->geo_latitude, CIVIL_TWILIGHT_RAD);
+      sun_calculateDuskDawn(NULL, &duskr, astro_cfg->geo_timezone + (mint_offset / 60.0f), dayr, astro_cfg->geo_longitude, astro_cfg->geo_latitude, CIVIL_TWILIGHT_RAD);
 
-      switch (C.astroCorrection) {
+      switch (astro_cfg->astroCorrection) {
       case acAverage:
         dusk = (duskf + duskr) / 2;
         break;
@@ -172,7 +171,7 @@ u16 astro_calc_minutes(const struct tm *tm) {
   assert(0 <= idx && idx <= 47);
 
   double dayofy = yd * 1.0139;
-  calc_sunrise_sunset(NULL, &dusk, C.geo_timezone + (tm->tm_isdst ? 1 : 0), dayofy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+  sun_calculateDuskDawn(NULL, &dusk, astro_cfg->geo_timezone + (tm->tm_isdst ? 1 : 0), dayofy, astro_cfg->geo_longitude, astro_cfg->geo_latitude, CIVIL_TWILIGHT_RAD);
   u16 minutes = dusk * 60;
   return minutes;
 }
@@ -187,7 +186,7 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
     double dusk;
     double dayofy = (4 * yd--) * 1.0139; // 360 => 365 days per year
 
-    calc_sunrise_sunset(NULL, &dusk, C.geo_timezone + (mint_offset / 60.0f), dayofy, C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+    sun_calculateDuskDawn(NULL, &dusk, astro_cfg->geo_timezone + (mint_offset / 60.0f), dayofy, astro_cfg->geo_longitude, astro_cfg->geo_latitude, CIVIL_TWILIGHT_RAD);
     time_to_bcd(&dst[i][j * 2], &dst[i][j * 2 + 1], dusk, true);
     }
   }
@@ -216,7 +215,7 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
 
   for (i = 0; i < FPR_ASTRO_HEIGHT; ++i) {
     for (j = 0; j < 4; ++j) {
-      calc_sunrise_sunset(NULL, &sunset, C.geo_timezone + (mint_offset / 60.0f), get_yday(month, mday), C.geo_longitude, C.geo_latitude, CIVIL_TWILIGHT_RAD);
+      sun_calculateDuskDawn(NULL, &sunset, astro_cfg->geo_timezone + (mint_offset / 60.0f), get_yday(month, mday), astro_cfg->geo_longitude, astro_cfg->geo_latitude, CIVIL_TWILIGHT_RAD);
 
       time_to_bcd(&dst[i][j * 2], &dst[i][j * 2 + 1], sunset, true);
 
@@ -237,7 +236,10 @@ void  astro_write_data(u8 d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
   math_write_astro(d, mint_offset);
 }
 
-void astro_init_and_reinit() {
+void astro_init_and_reinit(const struct cfg_astro *cfg_astro) {
+  if (cfg_astro)
+    astro_cfg = cfg_astro;
+
   astro_populate_astroMinutes_from_astroBcd();
 }
 

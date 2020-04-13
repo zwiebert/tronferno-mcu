@@ -1,11 +1,10 @@
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include <string.h>
 #include "config/config.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
-#include "userio_app/status_output.h"
 #include "cli_app.h"
-
+#include "misc/int_types.h"
 
 const char *Obj_tag="";
 #define SET_OBJ_TAG(tag) Obj_tag=(tag)
@@ -21,10 +20,10 @@ static void  cli_out_top_tag(void) {
 }
 
 static void  cli_out_reply_tag(void) {
-  if (msgid) {
-    io_puts("reply="), io_putd(msgid), io_puts(": ");
+  if (cli_msgid) {
+    io_puts("cli_replyResult="), io_putd(cli_msgid), io_puts(": ");
   } else {
-    io_puts("reply: ");
+    io_puts("cli_replyResult: ");
   }
 }
 
@@ -124,64 +123,4 @@ void  cli_out_mcu_reply_entry(const char *key, const char *val, int len) {
   cli_out_entry(cli_out_start_mcu_reply, key, val, len);
 }
 
-int ENR; // error number
-void  print_enr(void) {
-  io_puts("enr: "), io_putd(ENR), io_putlf();
-}
-
-void  msg_print(const char *msg, const char *tag) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
-    return;
-  if (msg)
-    io_puts(msg);
-  if (msgid) {
-    io_putc('@');
-    io_putd(msgid);
-  }
-  if (tag) {
-    io_putc(':');
-    io_puts(tag);
-  }
-  io_puts(": ");
-}
-
-void  warning_unknown_option(const char *key) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
-    return;
-  msg_print("warning", "unknown-option"), io_puts(key), io_putc('\n');
-}
-
-void  reply_print(const char *tag) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
-    return;
-  msg_print("reply", tag);
-}
-
-void  reply_message(const char *tag, const char *msg) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
-    return;
-  reply_print(tag);
-  if (msg)
-    io_puts(msg);
-  io_putlf();
-}
-
-void  cli_msg_ready(void) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
-    return;
-  io_puts("\nready:\n");
-}
-
-void  reply_id_message(u16 id, const char *tag, const char *msg) {
-  u16 old_id = msgid;
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
-    return;
-
-  msgid = id;
-  reply_print(tag);
-  if (msg)
-    io_puts(msg);
-  io_putlf();
-  msgid = old_id;
-}
 

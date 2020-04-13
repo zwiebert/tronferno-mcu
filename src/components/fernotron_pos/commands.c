@@ -6,14 +6,16 @@
  */
 
 #include "fernotron/fsb.h"
-#include "fernotron/fer_msg_basic.h"
+#include "fernotron/fer_msg_plain.h"
+#include "fernotron/fer_msg_rx.h"
 #include "fernotron_pos/commands.h"
 #include "fernotron_pos/shutter_pct.h"
-#include "app/proj_app_cfg.h"
-#include "fernotron/fer_rx_tx.h"
+#include "app_config/proj_app_cfg.h"
+
 #include "cli_app/cli_imp.h"
 #include "cli_app/cli_fer.h"
 #include "config/config.h"
+#include "debug/debug.h"
 
 #define GRP_COUNT 7
 #define MBR_COUNT 7
@@ -32,7 +34,7 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   if (m == 0) {
     gm_bitmask_t gm = {0,};
     gm_SetByte(&gm, g, 0xfe);
-    return commands_moveShutterMaskToPct(a, &gm, pct, repeats);
+    return commands_moveShuttersToPct(a, &gm, pct, repeats);
   }
 
   fer_cmd fc = fer_cmd_None;
@@ -40,7 +42,8 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   fer_memb memb = m == 0 ? 0 : m + 7;
 
   if (g > 0 && m > 0) {
-    curr_pct = ferPos_getPct(a, g, m);
+    curr_pct = statPos_getPct(a, g, m);
+    io_printf_v(vrbDebug, "curr_pct: %d\n", curr_pct);
   }
 
   fsbT *fsb = get_sender_by_addr(a);
@@ -62,7 +65,7 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     FSB_PUT_CMD(fsb, fc);
     fer_send_msg(fsb, MSG_TYPE_PLAIN, repeats);
   } else if (curr_pct >= 0) {
-    u16 stop_delay = ferPos_calcMoveDuration_fromPctDiff_m(g, m, curr_pct, pct);
+    u16 stop_delay = simPos_calcMoveDuration_fromPctDiff_m(g, m, curr_pct, pct);
     if (stop_delay == 0)
       return false;
     fc = (pct < curr_pct) ? fer_cmd_DOWN : fer_cmd_UP;
@@ -71,8 +74,8 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   } else {
     FSB_PUT_CMD(fsb, fer_cmd_UP);
     fer_send_msg(fsb, MSG_TYPE_PLAIN, repeats);
-    u16 delay = ferPos_calcMoveDuration_fromPctDiff_m(g, m, 0, 100);
-    u16 stop_delay = ferPos_calcMoveDuration_fromPctDiff_m(g, m, 100, pct);
+    u16 delay = simPos_calcMoveDuration_fromPctDiff_m(g, m, 0, 100);
+    u16 stop_delay = simPos_calcMoveDuration_fromPctDiff_m(g, m, 100, pct);
     if (stop_delay == 0)
       return false;
     FSB_PUT_CMD(fsb, fer_cmd_DOWN);
@@ -82,7 +85,7 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   return true;
 }
 
-bool   commands_moveShutterMaskToPct(u32 a, gm_bitmask_t *gm, u8 pct, u8 repeats) {
+bool   commands_moveShuttersToPct(u32 a, gm_bitmask_t *gm, u8 pct, u8 repeats) {
   u8 g, m;
 
   for (g=1; g <= GRP_MAX; ++g) {

@@ -5,7 +5,7 @@
  *  Author: bertw
  */
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include <string.h>
 #include "config/config.h"
 #include "misc/bcd.h"
@@ -14,14 +14,8 @@
 #include "userio/status_json.h"
 #include "fernotron/fsb.h"
 
-#define ENABLE_RESTART 1 // allow software reset
-#define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
-#define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
 fsbT default_sender;
-
-u16 msgid;
-
 
 struct c_map {
   const char *fs;
@@ -37,7 +31,7 @@ struct c_map const fc_map[] = { { "down", fer_cmd_DOWN }, { "up", fer_cmd_UP },
 bool 
 cli_parm_to_ferCMD(const char *token, fer_cmd *cmd) {
   int i;
-  dbg_trace();
+  
 
   for (i = 0; i < (sizeof(fc_map) / sizeof(fc_map[0])); ++i) {
     if (strcmp(token, fc_map[i].fs) == 0) {
@@ -111,22 +105,22 @@ bool  asc2memb(const char *s, fer_memb *memb) {
 
 int process_parmHelp(clpar p[], int len);
 
-const char help_parmHelp[]  =
+const char cli_help_parmHelp[]  =
 "type 'help command;'  or 'help all;'\ncommands are: ";
 
 
 static struct parm_handler handlers[] = {
-                      { "send", process_parmSend, help_parmSend },
-                      { "cmd", process_parmSend, help_parmSend }, // alias
-                      { "config", process_parmConfig, help_parmConfig },
-                      { "mcu", process_parmMcu, help_parmMcu },
-                      { "timer", process_parmTimer, help_parmTimer },
-                      { "auto", process_parmTimer, help_parmTimer }, // alias
-                      { "help", process_parmHelp, help_parmHelp },
+                      { "send", process_parmSend, cli_help_parmSend },
+                      { "cmd", process_parmSend, cli_help_parmSend }, // alias
+                      { "config", process_parmConfig, cli_help_parmConfig },
+                      { "mcu", process_parmMcu, cli_help_parmMcu },
+                      { "timer", process_parmTimer, cli_help_parmTimer },
+                      { "auto", process_parmTimer, cli_help_parmTimer }, // alias
+                      { "help", process_parmHelp, cli_help_parmHelp },
 #ifdef USE_PAIRINGS
-                      { "pair", process_parmPair, help_parmPair},
+                      { "pair", process_parmPair, cli_help_parmPair},
 #endif
-                      { "shpref", process_parmShpref, help_parmShpref},
+                      { "shpref", process_parmShpref, cli_help_parmShpref},
   };
 
 const struct parm_handlers parm_handlers = {

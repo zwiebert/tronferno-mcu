@@ -4,25 +4,22 @@
  *  Created on: 08.09.2018
  *      Author: bertw
  */
-#include "app/proj_app_cfg.h"
-
+#include "app_config/proj_app_cfg.h"
 #include "timer_data_fs.h"
-
-
 #include "config/config.h"
 #include "storage/storage.h"
+#include "misc/int_types.h"
+#include "debug/debug.h"
 
-#define TEST_THIS_MODULE 0
-
-#if TEST_THIS_MODULE
-#define DB(x) x
-#define DB2(x)
-#else
+#ifndef TEST_HOST
+#define printf ets_printf
 #define DB(x) do { if (C.app_verboseOutput >= vrbDebug) { x; } } while(0)
 #define DB2(x) DB(x)
+#else
+#include <stdio.h>
+#define DB(x) x
+#define DB2(x)
 #endif
-#define printf ets_printf
-
 
 
 ////////////////// private ///////////////////////////////////////////////////////////////
@@ -41,12 +38,12 @@ gm_to_file_name (u8 g, u8 m) {
 }
 
 static bool  save_data2(timer_data_t *p, const char *file_name) {
-  return write_to_file(file_name, p, sizeof (timer_data_t));
+  return stor_fileWrite(file_name, p, sizeof (timer_data_t));
 }
 
 
 static bool  read_data2(timer_data_t *p, const char *file_name) {
-  return read_from_file(file_name, p, sizeof (timer_data_t));
+  return stor_fileRead(file_name, p, sizeof (timer_data_t));
 }
 
 static int  delete_shadowded_files(u8 group, u8 memb) {
@@ -55,7 +52,7 @@ static int  delete_shadowded_files(u8 group, u8 memb) {
   for (g = 0; g <= 7; ++g) {
     for (m = 0; m <= 7; ++m) {
       if ((group == 0 || group == g) && (memb == 0 || memb == m)) {
-        if (delete_file(gm_to_file_name(g, m))) {
+        if (stor_fileDelete(gm_to_file_name(g, m))) {
           DB2(printf("shadow deleted: g=%d, m=%d, fid=%s\n", (int)g, (int)m, gm_to_file_name(g, m)));
           ++result;
         }
@@ -67,6 +64,9 @@ static int  delete_shadowded_files(u8 group, u8 memb) {
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 
+bool erase_timer_data_fs(u8 g, u8 m) {
+  return delete_shadowded_files(g, m) > 0;
+}
 
 bool  save_timer_data_fs(timer_data_t *p, u8 g, u8 m) {
   bool result = false;

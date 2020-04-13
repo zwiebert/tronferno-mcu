@@ -20,15 +20,24 @@ TEST_BUILD_DIR_BASE=  build dir for esp32 unit tests
 Targets:
 
 clean:
+all:
+http_proxy: start HTTP proxy for developing HTTP content and updating FHEM modules
 
 esp32-all:   build esp32 firmware
 esp32-clean: delete built esp32 files
 esp32-lan:   build esp32 firmware with LAN support
-esp32-flash: build and flash
+esp32-flash: write flash
+
+esp32-ocd: run openocd server
+esp32-ocd-loop: run openocd server in a loop, so it will wait and restart after e.g. flash-ocd is done
+esp32-flash-ocd: kill running openocd server and openocd to write to flash
+esp32-flash-ocd: ...like above, but write app-image only
 
 esp32-test-build: build test firmware
 esp32-test-flash: build and flash test firmware
 esp32-test-run: run python script to check test results
+esp32-test-all: build, flash and run tests
+
 
 
 esp8266-erase:       optional erases flash. any configuration data and stored files are lost

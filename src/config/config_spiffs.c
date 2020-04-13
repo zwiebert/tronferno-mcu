@@ -5,9 +5,9 @@
  *      Author: bertw
  */
 
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
-#if ENABLE_SPIFFS
+#ifndef NO_SPIFFS
 
 #include "config_spiffs.h"
 

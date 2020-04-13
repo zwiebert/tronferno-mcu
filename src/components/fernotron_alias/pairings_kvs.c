@@ -1,11 +1,12 @@
-#include "app/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "fernotron_alias/pairings.h"
 #include <stdio.h>
 #include <string.h>
 #include "userio_app/status_output.h"
 #include "key_value_store/kvs_wrapper.h"
-
+#include "misc/int_types.h"
+#include "debug/debug.h"
 
 #ifndef DISTRIBUTION
 #define D(x)
@@ -69,12 +70,7 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
 
     gm_PutBit(&gm, g, m, !remove);
 
-    bool not_empty = false;
-    for (g = 0; g <= 7; ++g)
-      if (gm_GetByte(&gm, g) != 0) {
-        not_empty = true;
-        break;
-      }
+    bool not_empty = !gm_isAllClear(&gm);
 
     if (not_empty) {
       success = kvs_rw_blob(handle, key, &gm, sizeof gm, true);
