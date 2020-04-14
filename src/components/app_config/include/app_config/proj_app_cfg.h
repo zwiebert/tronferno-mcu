@@ -27,6 +27,7 @@
 #define USE_JSON
 #define USE_CLI_MUTEX
 #define USE_OTA
+#define USE_TXTIO_MUTEX
 
 #define USE_FREERTOS
 
