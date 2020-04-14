@@ -18,6 +18,6 @@ extern void (*ferCb_beforeAnySend)(fmsg_type msg_type, const fsbT *fsb, const fe
 extern void (*ferCb_rawMessageReceived)(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *fmsg);
 extern void (*ferCb_plainMessageReceived)(const fsbT *fsb);
 extern void (*ferCb_rtcMessageReceived)(fer_rawMsg *fmsg);
-extern void (*ferCb_timerMessageReceived)(timer_data_t *tdr);
+extern void (*ferCb_timerMessageReceived)(fer_rawMsg *fmsg);
 
 #endif /* COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_CALLBACKS_H_ */
