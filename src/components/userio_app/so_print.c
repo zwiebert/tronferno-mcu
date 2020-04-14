@@ -52,7 +52,6 @@ void  so_print_timer_as_text(u8 g, u8 m, bool wildcard) {
   timer_data_t tdr;
   char buf[10];
   u8 g_res = g, m_res = m;
-  // read_gm_bitmask("MANU", &manual_bits, 1); //FIXME: not needed
   bool f_manual = GET_BIT(manual_bits[g], m);
 
   if (so_cco) cli_out_timer_reply_entry(NULL, NULL, 1);
@@ -110,7 +109,6 @@ void  so_timer_to_json(u8 g, u8 m, bool wildcard) {
     }
 
     {
-      extern gm_bitmask_t manual_bits; //FIXME
       bool f_manual = GET_BIT(manual_bits[g], m);
       char flags[10], *p = flags;
       *p++ = f_manual ? 'M' : 'm';

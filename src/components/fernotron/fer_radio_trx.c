@@ -10,10 +10,6 @@
 #include "fernotron/extern.h"
 #include "app/loop.h"
 
-#ifndef MCU_ESP8266
-#include "esp_attr.h" //XXX: for eclipse
-#endif
-
 //  the same timings relative to ticks of interrupt frequency
 #define FER_PRE_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_DCK)
 #define FER_PRE_WIDTH_MIN_TCK   DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_MIN_DCK)
