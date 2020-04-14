@@ -105,9 +105,7 @@ static int error;
 
 volatile u8 frx_messageReceived;
 
-#define rbuf (&message_buffer)
-
-#define rxbuf_current_byte() (&rbuf->cmd.bd[0] + received_byte_ct)
+#define rxbuf_current_byte() (&rxmsg->cmd.bd[0] + received_byte_ct)
 static u16 received_byte_ct;
 static u16 bytesToReceive;
 #define getBytesToReceive() (bytesToReceive + 0)
@@ -251,8 +249,8 @@ static void IRAM_ATTR frx_tick_receive_message() {
     switch (getBytesToReceive()) {
 
     case BYTES_MSG_PLAIN:
-      if ((!error && fer_OK == frx_verify_cmd(rbuf->cmd.bd))) {
-        if (FRB_GET_CMD(rbuf->cmd.bd) == fer_cmd_Program && FRB_ADDR_IS_CENTRAL(rbuf->cmd.bd)) {
+      if ((!error && fer_OK == frx_verify_cmd(rxmsg->cmd.bd))) {
+        if (FRB_GET_CMD(rxmsg->cmd.bd) == fer_cmd_Program && FRB_ADDR_IS_CENTRAL(rxmsg->cmd.bd)) {
           bytesToReceive = BYTES_MSG_RTC;
         } else {
           frx_messageReceived = MSG_TYPE_PLAIN;
@@ -263,7 +261,7 @@ static void IRAM_ATTR frx_tick_receive_message() {
       break;
 
     case BYTES_MSG_RTC:
-      if (FRB_GET_FPR0_IS_RTC_ONLY(rbuf->rtc.bd)) {
+      if (FRB_GET_FPR0_IS_RTC_ONLY(rxmsg->rtc.bd)) {
         frx_messageReceived = MSG_TYPE_RTC;
 
       } else {
@@ -285,7 +283,7 @@ void  IRAM_ATTR frx_tick() {
   old_rx_input = rx_input;
 
   // receive and decode input
-  if (!(frx_messageReceived || ftx_messageToSend_isReady || msgBuf_isLocked)) {
+  if (!(frx_messageReceived || ftx_messageToSend_isReady)) {
 
     if ((prgTickCount && !--prgTickCount) || (IS_P_INPUT && nTicks > veryLongPauseLow_Len)) {
       frx_clear();
@@ -293,14 +291,6 @@ void  IRAM_ATTR frx_tick() {
 
     frx_tick_receive_message();
 
-  }
-
-  if (msgBuf_requestLock) {
-    if (!msgBuf_isLocked)
-      frx_clear();
-    msgBuf_isLocked = true;
-  } else {
-    msgBuf_isLocked = false;
   }
 
   // measure the time between input edges
@@ -407,9 +397,6 @@ static void  IRAM_ATTR ftx_tick_send_message() {
     init_counter();
     mcu_put_txPin(0);
 
-    if (ftx_messageToSend_wordCount >= (2 * BYTES_MSG_RTC)) {
-     --msgBuf_requestLock; // the same as calling recv_lockBuffer(false);
-    }
     ftx_MSG_TRANSMITTED_ISR_cb();
   }
 }
