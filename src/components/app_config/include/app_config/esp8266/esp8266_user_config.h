@@ -18,6 +18,7 @@ extern const char *const build_time;
 #undef USE_ESP_GET_TIME
 #define CONFIG_GPIO_SIZE 17
 #undef POSIX_TIME
+#undef USE_TXTIO_MUTEX
 
 #include "user_interface.h"
 #define IRAM_ATTR  __attribute__((section(".iram0.text")))

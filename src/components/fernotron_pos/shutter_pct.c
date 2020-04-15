@@ -16,12 +16,13 @@
 #include "cli_app/cli_fer.h"
 #include "cli/mutex.h"
 #include "misc/time/run_time.h"
+#include "misc/time/periodic.h"
 
 #include "move.h"
 
 #ifndef DISTRIBUTION
 #define DB_INFO 0
-#define DT(x) x
+#define DT(x)
 #define D(x) x
 #else
 #define DB_INFO 0
@@ -181,12 +182,14 @@ statPos_printAllPcts() {
 
 static void ferPos_autoSavePositions_iv(int interval_ts) {
   DT(ets_printf("%s: interval_tx=%d\n", __func__, interval_ts));
-  static u32 next_save_pos;
-  if (pos_map_changed && next_save_pos < get_now_time_ts()) {
-    next_save_pos = get_now_time_ts() + interval_ts;
-    u8 g, mask = pos_map_changed;
+  static unsigned next_save_pos;
+  u8 mask = pos_map_changed;
+  if (mask && periodic_ts(interval_ts, &next_save_pos)) {
+    fpos_POSTIONS_SAVED_cb();
+    next_save_pos = 0;
     pos_map_changed = 0;
 
+    u8 g;
     for (g = 0; mask; ++g, (mask >>= 1)) {
       if ((mask & 1) == 0)
         continue;
@@ -194,8 +197,6 @@ static void ferPos_autoSavePositions_iv(int interval_ts) {
       statPos_pctsByGroup_store(g, pos_map[g]);
       D(io_printf_v(vrbDebug, "autosave_pos: g=%d\n", (int)g));
     }
-
-    fpos_POSTIONS_SAVED_cb();
   }
 }
 

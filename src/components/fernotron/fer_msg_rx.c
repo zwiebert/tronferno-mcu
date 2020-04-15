@@ -17,41 +17,29 @@ void (*ferCb_rawMessageReceived)(fmsg_type msg_type, fsbT *fsb, fer_rawMsg *fmsg
 
 void (*ferCb_plainMessageReceived)(const fsbT *fsb);
 void (*ferCb_rtcMessageReceived)(fer_rawMsg *fmsg);
-void (*ferCb_timerMessageReceived)(timer_data_t *tdr);
+void (*ferCb_timerMessageReceived)(fer_rawMsg *fmsg);
 
 fsbT last_received_sender;
 
 static void notify_rawMessageReceived(fmsg_type msg_type) {
   if (ferCb_rawMessageReceived)
     ferCb_rawMessageReceived(msg_type, &last_received_sender, rxmsg);
-  frx_clear();
 }
 
 static void notify_plainMessageReceived() {
-  frx_clear();
-  if (ferCb_plainMessageReceived) {
+  if (ferCb_plainMessageReceived)
     ferCb_plainMessageReceived(&last_received_sender);
-  }
+
 }
 
 static void notify_rtcMessageReceived() {
-  if (!ferCb_rtcMessageReceived) {
-    frx_clear();
-    return;
-  }
-  assert(!"implemented"); // XXX
-  frx_clear();
-  //ferHook_rtcMessageReceived(xxx); //XXX
+  if (ferCb_rtcMessageReceived)
+    ferCb_rtcMessageReceived(rxmsg);
 }
 
 static void notify_timerMessageReceived() {
-  if (!ferCb_timerMessageReceived) {
-    frx_clear();
-    return;
-  }
-  assert(!"implemented"); // XXX
-  frx_clear();
-  //ferHook_timerMessageReceived(xxx); //XXX
+  if (ferCb_timerMessageReceived)
+    ferCb_timerMessageReceived(rxmsg);
 }
 
 static void notify_messageReceived(fmsg_type msg_type) {
@@ -88,6 +76,7 @@ void fer_rx_loop() {
     if (fmsg_raw_checksumsVerify(rxmsg, frx_messageReceived)) {
       notify_rawMessageReceived(msgType);
       notify_messageReceived(msgType);
+      frx_clear();
     }
   }
 #endif

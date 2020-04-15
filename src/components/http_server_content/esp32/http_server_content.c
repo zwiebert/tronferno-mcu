@@ -7,14 +7,12 @@
 #include <mbedtls/base64.h>
 
 #include <esp_http_server.h>
-
+#include "net/http/server/http_server.h"
 #include "userio/status_json.h"
 #include "config/config.h"
 #include "cli_app/cli_imp.h"
 #include "misc/int_types.h"
 #include "cli/mutex.h"
-
-bool check_access_allowed(httpd_req_t *req); //XXX move this to a header file
 
 static const char *TAG="APP";
 

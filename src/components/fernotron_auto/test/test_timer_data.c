@@ -48,3 +48,8 @@ TEST_CASE("save and restore timer data", "[fernotron_auto]") {
   test_save_and_restore();
 }
 
+#ifdef TEST_HOST
+#include "config/config.h"
+config C;
+#endif
+

@@ -17,17 +17,12 @@
 #include "nvs_flash.h"
 #include "misc/int_types.h"
 
-static const char *TAG = "simple_ota_example";
-extern const u8 server_cert_pem_start[] asm("_binary_ca_cert_pem_start");
+static const char *TAG = "ESP32_OTA";
+extern const u8 ca_cert_pem[];
 
 static ota_state_T state;
 
 ota_state_T ota_getState(void) { return state; }
-
-/* The event group allows multiple bits for each event,
-   but we only care about one event - are we connected
-   to the AP with an IP? */
-const int CONNECTED_BIT = BIT0;
 
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
@@ -63,7 +58,7 @@ void simple_ota_example_task(void * pvParameter) {
 
   // ESP_LOGI(TAG, "Starting OTA example");
 
-  esp_http_client_config_t config = { .url = Firmware_url, .cert_pem = (char *) server_cert_pem_start, .event_handler = _http_event_handler, };
+  esp_http_client_config_t config = { .url = Firmware_url, .cert_pem = (char *) ca_cert_pem, .event_handler = _http_event_handler, };
   //vTaskDelete(NULL);
   state = ota_RUN;
   esp_err_t ret = esp_https_ota(&config);
@@ -82,22 +77,6 @@ bool ota_doUpdate(const char *firmware_url) {
   strcpy (Firmware_url, firmware_url);
   xTaskCreate(&simple_ota_example_task, "ota_example_task", 16384, NULL, 5, NULL);
   return false;
-}
-
-#if 0
-void ota_loop() { // TODO: under construction
-  switch (state) {
-  case ota_NONE:
-      return;
-
-
-  }
-  state = ota_NONE;
-}
-#endif
-void ota_setup()
-{
-
 }
 
 #endif

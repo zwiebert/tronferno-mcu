@@ -63,7 +63,7 @@ int process_parmHelp(clpar p[], int len) {
   }
 
   io_puts("\ncommon options:\n"
-      "mid=N  N is used as an ID in the cli_replyResult\n");
+      "mid=N  N is used as an ID in the cli_reply\n");
 
   return 0;
 }

@@ -21,9 +21,9 @@ static void  cli_out_top_tag(void) {
 
 static void  cli_out_reply_tag(void) {
   if (cli_msgid) {
-    io_puts("cli_replyResult="), io_putd(cli_msgid), io_puts(": ");
+    io_puts("cli_reply="), io_putd(cli_msgid), io_puts(": ");
   } else {
-    io_puts("cli_replyResult: ");
+    io_puts("cli_reply: ");
   }
 }
 
