@@ -13,7 +13,6 @@
 #include "app_config/callbacks.h"
 
 extern volatile uint8_t frx_messageReceived;
-
 extern volatile bool ftx_messageToSend_isReady;
 extern volatile uint16_t ftx_messageToSend_wordCount;
 
@@ -25,6 +24,7 @@ void frx_clear(void); // call it after received data buffers has been processed 
 void frx_tick(void);  // call it from timer tick interrupt
 void ftx_tick(void);  // call it from timer tick interrupt
 
+void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type);
 
 
 // event notification callback functions

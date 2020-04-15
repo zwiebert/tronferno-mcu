@@ -9,6 +9,7 @@
 #include "fer_msg_tx.h"
 #include "fernotron/extern.h"
 #include "app/loop.h"
+#include "debug/debug.h"
 
 //  the same timings relative to ticks of interrupt frequency
 #define FER_PRE_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_DCK)
@@ -29,6 +30,12 @@
 #define FER_BIT_LONG_TCK        DATA_CLOCK_TO_TICKS(FER_BIT_LONG_DCK)
 #define FER_BIT_SAMP_POS_TCK    DATA_CLOCK_TO_TICKS(FER_BIT_SAMP_POS_DCK)
 
+
+void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type) {
+  precond (!ftx_messageToSend_isReady);
+  ftx_messageToSend_wordCount = 2 * ((msg_type == MSG_TYPE_PLAIN) ? BYTES_MSG_PLAIN : (msg_type == MSG_TYPE_RTC) ? BYTES_MSG_RTC : BYTES_MSG_TIMER);
+  ftx_messageToSend_isReady = true;
+}
 
 /////////////////////////// interrupt code //////////////////////
 #if defined FER_RECEIVER || defined FER_TRANSMITTER
