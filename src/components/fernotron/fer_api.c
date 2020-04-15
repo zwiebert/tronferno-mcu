@@ -50,18 +50,12 @@ timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
 }
 
 bool fill_rtc_buf(fsbT *fsb, time_t rtc) {
-  if (!ftrx_lockBuffer(true))
-    return false;
-
   fmsg_raw_init(txmsg);
   fmsg_raw_from_rtc(txmsg, rtc, true);
   return true;
 }
 
 bool fill_timer_buf(fsbT *fsb, time_t rtc, timer_data_t *tdr) {
-
-  if (!ftrx_lockBuffer(true))
-    return false;
 
   fmsg_raw_init(txmsg);
 

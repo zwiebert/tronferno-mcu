@@ -27,6 +27,7 @@
 #define USE_JSON
 #define USE_CLI_MUTEX
 #define USE_OTA
+#define USE_TXTIO_MUTEX
 
 #define USE_FREERTOS
 
@@ -41,7 +42,7 @@
 #define CONFIG_LOG_DEFAULT_LEVEL 3
 #endif
 
-#define USE_EG  //XXX using eventgroup causes SIGTRAP exception
+#define USE_EG
 #define USE_AP_FALLBACK
 #define CHECK_NETWORK_INTERVAL 15
 #define LOOP_PERIODIC_INTERVAL_MS 100

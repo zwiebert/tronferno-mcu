@@ -41,7 +41,7 @@ static void plainMessageReceived_cb(const fsbT *fsb) {
 #ifdef USE_PAIRINGS
   pair_auto_set_check(fsb);
 #endif
-  { //TODO: improve shutter states
+  {
     u8 g = 0, m = 0;
 
     if (FSB_ADDR_IS_CENTRAL(fsb)) {

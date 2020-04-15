@@ -34,7 +34,7 @@ enum rtc_wday {
 };
 
 // values of fpr0_FlagBits.
-enum fpr0_FlagBitsValues { // FIXME: there may be more flag bits in use. try to find out
+enum fpr0_FlagBitsValues {
   flag_Random, // shutter opens/closes at random times (theft protection during longer absence). (FIXME: ignored ???)
   flag_1,  // ???
   flag_DST,  // daylight saving time. if set, the shutter will add 1 hour to its saved astro time table. (never ignored)

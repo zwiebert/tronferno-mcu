@@ -98,7 +98,6 @@ sep_disable(void) {
     so_output_message(SO_SEP_DISABLE, 0);
     up_pressed = down_pressed = false;
     sep_buttons_enabled = false;
-    ftrx_lockBuffer(false); // unblock transceiver
   }
 }
 
@@ -129,7 +128,6 @@ sep_enable(fsbT *fsb) {
     so_output_message(SO_SEP_ENABLE, 0);
     sep_fsb = *fsb;
     sep_buttons_enabled = true;
-    ftrx_lockBuffer(true); // make sure we have the transceiver for ourselves (or at least block large data being send or received)
     TIMEOUT_SET();
     sep_ENABLE_cb();
     return true;

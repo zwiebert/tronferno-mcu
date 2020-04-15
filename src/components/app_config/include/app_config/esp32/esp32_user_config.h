@@ -28,6 +28,12 @@
 #undef USE_LAN
 #endif
 
+#ifdef DISTRIBUTION
+#undef USE_TCPS
+#else
+#undef USE_TCPS
+#endif
+
 
 #include "esp_attr.h"
 
