@@ -2,6 +2,7 @@
 #define COMPONENTS_APP_CONFIG_INCLUDE_APP_CONFIG_ESP32_ESP32_CALLBACKS_H_
 
 #include "../callbacks.h"
+#include <stdint.h>
 
 void loop_setBit_rxLoop_fromISR(void);
 #define frx_MSG_RECEIVED_ISR_cb loop_setBit_rxLoop_fromISR
@@ -9,7 +10,7 @@ void loop_setBit_rxLoop_fromISR(void);
 void loop_setBit_txLoop_fromISR(void);
 #define ftx_MSG_TRANSMITTED_ISR_cb  loop_setBit_txLoop_fromISR
 
-void loop_setBit_txLoop(void);
+void loop_setBit_txLoop(uint32_t time_ts);
 #define ftx_READY_TO_TRANSMIT_cb loop_setBit_txLoop
 
 #ifdef USE_SEP

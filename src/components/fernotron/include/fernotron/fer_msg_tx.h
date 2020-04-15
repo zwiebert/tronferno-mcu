@@ -29,7 +29,7 @@ void fer_tx_loop(void);
 int ftx_get_msgPendingCount();
 
 #ifndef ftx_READY_TO_TRANSMIT_cb
-#define ftx_READY_TO_TRANSMIT_cb()
+#define ftx_READY_TO_TRANSMIT_cb(time_ts)
 #endif
 
 #endif /* USER_MAIN_FER_SENDER_H_ */

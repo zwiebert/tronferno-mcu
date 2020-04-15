@@ -1,4 +1,5 @@
 #include "main.h"
+#include "misc/time/run_time.h"
 
 #ifdef USE_NETWORK
 void lfa_gotIpAddr_cb() {
@@ -16,8 +17,27 @@ void lfa_ntpSync(void) {
 #endif
 
 #ifdef FER_TRANSMITTER
-void loop_setBit_txLoop() {
+static void tmr_setBit_txLoop_cb(TimerHandle_t xTimer) {
   lf_setBit(lf_loopFerTx);
+}
+
+void tmr_setBit_txLoop_start(u32 interval_ms) {
+  TimerHandle_t tmr;
+  int interval = pdMS_TO_TICKS(interval_ms);
+  tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, (void*) lf_createWifiAp, tmr_setBit_txLoop_cb);
+  if (xTimerStart(tmr, 10 ) != pdPASS) {
+    printf("CheckNetworkTimer start error");
+  }
+}
+
+void loop_setBit_txLoop(u32 time_ts) {
+  u32 now_ts = get_now_time_ts();
+  if (now_ts >= time_ts) {
+    lf_setBit(lf_loopFerTx);
+    return;
+  }
+  u32 delay_ms = (time_ts - now_ts) * 100;
+  tmr_setBit_txLoop_start(delay_ms);
 }
 void IRAM_ATTR loop_setBit_txLoop_fromISR() {
   lf_setBit_ISR(lf_loopFerTx, true);

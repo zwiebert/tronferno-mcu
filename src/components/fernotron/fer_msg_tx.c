@@ -33,6 +33,8 @@ u8 sf_head_, sf_tail_;
 #define sf_isEmpty() (sf_head_ == sf_tail)
 #define sf_isFull()  (sf_head_ == (((sf_tail+1) & (sf_SIZE-1))))
 
+#define sf_getHead() (&sf[sf_head])
+
 #ifdef UNUSED_STATIC_FUNCTION
 static fsbT *sf_shift() {
   if (sf_isEmpty())
@@ -75,7 +77,7 @@ static void fer_send_checkQuedState() {
   if (sf_isEmpty())
     return;
 
-  ftx_READY_TO_TRANSMIT_cb();
+  ftx_READY_TO_TRANSMIT_cb(sf_getHead()->s10);
 }
 
 bool 
