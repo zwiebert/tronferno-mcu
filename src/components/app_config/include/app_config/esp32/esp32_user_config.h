@@ -29,7 +29,7 @@
 #endif
 
 #ifdef DISTRIBUTION
-#undef USE_TCPS_TASK
+#undef USE_TCPS
 #else
 #undef USE_TCPS
 #endif
