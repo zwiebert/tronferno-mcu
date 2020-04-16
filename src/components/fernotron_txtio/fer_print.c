@@ -105,8 +105,9 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 #define fmsg_get_data(msg) ((u8(*)[FER_PRG_BYTE_CT])(msg)->rtc.bd)
 typedef u8(*fmsg_data)[FER_PRG_BYTE_CT];
 
-void  fmsg_print(const fer_rawMsg *msg, fmsg_type t, bool verbose) {
+void  fmsg_print(const char *tag, const fer_rawMsg *msg, fmsg_type t, bool verbose) {
 
+  io_puts(tag);
   frb_printPacket(&msg->cmd);
 
 #ifndef FER_RECEIVER_MINIMAL
@@ -127,11 +128,13 @@ void  fmsg_print(const fer_rawMsg *msg, fmsg_type t, bool verbose) {
 #endif
 }
 
-void  fmsg_print_as_cmdline(const fer_rawMsg *msg, fmsg_type t) {
+void  fmsg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fmsg_type t) {
   const fsbT *fsb = (fsbT*) msg;
 
-  if (t != MSG_TYPE_PLAIN)
+  if (t != MSG_TYPE_PLAIN && t !=  MSG_TYPE_PLAIN_DOUBLE)
     return; // ignore long messages for now
+
+  io_puts(tag);
 
   fer_cmd c = FSB_GET_CMD(fsb);
   u32 id = FSB_GET_DEVID(fsb);

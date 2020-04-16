@@ -23,14 +23,14 @@
 
 static void rawMessageReceived_cb(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *rxmsg) {
   if (msg_type == MSG_TYPE_PLAIN || msg_type == MSG_TYPE_PLAIN_DOUBLE) {
-    io_puts("R:"), fmsg_print(rxmsg, msg_type, (C.app_verboseOutput >= vrbDebug));
-    io_puts((msg_type == MSG_TYPE_PLAIN_DOUBLE) ? "c:" : "C:"), fmsg_print_as_cmdline(rxmsg, msg_type);
+    fmsg_print("R:", rxmsg, msg_type, (C.app_verboseOutput >= vrbDebug));
+    fmsg_print_as_cmdline((msg_type == MSG_TYPE_PLAIN_DOUBLE ? "c:" : "C:"), rxmsg, msg_type);
   }
 
 #ifndef FER_RECEIVER_MINIMAL
 
   if (msg_type == MSG_TYPE_RTC || msg_type == MSG_TYPE_TIMER) {
-    io_puts("timer frame received\n"), fmsg_print(rxmsg, msg_type, (C.app_verboseOutput >= vrbDebug));
+    fmsg_print("timer frame received\n", rxmsg, msg_type, (C.app_verboseOutput >= vrbDebug));
   }
 #endif
 
@@ -61,8 +61,8 @@ static void beforeFirstSend_cb(const fsbT *fsb) {
 static void beforeAnySend_cb(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *txmsg) {
   if (TXTIO_IS_VERBOSE(vrb1)) {
     fmsg_type t = TXTIO_IS_VERBOSE(vrb2) ? msg_type : MSG_TYPE_PLAIN;
-    io_puts("S:"), fmsg_print(txmsg, t, TXTIO_IS_VERBOSE(vrbDebug));
-    io_puts("C:"), fmsg_print_as_cmdline(txmsg, t);
+    fmsg_print("S:", txmsg, t, TXTIO_IS_VERBOSE(vrbDebug));
+    fmsg_print_as_cmdline("SC:", txmsg, t);
   }
 }
 
