@@ -30,21 +30,30 @@
 #define FER_BIT_LONG_TCK        DATA_CLOCK_TO_TICKS(FER_BIT_LONG_DCK)
 #define FER_BIT_SAMP_POS_TCK    DATA_CLOCK_TO_TICKS(FER_BIT_SAMP_POS_DCK)
 
+#ifndef DISTRIBUTION
+//#define FTRX_TEST_LOOP_BACK
+#endif
 
-void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type) {
-  precond (!ftx_messageToSend_isReady);
-  ftx_messageToSend_wordCount = 2 * ((msg_type == MSG_TYPE_PLAIN) ? BYTES_MSG_PLAIN : (msg_type == MSG_TYPE_RTC) ? BYTES_MSG_RTC : BYTES_MSG_TIMER);
-  ftx_messageToSend_isReady = true;
-}
+#ifdef FTRX_TEST_LOOP_BACK
+bool ftrx_testLoopBack_getRxPin();
+#define mcu_get_rxPin ftrx_testLoopBack_getRxPin
+#else
+
+#endif
+
+
+#ifdef FTRX_COMMON_COUNTERS
+#endif
+
+struct ftrx_counter {
+  u16 Words;
+  u8 Ticks, Bits;
+};
 
 /////////////////////////// interrupt code //////////////////////
 #if defined FER_RECEIVER || defined FER_TRANSMITTER
-// counters
-static u8 CountTicks, CountBits;
-static u16 CountWords;
 // buffer to store received RF data
 static u16 dtRecvBuffer[2];
-#define dtSendBuf (dtRecvBuffer[0])
 
 /*  "t if VAL contains an even number of 1 bits" */
 static bool IRAM_ATTR is_bits_even(u8 val) {
@@ -75,6 +84,8 @@ static u16  IRAM_ATTR fer_add_word_parity(u8 data_byte, int pos) {
 
 #ifdef FER_RECEIVER
 
+static struct ftrx_counter frxCount;
+
 #define bitLen               DATA_CLOCK_TO_TICKS(FER_BIT_WIDTH_DCK)
 // bit is 1, if data edge comes before sample position (/SHORT\..long../)
 // bit is 0, if data edge comes after sample position  (/..LONG..\short/)
@@ -97,8 +108,8 @@ static u16  IRAM_ATTR fer_add_word_parity(u8 data_byte, int pos) {
 static i8 preBits;
 static i8 input_edge; // Usually 0, but -1 or +1 at the tick where input has changed
 static u16 aTicks, pTicks, nTicks;
-#define POS__IN_DATA (CountTicks > 0 && CountBits < FER_CMD_BIT_CT)
-#define POS__NOT_IN_DATA ((CountTicks == 0) && (CountBits == 0))
+#define POS__IN_DATA (frxCount.Ticks > 0 && frxCount.Bits < FER_CMD_BIT_CT)
+#define POS__NOT_IN_DATA ((frxCount.Ticks == 0) && (frxCount.Bits == 0))
 //#define PUTBIT(dst,bit,val) (put_bit_16(&dst, (bit), (val)))
 #define PUTBIT(dst,bit,val) ((val) ? (dst |= (1 << (bit))) : (dst &= ~(1 << (bit))))
 
@@ -212,7 +223,7 @@ static bool  IRAM_ATTR frx_wait_and_sample(void) {
     }
 
   } else if (dataEdge) {
-    PUTBIT(dtRecvBuffer[CountWords & 1], CountBits, SAMPLE_BIT);
+    PUTBIT(dtRecvBuffer[frxCount.Words & 1], frxCount.Bits, SAMPLE_BIT);
   }
 
   return preBits == FER_PRE_BIT_CT;
@@ -221,15 +232,15 @@ static bool  IRAM_ATTR frx_wait_and_sample(void) {
 static bool  IRAM_ATTR frx_receive_message(void) {
 
   if (frx_wait_and_sample()) {
-    if (ct_incr(CountTicks, bitLen)) {
-      if (ct_incr(CountBits, FER_CMD_BIT_CT)) {
+    if (ct_incr(frxCount.Ticks, bitLen)) {
+      if (ct_incr(frxCount.Bits, FER_CMD_BIT_CT)) {
         // word complete
-        if ((CountWords & 1) == 1) {
+        if ((frxCount.Words & 1) == 1) {
           // word pair complete
           frx_recv_decodeByte(rxbuf_current_byte());
           frx_incr_received_bytes();
         }
-        ++CountWords;
+        ++frxCount.Words;
         if (hasAllBytesReceived()) {
           return true; // success
         }
@@ -241,7 +252,7 @@ static bool  IRAM_ATTR frx_receive_message(void) {
 }
 
 void IRAM_ATTR  frx_clear(void) {
-  CountTicks = CountBits = CountWords = 0;
+  frxCount = (struct ftrx_counter) {};
   preBits = 0;
   error = 0;
   frx_messageReceived = 0;
@@ -282,15 +293,17 @@ static void IRAM_ATTR frx_tick_receive_message() {
   }
 }
 
-void  IRAM_ATTR frx_tick() {
-
-  // sample input pin and detect input edge
+void IRAM_ATTR frx_sampleInput() {
   rx_input = mcu_get_rxPin();
+}
+void  IRAM_ATTR frx_tick() {
+  // sample input pin and detect input edge
+
   input_edge = (old_rx_input == rx_input) ? 0 : (IS_P_INPUT ? +1 : -1);
   old_rx_input = rx_input;
 
   // receive and decode input
-  if (!(frx_messageReceived || ftx_messageToSend_isReady)) {
+  if (!frx_isReceiverBlocked()) {
 
     if ((prgTickCount && !--prgTickCount) || (IS_P_INPUT && nTicks > veryLongPauseLow_Len)) {
       frx_clear();
@@ -320,99 +333,5 @@ void  IRAM_ATTR frx_tick() {
   }
 }
 
-#endif
-
-#ifdef FER_TRANSMITTER
-/////////////////////////// transmitter /////////////////////////
-/////////////////////////// interrupt code //////////////////////
-#undef bitLen
-
-#define bitLen               FER_BIT_WIDTH_DCK
-#define shortPositive_Len    FER_BIT_SHORT_DCK
-#define longPositive_Len     FER_BIT_LONG_DCK
-#define pre_Len              FER_PRE_WIDTH_DCK
-#define pauseHigh_Len        FER_STP_NEDGE_DCK
-
-
-static bool tx_output;   // output line
-volatile u16 ftx_messageToSend_wordCount;
-volatile bool ftx_messageToSend_isReady;
-
-#define make_Word fer_add_word_parity
-#define init_counter() (CountTicks = CountBits = CountWords = 0)
-#define ftx_update_output_preamble() (tx_output = (CountTicks < shortPositive_Len))
-#define advancePreCounter() (ct_incr(CountTicks, pre_Len) && ct_incr(CountBits, FER_PRE_BIT_CT))
-#define advanceStopCounter() (ct_incr(CountTicks, bitLen) && ct_incr(CountBits, FER_STP_BIT_CT))
-#define ftx_update_output_stop() (tx_output = (CountTicks < pauseHigh_Len) && (CountBits == 0))
-
-// sets output line according to current bit in data word
-// a stop bit is sent in CountBits 0 .. 2
-// a data word is sent in CountBits 3 .. 10
-static void  IRAM_ATTR ftx_update_output_data() {
-  int bit = CountBits - FER_STP_BIT_CT;
-
-  if (bit < 0) {  // in stop bit (CountBits 0 .. 2)
-    tx_output = CountBits == 0 && CountTicks < shortPositive_Len;
-  } else { // in data word
-    tx_output = CountTicks < shortPositive_Len || (CountTicks < longPositive_Len && !(dtSendBuf & (1 << bit)));
-  }
-}
-
-static bool  IRAM_ATTR ftx_send_message() {
-  static bool preamble_done, stop_done;
-
-  if (!stop_done) {
-    //send single stop bit before preamble
-    ftx_update_output_stop();
-    stop_done = advanceStopCounter();
-
-  } else if (!preamble_done) {
-    // send preamble
-    ftx_update_output_preamble();
-    if ((preamble_done = advancePreCounter())) {
-      dtSendBuf = make_Word(txmsg->cmd.bd[0], 0);
-    }
-  } else {
-    // send data words + stop bits
-    ftx_update_output_data();
-    // counting ticks until end_of_frame
-    if (ct_incr(CountTicks, bitLen)) {
-      // bit sent
-      if ((ct_incr(CountBits, FER_CMD_BIT_CT + FER_STP_BIT_CT))) {
-        // word + stop sent
-        if (ct_incr(CountWords, ftx_messageToSend_wordCount)) {
-          // line sent
-          stop_done = preamble_done = false;
-          return true; // done
-        } else {
-          dtSendBuf = make_Word(txmsg->cmd.bd[CountWords / 2], CountWords); // load next word
-        }
-      }
-    }
-  }
-  return false; // continue
-}
-
-static void  IRAM_ATTR ftx_tick_send_message() {
-
-  bool done = ftx_send_message();
-  mcu_put_txPin(tx_output);
-
-  if (done) {
-    ftx_messageToSend_isReady = false;
-
-    init_counter();
-    mcu_put_txPin(0);
-
-    ftx_MSG_TRANSMITTED_ISR_cb();
-  }
-}
-
-void IRAM_ATTR  ftx_tick(void) {
-
-  if (ftx_messageToSend_isReady) {
-    ftx_tick_send_message();
-  }
-}
 #endif
 

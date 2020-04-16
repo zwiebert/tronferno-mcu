@@ -18,7 +18,7 @@ void (*ferCb_beforeAnySend)(fmsg_type msg_type, const fsbT *fsb, const fer_rawMs
 static void fer_send_checkQuedState() {
   struct sf *msg;
 
-  if (ftx_messageToSend_isReady)
+  if (ftx_isTransmitterBusy())
     return;
 
   if ((msg = ftx_nextMsg())) {
@@ -57,7 +57,7 @@ bool fer_send_delayed_msg(const fsbT *fsb, fmsg_type msgType, u16 delay, i8 repe
 static bool fer_send_queued_msg(struct sf *msg) {
   static u8 sf_toggle;
 
-  precond(!ftx_messageToSend_isReady);
+  precond(!ftx_isTransmitterBusy());
   precond(msg);
 
   if (msg->sent_ct++ == 0) {
@@ -98,7 +98,7 @@ fsbT* get_fsb(u32 a, u8 g, u8 m, fer_cmd cmd) {
 }
 
 void fer_tx_loop() {
-  if (ftx_messageToSend_isReady)
+  if (ftx_isTransmitterBusy())
     return;
 
   struct sf *msg = ftx_nextMsg();

@@ -16,6 +16,15 @@ extern volatile uint8_t frx_messageReceived;
 extern volatile bool ftx_messageToSend_isReady;
 extern volatile uint16_t ftx_messageToSend_wordCount;
 
+#define frx_hasNewMsg() (!!frx_messageReceived)
+#define ftx_isTransmitterBusy() (!!ftx_messageToSend_isReady)
+
+#ifdef DISTRIBUTION
+#define frx_isReceiverBlocked() (frx_messageReceived || ftx_messageToSend_isReady)
+#else
+#define frx_isReceiverBlocked() (frx_messageReceived)
+#endif
+
 // unlock read buffer after done with data
 void frx_clear(void); // call it after received data buffers has been processed by main thread
 
@@ -26,6 +35,7 @@ void ftx_tick(void);  // call it from timer tick interrupt
 
 void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type);
 
+void frx_sampleInput(); // call this from top of timer ISR handler
 
 // event notification callback functions
 
