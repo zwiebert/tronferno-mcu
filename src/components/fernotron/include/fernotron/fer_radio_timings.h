@@ -56,10 +56,10 @@
 #define FER_STP_WIDTH_MAX_DCK    30
 #define FER_STP_NEDGE_MIN_DCK     1
 #define FER_STP_NEDGE_MAX_DCK     6
-#define FER_PRE_WIDTH_MAX_DCK    10
+#define FER_PRE_WIDTH_MAX_DCK     6
 #define FER_PRE_WIDTH_MIN_DCK     3
 #define FER_PRE_NEDGE_MIN_DCK     1
-#define FER_PRE_NEDGE_MAX_DCK     5
-#define FER_BIT_SAMP_POS_DCK      (FER_BIT_WIDTH_DCK / 2) // for receiving: look if negative edge lies before or after
+#define FER_PRE_NEDGE_MAX_DCK     4
+#define FER_BIT_SAMP_POS_DCK      3 // for receiving: look if negative edge lies before or after
 
 #endif /* USER_MAIN_FER_TIMINGS_H_ */
