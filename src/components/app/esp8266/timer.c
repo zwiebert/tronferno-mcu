@@ -68,22 +68,21 @@ timer1Stop(void) {
 volatile u32 run_time_s_, run_time_ts_;
 
 void IRAM_ATTR timer_handler(void) {
+#ifdef FER_RECEIVER
+  void frx_sampleInput();
+#endif
 
 #ifdef FER_TRANSMITTER
-  if (transmTick == C.app_transm) {
-    {
-      static uint_fast8_t tick_count;
-      if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
-        ftx_tick();
-      }
+  {
+    static uint_fast8_t tick_count;
+    if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
+      ftx_tick();
     }
   }
 #endif
 
 #ifdef FER_RECEIVER
-  if (recvTick == C.app_recv) {
-    frx_tick();
-  }
+  frx_tick();
 #endif
 
   {

@@ -10,8 +10,8 @@
 
 #include "fernotron/fer_msg_attachment.h"
 
-void fmsg_print(const fer_rawMsg *msg, fmsg_type t, bool verbose);
-void fmsg_print_as_cmdline(const fer_rawMsg *msg, fmsg_type t);
+void fmsg_print(const char *tag, const fer_rawMsg *msg, fmsg_type t, bool verbose);
+void fmsg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fmsg_type t);
 
 
 #endif /* USER_MAIN_FER_PRINT_H_ */
