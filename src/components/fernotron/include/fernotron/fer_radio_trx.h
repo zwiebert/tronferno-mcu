@@ -31,6 +31,8 @@ extern volatile uint16_t ftx_messageToSend_wordCount;
 
 // unlock read buffer after done with data
 void frx_clear(void); // call it after received data buffers has been processed by main thread
+struct frx_quality { uint8_t bad_pair_count; };
+void frx_getQuality(struct frx_quality *dst);
 
 // tick should be called from stable timer interrupt
 // do a bit of work each tick

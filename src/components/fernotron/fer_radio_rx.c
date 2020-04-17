@@ -1,5 +1,6 @@
 #include "app_config/proj_app_cfg.h"
 
+#include "fer_radio_parity.h"
 #include <fernotron/fer_msg_plain.h>
 #include "int_timer.h"
 #include <stdlib.h>
@@ -11,6 +12,7 @@
 #include "app/loop.h"
 #include "debug/debug.h"
 #include "misc/int_macros.h"
+
 
 //  the same timings relative to ticks of interrupt frequency
 #define FER_PRE_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_DCK)
@@ -40,103 +42,61 @@ bool ftrx_testLoopBack_getRxPin();
 #define mcu_get_rxPin ftrx_testLoopBack_getRxPin
 #endif
 
+#if defined FER_RECEIVER
 
 struct frx_counter {
   u16 Words;
   u8 Bits, preBits, stopBits;
-  u8 errors;
+  u8 errors; u8 recovered;
 };
-
-/////////////////////////// interrupt code //////////////////////
-#if defined FER_RECEIVER
-// buffer to store received RF data
-static u16 dtRecvBuffer[2];
+static bool input_level, input_edge_pos, input_edge_neg;
+static u16 aTicks, pTicks, nTicks;
+static u16 wordsToReceive;
+// flags
+volatile u8 frx_messageReceived;
+static u16 word_pair_buffer[2];
 static struct frx_counter frxCount;
 
-/*  "t if VAL contains an even number of 1 bits" */
-static bool IRAM_ATTR is_bits_even(u8 val) {
-  val ^= val >> 4;
-  val ^= val >> 2;
-  val ^= val >> 1;
-  val &= 0x01;
-  return (val == 0);
+
+void frx_getQuality(struct frx_quality *dst) {
+  dst->bad_pair_count = frxCount.recovered;
 }
 
-/* "calculate 2bit parity value for DATA_BYTE according to POS" */
-static u8 IRAM_ATTR fer_get_word_parity(u8 data_byte, u8 pos) {
-  u8 result;
-  bool is_even = is_bits_even(data_byte);
-
-  result = ((pos & 1)) ? (is_even ? 3 : 1) : (is_even ? 0 : 2);
-
-  return result;
-}
-
-/* "extend DATA_BYTE with parity according to POS" */
-static u16  IRAM_ATTR fer_add_word_parity(u8 data_byte, int pos) {
-  u16 result = (data_byte | (((u16) fer_get_word_parity(data_byte, pos)) << 8));
-  return result;
-}
-
-
-
+/////////////////////////// interrupt code //////////////////////
 #define bitLen               DATA_CLOCK_TO_TICKS(FER_BIT_WIDTH_DCK)
 // bit is 1, if data edge comes before sample position (/SHORT\..long../)
 // bit is 0, if data edge comes after sample position  (/..LONG..\short/)
 #define SAMPLE_BIT ((pTicks < DATA_CLOCK_TO_TICKS(FER_BIT_SAMP_POS_DCK)))
-
-#define IS_P_INPUT (rx_input == true)
-#define IS_N_INPUT (rx_input == false)
 #define veryLongPauseLow_Len (2 * DATA_CLOCK_TO_TICKS(FER_STP_WIDTH_MAX_DCK))
-
-#define pEdge (input_edge > 0)
-#define nEdge (input_edge < 0)
-
 #define MAX_PRG_TICK_COUNT (DATA_CLOCK_TO_TICKS(FER_PRG_FRAME_WIDTH_DCK) * 2) // FIXME
-
+#define rxbuf_current_byte() (&rxmsg->cmd.bd[0] + (frxCount.Words / 2))
 #define ct_incr(ct, limit) (!((++ct >= limit) ? (ct = 0) : 1))
 #define ct_incrementP(ctp, limit) ((++*ctp, *ctp %= limit) == 0)
 
-static i8 input_edge; // Usually 0, but -1 or +1 at the tick where input has changed
-static u16 aTicks, pTicks, nTicks;
 
-// holds sampled value of input pin
-static bool rx_input;
+static fer_error IRAM_ATTR frx_extract_Byte(const u16 *src, u8 *dst) {
+  bool match = ((0xff & src[0]) == (0xff & src[1]));
+  unsigned count = 0;
+  u8 out_byte = 0x77;
 
-// flags
-volatile u8 frx_messageReceived;
-
-#define rxbuf_current_byte() (&rxmsg->cmd.bd[0] + (frxCount.Words / 2))
-static u16 wordsToReceive;
-
-
-/* "return t if parity is even and position matches parity bit \ 1/3
- on even positions and 0,2 on odd positions)" */
-static bool  IRAM_ATTR fer_word_parity_p(u16 word, u8 pos) {
-  bool result = fer_add_word_parity((word & 0xff), pos) == word;
-  return result;
-}
-
-static fer_error  IRAM_ATTR frx_extract_Byte(const u16 *src, u8 *dst) {
-#if 0
-  if (fer_word_parity_p(src[0], 0)
-      && fer_word_parity_p(src[1], 1)
-      && ((0xff & src[0]) == (0xff & src[1]))) {
-    *dst = src[0];
-    return fer_OK;
-  }
-
-#else
   if (fer_word_parity_p(src[0], 0)) {
-    *dst = src[0];
-    return fer_OK;
-  } else if (fer_word_parity_p(src[1], 1)) {
-    *dst = src[1];
-    return fer_OK;
-  }
-#endif
+    out_byte = src[0];
+    ++count;
 
-  *dst = 0x77;  // error
+  }
+
+  if (fer_word_parity_p(src[1], 1)) {
+    out_byte = src[1];
+    ++count;
+  }
+
+  *dst = out_byte;
+
+  if (count == 2 && match) {
+    return fer_OK;
+  } else if (count == 1) {
+    return fer_PAIR_NOT_EQUAL;
+  }
   return fer_BAD_WORD_PARITY;
 }
 
@@ -157,9 +117,17 @@ static fer_error  IRAM_ATTR frx_verify_cmd(const u8 *dg) {
   return (checksum == dg[i] ? fer_OK : fer_BAD_CHECKSUM);
 }
 
-static void  IRAM_ATTR frx_recv_decodeByte(u8 *dst) {
-  if (fer_OK != frx_extract_Byte(dtRecvBuffer, dst)) {
+static void IRAM_ATTR frx_recv_decodeByte(u8 *dst) {
+  switch (frx_extract_Byte(word_pair_buffer, dst)) {
+  case fer_PAIR_NOT_EQUAL:
+    ++frxCount.recovered;
+    break;
+  case fer_BAD_WORD_PARITY:
     ++frxCount.errors;
+    break;
+  case fer_OK:
+  default:
+    break;
   }
 }
 
@@ -173,7 +141,7 @@ static bool  IRAM_ATTR frx_is_pre_bit(unsigned len, unsigned nedge) {
 
 
 static bool IRAM_ATTR frx_wait_and_sample(void) {
-  if (!pEdge)
+  if (!input_edge_pos)
     return false;
 
   if (frxCount.preBits < 5) {
@@ -193,7 +161,7 @@ static bool IRAM_ATTR frx_wait_and_sample(void) {
   }
 
 
-  PUT_BIT(dtRecvBuffer[frxCount.Words & 1], frxCount.Bits, pTicks < nTicks);
+  PUT_BIT(word_pair_buffer[frxCount.Words & 1], frxCount.Bits, pTicks < nTicks);
   return true;
 }
 
@@ -267,31 +235,37 @@ static void IRAM_ATTR frx_tick_receive_message() {
 
 void IRAM_ATTR frx_sampleInput() {
   bool pin_level = mcu_get_rxPin();
-  input_edge = (rx_input == pin_level) ? 0 : (pin_level ? +1 : -1);
-  rx_input = pin_level;
+
+  input_edge_pos = input_edge_neg = false;
+  if (input_level != pin_level) {
+    if (pin_level)
+      input_edge_pos = true;
+    else
+      input_edge_neg = true;
+  }
+
+  input_level = pin_level;
 }
 
 void IRAM_ATTR frx_tick() {
 
-  if ((IS_P_INPUT && nTicks > veryLongPauseLow_Len)) {
+  if ((input_level && nTicks > veryLongPauseLow_Len)) {
     frx_clear();
   }
-
 
   // receive and decode input
   if (!frx_isReceiverBlocked()) {
     frx_tick_receive_message();
   }
 
-  if (pEdge) {
-    aTicks = 0;
-    pTicks = 0;
+  if (input_edge_pos)
+    aTicks = pTicks = 0;
+  if (input_edge_neg)
     nTicks = 0;
-  }
 
   // measure the time between input edges
   ++aTicks;
-  if (IS_P_INPUT) {
+  if (input_level) {
     ++pTicks;
   } else {
     ++nTicks;
