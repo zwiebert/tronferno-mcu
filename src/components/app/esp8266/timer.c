@@ -79,7 +79,7 @@ void IRAM_ATTR timer_handler(void) {
   {
     static uint_fast8_t tick_count;
     if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
-      ftx_tick();
+      ftx_dck();
     }
   }
 #endif

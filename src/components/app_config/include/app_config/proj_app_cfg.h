@@ -61,6 +61,7 @@
 #undef ACCESS_GPIO
 #else
 #define IRAM_ATTR
+#define DRAM_ATTR
 #error "no supported MCU"
 #endif
 

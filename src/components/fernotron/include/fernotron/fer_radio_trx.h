@@ -37,7 +37,7 @@ void frx_getQuality(struct frx_quality *dst);
 // tick should be called from stable timer interrupt
 // do a bit of work each tick
 void frx_tick(void);  // call it from timer tick interrupt
-void ftx_tick(void);  // call it from timer tick interrupt
+void ftx_dck(void);  // call it from timer tick interrupt
 
 void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type);
 

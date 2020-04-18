@@ -77,7 +77,7 @@ static void IRAM_ATTR intTimer_isr(void *args) {
   {
     static uint_fast8_t tick_count;
     if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
-      ftx_tick();
+      ftx_dck();
     }
   }
 #endif
