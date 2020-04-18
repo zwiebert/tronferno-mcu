@@ -68,6 +68,9 @@ timer1Stop(void) {
 volatile u32 run_time_s_, run_time_ts_;
 
 void IRAM_ATTR timer_handler(void) {
+#ifdef FER_TRANSMITTER
+  ftx_setOutput();
+#endif
 #ifdef FER_RECEIVER
   void frx_sampleInput();
 #endif

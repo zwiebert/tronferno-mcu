@@ -56,6 +56,9 @@ volatile u32 run_time_s_, run_time_ts_;
 static void IRAM_ATTR intTimer_isr(void *args) {
   int timer_idx = (int) args;
 
+#ifdef FER_TRANSMITTER
+  ftx_setOutput();
+#endif
 #ifdef FER_RECEIVER
   frx_sampleInput();
 #endif

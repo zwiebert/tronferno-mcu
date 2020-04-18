@@ -41,7 +41,8 @@ void ftx_tick(void);  // call it from timer tick interrupt
 
 void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type);
 
-void frx_sampleInput(); // call this from top of timer ISR handler
+void frx_sampleInput(void); // call this from top of timer ISR handler
+void ftx_setOutput(void); // call this from top of timer ISR handler
 
 // event notification callback functions
 

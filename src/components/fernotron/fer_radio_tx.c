@@ -52,73 +52,73 @@ bool IRAM_ATTR ftrx_testLoopBack_getRxPin() {
 #define ct_incr(ct, limit) (!((++ct >= limit) ? (ct = 0) : 1))
 #define ct_incrementP(ctp, limit) ((++*ctp, *ctp %= limit) == 0)
 #define init_counter() (ftxCount.Ticks = ftxCount.Bits = ftxCount.Words = 0)
-#define advancePreCounter() (ct_incr(ftxCount.Ticks, pre_Len) && ct_incr(ftxCount.Bits, FER_PRE_BIT_CT))
-#define advanceStopCounter() (ct_incr(ftxCount.Ticks, bitLen) && ct_incr(ftxCount.Bits, FER_STP_BIT_CT))
+#define advancePreambleCounter() (ct_incr(ftxCount.Ticks, pre_Len) && ct_incr(ftxCount.Bits, FER_PRE_BIT_CT))
+#define advanceStopBitCounter() (ct_incr(ftxCount.Ticks, bitLen) && ct_incr(ftxCount.Bits, FER_STP_BIT_CT))
+#define advanceWordBitCounter() (ct_incr(ftxCount.Ticks, bitLen) && ct_incr(ftxCount.Bits, FER_CMD_BIT_CT))
+#define advanceWordCounter() (ct_incr(ftxCount.Words, ftx_messageToSend_wordCount))
 #define ftx_update_output_preamble() (output_level = (ftxCount.Ticks < shortPositive_Len))
 #define ftx_update_output_stop() (output_level = (ftxCount.Ticks < pauseHigh_Len) && (ftxCount.Bits == 0))
+#define ftx_update_output_data(word_buffer) (output_level = ftxCount.Ticks < shortPositive_Len || (ftxCount.Ticks < longPositive_Len && !GET_BIT(word_buffer, ftxCount.Bits)))
 
-// sets output line according to current bit in data word
-// a stop bit is sent in ftxCount.Bits 0 .. 2
-// a data word is sent in ftxCount.Bits 3 .. 10
-static void IRAM_ATTR ftx_update_output_data(u16 word_buffer) {
-  int bit = ftxCount.Bits - FER_STP_BIT_CT;
-
-  if (bit < 0) {  // in stop bit (ftxCount.Bits 0 .. 2)
-    output_level = ftxCount.Bits == 0 && ftxCount.Ticks < shortPositive_Len;
-  } else { // in data word
-    output_level = ftxCount.Ticks < shortPositive_Len || (ftxCount.Ticks < longPositive_Len && !(word_buffer & (1 << bit)));
-  }
-}
 
 static bool IRAM_ATTR ftx_send_message() {
-  static bool preamble_done, stop_done;
+  enum state {
+    state_preamble_stop_bit, state_preamble, state_data_stop_bit, state_data_word
+  };
+  static enum state state;
   static u16 word_buffer;
 
-  if (!stop_done) {
-    //send single stop bit before preamble
+  switch (state) {
+  case state_preamble_stop_bit:
     ftx_update_output_stop();
-    stop_done = advanceStopCounter();
+    if (advanceStopBitCounter())
+      state = state_preamble;
+    break;
 
-  } else if (!preamble_done) {
-    // send preamble
+  case state_preamble:
     ftx_update_output_preamble();
-    if ((preamble_done = advancePreCounter())) {
-      word_buffer = fer_add_word_parity(ftx_buf->cmd.bd[0], 0);
+    if (advancePreambleCounter())
+      state = state_data_stop_bit;
+    break;
+
+  case state_data_stop_bit:
+    ftx_update_output_stop();
+    if (advanceStopBitCounter()) {
+      state = state_data_word;
+      word_buffer = fer_add_word_parity(ftx_buf->cmd.bd[ftxCount.Words / 2], ftxCount.Words);
     }
-  } else {
-    // send data words + stop bits
+    break;
+
+  case state_data_word:
     ftx_update_output_data(word_buffer);
-    // counting ticks until end_of_frame
-    if (ct_incr(ftxCount.Ticks, bitLen)) {
-      // bit sent
-      if ((ct_incr(ftxCount.Bits, FER_CMD_BIT_CT + FER_STP_BIT_CT))) {
-        // word + stop sent
-        if (ct_incr(ftxCount.Words, ftx_messageToSend_wordCount)) {
-          // line sent
-          stop_done = preamble_done = false;
-          return true; // done
-        } else {
-          word_buffer = fer_add_word_parity(ftx_buf->cmd.bd[ftxCount.Words / 2], ftxCount.Words); // load next word
-        }
+    if (advanceWordBitCounter()) {
+      if (advanceWordCounter()) {
+        state = state_preamble_stop_bit;
+        return true;
+      } else {
+        state = state_data_stop_bit;
       }
     }
+    break;
   }
+
   return false; // continue
 }
 
 static void IRAM_ATTR ftx_tick_send_message() {
 
   bool done = ftx_send_message();
-  mcu_put_txPin(output_level);
 
   if (done) {
     ftx_messageToSend_isReady = false;
-
     init_counter();
-    mcu_put_txPin(0);
-
+    output_level = false;
     ftx_MSG_TRANSMITTED_ISR_cb();
   }
+}
+
+void IRAM_ATTR ftx_setOutput(void) {
+  mcu_put_txPin(output_level);
 }
 
 void IRAM_ATTR ftx_tick(void) {
