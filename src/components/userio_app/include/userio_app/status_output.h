@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef USER_MAIN_STATUS_OUTPUT_H_
-#define USER_MAIN_STATUS_OUTPUT_H_
+#pragma once
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -92,4 +91,3 @@ void so_output_message(so_msg_t mt, void *arg);
 so_msg_t so_parse_config_key(const char *k);
 
 
-#endif /* USER_MAIN_STATUS_OUTPUT_H_ */

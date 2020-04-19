@@ -1,5 +1,4 @@
-#ifndef COMPONENTS_APP_ESP32_MAIN_H_
-#define COMPONENTS_APP_ESP32_MAIN_H_
+#pragma once
 
 #include "app_config/proj_app_cfg.h"
 
@@ -126,4 +125,3 @@ void mcu_init();
 
 #define D(x) x
 
-#endif /* COMPONENTS_APP_ESP32_MAIN_H_ */

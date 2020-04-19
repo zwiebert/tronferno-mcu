@@ -1,5 +1,4 @@
-#ifndef USER_MAIN_TIMER_STATE_H_
-#define USER_MAIN_TIMER_STATE_H_
+#pragma once
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -52,4 +51,3 @@ typedef struct {
 bool fam_get_next_timer_event_te(timer_event_t *evt, const time_t *now_time);
 
 
-#endif

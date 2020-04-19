@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef USER_MAIN_FER_SENDER_H_
-#define USER_MAIN_FER_SENDER_H_
+#pragma once
 
 #include "stdbool.h"
 #include <stdint.h>
@@ -32,5 +31,4 @@ int ftx_get_msgPendingCount();
 #define ftx_READY_TO_TRANSMIT_cb(time_ts)
 #endif
 
-#endif /* USER_MAIN_FER_SENDER_H_ */
 

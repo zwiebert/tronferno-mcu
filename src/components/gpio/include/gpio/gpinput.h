@@ -1,5 +1,4 @@
-#ifndef gpinput_h_
-#define gpinput_h_
+#pragma once
 
 #include <stdint.h>
 
@@ -10,5 +9,4 @@ void gpi_configure(uint8_t gpi_nmb, uint8_t g, uint8_t m, uint8_t gpi_cmd);
 void gpi_loop(void);
 
 
-#endif
 

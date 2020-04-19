@@ -1,5 +1,4 @@
-#ifndef pairings_h_
-#define pairings_h_
+#pragma once
 
 #include "fernotron/fsb.h"
 #include "fernotron/types.h"
@@ -34,4 +33,3 @@ bool pair_auto_set_check(const fsbT *fsb);
 #define pair_DISABLE_cb() // do nothing
 #endif
 
-#endif

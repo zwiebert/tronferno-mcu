@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_POS_INCLUDE_FERNOTRON_POS_POSITIONS_STATIC_H_
-#define COMPONENTS_FERNOTRON_POS_INCLUDE_FERNOTRON_POS_POSITIONS_STATIC_H_
+#pragma once
 
 #include "fernotron/types.h"
 #include "fernotron/fer_msg_plain.h"
@@ -43,4 +42,3 @@ void ferPos_init(void);
 #define  fpos_POSTIONS_SAVED_cb()
 #endif
 
-#endif /* COMPONENTS_FERNOTRON_POS_INCLUDE_FERNOTRON_POS_POSITIONS_STATIC_H_ */

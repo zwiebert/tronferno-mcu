@@ -1,5 +1,4 @@
-#ifndef COMPONENTS_FERNOTRON_AUTO_INCLUDE_FERNOTRON_AUTO_TIMER_STATE_LOOP_H_
-#define COMPONENTS_FERNOTRON_AUTO_INCLUDE_FERNOTRON_AUTO_TIMER_STATE_LOOP_H_
+#pragma once
 
 #include "timer_state.h"
 
@@ -7,4 +6,3 @@ void fam_updateTimerEvent();
 void fam_loop_old(void);
 void fam_loop(void);
 
-#endif /* COMPONENTS_FERNOTRON_AUTO_INCLUDE_FERNOTRON_AUTO_TIMER_STATE_LOOP_H_ */

@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef SRC_net_mqtt_app_H_
-#define SRC_net_mqtt_app_H_
+#pragma once
 
 #include "app_config/proj_app_cfg.h"
 #include "userio_app/status_output.h"
@@ -29,4 +28,3 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
 
 void io_mqttApp_setup(struct cfg_mqtt *cfg_mqtt);
 
-#endif /* SRC_net_mqtt_app_H_ */

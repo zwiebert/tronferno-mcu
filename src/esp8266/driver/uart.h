@@ -1,5 +1,4 @@
-#ifndef UART_APP_H
-#define UART_APP_H
+#pragma once
 
 #include "uart_register.h"
 
@@ -92,5 +91,4 @@ typedef struct {
 
 void uart_init(UartBautRate uart0_br, UartBautRate uart1_br);
 
-#endif
 

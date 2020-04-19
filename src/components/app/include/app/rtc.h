@@ -1,5 +1,4 @@
-#ifndef RTC_H_
-#define RTC_H_
+#pragma once
 
 #include "app_config/proj_app_cfg.h"
 #include <time.h>
@@ -44,4 +43,3 @@ rtc_time_t rtc_time(void);
 extern rtc_time_source_t rtc_last_time_source;
 
 
-#endif

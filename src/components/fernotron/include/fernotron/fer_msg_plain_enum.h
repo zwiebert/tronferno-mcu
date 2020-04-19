@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_FER_MSG_PLAIN_ENUMS_H_
-#define COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_FER_MSG_PLAIN_ENUMS_H_
+#pragma once
 
 
 // indexes of data[5]
@@ -73,4 +72,3 @@ typedef enum {
 } fer_memb;
 
 
-#endif /* COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_FER_MSG_PLAIN_ENUMS_H_ */

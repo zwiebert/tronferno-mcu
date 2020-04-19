@@ -1,5 +1,4 @@
-#ifndef _common_h
-#define _common_h
+#pragma once
 
 ////////////////////////
 
@@ -26,4 +25,3 @@ void mcu_restart(void);
 void loop(void);
 int main_setup(void);
 
-#endif // _common_h

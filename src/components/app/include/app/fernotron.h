@@ -5,11 +5,9 @@
  *      Author: bertw
  */
 
-#ifndef MAIN_FERNOTRON_H_
-#define MAIN_FERNOTRON_H_
+#pragma once
 
 #include "fernotron/fsb.h"
 extern fsbT default_sender;
 
 
-#endif /* MAIN_FERNOTRON_H_ */

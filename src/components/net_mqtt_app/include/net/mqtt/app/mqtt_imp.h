@@ -5,10 +5,8 @@
  *      Author: bertw
  */
 
-#ifndef SRC_USERIO_MQTT_IMP_H_
-#define SRC_USERIO_MQTT_IMP_H_
+#pragma once
 
 #include "mqtt.h"
 
 
-#endif /* SRC_USERIO_MQTT_IMP_H_ */

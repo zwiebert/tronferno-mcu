@@ -28,8 +28,7 @@
 
 /* $Id$ */
 
-#ifndef EPHEMERA_PRIVATE_H
-#define EPHEMERA_PRIVATE_H
+#pragma once
 
 #define TROP_YEAR 31556925
 #define ANOM_YEAR 31558433
@@ -41,4 +40,3 @@
 #define ANOM_CYCLE 5022680.6082
 #define DELTA_V 0.03342044    /* 2x orbital eccentricity */
 
-#endif

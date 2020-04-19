@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef USER_STDBOOL_H_
-#define USER_STDBOOL_H_
+#pragma once
 
 #ifdef MCU_ESP8266
 #include <c_types.h>
@@ -21,4 +20,3 @@ typedef unsigned char bool;
 #define FALSE           false
 #endif
 
-#endif /* USER_STDBOOL_H_ */

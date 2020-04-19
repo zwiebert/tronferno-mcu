@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_FER_RX_TX_H_
-#define COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_FER_RX_TX_H_
+#pragma once
 
 #include "fsb.h"
 #include "fer_msg_plain.h"
@@ -34,4 +33,3 @@ fsbT* get_fsb(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd);
 void frx_tick(void);  // call it from timer tick interrupt
 void ftx_dck(void);  // call it from timer tick interrupt
 
-#endif /* COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_FER_RX_TX_H_ */
