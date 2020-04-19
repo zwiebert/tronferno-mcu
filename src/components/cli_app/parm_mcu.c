@@ -7,7 +7,7 @@
 #include "fernotron_pos/shutter_pct.h"
 #include "txtio/inout.h"
 #include "userio_app/status_output.h"
-#include "fernotron_auto/timer_state.h"
+#include "fernotron_auto/fau_tevent.h"
 #include "misc/bcd.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
@@ -84,7 +84,7 @@ process_parmMcu(clpar p[], int len) {
 
       timer_event_t tevt;
       time_t now_time = time(NULL);
-      fam_get_next_timer_event_te(&tevt, &now_time);
+      fam_get_next_timer_event(&tevt, &now_time);
       io_putd(tevt.next_event), io_putlf();
       for (k = 0; k < 2; ++k) {
         for (i = 0; i < 8; ++i) {

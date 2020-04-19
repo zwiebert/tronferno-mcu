@@ -5,7 +5,7 @@
 #include "app_config/proj_app_cfg.h"
 
 
-#include "fernotron_auto/timer_state_loop.h"
+#include "fernotron_auto/fau_tevent.h"
 #include "cli/cli.h"
 #include "config/config.h"
 #include "fernotron_cuas/cuid_auto_set.h"

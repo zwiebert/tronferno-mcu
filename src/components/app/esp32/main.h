@@ -12,7 +12,7 @@
 #include "fernotron/fer_msg_tx.h"
 #include "fernotron/fer_radio_trx.h"
 #include "fernotron_alias/pairings.h"
-#include "fernotron_auto/timer_state_loop.h"
+#include "fernotron_auto/fau_tevent.h"
 #include "fernotron_cuas/cuid_auto_set.h"
 #include "fernotron_sep/set_endpos.h"
 #include "fernotron_txtio/fer_print.h"

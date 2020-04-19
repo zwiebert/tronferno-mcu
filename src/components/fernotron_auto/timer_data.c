@@ -6,7 +6,7 @@
  */
 #include "app_config/proj_app_cfg.h"
 #include "timer_data_fs.h"
-#include "fernotron_auto/timer_data_store.h"
+#include "fernotron_auto/fau_tdata_store.h"
 #include "misc/int_types.h"
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////

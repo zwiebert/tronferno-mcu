@@ -6,8 +6,8 @@
  */
 
 #include "unity.h"
-#include "fernotron_auto/timer_data_store.h"
-#include "fernotron_auto/timer_state.h"
+#include "fernotron_auto/fau_tdata_store.h"
+#include "fernotron_auto/fau_tminutes.h"
 #include "fernotron/astro.h"
 #include "time.h"
 #include "debug/debug.h"

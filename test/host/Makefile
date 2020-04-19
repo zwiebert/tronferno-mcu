@@ -78,7 +78,7 @@ build/test_gm.out:   $(addprefix $(COMP_PATH)/fernotron/,test/test_gm.c gmbitmas
 build/test_prg.out:  $(addprefix $(COMP_PATH)/fernotron/,test/test_prg.c astro.c fer_rawmsg_build.c) $(COMPSHARE_PATH)/misc/bcd.c $(COMPSHARE_PATH)/misc/sun.c
 build/test_msg_tx.out:  $(addprefix $(COMP_PATH)/fernotron/,test/test_msg_tx.c fer_msg_tx.c fer_msg_tx_queue.c fer_radio_rx.c fer_radio_tx.c fer_msg_basic.c fer_rawmsg_buffer.c fer_rawmsg_build.c astro.c) $(addprefix $(COMPSHARE_PATH)/, misc/bcd.c misc/sun.c)
 build/test_timer_data.out:   $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_data.c timer_data.c timer_data_fs.c)  $(COMPSHARE_PATH)/storage/esp32/storage.c
-build/test_timer_state.out:  $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_state.c timer_state.c timer_data.c timer_data_fs.c) $(COMP_PATH)/fernotron/astro.c $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/, storage/esp8266/storage.c misc/bcd.c misc/sun.c)
+build/test_timer_state.out:  $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_state.c timer_minutes.c timer_event.c timer_data.c timer_data_fs.c) $(COMP_PATH)/fernotron/astro.c $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/, storage/esp8266/storage.c misc/bcd.c misc/sun.c)
 build/test_alias.out:  $(addprefix $(COMP_PATH)/fernotron_alias/,test/test_alias.c pairings_kvs.c) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c misc/esp32/itoa.c)
 
 

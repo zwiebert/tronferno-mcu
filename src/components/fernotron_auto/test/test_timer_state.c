@@ -5,8 +5,8 @@
  *      Author: bertw
  */
 #include "unity.h"
-#include "fernotron_auto/timer_data_store.h"
-#include "fernotron_auto/timer_state.h"
+#include "fernotron_auto/fau_tdata_store.h"
+#include "fernotron_auto/fau_tevent.h"
 #include "fernotron/astro.h"
 #include "time.h"
 #include <fernotron/types.h>
@@ -38,7 +38,7 @@ static void test_timer_event3() {
 
   time_t now_time = timegm(&now_tm);
   timer_event_t tevt;
-  fam_get_next_timer_event_te(&tevt, &now_time);
+  fam_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(6,54), tevt.next_event);
   gm_bitmask_t test1 = {0,0x02,0,0,0,0,0,0};
@@ -66,7 +66,7 @@ static void test_timer_event2() {
 
   time_t now_time = timegm(&now_tm);
   timer_event_t tevt;
-  fam_get_next_timer_event_te(&tevt, &now_time);
+  fam_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
   gm_bitmask_t test1 = {0,0xfc,0,0,0,0,0,0};
@@ -83,7 +83,7 @@ static void test_timer_event2() {
 
   now_time = timegm(&now_tm);
 
-  fam_get_next_timer_event_te(&tevt, &now_time);
+  fam_get_next_timer_event(&tevt, &now_time);
   TEST_ASSERT_EQUAL(t2m(23,45), tevt.next_event);
 
 }
@@ -110,7 +110,6 @@ static void test_timer_event() {
 
   timer_minutes_t timi;
   uint8_t g=1, m=2;
-
   succ = fau_get_timer_minutes_tm(&timi, &g, &m, true, &now_tm);
   TEST_ASSERT_TRUE(succ);
   TEST_ASSERT_EQUAL(1, g);
@@ -121,7 +120,7 @@ static void test_timer_event() {
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(23, 45), fau_timi_get_earliest(&timi, now_minutes));
+  TEST_ASSERT_EQUAL(t2m(23, 45), fau_get_earliest_from_timer_minutes(&timi, now_minutes));
 
 
    ///////////////////////////////////////////////////////////////////////////
@@ -140,13 +139,13 @@ static void test_timer_event() {
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(21, 23), fau_timi_get_earliest(&timi, now_minutes));
+  TEST_ASSERT_EQUAL(t2m(21, 23), fau_get_earliest_from_timer_minutes(&timi, now_minutes));
 
 
   time_t now_time = timegm(&now_tm);
 
   timer_event_t tevt;
-  fam_get_next_timer_event_te(&tevt, &now_time);
+  fam_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
 
@@ -161,21 +160,14 @@ static void test_timer_event() {
 
   now_time = timegm(&now_tm);
 
-  fam_get_next_timer_event_te(&tevt, &now_time);;
+  fam_get_next_timer_event(&tevt, &now_time);;
   TEST_ASSERT_EQUAL(t2m(23,45), tevt.next_event);
-
-
-
-
 }
 
 
 static void test_timer_minutes() {
-  erase_timer_data(0,0);
   timer_data_t t1 = {.astro = 20000, .bf = 0, .daily = "04562345", .weekly = "" };
-  save_timer_data(&t1, 1, 1);
   timer_data_t t2 = {.astro = 20000, .bf = 0, .daily = "", .weekly = "06542109+++0822-07082211+" };
-  save_timer_data(&t2, 1, 2);
 
   struct tm tm = {
      .tm_sec = 0,
@@ -189,9 +181,9 @@ static void test_timer_minutes() {
   minutes_t now = t2m(tm.tm_hour, tm.tm_min);
 
   timer_minutes_t timi;
-  uint8_t g=1, m=1;
 
-  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+
+  succ = fau_get_timer_minutes_from_timer_data_tm(&timi, &t1, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -200,16 +192,14 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(23, 45), fau_timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(23, 45), fau_get_earliest_from_timer_minutes(&timi, now));
 
 
    ///////////////////////////////////////////////////////////////////////////
-  g=1;
-  m=2;
 
   tm.tm_wday = 1;
 
-  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_from_timer_data_tm(&timi, &t2, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -218,11 +208,11 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(6,54), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(t2m(21,9), timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(21, 9), fau_timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(21, 9), fau_get_earliest_from_timer_minutes(&timi, now));
 
   tm.tm_wday = 2;
 
-  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_from_timer_data_tm(&timi, &t2, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -231,11 +221,11 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(6,54), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(t2m(21,9), timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(21, 9), fau_timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(21, 9), fau_get_earliest_from_timer_minutes(&timi, now));
 
   tm.tm_wday = 3;
 
-  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_from_timer_data_tm(&timi, &t2, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -244,11 +234,11 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(6,54), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(t2m(21,9), timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(21, 9), fau_timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(21, 9), fau_get_earliest_from_timer_minutes(&timi, now));
 
   tm.tm_wday = 4;
 
-  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_from_timer_data_tm(&timi, &t2, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -257,11 +247,11 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(6,54), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(t2m(21,9), timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(21, 9), fau_timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(21, 9), fau_get_earliest_from_timer_minutes(&timi, now));
 
   tm.tm_wday = 5;
 
-  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_from_timer_data_tm(&timi, &t2, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -270,12 +260,12 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(8,22), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(MINUTES_DISABLED, fau_timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(MINUTES_DISABLED, fau_get_earliest_from_timer_minutes(&timi, now));
 
 
   tm.tm_wday = 6;
 
-  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_from_timer_data_tm(&timi, &t2, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -284,12 +274,12 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(7,8), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(t2m(22,11), timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(22, 11), fau_timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(22, 11), fau_get_earliest_from_timer_minutes(&timi, now));
 
 
   tm.tm_wday = 0;
 
-  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_from_timer_data_tm(&timi, &t2, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -298,7 +288,7 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(7,8), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(t2m(22,11), timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(22, 11), fau_timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(22, 11), fau_get_earliest_from_timer_minutes(&timi, now));
 
 
 }
