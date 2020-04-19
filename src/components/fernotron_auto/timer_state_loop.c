@@ -17,23 +17,31 @@ static timer_event_t teud[2];
 
 time_t next_event;
 
-minutes_t get_now() {
+#define tm_DMin(tm) (tm->tm_hour * 60 + tm->tm_min)
+minutes_t get_now_min();
+minutes_t get_min(time_t timer);
+
+minutes_t get_now_min() {
   time_t timer = time(NULL);
   struct tm *tm = localtime(&timer);
-  minutes_t minutes_now = tm->tm_hour * 60 + tm->tm_min;
-  return minutes_now;
+  return tm_DMin(tm);
+}
+
+minutes_t get_min(time_t timer) {
+  struct tm *tm = localtime(&timer);
+  return tm_DMin(tm);
 }
 
 static void set_next_event() {
   minutes_t next_min = MIN(teud[0].next_event, teud[1].next_event);
-  minutes_t now_min = get_now();
-  time_t now = time(NULL);
-  time_t midnight = ((60 * 24) - now_min) * 60 + now;
+  time_t now_time = time(NULL);
+  minutes_t now_min = get_min(now_time);
+  time_t midnight = ((60 * 24) - now_min) * 60 + now_time;
 
   if (next_min == MINUTES_DISABLED) {
     next_event = midnight;
   } else {
-    next_event = (next_min - now_min) * 60 + now;
+    next_event = (next_min - now_min) * 60 + now_time;
   }
 }
 
@@ -51,7 +59,7 @@ void timer_state_loop_evt(void) {
   if (time(NULL) < next_event)
     return;
 
-  minutes_t now_min = get_now();
+  minutes_t now_min = get_now_min();
 
   for (k = 0; k < 2; ++k) {
     te = &teud[k];

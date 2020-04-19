@@ -20,13 +20,15 @@ typedef struct {
   minutes_t minutes[SIZE_MINTS];
 } timer_minutes_t;
 
+#define tm_DMin(tm) (tm->tm_hour * 60 + tm->tm_min)
+minutes_t get_now_min();
+minutes_t get_min(time_t timer);
 
 // return minute offsets of todays timer events
 // offsets are minutes after 00:00 hour.
 // offset == -1 means: no timer event exists for today
-bool get_timer_minutes(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard);
+bool get_timer_minutes_now(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard);
 bool get_timer_minutes_tim(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard, const time_t *now_time);
-struct tm;
 bool get_timer_minutes_tm(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard, const struct tm *tm);
 
 minutes_t timi_get_earliest(timer_minutes_t *timi, minutes_t now);
@@ -51,6 +53,5 @@ typedef struct {
 
 bool get_next_timer_event(timer_event_t *up, timer_event_t *down, const time_t *now_time);
 
-bool get_next_timer_event_old(timer_event_t *up, timer_event_t *down, const time_t *now_time);
 
 #endif

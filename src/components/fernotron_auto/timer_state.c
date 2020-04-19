@@ -123,7 +123,7 @@ get_timer_minutes_tim(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcar
 }
 
 bool
-get_timer_minutes(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard) {
+get_timer_minutes_now(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard) {
   time_t now_time = time(NULL);
   return get_timer_minutes_tim(timi, group, member, wildcard, &now_time);
 }
