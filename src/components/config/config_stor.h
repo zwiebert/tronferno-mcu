@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef USER_MAIN_CONFIG_SPIFFS_H_
-#define USER_MAIN_CONFIG_SPIFFS_H_
+#pragma once
 
 
 #include <stdbool.h>
@@ -22,4 +21,3 @@ bool config_save(void);
 
 
 
-#endif /* USER_MAIN_CONFIG_SPIFFS_H_ */

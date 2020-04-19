@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_FER_APP_CFG_H_
-#define COMPONENTS_FERNOTRON_FER_APP_CFG_H_
+#pragma once
 
 #define FER_TRANSMITTER
 #define FER_RECEIVER
@@ -19,4 +18,3 @@
 
 #include "app_config/proj_app_cfg.h"
 
-#endif /* COMPONENTS_FERNOTRON_FER_APP_CFG_H_ */

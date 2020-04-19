@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_POS_SHUTTER_MOVEMENT_H_
-#define COMPONENTS_FERNOTRON_POS_SHUTTER_MOVEMENT_H_
+#pragma once
 
 #include "stdbool.h"
 #include <stdint.h>
@@ -52,4 +51,3 @@ void ferPos_stop_mvi_mm(struct mv *mv, gm_bitmask_t *mm, u32 now_ts);
 
 
 
-#endif /* COMPONENTS_FERNOTRON_POS_SHUTTER_MOVEMENT_H_ */

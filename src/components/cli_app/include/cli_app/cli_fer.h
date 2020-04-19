@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef CLI_CLI_FER_H_
-#define CLI_CLI_FER_H_
+#pragma once
 
 #include "cli_imp.h"
 #include "fernotron/fsb.h"
@@ -20,4 +19,3 @@ bool asc2memb(const char *s, fer_memb *memb);
 
 extern gm_bitmask_t manual_bits;
 
-#endif /* CLI_CLI_FER_H_ */

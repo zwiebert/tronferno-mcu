@@ -10,8 +10,8 @@
 #include "cli_app/cli_imp.h" // FIXME?
 #include "config/config.h"
 #include "fernotron_alias/pairings.h"
-#include "fernotron_auto/timer_data.h"
-#include "fernotron_auto/timer_state.h"
+#include "fernotron_auto/fau_tdata_store.h"
+#include "fernotron_auto/fau_tminutes.h"
 #include "fernotron_cuas/cuid_auto_set.h"
 #include "fernotron_pos/shutter_prefs.h"
 #include "net/ipnet.h"
@@ -37,7 +37,7 @@ void print_timer_event_minute(const char *label, minutes_t mins) {
 
 void  so_print_timer_event_minutes(u8 g, u8 m) {
   timer_minutes_t tm;
-  if (get_timer_minutes(&tm, &g, &m, true)) {
+  if (fau_get_timer_minutes_now(&tm, &g, &m, true)) {
     print_timer_event_minute("astro-down", tm.minutes[0]);
     print_timer_event_minute("daily-up", tm.minutes[1]);
     print_timer_event_minute("daily-down", tm.minutes[2]);
@@ -134,7 +134,7 @@ void  so_timer_to_json(u8 g, u8 m, bool wildcard) {
       sj_add_key_value_pair_d("astro", tdr.astro);
 
       timer_minutes_t tmi;
-      get_timer_minutes(&tmi, &g_res, &m_res, false);
+      fau_get_timer_minutes_now(&tmi, &g_res, &m_res, false);
       sj_add_key_value_pair_d("asmin", tmi.minutes[ASTRO_MINTS]);
     }
 

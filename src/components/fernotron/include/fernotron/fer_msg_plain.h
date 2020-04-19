@@ -1,6 +1,5 @@
 //-*- C -*-
-#ifndef _fer_code
-#define _fer_code
+#pragma once
 
 #include "fer_msg_type.h"
 #include "fer_msg_plain_enum.h"
@@ -38,4 +37,3 @@ union fer_cmd_row {
 
 #define FRB_GET_DEVID(data) (((uint32_t)(data[fer_dat_ADDR_2]) << 16) | ((uint16_t)(data[fer_dat_ADDR_1]) << 8) | (data[fer_dat_ADDR_0]))
 
-#endif //_fer_code

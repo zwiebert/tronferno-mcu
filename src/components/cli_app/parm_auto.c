@@ -6,13 +6,13 @@
 #include "fernotron_pos/shutter_pct.h"
 #include "userio_app/status_output.h"
 #include "app_config/proj_app_cfg.h"
-#include "fernotron_auto/timer_state.h"
+#include "fernotron_auto/fau_tminutes.h"
 #include "app/rtc.h"
 #include "fernotron/fer_msg_attachment.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "cli_fer.h"
-#include "fernotron_auto/timer_data.h"
+#include "fernotron_auto/fau_tdata_store.h"
 #include "config/config.h"
 
 gm_bitmask_t manual_bits;

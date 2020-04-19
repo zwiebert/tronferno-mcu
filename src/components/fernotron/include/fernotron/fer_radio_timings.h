@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef USER_MAIN_FER_TIMINGS_H_
-#define USER_MAIN_FER_TIMINGS_H_
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////////////
 // timing/sizes of RF modulation
@@ -62,4 +61,3 @@
 #define FER_PRE_NEDGE_MAX_DCK     4
 #define FER_BIT_SAMP_POS_DCK      3 // for receiving: look if negative edge lies before or after
 
-#endif /* USER_MAIN_FER_TIMINGS_H_ */

@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_FER_RADIO_PARITY_H_
-#define COMPONENTS_FERNOTRON_FER_RADIO_PARITY_H_
+#pragma once
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -24,4 +23,3 @@ uint16_t fer_add_word_parity(uint8_t data_byte, int pos);
  on even positions and 0,2 on odd positions)" */
 bool fer_word_parity_p(uint16_t word, uint8_t pos);
 
-#endif /* COMPONENTS_FERNOTRON_FER_RADIO_PARITY_H_ */

@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_TIMER_DATA_H_
-#define COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_TIMER_DATA_H_
+#pragma once
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -31,4 +30,3 @@ typedef struct {
 #define td_is_sun_auto(td)      (GET_BIT((td)->bf, flag_SunAuto))
 #define td_put_sun_auto(td, on) (PUT_BIT((td)->bf, flag_SunAuto, (on)))
 
-#endif /* COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_TIMER_DATA_H_ */

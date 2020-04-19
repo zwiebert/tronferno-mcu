@@ -7,7 +7,7 @@
 #include "fernotron_pos/shutter_pct.h"
 #include "txtio/inout.h"
 #include "app_config/proj_app_cfg.h"
-#include "fernotron_auto/timer_state.h"
+#include "fernotron_auto/fau_tminutes.h"
 #include "fernotron/fer_msg_tx.h"
 #include "fernotron/fer_msg_attachment.h"
 #include "misc/bcd.h"

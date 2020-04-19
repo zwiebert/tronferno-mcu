@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef CLI_CLI_APP_H_
-#define CLI_CLI_APP_H_
+#pragma once
 
 #include "cli_imp.h"
 
@@ -18,4 +17,3 @@ int process_parmHelp(clpar p[], int len);
 int process_parmPair(clpar p[], int len);
 int process_parmShpref(clpar p[], int len);
 
-#endif /* CLI_CLI_APP_H_ */

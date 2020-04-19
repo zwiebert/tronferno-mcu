@@ -18,7 +18,7 @@
 #include "userio_app/status_output.h"
 #include "userio/status_json.h"
 #include "fernotron_alias/pairings.h"
-#include "fernotron_auto/timer_data.h"
+#include "fernotron_auto/fau_tdata_store.h"
 #include "cli_app/cli_imp.h"
 #include "cli_app/cli_fer.h"
 #include "cli/mutex.h"

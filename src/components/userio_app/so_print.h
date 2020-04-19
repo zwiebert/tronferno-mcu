@@ -1,4 +1,4 @@
-#include "fernotron_auto/timer_state.h"
+#include "fernotron_auto/fau_tminutes.h"
 
 void so_gmbitmask_to_str(char *dst, gm_bitmask_t *mm);
 void so_print_gmbitmask(gm_bitmask_t *mm);

@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef FERNOTRON_FER_API_H_
-#define FERNOTRON_FER_API_H_
+#pragma once
 
 #include "fer_app_cfg.h"
 #include "fernotron/fer_msg_plain.h"
@@ -25,4 +24,3 @@ bool fill_rtc_buf(fsbT *fsb, time_t rtc);
 
 
 
-#endif /* FERNOTRON_FER_API_H_ */

@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef MAIN_OTA_H_
-#define MAIN_OTA_H_
+#pragma once
 
 #include "app_config/proj_app_cfg.h"
 #include <stdbool.h>
@@ -27,4 +26,3 @@ typedef enum { ota_NONE, ota_RUN, ota_FAIL, ota_DONE} ota_state_T;
 ota_state_T ota_getState(void);
 
 
-#endif /* MAIN_OTA_H_ */

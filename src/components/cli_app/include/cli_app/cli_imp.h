@@ -1,5 +1,4 @@
-#ifndef cli_imp_h_
-#define cli_imp_h_
+#pragma once
 #include "cli/cli.h"
 
 extern const char pin_state_args[];
@@ -28,4 +27,3 @@ bool config_transmitter(const char *val);
 int asc2bool(const char *s);
 bool  asc2u8(const char *s, uint8_t *n, uint8_t limit);
 
-#endif

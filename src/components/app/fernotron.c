@@ -5,7 +5,7 @@
 #include "app_config/proj_app_cfg.h"
 
 
-#include "fernotron_auto/timer_state_loop.h"
+#include "fernotron_auto/fau_tevent.h"
 #include "cli/cli.h"
 #include "config/config.h"
 #include "fernotron_cuas/cuid_auto_set.h"
@@ -25,7 +25,7 @@
 static void rawMessageReceived_cb(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *rxmsg) {
   if (msg_type == MSG_TYPE_PLAIN || msg_type == MSG_TYPE_PLAIN_DOUBLE) {
     fmsg_print("R:", rxmsg, msg_type, TXTIO_IS_VERBOSE(vrbDebug));
-    fmsg_print_as_cmdline((msg_type == MSG_TYPE_PLAIN_DOUBLE ? "c:" : "C:"), rxmsg, msg_type);
+    fmsg_print_as_cmdline((msg_type == MSG_TYPE_PLAIN_DOUBLE ? "Rc:" : "RC:"), rxmsg, msg_type);
   }
 
 #ifndef FER_RECEIVER_MINIMAL

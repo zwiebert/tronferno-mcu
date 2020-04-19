@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef USER_MAIN_FER_TRANSCEIVER_H_
-#define USER_MAIN_FER_TRANSCEIVER_H_
+#pragma once
 
 #include <stdint.h>
 #include "stdbool.h"
@@ -56,4 +55,3 @@ void ftx_setOutput(void); // call this from top of timer ISR handler
 #define ftx_MSG_TRANSMITTED_ISR_cb() // do nothing
 #endif
 
-#endif /* USER_MAIN_FER_TRANSCEIVER_H_ */

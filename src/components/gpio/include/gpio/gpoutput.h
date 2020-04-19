@@ -1,5 +1,4 @@
-#ifndef gpoutput_h_
-#define gpoutput_h_
+#pragma once
 
 #include <stdint.h>
 
@@ -10,4 +9,3 @@ void gpo_configure(uint8_t gpo_nmb, uint8_t g, uint8_t m, uint8_t gpo_cmd);
 void gpo_action(uint8_t g, uint8_t m, uint8_t cmd);
 
 
-#endif

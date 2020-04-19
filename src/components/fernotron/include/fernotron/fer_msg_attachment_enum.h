@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_FER_MSG_ATTACHMENT_ENUMS_H_
-#define COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_FER_MSG_ATTACHMENT_ENUMS_H_
+#pragma once
 
 ////////////// programming frame /////////////////////
 //18 rows each 9 columns
@@ -134,4 +133,3 @@ enum fpr_tim {
 
 
 
-#endif /* COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_FER_MSG_ATTACHMENT_ENUMS_H_ */

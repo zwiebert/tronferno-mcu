@@ -16,8 +16,8 @@
 #include "cli_app/cli_imp.h" // FIXME?
 #include "config/config.h"
 #include "fernotron_alias/pairings.h"
-#include "fernotron_auto/timer_data.h"
-#include "fernotron_auto/timer_state.h"
+#include "fernotron_auto/fau_tdata_store.h"
+#include "fernotron_auto/fau_tminutes.h"
 #include "fernotron_cuas/cuid_auto_set.h"
 #include "fernotron_pos/shutter_prefs.h"
 #include "net/ipnet.h"
@@ -352,7 +352,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
     so_arg_gm_t *a = arg;
     u8 g = a->g, m = a->m;
     timer_minutes_t tmi;
-    if (get_timer_minutes(&tmi, &g, &m, true)) {
+    if (fau_get_timer_minutes_now(&tmi, &g, &m, true)) {
       so_out_x_reply_entry_sl("astro-minute", tmi.minutes[ASTRO_MINTS]);
     }
 
