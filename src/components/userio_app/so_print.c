@@ -10,7 +10,7 @@
 #include "cli_app/cli_imp.h" // FIXME?
 #include "config/config.h"
 #include "fernotron_alias/pairings.h"
-#include "fernotron_auto/timer_data.h"
+#include "fernotron_auto/timer_data_store.h"
 #include "fernotron_auto/timer_state.h"
 #include "fernotron_cuas/cuid_auto_set.h"
 #include "fernotron_pos/shutter_prefs.h"

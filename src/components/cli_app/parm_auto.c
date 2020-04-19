@@ -12,7 +12,7 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "cli_fer.h"
-#include "fernotron_auto/timer_data.h"
+#include "fernotron_auto/timer_data_store.h"
 #include "config/config.h"
 
 gm_bitmask_t manual_bits;

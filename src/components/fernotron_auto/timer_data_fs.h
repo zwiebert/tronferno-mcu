@@ -9,7 +9,8 @@
 #define USER_MAIN_TIMER_DATA_FS_H_
 
 #include <stdint.h>
-#include "timer_data.h"
+#include <stdbool.h>
+#include "fernotron/timer_data.h"
 
 
 bool save_timer_data_fs(timer_data_t *p, uint8_t group, uint8_t member);

@@ -1,7 +1,7 @@
 #include "app_config/proj_app_cfg.h"
 
 #include "timer_state.h"
-#include "fernotron_auto/timer_data.h"
+#include "fernotron_auto/timer_data_store.h"
 #include "app/rtc.h"
 #include "fernotron/astro.h"
 #include "config/config.h"

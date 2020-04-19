@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 #include "unity.h"
-#include "fernotron_auto/timer_data.h"
+#include "fernotron_auto/timer_data_store.h"
 #include "fernotron_auto/timer_state.h"
 #include "fernotron/astro.h"
 #include "time.h"

@@ -4,9 +4,7 @@
  *  Created on: 08.09.2018
  *      Author: bertw
  */
-
-#ifndef USER_MAIN_TIMER_DATA_H_
-#define USER_MAIN_TIMER_DATA_H_
+#pragma once
 
 #include "fernotron/timer_data.h"
 #include "app_config/callbacks.h"
@@ -28,4 +26,3 @@ extern bool timer_data_changed; // set by save_timer_data - cleared by code read
 #define fau_TIMER_DATA_CHANGE_cb()
 #endif
 
-#endif /* USER_MAIN_TIMER_DATA_H_ */
