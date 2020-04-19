@@ -37,13 +37,12 @@ static void test_timer_event3() {
 
 
   time_t now_time = timegm(&now_tm);
-  timer_event_t teu, ted;
-  get_next_timer_event(&teu, &ted, &now_time);
+  timer_event_t tevt;
+  fam_get_next_timer_event_te(&tevt, &now_time);
 
-  TEST_ASSERT_EQUAL(t2m(6,54), teu.next_event);
-  TEST_ASSERT_EQUAL(MINUTES_DISABLED, ted.next_event);
+  TEST_ASSERT_EQUAL(t2m(6,54), tevt.next_event);
   gm_bitmask_t test1 = {0,0x02,0,0,0,0,0,0};
-  TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, teu.matching_members, 8);
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskUp(&tevt), 8);
 
 }
 
@@ -66,13 +65,12 @@ static void test_timer_event2() {
 
 
   time_t now_time = timegm(&now_tm);
-  timer_event_t teu, ted;
-  get_next_timer_event(&teu, &ted, &now_time);
+  timer_event_t tevt;
+  fam_get_next_timer_event_te(&tevt, &now_time);
 
-  TEST_ASSERT_EQUAL(MINUTES_DISABLED, teu.next_event);
-  TEST_ASSERT_EQUAL(t2m(21,23), ted.next_event);
+  TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
   gm_bitmask_t test1 = {0,0xfc,0,0,0,0,0,0};
-  TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, ted.matching_members, 8);
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
   now_tm = (struct tm){
        .tm_sec = 0,
@@ -85,9 +83,8 @@ static void test_timer_event2() {
 
   now_time = timegm(&now_tm);
 
-  get_next_timer_event(&teu, &ted, &now_time);
-  TEST_ASSERT_EQUAL(MINUTES_DISABLED, teu.next_event);
-  TEST_ASSERT_EQUAL(t2m(23,45), ted.next_event);
+  fam_get_next_timer_event_te(&tevt, &now_time);
+  TEST_ASSERT_EQUAL(t2m(23,45), tevt.next_event);
 
 }
 
@@ -114,7 +111,7 @@ static void test_timer_event() {
   timer_minutes_t timi;
   uint8_t g=1, m=2;
 
-  succ = get_timer_minutes_tm(&timi, &g, &m, true, &now_tm);
+  succ = fau_get_timer_minutes_tm(&timi, &g, &m, true, &now_tm);
   TEST_ASSERT_TRUE(succ);
   TEST_ASSERT_EQUAL(1, g);
   TEST_ASSERT_EQUAL(0, m);
@@ -124,7 +121,7 @@ static void test_timer_event() {
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(23, 45), timi_get_earliest(&timi, now_minutes));
+  TEST_ASSERT_EQUAL(t2m(23, 45), fau_timi_get_earliest(&timi, now_minutes));
 
 
    ///////////////////////////////////////////////////////////////////////////
@@ -132,7 +129,7 @@ static void test_timer_event() {
   m=1;
 
 
-  succ = get_timer_minutes_tm(&timi, &g, &m, false, &now_tm);
+  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &now_tm);
   TEST_ASSERT_TRUE(succ);
   TEST_ASSERT_EQUAL(1, g);
   TEST_ASSERT_EQUAL(1, m);
@@ -143,16 +140,15 @@ static void test_timer_event() {
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(21, 23), timi_get_earliest(&timi, now_minutes));
+  TEST_ASSERT_EQUAL(t2m(21, 23), fau_timi_get_earliest(&timi, now_minutes));
 
 
   time_t now_time = timegm(&now_tm);
 
-  timer_event_t teu, ted;
-  get_next_timer_event(&teu, &ted, &now_time);
+  timer_event_t tevt;
+  fam_get_next_timer_event_te(&tevt, &now_time);
 
-  TEST_ASSERT_EQUAL(MINUTES_DISABLED, teu.next_event);
-  TEST_ASSERT_EQUAL(t2m(21,23), ted.next_event);
+  TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
 
   now_tm = (struct tm){
        .tm_sec = 0,
@@ -165,9 +161,8 @@ static void test_timer_event() {
 
   now_time = timegm(&now_tm);
 
-  get_next_timer_event(&teu, &ted, &now_time);
-  TEST_ASSERT_EQUAL(MINUTES_DISABLED, teu.next_event);
-  TEST_ASSERT_EQUAL(t2m(23,45), ted.next_event);
+  fam_get_next_timer_event_te(&tevt, &now_time);;
+  TEST_ASSERT_EQUAL(t2m(23,45), tevt.next_event);
 
 
 
@@ -196,7 +191,7 @@ static void test_timer_minutes() {
   timer_minutes_t timi;
   uint8_t g=1, m=1;
 
-  succ = get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -205,7 +200,7 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(23, 45), timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(23, 45), fau_timi_get_earliest(&timi, now));
 
 
    ///////////////////////////////////////////////////////////////////////////
@@ -214,7 +209,7 @@ static void test_timer_minutes() {
 
   tm.tm_wday = 1;
 
-  succ = get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -223,11 +218,11 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(6,54), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(t2m(21,9), timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(21, 9), timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(21, 9), fau_timi_get_earliest(&timi, now));
 
   tm.tm_wday = 2;
 
-  succ = get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -236,11 +231,11 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(6,54), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(t2m(21,9), timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(21, 9), timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(21, 9), fau_timi_get_earliest(&timi, now));
 
   tm.tm_wday = 3;
 
-  succ = get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -249,11 +244,11 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(6,54), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(t2m(21,9), timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(21, 9), timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(21, 9), fau_timi_get_earliest(&timi, now));
 
   tm.tm_wday = 4;
 
-  succ = get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -262,11 +257,11 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(6,54), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(t2m(21,9), timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(21, 9), timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(21, 9), fau_timi_get_earliest(&timi, now));
 
   tm.tm_wday = 5;
 
-  succ = get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -275,12 +270,12 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(8,22), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(MINUTES_DISABLED, fau_timi_get_earliest(&timi, now));
 
 
   tm.tm_wday = 6;
 
-  succ = get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -289,12 +284,12 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(7,8), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(t2m(22,11), timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(22, 11), timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(22, 11), fau_timi_get_earliest(&timi, now));
 
 
   tm.tm_wday = 0;
 
-  succ = get_timer_minutes_tm(&timi, &g, &m, false, &tm);
+  succ = fau_get_timer_minutes_tm(&timi, &g, &m, false, &tm);
   TEST_ASSERT_TRUE(succ);
 
   TEST_ASSERT_EQUAL(MINUTES_DISABLED, timi.minutes[ASTRO_MINTS]);
@@ -303,7 +298,7 @@ static void test_timer_minutes() {
   TEST_ASSERT_EQUAL(t2m(7,8), timi.minutes[WEEKLY_UP_MINTS]);
   TEST_ASSERT_EQUAL(t2m(22,11), timi.minutes[WEEKLY_DOWN_MINTS]);
 
-  TEST_ASSERT_EQUAL(t2m(22, 11), timi_get_earliest(&timi, now));
+  TEST_ASSERT_EQUAL(t2m(22, 11), fau_timi_get_earliest(&timi, now));
 
 
 }

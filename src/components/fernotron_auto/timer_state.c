@@ -47,7 +47,7 @@ timer_to_minutes(minutes_t *result, const char *ts) {
 extern gm_bitmask_t manual_bits;
 
 bool 
-get_timer_minutes_tm(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, const struct tm *tm) {
+fau_get_timer_minutes_tm(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, const struct tm *tm) {
 
   precond(timi && group && member);
 
@@ -117,19 +117,19 @@ get_timer_minutes_tm(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard
 }
 
 bool 
-get_timer_minutes_tim(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, const time_t *now_time) {
+fau_get_timer_minutes_tim(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, const time_t *now_time) {
   struct tm *tm = localtime(now_time);
-  return get_timer_minutes_tm(timi, group, member, wildcard, tm);
+  return fau_get_timer_minutes_tm(timi, group, member, wildcard, tm);
 }
 
 bool
-get_timer_minutes_now(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard) {
+fau_get_timer_minutes_now(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard) {
   time_t now_time = time(NULL);
-  return get_timer_minutes_tim(timi, group, member, wildcard, &now_time);
+  return fau_get_timer_minutes_tim(timi, group, member, wildcard, &now_time);
 }
 
 minutes_t
-timi_get_earliest(timer_minutes_t *timi, minutes_t now) {
+fau_timi_get_earliest(timer_minutes_t *timi, minutes_t now) {
   u8 i;
   minutes_t last = MINUTES_DISABLED;
   for (i=0; i < SIZE_MINTS; ++i) {
@@ -149,8 +149,8 @@ static int set_earliest(u8 g, u8 m, minutes_t *earliest, const struct tm *tm_now
   int result = 0;
 
   timer_minutes_t timi;
-  if (get_timer_minutes_tm(&timi, &g, &m, false, tm_now)) {
-    minutes_t temp = timi_get_earliest(&timi, minutes_now);
+  if (fau_get_timer_minutes_tm(&timi, &g, &m, false, tm_now)) {
+    minutes_t temp = fau_timi_get_earliest(&timi, minutes_now);
     if (temp == *earliest)
       result = 1;
     else if (temp < *earliest) {
@@ -163,7 +163,7 @@ static int set_earliest(u8 g, u8 m, minutes_t *earliest, const struct tm *tm_now
   return result;
 }
 
-static bool get_next_timer_event_earliest(gm_bitmask_t *mask_result, minutes_t *earliest_result, const struct tm *tm_now, minutes_t minutes_now) {
+static bool fam_get_next_timer_event_earliest(gm_bitmask_t *mask_result, minutes_t *earliest_result, const struct tm *tm_now, minutes_t minutes_now) {
   u8 g, m;
   minutes_t earliest = MINUTES_DISABLED;
 
@@ -192,22 +192,21 @@ static bool get_next_timer_event_earliest(gm_bitmask_t *mask_result, minutes_t *
   return (earliest != MINUTES_DISABLED);
 }
 
-bool get_next_timer_event(timer_event_t *teu, timer_event_t *ted, const time_t *now_time) {
-  precond(teu && ted);
+bool fam_get_next_timer_event_te(timer_event_t *evt, const time_t *now_time) {
+  precond(evt);
   u8 g, m;
   minutes_t earliest = MINUTES_DISABLED;
   gm_bitmask_t existing_members = { 0, };
 
-  *teu = (timer_event_t ) { .next_event = MINUTES_DISABLED, .flags = BIT(tef_UP) };
-  *ted = (timer_event_t ) { .next_event = MINUTES_DISABLED, .flags = BIT(tef_DOWN) };
-
+  *evt = (timer_event_t ) { .next_event = MINUTES_DISABLED, };
 
   const struct tm *tm_now = localtime(now_time);
   minutes_t minutes_now = tm_now->tm_hour * 60 + tm_now->tm_min;
 
-  if (!get_next_timer_event_earliest(&existing_members, &earliest, tm_now, minutes_now))
+  if (!fam_get_next_timer_event_earliest(&existing_members, &earliest, tm_now, minutes_now))
     return false;
 
+  evt->next_event = earliest;
 
   for ((g = 0), (m = ~0); gm_getNext(&existing_members, &g, &m);) {
     if (gm_GetBit(&manual_bits, g, m))
@@ -215,19 +214,18 @@ bool get_next_timer_event(timer_event_t *teu, timer_event_t *ted, const time_t *
 
     timer_minutes_t timi;
     u8 g2 = g, m2 = m;
-    if (!get_timer_minutes_tm(&timi, &g2, &m2, true, tm_now))
+    if (!fau_get_timer_minutes_tm(&timi, &g2, &m2, true, tm_now))
       continue; // should not happen
 
-    minutes_t temp = timi_get_earliest(&timi, minutes_now);
+    minutes_t temp = fau_timi_get_earliest(&timi, minutes_now);
     if (temp <= earliest) {
 
       if (timi.minutes[DAILY_UP_MINTS] == earliest || timi.minutes[WEEKLY_UP_MINTS] == earliest) {
-        te_set_match(teu, g, m);
-        teu->next_event = earliest;
+        gm_SetBit(te_getMaskUp(evt), g, m);
+
       }
       if (timi.minutes[ASTRO_MINTS] == earliest || timi.minutes[DAILY_DOWN_MINTS] == earliest || timi.minutes[WEEKLY_DOWN_MINTS] == earliest) {
-        te_set_match(ted, g, m);
-        ted->next_event = earliest;
+        gm_SetBit(te_getMaskDown(evt), g, m);
       }
     }
   }

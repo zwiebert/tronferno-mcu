@@ -12,7 +12,7 @@ void lfa_lostIpAddr_cb() {
 
 #ifdef USE_NTP
 void lfa_ntpSync(void) {
-  fau_getnextTimerEvent();
+  fam_updateTimerEvent();
 }
 #endif
 
@@ -156,7 +156,7 @@ void mcu_init() {
 #ifdef FER_TRANSMITTER
   //lfPer_setBit(lf_loopFerTx);
 #endif
-  fau_getnextTimerEvent();
+  fam_updateTimerEvent();
   lfPer_setBit(lf_loopFerTimerState);
   //lfPer_setBit(lf_checkCuasTimeout);
 #ifdef USE_PAIRINGS

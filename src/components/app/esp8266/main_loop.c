@@ -38,7 +38,7 @@ void loop(void) {
   cli_loop();
   ferPos_loop();
 
-  timer_state_loop();
+  fam_loop_old();
   cu_auto_set_check_timeout();
 #ifdef USE_PAIRINGS
   pair_auto_set_check_timeout();

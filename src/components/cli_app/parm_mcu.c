@@ -80,22 +80,19 @@ process_parmMcu(clpar p[], int len) {
       ets_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
 #endif
     } else if (strcmp(key, "te") == 0) {
-      int i;
+      int i,k;
 
-      timer_event_t teu, ted;
+      timer_event_t tevt;
       time_t now_time = time(NULL);
-      get_next_timer_event(&teu, &ted, &now_time);
-      io_putd(teu.next_event), io_putlf();
-      for (i = 0; i < 8; ++i) {
-        io_print_hex_8(teu.matching_members[i], true);
+      fam_get_next_timer_event_te(&tevt, &now_time);
+      io_putd(tevt.next_event), io_putlf();
+      for (k = 0; k < 2; ++k) {
+        for (i = 0; i < 8; ++i) {
+          io_print_hex_8(tevt.member_mask[k][i], true);
+        }
+        io_putlf();
       }
-      io_putlf();
 
-      io_putd(ted.next_event), io_putlf();
-      for (i = 0; i < 8; ++i) {
-        io_print_hex_8(ted.matching_members[i], true);
-      }
-      io_putlf();
 
 #ifdef USE_PAIRINGS
     } else if (strcmp(key, "dbp") == 0) {
