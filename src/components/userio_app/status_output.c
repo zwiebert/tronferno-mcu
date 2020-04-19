@@ -90,6 +90,12 @@ void  so_output_message(so_msg_t mt, void *arg) {
 #endif
     break;
 
+  case SO_MCU_BOOT_COUNT: {
+    extern i32 boot_counter;
+    so_out_x_reply_entry_sl("boot-count", boot_counter);
+  }
+    break;
+
   case SO_MCU_end:
     so_out_x_close();
     break;

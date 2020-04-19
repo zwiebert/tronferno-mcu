@@ -24,6 +24,7 @@ extern void setup_notImplemented(void);
 extern void setup_pin(void);
 void task_setup(void);
 
+i32 boot_counter;
 
 // hardware specific main setup
 void
@@ -53,4 +54,11 @@ user_init() {
   main_setup();
   task_setup();
   intTimer_setup();
+
+  kvshT h;
+  if ((h = kvs_open("misc", kvs_READ_WRITE))) {
+    boot_counter = kvs_get_i32(h, "boot_ct", 0, 0) + 1;
+    kvs_set_i32(h, "boot_ct", boot_counter);
+    kvs_close(h);
+  }
 }

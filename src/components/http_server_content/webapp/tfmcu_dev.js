@@ -29,6 +29,7 @@ class AppState {
     this.tfmcu_config = {};
     this.gmc_fetch = 0;
     this.load_fetch = FETCH_GMU;
+    this.mEsp32BootCount = 0;
   }
 
   load() {
@@ -272,6 +273,10 @@ class AppState {
       if ("build-time" in mcu) {
         document.getElementById("id_buildTime").innerHTML = mcu["build-time"];
       }
+      if ("boot-count" in mcu) {
+        this.mEsp32BootCount = mcu["boot-count"];
+        this.updateHtml_bootCount();
+      }
       if ("ota-state" in mcu) {
         let e = document.getElementById("netota_progress_div");
         switch(mcu["ota-state"]) {
@@ -305,6 +310,10 @@ class AppState {
     }
   }
 
+  updateHtml_bootCount() {
+    document.getElementById("id-bootCount").innerHTML = this.mEsp32BootCount.toString();
+  }
+
   http_handleDocResponses(name, text) {
     this.docs[name] =  { 'text':text };
   }
@@ -319,7 +328,7 @@ class AppState {
       tfmcu.config = { 'gm-used': "?" };
 
     if (mask & FETCH_VERSION)
-      tfmcu.mcu = { version:"?" };
+      tfmcu.mcu = { version:"?", 'boot-count':'?' };
 
 
     if (mask & FETCH_AUTO)
