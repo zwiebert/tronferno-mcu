@@ -13,6 +13,7 @@ CFLAGS          =  -std=gnu90 -Wpointer-arith -Wundef -Wl,-EL -fno-inline-functi
 CXXFLAGS        = -Os -g -O2  -Wpointer-arith -Wundef -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -mno-serialize-volatile -D__ets__ -DICACHE_FLASH -fno-rtti -fno-exceptions
 
 # linker flags used to generate the main object file
+
 LDFLAGS         = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
 # linker script used for the above linker step
 LD_SCRIPT       = eagle.app.v6.4M.ld
