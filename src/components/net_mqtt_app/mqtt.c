@@ -9,7 +9,7 @@
 #ifdef USE_MQTT
 
 #include "mqtt.h"
-#include "mqtt_imp.h"
+#include "net/mqtt/mqtt_imp.h"
 
 #include <string.h>
 #include <stdio.h>

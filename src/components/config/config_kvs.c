@@ -125,7 +125,7 @@ void config_save_kvs(u32 mask) {
     kvs_commit(handle);
     kvs_close(handle);
   } else {
-    D(ets_printf("error: cannot open config in key_value_store\n"));
+    io_puts("error: cannot open config <" CFG_NAMESPACE "> in key_value_store\n");
   }
 }
 

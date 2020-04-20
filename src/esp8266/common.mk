@@ -133,7 +133,7 @@ LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
 
 
 # linker script used for the above linkier step
-LD_SCRIPT	= eagle.app.v6.ld
+LD_SCRIPT	= eagle.app.v6.4M.ld
 
 ifneq ($(boot), none)
 ifneq ($(app),0)
@@ -266,6 +266,7 @@ endef
 all: checkdirs $(TARGET_OUT) $(SUBMODULES)
 
 $(TARGET_OUT): $(APP_AR_IROM) $(GEN_LIBS)
+	$(Q) echo "flash size: " $(flash) " ldscript: " $(LD_SCRIPT)
 	$(MAKE) $(C_VERSION_OBJ)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(SDK_LIBDIR) -L$(BUILD_BASE) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group  $(LIBS) $(APP_AR_IROM) $(EXTRA_AR) $(C_VERSION_OBJ) -Wl,--end-group -o $@
