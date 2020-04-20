@@ -6,8 +6,7 @@
  */ 
 
 
-#ifndef ASTRO_H_
-#define ASTRO_H_
+#pragma once
 
 #include "fernotron/fer_msg_attachment.h"
 #include "time.h"
@@ -31,4 +30,3 @@ uint16_t astro_calc_minutes(const struct tm *tm);
 
 void astro_init_and_reinit(const struct cfg_astro *cfg_astro);
 
-#endif /* ASTRO_H_ */

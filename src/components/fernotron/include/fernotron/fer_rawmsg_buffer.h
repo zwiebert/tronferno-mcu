@@ -1,6 +1,5 @@
 // -*- C -*-
-#ifndef FER_H
-#define FER_H
+#pragma once
 
 #include <stdint.h>
 #include "stdbool.h"
@@ -31,4 +30,3 @@ extern volatile bool msgBuf_isLocked;
 #define txbuf ((uint8_t *)txmsg)
 #define txdat fmsg_get_data(txmsg)
 
-#endif // FER_H

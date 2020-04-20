@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef USER_MAIN_FER_PRG_H_
-#define USER_MAIN_FER_PRG_H_
+#pragma once
 
 #include <stdint.h>
 #include "fsb.h"
@@ -23,4 +22,3 @@ void fmsg_raw_from_dailyTimer(fer_rawMsg *msg, const uint8_t *dtimer_data);
 void fmsg_raw_from_astro(fer_rawMsg *msg, int mint_offset);
 void fmsg_raw_footerCreate(fer_rawMsg *msg, const fsbT *fsb);
 
-#endif /* USER_MAIN_FER_PRG_H_ */

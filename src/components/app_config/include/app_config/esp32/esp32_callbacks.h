@@ -1,5 +1,4 @@
-#ifndef COMPONENTS_APP_CONFIG_INCLUDE_APP_CONFIG_ESP32_ESP32_CALLBACKS_H_
-#define COMPONENTS_APP_CONFIG_INCLUDE_APP_CONFIG_ESP32_ESP32_CALLBACKS_H_
+#pragma once
 
 #include "../callbacks.h"
 #include <stdint.h>
@@ -53,4 +52,3 @@ void loop_clrPerBit_loopCheckMoving(void);
 
 
 
-#endif /* COMPONENTS_APP_CONFIG_INCLUDE_APP_CONFIG_ESP32_ESP32_CALLBACKS_H_ */

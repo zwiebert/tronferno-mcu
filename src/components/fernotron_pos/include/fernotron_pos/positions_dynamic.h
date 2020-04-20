@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_POS_INCLUDE_FERNOTRON_POS_POSITIONS_DYNAMIC_H_
-#define COMPONENTS_FERNOTRON_POS_INCLUDE_FERNOTRON_POS_POSITIONS_DYNAMIC_H_
+#pragma once
 
 #include "fernotron/types.h"
 #include "fernotron/fer_msg_plain.h"
@@ -33,4 +32,3 @@ void ferPos_loopCheckMoving();
 void ferPos_loop(void);
 void ferPos_init(void);
 
-#endif /* COMPONENTS_FERNOTRON_POS_INCLUDE_FERNOTRON_POS_POSITIONS_DYNAMIC_H_ */

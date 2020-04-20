@@ -1,5 +1,6 @@
 #include "main.h"
 #include "misc/time/run_time.h"
+#include "key_value_store/kvs_wrapper.h"
 
 #ifdef USE_NETWORK
 void lfa_gotIpAddr_cb() {
@@ -12,7 +13,7 @@ void lfa_lostIpAddr_cb() {
 
 #ifdef USE_NTP
 void lfa_ntpSync(void) {
-  fau_getnextTimerEvent();
+  fam_updateTimerEvent();
 }
 #endif
 
@@ -156,7 +157,7 @@ void mcu_init() {
 #ifdef FER_TRANSMITTER
   //lfPer_setBit(lf_loopFerTx);
 #endif
-  fau_getnextTimerEvent();
+  fam_updateTimerEvent();
   lfPer_setBit(lf_loopFerTimerState);
   //lfPer_setBit(lf_checkCuasTimeout);
 #ifdef USE_PAIRINGS
@@ -204,4 +205,11 @@ void mcu_init() {
   intTimer_setup();
   stor_setup();
   main_setup();
+
+  kvshT h;
+  if ((h = kvs_open("misc", kvs_READ_WRITE))) {
+    boot_counter = kvs_get_i32(h, "boot_ct", 0, 0) + 1;
+    kvs_set_i32(h, "boot_ct", boot_counter);
+    kvs_close(h);
+  }
 }

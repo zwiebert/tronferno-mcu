@@ -68,6 +68,9 @@ timer1Stop(void) {
 volatile u32 run_time_s_, run_time_ts_;
 
 void IRAM_ATTR timer_handler(void) {
+#ifdef FER_TRANSMITTER
+  ftx_setOutput();
+#endif
 #ifdef FER_RECEIVER
   void frx_sampleInput();
 #endif
@@ -76,7 +79,7 @@ void IRAM_ATTR timer_handler(void) {
   {
     static uint_fast8_t tick_count;
     if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
-      ftx_tick();
+      ftx_dck();
     }
   }
 #endif

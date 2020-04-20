@@ -5,8 +5,7 @@
  *  Author: bertw
  */
 
-#ifndef CONFIG_H_
-#define CONFIG_H_
+#pragma once
 
 #include "app_config/proj_app_cfg.h"
 #include "txtio/inout.h"
@@ -180,5 +179,4 @@ void mcu_read_config(uint32_t mask); //IMPLEMENT_ME
 void mcu_save_config(uint32_t mask); //IMPLEMENT_ME
 #endif
 
-#endif /* CONFIG_H_ */
 

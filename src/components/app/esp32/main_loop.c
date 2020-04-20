@@ -33,7 +33,7 @@ static const lfa_funT lfa_table[lf_Len] = {
 #ifdef USE_SEP
     sep_loop,
 #endif
-    ferPos_loop, timer_state_loop_evt, fau_getnextTimerEvent,
+    ferPos_loop, fam_loop, fam_updateTimerEvent,
 #ifdef USE_CUAS
     cu_auto_set_check_timeout,
 #endif

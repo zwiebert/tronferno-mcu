@@ -1,5 +1,4 @@
-#ifndef USER_MAIN_CUID_AUTO_SET_H_
-#define USER_MAIN_CUID_AUTO_SET_H_
+#pragma once
 
 
 #include <fernotron/fsb.h>
@@ -22,4 +21,3 @@ cuas_state_T cuas_getState();
 #endif
 
 
-#endif /* USER_MAIN_CUID_AUTO_SET_H_ */

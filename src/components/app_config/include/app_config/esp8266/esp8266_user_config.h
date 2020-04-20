@@ -1,5 +1,4 @@
-#ifndef esp8266_user_config_h
-#define esp8266_user_config_h
+#pragma once
 
 #define MCU_TYPE "esp8266"
 
@@ -25,5 +24,4 @@ extern const char *const build_time;
 
 #include <osapi.h>
 
-#endif
 

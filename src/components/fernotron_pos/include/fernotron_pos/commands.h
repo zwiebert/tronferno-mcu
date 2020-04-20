@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef SRC_SHUTTER_POSITIONS_COMMANDS_H_
-#define SRC_SHUTTER_POSITIONS_COMMANDS_H_
+#pragma once
 
 #include "fernotron/fer_msg_plain.h"
 #include <stdint.h>
@@ -19,4 +18,3 @@ bool commands_sendShutterCommand(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd, 
 bool commands_moveShutterToPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct, uint8_t repeats);
 bool commands_moveShuttersToPct(uint32_t a, gm_bitmask_t *mm, uint8_t pct, uint8_t repeats);
 
-#endif /* SRC_SHUTTER_POSITIONS_COMMANDS_H_ */

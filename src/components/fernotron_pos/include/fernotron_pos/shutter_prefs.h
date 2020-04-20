@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_POS_INCLUDE_FERNOTRON_POS_SHUTTER_PREFS_H_
-#define COMPONENTS_FERNOTRON_POS_INCLUDE_FERNOTRON_POS_SHUTTER_PREFS_H_
+#pragma once
 
 #include <stdint.h>
 #include "stdbool.h"
@@ -25,4 +24,3 @@ bool ferPos_prefByM_load(struct shutter_timings *dst, uint8_t g, uint8_t m);
 bool ferPos_prefByWildcard_load(struct shutter_timings *dst, uint8_t *g, uint8_t *m);
 
 
-#endif /* COMPONENTS_FERNOTRON_POS_INCLUDE_FERNOTRON_POS_SHUTTER_PREFS_H_ */

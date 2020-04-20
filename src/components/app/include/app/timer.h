@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_APP_INCLUDE_APP_TIMER_H_
-#define COMPONENTS_APP_INCLUDE_APP_TIMER_H_
+#pragma once
 
 #include <stdint.h>
 
@@ -16,4 +15,3 @@ void intTimer_setup(void);
 extern volatile uint32_t run_time_ts_, run_time_s_;
 #endif
 
-#endif /* COMPONENTS_APP_INCLUDE_APP_TIMER_H_ */

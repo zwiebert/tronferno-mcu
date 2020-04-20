@@ -1,5 +1,4 @@
-#ifndef FERNOTRON_INCLUDE_FERNOTRON_FSB_H_
-#define FERNOTRON_INCLUDE_FERNOTRON_FSB_H_
+#pragma once
 
 #include <stdint.h>
 #include "fer_msg_plain.h"
@@ -48,4 +47,3 @@ void fer_update_tglNibble(fsbT *fsb);
 
 #define FRB_GET_FPR0_IS_RTC_ONLY(data) (((data)[fpr0_RTC_wday] & 0x80) != 0) //TODO:move
 
-#endif /* FERNOTRON_INCLUDE_FERNOTRON_FSB_H_ */

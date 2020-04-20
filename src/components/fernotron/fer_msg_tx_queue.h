@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_FER_MSG_TX_QUEUE_H_
-#define COMPONENTS_FERNOTRON_FER_MSG_TX_QUEUE_H_
+#pragma once
 
 #include "fernotron/fsb.h"
 #include <stdint.h>
@@ -26,4 +25,3 @@ void ftx_popMsg();
 bool ftx_pushMsg(const struct sf *msg);
 int ftx_get_msgPendingCount();
 
-#endif /* COMPONENTS_FERNOTRON_FER_MSG_TX_QUEUE_H_ */

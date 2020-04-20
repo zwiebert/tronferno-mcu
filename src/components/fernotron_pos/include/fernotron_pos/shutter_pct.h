@@ -5,10 +5,8 @@
  *      Author: bertw
  */
 
-#ifndef USER_MAIN_CURRENT_STATE_H_
-#define USER_MAIN_CURRENT_STATE_H_
+#pragma once
 
 #include "positions_static.h"
 #include "positions_dynamic.h"
 
-#endif /* USER_MAIN_CURRENT_STATE_H_ */

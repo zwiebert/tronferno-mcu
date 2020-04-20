@@ -30,13 +30,6 @@ volatile u16 ftx_messageToSend_wordCount;
 volatile bool ftx_messageToSend_isReady;
 static fer_rawMsg *ftx_buf;
 
-#undef bitLen
-#define bitLen               FER_BIT_WIDTH_DCK
-#define shortPositive_Len    FER_BIT_SHORT_DCK
-#define longPositive_Len     FER_BIT_LONG_DCK
-#define pre_Len              FER_PRE_WIDTH_DCK
-#define pauseHigh_Len        FER_STP_NEDGE_DCK
-
 void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type) {
   precond(!ftx_isTransmitterBusy());
   ftx_buf = msg ? msg : txmsg;
@@ -45,87 +38,143 @@ void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type) {
 }
 
 /////////////////////////// interrupt code //////////////////////
-bool IRAM_ATTR ftrx_testLoopBack_getRxPin() {
-  return output_level;
-}
-
 #define ct_incr(ct, limit) (!((++ct >= limit) ? (ct = 0) : 1))
 #define ct_incrementP(ctp, limit) ((++*ctp, *ctp %= limit) == 0)
 #define init_counter() (ftxCount.Ticks = ftxCount.Bits = ftxCount.Words = 0)
-#define advancePreCounter() (ct_incr(ftxCount.Ticks, pre_Len) && ct_incr(ftxCount.Bits, FER_PRE_BIT_CT))
-#define advanceStopCounter() (ct_incr(ftxCount.Ticks, bitLen) && ct_incr(ftxCount.Bits, FER_STP_BIT_CT))
-#define ftx_update_output_preamble() (output_level = (ftxCount.Ticks < shortPositive_Len))
-#define ftx_update_output_stop() (output_level = (ftxCount.Ticks < pauseHigh_Len) && (ftxCount.Bits == 0))
 
-// sets output line according to current bit in data word
-// a stop bit is sent in ftxCount.Bits 0 .. 2
-// a data word is sent in ftxCount.Bits 3 .. 10
-static void IRAM_ATTR ftx_update_output_data(u16 word_buffer) {
-  int bit = ftxCount.Bits - FER_STP_BIT_CT;
+#define advanceStopBitCounter() (ct_incr(ftxCount.Ticks, FER_STP_WIDTH_DCK))
+#define ftx_update_output_stop_bit() (output_level = (ftxCount.Ticks < FER_STP_NEDGE_DCK))
 
-  if (bit < 0) {  // in stop bit (ftxCount.Bits 0 .. 2)
-    output_level = ftxCount.Bits == 0 && ftxCount.Ticks < shortPositive_Len;
-  } else { // in data word
-    output_level = ftxCount.Ticks < shortPositive_Len || (ftxCount.Ticks < longPositive_Len && !(word_buffer & (1 << bit)));
-  }
-}
+#define advancePreambleCounter() (ct_incr(ftxCount.Ticks, FER_PRE_WIDTH_DCK) && ct_incr(ftxCount.Bits, FER_PRE_BIT_CT))
+#define ftx_update_output_preamble() (output_level = (ftxCount.Ticks < FER_PRE_NEDGE_DCK))
+
+#define advanceWordBitCounter() (ct_incr(ftxCount.Ticks, FER_BIT_WIDTH_DCK) && ct_incr(ftxCount.Bits, FER_CMD_BIT_CT))
+#define ftx_update_output_data(word_buffer) (output_level = ftxCount.Ticks < FER_BIT_SHORT_DCK || (ftxCount.Ticks < FER_BIT_LONG_DCK && !GET_BIT(word_buffer, ftxCount.Bits)))
+
+#define advanceWordCounter() (ct_incr(ftxCount.Words, ftx_messageToSend_wordCount))
+
+#define advanceLeadOutCounter() (ct_incr(ftxCount.Ticks, 18)) // XXX: add pause after done (usefulness?)
+
+
+#if 0 // compiler bug
+// XXX: this crashes because somehow the switch() statement uses inaccessible memory (0x3f40_xxxx) for jumping to case labels
+// XXX: works fine with if/else (GCC bug? Needs bug report?)
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
 
 static bool IRAM_ATTR ftx_send_message() {
-  static bool preamble_done, stop_done;
+  static enum {    state_preamble_stop_bit, state_preamble, state_data_stop_bit, state_data_word, state_lead_out,  } ftx_state;
   static u16 word_buffer;
 
-  if (!stop_done) {
-    //send single stop bit before preamble
-    ftx_update_output_stop();
-    stop_done = advanceStopCounter();
+  switch (ftx_state) {
+  case state_preamble_stop_bit:
+    ftx_update_output_stop_bit();
+    if (advanceStopBitCounter())
+      ftx_state = state_preamble;
+    break;
 
-  } else if (!preamble_done) {
-    // send preamble
+  case state_preamble:
     ftx_update_output_preamble();
-    if ((preamble_done = advancePreCounter())) {
-      word_buffer = fer_add_word_parity(ftx_buf->cmd.bd[0], 0);
-    }
-  } else {
-    // send data words + stop bits
-    ftx_update_output_data(word_buffer);
-    // counting ticks until end_of_frame
-    if (ct_incr(ftxCount.Ticks, bitLen)) {
-      // bit sent
-      if ((ct_incr(ftxCount.Bits, FER_CMD_BIT_CT + FER_STP_BIT_CT))) {
-        // word + stop sent
-        if (ct_incr(ftxCount.Words, ftx_messageToSend_wordCount)) {
-          // line sent
-          stop_done = preamble_done = false;
-          return true; // done
-        } else {
-          word_buffer = fer_add_word_parity(ftx_buf->cmd.bd[ftxCount.Words / 2], ftxCount.Words); // load next word
-        }
-      }
-    }
-  }
-  return false; // continue
-}
+    if (advancePreambleCounter())
+      ftx_state = state_data_stop_bit;
+    break;
 
-static void IRAM_ATTR ftx_tick_send_message() {
+  case state_data_stop_bit:
+    ftx_update_output_stop_bit();
+    if (advanceStopBitCounter()) {
+      ftx_state = state_data_word;
+      word_buffer = fer_add_word_parity(ftx_buf->cmd.bd[ftxCount.Words / 2], ftxCount.Words);
+    }
+    break;
+
+  case state_data_word:
+    ftx_update_output_data(word_buffer);
+    if (advanceWordBitCounter())
+      ftx_state = advanceWordCounter() ? state_lead_out : state_data_stop_bit;
+    break;
+
+  case state_lead_out:
+    output_level = 0;
+    if (advanceLeadOutCounter()) {
+      ftx_state = state_preamble_stop_bit;
+      return true;
+    }
+
+  }
+
+return false; // continue
+}
+#pragma GCC pop_options
+
+#else
+
+static bool IRAM_ATTR ftx_send_message() {
+  static enum {
+    state_preamble_stop_bit, state_preamble, state_data_stop_bit, state_data_word, state_lead_out,
+  } ftx_state;
+  static u16 word_buffer;
+
+  if (ftx_state == state_preamble_stop_bit) {
+    ftx_update_output_stop_bit();
+    if (advanceStopBitCounter())
+      ftx_state = state_preamble;
+
+  } else if (ftx_state == state_preamble) {
+    ftx_update_output_preamble();
+    if (advancePreambleCounter())
+      ftx_state = state_data_stop_bit;
+
+  } else if (ftx_state == state_data_stop_bit) {
+    ftx_update_output_stop_bit();
+    if (advanceStopBitCounter()) {
+      ftx_state = state_data_word;
+      word_buffer = fer_add_word_parity(ftx_buf->cmd.bd[ftxCount.Words / 2], ftxCount.Words);
+    }
+
+  } else if (ftx_state == state_data_word) {
+    ftx_update_output_data(word_buffer);
+    if (advanceWordBitCounter())
+      ftx_state = advanceWordCounter() ? state_lead_out : state_data_stop_bit;
+
+  } else if (ftx_state == state_lead_out) {
+    output_level = 0;
+    if (advanceLeadOutCounter()) {
+      ftx_state = state_preamble_stop_bit;
+      return true;
+    }
+
+  }
+
+return false; // continue
+}
+#endif
+
+static void IRAM_ATTR ftx_dck_send_message() {
 
   bool done = ftx_send_message();
-  mcu_put_txPin(output_level);
-
   if (done) {
     ftx_messageToSend_isReady = false;
-
     init_counter();
-    mcu_put_txPin(0);
-
+    output_level = false;
     ftx_MSG_TRANSMITTED_ISR_cb();
   }
 }
 
-void IRAM_ATTR ftx_tick(void) {
 
+void IRAM_ATTR ftx_setOutput(void) {
+  mcu_put_txPin(output_level);
+}
+
+void IRAM_ATTR ftx_dck(void) {
   if (ftx_messageToSend_isReady) {
-    ftx_tick_send_message();
+    ftx_dck_send_message();
   }
 }
+
+// debug function
+bool IRAM_ATTR ftrx_testLoopBack_getRxPin() {
+  return output_level;
+}
+
 #endif
 

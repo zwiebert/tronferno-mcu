@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef USER_MAIN_FER_FRAME_H_
-#define USER_MAIN_FER_FRAME_H_
+#pragma once
 
 #include <stdint.h>
 
@@ -148,4 +147,3 @@ typedef struct fer_raw_msg {
   last_byte_data last;
 } __attribute__((__packed__)) fer_rawMsg;
 
-#endif /* USER_MAIN_FER_FRAME_H_ */

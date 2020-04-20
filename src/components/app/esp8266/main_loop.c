@@ -5,7 +5,7 @@
 #include "app_config/proj_app_cfg.h"
 
 
-#include "fernotron_auto/timer_state_loop.h"
+#include "fernotron_auto/fau_tevent.h"
 #include "cli/cli.h"
 #include "config/config.h"
 #include "fernotron_cuas/cuid_auto_set.h"
@@ -38,7 +38,7 @@ void loop(void) {
   cli_loop();
   ferPos_loop();
 
-  timer_state_loop();
+  fam_loop_old();
   cu_auto_set_check_timeout();
 #ifdef USE_PAIRINGS
   pair_auto_set_check_timeout();

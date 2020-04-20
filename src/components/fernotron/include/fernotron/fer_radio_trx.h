@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef USER_MAIN_FER_TRANSCEIVER_H_
-#define USER_MAIN_FER_TRANSCEIVER_H_
+#pragma once
 
 #include <stdint.h>
 #include "stdbool.h"
@@ -37,11 +36,12 @@ void frx_getQuality(struct frx_quality *dst);
 // tick should be called from stable timer interrupt
 // do a bit of work each tick
 void frx_tick(void);  // call it from timer tick interrupt
-void ftx_tick(void);  // call it from timer tick interrupt
+void ftx_dck(void);  // call it from timer tick interrupt
 
 void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type);
 
-void frx_sampleInput(); // call this from top of timer ISR handler
+void frx_sampleInput(void); // call this from top of timer ISR handler
+void ftx_setOutput(void); // call this from top of timer ISR handler
 
 // event notification callback functions
 
@@ -55,4 +55,3 @@ void frx_sampleInput(); // call this from top of timer ISR handler
 #define ftx_MSG_TRANSMITTED_ISR_cb() // do nothing
 #endif
 
-#endif /* USER_MAIN_FER_TRANSCEIVER_H_ */

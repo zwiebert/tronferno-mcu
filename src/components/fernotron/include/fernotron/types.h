@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_TYPES_H_
-#define COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_TYPES_H_
+#pragma once
 
 #include <stdint.h>
 #include "stdbool.h"
@@ -34,4 +33,3 @@ int fer_gmByName_store(const char *name, gm_bitmask_t *gm, int count);
 
 void gm_fromNibbleCounters(gm_bitmask_t *gm, uint32_t um);
 
-#endif /* COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_TYPES_H_ */

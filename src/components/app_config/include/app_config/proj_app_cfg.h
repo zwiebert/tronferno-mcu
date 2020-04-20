@@ -1,8 +1,7 @@
 // User configuration
-#ifndef PROJ_APP_CONFIG_H_
-#define PROJ_APP_CONFIG_H_
+#pragma once
 
-#define APP_VERSION "0.10.2"
+#define APP_VERSION "0.10.3"
 
 #define FER_TRANSMITTER
 #define FER_RECEIVER
@@ -61,8 +60,8 @@
 #undef ACCESS_GPIO
 #else
 #define IRAM_ATTR
+#define DRAM_ATTR
 #error "no supported MCU"
 #endif
 
 
-#endif /* PROJ_APP_CONFIG_H_ */

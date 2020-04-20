@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef COMPONENTS_FERNOTRON_POS_MOVE_BUF_H_
-#define COMPONENTS_FERNOTRON_POS_MOVE_BUF_H_
+#pragma once
 
 #include "stdbool.h"
 #include <stdint.h>
@@ -30,4 +29,3 @@ struct mv *mv_getNext(struct mv *pred);
 struct mv *mv_calloc();
 void mv_free(struct mv *mv);
 
-#endif /* COMPONENTS_FERNOTRON_POS_MOVE_BUF_H_ */

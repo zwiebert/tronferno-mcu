@@ -1,5 +1,4 @@
-#ifndef COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_INT_TIMER_H_
-#define COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_INT_TIMER_H_
+#pragma once
 
 // imaginary "data clock" which is "four times preamble frequency"
 #define BASE_CLOCK       5000UL  // 5kHz . 200us
@@ -19,4 +18,3 @@
 #define US_TO_TICKS(us) ((us) / TICK_PERIOD_US)
 #define MS_TO_TICKS(ms) ((ms) / TICK_PERIOD_MS)
 
-#endif /* COMPONENTS_FERNOTRON_INCLUDE_FERNOTRON_INT_TIMER_H_ */

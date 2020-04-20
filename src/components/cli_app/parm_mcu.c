@@ -7,7 +7,7 @@
 #include "fernotron_pos/shutter_pct.h"
 #include "txtio/inout.h"
 #include "userio_app/status_output.h"
-#include "fernotron_auto/timer_state.h"
+#include "fernotron_auto/fau_tevent.h"
 #include "misc/bcd.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
@@ -42,6 +42,8 @@ process_parmMcu(clpar p[], int len) {
 
     if (key == NULL || val == NULL) {
       return -1;
+    } else if (strcmp(key, "boot-count") == 0 && *val == '?') {
+      so_output_message(SO_MCU_BOOT_COUNT, 0);
     } else if (strcmp(key, "print") == 0) {
 #ifdef MCU_ESP8266
       if (strcmp(val, "reset-info") == 0) {
@@ -80,22 +82,19 @@ process_parmMcu(clpar p[], int len) {
       ets_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
 #endif
     } else if (strcmp(key, "te") == 0) {
-      int i;
+      int i,k;
 
-      timer_event_t teu, ted;
+      timer_event_t tevt;
       time_t now_time = time(NULL);
-      get_next_timer_event(&teu, &ted, &now_time);
-      io_putd(teu.next_event), io_putlf();
-      for (i = 0; i < 8; ++i) {
-        io_print_hex_8(teu.matching_members[i], true);
+      fam_get_next_timer_event(&tevt, &now_time);
+      io_putd(tevt.next_event), io_putlf();
+      for (k = 0; k < 2; ++k) {
+        for (i = 0; i < 8; ++i) {
+          io_print_hex_8(tevt.member_mask[k][i], true);
+        }
+        io_putlf();
       }
-      io_putlf();
 
-      io_putd(ted.next_event), io_putlf();
-      for (i = 0; i < 8; ++i) {
-        io_print_hex_8(ted.matching_members[i], true);
-      }
-      io_putlf();
 
 #ifdef USE_PAIRINGS
     } else if (strcmp(key, "dbp") == 0) {
