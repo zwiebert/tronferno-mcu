@@ -122,7 +122,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
 
   case SO_CFG_BAUD:
 #ifndef MCU_ESP32
-    so_out_x_reply_entry_l(mt, C.mcu_serialBaud);
+    so_out_x_reply_entry_l(mt,config_read_item_u32(CB_BAUD, MY_MCU_UART_BAUD_RATE));
 #endif
     break;
   case SO_CFG_RTC:
@@ -136,7 +136,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
 
   case SO_CFG_NETWORK:
 #ifdef USE_NETWORK
-    so_out_x_reply_entry_s(mt, cfg_args_network[C.network]);
+    so_out_x_reply_entry_s(mt, cfg_args_network[config_read_item_i8(CB_NETWORK_CONNECTION, MY_NETWORK_CONNECTION)]);
 #endif
     break;
 
@@ -221,7 +221,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_CFG_VERBOSE:
-    so_out_x_reply_entry_d(mt, C.app_verboseOutput);
+    so_out_x_reply_entry_d(mt, config_read_item_i8(CB_VERBOSE, MY_VERBOSE));
     break;
     case SO_CFG_TZ:
 #ifdef POSIX_TIME
@@ -231,14 +231,15 @@ void  so_output_message(so_msg_t mt, void *arg) {
   case SO_CFG_DST:
 #ifdef MDR_TIME
   {
-    const char *dst = (C.geo_dST == dstEU ? "eu" : (C.geo_dST == dstNone ? "0" : "1"));
+    enum dst geo_dst = config_read_item_i8(CB_DST, MY_GEO_DST);
+    const char *dst = (geo_dst == dstEU ? "eu" : (geo_dst == dstNone ? "0" : "1"));
     so_out_x_reply_entry_s(mt, dst);
   }
 #endif
     break;
 
   case SO_CFG_GM_USED: {
-    so_out_x_reply_entry_lx(mt, C.fer_usedMembers);
+    so_out_x_reply_entry_lx(mt, config_read_item_u32(CB_USED_MEMBERS, MY_FER_GM_USE));
   }
     break;
 
