@@ -82,7 +82,6 @@ int process_parmMcu(clpar p[], int len) {
       }
 #ifdef USE_FREERTOS
     } else if (strcmp(key, "stack") == 0) {
-      int n = atoi(val);
       int words = uxTaskGetStackHighWaterMark(NULL);
       ets_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
 #endif

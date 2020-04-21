@@ -35,10 +35,10 @@ static os_event_t user_procTaskQueue[user_procTaskQueueLen];
 
 void main_setup_ip_dependent() {
 #ifdef USE_NTP
-  ntp_setup(cfg_getNtpClient());
+  config_setup_ntpClient();
 #endif
 #ifdef USE_MQTT
-    io_mqttApp_setup(cfg_getMqttClient());
+    config_setup_mqttClient();
 #endif
 }
 

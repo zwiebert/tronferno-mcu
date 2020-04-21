@@ -48,7 +48,7 @@ user_init() {
 
   setup_notImplemented();
   setup_pin();
-  wifistation_setup(cfg_getWlan());
+  config_setup_wifiStation();
   tcpCli_setup(cfg_getTcpsServer());
   setup_udp();
   main_setup();

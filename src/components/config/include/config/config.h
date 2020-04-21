@@ -8,8 +8,10 @@
 #pragma once
 
 #include "app_config/proj_app_cfg.h"
+#include "config_defaults.h"
 #include "txtio/inout.h"
 #include "fernotron/astro.h"
+#if 0
 #ifdef USE_MQTT
 #include "net/mqtt/mqtt.h"
 #endif
@@ -21,6 +23,7 @@
 #endif
 #ifdef USE_NTP
 #include "net/ntp.h"
+#endif
 #endif
 
 #include "fernotron/types.h"
@@ -57,7 +60,6 @@ void cfg_tz2timezone(void);
 
 typedef struct {
   uint32_t fer_centralUnitID, mcu_serialBaud;
-  struct cfg_astro astro;
 #ifdef MDR_TIME
   enum dst geo_dST;
 #endif
@@ -68,46 +70,20 @@ typedef struct {
   enum verbosity app_verboseOutput;
   uint32_t fer_usedMembers; // each of the nibbles 1-7 stands for a group. nibble 1 == group 1. nibble 0 = number of used Groups (stored for the front-end, not used here on the MCU)
   gm_bitmask_t fer_usedMemberMask;
-
-#ifdef USE_WLAN
-  struct cfg_wlan wifi;
-#endif
   char app_configPassword[16];
   char app_expertPassword[16];
 #ifdef ACCESS_GPIO
   enum mcu_pin_state gpio[CONFIG_GPIO_SIZE];
 #endif
-#ifdef POSIX_TIME
-  char geo_tz[32];
-#endif
-#ifdef USE_MQTT
-  struct cfg_mqtt mqtt;
-#endif
-#ifdef USE_HTTP
-  struct cfg_http http;
-#endif
-#ifdef USE_NTP
-  struct cfg_ntp ntp;
-#endif
 #ifdef USE_NETWORK
   enum nwConnection network;
 #endif
-#ifdef USE_LAN
-  struct cfg_lan lan;
-#endif
-
 } config;
 
 extern config C;
 extern const bool always_true, always_false;
 
 #ifndef TEST_HOST
-#define cfg_getAstro() &C.astro
-#define cfg_getWlan() &C.wifi
-#define cfg_getLan() &C.lan
-#define cfg_getMqttClient() &C.mqtt
-#define cfg_getHttpServer() &C.http
-#define cfg_getNtpClient() &C.ntp
 #define cfg_getTxtio() (struct cfg_txtio *)&C.app_verboseOutput
 #define cfg_getTcpsServer() (struct cfg_tcps *)&always_true
 #define cfg_getCuId() C.fer_centralUnitID
@@ -117,6 +93,7 @@ extern const bool always_true, always_false;
 // so these options will not be persistent during restart
 //
 #define CONFIG_IGORE_MASK ((1<<CB_RECV)|(1<<CB_TRANSM))
+
 
 enum configItem {
   CB_RECV, CB_TRANSM, CB_CUID, CB_USED_MEMBERS, CB_BAUD, CB_GPIO, CB_VERBOSE,
@@ -154,6 +131,18 @@ CB_TIZO,
   CB_size
 };
 
+bool config_save_item_s(enum configItem item, const char *val);
+bool config_save_item_u32(enum configItem item, const char *val);
+bool config_save_item_i8(enum configItem item, const char *val);
+bool config_save_item_f(enum configItem item, const char *val);
+bool config_save_item_n_u32(enum configItem item, uint32_t val);
+bool config_save_item_n_i8(enum configItem item, int8_t val);
+bool config_save_item_n_f(enum configItem item, float val);
+
+const char *config_read_item_s(enum configItem item, char *d, unsigned d_size, const char *def);
+uint32_t config_read_item_u32(enum configItem item, uint32_t def);
+int8_t config_read_item_i8(enum configItem item,  int8_t def);
+float config_read_item_f(enum configItem item, float def);
 
 
 //#define CM_ALL ((uint32_t)((1UL<<CB_size)-1))
@@ -179,4 +168,12 @@ void mcu_read_config(uint32_t mask); //IMPLEMENT_ME
 void mcu_save_config(uint32_t mask); //IMPLEMENT_ME
 #endif
 
+
+
+void config_setup_mqttClient();
+void config_setup_httpServer();
+void config_setup_astro();
+void config_setup_wifiStation();
+void config_setup_ntpClient();
+void config_setup_ethernet();
 
