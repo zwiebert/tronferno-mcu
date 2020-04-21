@@ -28,7 +28,6 @@ MODULES	=  src/esp8266 src/esp8266/driver src/lib/time
 LIBS   =  gcc hal phy pp net80211 lwip wpa main crypto 
 EXTRA_INCDIR += . 
 #spiffs
-
 EXTRA_INCDIR += $(addprefix $(COMPSHARE_PATH)/storage/,esp8266/spiffs/src include/storage/esp8266)
 #time
 EXTRA_INCDIR += $(SRC_BASE)/src/lib/time
