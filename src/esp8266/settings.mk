@@ -41,15 +41,6 @@ ESPBAUD		?= 115200
 
 ESPTOOL += --chip esp8266
 
-
-# BOOT = none
-# BOOT = old - boot_v1.1
-# BOOT = new - boot_v1.2+
-BOOT ?= none # - boot_v1.7
-# APP = 0 - eagle.flash.bin + eagle.irom0text.bin
-# APP = 1 - user1.bin
-# APP = 2 - user2.bin
-APP ?= 0
 # SPI_SPEED = 40, 26, 20, 80
 SPI_SPEED ?= 40
 # SPI_MODE: QIO, QOUT, DIO, DOUT
