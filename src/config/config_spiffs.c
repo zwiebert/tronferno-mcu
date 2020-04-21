@@ -15,7 +15,7 @@
 
 
 #include "config/config.h"
-#include "storage/spiffs_fs.h"
+#include "storage/esp8266/spiffs_fs.h"
 
 #define CFG_FILE "mcucfg.bin"
 #define DATA_TYPE config

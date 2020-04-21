@@ -12,7 +12,7 @@
 #include "app/rtc.h"
 #include "cli_imp.h"
 #ifndef NO_SPIFFS
-#include "storage/spiffs_fs.h"
+#include "storage/esp8266/spiffs_fs.h"
 #endif
 #include "debug/debug.h"
 

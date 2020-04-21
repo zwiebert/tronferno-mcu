@@ -22,17 +22,17 @@ COMPSHARE_DIR=components-mcu/components
 COMPSHARE_PATH := $(SRC_BASE)/$(COMPSHARE_DIR)
 COMP_PATH := $(SRC_BASE)/$(COMP_DIR)
 
-COMPSHARE = txtio net debug cli key_value_store misc misc_time userio net_mqtt net_http_server storage storage/spiffs/src  net_mqtt/esp8266/esp_mqtt/mqtt
+COMPSHARE = txtio net debug cli key_value_store misc misc_time userio net_mqtt net_http_server storage storage/esp8266/spiffs/src  net_mqtt/esp8266/esp_mqtt/mqtt
 COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app 
 MODULES	=  src/esp8266 src/esp8266/driver src/lib/time
 LIBS   =  gcc hal phy pp net80211 lwip wpa main crypto 
 EXTRA_INCDIR += . 
 #spiffs
-EXTRA_INCDIR += $(COMPSHARE_PATH)/storage/spiffs/src
+EXTRA_INCDIR += $(addprefix $(COMPSHARE_PATH)/storage/,esp8266/spiffs/src include/storage/esp8266)
 #time
 EXTRA_INCDIR += $(SRC_BASE)/src/lib/time
 # esp_mqtt
-EXTRA_INCDIR += $(COMPSHARE_PATH)/net_mqtt/esp8266/esp_mqtt/mqtt/include $(COMPSHARE_PATH)/net_mqtt/esp8266/esp_mqtt/include $(COMPSHARE_PATH)/net_mqtt/esp8266
+EXTRA_INCDIR += $(addprefix $(COMPSHARE_PATH)/net_mqtt/esp8266/,esp_mqtt/mqtt/include esp_mqtt/include .)
 CPPFLAGS += -DLOCAL_CONFIG_AVAILABLE # for esp_mqtt
 LIBS += mbedtls
 
