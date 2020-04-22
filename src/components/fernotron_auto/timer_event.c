@@ -62,8 +62,9 @@ void fam_loop(void) {
   if (te->next_event != get_now_min())
     return;
 
-  if (simPos_registerMovingShutters(te_getMaskUp(te), fer_cmd_UP) >= 0 || simPos_registerMovingShutters(te_getMaskUp(te), fer_cmd_DOWN) >= 0)
-    fam_updateTimerEvent();
+  simPos_registerMovingShutters(te_getMaskUp(te), fer_cmd_UP);
+  simPos_registerMovingShutters(te_getMaskDown(te), fer_cmd_DOWN);
+  fam_updateTimerEvent();
 }
 
 // old loop (ESP8266)
@@ -88,7 +89,7 @@ void fam_loop_old(void) {
     return;
 
   simPos_registerMovingShutters(te_getMaskUp(te), fer_cmd_UP);
-  simPos_registerMovingShutters(te_getMaskUp(te), fer_cmd_DOWN);
+  simPos_registerMovingShutters(te_getMaskDown(te), fer_cmd_DOWN);
 
 }
 
