@@ -19,6 +19,34 @@ static int t2m(int hour, int minute) {
   return hour * 60 + minute;
 }
 
+static void test_timer_event4() {
+  erase_timer_data(0,0);
+  timer_data_t t1 = {.astro = 15, .bf = 0, .daily = "03452123", .weekly = "" };
+  save_timer_data(&t1, 1, 0);
+  timer_data_t t2 = {.astro = 0, .bf = 0, .daily = "", .weekly = "06542109+++0822-07082211+" };
+  save_timer_data(&t2, 1, 1);
+
+  struct tm now_tm = {
+     .tm_sec = 0,
+     .tm_min = 0,
+     .tm_hour = 18,
+     .tm_wday = 3,
+     .tm_mday = 22,
+     .tm_mon = 3, // april
+  };
+
+
+  time_t now_time = timegm(&now_tm);
+  timer_event_t tevt;
+  fam_get_next_timer_event(&tevt, &now_time);
+
+  TEST_ASSERT_EQUAL(t2m(19,54), tevt.next_event);
+  gm_bitmask_t test1 = {0,0x02,0,0,0,0,0,0};
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
+
+}
+
+
 static void test_timer_event3() {
   erase_timer_data(0,0);
   timer_data_t t1 = {.astro = 20000, .bf = 0, .daily = "03452123", .weekly = "" };
@@ -304,6 +332,7 @@ TEST_CASE("timer next event", "[fernotron_auto]") {
   test_timer_event();
   test_timer_event2();
   test_timer_event3();
+  test_timer_event4();
 }
 
 #ifdef TEST_HOST
@@ -312,7 +341,7 @@ gm_bitmask_t manual_bits;
 config C;
 
 static struct cfg_astro cfg_astro =
-    { .geo_longitude = 13, .geo_latitude = 52, .geo_timezone = 1, .astroCorrection = acAverage, };
+    { .geo_longitude = 13.38, .geo_latitude = 52.5, .geo_timezone = 1, .astroCorrection = acAverage, };
 void setUp() {
 
   C.fer_usedMembers = ~0U;
