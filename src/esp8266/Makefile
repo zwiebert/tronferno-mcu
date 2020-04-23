@@ -89,4 +89,3 @@ include $(SRC_BASE)/src/esp8266/common.mk
 
 libmirom: $(LIBMIROM_A)
 
-

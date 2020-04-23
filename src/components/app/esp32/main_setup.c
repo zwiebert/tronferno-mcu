@@ -107,7 +107,7 @@ void ntpApp_sync_time_cb(struct timeval *tv) {
 
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb(ntpApp_sync_time_cb);
-  ntp_setup(cfg_getNtpClient());
+  config_setup_ntpClient();
 }
 
 void main_setup_ip_dependent() {
@@ -118,16 +118,13 @@ void main_setup_ip_dependent() {
     ntpApp_setup();
 #endif
 #ifdef USE_MQTT
-    io_mqttApp_setup(cfg_getMqttClient());
+    config_setup_mqttClient();
 #endif
-#ifdef USE_TCPS
-  tcpCli_setup(cfg_getTcpsServer());
-#endif
-#ifdef USE_TCPS_TASK
-  tcpCli_setup_task(cfg_getTcpsServer());
+#if defined USE_TCPS || defined USE_TCPS_TASK
+    config_setup_cliTcpServer();
 #endif
 #ifdef USE_HTTP
-  hts_setup(cfg_getHttpServer());
+  config_setup_httpServer();
 #endif
   }
 }
@@ -139,10 +136,9 @@ void mcu_init() {
 #ifdef USE_EG
   loop_eventBits_setup();
 #endif
-
-  txtio_setup(cfg_getTxtio());
+  config_setup_global();
+  config_setup_txtio();
   kvs_setup();
-  config_setup();
 
   io_puts("\r\n\r\n");
 
@@ -172,7 +168,7 @@ void mcu_init() {
 #ifdef USE_WLAN
   case nwWlanSta:
     esp_netif_init();
-    wifistation_setup(cfg_getWlan());
+    config_setup_wifiStation();
     break;
 #endif
 #ifdef USE_WLAN_AP
@@ -184,7 +180,7 @@ void mcu_init() {
 #ifdef USE_LAN
   case nwLan:
     esp_netif_init();
-    ethernet_setup(cfg_getLan());
+    config_setup_ethernet();
 #endif
     break;
   default:

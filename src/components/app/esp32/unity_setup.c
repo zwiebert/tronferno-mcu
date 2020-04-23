@@ -27,16 +27,16 @@ void unity_suiteSetUp() {
  mcu_init();
 #else
   //config_setup();
+  config_setup_global();
 #ifdef USE_EG
   loop_eventBits_setup();
 #endif
   mutex_setup();
   kvs_setup();
-  txtio_setup(cfg_getTxtio());
+  config_setup_txtio();
   stor_setup();
   ferPos_init();
-  astro_init_and_reinit(cfg_getAstro());
-
+  config_setup_astro();
 #endif
 
 }

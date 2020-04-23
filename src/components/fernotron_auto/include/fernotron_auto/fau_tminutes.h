@@ -22,7 +22,7 @@ typedef struct {
 
 #define tm_DMin(tm) (tm->tm_hour * 60 + tm->tm_min)
 minutes_t get_now_min();
-minutes_t get_min(time_t *timer);
+minutes_t get_min(const time_t *timer);
 
 // return minute offsets of todays timer events in parameter *result
 // offsets are minutes after 00:00 hour.

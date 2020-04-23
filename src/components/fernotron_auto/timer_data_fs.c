@@ -13,7 +13,7 @@
 
 #ifndef TEST_HOST
 #define printf ets_printf
-#define DB(x) do { if (C.app_verboseOutput >= vrbDebug) { x; } } while(0)
+#define DB(x) do { if (TXTIO_IS_VERBOSE(vrbDebug)) { x; } } while(0)
 #define DB2(x) DB(x)
 #else
 #include <stdio.h>

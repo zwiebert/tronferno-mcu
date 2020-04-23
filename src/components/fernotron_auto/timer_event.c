@@ -27,12 +27,12 @@ minutes_t get_now_min() {
   return tm_DMin(tm);
 }
 
-minutes_t get_min(time_t *timer) {
+minutes_t get_min(const time_t *timer) {
   struct tm *tm = localtime(timer);
   return tm_DMin(tm);
 }
 
-static void fam_updateTimerEventTime(time_t *now_time) {
+static void fam_updateTimerEventTime(const time_t *now_time) {
   minutes_t next_min = next_event_te.next_event;
   minutes_t now_min = get_min(now_time);
   time_t midnight = ((60 * 24) - now_min) * 60 + *now_time;
@@ -100,6 +100,8 @@ static int set_earliest(u8 g, u8 m, minutes_t *earliest, const struct tm *tm_now
   timer_minutes_t timi;
   if (fau_get_timer_minutes_tm(&timi, &g, &m, false, tm_now)) {
     minutes_t temp = fau_get_earliest_from_timer_minutes(&timi, minutes_now);
+    if (temp == MINUTES_DISABLED)
+      result = 0;
     if (temp == *earliest)
       result = 1;
     else if (temp < *earliest) {
@@ -116,6 +118,7 @@ static int set_earliest(u8 g, u8 m, minutes_t *earliest, const struct tm *tm_now
 static bool fam_get_next_timer_event_earliest(gm_bitmask_t *mask_result, minutes_t *earliest_result, const struct tm *tm_now, minutes_t minutes_now) {
   u8 g, m;
   minutes_t earliest = MINUTES_DISABLED;
+  bool result = false;
 
   if (set_earliest(0, 0, &earliest, tm_now, minutes_now, mask_result)) {
     for (g = 1; g <= MAX_GRP; ++g) {
@@ -137,10 +140,19 @@ static bool fam_get_next_timer_event_earliest(gm_bitmask_t *mask_result, minutes
       gm_SetBit(mask_result, g, m);
     }
   }
-  if (earliest_result)
+
+  if (gm_isAllClear(mask_result))
+    earliest = MINUTES_DISABLED;
+
+  result = (earliest != MINUTES_DISABLED);
+
+  if (result && earliest_result)
     *earliest_result = earliest;
-  return (earliest != MINUTES_DISABLED);
+
+  postcond(result == !gm_isAllClear(mask_result));
+  return result;
 }
+
 
 bool fam_get_next_timer_event(timer_event_t *evt, const time_t *now_time) {
   precond(evt);
@@ -149,11 +161,11 @@ bool fam_get_next_timer_event(timer_event_t *evt, const time_t *now_time) {
   gm_bitmask_t existing_members = { 0, };
 
   *evt = (timer_event_t ) { .next_event = MINUTES_DISABLED, };
+  struct tm tm_now;
+  localtime_r(now_time, &tm_now);
+  minutes_t minutes_now = tm_now.tm_hour * 60 + tm_now.tm_min;
 
-  const struct tm *tm_now = localtime(now_time);
-  minutes_t minutes_now = tm_now->tm_hour * 60 + tm_now->tm_min;
-
-  if (!fam_get_next_timer_event_earliest(&existing_members, &earliest, tm_now, minutes_now))
+  if (!fam_get_next_timer_event_earliest(&existing_members, &earliest, &tm_now, minutes_now))
     return false;
 
   evt->next_event = earliest;
@@ -164,7 +176,7 @@ bool fam_get_next_timer_event(timer_event_t *evt, const time_t *now_time) {
 
     timer_minutes_t timi;
     u8 g2 = g, m2 = m;
-    if (!fau_get_timer_minutes_tm(&timi, &g2, &m2, true, tm_now))
+    if (!fau_get_timer_minutes_tm(&timi, &g2, &m2, true, &tm_now))
       continue; // should not happen
 
     minutes_t temp = fau_get_earliest_from_timer_minutes(&timi, minutes_now);

@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include "stdbool.h"
 #include "app_config/callbacks.h"
+#include "fer_msg_attachment.h"
 
 #define WORDS_MSG_PLAIN (2*BYTES_MSG_PLAIN)
 #define WORDS_MSG_RTC (2*BYTES_MSG_RTC)

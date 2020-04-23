@@ -59,9 +59,9 @@ u8 IRAM_ATTR mcu_get_rxPin() {
 void 
 setup_pin(void) {
   int i;
-
+#ifdef ACCESS_GPIO
   for (i = 0; i < 17; ++i) {
-    mcu_pin_state state = C.gpio[i];
+    mcu_pin_state state = C.gpio.gpio[i];
     if (state == PIN_DEFAULT)
       continue;
     else if (state == PIN_INPUT || state == PIN_INPUT_PULLUP || state == PIN_OUTPUT)
@@ -71,7 +71,7 @@ setup_pin(void) {
       mcu_access_pin2(i, NULL, state);
     }
   }
-
+#endif
   mcu_access_pin2(RFOUT_GPIO, NULL, PIN_OUTPUT);
   mcu_access_pin2(RFIN_GPIO, NULL, PIN_INPUT);
   mcu_access_pin2(BUTTON_GPIO, NULL, PIN_INPUT_PULLUP);

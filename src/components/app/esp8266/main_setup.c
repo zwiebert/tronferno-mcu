@@ -30,8 +30,9 @@ i32 boot_counter;
 void
 user_init() {
   // load config and setup serial interface
+  config_setup_global();
   setup_serial(115200);
-  txtio_setup(cfg_getTxtio());
+  config_setup_txtio();
   io_puts("\r\n\r\n");
   io_puts("\r\n\r\n");
   io_puts("test io_puts...\n");
@@ -40,16 +41,13 @@ user_init() {
   stor_setup();
   kvs_setup();
 
-  read_config_all();
-
-
   // print debug info
   print_reset_info();
 
   setup_notImplemented();
   setup_pin();
-  wifistation_setup(cfg_getWlan());
-  tcpCli_setup(cfg_getTcpsServer());
+  config_setup_wifiStation();
+  config_setup_cliTcpServer();
   setup_udp();
   main_setup();
   task_setup();
