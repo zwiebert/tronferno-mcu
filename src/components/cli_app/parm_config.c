@@ -124,9 +124,10 @@ const char *const *cfg_args[SO_CFG_size] = {
 #else
 #define isValid_optStr(cfg, new) true
 #define set_optStr(v, cb) config_save_item_s(cb, v)
+#define set_optBlob(v, cb) config_save_item_b(cb, &v, sizeof v)
 #define set_optStr_ifValid set_optStr
-#define set_opt(t, v, cb) config_save_item_##t(cb,v)
-#define set_optN(t, v, cb) config_save_item_n_##t(cb,v)
+#define set_opt(t, v, cb) (config_save_item_##t(cb,v) && config_item_modified(cb))
+#define set_optN(t, v, cb) (config_save_item_n_##t(cb,v) && config_item_modified(cb))
 #endif
 
 
@@ -137,7 +138,7 @@ process_parmConfig(clpar p[], int len) {
   so_msg_t so_key = SO_NONE;
 
   bool flag_isValid = 0, flag_hasChanged = 0;
-  bool hasChanged_mqttClient = false, hasChanged_httpServer = false,  hasChanged_geo = false;
+  bool hasChanged_mqttClient = false, hasChanged_httpServer = false,  hasChanged_geo = false, hasChanged_ethernet = false;
 
   so_output_message(SO_CFG_begin, NULL);
 
@@ -191,19 +192,18 @@ process_parmConfig(clpar p[], int len) {
             if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
               return cli_replyFailure();
             }
-            FSB_PUT_DEVID(&default_sender, cu);
-            set_optN(u32, cu, CB_CUID);
+            (void)set_optN(u32, cu, CB_CUID);
           }
 
         }
           break;
         case SO_CFG_BAUD: {
-          set_opt(u32, val, CB_BAUD);
+          (void)set_opt(u32, val, CB_BAUD);
         }
           break;
         case SO_CFG_VERBOSE: {
           NODEFAULT();
-          set_opt(i8, val, CB_VERBOSE);
+          (void)set_opt(i8, val, CB_VERBOSE);
         }
         break;
 #ifdef USE_NETWORK
@@ -223,7 +223,7 @@ process_parmConfig(clpar p[], int len) {
             }
 #endif
             if (strcmp(val, cfg_args_network[i]) == 0) {
-              set_optN(i8, i, CB_NETWORK_CONNECTION);
+              (void)(set_optN(i8, i, CB_NETWORK_CONNECTION));
               success = true;
               break;
             }
@@ -259,7 +259,8 @@ process_parmConfig(clpar p[], int len) {
            u8 i;
            for (i=0; i < lanPhyLEN; ++i) {
              if (strcasecmp(val, cfg_args_lanPhy[i]) == 0) {
-               set_optN(i8, i, CB_LAN_PHY);
+               if (set_optN(i8, i, CB_LAN_PHY))
+                 hasChanged_ethernet = true;
                success = true;
                break;
              }
@@ -270,7 +271,8 @@ process_parmConfig(clpar p[], int len) {
          break;
         case SO_CFG_LAN_PWR_GPIO: {
           NODEFAULT();
-          set_opt(i8, val, CB_LAN_PWR_GPIO);
+          if (set_opt(i8, val, CB_LAN_PWR_GPIO))
+            hasChanged_ethernet = true;
         }
         break;
 #endif // USE_LAN
@@ -399,16 +401,15 @@ process_parmConfig(clpar p[], int len) {
             cli_warning_optionUnknown(key);
           }
           rtc_setup();
-          set_optN(i8, v, CB_DST);
+          (void)set_optN(i8, v, CB_DST);
 #endif
         }
         break;
 
 
         case SO_CFG_GM_USED: {
-           u32 gmu = strtoul(val, NULL, 16);
-           C.fer_usedMembers = gmu;
-           save_config_item(CB_USED_MEMBERS);
+          u32 gmu = strtoul(val, NULL, 16);
+          (void)set_optN(u32, gmu, CB_USED_MEMBERS);
         }
         break;
 
@@ -475,8 +476,8 @@ process_parmConfig(clpar p[], int len) {
         if (error) {
           reply_message("gpio:failure", error);
         } else {
-          C.gpio[gpio_number] = ps;
-          save_config_item(CB_GPIO);
+          C.gpio.gpio[gpio_number] = ps;
+          set_optBlob(C.gpio, CB_GPIO);
         }
       }
 #endif
@@ -502,6 +503,11 @@ process_parmConfig(clpar p[], int len) {
   if (hasChanged_geo) {
     config_setup_astro();
   }
+#ifdef USE_LAN
+  if (hasChanged_ethernet) {
+    config_setup_ethernet();
+  }
+#endif
 #ifdef USE_MQTT
   if (hasChanged_mqttClient) {
     config_setup_mqttClient();

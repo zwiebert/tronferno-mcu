@@ -7,7 +7,7 @@
 
 #include "app_config/proj_app_cfg.h"
 
-
+#include "app/fernotron.h"
 #include "config/config.h"
 #include "config_kvs.h"
 #include "config_defaults.h"
@@ -16,6 +16,7 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
 #include "misc/stof.h"
+#include <stdbool.h>
 
 #define D(x) 
 
@@ -23,7 +24,7 @@
 
 #ifdef CONFIG_DICT
 
-const char *cfg_kvsKeys[] = { "C_RECEIVER", "C_TRANSM", "C_UID", "C_GMU", "C_BAUD", "C_GPIO", "C_VERBOSE",
+const char *cfg_kvsKeys[] = { "C_RECEIVER", "C_TRANSM", "C_CUID", "C_GMU", "C_BAUD", "C_GPIO", "C_VERBOSE",
 #ifdef USE_WLAN
   "C_WIFI_SSID", "C_WIFI_PASSWD",
 #endif
@@ -73,12 +74,24 @@ unsigned nvsBlob(void *handle, const char *key, void *dst, size_t dst_len, bool 
 
 bool config_save_item_s(enum configItem item, const char *val) {
   kvshT h;
+  bool result = false;
   if ((h = kvs_open(CFG_NAMESPACE, kvs_WRITE))) {
-    kvsWs(item, (char*)val);
+    result = strlen(val) == kvsWs(item, (char*)val);
     kvs_commit(h);
     kvs_close(h);
   }
-  return true;
+  return result;
+}
+
+bool config_save_item_b(enum configItem item, const void *val, unsigned size) {
+  kvshT h;
+  bool result = false;
+  if ((h = kvs_open(CFG_NAMESPACE, kvs_WRITE))) {
+    result = size == kvs_rw_blob(h, cfg_key(item), (void*)val, size, true);
+    kvs_commit(h);
+    kvs_close(h);
+  }
+  return result;
 }
 
 bool config_save_item_u32(enum configItem item, const char *val) {
@@ -121,6 +134,7 @@ bool config_save_item_n_f(enum configItem item, float val) {
   return true;
 }
 
+
 const char* config_read_item_s(enum configItem item, char *d, unsigned d_size, const char *def) {
   kvshT h;
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
@@ -155,55 +169,38 @@ float config_read_item_f(enum configItem item, float def) {
   return def;
 }
 
-static void rw_config(void *handle, u32 mask, bool write) {
-#ifdef CONFIG_IGORE_MASK
-  mask &= ~CONFIG_IGORE_MASK;
+bool config_item_modified(enum configItem item) {
+  kvshT h;
+  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
+    switch (item) {
+    case CB_CUID:
+      kvsR(u32, item, C.fer_centralUnitID);
+      FSB_PUT_DEVID(&default_sender, C.fer_centralUnitID);
+      break;
+    case CB_BAUD:
+      kvsR(i8, item, C.mcu_serialBaud);
+      break;
+#ifdef MDR_TIME
+    case CB_DST:
+      kvsR(u32, item, C.geo_dST);
+      break;
 #endif
+    case CB_USED_MEMBERS:
+      kvsR(u32, item, C.fer_usedMembers);
+      gm_fromNibbleCounters(&C.fer_usedMemberMask, C.fer_usedMembers);
+      break;
+    case CB_VERBOSE:
+      config_setup_txtio();
+      break;
 
-
-#ifdef ACCESS_GPIO
-  nvs_s(CB_GPIO, C.gpio);
-#endif
-  nvs_i8(CB_RECV, C.app_recv);
-  nvs_i8(CB_TRANSM, C.app_transm);
-  nvs_i8(CB_VERBOSE, C.app_verboseOutput);
-#ifdef USE_NETWORK
-  nvs_i8(CB_NETWORK_CONNECTION, C.network);
-#endif
-
-
-  nvs_u32(CB_CUID, C.fer_centralUnitID);
-  nvs_u32(CB_USED_MEMBERS, C.fer_usedMembers);
-  nvs_u32(CB_BAUD, C.mcu_serialBaud);
-
-  if (GET_BIT(mask, CB_USED_MEMBERS)) {
-    gm_fromNibbleCounters(&C.fer_usedMemberMask, C.fer_usedMembers);
+    default:
+      break;
+    }
+    kvs_close(h);
   }
+  return true;
 }
 
 
 
-void config_read_kvs(u32 mask) {
- kvshT handle = kvs_open(CFG_NAMESPACE, kvs_READ);
- if (handle) {
-   rw_config(handle, mask, false);
-   kvs_close(handle);
- }
-}
-
-void config_save_kvs(u32 mask) {
-  kvshT handle = kvs_open(CFG_NAMESPACE, kvs_WRITE);
-
-  if (handle) {
-    rw_config(handle, mask, true);
-    kvs_commit(handle);
-    kvs_close(handle);
-  } else {
-    io_puts("error: cannot open config <" CFG_NAMESPACE "> in key_value_store\n");
-  }
-}
-
-void config_setup() {
-  read_config(~0);
-}
 #endif

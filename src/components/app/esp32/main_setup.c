@@ -120,11 +120,8 @@ void main_setup_ip_dependent() {
 #ifdef USE_MQTT
     config_setup_mqttClient();
 #endif
-#ifdef USE_TCPS
-  tcpCli_setup(cfg_getTcpsServer());
-#endif
-#ifdef USE_TCPS_TASK
-  tcpCli_setup_task(cfg_getTcpsServer());
+#if defined USE_TCPS || defined USE_TCPS_TASK
+    config_setup_cliTcpServer();
 #endif
 #ifdef USE_HTTP
   config_setup_httpServer();
@@ -139,10 +136,9 @@ void mcu_init() {
 #ifdef USE_EG
   loop_eventBits_setup();
 #endif
-
-  txtio_setup(cfg_getTxtio());
+  config_setup_global();
+  config_setup_txtio();
   kvs_setup();
-  config_setup();
 
   io_puts("\r\n\r\n");
 

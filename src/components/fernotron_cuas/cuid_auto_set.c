@@ -63,12 +63,13 @@ bool cu_auto_set_check(const fsbT *fsb) {
 
   if (FSB_ADDR_IS_CENTRAL(fsb)) {
     u32 cu = FSB_GET_DEVID(fsb);
-    FSB_PUT_DEVID(&default_sender, cu);
-    C.fer_centralUnitID = cu;
+    config_save_item_n_u32(CB_CUID, cu);
+    config_item_modified(CB_CUID);
     end_time = 0;
     so_output_message(SO_CUAS_DONE, NULL);
     cuas_state = CUAS_SUCCESS;
-    save_config_item(CB_CUID);
+    config_save_item_n_u32(CB_CUID, cu);
+    config_item_modified(CB_CUID);
     cuas_active = false;
     cuas_DISABLE_cb();
     return true;

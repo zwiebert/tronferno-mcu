@@ -6,7 +6,13 @@
  */
 
 #pragma once
+#include "app_config/proj_app_cfg.h"
 
+#ifdef ACCESS_GPIO
+struct cfg_gpio {
+  /* enum mcu_pin_state */ uint8_t gpio[CONFIG_GPIO_SIZE];
+};
+#endif
 
 void setup_pin(void);
 

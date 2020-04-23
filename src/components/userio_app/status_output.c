@@ -15,6 +15,7 @@
 #include "cli_app/cli_fer.h"
 #include "cli_app/cli_imp.h" // FIXME?
 #include "config/config.h"
+#include "fernotron/astro.h"
 #include "fernotron_alias/pairings.h"
 #include "fernotron_auto/fau_tdata_store.h"
 #include "fernotron_auto/fau_tminutes.h"
@@ -251,7 +252,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
       strcat(key, itoa(gpio_number, buf, 10));
       char ps[2] = "x";
       if (is_gpio_number_usable(gpio_number, true)) {
-        ps[0] = pin_state_args[C.gpio[gpio_number]];
+        ps[0] = pin_state_args[C.gpio.gpio[gpio_number]];
       }
       so_out_x_reply_entry_ss(key, ps);
     }

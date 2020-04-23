@@ -13,7 +13,81 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
 
-double tz2offset(const char *tz);
+
+#if 1
+#include "app/fernotron.h"
+void config_setup_global() {
+  kvshT h;
+  C = (config){   .fer_centralUnitID = MY_FER_CENTRAL_UNIT_ID,
+    .mcu_serialBaud = MY_MCU_UART_BAUD_RATE,
+    .app_rtcAdjust = 0,
+    .app_recv = recvTick,
+    .app_transm = transmTick,
+    .app_rtc = rtcAvrTime,
+    .fer_usedMembers = MY_FER_GM_USE,
+    .app_configPassword = MY_APP_CONFIG_PASSWORD,
+    .app_expertPassword = MY_APP_EXPERT_PASSWORD,
+  #ifdef ACCESS_GPIO
+    .gpio =  { .gpio = {0,} },
+  #endif
+  #ifdef USE_NETWORK
+    .network = MY_NETWORK_CONNECTION,
+  #endif
+};
+
+  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
+
+#ifdef ACCESS_GPIO
+    kvsRb(CB_GPIO, C.gpio);
+#endif
+  //XXX-ignore kvsR(i8, CB_RECV, C.app_recv);
+  //XXX-ignore kvsR(i8, CB_TRANSM, C.app_transm);
+#ifdef USE_NETWORK
+    kvsR(i8, CB_NETWORK_CONNECTION, C.network);
+#endif
+
+    kvsR(u32, CB_CUID, C.fer_centralUnitID);
+    kvsR(u32, CB_USED_MEMBERS, C.fer_usedMembers);
+    kvsR(u32, CB_BAUD, C.mcu_serialBaud);
+    kvs_close(h);
+  }
+  gm_fromNibbleCounters(&C.fer_usedMemberMask, C.fer_usedMembers);
+  FSB_PUT_DEVID(&default_sender, C.fer_centralUnitID);
+}
+#endif
+
+#if defined USE_TCPS_TASK || defined USE_TCPS
+#include "net/tcp_cli_server.h"
+void config_setup_cliTcpServer() {
+  kvshT h;
+  struct cfg_tcps c = { .enable = true };
+#if 0
+  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
+    kvsR(i8, CB_VERBOSE, c.verbose);
+    kvs_close(h);
+  }
+#endif
+#ifdef USE_TCPS
+ tcpCli_setup(&c);
+#elif defined USE_TCPS_TASK
+ tcpCli_setup_task(&c);
+#endif
+}
+#endif
+
+#if 1
+#include "txtio/inout.h"
+void config_setup_txtio() {
+  kvshT h;
+  struct cfg_txtio c = { .verbose = MY_VERBOSE };
+
+  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
+    kvsR(i8, CB_VERBOSE, c.verbose);
+    kvs_close(h);
+  }
+ txtio_setup(&c);
+}
+#endif
 
 #ifdef USE_LAN
 #include "net/ethernet.h"
@@ -58,7 +132,8 @@ void config_setup_wifiStation() {
 #endif
 
 #if 1
-#include "net/mqtt/app/mqtt.h"
+#include "fernotron/astro.h"
+double tz2offset(const char *tz);
 void config_setup_astro() {
   kvshT h;
   struct cfg_astro c = { .geo_longitude = MY_GEO_LONGITUDE, .geo_latitude = MY_GEO_LATITUDE, .astroCorrection = acAverage,

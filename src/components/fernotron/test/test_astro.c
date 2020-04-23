@@ -17,6 +17,7 @@
 #include "misc/bcd.h"
 #include "config/config.h"
 
+#if 0
 static u8 data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];
 
 void
@@ -50,8 +51,8 @@ test_astro()  // FIXME: this does not really tests anything
 
 TEST_CASE("astro", "[app]")
 {
-     astro_init_and_reinit(cfg_getAstro());
+     config_setup_astro();
      test_astro();
 }
-
+#endif
 
