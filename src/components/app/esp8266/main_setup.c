@@ -30,7 +30,7 @@ i32 boot_counter;
 void
 user_init() {
   // load config and setup serial interface
-  config_setup_global();
+
   setup_serial(115200);
   config_setup_txtio();
   io_puts("\r\n\r\n");
@@ -40,6 +40,7 @@ user_init() {
 
   stor_setup();
   kvs_setup();
+  config_setup_global();
 
   // print debug info
   print_reset_info();
