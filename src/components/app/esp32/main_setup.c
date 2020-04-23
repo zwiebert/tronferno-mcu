@@ -136,9 +136,9 @@ void mcu_init() {
 #ifdef USE_EG
   loop_eventBits_setup();
 #endif
-  config_setup_global();
   config_setup_txtio();
   kvs_setup();
+  config_setup_global();
 
   io_puts("\r\n\r\n");
 
@@ -162,24 +162,28 @@ void mcu_init() {
 //  lfPer_setBit(lf_loopFerPos);
 
 #ifdef USE_NETWORK
+#ifdef USE_AP_FALLBACK
+  esp_netif_init();
+#else
+  if (C.network != nwNone)
+    esp_netif_init();
+#endif
+
   ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
   ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
   switch (C.network) {
 #ifdef USE_WLAN
   case nwWlanSta:
-    esp_netif_init();
     config_setup_wifiStation();
     break;
 #endif
 #ifdef USE_WLAN_AP
   case nwWlanAp:
-    esp_netif_init();
-    wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
+    lfa_createWifiAp(); // XXX: Create the fall-back AP. Should we have a regular configured AP also?
     break;
 #endif
 #ifdef USE_LAN
   case nwLan:
-    esp_netif_init();
     config_setup_ethernet();
 #endif
     break;
@@ -191,7 +195,8 @@ void mcu_init() {
   setup_pin();
 
 #ifdef USE_AP_FALLBACK
-  tmr_checkNetwork_start();
+  if (C.network != nwWlanAp)
+    tmr_checkNetwork_start();
 #endif
 #ifdef USE_CLI_MUTEX
   void mutex_setup(void);

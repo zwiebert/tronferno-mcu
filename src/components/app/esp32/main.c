@@ -1,5 +1,7 @@
-
 #include "main.h"
+
+#include "net/http/server/http_server.h"
+#include "net/tcp_cli_server.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
@@ -7,14 +9,23 @@
 #include <lwip/apps/sntp_opts.h>
 #include <esp_attr.h>
 
+
 SemaphoreHandle_t uart_mutex;
 i32 boot_counter;
-bool wifi_ap_active;
 
 void lfa_createWifiAp() {
-  esp_netif_init();
-  wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
-  wifi_ap_active = true;
+  static bool wifi_ap_active;
+
+  if (!wifi_ap_active) {
+    wifi_ap_active = true;
+    wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
+
+    struct cfg_tcps cfg_tcps = { .enable = true };
+    tcpCli_setup(&cfg_tcps);
+
+    struct cfg_http cfg_http = { .enable = true };
+    hts_setup(&cfg_http);
+  }
 }
 
 void lfa_gotIpAddr(void) {
