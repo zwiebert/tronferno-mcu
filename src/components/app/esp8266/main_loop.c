@@ -27,8 +27,6 @@ void tcpCli_loop(void);
 
 #ifndef MCU_ESP32
 void loop(void) {
-
-
   fer_tx_loop();
 
 #ifdef USE_SEP

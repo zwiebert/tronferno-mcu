@@ -8,11 +8,12 @@
 #include "txtio/inout.h"
 #include "userio_app/status_output.h"
 #include "fernotron_auto/fau_tevent.h"
+#include "key_value_store/kvs_wrapper.h"
 #include "misc/bcd.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
 #ifndef NO_SPIFFS
-#include "storage/spiffs_fs.h"
+#include "storage/esp8266/spiffs_fs.h"
 #endif
 #include "debug/debug.h"
 
@@ -31,8 +32,9 @@ const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
         "up-time=?\n"
         "version=full\n";
 
-int 
-process_parmMcu(clpar p[], int len) {
+static void kvs_print_keys(const char *name_space);
+
+int process_parmMcu(clpar p[], int len) {
   int arg_idx;
 
   so_output_message(SO_MCU_begin, NULL);
@@ -59,6 +61,9 @@ process_parmMcu(clpar p[], int len) {
         spiffs_test();
       }
 #endif
+    } else if (strcmp(key, "kvs-pk") == 0) {
+
+      kvs_print_keys(val);
 
     } else if (strcmp(key, "tm") == 0) {
 
@@ -186,3 +191,13 @@ process_parmMcu(clpar p[], int len) {
 
   return 0;
 }
+
+static kvs_cbrT kvs_print_keys_cb(const char *key, kvs_type_t type) {
+  io_printf("key: %s, type: %d\n", key, (int)type);
+  return kvsCb_match;
+}
+
+static void kvs_print_keys(const char *name_space) {
+  kvs_foreach(name_space, KVS_TYPE_ANY, 0, kvs_print_keys_cb);
+}
+
