@@ -40,7 +40,7 @@ static void test_timer_event4() {
   timer_event_t tevt;
   fam_get_next_timer_event(&tevt, &now_time);
 
-  TEST_ASSERT_EQUAL(t2m(19,54), tevt.next_event);
+  TEST_ASSERT_EQUAL(t2m(20,54), tevt.next_event); // astro time
   gm_bitmask_t test1 = {0,0x02,0,0,0,0,0,0};
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
