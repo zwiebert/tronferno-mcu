@@ -19,6 +19,8 @@ struct cfg_gpio {
 
 void setup_pin(const struct cfg_gpio *c);
 
+enum mcu_pin_mode pin_getPinMode(unsigned gpio_number);
+
 void mcu_put_txPin(uint8_t level);
 uint8_t   mcu_get_rxPin();
 

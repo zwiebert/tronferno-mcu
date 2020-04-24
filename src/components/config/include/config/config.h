@@ -113,6 +113,8 @@ bool config_save_item_n_u32(enum configItem item, uint32_t val);
 bool config_save_item_n_i8(enum configItem item, int8_t val);
 bool config_save_item_n_f(enum configItem item, float val);
 
+bool config_gpio_setPinMode(unsigned gpio_number, enum mcu_pin_mode pm);
+
 bool config_item_modified(enum configItem item);
 
 const char *config_read_item_s(enum configItem item, char *d, unsigned d_size, const char *def);

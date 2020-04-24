@@ -501,8 +501,8 @@ process_parmConfig(clpar p[], int len) {
         if (error) {
           reply_message("gpio:failure", error);
         } else {
-          C.gpio.gpio[gpio_number] = ps;
-          set_optBlob(C.gpio, CB_GPIO);
+          config_gpio_setPinMode(gpio_number, ps);
+          hasChanged_gpio = true;
         }
       }
 #endif

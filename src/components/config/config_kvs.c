@@ -202,6 +202,19 @@ bool config_item_modified(enum configItem item) {
   return true;
 }
 
+bool config_gpio_setPinMode(unsigned gpio_number, enum mcu_pin_mode ps) {
+  bool result = false;
+  kvshT h;
+  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ_WRITE))) {
+    uint8_t gpio[CONFIG_GPIO_SIZE] = {};
+    kvsRb(CB_GPIO, gpio);
+    gpio[gpio_number] = ps;
+    result = (kvsWb(CB_GPIO, gpio) == sizeof gpio);
+    kvs_commit(h);
+    kvs_close(h);
+  }
+  return result;
+}
 
 
 #endif

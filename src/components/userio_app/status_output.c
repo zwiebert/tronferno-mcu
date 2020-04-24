@@ -261,7 +261,8 @@ void  so_output_message(so_msg_t mt, void *arg) {
       strcat(key, itoa(gpio_number, buf, 10));
       char ps[2] = "x";
       if (is_gpio_number_usable(gpio_number, true)) {
-        ps[0] = pin_state_args[C.gpio.gpio[gpio_number]];
+        enum mcu_pin_mode mps = pin_getPinMode(gpio_number);
+        ps[0] = pin_state_args[mps];
       }
       so_out_x_reply_entry_ss(key, ps);
     }

@@ -41,6 +41,7 @@
 
 static struct cfg_gpio *gpio_cfg;
 
+
 #define RESERVED_GPIO (1ULL<<RFOUT_GPIO|1ULL<<RFIN_GPIO|1ULL<<BUTTON_GPIO)
 
 #define gpioUsable  (0xffffffff & ~(1ULL<<0|1ULL<<1|1ULL<<2|1ULL<<20|1ULL<<24|1ULL<<28|1ULL<<29|1ULL<<30|1ULL<<31|RESERVED_GPIO)) \
@@ -51,7 +52,12 @@ uint64_t outputGpioUsable;
 #define gpioUsableHigh
 
 
-const char*  mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state);
+enum mcu_pin_mode pin_getPinMode(unsigned gpio_number) {
+  if (gpio_number >= sizeof gpio_cfg->gpio)
+    return -1;
+  return gpio_cfg->gpio[gpio_number];
+}
+
 
 void gpio_get_levels(uint64_t gpio_mask, char *buf, int buf_size) {
   int i;
@@ -220,7 +226,7 @@ setup_pin(const struct cfg_gpio *c) {
 #ifdef ACCESS_GPIO
   int i;
   for (i = 0; i < CONFIG_GPIO_SIZE; ++i) {
-    mcu_pin_state state = C.gpio.gpio[i];
+    mcu_pin_state state = gpio_cfg->gpio[i];
     if (state == PIN_DEFAULT)
       continue;
     else if (state == PIN_INPUT || state == PIN_INPUT_PULLUP || state == PIN_OUTPUT)
