@@ -53,6 +53,7 @@ const char *cfg_kvsKeys[] = { "C_RECEIVER", "C_TRANSM", "C_CUID", "C_GMU", "C_BA
 #ifdef USE_LAN
   "C_LAN_PHY", "C_LAN_PWR_GPIO",
 #endif
+  "CB_RFOUTP", "CB_RFINP", "CB_SETBTNP",
 
 };
 

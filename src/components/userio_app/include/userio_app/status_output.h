@@ -34,6 +34,7 @@ typedef enum {
   SO_CFG_HTTP_ENABLE, SO_CFG_HTTP_USER, SO_CFG_HTTP_PASSWORD,
   SO_CFG_GM_USED,
   SO_CFG_ASTRO_CORRECTION,
+  SO_CFG_GPIO_RFOUT, SO_CFG_GPIO_RFIN, SO_CFG_GPIO_SETBUTTON,
   SO_CFG_end, // values between begin/end will be used for 'all=?'
   SO_CFG_GPIO_PIN,
 

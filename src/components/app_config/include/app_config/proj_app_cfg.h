@@ -18,6 +18,7 @@
 #define CONFIG_DICT
 #define USE_CONFIG_KVS
 #define ACCESS_GPIO
+#define USE_CONFIG_PIN
 #define POSIX_TIME 1
 #define USE_ESP_GET_TIME
 #define MDR_TIME

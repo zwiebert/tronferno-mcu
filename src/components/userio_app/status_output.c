@@ -244,6 +244,15 @@ void  so_output_message(so_msg_t mt, void *arg) {
   }
     break;
 
+  case SO_CFG_GPIO_RFOUT:
+    so_out_x_reply_entry_d(mt, config_read_item_i8(CB_RFOUT_GPIO, MY_RFOUT_GPIO));
+    break;
+  case SO_CFG_GPIO_RFIN:
+    so_out_x_reply_entry_d(mt, config_read_item_i8(CB_RFIN_GPIO, MY_RFIN_GPIO));
+    break;
+  case SO_CFG_GPIO_SETBUTTON:
+    so_out_x_reply_entry_d(mt, config_read_item_i8(CB_SETBUTTON_GPIO, MY_SETBUTTON_GPIO));
+    break;
     case SO_CFG_GPIO_PIN:
 #ifdef ACCESS_GPIO
       {

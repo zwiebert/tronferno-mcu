@@ -56,9 +56,6 @@ typedef struct {
   gm_bitmask_t fer_usedMemberMask;
   char app_configPassword[16];
   char app_expertPassword[16];
-#ifdef ACCESS_GPIO
-  struct cfg_gpio gpio;
-#endif
 #ifdef USE_NETWORK
   enum nwConnection network;
 #endif
@@ -101,7 +98,7 @@ CB_TIZO,
 #ifdef USE_LAN
   CB_LAN_PHY, CB_LAN_PWR_GPIO,
 #endif
-
+  CB_RFOUT_GPIO, CB_RFIN_GPIO, CB_SETBUTTON_GPIO,
 
 //-----------
   CB_size
@@ -128,6 +125,7 @@ float config_read_item_f(enum configItem item, float def);
 #define CM_ALL ((uint32_t)~0UL)
 
 
+void config_setup_gpio();
 void config_setup_global();
 void config_setup_cliTcpServer();
 void config_setup_txtio();

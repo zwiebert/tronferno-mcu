@@ -21,7 +21,6 @@
 extern void intTimer_setup(void);
 extern void setup_serial(u32 baudrate);
 extern void setup_notImplemented(void);
-extern void setup_pin(void);
 void task_setup(void);
 
 i32 boot_counter;
@@ -46,7 +45,7 @@ user_init() {
   print_reset_info();
 
   setup_notImplemented();
-  setup_pin();
+  config_setup_gpio();
   config_setup_wifiStation();
   config_setup_cliTcpServer();
   setup_udp();

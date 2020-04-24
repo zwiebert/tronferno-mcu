@@ -19,7 +19,7 @@ extern const char *const build_time;
 #undef POSIX_TIME
 #undef USE_TXTIO_MUTEX
 
-//#undef ACCESS_GPIO
+#undef ACCESS_GPIO
 
 #include "user_interface.h"
 #define IRAM_ATTR  __attribute__((section(".iram0.text")))

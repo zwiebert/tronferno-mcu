@@ -198,6 +198,38 @@
 #define MY_LAN_PWR_GPIO 5
 #endif
 
+#ifndef MY_RFOUT_GPIO
+#ifdef MCU_ESP32
+#ifndef USE_LAN
+#define MY_RFOUT_GPIO 22
+#else
+#define MY_RFOUT_GPIO 16
+#endif
+#elif defined MCU_ESP8266
+#define MY_RFOUT_GPIO 4
+#endif
+#endif
+
+#ifndef MY_RFIN_GPIO
+#ifdef MCU_ESP32
+#ifndef USE_LAN
+#define MY_RFIN_GPIO 17
+#else
+#define MY_RFIN_GPIO 15 //XXX: GPIO15 is used by JTAG
+#endif
+#elif defined MCU_ESP8266
+#define MY_RFIN_GPIO 5
+#endif
+#endif
+
+#ifndef MY_SETBUTTON_GPIO
+#ifdef MCU_ESP32
+#define MY_SETBUTTON_GPIO 6
+#elif defined MCU_ESP8266
+#define MY_SETBUTTON_GPIO 0
+#endif
+#endif
+
 /*
  esp-idf: kconfig does not support float numbers...
 config MY_GEO_LONGITUDE

@@ -192,7 +192,7 @@ void mcu_init() {
   }
 #endif
 
-  setup_pin();
+  config_setup_gpio();
 
 #ifdef USE_AP_FALLBACK
   if (C.network != nwWlanAp)

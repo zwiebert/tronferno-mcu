@@ -8,13 +8,16 @@
 #pragma once
 #include "app_config/proj_app_cfg.h"
 
-#ifdef ACCESS_GPIO
-struct cfg_gpio {
-  /* enum mcu_pin_state */ uint8_t gpio[CONFIG_GPIO_SIZE];
-};
-#endif
 
-void setup_pin(void);
+struct cfg_gpio {
+  int8_t out_rf, in_rf, in_setButton;
+#ifdef ACCESS_GPIO
+  /* enum mcu_pin_state */ uint8_t gpio[CONFIG_GPIO_SIZE];
+#endif
+};
+
+
+void setup_pin(const struct cfg_gpio *c);
 
 void mcu_put_txPin(uint8_t level);
 uint8_t   mcu_get_rxPin();

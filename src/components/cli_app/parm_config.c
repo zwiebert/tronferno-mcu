@@ -75,6 +75,7 @@ const char cli_help_parmConfig[]  =
 #ifdef POSIX_TIME
     "tz=(POSIX_TZ|?)    time zone for RTC/NTP\n"
 #endif
+    "astro-correction   modifies astro table: 0=average, 1=bright 2=dark\n"
     "verbose=(0..5|?)   diagnose output verbosity level\n"
     "set-pw=password    set a config password. if set every config commands needs the pw option\n"
     "pw=PW              example: config pw=my_passw dst=eu;\n"
@@ -84,9 +85,12 @@ const char cli_help_parmConfig[]  =
 #ifdef ACCESS_GPIO
     "gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default\n"
 #endif
-    "astro-correction   modifies astro table: 0=average, 1=bright 2=dark\n"
+    "rf-tx-pin=N      RF output GPIO pin\n"
+    "rf-rx-pin=N      RF input GPIO pin\n"
+    "set-button-pin   Set-button input GPIO pin\n"
 //  "set-expert-password=\n"
 ;
+
 
 //key strings used for parsing and printing config commands by CLI/HTTP/MQTT
 //keys must be in same order as their SO_CFG_xxx counterparts in so_msg_t
@@ -97,6 +101,7 @@ const char *const cfg_keys[SO_CFG_size] = {
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-client-id",
     "http-enable", "http-user", "http-password",
     "gm-used", "astro-correction",
+    "rf-tx-pin", "rf-rx-pin", "set-button-pin",
 };
 
 #ifdef USE_NETWORK
@@ -138,7 +143,7 @@ process_parmConfig(clpar p[], int len) {
   so_msg_t so_key = SO_NONE;
 
   bool flag_isValid = 0, flag_hasChanged = 0;
-  bool hasChanged_mqttClient = false, hasChanged_httpServer = false,  hasChanged_geo = false, hasChanged_ethernet = false;
+  bool hasChanged_mqttClient = false, hasChanged_httpServer = false,  hasChanged_geo = false, hasChanged_ethernet = false, hasChanged_gpio = false;
 
   so_output_message(SO_CFG_begin, NULL);
 
@@ -421,6 +426,23 @@ process_parmConfig(clpar p[], int len) {
         }
 
         break;
+
+        case SO_CFG_GPIO_RFIN: {
+          if (set_opt(i8, val, CB_RFIN_GPIO))
+            hasChanged_gpio = true;
+        }
+          break;
+        case SO_CFG_GPIO_RFOUT: {
+          if (set_opt(i8, val, CB_RFOUT_GPIO))
+            hasChanged_gpio = true;
+        }
+          break;
+        case SO_CFG_GPIO_SETBUTTON: {
+          if (set_opt(i8, val, CB_SETBUTTON_GPIO))
+            hasChanged_gpio = true;
+        }
+          break;
+
         default:
         break;
       }
@@ -429,6 +451,9 @@ process_parmConfig(clpar p[], int len) {
       if (*val == '?') {
         so_output_message(SO_CUAS_STATE, 0);
       }
+
+
+
 
 #ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {
@@ -498,6 +523,11 @@ process_parmConfig(clpar p[], int len) {
       ++errors;
       cli_warning_optionUnknown(key);
     }
+  }
+
+
+  if (hasChanged_gpio) {
+    config_setup_gpio();
   }
 
   if (hasChanged_geo) {

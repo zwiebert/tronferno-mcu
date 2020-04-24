@@ -10,18 +10,27 @@
 #include <ets_sys.h>
 #include <osapi.h>
 #include <gpio.h>
+#include "gpio/pin.h"
 
 #include "txtio/inout.h"
 
 #include "config/config.h"
 
+#include <stdlib.h>
+#include <string.h>
+
+const struct cfg_gpio *gpio_cfg;
 
 #define printf ets_uart_printf
-
+#ifdef USE_CONFIG_PIN
+#define RFOUT_GPIO gpio_cfg->out_rf
+#define RFIN_GPIO gpio_cfg->in_rf
+#define BUTTON_GPIO gpio_cfg->in_setButton
+#else
 #define RFOUT_GPIO 4
 #define RFIN_GPIO 5
 #define BUTTON_GPIO 0
-
+#endif
 
 const char*  mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state);
 
@@ -57,11 +66,18 @@ u8 IRAM_ATTR mcu_get_rxPin() {
 }
 
 void 
-setup_pin(void) {
+setup_pin(const struct cfg_gpio *c) {
+  if (!gpio_cfg) {
+    gpio_cfg = calloc(1, sizeof *gpio_cfg);
+  } else {
+    //TODO: free any changed gpios here
+
+  }
+  memcpy((void*)gpio_cfg, c, sizeof *gpio_cfg);
   int i;
 #ifdef ACCESS_GPIO
   for (i = 0; i < 17; ++i) {
-    mcu_pin_state state = C.gpio.gpio[i];
+    mcu_pin_state state = gpio_cfg->gpio[i];
     if (state == PIN_DEFAULT)
       continue;
     else if (state == PIN_INPUT || state == PIN_INPUT_PULLUP || state == PIN_OUTPUT)

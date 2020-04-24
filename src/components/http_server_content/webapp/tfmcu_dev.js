@@ -708,6 +708,14 @@ function configTr_genHtml(name,value) {
     return '<td><label class="config-label">'+name+
       '</label></td><td><input class="config-input cb" type="checkbox" id="cfg_'+name+
       '" name="'+name +'"' + (value ? " checked" : "") +'></td>';
+  } else if (name === 'rf-rx-pin' || name === 'set-button-pin') {
+    return '<td><label class="config-label">'+name+
+    '</label></td><td><input class="config-input" type="number" min="-1" max="39" id="cfg_'+name+
+    '" name="'+name+'" value="'+value+'"></td>';
+  } else if (name === 'rf-tx-pin') {
+    return '<td><label class="config-label">'+name+
+    '</label></td><td><input class="config-input" type="number" min="-1" max="33" id="cfg_'+name+
+    '" name="'+name+'" value="'+value+'"></td>';
   } else if (name === 'verbose') {
     return '<td><label class="config-label">'+name+
       '</label></td><td><input class="config-input" type="number" min="0" max="5" id="cfg_'+name+

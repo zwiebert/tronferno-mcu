@@ -26,6 +26,7 @@ unsigned nvsBlob(void *handle, const char *key, void *dst, size_t dst_len, bool 
 #define nvs_i8(mbit, val) nvs_dt(i8, mbit, val)
 #define nvs_u32(mbit, val) nvs_dt(u32, mbit, val)
 
+#define cfg_get(DT,name) kvs_get_##DT(h, cfg_key(CB_##name), MY_##name, 0)
 
 #define kvsR(DT, cb, val)  do { val = kvs_get_##DT(h, cfg_key(cb), val, 0); } while(0)
 #define kvsW(DT, cb, val)  do { kvs_set_##DT(h,cfg_key(cb), val); } while(0)

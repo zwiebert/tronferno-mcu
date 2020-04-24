@@ -6,7 +6,7 @@
  */
 
 #include "app_config/proj_app_cfg.h"
-#include "../gpio/pin.h"
+#include "gpio/pin.h"
 
 #include "freertos/FreeRTOS.h"
 #include "esp_wifi.h"
@@ -24,7 +24,11 @@
 
 #define printf ets_uart_printf
 
-
+#ifdef USE_CONFIG_PIN
+#define RFOUT_GPIO gpio_cfg->out_rf
+#define RFIN_GPIO gpio_cfg->in_rf
+#define BUTTON_GPIO gpio_cfg->in_setButton
+#else
 #ifndef USE_LAN
 #define RFOUT_GPIO GPIO_NUM_22
 #define RFIN_GPIO GPIO_NUM_17
@@ -32,15 +36,17 @@
 #define RFOUT_GPIO GPIO_NUM_16
 #define RFIN_GPIO GPIO_NUM_15 //XXX: GPIO15 is used by JTAG
 #endif
-
 #define BUTTON_GPIO GPIO_NUM_6
+#endif
+
+static struct cfg_gpio *gpio_cfg;
 
 #define RESERVED_GPIO (1ULL<<RFOUT_GPIO|1ULL<<RFIN_GPIO|1ULL<<BUTTON_GPIO)
 
 #define gpioUsable  (0xffffffff & ~(1ULL<<0|1ULL<<1|1ULL<<2|1ULL<<20|1ULL<<24|1ULL<<28|1ULL<<29|1ULL<<30|1ULL<<31|RESERVED_GPIO)) \
   & (0xffffffff | (1ULL<<(GPIO_NUM_32-32)|1ULL<<(GPIO_NUM_33-32)))
-const uint64_t inputGpioUsable = gpioUsable;
-const uint64_t outputGpioUsable = gpioUsable;
+uint64_t inputGpioUsable;
+uint64_t outputGpioUsable;
 
 #define gpioUsableHigh
 
@@ -74,28 +80,6 @@ u8 IRAM_ATTR mcu_get_rxPin() {
     return GPIO_INPUT_GET(RFIN_GPIO);
 }
 
-void
-setup_pin(void) {
-#ifdef ACCESS_GPIO
-  int i;
-  for (i = 0; i < CONFIG_GPIO_SIZE; ++i) {
-    mcu_pin_state state = C.gpio.gpio[i];
-    if (state == PIN_DEFAULT)
-      continue;
-    else if (state == PIN_INPUT || state == PIN_INPUT_PULLUP || state == PIN_OUTPUT)
-      mcu_access_pin2(i, NULL, state);
-    else if (state == PIN_SET || state == PIN_CLEAR) {
-      mcu_access_pin2(i, NULL, PIN_OUTPUT);
-      mcu_access_pin2(i, NULL, state);
-    }
-  }
-#endif
-  mcu_access_pin2(RFOUT_GPIO, NULL, PIN_OUTPUT);
-  mcu_access_pin2(RFIN_GPIO, NULL, PIN_INPUT);
-  mcu_access_pin2(BUTTON_GPIO, NULL, PIN_INPUT_PULLUP);
-
-  mcu_put_txPin(false); // make sure, the RF transmitter is off
-}
 
 bool mcu_get_buttonUpPin(void) {
   return false;
@@ -110,8 +94,15 @@ bool mcu_get_buttonPin(void) {
   return val == 0;  // 0 means pressed
 }
 
+static int pin_set_dir(int gpio_number, int gpio_mode) {
+  if (gpio_mode != GPIO_MODE_DISABLE)
+    gpio_pad_select_gpio(gpio_number);
+  return gpio_set_direction(gpio_number, gpio_mode);
+}
 
 const char* mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
+  if (gpio_number == -1)
+    return 0;
 
   if (state == PIN_OUTPUT || state == PIN_INPUT || state == PIN_INPUT_PULLUP) {
     //bool pullup = state == PIN_INPUT_PULLUP;
@@ -150,9 +141,9 @@ const char* mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_stat
     case GPIO_NUM_32:
     case GPIO_NUM_33:
       if (state == PIN_OUTPUT) {
-        gpio_set_direction(gpio_number, GPIO_MODE_OUTPUT);
+        pin_set_dir(gpio_number, GPIO_MODE_OUTPUT);
     } else if (state == PIN_INPUT) {
-        gpio_set_direction(gpio_number, GPIO_MODE_INPUT);
+        pin_set_dir(gpio_number, GPIO_MODE_INPUT);
     }
 
       break;
@@ -166,7 +157,7 @@ const char* mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_stat
         if (state == PIN_OUTPUT) {
           return "GPIOs 34..39 can only used for input";
       } else if (state == PIN_INPUT) {
-          gpio_set_direction(gpio_number, GPIO_MODE_INPUT);
+        pin_set_dir(gpio_number, GPIO_MODE_INPUT);
       }
 
       break;
@@ -212,3 +203,38 @@ const char *mcu_access_pin(int gpio_number, mcu_pin_state *result, mcu_pin_state
 
     return mcu_access_pin2(gpio_number, result, state);
 }
+
+void
+setup_pin(const struct cfg_gpio *c) {
+  if (!gpio_cfg) {
+    gpio_cfg = calloc(1, sizeof *gpio_cfg);
+  } else {
+    pin_set_dir(gpio_cfg->out_rf, GPIO_MODE_DISABLE);
+    pin_set_dir(gpio_cfg->in_rf, GPIO_MODE_DISABLE);
+    pin_set_dir(gpio_cfg->in_setButton, GPIO_MODE_DISABLE);
+  }
+  memcpy(gpio_cfg, c, sizeof *gpio_cfg);
+
+  inputGpioUsable = gpioUsable;
+  outputGpioUsable = gpioUsable;
+#ifdef ACCESS_GPIO
+  int i;
+  for (i = 0; i < CONFIG_GPIO_SIZE; ++i) {
+    mcu_pin_state state = C.gpio.gpio[i];
+    if (state == PIN_DEFAULT)
+      continue;
+    else if (state == PIN_INPUT || state == PIN_INPUT_PULLUP || state == PIN_OUTPUT)
+      mcu_access_pin2(i, NULL, state);
+    else if (state == PIN_SET || state == PIN_CLEAR) {
+      mcu_access_pin2(i, NULL, PIN_OUTPUT);
+      mcu_access_pin2(i, NULL, state);
+    }
+  }
+#endif
+  mcu_access_pin2(RFOUT_GPIO, NULL, PIN_OUTPUT);
+  mcu_access_pin2(RFIN_GPIO, NULL, PIN_INPUT);
+  mcu_access_pin2(BUTTON_GPIO, NULL, PIN_INPUT_PULLUP);
+
+  mcu_put_txPin(false); // make sure, the RF transmitter is off
+}
+
