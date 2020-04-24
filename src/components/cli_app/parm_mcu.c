@@ -44,8 +44,12 @@ int process_parmMcu(clpar p[], int len) {
 
     if (key == NULL || val == NULL) {
       return -1;
-    } else if (strcmp(key, "boot-count") == 0 && *val == '?') {
-      so_output_message(SO_MCU_BOOT_COUNT, 0);
+    } else if (strcmp(key, "boot-count") == 0) {
+      if (*val == '?') {
+        so_output_message(SO_MCU_BOOT_COUNT, 0);
+      } else if (strcmp("0", val) == 0) {
+        // TODO: reset boot counter
+      }
     } else if (strcmp(key, "print") == 0) {
 #ifdef MCU_ESP8266
       if (strcmp(val, "reset-info") == 0) {
