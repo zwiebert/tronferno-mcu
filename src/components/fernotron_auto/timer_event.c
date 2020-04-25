@@ -102,7 +102,7 @@ static int set_earliest(u8 g, u8 m, minutes_t *earliest, const struct tm *tm_now
     minutes_t temp = fau_get_earliest_from_timer_minutes(&timi, minutes_now);
     if (temp == MINUTES_DISABLED)
       result = 0;
-    if (temp == *earliest)
+    else if (temp == *earliest)
       result = 1;
     else if (temp < *earliest) {
       *earliest = temp;
