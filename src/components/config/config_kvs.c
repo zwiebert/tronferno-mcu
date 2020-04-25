@@ -201,20 +201,20 @@ bool config_item_modified(enum configItem item) {
   }
   return true;
 }
-
-bool config_gpio_setPinMode(unsigned gpio_number, enum mcu_pin_mode ps) {
+#ifdef ACCESS_GPIO
+bool config_gpio_setPinMode(unsigned gpio_number, mcu_pin_mode ps, mcu_pin_level pl) {
   bool result = false;
   kvshT h;
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ_WRITE))) {
-    uint8_t gpio[CONFIG_GPIO_SIZE] = {};
-    kvsRb(CB_GPIO, gpio);
-    gpio[gpio_number] = ps;
-    result = (kvsWb(CB_GPIO, gpio) == sizeof gpio);
+    struct cfg_gpio c = {};
+    kvsRb(CB_GPIO, c.gpio);
+    gpioCfg_setPin(&c, gpio_number, ps, pl);
+    result = (kvsWb(CB_GPIO, c.gpio) == sizeof c.gpio);
     kvs_commit(h);
     kvs_close(h);
   }
   return result;
 }
-
+#endif
 
 #endif

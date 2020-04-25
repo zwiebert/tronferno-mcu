@@ -6,6 +6,7 @@
 #include "fernotron_sep/set_endpos.h"
 #include "fernotron_pos/shutter_pct.h"
 #include "txtio/inout.h"
+#include "gpio/pin.h"
 #include "userio_app/status_output.h"
 #include "fernotron_auto/fau_tevent.h"
 #include "key_value_store/kvs_wrapper.h"
@@ -31,6 +32,8 @@ const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #endif
         "up-time=?\n"
         "version=full\n";
+
+const char pin_state_args[] = "?01t";
 
 static void kvs_print_keys(const char *name_space);
 

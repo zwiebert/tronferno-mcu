@@ -29,7 +29,7 @@ void config_setup_gpio() {
 #endif
     kvs_close(h);
   }
- setup_pin(&c);
+  setup_pin(&c);
 }
 #endif
 
@@ -184,7 +184,7 @@ void config_setup_mqttClient() {
     kvsR(i8, CB_MQTT_ENABLE, c.enable);
     kvs_close(h);
   }
-  io_mqttApp_setup(&c);
+  io_mqttApp_setup(&c, "tfmcu/");
 }
 #endif
 

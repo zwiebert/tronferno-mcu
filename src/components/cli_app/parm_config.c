@@ -26,15 +26,15 @@
 #include "app/fernotron.h"
 #include "app/common.h"
 #include "misc/int_types.h"
+#include "gpio/pin.h"
 
 
 #define ENABLE_RESTART 1 // allow software reset
 
 
-#ifdef CONFIG_GPIO_SIZE
-//PIN_DEFAULT=0, PIN_INPUT, PIN_INPUT_PULLUP, PIN_OUTPUT, PIN_ERROR, PIN_READ, PIN_CLEAR, PIN_SET, PIN_TOGGLE
-
-const char pin_state_args[] = "dipo ?01t";
+#ifdef ACCESS_GPIO
+const char pin_mode_args[] = "diqQoO";
+const char pin_level_args[] = "lh";
 #endif
 
 const char cli_help_parmConfig[]  =
@@ -456,9 +456,15 @@ process_parmConfig(clpar p[], int len) {
 
 
 #ifdef ACCESS_GPIO
+    } else if (strcmp(key, "gpio") == 0) {
+      if (*val == '?') {
+        so_output_message(SO_CFG_GPIO_MODES, 0);
+      } else if (*val == '$') {
+        so_output_message(SO_CFG_GPIO_MODES_AS_STRING, 0);
+      }
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
-      mcu_pin_state ps;
+      mcu_pin_mode ps;
 
       if (*val == '?') {
         so_output_message(SO_CFG_GPIO_PIN, &gpio_number);
@@ -466,43 +472,20 @@ process_parmConfig(clpar p[], int len) {
         reply_message("gpio:error", "gpio number cannot be used");
         ++errors;
       } else {
-        const char *error = NULL;
+        const char *error = "unknown gpio config";
 
-        for (ps = 0; pin_state_args[ps] != 0; ++ps) {
-          if (pin_state_args[ps] == *val) {
+        for (ps = 0; pin_mode_args[ps]; ++ps) {
+          if (pin_mode_args[ps] == *val) {
+            mcu_pin_level pl = val[1] == 'h' ? PIN_HIGH : val[1] == 'l' ? PIN_LOW : val[1] == 'm' ? PIN_HIGH_LOW : PIN_FLOATING;
+            error = pin_set_mode(gpio_number, ps, pl);
+            config_gpio_setPinMode(gpio_number, ps, pl);
+            hasChanged_gpio = true;
             break;
           }
         }
-
-        switch (ps) {
-
-          case PIN_DEFAULT:
-          break;
-
-          case PIN_CLEAR:
-          case PIN_SET:
-          case PIN_OUTPUT:
-          error = mcu_access_pin(gpio_number, NULL, PIN_OUTPUT);
-          if (!error && ps != PIN_OUTPUT) {
-            error = mcu_access_pin(gpio_number, NULL, ps);
-          }
-          break;
-
-          case PIN_INPUT:
-          case PIN_INPUT_PULLUP:
-          error = mcu_access_pin(gpio_number, NULL, ps);
-          break;
-
-          default:
-          error = "unknown gpio config";
-          ++errors;
-        }
-
         if (error) {
+          ++errors;
           reply_message("gpio:failure", error);
-        } else {
-          config_gpio_setPinMode(gpio_number, ps);
-          hasChanged_gpio = true;
         }
       }
 #endif

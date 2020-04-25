@@ -41,6 +41,7 @@ static const lfa_funT lfa_table[lf_Len] = {
     pair_auto_set_check_timeout,
 #endif
     statPos_loopAutoSave, ferPos_loopCheckMoving,
+    pin_notify_input_change,
 };
 
 #ifndef USE_EG

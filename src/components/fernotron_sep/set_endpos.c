@@ -6,7 +6,7 @@
 #include <fernotron/fer_msg_tx.h>
 #include "fernotron/fer_radio_trx.h"
 #include "fernotron/fer_rawmsg_buffer.h"
-
+#include "gpio/pin.h"
 
 #include "app/rtc.h"
 #include "txtio/inout.h"

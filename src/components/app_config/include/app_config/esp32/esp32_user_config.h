@@ -23,8 +23,6 @@
 #undef MDR_TIME
 //#undef USE_PAIRINGS
 
-//#undef ACCESS_GPIO
-
 #ifndef FLAVOR_LAN
 #undef USE_LAN
 #endif
