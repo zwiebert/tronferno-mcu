@@ -122,20 +122,12 @@ const char *const *cfg_args[SO_CFG_size] = {
 };
 
 
-#if 0
-#define set_optN(cfg, new, cb) ((cfg != new) && ((cfg = new), save_config_item(cb), 1))
-#define set_optStr(cfg, new, cb) ((strcmp(cfg,new)) && ((strncpy(cfg,new,sizeof(cfg)), save_config_item(cb), 1)))
-#define isValid_optStr(cfg, new) (strlen(new) < sizeof(cfg))
-#define set_optStr_ifValid(cfg, new, cb) ((flag_isValid = isValid_optStr(cfg,new)) && (flag_hasChanged = set_optStr(cfg,new,cb)))
-#else
 #define isValid_optStr(cfg, new) true
 #define set_optStr(v, cb) config_save_item_s(cb, v)
 #define set_optBlob(v, cb) config_save_item_b(cb, &v, sizeof v)
 #define set_optStr_ifValid set_optStr
 #define set_opt(t, v, cb) (config_save_item_##t(cb,v) && config_item_modified(cb))
 #define set_optN(t, v, cb) (config_save_item_n_##t(cb,v) && config_item_modified(cb))
-#endif
-
 
 int 
 process_parmConfig(clpar p[], int len) {
@@ -143,8 +135,11 @@ process_parmConfig(clpar p[], int len) {
   int errors = 0;
   so_msg_t so_key = SO_NONE;
 
-  bool flag_isValid = 0, flag_hasChanged = 0;
-  bool hasChanged_mqttClient = false, hasChanged_httpServer = false,  hasChanged_geo = false, hasChanged_ethernet = false, hasChanged_gpio = false;
+  bool flag_isValid = 0;
+  bool hasChanged_mqttClient = false, hasChanged_httpServer = false,  hasChanged_geo = false, hasChanged_gpio = false;
+#ifdef USE_LAN
+  bool hasChanged_ethernet = false;
+#endif
 
   so_output_message(SO_CFG_begin, NULL);
 

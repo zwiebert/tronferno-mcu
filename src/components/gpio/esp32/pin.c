@@ -109,12 +109,6 @@ bool mcu_get_buttonPin(void) {
   return val == 0;  // 0 means pressed
 }
 
-static int pin_set_dir(int gpio_number, int gpio_mode) {
-  if (gpio_mode != GPIO_MODE_DISABLE)
-    gpio_pad_select_gpio(gpio_number);
-  return gpio_set_direction(gpio_number, gpio_mode);
-}
-
 static const gpio_mode_t pin_mode_table[] = {
     GPIO_MODE_DISABLE,
     GPIO_MODE_INPUT,
