@@ -11,7 +11,7 @@
 #include "cli_app/cli_config.h"
 #include "txtio/inout.h"
 #include "userio/status_json.h"
-
+#include "debug/debug.h"
 #include "misc/int_macros.h"
 #include "misc/ftoa.h"
 #include <string.h>
@@ -24,12 +24,19 @@ u8 so_target;
 // get the SO_MSG_T for a config key string (or SO_NONE)
 SO_MSG_T
 so_parse_config_key(const char *k) {
+  const int cfg_len = (SO_CFG_end - SO_CFG_begin - 1);
+  const int keys_len = sizeof cfg_keys / sizeof cfg_keys[0];
+  precond((cfg_len == keys_len));
+
+  SO_MSG_T result = SO_NONE;
   int i;
-  for (i = 0; i < (SO_CFG_end - SO_CFG_begin); ++i) {
-    if (0 == strcmp(k, cfg_keys[i]))
-      return i + SO_CFG_begin + 1;
+  for (i = 0; i < keys_len; ++i) {
+    if (0 == strcmp(k, cfg_keys[i])) {
+      result = SO_CFG_begin + 1 + i;
+      break;
+    }
   }
-  return SO_NONE;
+  return result;
 }
 
 // get config key string for a so_msgt_t (or NULL)
