@@ -100,7 +100,8 @@ const char *const cfg_keys[SO_CFG_size] = {
     "longitude", "latitude", "timezone", "dst", "tz", "verbose",
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-client-id",
     "http-enable", "http-user", "http-password",
-    "gm-used", "astro-correction",
+    "gm-used",
+    "astro-correction",
     "rf-tx-pin", "rf-rx-pin", "set-button-pin",
 };
 

@@ -34,11 +34,21 @@ const struct cfg_gpio *gpio_cfg;
 
 const char*  mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state);
 
+#ifdef ACCESS_GPIO
 enum mcu_pin_mode pin_getPinMode(unsigned gpio_number) {
   if (gpio_number >= sizeof gpio_cfg->gpio)
     return -1;
-  return gpio_cfg->gpio[gpio_number];
+  return  gpioCfg_getPinMode(gpio_cfg, gpio_number);
 }
+enum mcu_pin_level pin_getPinLevel(unsigned gpio_number) {
+  if (gpio_number >= sizeof gpio_cfg->gpio)
+    return -1;
+  return  gpioCfg_getPinLevel(gpio_cfg, gpio_number);
+}
+#endif
+
+#define gpioUsable BIT(0)|BIT(4)|BIT(5)|BIT(12)|BIT(13)|BIT(14)|BIT(15)
+static u32 pins_in_use, pins_not_cli;
 
 bool  is_gpio_number_usable(int gpio_number, bool cli) {
   if (cli) {
@@ -86,68 +96,94 @@ bool  mcu_get_buttonPin(void) {
   return val == 0;  // 0 means pressed
 }
 
-const char*  mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
 
-  if (state == PIN_OUTPUT || state == PIN_INPUT || state == PIN_INPUT_PULLUP) {
-    bool pullup = state == PIN_INPUT_PULLUP;
 
-    if (state != PIN_OUTPUT) {
-      GPIO_DIS_OUTPUT(GPIO_ID_PIN(gpio_number));
-    }
+static const char* pin_set_mode_int(int gpio_number, mcu_pin_mode mode, mcu_pin_level level) {
+  if (gpio_number == -1)
+    return 0;
+  if (mode != PIN_DEFAULT && GET_BIT(pins_in_use, gpio_number))
+    return "Pin is already in use";
 
-    switch (gpio_number) {
+  bool pullup = mode == PIN_INPUT && level == PIN_HIGH;
 
-    case 4:
-      PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO4_U, FUNC_GPIO4);
-      if (pullup)
-        PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO4_U);
-      else
-        PIN_PULLUP_DIS(PERIPHS_IO_MUX_GPIO4_U);
-      break;
+  PUT_BIT(pins_in_use, gpio_number, mode != PIN_DEFAULT);
 
-    case 5:
-      PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO5_U, FUNC_GPIO5);
-      if (pullup)
-        PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO5_U);
-      else
-        PIN_PULLUP_DIS(PERIPHS_IO_MUX_GPIO5_U);
-      break;
+  if (mode == PIN_DEFAULT || mode == PIN_INPUT) {
+    GPIO_DIS_OUTPUT(GPIO_ID_PIN(gpio_number));
+  }
 
-    case 12:
-      PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO12);
-      if (pullup)
-        PIN_PULLUP_EN(PERIPHS_IO_MUX_MTDI_U);
-      else
-        PIN_PULLUP_DIS(PERIPHS_IO_MUX_MTDI_U);
-      break;
+  switch (gpio_number) {
 
-    case 13:
-      PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, FUNC_GPIO13);
-      if (pullup)
-        PIN_PULLUP_EN(PERIPHS_IO_MUX_MTCK_U);
-      else
-        PIN_PULLUP_DIS(PERIPHS_IO_MUX_MTCK_U);
-      break;
+  case 4:
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO4_U, FUNC_GPIO4);
+    if (pullup)
+      PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO4_U);
+    else
+      PIN_PULLUP_DIS(PERIPHS_IO_MUX_GPIO4_U);
+    break;
 
-    case 14:
-      PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14);
-      if (pullup)
-        PIN_PULLUP_EN(PERIPHS_IO_MUX_MTMS_U);
-      else
-        PIN_PULLUP_DIS(PERIPHS_IO_MUX_MTMS_U);
-      break;
+  case 5:
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO5_U, FUNC_GPIO5);
+    if (pullup)
+      PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO5_U);
+    else
+      PIN_PULLUP_DIS(PERIPHS_IO_MUX_GPIO5_U);
+    break;
 
-    case 15:
-      PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);
-      if (pullup)
-        return "pullup for gpio15 not possible";
-      break;
+  case 12:
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO12);
+    if (pullup)
+      PIN_PULLUP_EN(PERIPHS_IO_MUX_MTDI_U);
+    else
+      PIN_PULLUP_DIS(PERIPHS_IO_MUX_MTDI_U);
+    break;
 
-    default:
-      return "gpio number can not be used";
-    }
+  case 13:
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, FUNC_GPIO13);
+    if (pullup)
+      PIN_PULLUP_EN(PERIPHS_IO_MUX_MTCK_U);
+    else
+      PIN_PULLUP_DIS(PERIPHS_IO_MUX_MTCK_U);
+    break;
 
-  } else if (state == PIN_SET) {
+  case 14:
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14);
+    if (pullup)
+      PIN_PULLUP_EN(PERIPHS_IO_MUX_MTMS_U);
+    else
+      PIN_PULLUP_DIS(PERIPHS_IO_MUX_MTMS_U);
+    break;
+
+  case 15:
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);
+    if (pullup)
+      return "pullup for gpio15 not possible";
+    break;
+
+  default:
+    return "gpio number can not be used";
+  }
+
+  if (mode != PIN_INPUT && (level == PIN_LOW || level == PIN_HIGH))
+    GPIO_OUTPUT_SET(gpio_number, (level == PIN_HIGH));
+
+  return NULL;
+}
+
+const char* pin_set_mode(int gpio_number, mcu_pin_mode mode, mcu_pin_level level) {
+  if (GET_BIT(pins_not_cli, gpio_number))
+    return "this gpio cannot be set from CLI";
+  return pin_set_mode_int(gpio_number, mode, level);
+}
+
+const char* mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
+  if (!GET_BIT(gpioUsable, gpio_number))
+    return "gpio not usable";
+  if (!GET_BIT(pins_in_use, gpio_number))
+    return "gpio is unused";
+
+
+  if (state == PIN_SET) {
     GPIO_OUTPUT_SET(gpio_number, 1);
 
   } else if (state == PIN_CLEAR) {
@@ -159,16 +195,17 @@ const char*  mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_sta
 
   } else if (state == PIN_READ) {
     *result = GPIO_INPUT_GET(GPIO_ID_PIN(gpio_number)) ? PIN_SET : PIN_CLEAR;
-
   } else {
     return "not implemented";
   }
 
   return NULL;
-
 }
 
+
 const char*  mcu_access_pin(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
+  if (state != PIN_READ && GET_BIT(pins_not_cli, gpio_number))
+    return "this gpio cannot be set from CLI";
 
   if (state != PIN_READ)
     switch (gpio_number) {
@@ -190,27 +227,28 @@ setup_pin(const struct cfg_gpio *c) {
   if (!gpio_cfg) {
     gpio_cfg = calloc(1, sizeof *gpio_cfg);
   } else {
-    //TODO: free any changed gpios here
-
+    pin_set_mode_int(RFOUT_GPIO, PIN_DEFAULT, PIN_LOW);
+    pin_set_mode_int(RFIN_GPIO, PIN_DEFAULT, PIN_FLOATING);
+    pin_set_mode_int(BUTTON_GPIO, PIN_DEFAULT, PIN_HIGH);
+    pins_in_use = 0;
   }
   memcpy((void*)gpio_cfg, c, sizeof *gpio_cfg);
-  int i;
+
+  pin_set_mode_int(RFOUT_GPIO, PIN_OUTPUT, PIN_LOW);
+  pin_set_mode_int(RFIN_GPIO, PIN_INPUT, PIN_FLOATING);
+  pin_set_mode_int(BUTTON_GPIO, PIN_INPUT, PIN_HIGH);
+  pins_not_cli = pins_in_use;
+
 #ifdef ACCESS_GPIO
-  for (i = 0; i < 17; ++i) {
-    mcu_pin_state state = gpio_cfg->gpio[i];
-    if (state == PIN_DEFAULT)
+  int i;
+  for (i = 0; i < CONFIG_GPIO_SIZE; ++i) {
+      if (gpioCfg_getPinMode(gpio_cfg, i) == PIN_DEFAULT)
       continue;
-    else if (state == PIN_INPUT || state == PIN_INPUT_PULLUP || state == PIN_OUTPUT)
-      mcu_access_pin2(i, NULL, state);
-    else if (state == PIN_SET || state == PIN_CLEAR) {
-      mcu_access_pin2(i, NULL, PIN_OUTPUT);
-      mcu_access_pin2(i, NULL, state);
+    pin_set_mode(i, gpioCfg_getPinMode(gpio_cfg, i), gpioCfg_getPinLevel(gpio_cfg, i));
+    if (gpioCfg_getPinMode(gpio_cfg, i) == PIN_INPUT) {
+      //TODO-implement-me: pin_setup_input_handler(i);
     }
+
   }
 #endif
-  mcu_access_pin2(RFOUT_GPIO, NULL, PIN_OUTPUT);
-  mcu_access_pin2(RFIN_GPIO, NULL, PIN_INPUT);
-  mcu_access_pin2(BUTTON_GPIO, NULL, PIN_INPUT_PULLUP);
-
-  mcu_put_txPin(false); // make sure, the RF transmitter is off
 }

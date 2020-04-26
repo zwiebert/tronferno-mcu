@@ -50,6 +50,7 @@ static struct cfg_gpio *gpio_cfg;
   & (0xffffffff | (1ULL<<(GPIO_NUM_32-32)|1ULL<<(GPIO_NUM_33-32)))
 uint64_t inputGpioUsable;
 uint64_t outputGpioUsable;
+static u64 pins_in_use, pins_not_cli;
 volatile uint64_t pin_int_mask;
 
 #define gpioUsableHigh
@@ -138,10 +139,13 @@ static bool pin_set_gpio_mode(int gpio_number, mcu_pin_mode mode, mcu_pin_level 
   return true;
 }
 
-const char* pin_set_mode(int gpio_number, mcu_pin_mode mode, mcu_pin_level level) {
+const char* pin_set_mode_int(int gpio_number, mcu_pin_mode mode, mcu_pin_level level) {
   if (gpio_number == -1)
     return 0;
-  // GPIO_DIS_OUTPUT(GPIO_ID_PIN(gpio_number));
+  if (mode != PIN_DEFAULT && GET_BIT(pins_in_use, gpio_number))
+    return "Pin is already in use";
+
+  PUT_BIT(pins_in_use, gpio_number, mode != PIN_DEFAULT);
 
   switch (gpio_number) {
   case GPIO_NUM_2:
@@ -196,6 +200,11 @@ const char* pin_set_mode(int gpio_number, mcu_pin_mode mode, mcu_pin_level level
   return NULL;
 }
 
+const char* pin_set_mode(int gpio_number, mcu_pin_mode mode, mcu_pin_level level) {
+  if (GET_BIT(pins_not_cli, gpio_number))
+    return "this gpio cannot be set from CLI";
+  return pin_set_mode_int(gpio_number, mode, level);
+}
 
 const char* mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
   if (gpio_number == -1)
@@ -222,6 +231,8 @@ const char* mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_stat
 }
 
 const char *mcu_access_pin(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
+  if (state != PIN_READ && GET_BIT(pins_not_cli, gpio_number))
+    return "this gpio cannot be set from CLI";
 #ifdef DISTRIBUTION
   if (state != PIN_READ)
     switch (gpio_number) {
@@ -278,24 +289,30 @@ void pin_setup_input_handler(gpio_num_t gpio_num) {
   }
 }
 
-void
-setup_pin(const struct cfg_gpio *c) {
+void setup_pin(const struct cfg_gpio *c) {
   if (!gpio_cfg) {
     gpio_cfg = calloc(1, sizeof *gpio_cfg);
   } else {
-    pin_set_dir(gpio_cfg->out_rf, GPIO_MODE_DISABLE);
-    pin_set_dir(gpio_cfg->in_rf, GPIO_MODE_DISABLE);
-    pin_set_dir(gpio_cfg->in_setButton, GPIO_MODE_DISABLE);
+    pin_set_mode_int(RFOUT_GPIO, PIN_DEFAULT, PIN_LOW);
+    pin_set_mode_int(RFIN_GPIO, PIN_DEFAULT, PIN_FLOATING);
+    pin_set_mode_int(BUTTON_GPIO, PIN_DEFAULT, PIN_HIGH);
+    pins_in_use = 0;
     pin_setup_input_handler(-1);
   }
   memcpy(gpio_cfg, c, sizeof *gpio_cfg);
 
   inputGpioUsable = gpioUsable;
   outputGpioUsable = gpioUsable;
+
+  pin_set_mode_int(RFOUT_GPIO, PIN_OUTPUT, PIN_LOW);
+  pin_set_mode_int(RFIN_GPIO, PIN_INPUT, PIN_FLOATING);
+  pin_set_mode_int(BUTTON_GPIO, PIN_INPUT, PIN_HIGH);
+  pins_not_cli = pins_in_use;
+
 #ifdef ACCESS_GPIO
   int i;
   for (i = 0; i < CONFIG_GPIO_SIZE; ++i) {
-      if (gpioCfg_getPinMode(gpio_cfg, i) == PIN_DEFAULT)
+    if (gpioCfg_getPinMode(gpio_cfg, i) == PIN_DEFAULT)
       continue;
     pin_set_mode(i, gpioCfg_getPinMode(gpio_cfg, i), gpioCfg_getPinLevel(gpio_cfg, i));
     if (gpioCfg_getPinMode(gpio_cfg, i) == PIN_INPUT) {
@@ -304,10 +321,6 @@ setup_pin(const struct cfg_gpio *c) {
 
   }
 #endif
-  pin_set_mode(RFOUT_GPIO, PIN_OUTPUT, PIN_LOW);
-  pin_set_mode(RFIN_GPIO, PIN_INPUT, PIN_FLOATING);
-  pin_set_mode(BUTTON_GPIO, PIN_INPUT, PIN_HIGH);
 
-  mcu_put_txPin(false); // make sure, the RF transmitter is off
 }
 

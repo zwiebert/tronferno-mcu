@@ -114,7 +114,7 @@ int process_parmMcu(clpar p[], int len) {
 #endif
     } else if (strcmp(key, "cs") == 0) {
       statPos_printAllPcts();
-#ifdef CONFIG_GPIO_SIZE
+#ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
       mcu_pin_state ps = 0, ps_result = 0;
