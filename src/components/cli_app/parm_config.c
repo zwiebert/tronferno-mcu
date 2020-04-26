@@ -55,16 +55,16 @@ const char cli_help_parmConfig[]  =
     "ntp-server=(gateway|dhcp|IP4ADDR|NAME) default: gateway\n"
 #endif
 #ifdef USE_MQTT
-     "mqtt-enable=(0|1) enable MQTT\n"
-     "mqtt-url=URL      broker/server URL (e.g. mqtt://192.168.1.42:7777)\n"
-     "mqtt-user=NAME    user name on server\n"
-     "mqtt-password=PW  user password on server\n"
-     "mqtt-client-id=CID  default: rv\n"
+    "mqtt-enable=(0|1)  enable MQTT\n"
+    "mqtt-url=URL       broker/server URL (e.g. mqtt://192.168.1.42:7777)\n"
+    "mqtt-user=NAME     user name on server\n"
+    "mqtt-password=PW   user password on server\n"
+    "mqtt-client-id=ID  default: tfmcu\n"
 #endif
 #ifdef USE_HTTP
-     "http-enable=(0|1) enable HTTP\n"
-     "http-user=NAME    user name on server\n"
-     "http-password=PW  user password on server\n"
+    "http-enable=(0|1)  enable HTTP\n"
+    "http-user=NAME     user name on server\n"
+    "http-password=PW   user password on server\n"
 #endif
     "longitude=(DEG|?)\n"
     "latitude=(DEG|?)\n"
@@ -83,11 +83,15 @@ const char cli_help_parmConfig[]  =
     "restart            restart MCU\n"
 #endif
 #ifdef ACCESS_GPIO
-    "gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default\n"
+    "gpioN=(d|i|o|O|q|Q|?)(h|l|m) Set gpio as pin for input (i) output (O), open drain output (o) or input/output (q,Q).\n"
+    "                   Add suffix to input to enable pull up (h), pull down (l), pull up/down (m)\n"
+    "                   Add suffix (h|l) to output to set the initial level high or low at restart\n"
+    "                   Disable gpio (d)\n"
+    "                   Example: config gpio19=ol gpio18=ih gpio20=qh gpio21=d;\n"
 #endif
-    "rf-tx-pin=N      RF output GPIO pin\n"
-    "rf-rx-pin=N      RF input GPIO pin\n"
-    "set-button-pin   Set-button input GPIO pin\n"
+    "rf-tx-pin=N        RF output GPIO pin\n"
+    "rf-rx-pin=N        RF input GPIO pin\n"
+    "set-button-pin     Set-button input GPIO pin\n"
 //  "set-expert-password=\n"
 ;
 
