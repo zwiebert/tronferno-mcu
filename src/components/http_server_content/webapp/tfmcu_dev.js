@@ -745,6 +745,25 @@ function configTr_genHtml(name,value) {
       '<option value="1">not too late or dark</option>'+
       '<option value="2">not too early or bright</option>'+
       '</select></td>';
+  } else if (name.startsWith('gpio')) {
+    return '<td><label class="config-label">'+name+
+      '</label></td><td><select  class="config-input" id="cfg_'+name+'">'+
+      '<option value="i">Input (Pull.FLoating)</option>'+
+      '<option value="ih">Input (Pull.Up)</option>'+
+      '<option value="il">Input (Pull.Down)</option>'+
+      '<option value="O">Output</option>'+
+      '<option value="Ol">Output (Level.Low)</option>'+
+      '<option value="Oh">Output (Level.High)</option>'+
+      '<option value="o">Output (OpenDrain)</option>'+
+      '<option value="ol">Output (OpenDrain + Level.Low)</option>'+
+      '<option value="oh">Output (OpenDrain + Level.High)</option>'+
+      '<option value="Q">Input/Output</option>'+
+      '<option value="Ql">Input/Output (Level.Low)</option>'+
+      '<option value="Qh">Input/Output (Level.High)</option>'+
+      '<option value="q">Input/Output (OpenDrain)</option>'+
+      '<option value="ql">Input/Output (OpenDrain + Level.Low)</option>'+
+      '<option value="qh">Input/Output (OpenDrain + Level.High)</option>'+
+      '</select></td>';
   } else {
     return '<td><label class="config-label">'+name+
       '</label></td><td><input class="config-input text" type="text" id="cfg_'+name+

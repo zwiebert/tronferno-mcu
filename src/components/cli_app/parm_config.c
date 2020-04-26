@@ -102,7 +102,7 @@ const char *const cfg_keys[SO_CFG_size] = {
     "http-enable", "http-user", "http-password",
     "gm-used",
     "astro-correction",
-    "rf-tx-pin", "rf-rx-pin", "set-button-pin",
+    "rf-tx-pin", "rf-rx-pin", "set-button-pin", "gpio",
 };
 
 #ifdef USE_NETWORK
