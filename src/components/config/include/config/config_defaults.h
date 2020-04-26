@@ -224,7 +224,7 @@
 
 #ifndef MY_SETBUTTON_GPIO
 #ifdef MCU_ESP32
-#define MY_SETBUTTON_GPIO 6
+#define MY_SETBUTTON_GPIO -1
 #elif defined MCU_ESP8266
 #define MY_SETBUTTON_GPIO 0
 #endif
