@@ -22,7 +22,7 @@
      * rf-tx-pin: RF output GPIO pin
      * rf-rx-pin: RF input GPIO pin
      * set-button-pin: Set-button input GPIO pin
-     * gpiN: Pins for input (can then be read and set via CLI and MQTT)
+     * gpioN: Pins for input/output (can then be read/set via CLI and MQTT)
      * Group/Members: define how many members are used in each group. Unused groups and members may then be hidden in the user interface
  * Buttons:
       * Reload: read in all config options again from the MCU
