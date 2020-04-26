@@ -19,15 +19,16 @@
 #include "userio_app/status_output.h"
 #include "config/config.h"
 
-#define TOPIC_ROOT "tfmcu/"
-#define TOPIC_CLI TOPIC_ROOT "cli"
-#define TOPIC_STATUS TOPIC_ROOT "status"
+static char *io_mqtt_topic_root;
+
+#define TOPIC_ROOT io_mqtt_topic_root
 #define TOPIC_PCT_END "/pct"
-#define TOPIC_PCT_MID "+"   // wildcard can be a, gm, agm (like: 23, 102030, 8090a023)
-#define TOPIC_PCT TOPIC_ROOT TOPIC_PCT_MID TOPIC_PCT_END
 #define TOPIC_CMD_END "/cmd"
-#define TOPIC_CMD_MID "+"
-#define TOPIC_CMD TOPIC_ROOT TOPIC_CMD_MID TOPIC_CMD_END
+#define TOPIC_CLI_END "/cli"
+#define TOPIC_GPI_MID "gpi/"
+#define TOPIC_GPI_END "/level"
+#define TOPIC_GPO_MID "gpo/"
+#define TOPIC_GPO_END "/level"
 
 #define TAG_CLI "cli "
 #define TAG_CLI_LEN (sizeof(TAG_CLI) - 1)
@@ -52,11 +53,26 @@ void io_mqtt_publish_gmp(const so_arg_gmp_t *gmp) {
   io_mqtt_publish(topic, data);
 }
 
+void io_mqttApp_publishPinChange(int gpio_num, bool level) {
+  char topic[64];
+  const char *data = level ? "H" : "L";
+  snprintf(topic, 64, "%sgpi/%d/level", TOPIC_ROOT, gpio_num);
+  io_mqtt_publish(topic, data);
+}
+
 void io_mqtt_connected () {
-  io_mqtt_subscribe(TOPIC_CLI, 0);
-  io_mqtt_subscribe(TOPIC_PCT, 0);
-  io_mqtt_subscribe(TOPIC_CMD, 0);
-  io_mqtt_publish(TOPIC_STATUS, "connected"); // for autocreate (ok???)
+  char topic[64];
+  snprintf(topic, sizeof topic, "%scli", TOPIC_ROOT);
+  io_mqtt_subscribe(topic, 0);
+  snprintf(topic, sizeof topic, "%s+/pct", TOPIC_ROOT);
+  io_mqtt_subscribe(topic, 0);
+  snprintf(topic, sizeof topic, "%s+/cmd", TOPIC_ROOT);
+  io_mqtt_subscribe(topic, 0);
+  snprintf(topic, sizeof topic, "%sstatus", TOPIC_ROOT);
+  io_mqtt_publish(topic, "connected"); // for autocreate (ok???)
+
+  snprintf(topic, sizeof topic, "%s%s+%s", TOPIC_ROOT, TOPIC_GPO_MID, TOPIC_GPO_END);
+  io_mqtt_subscribe(topic, 0);
 }
 
 
@@ -67,10 +83,25 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
   }
 
   if (mutex_cliTake()) {
-    if (topic_endsWith(topic, topic_len, TOPIC_PCT_END)) {
+    if (topic_endsWith(topic, topic_len, TOPIC_GPO_END)) {
       char *line = set_commandline("x", 1);
-      const char *addr = topic + (sizeof TOPIC_ROOT - 1);
-      int addr_len = topic_len - ((sizeof TOPIC_ROOT - 1) + (sizeof TOPIC_PCT_END - 1));
+      const char *addr = strstr(topic, TOPIC_GPO_MID);
+      if (!addr)
+        goto RETURN;
+      addr += strlen(TOPIC_GPO_MID);
+      const char *addr_end = strchr(addr, '/');
+      if (!addr_end)
+        goto RETURN;
+      int addr_len = addr_end - addr;
+
+      sprintf(line, "mcu gpio%.*s=%.*s", addr_len, addr, data_len, data);
+
+      cli_process_cmdline(line, SO_TGT_MQTT);
+
+    } else if (topic_endsWith(topic, topic_len, TOPIC_PCT_END)) {
+      char *line = set_commandline("x", 1);
+      const char *addr = topic + strlen(TOPIC_ROOT);
+      int addr_len = topic_len - (strlen(TOPIC_ROOT) + (sizeof TOPIC_PCT_END - 1));
 
       if (addr_len == 2) {
         sprintf(line, "send g=%c m=%c p=%.*s", addr[0], addr[1], data_len, data);
@@ -86,8 +117,8 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
 
     } else if (topic_endsWith(topic, topic_len, TOPIC_CMD_END)) {
       char *line = set_commandline("x", 1);
-      const char *addr = topic + (sizeof TOPIC_ROOT - 1);
-      int addr_len = topic_len - ((sizeof TOPIC_ROOT - 1) + (sizeof TOPIC_CMD_END - 1));
+      const char *addr = topic + strlen(TOPIC_ROOT);
+      int addr_len = topic_len - (strlen(TOPIC_ROOT) + (sizeof TOPIC_CMD_END - 1));
 
       if (addr_len == 2) {
         sprintf(line, "send g=%c m=%c c=%.*s", addr[0], addr[1], data_len, data);
@@ -101,7 +132,7 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
       }
       cli_process_cmdline(line, SO_TGT_MQTT);
 
-    } else if (strlen(TOPIC_CLI) == topic_len && 0 == strncmp(topic, TOPIC_CLI, topic_len)) {
+    } else if (topic_endsWith(topic, topic_len, TOPIC_CLI_END)) {
       if (strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
         char *line;
         if ((line = set_commandline(data + TAG_CLI_LEN, data_len - TAG_CLI_LEN))) {
@@ -139,8 +170,17 @@ void io_mqttApp_unsubscribed(const char *topic, int topic_len) {
 void io_mqttApp_published(int msg_id) {
 }
 
-void io_mqttApp_setup(struct cfg_mqtt *cfg_mqtt) {
+void io_mqttApp_setup(struct cfg_mqtt *cfg_mqtt, const char *topic_root) {
+  if (topic_root && *topic_root && (!io_mqtt_topic_root || 0 != strcmp(io_mqtt_topic_root, topic_root))) {
+    char *tr = malloc(strlen(topic_root)+1);
+    if (tr) {
+      strcpy (tr, topic_root);
+      free(io_mqtt_topic_root);
+      io_mqtt_topic_root = tr;
+    }
+  }
   io_mqtt_setup(cfg_mqtt);
+  pin_notify_input_change_cb =  (cfg_mqtt && cfg_mqtt->enable) ? io_mqttApp_publishPinChange : 0;
 }
 
 #endif // USE_MQTT

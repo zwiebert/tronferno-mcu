@@ -26,15 +26,15 @@
 #include "app/fernotron.h"
 #include "app/common.h"
 #include "misc/int_types.h"
+#include "gpio/pin.h"
 
 
 #define ENABLE_RESTART 1 // allow software reset
 
 
-#ifdef CONFIG_GPIO_SIZE
-//PIN_DEFAULT=0, PIN_INPUT, PIN_INPUT_PULLUP, PIN_OUTPUT, PIN_ERROR, PIN_READ, PIN_CLEAR, PIN_SET, PIN_TOGGLE
-
-const char pin_state_args[] = "dipo ?01t";
+#ifdef ACCESS_GPIO
+const char pin_mode_args[] = "diqQoO";
+const char pin_level_args[] = "lh";
 #endif
 
 const char cli_help_parmConfig[]  =
@@ -75,6 +75,7 @@ const char cli_help_parmConfig[]  =
 #ifdef POSIX_TIME
     "tz=(POSIX_TZ|?)    time zone for RTC/NTP\n"
 #endif
+    "astro-correction   modifies astro table: 0=average, 1=bright 2=dark\n"
     "verbose=(0..5|?)   diagnose output verbosity level\n"
     "set-pw=password    set a config password. if set every config commands needs the pw option\n"
     "pw=PW              example: config pw=my_passw dst=eu;\n"
@@ -84,9 +85,12 @@ const char cli_help_parmConfig[]  =
 #ifdef ACCESS_GPIO
     "gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default\n"
 #endif
-    "astro-correction   modifies astro table: 0=average, 1=bright 2=dark\n"
+    "rf-tx-pin=N      RF output GPIO pin\n"
+    "rf-rx-pin=N      RF input GPIO pin\n"
+    "set-button-pin   Set-button input GPIO pin\n"
 //  "set-expert-password=\n"
 ;
+
 
 //key strings used for parsing and printing config commands by CLI/HTTP/MQTT
 //keys must be in same order as their SO_CFG_xxx counterparts in so_msg_t
@@ -96,7 +100,9 @@ const char *const cfg_keys[SO_CFG_size] = {
     "longitude", "latitude", "timezone", "dst", "tz", "verbose",
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-client-id",
     "http-enable", "http-user", "http-password",
-    "gm-used", "astro-correction",
+    "gm-used",
+    "astro-correction",
+    "rf-tx-pin", "rf-rx-pin", "set-button-pin", "gpio",
 };
 
 #ifdef USE_NETWORK
@@ -116,20 +122,12 @@ const char *const *cfg_args[SO_CFG_size] = {
 };
 
 
-#if 0
-#define set_optN(cfg, new, cb) ((cfg != new) && ((cfg = new), save_config_item(cb), 1))
-#define set_optStr(cfg, new, cb) ((strcmp(cfg,new)) && ((strncpy(cfg,new,sizeof(cfg)), save_config_item(cb), 1)))
-#define isValid_optStr(cfg, new) (strlen(new) < sizeof(cfg))
-#define set_optStr_ifValid(cfg, new, cb) ((flag_isValid = isValid_optStr(cfg,new)) && (flag_hasChanged = set_optStr(cfg,new,cb)))
-#else
 #define isValid_optStr(cfg, new) true
 #define set_optStr(v, cb) config_save_item_s(cb, v)
 #define set_optBlob(v, cb) config_save_item_b(cb, &v, sizeof v)
 #define set_optStr_ifValid set_optStr
 #define set_opt(t, v, cb) (config_save_item_##t(cb,v) && config_item_modified(cb))
 #define set_optN(t, v, cb) (config_save_item_n_##t(cb,v) && config_item_modified(cb))
-#endif
-
 
 int 
 process_parmConfig(clpar p[], int len) {
@@ -137,8 +135,11 @@ process_parmConfig(clpar p[], int len) {
   int errors = 0;
   so_msg_t so_key = SO_NONE;
 
-  bool flag_isValid = 0, flag_hasChanged = 0;
-  bool hasChanged_mqttClient = false, hasChanged_httpServer = false,  hasChanged_geo = false, hasChanged_ethernet = false;
+  bool flag_isValid = 0;
+  bool hasChanged_mqttClient = false, hasChanged_httpServer = false,  hasChanged_geo = false, hasChanged_gpio = false;
+#ifdef USE_LAN
+  bool hasChanged_ethernet = false;
+#endif
 
   so_output_message(SO_CFG_begin, NULL);
 
@@ -421,6 +422,23 @@ process_parmConfig(clpar p[], int len) {
         }
 
         break;
+
+        case SO_CFG_GPIO_RFIN: {
+          if (set_opt(i8, val, CB_RFIN_GPIO))
+            hasChanged_gpio = true;
+        }
+          break;
+        case SO_CFG_GPIO_RFOUT: {
+          if (set_opt(i8, val, CB_RFOUT_GPIO))
+            hasChanged_gpio = true;
+        }
+          break;
+        case SO_CFG_GPIO_SETBUTTON: {
+          if (set_opt(i8, val, CB_SETBUTTON_GPIO))
+            hasChanged_gpio = true;
+        }
+          break;
+
         default:
         break;
       }
@@ -430,10 +448,19 @@ process_parmConfig(clpar p[], int len) {
         so_output_message(SO_CUAS_STATE, 0);
       }
 
+
+
+
 #ifdef ACCESS_GPIO
+    } else if (strcmp(key, "gpio") == 0) {
+      if (*val == '?') {
+        so_output_message(SO_CFG_GPIO_MODES, 0);
+      } else if (*val == '$') {
+        so_output_message(SO_CFG_GPIO_MODES_AS_STRING, 0);
+      }
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
-      mcu_pin_state ps;
+      mcu_pin_mode ps;
 
       if (*val == '?') {
         so_output_message(SO_CFG_GPIO_PIN, &gpio_number);
@@ -441,43 +468,20 @@ process_parmConfig(clpar p[], int len) {
         reply_message("gpio:error", "gpio number cannot be used");
         ++errors;
       } else {
-        const char *error = NULL;
+        const char *error = "unknown gpio config";
 
-        for (ps = 0; pin_state_args[ps] != 0; ++ps) {
-          if (pin_state_args[ps] == *val) {
+        for (ps = 0; pin_mode_args[ps]; ++ps) {
+          if (pin_mode_args[ps] == *val) {
+            mcu_pin_level pl = val[1] == 'h' ? PIN_HIGH : val[1] == 'l' ? PIN_LOW : val[1] == 'm' ? PIN_HIGH_LOW : PIN_FLOATING;
+            error = pin_set_mode(gpio_number, ps, pl);
+            config_gpio_setPinMode(gpio_number, ps, pl);
+            hasChanged_gpio = true;
             break;
           }
         }
-
-        switch (ps) {
-
-          case PIN_DEFAULT:
-          break;
-
-          case PIN_CLEAR:
-          case PIN_SET:
-          case PIN_OUTPUT:
-          error = mcu_access_pin(gpio_number, NULL, PIN_OUTPUT);
-          if (!error && ps != PIN_OUTPUT) {
-            error = mcu_access_pin(gpio_number, NULL, ps);
-          }
-          break;
-
-          case PIN_INPUT:
-          case PIN_INPUT_PULLUP:
-          error = mcu_access_pin(gpio_number, NULL, ps);
-          break;
-
-          default:
-          error = "unknown gpio config";
-          ++errors;
-        }
-
         if (error) {
+          ++errors;
           reply_message("gpio:failure", error);
-        } else {
-          C.gpio.gpio[gpio_number] = ps;
-          set_optBlob(C.gpio, CB_GPIO);
         }
       }
 #endif
@@ -498,6 +502,11 @@ process_parmConfig(clpar p[], int len) {
       ++errors;
       cli_warning_optionUnknown(key);
     }
+  }
+
+
+  if (hasChanged_gpio) {
+    config_setup_gpio();
   }
 
   if (hasChanged_geo) {

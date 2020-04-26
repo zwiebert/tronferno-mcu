@@ -244,21 +244,71 @@ void  so_output_message(so_msg_t mt, void *arg) {
   }
     break;
 
+  case SO_CFG_GPIO_RFOUT:
+    so_out_x_reply_entry_d(mt, config_read_item_i8(CB_RFOUT_GPIO, MY_RFOUT_GPIO));
+    break;
+  case SO_CFG_GPIO_RFIN:
+    so_out_x_reply_entry_d(mt, config_read_item_i8(CB_RFIN_GPIO, MY_RFIN_GPIO));
+    break;
+  case SO_CFG_GPIO_SETBUTTON:
+    so_out_x_reply_entry_d(mt, config_read_item_i8(CB_SETBUTTON_GPIO, MY_SETBUTTON_GPIO));
+    break;
     case SO_CFG_GPIO_PIN:
 #ifdef ACCESS_GPIO
       {
       int gpio_number = *(int *)arg;
       char key[10] = "gpio";
-      strcat(key, itoa(gpio_number, buf, 10));
+      strcpy(key+4, itoa(gpio_number, buf, 10));
       char ps[2] = "x";
       if (is_gpio_number_usable(gpio_number, true)) {
-        ps[0] = pin_state_args[C.gpio.gpio[gpio_number]];
+        enum mcu_pin_mode mps = pin_getPinMode(gpio_number);
+        ps[0] = pin_state_args[mps];
       }
       so_out_x_reply_entry_ss(key, ps);
     }
 #endif
     break;
+    case SO_CFG_GPIO_MODES:
+#ifdef ACCESS_GPIO
+  {
+    int gpio_number;
+    char key[10] = "gpio";
+    char pin_level_args[] = "mhl";
+    for (gpio_number = 0; gpio_number < CONFIG_GPIO_SIZE; ++gpio_number) {
+      strcpy(key+4, itoa(gpio_number, buf, 10));
+      char ps[3] = "x";
+      if (is_gpio_number_usable(gpio_number, true)) {
+        enum mcu_pin_mode mps = pin_getPinMode(gpio_number);
+        if (mps != PIN_DEFAULT) {
+        enum mcu_pin_level mpl = pin_getPinLevel(gpio_number);
+        ps[0] = pin_mode_args[mps];
+        ps[1] = pin_level_args[3-mpl];
+        so_out_x_reply_entry_ss(key, ps);
+        }
+      }
 
+    }
+  }
+#endif
+    break;
+    case SO_CFG_GPIO_MODES_AS_STRING:
+#ifdef ACCESS_GPIO
+  {
+    int gpio_number;
+    char val[CONFIG_GPIO_SIZE+1];
+    val[CONFIG_GPIO_SIZE] = '\0';
+    for (gpio_number = 0; gpio_number < CONFIG_GPIO_SIZE; ++gpio_number) {
+      if (is_gpio_number_usable(gpio_number, true)) {
+        enum mcu_pin_mode mps = pin_getPinMode(gpio_number);
+        val[gpio_number] = pin_mode_args[mps];
+      } else {
+        val[gpio_number] = 'x';
+      }
+    }
+    so_out_x_reply_entry_ss("gpio", val);
+  }
+#endif
+    break;
     case SO_CFG_ASTRO_CORRECTION: {
       so_out_x_reply_entry_l(mt, config_read_item_i8(CB_ASTRO_CORRECTION, acAverage));
     }

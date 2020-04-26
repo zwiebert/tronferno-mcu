@@ -95,6 +95,7 @@ enum loop_flagbits {
   lf_checkPairingTimeout,
 #endif
   lf_loopPosAutoSave, lf_loopPosCheckMoving,
+  lf_gpio_input_intr,
 
   //-------------
   lf_Len

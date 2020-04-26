@@ -54,6 +54,10 @@ void IRAM_ATTR loop_setBit_rxLoop_fromISR() {
 }
 #endif
 
+void loop_setBit_pinNotifyInputChange_fromISR() {
+  lf_setBit_ISR(lf_gpio_input_intr, true);
+}
+
 void loop_setBit_fauTimerDataHasChanged(void) {
   lf_setBit(lf_loopFauTimerDataHasChanged);
 }
@@ -192,7 +196,7 @@ void mcu_init() {
   }
 #endif
 
-  setup_pin();
+  config_setup_gpio();
 
 #ifdef USE_AP_FALLBACK
   if (C.network != nwWlanAp)

@@ -15,6 +15,25 @@
 
 
 #if 1
+#include "gpio/pin.h"
+void config_setup_gpio() {
+  kvshT h;
+  struct cfg_gpio c = { .out_rf = MY_RFOUT_GPIO, .in_rf = MY_RFIN_GPIO, .in_setButton = MY_SETBUTTON_GPIO };
+
+  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
+    kvsR(i8, CB_RFOUT_GPIO, c.out_rf);
+    kvsR(i8, CB_RFIN_GPIO, c.in_rf);
+    kvsR(i8, CB_SETBUTTON_GPIO, c.in_setButton);
+#ifdef ACCESS_GPIO
+    kvsRb(CB_GPIO, c.gpio);
+#endif
+    kvs_close(h);
+  }
+  setup_pin(&c);
+}
+#endif
+
+#if 1
 #include "app/fernotron.h"
 void config_setup_global() {
   kvshT h;
@@ -27,9 +46,6 @@ void config_setup_global() {
     .fer_usedMembers = MY_FER_GM_USE,
     .app_configPassword = MY_APP_CONFIG_PASSWORD,
     .app_expertPassword = MY_APP_EXPERT_PASSWORD,
-  #ifdef ACCESS_GPIO
-    .gpio =  { .gpio = {0,} },
-  #endif
   #ifdef USE_NETWORK
     .network = MY_NETWORK_CONNECTION,
   #endif
@@ -37,10 +53,6 @@ void config_setup_global() {
 
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
 
-#ifdef ACCESS_GPIO
-    kvsRb(CB_GPIO, C.gpio);
-#endif
-  //XXX-ignore kvsR(i8, CB_RECV, C.app_recv);
   //XXX-ignore kvsR(i8, CB_TRANSM, C.app_transm);
 #ifdef USE_NETWORK
     kvsR(i8, CB_NETWORK_CONNECTION, C.network);
@@ -59,9 +71,9 @@ void config_setup_global() {
 #if defined USE_TCPS_TASK || defined USE_TCPS
 #include "net/tcp_cli_server.h"
 void config_setup_cliTcpServer() {
-  kvshT h;
   struct cfg_tcps c = { .enable = true };
 #if 0
+  kvshT h;
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
     kvsR(i8, CB_VERBOSE, c.verbose);
     kvs_close(h);
@@ -172,7 +184,7 @@ void config_setup_mqttClient() {
     kvsR(i8, CB_MQTT_ENABLE, c.enable);
     kvs_close(h);
   }
-  io_mqttApp_setup(&c);
+  io_mqttApp_setup(&c, "tfmcu/");
 }
 #endif
 

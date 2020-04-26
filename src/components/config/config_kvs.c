@@ -53,6 +53,7 @@ const char *cfg_kvsKeys[] = { "C_RECEIVER", "C_TRANSM", "C_CUID", "C_GMU", "C_BA
 #ifdef USE_LAN
   "C_LAN_PHY", "C_LAN_PWR_GPIO",
 #endif
+  "CB_RFOUTP", "CB_RFINP", "CB_SETBTNP",
 
 };
 
@@ -200,7 +201,20 @@ bool config_item_modified(enum configItem item) {
   }
   return true;
 }
-
-
+#ifdef ACCESS_GPIO
+bool config_gpio_setPinMode(unsigned gpio_number, mcu_pin_mode ps, mcu_pin_level pl) {
+  bool result = false;
+  kvshT h;
+  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ_WRITE))) {
+    struct cfg_gpio c = {};
+    kvsRb(CB_GPIO, c.gpio);
+    gpioCfg_setPin(&c, gpio_number, ps, pl);
+    result = (kvsWb(CB_GPIO, c.gpio) == sizeof c.gpio);
+    kvs_commit(h);
+    kvs_close(h);
+  }
+  return result;
+}
+#endif
 
 #endif

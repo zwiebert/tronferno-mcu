@@ -2,6 +2,7 @@
 #include "cli/cli.h"
 
 extern const char pin_state_args[];
+extern const char pin_mode_args[];
 
 extern const char cli_help_parmSend[] ;
 extern const char cli_help_parmTimer[] ;
