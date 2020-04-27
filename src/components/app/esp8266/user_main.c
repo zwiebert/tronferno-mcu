@@ -38,7 +38,7 @@ void main_setup_ip_dependent() {
   config_setup_ntpClient();
 #endif
 #ifdef USE_MQTT
-    config_setup_mqttClient();
+    config_setup_mqttAppClient();
 #endif
 }
 

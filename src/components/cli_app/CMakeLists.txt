@@ -3,7 +3,7 @@ set(srcs cli.c  cli_out.c
     parm_alias.c
     parm_auto.c
     parm_cmd.c
-    parm_config.c
+    parm_config.c parm_config_switch.c
     parm_mcu.c
     parm_shpref.c
 )

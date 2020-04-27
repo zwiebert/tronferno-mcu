@@ -122,7 +122,7 @@ void main_setup_ip_dependent() {
     ntpApp_setup();
 #endif
 #ifdef USE_MQTT
-    config_setup_mqttClient();
+    config_setup_mqttAppClient();
 #endif
 #if defined USE_TCPS || defined USE_TCPS_TASK
     config_setup_cliTcpServer();

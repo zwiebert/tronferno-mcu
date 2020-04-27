@@ -115,16 +115,8 @@ const char *const cfg_args_network[nwLEN] = {
 };
 #endif
 
-#ifdef USE_LAN
-const char *const cfg_args_lanPhy[lanPhyLEN] = {
-    "none", "lan8270", "rtl8201", "ip101",
-};
-#endif
-
 const char *const *cfg_args[SO_CFG_size] = {
-
 };
-
 
 #define isValid_optStr(cfg, new) true
 #define set_optStr(v, cb) config_save_item_s(cb, v)
@@ -133,17 +125,27 @@ const char *const *cfg_args[SO_CFG_size] = {
 #define set_opt(t, v, cb) (config_save_item_##t(cb,v) && config_item_modified(cb))
 #define set_optN(t, v, cb) (config_save_item_n_##t(cb,v) && config_item_modified(cb))
 
+#define has_changed() SET_BIT(*changed_mask, so_key)
+
+bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask);
+
 int 
 process_parmConfig(clpar p[], int len) {
   int arg_idx;
   int errors = 0;
   so_msg_t so_key = SO_NONE;
-
+  u32 changed_mask = 0;
   bool flag_isValid = 0;
-  bool hasChanged_mqttClient = false, hasChanged_httpServer = false,  hasChanged_geo = false, hasChanged_gpio = false;
 #ifdef USE_LAN
-  bool hasChanged_ethernet = false;
+#define hasChanged_ethernet (changed_mask & (BIT(CB_LAN_PHY)|BIT(CB_LAN_PWR_GPIO)))
 #endif
+#define hasChanged_mqttClient (changed_mask & (BIT(CB_MQTT_ENABLE)|BIT(CB_MQTT_PASSWD)|\
+    BIT(CB_MQTT_USER)|BIT(CB_MQTT_URL)|BIT(CB_MQTT_CLIENT_ID)))
+#define hasChanged_httpServer (changed_mask & (BIT(CB_HTTP_ENABLE)|BIT(CB_HTTP_PASSWD)|BIT(CB_HTTP_USER)))
+#define hasChanged_txtio (changed_mask & (BIT(CB_VERBOSE)))
+
+  bool hasChanged_geo = false, hasChanged_gpio = false;
+
 
   so_output_message(SO_CFG_begin, NULL);
 
@@ -179,10 +181,10 @@ process_parmConfig(clpar p[], int len) {
     } else if (SO_NONE != (so_key = so_parse_config_key(key))) {
       if (0 == strcmp("?", val)) {
         so_output_message(so_key, NULL);
-      } else
-        switch (so_key) {
+      } else if (process_parmKvsConfig(so_key, val, &changed_mask)) {
 
-        case SO_CFG_RTC: {
+      } else switch (so_key) {
+       case SO_CFG_RTC: {
           cli_replyResult(val ? rtc_set_by_string(val) : false);
         }
           break;
@@ -206,11 +208,7 @@ process_parmConfig(clpar p[], int len) {
           (void)set_opt(u32, val, CB_BAUD);
         }
           break;
-        case SO_CFG_VERBOSE: {
-          NODEFAULT();
-          (void)set_opt(i8, val, CB_VERBOSE);
-        }
-        break;
+
 #ifdef USE_NETWORK
         case SO_CFG_NETWORK: {
           int i;
@@ -238,126 +236,7 @@ process_parmConfig(clpar p[], int len) {
         }
         break;
 #endif
-#ifdef USE_WLAN
-        case SO_CFG_WLAN_SSID: {
-          if (set_optStr_ifValid(val, CB_WIFI_SSID))
-            {}
 
-          if (!flag_isValid)
-            cli_replyFailure();
-        }
-          break;
-
-        case SO_CFG_WLAN_PASSWORD: {
-          if (set_optStr_ifValid(val, CB_WIFI_PASSWD))
-            {}
-
-          if (!flag_isValid)
-            cli_replyFailure();
-        }
-        break;
-#endif // USE_WLAN
-#ifdef USE_LAN
-        case SO_CFG_LAN_PHY: {
-          NODEFAULT();
-           bool success = false;
-           u8 i;
-           for (i=0; i < lanPhyLEN; ++i) {
-             if (strcasecmp(val, cfg_args_lanPhy[i]) == 0) {
-               if (set_optN(i8, i, CB_LAN_PHY))
-                 hasChanged_ethernet = true;
-               success = true;
-               break;
-             }
-           }
-           if (!success)
-             cli_replyFailure();
-         }
-         break;
-        case SO_CFG_LAN_PWR_GPIO: {
-          NODEFAULT();
-          if (set_opt(i8, val, CB_LAN_PWR_GPIO))
-            hasChanged_ethernet = true;
-        }
-        break;
-#endif // USE_LAN
-
-#ifdef USE_NTP
-        case SO_CFG_NTP_SERVER: {
-          if (set_optStr_ifValid(val, CB_NTP_SERVER)){}
-
-          if (!flag_isValid)
-            cli_replyFailure();
-        }
-          break;
-#endif
-
-#ifdef USE_MQTT
-        case SO_CFG_MQTT_ENABLE: {
-          if (set_optN(i8, (*val == '1'), CB_MQTT_ENABLE))
-            hasChanged_mqttClient = true;
-        }
-          break;
-
-        case SO_CFG_MQTT_PASSWORD: {
-          if (set_optStr_ifValid(val, CB_MQTT_PASSWD))
-            hasChanged_mqttClient = true;
-          if (!flag_isValid)
-            cli_replyFailure();
-        }
-          break;
-
-        case SO_CFG_MQTT_USER: {
-          if (set_optStr_ifValid(val, CB_MQTT_USER))
-            hasChanged_mqttClient = true;
-          if (!flag_isValid)
-            cli_replyFailure();
-        }
-          break;
-
-        case SO_CFG_MQTT_URL: {
-          if (set_optStr_ifValid(val, CB_MQTT_URL))
-            hasChanged_mqttClient = true;
-          if (!flag_isValid)
-            cli_replyFailure();
-        }
-          break;
-
-        case SO_CFG_MQTT_CLIENT_ID: {
-          if (isValid_optStr(C.mqtt.client_id, val)) {
-            if (set_optStr(val, CB_MQTT_CLIENT_ID))
-              hasChanged_mqttClient = true;
-          } else {
-            cli_replyFailure();
-          }
-        }
-          break;
-#endif //USE_MQTT
-
-#ifdef USE_HTTP
-        case SO_CFG_HTTP_ENABLE: {
-          if (set_optN(i8, (*val == '1'), CB_HTTP_ENABLE))
-            hasChanged_httpServer = true;
-        }
-          break;
-
-        case SO_CFG_HTTP_PASSWORD: {
-          if (set_optStr_ifValid(val, CB_HTTP_PASSWD))
-            hasChanged_httpServer = true;
-          if (!flag_isValid)
-            cli_replyFailure();
-        }
-          break;
-
-        case SO_CFG_HTTP_USER: {
-
-          if (set_optStr_ifValid(val, CB_HTTP_USER))
-            hasChanged_httpServer = true;
-          if (!flag_isValid)
-            cli_replyFailure();
-        }
-          break;
-#endif //USE_HTTP
 
         case SO_CFG_LONGITUDE: {
           if (set_opt(f, val, CB_LONGITUDE))
@@ -523,7 +402,7 @@ process_parmConfig(clpar p[], int len) {
 #endif
 #ifdef USE_MQTT
   if (hasChanged_mqttClient) {
-    config_setup_mqttClient();
+    config_setup_mqttAppClient();
   }
 #endif
 #ifdef USE_HTTP
@@ -531,6 +410,9 @@ process_parmConfig(clpar p[], int len) {
     config_setup_httpServer();
   }
 #endif
+  if (hasChanged_txtio) {
+    config_setup_txtio();
+  }
   so_output_message(SO_CFG_end, NULL);
   cli_replyResult(errors==0);
   return 0;

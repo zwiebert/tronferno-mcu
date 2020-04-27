@@ -1,4 +1,4 @@
-#include "config.h"
+#include "config/config.h"
 #include "config_defaults.h"
 #include "app/fernotron.h"
 #include "misc/int_types.h"

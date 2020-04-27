@@ -11,20 +11,16 @@
 #include "config/config.h"
 
 
-extern const char *cfg_kvsKeys[];
-#define cfg_key(cb) (cfg_kvsKeys[(cb)])
+extern const char *config_keys[];
+#define cfg_key(cb) (config_keys[(cb)])
 
 
 
 unsigned nvsStr(void *handle, const char *key, void *dst, size_t dst_len, bool save);
 unsigned nvsBlob(void *handle, const char *key, void *dst, size_t dst_len, bool save);
 
-#define nvs_s(mbit, val) if (GET_BIT(mask,mbit)) { nvsStr(handle, cfg_kvsKeys[mbit], val, sizeof val, write); }
-#define nvs_b(mbit, val) if (GET_BIT(mask,mbit)) { nvsBlob(handle, cfg_kvsKeys[mbit], &val, sizeof val, write); }
-
-#define nvs_dt(DT, mbit, val) if (GET_BIT(mask,mbit)) { if (write) { kvs_set_##DT(handle, cfg_kvsKeys[mbit], val); } else { val = kvs_get_##DT(handle, cfg_kvsKeys[mbit], val, 0); } }
-#define nvs_i8(mbit, val) nvs_dt(i8, mbit, val)
-#define nvs_u32(mbit, val) nvs_dt(u32, mbit, val)
+#define nvs_s(mbit, val) if (GET_BIT(mask,mbit)) { nvsStr(handle, config_keys[mbit], val, sizeof val, write); }
+#define nvs_b(mbit, val) if (GET_BIT(mask,mbit)) { nvsBlob(handle, config_keys[mbit], &val, sizeof val, write); }
 
 #define cfg_get(DT,name) kvs_get_##DT(h, cfg_key(CB_##name), MY_##name, 0)
 

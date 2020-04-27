@@ -1,4 +1,4 @@
-set(srcs status_output.c so_out.c so_print.c) 
+set(srcs status_output.c status_output_switch.c so_out.c so_print.c) 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 

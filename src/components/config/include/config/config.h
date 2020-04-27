@@ -8,6 +8,7 @@
 #pragma once
 
 #include "app_config/proj_app_cfg.h"
+#include "config_kvs/config.h"
 #include "config_defaults.h"
 #include "txtio/inout.h"
 #include "fernotron/types.h"
@@ -68,11 +69,8 @@ extern const bool always_true, always_false;
 #define cfg_getCuId() C.fer_centralUnitID
 #endif
 
-enum configItem {
-  CB_RECV, CB_TRANSM, CB_CUID, CB_USED_MEMBERS, CB_BAUD, CB_GPIO, CB_VERBOSE,
-#ifdef USE_WLAN
-  CB_WIFI_SSID, CB_WIFI_PASSWD,
-#endif
+enum configAppItem {
+  CB_RECV, CB_TRANSM, CB_CUID, CB_USED_MEMBERS, CB_BAUD, CB_GPIO,
   CB_CFG_PASSWD, CB_LONGITUDE, CB_LATITUDE,
 #ifndef POSIX_TIME
 CB_TIZO,
@@ -82,36 +80,15 @@ CB_TIZO,
 #ifdef MDR_TIME
   CB_DST,
 #endif
-#ifdef USE_MQTT
-  CB_MQTT_URL, CB_MQTT_USER, CB_MQTT_PASSWD, CB_MQTT_CLIENT_ID, CB_MQTT_ENABLE,
-#endif
-#ifdef USE_HTTP
-  CB_HTTP_USER, CB_HTTP_PASSWD, CB_HTTP_ENABLE,
-#endif
-#ifdef USE_NTP
-  CB_NTP_SERVER,
-#endif
   CB_ASTRO_CORRECTION,
 #ifdef USE_NETWORK
   CB_NETWORK_CONNECTION,
 #endif
-#ifdef USE_LAN
-  CB_LAN_PHY, CB_LAN_PWR_GPIO,
-#endif
   CB_RFOUT_GPIO, CB_RFIN_GPIO, CB_SETBUTTON_GPIO,
 
 //-----------
-  CB_size
+  CBA_size
 };
-
-bool config_save_item_s(enum configItem item, const char *val);
-bool config_save_item_b(enum configItem item, const void *val, unsigned size);
-bool config_save_item_u32(enum configItem item, const char *val);
-bool config_save_item_i8(enum configItem item, const char *val);
-bool config_save_item_f(enum configItem item, const char *val);
-bool config_save_item_n_u32(enum configItem item, uint32_t val);
-bool config_save_item_n_i8(enum configItem item, int8_t val);
-bool config_save_item_n_f(enum configItem item, float val);
 
 bool config_gpio_setPinMode(unsigned gpio_number, mcu_pin_mode ps, mcu_pin_level pl);
 
@@ -123,18 +100,8 @@ int8_t config_read_item_i8(enum configItem item,  int8_t def);
 float config_read_item_f(enum configItem item, float def);
 
 
-//#define CM_ALL ((uint32_t)((1UL<<CB_size)-1))
-#define CM_ALL ((uint32_t)~0UL)
-
-
 void config_setup_gpio();
 void config_setup_global();
-void config_setup_cliTcpServer();
-void config_setup_txtio();
-void config_setup_mqttClient();
-void config_setup_httpServer();
 void config_setup_astro();
-void config_setup_wifiStation();
-void config_setup_ntpClient();
-void config_setup_ethernet();
+void config_setup_mqttAppClient();
 
