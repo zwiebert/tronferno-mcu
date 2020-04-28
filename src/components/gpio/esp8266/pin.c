@@ -47,26 +47,15 @@ enum mcu_pin_level pin_getPinLevel(unsigned gpio_number) {
 }
 #endif
 
-#define gpioUsable BIT(0)|BIT(4)|BIT(5)|BIT(12)|BIT(13)|BIT(14)|BIT(15)
+#define gpioUsable (BIT(0)|BIT(1)|BIT(2)|BIT(3)|BIT(4)|BIT(5)|BIT(12)|BIT(13)|BIT(14)|BIT(15))
 static u32 pins_in_use, pins_not_cli;
 
-bool  is_gpio_number_usable(int gpio_number, bool cli) {
-  if (cli) {
-    switch (gpio_number) {
-    case 12:
-    case 13:
-    case 14:
-    case 15:
-      return true;
-      break;
-
-    default:
-      break;
-
-    }
-  } else {
-    if (0 <= gpio_number && 16 <= gpio_number) {
-      return true;
+bool is_gpio_number_usable(int gpio_number, bool cli) {
+  if (GET_BIT(gpioUsable, gpio_number)) {
+    if (cli) {
+      return !GET_BIT((pins_in_use | pins_not_cli), gpio_number);
+    } else {
+      return !GET_BIT(pins_in_use, gpio_number);
     }
   }
   return false;
@@ -113,6 +102,38 @@ static const char* pin_set_mode_int(int gpio_number, mcu_pin_mode mode, mcu_pin_
   }
 
   switch (gpio_number) {
+
+  case 0:
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0);
+    if (pullup)
+      PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO0_U);
+    else
+      PIN_PULLUP_DIS(PERIPHS_IO_MUX_GPIO0_U);
+    break;
+
+  case 1:
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0TXD_U, FUNC_GPIO1);
+    if (pullup)
+      PIN_PULLUP_EN(PERIPHS_IO_MUX_U0TXD_U);
+    else
+      PIN_PULLUP_DIS(PERIPHS_IO_MUX_U0TXD_U);
+    break;
+
+  case 2:
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
+    if (pullup)
+      PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO2_U);
+    else
+      PIN_PULLUP_DIS(PERIPHS_IO_MUX_GPIO2_U);
+    break;
+
+  case 3:
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0RXD_U, FUNC_GPIO3);
+    if (pullup)
+      PIN_PULLUP_EN(PERIPHS_IO_MUX_U0RXD_U);
+    else
+      PIN_PULLUP_DIS(PERIPHS_IO_MUX_U0RXD_U);
+    break;
 
   case 4:
     PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO4_U, FUNC_GPIO4);
@@ -206,7 +227,7 @@ const char* mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_stat
 const char*  mcu_access_pin(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
   if (state != PIN_READ && GET_BIT(pins_not_cli, gpio_number))
     return "this gpio cannot be set from CLI";
-
+#if 0
   if (state != PIN_READ)
     switch (gpio_number) {
    case 12:
@@ -218,7 +239,7 @@ const char*  mcu_access_pin(int gpio_number, mcu_pin_state *result, mcu_pin_stat
    default:
      return "gpio number not writable (use 12, 13, 14, 15)";
    }
-
+#endif
     return mcu_access_pin2(gpio_number, result, state);
 }
 

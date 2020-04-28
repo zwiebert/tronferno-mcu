@@ -84,7 +84,7 @@ void gpio_get_levels(uint64_t gpio_mask, char *buf, int buf_size) {
 }
 
 bool is_gpio_number_usable(int gpio_number, bool cli) {
-  return  (gpioUsable & 1ULL<<gpio_number) != 0;
+  return  (gpioUsable & (1ULL<<gpio_number)) != 0;
 }
 
 void IRAM_ATTR mcu_put_txPin(u8 dat) {
