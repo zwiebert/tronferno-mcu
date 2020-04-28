@@ -9,9 +9,9 @@
 
 #include "app_config/proj_app_cfg.h"
 #include "config_kvs/config.h"
-#include "config_defaults.h"
 #include "txtio/inout.h"
 #include "fernotron/types.h"
+#include "fernotron/astro.h"
 #include "net/ethernet.h"
 #include "gpio/pin.h"
 #include "stdbool.h"
@@ -70,6 +70,7 @@ extern const bool always_true, always_false;
 #endif
 
 enum configAppItem {
+  CBA_start = CB_size-1,
   CB_RECV, CB_TRANSM, CB_CUID, CB_USED_MEMBERS, CB_BAUD, CB_GPIO,
   CB_CFG_PASSWD, CB_LONGITUDE, CB_LATITUDE,
 #ifndef POSIX_TIME
@@ -104,4 +105,20 @@ void config_setup_gpio();
 void config_setup_global();
 void config_setup_astro();
 void config_setup_mqttAppClient();
+
+const char *config_read_tz(char *d, unsigned d_size);
+float config_read_timezone();
+enum dst config_read_dst();
+enum nwConnection  config_read_network_connection();
+float config_read_longitude();
+float config_read_latitude();
+uint32_t config_read_used_members();
+int8_t config_read_rfout_gpio();
+int8_t config_read_rfin_gpio();
+int8_t config_read_setbutton_gpio();
+enum astroCorrection config_read_astro_correction();
+uint32_t config_read_baud();
+
+
+
 

@@ -127,7 +127,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
 
   case SO_CFG_BAUD:
 #ifndef MCU_ESP32
-    so_out_x_reply_entry_l(mt,config_read_item_u32(CB_BAUD, MY_MCU_UART_BAUD_RATE));
+    so_out_x_reply_entry_l(mt, config_read_baud());
 #endif
     break;
   case SO_CFG_RTC:
@@ -141,32 +141,32 @@ void  so_output_message(so_msg_t mt, void *arg) {
 
   case SO_CFG_NETWORK:
 #ifdef USE_NETWORK
-    so_out_x_reply_entry_s(mt, cfg_args_network[config_read_item_i8(CB_NETWORK_CONNECTION, MY_NETWORK_CONNECTION)]);
+    so_out_x_reply_entry_s(mt, cfg_args_network[config_read_network_connection()]);
 #endif
     break;
   case SO_CFG_TZ:
 #ifdef POSIX_TIME
-    so_out_x_reply_entry_s(mt, config_read_item_s(CB_TZ, buf, sizeof buf, MY_GEO_TZ));
+    so_out_x_reply_entry_s(mt, config_read_tz(buf, sizeof buf));
 #endif
   break;
 
- case SO_CFG_LONGITUDE:
-    so_out_x_reply_entry_f(mt, config_read_item_f(CB_LONGITUDE, MY_GEO_LONGITUDE), 5);
+  case SO_CFG_LONGITUDE:
+    so_out_x_reply_entry_f(mt, config_read_longitude(), 5);
     break;
   case SO_CFG_LATITUDE:
-    so_out_x_reply_entry_f(mt, config_read_item_f(CB_LATITUDE, MY_GEO_LATITUDE), 5);
+    so_out_x_reply_entry_f(mt, config_read_latitude(), 5);
     break;
 
   case SO_CFG_TIMEZONE:
 #ifndef POSIX_TIME
-    so_out_x_reply_entry_f(mt, config_read_item_f(CB_TIZO, MY_GEO_TIMEZONE), 5);
+    so_out_x_reply_entry_f(mt, config_read_timezone(), 5);
 #endif
     break;
 
   case SO_CFG_DST:
 #ifdef MDR_TIME
   {
-    enum dst geo_dst = config_read_item_i8(CB_DST, MY_GEO_DST);
+    enum dst geo_dst = config_read_dst();
     const char *dst = (geo_dst == dstEU ? "eu" : (geo_dst == dstNone ? "0" : "1"));
     so_out_x_reply_entry_s(mt, dst);
   }
@@ -174,18 +174,18 @@ void  so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_CFG_GM_USED: {
-    so_out_x_reply_entry_lx(mt, config_read_item_u32(CB_USED_MEMBERS, MY_FER_GM_USE));
+    so_out_x_reply_entry_lx(mt,config_read_used_members());
   }
     break;
 
   case SO_CFG_GPIO_RFOUT:
-    so_out_x_reply_entry_d(mt, config_read_item_i8(CB_RFOUT_GPIO, MY_RFOUT_GPIO));
+    so_out_x_reply_entry_d(mt, config_read_rfout_gpio());
     break;
   case SO_CFG_GPIO_RFIN:
-    so_out_x_reply_entry_d(mt, config_read_item_i8(CB_RFIN_GPIO, MY_RFIN_GPIO));
+    so_out_x_reply_entry_d(mt, config_read_rfin_gpio());
     break;
   case SO_CFG_GPIO_SETBUTTON:
-    so_out_x_reply_entry_d(mt, config_read_item_i8(CB_SETBUTTON_GPIO, MY_SETBUTTON_GPIO));
+    so_out_x_reply_entry_d(mt, config_read_setbutton_gpio());
     break;
     case SO_CFG_GPIO_PIN:
 #ifdef ACCESS_GPIO
@@ -244,7 +244,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
 #endif
     break;
     case SO_CFG_ASTRO_CORRECTION: {
-      so_out_x_reply_entry_l(mt, config_read_item_i8(CB_ASTRO_CORRECTION, acAverage));
+      so_out_x_reply_entry_l(mt, config_read_astro_correction());
     }
     break;
 

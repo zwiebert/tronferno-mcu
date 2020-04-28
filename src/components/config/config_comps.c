@@ -6,7 +6,7 @@
  */
 
 #include "config/config.h"
-#include "config_defaults.h"
+#include "config/config_defaults.h"
 #include "config_kvs.h"
 
 #include "misc/int_macros.h"

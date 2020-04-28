@@ -45,7 +45,7 @@ const char *config_keys[] = {
 bool config_item_modified(enum configItem item) {
   kvshT h;
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
-    switch (item) {
+    switch ((int)item) {
     case CB_CUID:
       kvsR(u32, item, C.fer_centralUnitID);
       FSB_PUT_DEVID(&default_sender, C.fer_centralUnitID);
