@@ -12,7 +12,7 @@
 #include "fernotron/types.h"
 #include "fernotron/fer_msg_plain.h"
 #include "app_config/callbacks.h"
-#include "positions_dynamic.h"
+#include "fernotron_pos/positions_dynamic.h"
 
 #include "move_buf.h"
 

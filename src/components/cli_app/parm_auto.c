@@ -10,8 +10,8 @@
 #include "app/rtc.h"
 #include "fernotron/fer_msg_attachment.h"
 #include "misc/bcd.h"
-#include "cli_imp.h"
-#include "cli_fer.h"
+#include "cli_app/cli_imp.h"
+#include "cli_app/cli_fer.h"
 #include "fernotron_auto/fau_tdata_store.h"
 #include "config/config.h"
 

@@ -13,7 +13,7 @@
 #include "fer_app_cfg.h"
 
 
-#include "astro.h"
+#include "fernotron/astro.h"
 #include "misc/sun.h"
 #include "misc/bcd.h"
 #include "debug/debug.h"

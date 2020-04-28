@@ -7,8 +7,8 @@
 #include "fer_app_cfg.h"
 #include "fernotron/fer_msg_type.h"
 #include "fernotron/fer_msg_rx.h"
-#include "fer_rawmsg_buffer.h"
-#include "timer_data.h"
+#include "fernotron/fer_rawmsg_buffer.h"
+#include "fernotron/timer_data.h"
 #include "debug/debug.h"
 #include <string.h>
 

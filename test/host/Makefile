@@ -48,7 +48,7 @@ COMPSHARE = txtio net debug cli key_value_store misc misc_time config_kvs userio
 COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app 
 
 define GEN_COMPONENTS
-EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include $(SRC_BASE)/$(1)/$(2)/include/$(2)
+EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include #$(SRC_BASE)/$(1)/$(2)/include/$(2)
 MODULES += $(1)/$(2)
 ifneq ("$(wildcard $(SRC_BASE)/$(1)/$(2)/esp8266)","")
 MODULES += $(1)/$(2)/esp8266
@@ -60,7 +60,7 @@ $(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,$(COMP_DIR),$(com
 INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
 
 build/test_%.out:
-	$(Q) gcc -g3 $(C_WARN) -flto -O1 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm
+	$(Q) gcc  -g3 $(C_WARN) -flto -O1 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm #-H
 
 
 %.log:%.out

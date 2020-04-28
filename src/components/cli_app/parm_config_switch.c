@@ -1,6 +1,6 @@
 #include "app_config/proj_app_cfg.h"
 #include "config_kvs/config.h"
-#include "cli_imp.h"
+#include "cli_app/cli_imp.h"
 #include "cli/cli.h"
 #include "net/mqtt/mqtt.h"
 #include "net/http/server/http_server.h"

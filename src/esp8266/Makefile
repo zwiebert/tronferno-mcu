@@ -37,7 +37,7 @@ CPPFLAGS += -DLOCAL_CONFIG_AVAILABLE # for esp_mqtt
 LIBS += mbedtls
 
 define GEN_COMPONENTS
-EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include $(SRC_BASE)/$(1)/$(2)/include/$(2)
+EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include #$(SRC_BASE)/$(1)/$(2)/include/$(2)
 MODULES += $(1)/$(2)
 ifneq ("$(wildcard $(SRC_BASE)/$(1)/$(2)/esp8266)","")
 MODULES += $(1)/$(2)/esp8266

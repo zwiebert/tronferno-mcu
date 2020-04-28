@@ -10,7 +10,7 @@
 #include "config/config.h"
 #include "app/rtc.h"
 #include "misc/bcd.h"
-#include "cli_imp.h"
+#include "cli_app/cli_imp.h"
 #include "misc/stof.h"
 #ifdef USE_MQTT
 #include "net/mqtt/app/mqtt.h"

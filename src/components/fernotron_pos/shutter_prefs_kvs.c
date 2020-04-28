@@ -6,7 +6,7 @@
  */
 
 
-#include "shutter_prefs.h"
+#include "fernotron_pos/shutter_prefs.h"
 #include "key_value_store/kvs_wrapper.h"
 
 #define SHPREF_KVS_NAMESPACE "shref"

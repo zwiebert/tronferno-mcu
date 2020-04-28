@@ -8,7 +8,7 @@
 #include "app_config/proj_app_cfg.h"
 #ifdef USE_MQTT
 
-#include "mqtt.h"
+#include "net/mqtt/app/mqtt.h"
 #include "net/mqtt/mqtt_imp.h"
 
 #include <string.h>

@@ -1,3 +1,4 @@
+#include "app_config/proj_app_cfg.h"
 #include "config/config.h"
 #include "config/config_defaults.h"
 #include "app/fernotron.h"

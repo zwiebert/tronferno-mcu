@@ -10,7 +10,7 @@
 #include "app/fernotron.h"
 #include "config/config.h"
 #include "config_kvs.h"
-#include "config_defaults.h"
+#include "config/config_defaults.h"
 
 #include "misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
