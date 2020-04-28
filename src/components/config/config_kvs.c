@@ -39,7 +39,7 @@ const char *config_keys[] = {
 #ifdef USE_NETWORK
   "C_NW_CONN",
 #endif
-  "CB_RFOUTP", "CB_RFINP", "CB_SETBTNP",
+  "C_RFOUTP", "C_RFINP", "C_SETBTNP",
 };
 
 bool config_item_modified(enum configItem item) {

@@ -26,20 +26,9 @@
 
 #define printf ets_uart_printf
 
-#ifdef USE_CONFIG_PIN
 #define RFOUT_GPIO gpio_cfg->out_rf
 #define RFIN_GPIO gpio_cfg->in_rf
 #define BUTTON_GPIO gpio_cfg->in_setButton
-#else
-#ifndef USE_LAN
-#define RFOUT_GPIO GPIO_NUM_22
-#define RFIN_GPIO GPIO_NUM_17
-#else
-#define RFOUT_GPIO GPIO_NUM_16
-#define RFIN_GPIO GPIO_NUM_15 //XXX: GPIO15 is used by JTAG
-#endif
-#define BUTTON_GPIO GPIO_NUM_6
-#endif
 
 static struct cfg_gpio *gpio_cfg;
 
@@ -200,7 +189,7 @@ const char* pin_set_mode(int gpio_number, mcu_pin_mode mode, mcu_pin_level level
   return pin_set_mode_int(gpio_number, mode, level);
 }
 
-const char* mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
+static const char* mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
   if (gpio_number == -1)
     return 0;
 

@@ -22,17 +22,10 @@
 const struct cfg_gpio *gpio_cfg;
 
 #define printf ets_uart_printf
-#ifdef USE_CONFIG_PIN
 #define RFOUT_GPIO gpio_cfg->out_rf
 #define RFIN_GPIO gpio_cfg->in_rf
 #define BUTTON_GPIO gpio_cfg->in_setButton
-#else
-#define RFOUT_GPIO 4
-#define RFIN_GPIO 5
-#define BUTTON_GPIO 0
-#endif
 
-const char*  mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state);
 
 #ifdef ACCESS_GPIO
 enum mcu_pin_mode pin_getPinMode(unsigned gpio_number) {
@@ -197,7 +190,7 @@ const char* pin_set_mode(int gpio_number, mcu_pin_mode mode, mcu_pin_level level
   return pin_set_mode_int(gpio_number, mode, level);
 }
 
-const char* mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
+static const char* mcu_access_pin2(int gpio_number, mcu_pin_state *result, mcu_pin_state state) {
   if (!GET_BIT(gpioUsable, gpio_number))
     return "gpio not usable";
   if (!GET_BIT(pins_in_use, gpio_number))

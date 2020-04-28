@@ -166,16 +166,17 @@ void mcu_init() {
 //  lfPer_setBit(lf_loopFerPos);
 
 #ifdef USE_NETWORK
+  enum nwConnection network = config_read_network_connection();
 #ifdef USE_AP_FALLBACK
   esp_netif_init();
 #else
-  if (C.network != nwNone)
+  if (network != nwNone)
     esp_netif_init();
 #endif
 
   ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
   ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
-  switch (C.network) {
+  switch (network) {
 #ifdef USE_WLAN
   case nwWlanSta:
     config_setup_wifiStation();
@@ -199,7 +200,7 @@ void mcu_init() {
   config_setup_gpio();
 
 #ifdef USE_AP_FALLBACK
-  if (C.network != nwWlanAp)
+  if (network != nwWlanAp)
     tmr_checkNetwork_start();
 #endif
 #ifdef USE_CLI_MUTEX

@@ -57,9 +57,6 @@ typedef struct {
   gm_bitmask_t fer_usedMemberMask;
   char app_configPassword[16];
   char app_expertPassword[16];
-#ifdef USE_NETWORK
-  enum nwConnection network;
-#endif
 } config;
 
 extern config C;
@@ -95,29 +92,35 @@ bool config_gpio_setPinMode(unsigned gpio_number, mcu_pin_mode ps, mcu_pin_level
 
 bool config_item_modified(enum configItem item);
 
-const char *config_read_item_s(enum configItem item, char *d, unsigned d_size, const char *def);
+const char* config_read_item_s(enum configItem item, char *d, unsigned d_size, const char *def);
 uint32_t config_read_item_u32(enum configItem item, uint32_t def);
-int8_t config_read_item_i8(enum configItem item,  int8_t def);
+int8_t config_read_item_i8(enum configItem item, int8_t def);
 float config_read_item_f(enum configItem item, float def);
 
-
 void config_setup_gpio();
-void config_setup_global();
-void config_setup_astro();
-void config_setup_mqttAppClient();
-
-const char *config_read_tz(char *d, unsigned d_size);
-float config_read_timezone();
-enum dst config_read_dst();
-enum nwConnection  config_read_network_connection();
-float config_read_longitude();
-float config_read_latitude();
-uint32_t config_read_used_members();
+struct cfg_gpio* config_read_gpio(struct cfg_gpio *c);
 int8_t config_read_rfout_gpio();
 int8_t config_read_rfin_gpio();
 int8_t config_read_setbutton_gpio();
-enum astroCorrection config_read_astro_correction();
+
+void config_setup_global();
+uint32_t config_read_used_members();
 uint32_t config_read_baud();
+
+const char* config_read_tz(char *d, unsigned d_size);
+float config_read_timezone();
+enum dst config_read_dst();
+enum nwConnection config_read_network_connection();
+
+void config_setup_astro();
+struct cfg_astro* config_read_astro(struct cfg_astro *c);
+float config_read_longitude();
+float config_read_latitude();
+enum astroCorrection config_read_astro_correction();
+
+void config_setup_mqttAppClient();
+
+
 
 
 
