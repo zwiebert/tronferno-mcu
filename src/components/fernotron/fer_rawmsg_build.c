@@ -6,12 +6,12 @@
  */
 
 #include <fernotron/fer_msg_plain.h>
-#include "astro.h"
+#include "fernotron/astro.h"
 #include <string.h>
 #include "fer_app_cfg.h"
 #include "debug/debug.h"
 
-#include "fer_rawmsg_buffer.h"
+#include "fernotron/fer_rawmsg_buffer.h"
 //#include "app/rtc.h"
 //#include "fernotron_auto/astro.h"
 //#include "config/config.h"

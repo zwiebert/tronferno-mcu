@@ -8,7 +8,7 @@
 #include <string.h>
 #include "app_config/proj_app_cfg.h"
 
-#include "cuid_auto_set.h"
+#include "fernotron_cuas/cuid_auto_set.h"
 
 #include "cli/cli.h"
 #include "config/config.h"

@@ -12,7 +12,7 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/bcd.h"
 #include "app/rtc.h"
-#include "cli_imp.h"
+#include "cli_app/cli_imp.h"
 #ifndef NO_SPIFFS
 #include "storage/esp8266/spiffs_fs.h"
 #endif

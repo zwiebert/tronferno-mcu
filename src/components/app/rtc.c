@@ -154,12 +154,12 @@ rtc_setup() {
 
 #ifdef POSIX_TIME
   char buf[64];
-  setenv("TZ", config_read_item_s(CB_TZ, buf, sizeof buf, MY_GEO_TZ), 1);
+  setenv("TZ", config_read_tz(buf, sizeof buf), 1);
   tzset();
 
 #else
 
-  set_zone(ONE_HOUR * config_read_item_f(CB_TIZO, MY_GEO_TIMEZONE)); //* C.timezone);
+  set_zone(ONE_HOUR * config_read_timezone()); //* C.timezone);
 
   switch (C.geo_dST) {
 

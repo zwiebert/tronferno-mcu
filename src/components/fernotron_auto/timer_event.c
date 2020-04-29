@@ -1,6 +1,6 @@
 #include "app_config/proj_app_cfg.h"
 
-#include "fau_tevent.h"
+#include "fernotron_auto/fau_tevent.h"
 #include "fernotron_auto/fau_tdata_store.h"
 #include "app/rtc.h"
 #include "fernotron/astro.h"
@@ -46,7 +46,7 @@ static void fam_updateTimerEventTime(const time_t *now_time) {
 
 void fam_updateTimerEvent() {
   time_t now_time = time(NULL);
-  time_t now_time_next = now_time + 60; // make sure we don't get the current event again
+  time_t now_time_next = now_time + 60; // XXX: make sure we don't get the current event again
   fam_get_next_timer_event(&next_event_te, &now_time_next);
   fam_updateTimerEventTime(&now_time);
 }

@@ -12,7 +12,7 @@
 #include <ets_sys.h>
 #include <osapi.h>
 #include <gpio.h>
-#include "pin.h"
+#include "gpio/pin.h"
 
 #include "txtio/inout.h"
 #include "driver/uart.h"
@@ -38,7 +38,7 @@ void main_setup_ip_dependent() {
   config_setup_ntpClient();
 #endif
 #ifdef USE_MQTT
-    config_setup_mqttClient();
+    config_setup_mqttAppClient();
 #endif
 }
 

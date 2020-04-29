@@ -7,8 +7,8 @@
 
 #include "fernotron/fer_msg_attachment.h"
 #include "fer_app_cfg.h"
-#include "fer_rawmsg_buffer.h"
-#include "int_timer.h"
+#include "fernotron/fer_rawmsg_buffer.h"
+#include "fernotron/int_timer.h"
 #include "stdbool.h"
 #include "app/common.h"
 

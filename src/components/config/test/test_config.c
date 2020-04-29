@@ -97,3 +97,21 @@ TEST_CASE("test config save_restore", "[config]")
 }
 #endif
 #endif
+
+
+void test_config_keys()
+{
+
+
+
+  TEST_ASSERT_EQUAL_STRING("C_TZ", config_get_kvs_key(CB_TZ));
+  TEST_ASSERT_EQUAL_STRING("C_RFOUTP", config_get_kvs_key(CB_RFOUT_GPIO));
+  TEST_ASSERT_EQUAL_STRING("C_CUID", config_get_kvs_key(CB_CUID));
+  TEST_ASSERT_EQUAL_STRING("C_BAUD", config_get_kvs_key(CB_BAUD));
+
+}
+
+TEST_CASE("test config keys", "[config]")
+{
+  test_config_keys();
+}

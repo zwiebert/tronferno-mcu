@@ -22,7 +22,7 @@ COMPSHARE_DIR=components-mcu/components
 COMPSHARE_PATH := $(SRC_BASE)/$(COMPSHARE_DIR)
 COMP_PATH := $(SRC_BASE)/$(COMP_DIR)
 
-COMPSHARE = txtio net debug cli key_value_store misc misc_time userio net_mqtt net_http_server storage storage/esp8266/spiffs/src  net_mqtt/esp8266/esp_mqtt/mqtt
+COMPSHARE = txtio net debug cli key_value_store misc misc_time userio config_kvs net_mqtt net_http_server storage storage/esp8266/spiffs/src  net_mqtt/esp8266/esp_mqtt/mqtt
 COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app 
 MODULES	=  src/esp8266 src/esp8266/driver src/lib/time
 LIBS   =  gcc hal phy pp net80211 lwip wpa main crypto 
@@ -37,7 +37,7 @@ CPPFLAGS += -DLOCAL_CONFIG_AVAILABLE # for esp_mqtt
 LIBS += mbedtls
 
 define GEN_COMPONENTS
-EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include $(SRC_BASE)/$(1)/$(2)/include/$(2)
+EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include #$(SRC_BASE)/$(1)/$(2)/include/$(2)
 MODULES += $(1)/$(2)
 ifneq ("$(wildcard $(SRC_BASE)/$(1)/$(2)/esp8266)","")
 MODULES += $(1)/$(2)/esp8266

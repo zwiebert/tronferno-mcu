@@ -33,6 +33,8 @@
 #undef USE_TCPS
 #endif
 
+#define CFG_NAMESPACE "Tronferno" // XXX: backward compatibility
+
 
 #include "esp_attr.h"
 

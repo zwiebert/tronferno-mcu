@@ -1,6 +1,6 @@
 #include "app_config/proj_app_cfg.h"
 
-#include "fau_tminutes.h"
+#include "fernotron_auto/fau_tminutes.h"
 #include "fernotron_auto/fau_tdata_store.h"
 #include "app/rtc.h"
 #include "fernotron/astro.h"

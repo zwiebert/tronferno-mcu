@@ -18,7 +18,6 @@
 #define CONFIG_DICT
 #define USE_CONFIG_KVS
 #define ACCESS_GPIO
-#define USE_CONFIG_PIN
 #define POSIX_TIME 1
 #define USE_ESP_GET_TIME
 #define MDR_TIME
@@ -59,6 +58,10 @@
 #elif defined TEST_HOST
 #define IRAM_ATTR
 #undef ACCESS_GPIO
+#undef MDR_TIME
+#define MY_RFOUT_GPIO -1
+#define MY_RFIN_GPIO -1
+#define MY_SETBUTTON_GPIO -1
 #else
 #define IRAM_ATTR
 #define DRAM_ATTR

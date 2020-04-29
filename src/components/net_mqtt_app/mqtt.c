@@ -8,7 +8,7 @@
 #include "app_config/proj_app_cfg.h"
 #ifdef USE_MQTT
 
-#include "mqtt.h"
+#include "net/mqtt/app/mqtt.h"
 #include "net/mqtt/mqtt_imp.h"
 
 #include <string.h>
@@ -17,6 +17,7 @@
 #include "cli/mutex.h"
 #include "userio/status_json.h"
 #include "userio_app/status_output.h"
+#include "gpio/pin.h"
 #include "config/config.h"
 
 static char *io_mqtt_topic_root;
@@ -170,7 +171,7 @@ void io_mqttApp_unsubscribed(const char *topic, int topic_len) {
 void io_mqttApp_published(int msg_id) {
 }
 
-void io_mqttApp_setup(struct cfg_mqtt *cfg_mqtt, const char *topic_root) {
+void io_mqttApp_setup(const char *topic_root) {
   if (topic_root && *topic_root && (!io_mqtt_topic_root || 0 != strcmp(io_mqtt_topic_root, topic_root))) {
     char *tr = malloc(strlen(topic_root)+1);
     if (tr) {
@@ -179,8 +180,7 @@ void io_mqttApp_setup(struct cfg_mqtt *cfg_mqtt, const char *topic_root) {
       io_mqtt_topic_root = tr;
     }
   }
-  io_mqtt_setup(cfg_mqtt);
-  pin_notify_input_change_cb =  (cfg_mqtt && cfg_mqtt->enable) ? io_mqttApp_publishPinChange : 0;
+  pin_notify_input_change_cb = io_mqttApp_publishPinChange; // TODO: check if MQTT enabled
 }
 
 #endif // USE_MQTT

@@ -6,7 +6,7 @@
 #include <ets_sys.h>
 #include <osapi.h>
 #include <gpio.h>
-#include "pin.h"
+#include "gpio/pin.h"
 
 #include "txtio/inout.h"
 #include "driver/uart.h"
