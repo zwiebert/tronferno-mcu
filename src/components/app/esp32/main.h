@@ -96,6 +96,7 @@ enum loop_flagbits {
 #endif
   lf_loopPosAutoSave, lf_loopPosCheckMoving,
   lf_gpio_input_intr,
+  lf_mcuRestart,
 
   //-------------
   lf_Len
@@ -112,6 +113,7 @@ void lfa_createWifiAp(void);
 void lfa_gotIpAddr(void);
 void lfa_lostIpAddr(void);
 void lfa_ntpSync(void);
+void lfa_mcuRestart(void);
 
 void loop(void);
 void tmr_checkNetwork_start();

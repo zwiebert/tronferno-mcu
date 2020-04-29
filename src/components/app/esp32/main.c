@@ -35,6 +35,10 @@ void lfa_lostIpAddr(void) {
   ipnet_disconnected();
 }
 
+void lfa_mcuRestart(void) {
+  mcu_delayedRestart(1500);
+}
+
 void appEsp32_main(void) {
 
   mcu_init();
@@ -48,12 +52,20 @@ void appEsp32_main(void) {
   }
 }
 
+void  mcu_delayedRestart(unsigned delay_ms) {
+  printf("mcu_restart()\n");
+  vTaskDelay(pdMS_TO_TICKS(delay_ms));
+  esp_restart();
+  for (;;) {
+  }
+}
+
 void  mcu_restart(void) {
   printf("mcu_restart()\n");
   ets_delay_us(10000);
   esp_restart();
   for (;;) {
-  };
+  }
 }
 
 #ifdef USE_EG

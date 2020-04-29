@@ -16,3 +16,5 @@ void loop_setBit_rxLoop();
 void loop_setBit_rxLoop_fromISR();
 
 void loop_setBit_pinNotifyInputChange_fromISR();
+
+void loop_setBit_mcuRestart();

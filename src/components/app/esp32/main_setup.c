@@ -2,6 +2,9 @@
 #include "misc/time/run_time.h"
 #include "key_value_store/kvs_wrapper.h"
 
+void loop_setBit_mcuRestart() {
+  lf_setBit(lf_mcuRestart);
+}
 #ifdef USE_NETWORK
 void lfa_gotIpAddr_cb() {
   lf_setBit(lf_gotIpAddr);

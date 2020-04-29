@@ -42,6 +42,7 @@ static const lfa_funT lfa_table[lf_Len] = {
 #endif
     statPos_loopAutoSave, ferPos_loopCheckMoving,
     pin_notify_input_change,
+    lfa_mcuRestart,
 };
 
 #ifndef USE_EG
