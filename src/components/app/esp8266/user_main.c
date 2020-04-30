@@ -12,7 +12,7 @@
 #include <ets_sys.h>
 #include <osapi.h>
 #include <gpio.h>
-#include "pin.h"
+#include "gpio/pin.h"
 
 #include "txtio/inout.h"
 #include "driver/uart.h"
@@ -29,17 +29,16 @@
 
 
 // main loop task
-#define user_procTaskPrio     2
+#define user_procTaskPrio     0
 #define user_procTaskQueueLen 1
 static os_event_t user_procTaskQueue[user_procTaskQueueLen];
 
-// io task
-#define io_procTaskPrio     0
-#define io_procTaskQueueLen 1
-
 void main_setup_ip_dependent() {
 #ifdef USE_NTP
-  ntp_setup(cfg_getNtpClient());
+  config_setup_ntpClient();
+#endif
+#ifdef USE_MQTT
+    config_setup_mqttAppClient();
 #endif
 }
 

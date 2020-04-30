@@ -84,7 +84,7 @@ main_setup() {
 
   rtc_setup();
   fer_init_sender(&default_sender, cfg_getCuId());
-  astro_init_and_reinit(cfg_getAstro());
+  config_setup_astro();
 
   so_output_message(SO_FW_START_MSG_PRINT, 0);
   ferPos_init();

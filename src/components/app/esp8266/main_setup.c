@@ -6,7 +6,7 @@
 #include <ets_sys.h>
 #include <osapi.h>
 #include <gpio.h>
-#include "pin.h"
+#include "gpio/pin.h"
 
 #include "txtio/inout.h"
 #include "driver/uart.h"
@@ -21,7 +21,6 @@
 extern void intTimer_setup(void);
 extern void setup_serial(u32 baudrate);
 extern void setup_notImplemented(void);
-extern void setup_pin(void);
 void task_setup(void);
 
 i32 boot_counter;
@@ -30,8 +29,9 @@ i32 boot_counter;
 void
 user_init() {
   // load config and setup serial interface
+
   setup_serial(115200);
-  txtio_setup(cfg_getTxtio());
+  config_setup_txtio();
   io_puts("\r\n\r\n");
   io_puts("\r\n\r\n");
   io_puts("test io_puts...\n");
@@ -39,17 +39,15 @@ user_init() {
 
   stor_setup();
   kvs_setup();
-
-  read_config_all();
-
+  config_setup_global();
 
   // print debug info
   print_reset_info();
 
   setup_notImplemented();
-  setup_pin();
-  wifistation_setup(cfg_getWlan());
-  tcpCli_setup(cfg_getTcpsServer());
+  config_setup_gpio();
+  config_setup_wifiStation();
+  config_setup_cliTcpServer();
   setup_udp();
   main_setup();
   task_setup();

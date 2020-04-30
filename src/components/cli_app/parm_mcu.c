@@ -6,13 +6,15 @@
 #include "fernotron_sep/set_endpos.h"
 #include "fernotron_pos/shutter_pct.h"
 #include "txtio/inout.h"
+#include "gpio/pin.h"
 #include "userio_app/status_output.h"
 #include "fernotron_auto/fau_tevent.h"
+#include "key_value_store/kvs_wrapper.h"
 #include "misc/bcd.h"
 #include "app/rtc.h"
-#include "cli_imp.h"
+#include "cli_app/cli_imp.h"
 #ifndef NO_SPIFFS
-#include "storage/spiffs_fs.h"
+#include "storage/esp8266/spiffs_fs.h"
 #endif
 #include "debug/debug.h"
 
@@ -31,8 +33,11 @@ const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
         "up-time=?\n"
         "version=full\n";
 
-int 
-process_parmMcu(clpar p[], int len) {
+const char pin_state_args[] = "?01t";
+
+static void kvs_print_keys(const char *name_space);
+
+int process_parmMcu(clpar p[], int len) {
   int arg_idx;
 
   so_output_message(SO_MCU_begin, NULL);
@@ -42,8 +47,12 @@ process_parmMcu(clpar p[], int len) {
 
     if (key == NULL || val == NULL) {
       return -1;
-    } else if (strcmp(key, "boot-count") == 0 && *val == '?') {
-      so_output_message(SO_MCU_BOOT_COUNT, 0);
+    } else if (strcmp(key, "boot-count") == 0) {
+      if (*val == '?') {
+        so_output_message(SO_MCU_BOOT_COUNT, 0);
+      } else if (strcmp("0", val) == 0) {
+        // TODO: reset boot counter
+      }
     } else if (strcmp(key, "print") == 0) {
 #ifdef MCU_ESP8266
       if (strcmp(val, "reset-info") == 0) {
@@ -59,6 +68,9 @@ process_parmMcu(clpar p[], int len) {
         spiffs_test();
       }
 #endif
+    } else if (strcmp(key, "kvs-pk") == 0) {
+
+      kvs_print_keys(val);
 
     } else if (strcmp(key, "tm") == 0) {
 
@@ -77,7 +89,6 @@ process_parmMcu(clpar p[], int len) {
       }
 #ifdef USE_FREERTOS
     } else if (strcmp(key, "stack") == 0) {
-      int n = atoi(val);
       int words = uxTaskGetStackHighWaterMark(NULL);
       ets_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
 #endif
@@ -103,7 +114,7 @@ process_parmMcu(clpar p[], int len) {
 #endif
     } else if (strcmp(key, "cs") == 0) {
       statPos_printAllPcts();
-#ifdef CONFIG_GPIO_SIZE
+#ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
       mcu_pin_state ps = 0, ps_result = 0;
@@ -186,3 +197,13 @@ process_parmMcu(clpar p[], int len) {
 
   return 0;
 }
+
+static kvs_cbrT kvs_print_keys_cb(const char *key, kvs_type_t type) {
+  io_printf("key: %s, type: %d\n", key, (int)type);
+  return kvsCb_match;
+}
+
+static void kvs_print_keys(const char *name_space) {
+  kvs_foreach(name_space, KVS_TYPE_ANY, 0, kvs_print_keys_cb);
+}
+

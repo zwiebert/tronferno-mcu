@@ -8,8 +8,7 @@ endif()
 
 idf_component_register(SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
-    PRIV_INCLUDE_DIRS "./include/fernotron_pos" 
     REQUIRES fernotron 
-    PRIV_REQUIRES app cli userio misc misc_time key_value_store debug
+    PRIV_REQUIRES app cli userio misc misc_time key_value_store debug config
 )
 

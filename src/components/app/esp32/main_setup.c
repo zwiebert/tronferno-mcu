@@ -2,6 +2,9 @@
 #include "misc/time/run_time.h"
 #include "key_value_store/kvs_wrapper.h"
 
+void loop_setBit_mcuRestart() {
+  lf_setBit(lf_mcuRestart);
+}
 #ifdef USE_NETWORK
 void lfa_gotIpAddr_cb() {
   lf_setBit(lf_gotIpAddr);
@@ -53,6 +56,10 @@ void IRAM_ATTR loop_setBit_rxLoop_fromISR() {
   lf_setBit_ISR(lf_loopFerRx, true);
 }
 #endif
+
+void loop_setBit_pinNotifyInputChange_fromISR() {
+  lf_setBit_ISR(lf_gpio_input_intr, true);
+}
 
 void loop_setBit_fauTimerDataHasChanged(void) {
   lf_setBit(lf_loopFauTimerDataHasChanged);
@@ -107,7 +114,7 @@ void ntpApp_sync_time_cb(struct timeval *tv) {
 
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb(ntpApp_sync_time_cb);
-  ntp_setup(cfg_getNtpClient());
+  config_setup_ntpClient();
 }
 
 void main_setup_ip_dependent() {
@@ -118,16 +125,13 @@ void main_setup_ip_dependent() {
     ntpApp_setup();
 #endif
 #ifdef USE_MQTT
-    io_mqttApp_setup(cfg_getMqttClient());
+    config_setup_mqttAppClient();
 #endif
-#ifdef USE_TCPS
-  tcpCli_setup(cfg_getTcpsServer());
-#endif
-#ifdef USE_TCPS_TASK
-  tcpCli_setup_task(cfg_getTcpsServer());
+#if defined USE_TCPS || defined USE_TCPS_TASK
+    config_setup_cliTcpServer();
 #endif
 #ifdef USE_HTTP
-  hts_setup(cfg_getHttpServer());
+  config_setup_httpServer();
 #endif
   }
 }
@@ -139,10 +143,9 @@ void mcu_init() {
 #ifdef USE_EG
   loop_eventBits_setup();
 #endif
-
-  txtio_setup(cfg_getTxtio());
+  config_setup_txtio();
   kvs_setup();
-  config_setup();
+  config_setup_global();
 
   io_puts("\r\n\r\n");
 
@@ -166,25 +169,30 @@ void mcu_init() {
 //  lfPer_setBit(lf_loopFerPos);
 
 #ifdef USE_NETWORK
+  enum nwConnection network = config_read_network_connection();
+#ifdef USE_AP_FALLBACK
+  esp_netif_init();
+#else
+  if (network != nwNone)
+    esp_netif_init();
+#endif
+
   ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
   ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
-  switch (C.network) {
+  switch (network) {
 #ifdef USE_WLAN
   case nwWlanSta:
-    esp_netif_init();
-    wifistation_setup(cfg_getWlan());
+    config_setup_wifiStation();
     break;
 #endif
 #ifdef USE_WLAN_AP
   case nwWlanAp:
-    esp_netif_init();
-    wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
+    lfa_createWifiAp(); // XXX: Create the fall-back AP. Should we have a regular configured AP also?
     break;
 #endif
 #ifdef USE_LAN
   case nwLan:
-    esp_netif_init();
-    ethernet_setup(cfg_getLan());
+    config_setup_ethernet();
 #endif
     break;
   default:
@@ -192,10 +200,11 @@ void mcu_init() {
   }
 #endif
 
-  setup_pin();
+  config_setup_gpio();
 
 #ifdef USE_AP_FALLBACK
-  tmr_checkNetwork_start();
+  if (network != nwWlanAp)
+    tmr_checkNetwork_start();
 #endif
 #ifdef USE_CLI_MUTEX
   void mutex_setup(void);

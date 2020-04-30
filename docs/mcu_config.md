@@ -19,6 +19,10 @@
      * http-enable: enable built-in HTTP webserver
      * http-user, http-password: optional. if set the webserver requires authentication to be accessed
      * astro-correction: workaround for fernotron astro table problem: 0: use average civil dusk time, 1: never too late, 2: never too early
+     * rf-tx-pin: RF output GPIO pin
+     * rf-rx-pin: RF input GPIO pin
+     * set-button-pin: Set-button input GPIO pin
+     * gpioN: Pins for input/output (can then be read/set via CLI and MQTT)
      * Group/Members: define how many members are used in each group. Unused groups and members may then be hidden in the user interface
  * Buttons:
       * Reload: read in all config options again from the MCU
@@ -38,29 +42,35 @@
 
 cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID
 rtc=(ISO_TIME|?)   set local time if NTP not working
-baud=(N|?)         serial baud rate
 wlan-ssid=(SSID|?)
 wlan-password=PW
 network=(wlan|ap|lan) ap opens wlan access-point at 192.168.4.1 (restart required)
-ntp-server=(dhcp|IP4ADDR|NAME) default: ntp.pool.org (TODO: implement list of servers)
-mqtt-enable=(0|1) enable MQTT
-mqtt-url=URL      broker/server URL (e.g. mqtt://192.168.1.42:7777)
-mqtt-user=NAME    user name on server
-mqtt-password=PW  user password on server
-http-enable=(0|1) enable HTTP
-http-user=NAME    user name on server
-http-password=PW  user password on server
+ntp-server=(gateway|dhcp|IP4ADDR|NAME) default: gateway
+mqtt-enable=(0|1)  enable MQTT
+mqtt-url=URL       broker/server URL (e.g. mqtt://192.168.1.42:7777)
+mqtt-user=NAME     user name on server
+mqtt-password=PW   user password on server
+mqtt-client-id=ID  default: tfmcu
+http-enable=(0|1)  enable HTTP
+http-user=NAME     user name on server
+http-password=PW   user password on server
 longitude=(DEG|?)
 latitude=(DEG|?)
 tz=(POSIX_TZ|?)    time zone for RTC/NTP
+astro-correction   modifies astro table: 0=average, 1=bright 2=dark
 verbose=(0..5|?)   diagnose output verbosity level
 set-pw=password    set a config password. if set every config commands needs the pw option
 pw=PW              example: config pw=my_passw dst=eu;
 restart            restart MCU
-gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default
-astro-correction   modifies astro table: 0=average, 1=bright 2=dark
+gpioN=(d|i|o|O|q|Q|?)(h|l|m) Set gpio as pin for input (i) output (O), open drain output (o) or input/output (q,Q).
+                   Add suffix to input to enable pull up (h), pull down (l), pull up/down (m)
+                   Add suffix (h|l) to output to set the initial level high or low at restart
+                   Disable gpio (d)
+                   Example: config gpio19=ol gpio18=ih gpio20=qh gpio21=d;
+rf-tx-pin=N        RF output GPIO pin
+rf-rx-pin=N        RF input GPIO pin
+set-button-pin     Set-button input GPIO pin
 ```
-
 
 <hr>
 

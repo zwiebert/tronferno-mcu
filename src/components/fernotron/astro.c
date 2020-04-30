@@ -13,14 +13,16 @@
 #include "fer_app_cfg.h"
 
 
-#include "astro.h"
+#include "fernotron/astro.h"
 #include "misc/sun.h"
 #include "misc/bcd.h"
 #include "debug/debug.h"
 #include "misc/int_macros.h"
 
-const struct cfg_astro *astro_cfg;
+#include <string.h>
 
+static struct cfg_astro astro_config;
+#define astro_cfg (&astro_config)
 
 /*
  *
@@ -237,8 +239,9 @@ void  astro_write_data(u8 d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset)
 }
 
 void astro_init_and_reinit(const struct cfg_astro *cfg_astro) {
-  if (cfg_astro)
-    astro_cfg = cfg_astro;
+  if (cfg_astro) {
+    memcpy(&astro_config, cfg_astro, sizeof astro_config);
+  }
 
   astro_populate_astroMinutes_from_astroBcd();
 }

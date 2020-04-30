@@ -5,7 +5,7 @@
 extern const char *const build_time;
 #define ISO_BUILD_TIME build_time
 
-#undef USE_MQTT
+//#undef USE_MQTT
 #undef USE_HTTP
 #undef USE_CLI_MUTEX
 #undef USE_OTA
@@ -19,9 +19,12 @@ extern const char *const build_time;
 #undef POSIX_TIME
 #undef USE_TXTIO_MUTEX
 
+
 #include "user_interface.h"
 #define IRAM_ATTR  __attribute__((section(".iram0.text")))
 
 #include <osapi.h>
 
+#define snprintf ets_snprintf
+#define sprintf ets_sprintf
 

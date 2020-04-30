@@ -7,7 +7,7 @@
 #include "unity.h"
 
 #include <fernotron/fer_msg_plain.h>
-#include "astro.h"
+#include "fernotron/astro.h"
 #include <string.h>
 #include "../fer_app_cfg.h"
 #include "debug/debug.h"

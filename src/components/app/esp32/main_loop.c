@@ -41,6 +41,8 @@ static const lfa_funT lfa_table[lf_Len] = {
     pair_auto_set_check_timeout,
 #endif
     statPos_loopAutoSave, ferPos_loopCheckMoving,
+    pin_notify_input_change,
+    lfa_mcuRestart,
 };
 
 #ifndef USE_EG
@@ -79,7 +81,7 @@ void loop_eventBits_check() {
 
 
 static void tmr_checkNetwork_cb(TimerHandle_t xTimer) {
-  if (!wifi_ap_active && !ipnet_isConnected()) {
+  if (!ipnet_isConnected()) {
     lf_setBit(lf_createWifiAp);
   }
 }

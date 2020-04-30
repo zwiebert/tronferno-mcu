@@ -1,5 +1,7 @@
-
 #include "main.h"
+
+#include "net/http/server/http_server.h"
+#include "net/tcp_cli_server.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
@@ -7,14 +9,23 @@
 #include <lwip/apps/sntp_opts.h>
 #include <esp_attr.h>
 
+
 SemaphoreHandle_t uart_mutex;
 i32 boot_counter;
-bool wifi_ap_active;
 
 void lfa_createWifiAp() {
-  esp_netif_init();
-  wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
-  wifi_ap_active = true;
+  static bool wifi_ap_active;
+
+  if (!wifi_ap_active) {
+    wifi_ap_active = true;
+    wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
+
+    struct cfg_tcps cfg_tcps = { .enable = true };
+    tcpCli_setup(&cfg_tcps);
+
+    struct cfg_http cfg_http = { .enable = true };
+    hts_setup(&cfg_http);
+  }
 }
 
 void lfa_gotIpAddr(void) {
@@ -22,6 +33,10 @@ void lfa_gotIpAddr(void) {
 }
 void lfa_lostIpAddr(void) {
   ipnet_disconnected();
+}
+
+void lfa_mcuRestart(void) {
+  mcu_delayedRestart(1500);
 }
 
 void appEsp32_main(void) {
@@ -37,12 +52,20 @@ void appEsp32_main(void) {
   }
 }
 
+void  mcu_delayedRestart(unsigned delay_ms) {
+  printf("mcu_restart()\n");
+  vTaskDelay(pdMS_TO_TICKS(delay_ms));
+  esp_restart();
+  for (;;) {
+  }
+}
+
 void  mcu_restart(void) {
   printf("mcu_restart()\n");
   ets_delay_us(10000);
   esp_restart();
   for (;;) {
-  };
+  }
 }
 
 #ifdef USE_EG

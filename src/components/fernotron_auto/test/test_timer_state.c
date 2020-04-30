@@ -14,7 +14,6 @@
 
 bool succ;
 
-
 static int t2m(int hour, int minute) {
   return hour * 60 + minute;
 }
@@ -33,14 +32,15 @@ static void test_timer_event4() {
      .tm_wday = 3,
      .tm_mday = 22,
      .tm_mon = 3, // april
+     .tm_year = 120,
   };
 
 
-  time_t now_time = timegm(&now_tm);
+  time_t now_time = mktime(&now_tm);
   timer_event_t tevt;
   fam_get_next_timer_event(&tevt, &now_time);
 
-  TEST_ASSERT_EQUAL(t2m(19,54), tevt.next_event);
+  TEST_ASSERT_EQUAL(t2m(20,54), tevt.next_event); // astro time
   gm_bitmask_t test1 = {0,0x02,0,0,0,0,0,0};
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
@@ -61,10 +61,11 @@ static void test_timer_event3() {
      .tm_wday = 1,
      .tm_mday = 2,
      .tm_mon = 3,
+     .tm_year = 120,
   };
 
 
-  time_t now_time = timegm(&now_tm);
+  time_t now_time = mktime(&now_tm);
   timer_event_t tevt;
   fam_get_next_timer_event(&tevt, &now_time);
 
@@ -89,10 +90,11 @@ static void test_timer_event2() {
      .tm_wday = 1,
      .tm_mday = 2,
      .tm_mon = 3,
+     .tm_year = 120,
   };
 
 
-  time_t now_time = timegm(&now_tm);
+  time_t now_time = mktime(&now_tm);
   timer_event_t tevt;
   fam_get_next_timer_event(&tevt, &now_time);
 
@@ -107,15 +109,17 @@ static void test_timer_event2() {
        .tm_wday = 1,
        .tm_mday = 2,
        .tm_mon = 3,
+       .tm_year = 120,
     };
 
-  now_time = timegm(&now_tm);
+  now_time = mktime(&now_tm);
 
   fam_get_next_timer_event(&tevt, &now_time);
   TEST_ASSERT_EQUAL(t2m(23,45), tevt.next_event);
 
 }
 
+struct tm test_tm, *test_tmp;
 
 
 static void test_timer_event() {
@@ -132,6 +136,7 @@ static void test_timer_event() {
      .tm_wday = 1,
      .tm_mday = 2,
      .tm_mon = 3,
+     .tm_year = 120,
   };
 
   minutes_t now_minutes = t2m(now_tm.tm_hour, now_tm.tm_min);
@@ -170,9 +175,9 @@ static void test_timer_event() {
   TEST_ASSERT_EQUAL(t2m(21, 23), fau_get_earliest_from_timer_minutes(&timi, now_minutes));
 
 
-  time_t now_time = timegm(&now_tm);
+  time_t now_time = mktime(&now_tm);
 
-  timer_event_t tevt;
+  static timer_event_t tevt;
   fam_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
@@ -184,9 +189,10 @@ static void test_timer_event() {
        .tm_wday = 1,
        .tm_mday = 2,
        .tm_mon = 3,
+       .tm_year = 120,
     };
 
-  now_time = timegm(&now_tm);
+  now_time = mktime(&now_tm);
 
   fam_get_next_timer_event(&tevt, &now_time);;
   TEST_ASSERT_EQUAL(t2m(23,45), tevt.next_event);
@@ -204,6 +210,7 @@ static void test_timer_minutes() {
      .tm_wday = 1,
      .tm_mday = 2,
      .tm_mon = 3,
+     .tm_year = 120,
   };
 
   minutes_t now = t2m(tm.tm_hour, tm.tm_min);

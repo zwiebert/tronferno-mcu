@@ -153,12 +153,13 @@ void
 rtc_setup() {
 
 #ifdef POSIX_TIME
-  setenv("TZ", C.geo_tz, 1);
+  char buf[64];
+  setenv("TZ", config_read_tz(buf, sizeof buf), 1);
   tzset();
 
 #else
 
-  set_zone(ONE_HOUR * C.astro.geo_timezone); //* C.timezone);
+  set_zone(ONE_HOUR * config_read_timezone()); //* C.timezone);
 
   switch (C.geo_dST) {
 

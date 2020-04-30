@@ -1,57 +1,19 @@
-#include "config.h"
-#include "config_defaults.h"
+#include "app_config/proj_app_cfg.h"
+#include "config/config.h"
+#include "config/config_defaults.h"
 #include "app/fernotron.h"
 #include "misc/int_types.h"
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-const bool always_true = true;
-const bool always_false;
-
-config C = {
-  .fer_centralUnitID = MY_FER_CENTRAL_UNIT_ID,
-  .mcu_serialBaud = MY_MCU_UART_BAUD_RATE,
-  .astro = { .geo_longitude = MY_GEO_LONGITUDE, .geo_latitude = MY_GEO_LATITUDE, .geo_timezone = MY_GEO_TIMEZONE, .astroCorrection = acAverage, },
-  0, // app_rtcAdjust
-  recvTick, // recv
-  transmTick,// transm
-  rtcAvrTime,//rtc
-  vrbNone,  //verboseOutput
-  .fer_usedMembers = MY_FER_GM_USE,
-#ifdef USE_WLAN
-    .wifi = { .SSID = MY_WIFI_SSID, .password = MY_WIFI_PASSWORD, },
-#endif
-  .app_configPassword = MY_APP_CONFIG_PASSWORD,
-  .app_expertPassword = MY_APP_EXPERT_PASSWORD,
-#ifdef ACCESS_GPIO
-  .gpio =  { 0, },
-#endif
-#ifdef POSIX_TIME
-  .geo_tz = MY_GEO_TZ,
-#endif
-#ifdef USE_MQTT
-    .mqtt = { .url = MY_MQTT_URL, .user = MY_MQTT_USER, .password = MY_MQTT_PASSWORD, .client_id = MY_MQTT_CLIENT_ID, .enable = MY_MQTT_ENABLE, },
-#endif
-#ifdef USE_HTTP
-    .http = { .user = MY_HTTP_USER, .password = MY_HTTP_PASSWORD, .enable = MY_HTTP_ENABLE, },
-#endif
-#ifdef USE_NTP
-  .ntp = { .server = MY_NTP_SERVER },
-#endif
-#ifdef USE_NETWORK
-  .network = MY_NETWORK_CONNECTION,
-#endif
-#ifdef USE_LAN
-    .lan = { .phy = MY_LAN_PHY, .pwr_gpio = MY_LAN_PWR_GPIO, },
-#endif
-
-};
+config C;
 
 #ifdef POSIX_TIME
-static double tz2offset(const char *tz) {
+double tz2offset(const char *tz) {
   double offset = 0.0;
 
-  for (const char *p=tz; *p; ++p) {
+  for (const char *p = tz; *p; ++p) {
     if (isalpha(*p))
       continue;
     offset = strtod(p, 0) * -1;
@@ -60,41 +22,30 @@ static double tz2offset(const char *tz) {
   return 0;
 }
 
-void cfg_tz2timezone(void) {
-  C.astro.geo_timezone = tz2offset(C.geo_tz);
+#endif
+#ifdef POSIX_TIME
+const char* config_read_tz(char *d, unsigned d_size) {
+  return config_read_item_s(CB_TZ, d, d_size, MY_GEO_TZ);
+}
+#endif
+#ifdef MDR_TIME
+float config_read_timezone() {
+  return config_read_item_f(CB_TIZO, MY_GEO_TIMEZONE);
+}
+
+enum dst config_read_dst() {
+  return config_read_item_i8(CB_DST, MY_GEO_DST);
+}
+#endif
+#ifdef USE_NETWORK
+enum nwConnection config_read_network_connection() {
+  return config_read_item_i8(CB_NETWORK_CONNECTION, MY_NETWORK_CONNECTION);
 }
 #endif
 
-
-void read_config(u32 mask) {
-#ifdef USE_CONFIG_KVS
-  config_read_kvs(mask);
-#else
-  mcu_read_config(mask);
+#ifndef MCU_ESP32
+uint32_t config_read_baud() {
+  return config_read_item_u32(CB_BAUD, MY_MCU_UART_BAUD_RATE);
+}
 #endif
-}
 
-void save_config(u32 mask) {
-#ifdef USE_CONFIG_KVS
-  config_save_kvs(mask);
-#else
-  mcu_save_config(mask);
-#endif
-}
-
-
-void save_config_item(enum configItem item) {
-  save_config(1UL << item);
-}
-
-void read_config_item(enum configItem item) {
-  read_config(1UL << item);
-}
-
-void save_config_all() {
-  save_config(CM_ALL);
-}
-
-void read_config_all() {
-  read_config(CM_ALL);
-}

@@ -15,6 +15,7 @@
 #include "cli_app/cli_fer.h"
 #include "cli_app/cli_imp.h" // FIXME?
 #include "config/config.h"
+#include "fernotron/astro.h"
 #include "fernotron_alias/pairings.h"
 #include "fernotron_auto/fau_tdata_store.h"
 #include "fernotron_auto/fau_tminutes.h"
@@ -34,14 +35,18 @@
 
 #define D(x)
 
-
+bool so_output_message2(so_msg_t mt, const void *arg);
 
 void  so_output_message(so_msg_t mt, void *arg) {
   static u16 pras_msgid, cuas_msgid;
   char buf[64];
   int i;
 
+  if (so_output_message2(mt, arg))
+    return;
+
   switch (mt) {
+
   case SO_FW_START_MSG_PRINT:
     so_print_startup_info();
     break;
@@ -122,7 +127,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
 
   case SO_CFG_BAUD:
 #ifndef MCU_ESP32
-    so_out_x_reply_entry_l(mt, C.mcu_serialBaud);
+    so_out_x_reply_entry_l(mt, config_read_baud());
 #endif
     break;
   case SO_CFG_RTC:
@@ -136,129 +141,110 @@ void  so_output_message(so_msg_t mt, void *arg) {
 
   case SO_CFG_NETWORK:
 #ifdef USE_NETWORK
-    so_out_x_reply_entry_s(mt, cfg_args_network[C.network]);
+    so_out_x_reply_entry_s(mt, cfg_args_network[config_read_network_connection()]);
 #endif
     break;
-
-#ifdef USE_LAN
-  case SO_CFG_LAN_PHY:
-    so_out_x_reply_entry_s(mt, cfg_args_lanPhy[C.lan.phy]);
-    break;
-  case SO_CFG_LAN_PWR_GPIO:
-    so_out_x_reply_entry_d(mt, C.lan.pwr_gpio);
-    break;
-#else
-  case SO_CFG_LAN_PHY:
-  case SO_CFG_LAN_PWR_GPIO:
-    break;
+  case SO_CFG_TZ:
+#ifdef POSIX_TIME
+    so_out_x_reply_entry_s(mt, config_read_tz(buf, sizeof buf));
 #endif
-#ifdef USE_WLAN
-  case SO_CFG_WLAN_SSID:
-    so_out_x_reply_entry_s(mt, C.wifi.SSID);
-    break;
-  case SO_CFG_WLAN_PASSWORD:
-    so_out_x_reply_entry_s(mt, *C.wifi.password ? "*" : "");
-    break;
-#endif
-#ifdef USE_NTP
-  case SO_CFG_NTP_SERVER:
-    so_out_x_reply_entry_s(mt, C.ntp.server);
-    break;
-#endif
-#ifdef USE_MQTT
-  case SO_CFG_MQTT_ENABLE:
-    so_out_x_reply_entry_d(mt, C.mqtt.enable ? 1 : 0);
-    break;
-  case SO_CFG_MQTT_URL:
-    so_out_x_reply_entry_s(mt, C.mqtt.url);
-    break;
-  case SO_CFG_MQTT_USER:
-    so_out_x_reply_entry_s(mt, C.mqtt.user);
-    break;
-  case SO_CFG_MQTT_PASSWORD:
-    so_out_x_reply_entry_s(mt, *C.mqtt.password ? "*" : "");
-    break;
-  case SO_CFG_MQTT_CLIENT_ID:
-    so_out_x_reply_entry_s(mt, C.mqtt.client_id);
-    break;
-#else
-  case SO_CFG_MQTT_ENABLE:
-  case SO_CFG_MQTT_URL:
-  case SO_CFG_MQTT_USER:
-  case SO_CFG_MQTT_PASSWORD:
-  case SO_CFG_MQTT_CLIENT_ID:
-    break;
-#endif
-
-#ifdef USE_HTTP
-  case SO_CFG_HTTP_ENABLE:
-    so_out_x_reply_entry_d(mt, C.http.enable ? 1 : 0);
-    break;
-  case SO_CFG_HTTP_USER:
-    so_out_x_reply_entry_s(mt, C.http.user);
-    break;
-  case SO_CFG_HTTP_PASSWORD:
-    so_out_x_reply_entry_s(mt, *C.http.password ? "*" : "");
-    break;
-#else
-  case SO_CFG_HTTP_ENABLE:
-  case SO_CFG_HTTP_USER:
-  case SO_CFG_HTTP_PASSWORD:
-    break;
-#endif
+  break;
 
   case SO_CFG_LONGITUDE:
-    so_out_x_reply_entry_f(mt, C.astro.geo_longitude, 5);
+    so_out_x_reply_entry_f(mt, config_read_longitude(), 5);
     break;
   case SO_CFG_LATITUDE:
-    so_out_x_reply_entry_f(mt, C.astro.geo_latitude, 5);
+    so_out_x_reply_entry_f(mt, config_read_latitude(), 5);
     break;
 
   case SO_CFG_TIMEZONE:
 #ifndef POSIX_TIME
-    so_out_x_reply_entry_f(mt, C.astro.geo_timezone, 5);
+    so_out_x_reply_entry_f(mt, config_read_timezone(), 5);
 #endif
     break;
 
-  case SO_CFG_VERBOSE:
-    so_out_x_reply_entry_d(mt, C.app_verboseOutput);
-    break;
-    case SO_CFG_TZ:
-#ifdef POSIX_TIME
-      so_out_x_reply_entry_s(mt, C.geo_tz);
-#endif
-    break;
   case SO_CFG_DST:
 #ifdef MDR_TIME
   {
-    const char *dst = (C.geo_dST == dstEU ? "eu" : (C.geo_dST == dstNone ? "0" : "1"));
+    enum dst geo_dst = config_read_dst();
+    const char *dst = (geo_dst == dstEU ? "eu" : (geo_dst == dstNone ? "0" : "1"));
     so_out_x_reply_entry_s(mt, dst);
   }
 #endif
     break;
 
   case SO_CFG_GM_USED: {
-    so_out_x_reply_entry_lx(mt, C.fer_usedMembers);
+    so_out_x_reply_entry_lx(mt,config_read_used_members());
   }
     break;
 
+  case SO_CFG_GPIO_RFOUT:
+    so_out_x_reply_entry_d(mt, config_read_rfout_gpio());
+    break;
+  case SO_CFG_GPIO_RFIN:
+    so_out_x_reply_entry_d(mt, config_read_rfin_gpio());
+    break;
+  case SO_CFG_GPIO_SETBUTTON:
+    so_out_x_reply_entry_d(mt, config_read_setbutton_gpio());
+    break;
     case SO_CFG_GPIO_PIN:
 #ifdef ACCESS_GPIO
       {
       int gpio_number = *(int *)arg;
       char key[10] = "gpio";
-      strcat(key, itoa(gpio_number, buf, 10));
+      strcpy(key+4, itoa(gpio_number, buf, 10));
       char ps[2] = "x";
       if (is_gpio_number_usable(gpio_number, true)) {
-        ps[0] = pin_state_args[C.gpio[gpio_number]];
+        enum mcu_pin_mode mps = pin_getPinMode(gpio_number);
+        ps[0] = pin_state_args[mps];
       }
       so_out_x_reply_entry_ss(key, ps);
     }
 #endif
     break;
+    case SO_CFG_GPIO_MODES:
+#ifdef ACCESS_GPIO
+  {
+    int gpio_number;
+    char key[10] = "gpio";
+    char pin_level_args[] = "mhl";
+    for (gpio_number = 0; gpio_number < CONFIG_GPIO_SIZE; ++gpio_number) {
+      strcpy(key+4, itoa(gpio_number, buf, 10));
+      char ps[3] = "x";
+      if (is_gpio_number_usable(gpio_number, true)) {
+        enum mcu_pin_mode mps = pin_getPinMode(gpio_number);
+        if (mps != PIN_DEFAULT) {
+        enum mcu_pin_level mpl = pin_getPinLevel(gpio_number);
+        ps[0] = pin_mode_args[mps];
+        ps[1] = pin_level_args[3-mpl];
+        so_out_x_reply_entry_ss(key, ps);
+        }
+      }
 
+    }
+  }
+#endif
+    break;
+    case SO_CFG_GPIO_MODES_AS_STRING:
+#ifdef ACCESS_GPIO
+  {
+    int gpio_number;
+    char val[CONFIG_GPIO_SIZE+1];
+    val[CONFIG_GPIO_SIZE] = '\0';
+    for (gpio_number = 0; gpio_number < CONFIG_GPIO_SIZE; ++gpio_number) {
+      if (is_gpio_number_usable(gpio_number, true)) {
+        enum mcu_pin_mode mps = pin_getPinMode(gpio_number);
+        val[gpio_number] = pin_mode_args[mps];
+      } else {
+        val[gpio_number] = 'x';
+      }
+    }
+    so_out_x_reply_entry_ss("gpio", val);
+  }
+#endif
+    break;
     case SO_CFG_ASTRO_CORRECTION: {
-      so_out_x_reply_entry_l(mt, C.astro.astroCorrection);
+      so_out_x_reply_entry_l(mt, config_read_astro_correction());
     }
     break;
 

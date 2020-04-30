@@ -9,8 +9,8 @@
 #include <string.h>
 #include "config/config.h"
 #include "misc/bcd.h"
-#include "cli_imp.h"
-#include "cli_app.h"
+#include "cli_app/cli_imp.h"
+#include "cli_app/cli_app.h"
 #include "userio/status_json.h"
 #include "fernotron/fsb.h"
 
@@ -50,7 +50,7 @@ bool  config_receiver(const char *val) {
   } else {
     return false;
   }
-  save_config_item(CB_RECV);
+  config_save_item_n_i8(CB_RECV, C.app_recv);
   return true;
 }
 
@@ -63,7 +63,7 @@ config_transmitter(const char *val) {
   } else {
     return false;
   }
-  save_config_item(CB_TRANSM);
+  config_save_item_n_i8(CB_TRANSM, C.app_transm);
   return true;
 }
 

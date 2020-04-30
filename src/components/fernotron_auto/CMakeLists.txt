@@ -8,7 +8,6 @@ endif()
 
 idf_component_register(SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
-    PRIV_INCLUDE_DIRS "./include/fernotron_auto" 
     REQUIRES fernotron 
     PRIV_REQUIRES app userio_app fernotron_pos storage misc debug cli_app
 )

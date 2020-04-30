@@ -9,7 +9,6 @@ endif()
 idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS "./include" 
-    PRIV_INCLUDE_DIRS "./include/fernotron" 
     REQUIRES misc 
     PRIV_REQUIRES app_config app debug key_value_store)
 
