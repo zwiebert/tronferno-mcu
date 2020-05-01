@@ -1,7 +1,7 @@
 // User configuration
 #pragma once
 
-#define APP_VERSION "0.10.4"
+#define APP_VERSION "0.10.5"
 
 #define FER_TRANSMITTER
 #define FER_RECEIVER

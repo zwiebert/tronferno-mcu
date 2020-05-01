@@ -1,6 +1,6 @@
 ### Default Pins to connect RF hardware to
 
-Pleas note: You can change any of the pins in [MCU configuration](mcu_config.md).
+Pleas note: You can change any of the pins to your liking in [MCU configuration](mcu_config.md).
 
 #### GPIO Pins ESP32 WLAN-only
 

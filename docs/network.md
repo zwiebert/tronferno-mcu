@@ -1,5 +1,6 @@
 ### WLAN Access-Point
-* active after initial flashing the firmware
+* Purpose: to do the first time basic configuration by web browser 
+* active after initial flashing the firmware until you reconfigure "network" option
 * SSID: tronferno
 * Password: tronferno
 * IP-address: 192.168.4.1

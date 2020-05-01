@@ -24,6 +24,9 @@
 
      * You can prepend all commands with the word "cli". This gives access to all
     CLI commands. Only the commands send, timer, config can be used without the cli prefix.
+    
+    
+ * tfmcu/gpo/+/level - send 0 or 1 to change level of output  pin
 
 
 #### MQTT Topics you can subscribe to:
@@ -33,3 +36,5 @@
 * tfmcu/timer_out - Timer/automatic data  in JSON format
 
 * tfmcu/+/pct_out - current shutter position in percent (+ stands for shutter ID)
+
+* tfmc/gpi/+/level - net notified for change of level (H,L) on input pin 
