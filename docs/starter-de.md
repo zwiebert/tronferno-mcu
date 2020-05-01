@@ -14,7 +14,8 @@ Ein ESP32 Board wird benötigt. Die Firmware kann mittels Linux- oder Windows-PC
 ##### Windows-PC
 1. Download und Entpacken des Firmware-Binary-Archivs auf den PC (es wird keine weitere Software benötigt)
 2. ESP32 Board per USB mit dem PC verbinden
-3. Flashen und Konfigurieren mit dem Programm menutool.cmd (Anleitung im dazugehörigen [README.md](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md))
+3. Windows sollte einen COM-Port für den ESP32 anlegen. Falls nicht, muss erst noch der passende [USB-Treiber](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/establish-serial-connection.html) installiert werden 
+4. Flashen und Konfigurieren mit dem Programm menutool.cmd (Anleitung im dazugehörigen [README.md](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md))
         
 ##### FHEM-Server
 1. python und pyserial müssen auf dem FHEM-Server installiert sein
