@@ -28,6 +28,8 @@
 #define USE_OTA
 #define USE_TXTIO_MUTEX
 
+//#define USE_PCT_ARRAY
+
 #define USE_FREERTOS
 
 #include "callbacks.h"

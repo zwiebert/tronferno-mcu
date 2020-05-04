@@ -239,10 +239,10 @@ class AppState {
         usedMembers_updHtml_fromHtml();
       }
     }
-
-    if ("position" in obj) {
-
-      this.pct = obj.position.p;
+ 
+    if ("pct" in obj) {
+      let key = this.g.toString() + this.m.toString();
+      this.pct = obj.pct[key];
     }
 
     if ("pair" in obj) {

@@ -362,8 +362,8 @@ break;
   case SO_SHPREF_PRINT_GMT: {
     so_arg_gmt_t *a = arg;
     char buf[]="shp00";
-    buf[3] = '0' + a->g;
-    buf[4] = '0' + a->m;
+    buf[3] += a->g;
+    buf[4] += a->m;
     so_out_x_open(buf);
     so_out_x_reply_entry_sd("mvut", a->st->move_up_tsecs);
     so_out_x_reply_entry_sd("mvdt", a->st->move_down_tsecs);
@@ -379,10 +379,11 @@ break;
     io_puts(" m="), io_putd(a->m);
     io_puts(" p="), io_putd(a->p), io_puts(";\n");
 
-    so_out_x_open("position");
-    so_out_x_reply_entry_sd("g", a->g);
-    so_out_x_reply_entry_sd("m", a->m);
-    so_out_x_reply_entry_sd("p", a->p);
+    so_out_x_open("pct");
+    char buf[] = "00";
+    buf[0] += a[0].g;
+    buf[1] += a[0].m;
+    so_out_x_reply_entry_sd(buf, a[0].p);
     so_out_x_close();
 
 
@@ -392,18 +393,71 @@ break;
   }
     break;
 
+  case SO_POS_PRINT_GMPA: {
+    so_arg_gmp_t *a = arg;
+
+
+
+    for (i = 0; a[i].g <= 7; ++i) {
+      io_puts("A:position:");
+      io_puts(" g="), io_putd(a[i].g);
+      io_puts(" m="), io_putd(a[i].m);
+      io_puts(" p="), io_putd(a[i].p), io_puts(";\n");
+    }
+
+    so_out_x_open("pct");
+    for (i = 0; a[i].g <= 7; ++i) {
+      char buf[]="00";
+      buf[0] += a[i].g;
+      buf[1] += a[i].m;
+      so_out_x_reply_entry_sd(buf, a[i].p);
+    }
+    so_out_x_close();
+
+#ifdef USE_MQTT
+    for (i = 0; a[i].g <= 7; ++i) {
+      io_mqtt_publish_gmp(&a[i]);
+    }
+#endif
+  }
+    break;
+
   case SO_POS_PRINT_MMP: {
     so_arg_mmp_t *a = arg;
     io_puts("U:position:"), io_puts(" p="), io_putd(a->p), io_puts(" mm="), so_print_gmbitmask(a->mm), io_puts(";\n");
+#ifdef USE_PCT_ARRAY
+    char buf[] = "pct255";
+    itoa(a->p, buf+3, 10);
+    sj_add_array(buf);
+    u8 g, m;
+    for (g = 1, m = ~0; gm_getNext(a->mm, &g, &m);) {
+      sj_add_value_d(g * 10 + m);
+    }
+    sj_close_array();
+#else
+    u8 g, m;
+    for (g = 1, m = ~0; gm_getNext(a->mm, &g, &m);) {
+      char buf[] = "00";
+      buf[0] += g;
+      buf[1] += m;
+      sj_add_key_value_pair_d(buf, a->p);
+    }
+#endif
   }
     break;
 
   case SO_POS_begin:
     io_puts("U:position:start;\n");
+#ifndef USE_PCT_ARRAY
+    sj_add_object("pct");
+#endif
     break;
 
   case SO_POS_end:
     io_puts("U:position:end;\n");
+#ifndef USE_PCT_ARRAY
+    sj_close_object();
+#endif
     break;
 
   case SO_PAIR_begin:

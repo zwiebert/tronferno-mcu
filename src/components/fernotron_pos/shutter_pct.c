@@ -98,7 +98,6 @@ set_state(u32 a, int g, int m, int position) {
 
 int 
 statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
-  int position = pct;
   precond(0 < g && g <= 7 && 0 < m && m <= 7);
   int result = -1;
 
@@ -121,21 +120,17 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
 #endif
 #endif
 
-  if (position >= 0) {
-    result = set_state(a, g, m, position);
-  }
+  result = set_state(a, g, m, pct);
+
 
 #ifndef TEST_HOST
-  if (0 <= position && position <= 100) {
+  if (pct <= 100) {
     if (a == 0 || a == cfg_getCuId()) {
 
       if (mutex_cliTake()) {
         if (sj_open_root_object("tfmcu")) {
-          so_arg_gmp_t gmp = { g, m, position };
-          so_output_message(SO_POS_PRINT_GMP, &gmp);
-          gmp.m = 0;
-          gmp.p = pm_getPct(g, 0);
-          so_output_message(SO_POS_PRINT_GMP, &gmp);
+          so_arg_gmp_t gmp[3] = { { g, m, pct }, { g, 0, pm_getPct(g, 0) }, { ~0, ~0, ~0 } };
+          so_output_message(SO_POS_PRINT_GMPA, gmp);
           sj_close_root_object();
           cli_print_json(sj_get_json());
         }
@@ -144,7 +139,6 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
     }
   }
 #endif
-
 
     return result;
 }
@@ -162,14 +156,45 @@ statPos_setPcts(gm_bitmask_t *mm, u8 p) {
   }
   return 0;
 }
+#if 0
+int
+statPos_printAllPcts() {
+  u8 g, m, g2, m2;
+  gm_bitmask_t msk = { 0, };
 
+  so_output_message(SO_POS_begin, 0);
+  for (g = 1, m = ~0; gm_getNext(&C.fer_usedMemberMask, &g, &m);) {
+    if (pm_isGroupUnused(g))
+      continue;
+    if (pm_isMemberUnused(g, m))
+      continue; //
+    if (gm_GetBit(&msk, g, m))
+      continue; // was already processed by a previous pass
+
+    u8 pct = pm_getPct(g, m);
+    gm_bitmask_t pos_msk = { 0, };
+    for (g2 = g; g2 < 8; ++g2) {
+      for (m2 = 0; m2 < 8; ++m2) {
+        if (pm_getPct(g2,m2) == pct) {
+          gm_SetBit(&pos_msk, g2, m2); // mark as being equal to pct
+          gm_SetBit(&msk, g2, m2); // mark as already processed
+        }
+      }
+    }
+    so_arg_mmp_t mmp = { &pos_msk, pct };
+    so_output_message(SO_POS_PRINT_MMP, &mmp);
+  }
+  so_output_message(SO_POS_end, 0);
+  return 0;
+}
+#else
 int 
 statPos_printAllPcts() {
   u8 g, m, g2, m2;
   gm_bitmask_t msk = {0,};
 
   so_output_message(SO_POS_begin, 0);
-  for (g=0; g < 8; ++g) {
+  for (g=1; g < 8; ++g) {
     if (pm_isGroupUnused(g))
       continue;
     for (m=0; m < 8; ++m) {
@@ -186,6 +211,8 @@ statPos_printAllPcts() {
       for (g2=g; g2 < 8; ++g2) {
         for (m2=0; m2 < 8; ++m2) {
           if (pm_getPct(g2,m2) == pct) {
+            if (m2 != 0 && cfg_isMemberUnused(g2,m2))
+              continue;
             gm_SetBit(&pos_msk, g2, m2); // mark as being equal to pct
             gm_SetBit(&msk, g2, m2); // mark as already processed
           }
@@ -198,7 +225,7 @@ statPos_printAllPcts() {
   so_output_message(SO_POS_end, 0);
   return 0;
 }
-
+#endif
 static void ferPos_autoSavePositions_iv(int interval_ts) {
   DT(ets_printf("%s: interval_tx=%d\n", __func__, interval_ts));
   static unsigned next_save_pos;
