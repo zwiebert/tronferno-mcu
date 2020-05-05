@@ -119,6 +119,7 @@ void ntpApp_setup(void) {
 
 void main_setup_ip_dependent() {
   static int once;
+  so_output_message(SO_INET_PRINT_ADDRESS, 0);
   if (!once) {
     once = 1;
 #ifdef USE_NTP

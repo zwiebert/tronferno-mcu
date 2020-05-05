@@ -14,6 +14,7 @@
 #include <gpio.h>
 #include "gpio/pin.h"
 
+#include "userio_app/status_output.h"
 #include "txtio/inout.h"
 #include "driver/uart.h"
 #include "fernotron/callbacks.h"
@@ -34,6 +35,7 @@
 static os_event_t user_procTaskQueue[user_procTaskQueueLen];
 
 void main_setup_ip_dependent() {
+  so_output_message(SO_INET_PRINT_ADDRESS, 0);
 #ifdef USE_NTP
   config_setup_ntpClient();
 #endif
