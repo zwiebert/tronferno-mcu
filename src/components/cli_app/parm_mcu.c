@@ -37,6 +37,7 @@ const char pin_state_args[] = "?01t";
 
 static void kvs_print_keys(const char *name_space);
 
+//TODO: add IP address query option
 int process_parmMcu(clpar p[], int len) {
   int arg_idx;
 

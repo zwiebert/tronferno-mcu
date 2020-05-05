@@ -42,7 +42,6 @@ void lfa_mcuRestart(void) {
 void appEsp32_main(void) {
 
   mcu_init();
-
   tmr_loopPeriodic_start();
   while (1) {
     loop();
