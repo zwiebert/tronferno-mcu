@@ -7,6 +7,7 @@ const FETCH_ALIASES_START_PAIRING = 32;
 const FETCH_ALIASES_START_UNPAIRING = 64;
 const FETCH_SHUTTER_PREFS = 128;
 const FETCH_GMU = 256;
+const FETCH_GIT_TAGS = 512;
 
 const UP = 0;
 const DOWN = 1;
@@ -374,8 +375,10 @@ class AppState {
 
     let url = '/cmd.json';
     http_postRequest(url, tfmcu);
+    
+    if (mask & FETCH_GIT_TAGS)
+      gitTags_fetch();
   }
-
 }
 
 let ast;
@@ -974,7 +977,51 @@ function req_cuasStart() {
   cuas_Interval = window.setInterval(req_cuasStatus, 1000);
 }
 
+function gitTags_genHtml(json) {
+  let html = '<button id="gitTag_netota" type="button" onClick="gitTags_netota();">Do flash selected firmware version: </button>'+
+  '<select id="gitTags_select">'
+    json.forEach(item => {
+      const name = item.name;
+      html += '<option value="'+name+'">'+name+'</option>';
+    });
+  
+  html += '</select>';
+  document.getElementById('gitTags_div').innerHTML = html;
+}
+function gitTags_handleResponse(json) {
+  console.log(json[0]);
+  gitTags_genHtml(json);
+}
+function gitTags_fetch() {
+  const tag_url = "https://api.github.com/repos/zwiebert/tronferno-mcu-bin/tags";
+  const fetch_data = {
+      method: "GET",
+      cache: "no-cache",
+      headers: {
+      },
+      referrer: "no-referrer",
+      //body: JSON.stringify(data),
+    };
+    return fetch(tag_url, fetch_data)
+      .then(response => {
+        if(!response.ok) {
+          console.log("error");
+          throw new Error("network repsonse failed");
+        }
+        return response.json();
+      })
 
+      .then((json) => gitTags_handleResponse(json))
+
+      .catch((error) => {
+        console.log("error: http_postRequest(): ", error);
+      });
+ 
+}
+function gitTags_netota() {
+  const git_tag = document.getElementById('gitTags_select').value;
+  netFirmwareOTA("tag:"+git_tag);
+}
 
 function mcuConfig_fromHtml_toMcu() {
   const cfg = ast.tfmcu_config;
@@ -1136,7 +1183,7 @@ const tabs = [
   { 'text':'Automatic', 'div_id':['senddiv', 'autodiv'], fetch_gm:FETCH_AUTO|FETCH_POS },
   { 'text':'Config', 'div_id':['configdiv'], fetch:FETCH_CONFIG },
   { 'text':'Positions', 'div_id':['senddiv', 'aliasdiv', 'shprefdiv'], fetch:FETCH_ALIASES, fetch_gm:FETCH_POS|FETCH_SHUTTER_PREFS },
-  { 'text':'Firmware', 'div_id':['id-fwDiv'], fetch_init:FETCH_VERSION},
+  { 'text':'Firmware', 'div_id':['id-fwDiv'], fetch_init:(FETCH_VERSION|FETCH_GIT_TAGS)},
   { 'text':'Tests', 'div_id':['testsdiv'], },//dev-distro-delete-line//
 
 ];

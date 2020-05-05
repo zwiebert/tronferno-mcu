@@ -4,7 +4,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
-
+#include "debug/debug.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
@@ -73,8 +73,9 @@ void simple_ota_example_task(void * pvParameter) {
 }
 
 bool ota_doUpdate(const char *firmware_url) {
-  Firmware_url = malloc(strlen(firmware_url)+1);
-  strcpy (Firmware_url, firmware_url);
+  Firmware_url = malloc(strlen(firmware_url) + 1);
+  strcpy(Firmware_url, firmware_url);
+  io_printf_v(vrb3, "OTA: url=<%s>\n", Firmware_url);
   xTaskCreate(&simple_ota_example_task, "ota_example_task", 16384, NULL, 5, NULL);
   return false;
 }

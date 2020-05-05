@@ -177,6 +177,14 @@ int process_parmMcu(clpar p[], int len) {
       } else if (strcmp(val, "github-beta") == 0) {
         so_output_message(SO_MCU_OTA, OTA_FWURL_BETA);
         ota_doUpdate(OTA_FWURL_BETA);
+      } else if (0 == strncmp(val, OTA_FWURL_TAG_COOKIE, strlen(OTA_FWURL_TAG_COOKIE))) {
+        const char *tag = val + strlen(OTA_FWURL_TAG_COOKIE);
+        int url_len = strlen(OTA_FWURL_TAG_HEAD) + strlen(OTA_FWURL_TAG_TAIL) + strlen(tag);
+        char *url;
+        if ((url = alloca(url_len + 1))) {
+          strcat(strcat(strcpy(url, OTA_FWURL_TAG_HEAD), tag), OTA_FWURL_TAG_TAIL);
+          ota_doUpdate(url);
+        }
       } else {
 #ifdef DISTRIBUTION
         ets_printf("forbidden: ota update from given URL\n");
