@@ -46,7 +46,9 @@ typedef enum {
 
   SO_POS_begin, SO_POS_PRINT_GMP, SO_POS_PRINT_GMPA, SO_POS_PRINT, SO_POS_PRINT_MMP, SO_POS_end,
 
-  SO_SHPREF_begin, SO_SHPREF_PRINT_GMT, SO_SHPREF_end,
+  SO_SHPREF_OBJ_begin, SO_SHPREF_OBJ_end, SO_SHPREF_OBJ_GM_begin, SO_SHPREF_OBJ_GM_end,
+
+  SO_PRINT_KVD, SO_PRINT_KVS,
 
   SO_PAIR_begin, SO_PAIR_ALL_begin, SO_PAIR_PRINT_AMM, SO_PAIR_PRINT_KMM, SO_PAIR_PRINT_KMM_SINGLE, SO_PAIR_ALL_end, SO_PAIR_end,
 
@@ -59,6 +61,15 @@ typedef enum {
 
 
 } so_msg_t;
+
+typedef struct {
+  const char *key, *val;
+} so_arg_kvs_t;
+
+typedef struct {
+  const char *key;
+  int val;
+} so_arg_kvd_t;
 
 typedef struct {
   uint8_t g, m;

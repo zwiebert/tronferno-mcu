@@ -352,25 +352,38 @@ void  so_output_message(so_msg_t mt, void *arg) {
 break;
     /////////////////////////////////////////////////////////////////////////////////
 
-  case SO_SHPREF_begin:
-    so_out_x_open("shpref");
+  case SO_SHPREF_OBJ_begin:
+    sj_add_object("shs");
     break;
-  case SO_SHPREF_end:
-    so_out_x_close();
+  case SO_SHPREF_OBJ_end:
+    sj_close_object();
     break;
 
-  case SO_SHPREF_PRINT_GMT: {
-    so_arg_gmt_t *a = arg;
-    char buf[]="shp00";
+  case SO_SHPREF_OBJ_GM_begin: {
+    so_arg_gm_t *a = arg;
+    char buf[] = "shs00";
     buf[3] += a->g;
     buf[4] += a->m;
     so_out_x_open(buf);
-    so_out_x_reply_entry_sd("mvut", a->st->move_up_tsecs);
-    so_out_x_reply_entry_sd("mvdt", a->st->move_down_tsecs);
-    so_out_x_reply_entry_sd("mvspdt", a->st->move_sundown_tsecs);
+  }
+    break;
+  case SO_SHPREF_OBJ_GM_end:
     so_out_x_close();
+    break;
+
+
+  case SO_PRINT_KVD: {
+    so_arg_kvd_t *a = arg;
+    so_out_x_reply_entry_sd(a->key, a->val);
   }
   break;
+
+  case SO_PRINT_KVS: {
+    so_arg_kvs_t *a = arg;
+    so_out_x_reply_entry_ss(a->key, a->val);
+  }
+  break;
+
 
   case SO_POS_PRINT_GMP: {
     so_arg_gmp_t *a = arg;

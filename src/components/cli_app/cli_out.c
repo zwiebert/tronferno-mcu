@@ -6,8 +6,8 @@
 #include "cli_app/cli_app.h"
 #include "misc/int_types.h"
 
-const char *Obj_tag="";
-#define SET_OBJ_TAG(tag) Obj_tag=(tag)
+char Obj_tag[16] = "";
+#define SET_OBJ_TAG(tag) strncpy(Obj_tag, (tag), sizeof Obj_tag)
 #define OBJ_TAG (Obj_tag+0)
 #define OBJ_TAG_TIMER "timer"
 #define OBJ_TAG_CONFIG "config"
