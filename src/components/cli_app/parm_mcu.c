@@ -207,12 +207,12 @@ int process_parmMcu(clpar p[], int len) {
   return 0;
 }
 
-static kvs_cbrT kvs_print_keys_cb(const char *key, kvs_type_t type) {
+static kvs_cbrT kvs_print_keys_cb(const char *key, kvs_type_t type, void *args) {
   io_printf("key: %s, type: %d\n", key, (int)type);
   return kvsCb_match;
 }
 
 static void kvs_print_keys(const char *name_space) {
-  kvs_foreach(name_space, KVS_TYPE_ANY, 0, kvs_print_keys_cb);
+  kvs_foreach(name_space, KVS_TYPE_ANY, 0, kvs_print_keys_cb, 0);
 }
 

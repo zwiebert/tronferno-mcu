@@ -144,8 +144,9 @@ void mcu_init() {
 #ifdef USE_EG
   loop_eventBits_setup();
 #endif
-  config_setup_txtio();
   kvs_setup();
+  config_setup_txtio();
+
   config_setup_global();
 
   io_puts("\r\n\r\n");
