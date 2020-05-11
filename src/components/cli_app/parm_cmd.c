@@ -116,7 +116,7 @@ process_parmSend(clpar p[], int len) {
       else
         sep_disable();
     } else if (has_pct) {
-      commands_moveShutterToPct(addr, g, m, pct, repeats);
+      cli_replyResult(commands_moveShutterToPct(addr, g, m, pct, repeats));
     } else if (has_cmd) {
       cli_replyResult(commands_sendShutterCommand(addr, g, m, cmd, repeats));
     } else {

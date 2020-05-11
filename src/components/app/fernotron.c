@@ -61,7 +61,9 @@ static void plainMessageReceived_cb(const fsbT *fsb) {
 }
 
 static void beforeFirstSend_cb(const fsbT *fsb) {
- simPos_registerMovingShutter(FSB_GET_DEVID(fsb), FSB_GET_GRP(fsb), FSB_GET_MEMB(fsb) == 0 ? 0 : FSB_GET_MEMB(fsb)-7, FSB_GET_CMD(fsb));
+  if (FSB_GET_DEVID(fsb) == C.fer_centralUnitID) {
+    simPos_registerMovingShutter(FSB_GET_DEVID(fsb), FSB_GET_GRP(fsb), FSB_GET_MEMB(fsb) == 0 ? 0 : FSB_GET_MEMB(fsb) - 7, FSB_GET_CMD(fsb));
+  }
 }
 
 static void beforeAnySend_cb(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *txmsg) {
