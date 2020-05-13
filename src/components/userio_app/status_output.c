@@ -41,7 +41,7 @@
 bool so_output_message2(so_msg_t mt, const void *arg);
 
 void so_broadcast_message(so_msg_t mt, void *arg) {
-  so_output_message_tgt(mt, arg, (SO_TGT_CLI|SO_TGT_FLAG_JSON|SO_TGT_FLAG_TXT));
+  so_output_message_tgt(mt, arg, (SO_TGT_MQTT|SO_TGT_CLI|SO_TGT_FLAG_JSON|SO_TGT_FLAG_TXT));
 }
 
 void so_output_message_tgt(so_msg_t mt, void *arg, so_target_bits tgt) {
