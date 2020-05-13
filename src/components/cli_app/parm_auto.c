@@ -220,7 +220,9 @@ int process_parmTimer(clpar p[], int len) {
 
   if (rs) {
     so_arg_gm_t gm = { group, mn };
+    so_output_message(SO_TIMER_PRINT_begin, 0);
     so_output_message(SO_TIMER_PRINT, &gm);
+    so_output_message(SO_TIMER_PRINT_end, 0);
   }
 
   return 0;

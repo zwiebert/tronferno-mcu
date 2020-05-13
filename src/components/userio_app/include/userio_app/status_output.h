@@ -42,7 +42,7 @@ typedef enum {
   SO_CFGPASSWD_OK, SO_CFGPASSWD_WRONG, SO_CFGPASSWD_MISSING,
 
   SO_TIMER_EVENT_PRINT, SO_ASTRO_MINUTES_PRINT,
-  SO_TIMER_PRINT,
+  SO_TIMER_PRINT, SO_TIMER_PRINT_begin, SO_TIMER_PRINT_end,
 
   SO_POS_begin, SO_POS_PRINT_GMP, SO_POS_PRINT_GMPA, SO_POS_PRINT, SO_POS_PRINT_MMP, SO_POS_end,
 
@@ -100,7 +100,10 @@ typedef struct {
   gm_bitmask_t *mm;
 } so_arg_kmm_t;
 
+void so_broadcast_message(so_msg_t mt, void *arg);
 void so_output_message(so_msg_t mt, void *arg);
+void so_output_message_tgt(so_msg_t mt, void *arg, so_target_bits tgt);
+
 so_msg_t so_parse_config_key(const char *k);
 
 

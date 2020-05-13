@@ -129,6 +129,5 @@ const struct parm_handlers parm_handlers = {
 };
 
 
-bool cli_isJson;
 
 

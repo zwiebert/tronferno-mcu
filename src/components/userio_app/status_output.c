@@ -35,7 +35,23 @@
 
 #define D(x)
 
+
+
+
 bool so_output_message2(so_msg_t mt, const void *arg);
+
+void so_broadcast_message(so_msg_t mt, void *arg) {
+  so_output_message_tgt(mt, arg, (SO_TGT_CLI|SO_TGT_FLAG_JSON|SO_TGT_FLAG_TXT));
+}
+
+void so_output_message_tgt(so_msg_t mt, void *arg, so_target_bits tgt) {
+  so_target_bits old_tgt = so_target;
+  so_target = tgt;
+
+  so_output_message(mt, arg);
+
+  so_target = old_tgt;
+}
 
 void  so_output_message(so_msg_t mt, void *arg) {
   static u16 pras_msgid, cuas_msgid;
@@ -334,6 +350,13 @@ void  so_output_message(so_msg_t mt, void *arg) {
   }
     break;
 
+  case SO_TIMER_PRINT_begin:
+    // if (so_jco) sj_add_object("auto"); // XXX-2020-05-13: disabled for now because would crash FHEM server with previous 00_TronfernoMCU.pm version
+    break;
+  case SO_TIMER_PRINT_end:
+    // if (so_jco) sj_close_object(); // XXX: disabled
+    break;
+
   case SO_TIMER_PRINT: {
     so_arg_gm_t *a = arg;
     so_print_timer(a->g, a->m);
@@ -387,21 +410,26 @@ break;
 
   case SO_POS_PRINT_GMP: {
     so_arg_gmp_t *a = arg;
-    io_puts("A:position:");
-    io_puts(" g="), io_putd(a->g);
-    io_puts(" m="), io_putd(a->m);
-    io_puts(" p="), io_putd(a->p), io_puts(";\n");
+    if (so_cco) {
+      io_puts("A:position:");
+      io_puts(" g="), io_putd(a->g);
+      io_puts(" m="), io_putd(a->m);
+      io_puts(" p="), io_putd(a->p), io_puts(";\n");
+    }
 
-    so_out_x_open("pct");
-    char buf[] = "00";
-    buf[0] += a[0].g;
-    buf[1] += a[0].m;
-    so_out_x_reply_entry_sd(buf, a[0].p);
-    so_out_x_close();
+    if (so_jco) {
+      sj_add_object("pct");
+      char buf[] = "00";
+      buf[0] += a[0].g;
+      buf[1] += a[0].m;
+      sj_add_key_value_pair_d(buf, a[0].p);
+      sj_close_object();
+    }
 
 
 #ifdef USE_MQTT
-    io_mqtt_publish_gmp(a);
+    if (so_mqt)
+      io_mqtt_publish_gmp(a);
 #endif
   }
     break;
@@ -410,34 +438,39 @@ break;
     so_arg_gmp_t *a = arg;
 
 
+    if (so_cco)
+      for (i = 0; a[i].g <= 7; ++i) {
+        io_puts("A:position:");
+        io_puts(" g="), io_putd(a[i].g);
+        io_puts(" m="), io_putd(a[i].m);
+        io_puts(" p="), io_putd(a[i].p), io_puts(";\n");
+      }
 
-    for (i = 0; a[i].g <= 7; ++i) {
-      io_puts("A:position:");
-      io_puts(" g="), io_putd(a[i].g);
-      io_puts(" m="), io_putd(a[i].m);
-      io_puts(" p="), io_putd(a[i].p), io_puts(";\n");
+    if (so_jco) {
+      sj_add_object("pct");
+      for (i = 0; a[i].g <= 7; ++i) {
+        char buf[] = "00";
+        buf[0] += a[i].g;
+        buf[1] += a[i].m;
+        sj_add_key_value_pair_d(buf, a[i].p);
+      }
+      sj_close_object();
     }
-
-    so_out_x_open("pct");
-    for (i = 0; a[i].g <= 7; ++i) {
-      char buf[]="00";
-      buf[0] += a[i].g;
-      buf[1] += a[i].m;
-      so_out_x_reply_entry_sd(buf, a[i].p);
-    }
-    so_out_x_close();
 
 #ifdef USE_MQTT
-    for (i = 0; a[i].g <= 7; ++i) {
-      io_mqtt_publish_gmp(&a[i]);
-    }
+    if (so_mqt)
+      for (i = 0; a[i].g <= 7; ++i) {
+        io_mqtt_publish_gmp(&a[i]);
+      }
 #endif
   }
     break;
 
   case SO_POS_PRINT_MMP: {
     so_arg_mmp_t *a = arg;
-    io_puts("U:position:"), io_puts(" p="), io_putd(a->p), io_puts(" mm="), so_print_gmbitmask(a->mm), io_puts(";\n");
+    if (so_cco)
+      io_puts("U:position:"), io_puts(" p="), io_putd(a->p), io_puts(" mm="), so_print_gmbitmask(a->mm), io_puts(";\n");
+    if (so_jco) {
 #ifdef USE_PCT_ARRAY
     char buf[] = "pct255";
     itoa(a->p, buf+3, 10);
@@ -448,28 +481,33 @@ break;
     }
     sj_close_array();
 #else
-    u8 g, m;
-    for (g = 1, m = ~0; gm_getNext(a->mm, &g, &m);) {
-      char buf[] = "00";
-      buf[0] += g;
-      buf[1] += m;
-      sj_add_key_value_pair_d(buf, a->p);
-    }
+      u8 g, m;
+      for (g = 1, m = ~0; gm_getNext(a->mm, &g, &m);) {
+        char buf[] = "00";
+        buf[0] += g;
+        buf[1] += m;
+        sj_add_key_value_pair_d(buf, a->p);
+      }
 #endif
+    }
   }
     break;
 
   case SO_POS_begin:
-    io_puts("U:position:start;\n");
+    if (so_cco)
+      io_puts("U:position:start;\n");
 #ifndef USE_PCT_ARRAY
-    sj_add_object("pct");
+    if (so_jco)
+      sj_add_object("pct");
 #endif
     break;
 
   case SO_POS_end:
-    io_puts("U:position:end;\n");
+    if (so_cco)
+      io_puts("U:position:end;\n");
 #ifndef USE_PCT_ARRAY
-    sj_close_object();
+    if (so_jco)
+      sj_close_object();
 #endif
     break;
 

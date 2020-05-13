@@ -100,25 +100,25 @@ void cli_out_close() {
   cli_out_x_reply_entry(0, 0, 0);
 }
 void  cli_out_x_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
+ if (!cli_isInteractive())
     return;
   cli_out_entry(cli_out_start_reply, key, val, len);
 }
 
 void  cli_out_timer_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
+ if (!cli_isInteractive())
     return;
   cli_out_entry(cli_out_start_timer_reply, key, val, len);
 }
 
 void  cli_out_config_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
+ if (!cli_isInteractive())
     return;
   cli_out_entry(cli_out_start_config_reply, key, val, len);
 }
 
 void  cli_out_mcu_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
+ if (!cli_isInteractive())
     return;
   cli_out_entry(cli_out_start_mcu_reply, key, val, len);
 }
