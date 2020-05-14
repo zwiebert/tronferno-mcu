@@ -26,3 +26,6 @@ int main() {
   return UNITY_END();
 }
 
+
+#include "config/config.h"
+config C;

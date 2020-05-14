@@ -134,7 +134,7 @@ void  fmsg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fmsg_type t)
   if (t != MSG_TYPE_PLAIN && t !=  MSG_TYPE_PLAIN_DOUBLE)
     return; // ignore long messages for now
 
-  io_puts(tag);
+
 
   fer_cmd c = FSB_GET_CMD(fsb);
   u32 id = FSB_GET_DEVID(fsb);
@@ -176,6 +176,8 @@ void  fmsg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fmsg_type t)
 
   if (!cs)
     return; // unsupported command
+
+  io_puts(tag);
 
   io_puts("type="), io_puts(fdt),
   io_puts(" a="), io_print_hex(id, false);

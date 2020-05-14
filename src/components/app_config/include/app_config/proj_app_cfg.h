@@ -1,7 +1,7 @@
 // User configuration
 #pragma once
 
-#define APP_VERSION "0.10.5"
+#define APP_VERSION "0.10.6"
 
 #define FER_TRANSMITTER
 #define FER_RECEIVER
@@ -27,6 +27,8 @@
 #define USE_CLI_MUTEX
 #define USE_OTA
 #define USE_TXTIO_MUTEX
+
+//#define USE_PCT_ARRAY
 
 #define USE_FREERTOS
 

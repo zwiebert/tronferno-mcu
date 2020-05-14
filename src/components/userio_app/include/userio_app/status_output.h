@@ -42,11 +42,13 @@ typedef enum {
   SO_CFGPASSWD_OK, SO_CFGPASSWD_WRONG, SO_CFGPASSWD_MISSING,
 
   SO_TIMER_EVENT_PRINT, SO_ASTRO_MINUTES_PRINT,
-  SO_TIMER_PRINT,
+  SO_TIMER_PRINT, SO_TIMER_PRINT_begin, SO_TIMER_PRINT_end,
 
-  SO_POS_begin, SO_POS_PRINT_GMP, SO_POS_PRINT, SO_POS_PRINT_MMP, SO_POS_end,
+  SO_POS_begin, SO_POS_PRINT_GMP, SO_POS_PRINT_GMPA, SO_POS_PRINT, SO_POS_PRINT_MMP, SO_POS_end,
 
-  SO_SHPREF_begin, SO_SHPREF_PRINT_GMT, SO_SHPREF_end,
+  SO_SHPREF_OBJ_begin, SO_SHPREF_OBJ_end, SO_SHPREF_OBJ_GM_begin, SO_SHPREF_OBJ_GM_end,
+
+  SO_PRINT_KVD, SO_PRINT_KVS,
 
   SO_PAIR_begin, SO_PAIR_ALL_begin, SO_PAIR_PRINT_AMM, SO_PAIR_PRINT_KMM, SO_PAIR_PRINT_KMM_SINGLE, SO_PAIR_ALL_end, SO_PAIR_end,
 
@@ -59,6 +61,15 @@ typedef enum {
 
 
 } so_msg_t;
+
+typedef struct {
+  const char *key, *val;
+} so_arg_kvs_t;
+
+typedef struct {
+  const char *key;
+  int val;
+} so_arg_kvd_t;
 
 typedef struct {
   uint8_t g, m;
@@ -89,7 +100,10 @@ typedef struct {
   gm_bitmask_t *mm;
 } so_arg_kmm_t;
 
+void so_broadcast_message(so_msg_t mt, void *arg);
 void so_output_message(so_msg_t mt, void *arg);
+void so_output_message_tgt(so_msg_t mt, void *arg, so_target_bits tgt);
+
 so_msg_t so_parse_config_key(const char *k);
 
 

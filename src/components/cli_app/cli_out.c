@@ -6,8 +6,8 @@
 #include "cli_app/cli_app.h"
 #include "misc/int_types.h"
 
-const char *Obj_tag="";
-#define SET_OBJ_TAG(tag) Obj_tag=(tag)
+char Obj_tag[16] = "";
+#define SET_OBJ_TAG(tag) strncpy(Obj_tag, (tag), sizeof Obj_tag)
 #define OBJ_TAG (Obj_tag+0)
 #define OBJ_TAG_TIMER "timer"
 #define OBJ_TAG_CONFIG "config"
@@ -100,25 +100,25 @@ void cli_out_close() {
   cli_out_x_reply_entry(0, 0, 0);
 }
 void  cli_out_x_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
+ if (!cli_isInteractive())
     return;
   cli_out_entry(cli_out_start_reply, key, val, len);
 }
 
 void  cli_out_timer_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
+ if (!cli_isInteractive())
     return;
   cli_out_entry(cli_out_start_timer_reply, key, val, len);
 }
 
 void  cli_out_config_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
+ if (!cli_isInteractive())
     return;
   cli_out_entry(cli_out_start_config_reply, key, val, len);
 }
 
 void  cli_out_mcu_reply_entry(const char *key, const char *val, int len) {
-  if (!so_tgt_test(SO_TGT_CLI) || cli_isJson)
+ if (!cli_isInteractive())
     return;
   cli_out_entry(cli_out_start_mcu_reply, key, val, len);
 }

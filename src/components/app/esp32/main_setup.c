@@ -119,6 +119,7 @@ void ntpApp_setup(void) {
 
 void main_setup_ip_dependent() {
   static int once;
+  so_output_message(SO_INET_PRINT_ADDRESS, 0);
   if (!once) {
     once = 1;
 #ifdef USE_NTP
@@ -143,8 +144,9 @@ void mcu_init() {
 #ifdef USE_EG
   loop_eventBits_setup();
 #endif
-  config_setup_txtio();
   kvs_setup();
+  config_setup_txtio();
+
   config_setup_global();
 
   io_puts("\r\n\r\n");

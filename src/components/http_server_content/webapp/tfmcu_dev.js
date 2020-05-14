@@ -7,6 +7,8 @@ const FETCH_ALIASES_START_PAIRING = 32;
 const FETCH_ALIASES_START_UNPAIRING = 64;
 const FETCH_SHUTTER_PREFS = 128;
 const FETCH_GMU = 256;
+const FETCH_GIT_TAGS = 512;
+const FETCH_SHUTTER_NAME = 1024;
 
 const UP = 0;
 const DOWN = 1;
@@ -67,6 +69,7 @@ class AppState {
   linkAutoObj() { this.mAuto.link = this.getAutoObj(); }
 
   gmChanged() {
+    shutterName_updHtml();
     this.linkAutoObj();
     this.automaticOptions_updHtml();
     dbLog(JSON.stringify(this));
@@ -157,6 +160,8 @@ class AppState {
 
   set shutterPrefs(obj) {
     Object.assign(this.mShutterPrefs, obj);
+    shutterPrefs_updHtml();
+    shutterName_updHtml();
   }
 
   get shutterPrefs() {
@@ -240,9 +245,9 @@ class AppState {
       }
     }
 
-    if ("position" in obj) {
-
-      this.pct = obj.position.p;
+    if ("pct" in obj) {
+      let key = this.g.toString() + this.m.toString();
+      this.pct = obj.pct[key];
     }
 
     if ("pair" in obj) {
@@ -256,10 +261,9 @@ class AppState {
 
     }
 
-    if ("shpref" in obj) {
-      this.shutterPrefs = obj.shpref;
-      shutterPrefs_updHtml();
-
+    if ("shs" in obj) {
+      const shs = obj.shs;
+      this.shutterPrefs = shs;
     }
 
     if ("mcu" in obj) {
@@ -365,17 +369,32 @@ class AppState {
         c: "unpair"
       };
 
-    if (mask & FETCH_SHUTTER_PREFS)
-      tfmcu.shpref = {
+    if (mask & FETCH_SHUTTER_PREFS) {
+      if (!('shpref' in tfmcu))
+        tfmcu.shpref = {};
+      Object.assign(tfmcu.shpref, {
         g: this.g,
         m: this.m,
-        c: "read",
-      };
+        mvut: '?', mvdt: '?', mvspdt: '?', 'tag.NAME':'?',
+      });
+    }
+
+    if (mask & FETCH_SHUTTER_NAME) {
+      if (!('shpref' in tfmcu))
+        tfmcu.shpref = {};
+      Object.assign(tfmcu.shpref, {
+        g: this.g,
+        m: this.m,
+        'tag.NAME':'?',
+      });
+    }
 
     let url = '/cmd.json';
     http_postRequest(url, tfmcu);
-  }
 
+    if (mask & FETCH_GIT_TAGS)
+      gitTags_fetch();
+  }
 }
 
 let ast;
@@ -446,7 +465,7 @@ function shutterPrefs_stopClock_do(direction) {
     shutterPrefs_stopClock_stop();
     return;
   }
-  
+
   if (direction === UP) {
     spsc.direction = UP;
     http_postShutterCommand('up');
@@ -459,7 +478,7 @@ function shutterPrefs_stopClock_do(direction) {
   } else {
     return;
   }
-  
+
   if (!spsc.ivId) {
     spsc.val = 0;
     spsc.ivId = setInterval(shutterPrefs_stopClock_tick, spsc.ms);
@@ -552,7 +571,7 @@ function shuPos_pctFetch_start() {
 }
 
 function shuPos_pctFetch_stop() {
-  let sppf = shuPos_pctFetch; 
+  let sppf = shuPos_pctFetch;
   clearInterval(sppf.ivId);
   sppf.ivId = 0;
 }
@@ -974,7 +993,51 @@ function req_cuasStart() {
   cuas_Interval = window.setInterval(req_cuasStatus, 1000);
 }
 
+function gitTags_genHtml(json) {
+  let html = '<button id="gitTag_netota" type="button" onClick="gitTags_netota();">Do flash selected firmware version: </button>'+
+      '<select id="gitTags_select">';
+    json.forEach(item => {
+      const name = item.name;
+      html += '<option value="'+name+'">'+name+'</option>';
+    });
 
+  html += '</select>';
+  document.getElementById('gitTags_div').innerHTML = html;
+}
+function gitTags_handleResponse(json) {
+  console.log(json[0]);
+  gitTags_genHtml(json);
+}
+function gitTags_fetch() {
+  const tag_url = "https://api.github.com/repos/zwiebert/tronferno-mcu-bin/tags";
+  const fetch_data = {
+      method: "GET",
+      cache: "no-cache",
+      headers: {
+      },
+      referrer: "no-referrer",
+      //body: JSON.stringify(data),
+    };
+    return fetch(tag_url, fetch_data)
+      .then(response => {
+        if(!response.ok) {
+          console.log("error");
+          throw new Error("network repsonse failed");
+        }
+        return response.json();
+      })
+
+      .then((json) => gitTags_handleResponse(json))
+
+      .catch((error) => {
+        console.log("error: http_postRequest(): ", error);
+      });
+
+}
+function gitTags_netota() {
+  const git_tag = document.getElementById('gitTags_select').value;
+  netFirmwareOTA("tag:"+git_tag);
+}
 
 function mcuConfig_fromHtml_toMcu() {
   const cfg = ast.tfmcu_config;
@@ -1081,6 +1144,27 @@ function onPos(pct) {
   shuPos_pctFetch_start();
 }
 
+
+function shutterName_fromHtml_toMcu(){
+  const val = document.getElementById("smn").value;
+
+  let tfmcu = {"to":"tfmcu", "shpref":{"g":ast.g, "m":ast.m, "tag.NAME":val }};
+
+  var url = '/cmd.json';
+  http_postRequest(url, tfmcu);
+}
+
+function shutterName_updHtml() {
+  const shsgm_key = "shs" + ast.g.toString() + ast.m.toString();
+  if (shsgm_key in ast.shutterPrefs) {
+    const shsgm = ast.shutterPrefs[shsgm_key];
+    if ('tag.NAME' in shsgm) {
+      document.getElementById("smn").value = shsgm['tag.NAME'];
+      return;
+    }
+  }
+  document.getElementById("smn").value = "";
+}
 // -------------  auto div -------------------------------
 function req_automatic() {
   let url = '/cmd.json';
@@ -1132,11 +1216,11 @@ function clearAuto_updHtml() {
 
 //--------------- nav tabs ------------------
 const tabs = [
-  { 'text':'Command', 'div_id':['senddiv'], fetch_gm:FETCH_POS},
-  { 'text':'Automatic', 'div_id':['senddiv', 'autodiv'], fetch_gm:FETCH_AUTO|FETCH_POS },
+  { 'text':'Command', 'div_id':['senddiv'], fetch_gm:(FETCH_POS|FETCH_SHUTTER_NAME)},
+  { 'text':'Automatic', 'div_id':['senddiv', 'autodiv'], fetch_gm:(FETCH_AUTO|FETCH_POS|FETCH_SHUTTER_NAME) },
   { 'text':'Config', 'div_id':['configdiv'], fetch:FETCH_CONFIG },
-  { 'text':'Positions', 'div_id':['senddiv', 'aliasdiv', 'shprefdiv'], fetch:FETCH_ALIASES, fetch_gm:FETCH_POS|FETCH_SHUTTER_PREFS },
-  { 'text':'Firmware', 'div_id':['id-fwDiv'], fetch_init:FETCH_VERSION},
+  { 'text':'Positions', 'div_id':['senddiv', 'aliasdiv', 'shprefdiv'], fetch:FETCH_ALIASES, fetch_gm:FETCH_POS|FETCH_SHUTTER_PREFS|FETCH_SHUTTER_NAME },
+  { 'text':'Firmware', 'div_id':['id-fwDiv'], fetch_init:(FETCH_VERSION|FETCH_GIT_TAGS)},
   { 'text':'Tests', 'div_id':['testsdiv'], },//dev-distro-delete-line//
 
 ];
@@ -1209,6 +1293,8 @@ function onContentLoaded() {
   ast.load();
   http_postDocRequest('cliparm_config');
 
+  document.getElementById("smn").onchange = () => shutterName_fromHtml_toMcu();
+
   document.getElementById("sgb").onclick = () => onGPressed();
   document.getElementById("smb").onclick = () => onMPressed();
   document.getElementById("sub").onclick = () => http_postShutterCommand('up');
@@ -1258,7 +1344,7 @@ function onContentLoaded() {
 
 const test_cmds = ['up', 'down', 'stop'];
 function get_randomCmd() {
-  const idx = Math.floor(Math.random() * (test_cmds.length-.01));
+  const idx = Math.floor(Math.random() * (test_cmds.length-0.01));
   return test_cmds[idx];
 }
 
@@ -1269,12 +1355,12 @@ function test_randomCmd() {
 }
 let test_randomCmd_interval = 0;
 function testPressed(enable) {
-  
+
   if (test_randomCmd_interval) {
     clearInterval(test_randomCmd_interval);
     test_randomCmd_interval = 0;
   }
-  
+
   if (enable) {
   ast.g = 7;
   ast.m = 1;

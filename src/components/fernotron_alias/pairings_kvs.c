@@ -30,7 +30,7 @@ extern char *ltoa(long val, char *s, int radix);
 static void  fixController(const char *key, gm_bitmask_t *gm) {
   // there seems to be existing keys which cannot be found by iteration.
   // to fix this: erase and create them new here.
-  if (!kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, key, 0)) {
+  if (!kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, key, 0, 0)) {
     kvshT handle;
     if ((handle = kvs_open(CFG_NAMESPACE, kvs_WRITE))) {
       kvs_erase_key(handle, key);
@@ -161,7 +161,7 @@ bool pair_getControllerPairings(u32 a, gm_bitmask_t *gm) {
   return success;
 }
 
-kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type) {
+kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     so_arg_kmm_t arg;
     gm_bitmask_t gm;
     arg.mm = &gm;
@@ -178,7 +178,7 @@ bool pair_so_output_all_pairings(void) {
 
   so_output_message(SO_PAIR_ALL_begin, NULL);
 
-  kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, KEY_PREFIX, kvs_foreach_cb);
+  kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, KEY_PREFIX, kvs_foreach_cb, 0);
 
   so_output_message(SO_PAIR_ALL_end, NULL);
   return true;

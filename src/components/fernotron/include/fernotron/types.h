@@ -28,8 +28,8 @@ bool gm_isAllClear(gm_bitmask_t *gm);
 int gm_countSetBits(gm_bitmask_t *gm);
 
 // read/save one or more elements of type gm_bitmask_t
-int fer_gmByName_load(const char *name, const gm_bitmask_t *gm, int count);
-int fer_gmByName_store(const char *name, gm_bitmask_t *gm, int count);
+bool fer_gmByName_load(const char *name, const gm_bitmask_t *gm, int count);
+bool fer_gmByName_store(const char *name, gm_bitmask_t *gm, int count);
 
 void gm_fromNibbleCounters(gm_bitmask_t *gm, uint32_t um);
 

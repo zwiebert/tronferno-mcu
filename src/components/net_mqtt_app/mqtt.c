@@ -40,9 +40,30 @@ static char *io_mqtt_topic_root;
 #define TAG_TIMER "timer "
 #define TAG_TIMER_LEN (sizeof(TAG_TIMER) - 1)
 
-void io_mqtt_publish_config(const char *s)  {
-  if (so_tgt_test(SO_TGT_MQTT)) //FIXME: implement this better
-    io_mqtt_publish("tfmcu/config_out", s);
+#define TOPIC_CLI_OUT_END "cli_out"
+#define TOPIC_CMD_OUT_END "cmd_out"
+#define TOPIC_PCT_OUT_END "pct_out"
+#define TOPIC_GPO_OUT_END "gpo_out"
+
+void io_mqtt_publish_topic_end(const char *topic_end, const char *json) {
+  char topic[64];
+  snprintf(topic, sizeof topic, "%s%s", TOPIC_ROOT, topic_end);
+
+  io_mqtt_publish(topic, json);
+}
+
+void io_mqtt_publish_topic_end_get_json(const char *topic_end) {
+  char *json = sj_get_json();
+  if (!json && !*json)
+    return;
+  io_mqtt_publish_topic_end(topic_end, json);
+}
+
+void io_mqtt_publish_config(const char *json) {
+  char topic[64];
+  snprintf(topic, sizeof topic, "%s%s", TOPIC_ROOT, TOPIC_CLI_OUT_END);
+
+  io_mqtt_publish(topic, json);
 }
 
 void io_mqtt_publish_gmp(const so_arg_gmp_t *gmp) {
@@ -132,33 +153,28 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
         // wrong topic format in wildcard
       }
       cli_process_cmdline(line, SO_TGT_MQTT);
-
+ 
     } else if (topic_endsWith(topic, topic_len, TOPIC_CLI_END)) {
-      if (strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
-        char *line;
-        if ((line = set_commandline(data + TAG_CLI_LEN, data_len - TAG_CLI_LEN))) {
-          cli_process_cmdline(line, SO_TGT_MQTT);
-        }
-      } else if ((0 == strncmp(data, TAG_SEND, TAG_SEND_LEN)) || (0 == strncmp(data, TAG_CONFIG, TAG_CONFIG_LEN))
-          || (0 == strncmp(data, TAG_TIMER, TAG_TIMER_LEN))) {
-        char *line;
-        if ((line = set_commandline(data, data_len))) {
-          cli_process_cmdline(line, SO_TGT_MQTT);
-        }
+      if (data_len > TAG_CLI_LEN && strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
+        data += TAG_CLI_LEN;
+        data_len -= TAG_CLI_LEN;
+      }
+      char *line;
+      if ((line = set_commandline(data, data_len))) {
+        cli_process_cmdline(line, SO_TGT_MQTT);
+        io_mqtt_publish_topic_end_get_json(TOPIC_CLI_OUT_END);
       }
     }
-
-    RETURN:
-    mutex_cliGive();
+    RETURN: mutex_cliGive();
   }
 }
 
 
 void io_mqttApp_enable(bool enable) {
   if (enable) {
-    sj_callback_onClose_ifNotEmpty = io_mqtt_publish_config;
+
   } else {
-    sj_callback_onClose_ifNotEmpty = 0;
+
   }
 }
 

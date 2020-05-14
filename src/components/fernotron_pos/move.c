@@ -74,7 +74,7 @@ static void ferPos_printMovingPct(u8 g, u8 m, u8 pct) {
   if (mutex_cliTake()) {
     so_arg_gmp_t gmp = { g, m, pct };
     if (sj_open_root_object("tfmcu")) {
-      so_output_message(SO_POS_PRINT_GMP, &gmp);
+      so_broadcast_message(SO_POS_PRINT_GMP, &gmp);
       sj_close_root_object();
       cli_print_json(sj_get_json());
     }

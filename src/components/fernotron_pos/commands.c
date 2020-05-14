@@ -27,12 +27,18 @@ bool   commands_sendShutterCommand(u32 a, u8 g, u8 m, fer_cmd cmd, u8 repeats) {
   return fer_send_msg(fsb, MSG_TYPE_PLAIN, repeats);
 }
 
-bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
+bool commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   precond(g <= 7 && m <= 7 && pct <= 100);
   int curr_pct = -1;
 
-  if (m == 0) {
-    gm_bitmask_t gm = {0,};
+  bool is_our_cu = a == cfg_getCuId();
+  bool is_cu = FER_ADDR_TYPE_CentralUnit == (a >> 16);
+
+  if (!is_cu && (g || m))
+    return false;
+
+  if (is_cu && m == 0) {
+    gm_bitmask_t gm = { 0, };
     gm_SetByte(&gm, g, 0xfe);
     return commands_moveShuttersToPct(a, &gm, pct, repeats);
   }
@@ -41,7 +47,7 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   fer_grp group = g;
   fer_memb memb = m == 0 ? 0 : m + 7;
 
-  if (g > 0 && m > 0) {
+  if (is_our_cu && g > 0 && m > 0) {
     curr_pct = statPos_getPct(a, g, m);
     io_printf_v(vrbDebug, "curr_pct: %d\n", curr_pct);
   }
@@ -63,15 +69,22 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   if (pct == 0 || pct == 100) {
     fc = (pct == 0) ? fer_cmd_DOWN : fer_cmd_UP;
     FSB_PUT_CMD(fsb, fc);
-    fer_send_msg(fsb, MSG_TYPE_PLAIN, repeats);
-  } else if (curr_pct >= 0) {
+    return fer_send_msg(fsb, MSG_TYPE_PLAIN, repeats);
+  }
+
+  if (!is_our_cu)
+    return false;
+
+  if (curr_pct >= 0) {
     u16 stop_delay = simPos_calcMoveDuration_fromPctDiff_m(g, m, curr_pct, pct);
     if (stop_delay == 0)
       return false;
     fc = (pct < curr_pct) ? fer_cmd_DOWN : fer_cmd_UP;
     FSB_PUT_CMD(fsb, fc);
-    fer_send_msg_with_stop(fsb, 0, stop_delay, repeats);
-  } else {
+    return fer_send_msg_with_stop(fsb, 0, stop_delay, repeats);
+  }
+
+  {
     FSB_PUT_CMD(fsb, fer_cmd_UP);
     fer_send_msg(fsb, MSG_TYPE_PLAIN, repeats);
     u16 delay = simPos_calcMoveDuration_fromPctDiff_m(g, m, 0, 100);
@@ -79,7 +92,7 @@ bool   commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     if (stop_delay == 0)
       return false;
     FSB_PUT_CMD(fsb, fer_cmd_DOWN);
-    fer_send_msg_with_stop(fsb, delay, stop_delay, repeats);
+    return fer_send_msg_with_stop(fsb, delay, stop_delay, repeats);
   }
 
   return true;

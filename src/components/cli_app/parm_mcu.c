@@ -37,6 +37,7 @@ const char pin_state_args[] = "?01t";
 
 static void kvs_print_keys(const char *name_space);
 
+//TODO: add IP address query option
 int process_parmMcu(clpar p[], int len) {
   int arg_idx;
 
@@ -177,6 +178,14 @@ int process_parmMcu(clpar p[], int len) {
       } else if (strcmp(val, "github-beta") == 0) {
         so_output_message(SO_MCU_OTA, OTA_FWURL_BETA);
         ota_doUpdate(OTA_FWURL_BETA);
+      } else if (0 == strncmp(val, OTA_FWURL_TAG_COOKIE, strlen(OTA_FWURL_TAG_COOKIE))) {
+        const char *tag = val + strlen(OTA_FWURL_TAG_COOKIE);
+        int url_len = strlen(OTA_FWURL_TAG_HEAD) + strlen(OTA_FWURL_TAG_TAIL) + strlen(tag);
+        char *url;
+        if ((url = alloca(url_len + 1))) {
+          strcat(strcat(strcpy(url, OTA_FWURL_TAG_HEAD), tag), OTA_FWURL_TAG_TAIL);
+          ota_doUpdate(url);
+        }
       } else {
 #ifdef DISTRIBUTION
         ets_printf("forbidden: ota update from given URL\n");
@@ -198,12 +207,12 @@ int process_parmMcu(clpar p[], int len) {
   return 0;
 }
 
-static kvs_cbrT kvs_print_keys_cb(const char *key, kvs_type_t type) {
+static kvs_cbrT kvs_print_keys_cb(const char *key, kvs_type_t type, void *args) {
   io_printf("key: %s, type: %d\n", key, (int)type);
   return kvsCb_match;
 }
 
 static void kvs_print_keys(const char *name_space) {
-  kvs_foreach(name_space, KVS_TYPE_ANY, 0, kvs_print_keys_cb);
+  kvs_foreach(name_space, KVS_TYPE_ANY, 0, kvs_print_keys_cb, 0);
 }
 

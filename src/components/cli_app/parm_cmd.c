@@ -100,7 +100,7 @@ process_parmSend(clpar p[], int len) {
   }
 
   if (has_requested_position) {
-    if (g != 0 && m != 0) {
+    if (g != 0) {
       int pos = simPos_getPct_whileMoving(addr, g, m);
       if (pos >= 0) {
         so_arg_gmp_t gmp = {g, m, pos};
@@ -116,7 +116,7 @@ process_parmSend(clpar p[], int len) {
       else
         sep_disable();
     } else if (has_pct) {
-      commands_moveShutterToPct(addr, g, m, pct, repeats);
+      cli_replyResult(commands_moveShutterToPct(addr, g, m, pct, repeats));
     } else if (has_cmd) {
       cli_replyResult(commands_sendShutterCommand(addr, g, m, cmd, repeats));
     } else {

@@ -36,6 +36,8 @@
 #define MBR_MAX 7
 
 
+#define cfg_isMemberUnused(g,m) !gm_GetBit(&C.fer_usedMemberMask, g, m)
+
 static shutterGroupPositionsT pos_map[8];
 static u8  pos_map_changed;
 
@@ -48,36 +50,46 @@ enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 #define pm_isGroupUnused(g) (pm_getPct((g),0) == pm_GROUP_UNUSED)
 
 
+static int statPos_getAvgPctGroup(u8 g) {
+  u8 m;
+  int count=0, sum=0;
+  for (m = 1; m <= MBR_MAX; ++m) {
+    if (pm_isMemberUnused(g, m))
+      continue;
+    if (cfg_isMemberUnused(g,m))
+      continue;
+    ++count;
+    sum += pm_getPct(g, m);
+  }
+  if (count) {
+    return sum/count;
+  }
+  return pm_GROUP_UNUSED;
+}
+
 int
 statPos_getPct(u32 a, u8 g, u8 m) {
   precond(g <= 7 && m <= 7);
 
-  if (m != 0 && !pm_isGroupUnused(g) && !pm_isMemberUnused(g,0))
-    return pm_getPct(g, 0);
-
-  if (!pm_isMemberUnused(g,m))
-    return pm_getPct(g,m);
-
+  if (g == 0) {
+    return -1; // TODO: average all?
+  } else {
+    if (pm_isMemberUnused(g, m))
+      return -1;
+    return pm_getPct(g, m);
+  }
   return -1;
 }
 
 static int 
 set_state(u32 a, int g, int m, int position) {
-  u8  mi;
   DT(db_printf("%s: a=%x, g=%d, m=%d, position=%d\n", __func__, a, g, m, position));
   precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
   precond(0 <= position && position <= 100);
 
-  if (m != 0 && !pm_isGroupUnused(g) && !pm_isMemberUnused(g,0)) {
-    u8 pct = pm_getPct(g,0);
-
-    for (mi = 1; mi <= MBR_MAX; ++mi) {
-      pm_setPct(g,mi, pct);
-    }
-  }
-
   pm_setMemberUnused(g,0);
   pm_setPct(g,m,position);
+  pm_setPct(g,0,statPos_getAvgPctGroup(g));
 
   SET_BIT(pos_map_changed, g);
   fpos_POSITIONS_UNSAVED_cb();
@@ -86,8 +98,8 @@ set_state(u32 a, int g, int m, int position) {
 
 int 
 statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
-  int position = pct;
-  precond(g <= 7 && m <= 7);
+  precond(0 < g && g <= 7 && 0 < m && m <= 7);
+  int result = -1;
 
 #ifndef TEST_HOST
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, pct=%d\n", __func__, a, (int)g, (int)m, (int)pct));
@@ -106,13 +118,19 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
     return 0;
   }
 #endif
+#endif
 
-  if (0 <= position && position <= 100) {
+  result = set_state(a, g, m, pct);
+
+
+#ifndef TEST_HOST
+  if (pct <= 100) {
     if (a == 0 || a == cfg_getCuId()) {
-      so_arg_gmp_t gmp = { g, m, position };
+
       if (mutex_cliTake()) {
         if (sj_open_root_object("tfmcu")) {
-          so_output_message(SO_POS_PRINT_GMP, &gmp);  // FIXME: better use bit mask?
+          so_arg_gmp_t gmp[3] = { { g, m, pct }, { g, 0, pm_getPct(g, 0) }, { ~0, ~0, ~0 } };
+          so_broadcast_message(SO_POS_PRINT_GMPA, gmp);
           sj_close_root_object();
           cli_print_json(sj_get_json());
         }
@@ -122,10 +140,7 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   }
 #endif
 
-  if (position < 0)
-    return -1;
-  else
-    return set_state(a, g, m, position);
+    return result;
 }
 
 int 
@@ -141,20 +156,54 @@ statPos_setPcts(gm_bitmask_t *mm, u8 p) {
   }
   return 0;
 }
+#if 0
+int
+statPos_printAllPcts() {
+  u8 g, m, g2, m2;
+  gm_bitmask_t msk = { 0, };
 
+  so_output_message(SO_POS_begin, 0);
+  for (g = 1, m = ~0; gm_getNext(&C.fer_usedMemberMask, &g, &m);) {
+    if (pm_isGroupUnused(g))
+      continue;
+    if (pm_isMemberUnused(g, m))
+      continue; //
+    if (gm_GetBit(&msk, g, m))
+      continue; // was already processed by a previous pass
+
+    u8 pct = pm_getPct(g, m);
+    gm_bitmask_t pos_msk = { 0, };
+    for (g2 = g; g2 < 8; ++g2) {
+      for (m2 = 0; m2 < 8; ++m2) {
+        if (pm_getPct(g2,m2) == pct) {
+          gm_SetBit(&pos_msk, g2, m2); // mark as being equal to pct
+          gm_SetBit(&msk, g2, m2); // mark as already processed
+        }
+      }
+    }
+    so_arg_mmp_t mmp = { &pos_msk, pct };
+    so_output_message(SO_POS_PRINT_MMP, &mmp);
+  }
+  so_output_message(SO_POS_end, 0);
+  return 0;
+}
+#else
 int 
 statPos_printAllPcts() {
   u8 g, m, g2, m2;
   gm_bitmask_t msk = {0,};
 
   so_output_message(SO_POS_begin, 0);
-  for (g=0; g < 8; ++g) {
+  for (g=1; g < 8; ++g) {
     if (pm_isGroupUnused(g))
       continue;
     for (m=0; m < 8; ++m) {
       if (pm_isMemberUnused(g,m))
         continue; //
-      if (gm_GetBit(&msk, g, 0) || gm_GetBit(&msk, g, m))
+      if (m != 0 && cfg_isMemberUnused(g,m))
+        continue; //
+
+      if (gm_GetBit(&msk, g, m))
         continue; // was already processed by a previous pass
 
       u8 pct = pm_getPct(g,m);
@@ -162,16 +211,13 @@ statPos_printAllPcts() {
       for (g2=g; g2 < 8; ++g2) {
         for (m2=0; m2 < 8; ++m2) {
           if (pm_getPct(g2,m2) == pct) {
+            if (m2 != 0 && cfg_isMemberUnused(g2,m2))
+              continue;
             gm_SetBit(&pos_msk, g2, m2); // mark as being equal to pct
             gm_SetBit(&msk, g2, m2); // mark as already processed
-            if (m2 == 0) {
-              goto next_g2;  // all group members have the same pct value because m==0 is used
-            }
           }
         }
-        next_g2:;
       }
-
       so_arg_mmp_t mmp = { &pos_msk, pct };
       so_output_message(SO_POS_PRINT_MMP, &mmp);
     }
@@ -179,7 +225,7 @@ statPos_printAllPcts() {
   so_output_message(SO_POS_end, 0);
   return 0;
 }
-
+#endif
 static void ferPos_autoSavePositions_iv(int interval_ts) {
   DT(ets_printf("%s: interval_tx=%d\n", __func__, interval_ts));
   static unsigned next_save_pos;
@@ -233,12 +279,16 @@ static char *g_to_name(u8 g, char *buf) {
   return buf;
 }
 
-int statPos_pctsByGroup_load(u8 g, const shutterGroupPositionsT positions) {
+bool statPos_pctsByGroup_load(u8 g, const shutterGroupPositionsT positions) {
   char buf[8];
-  return fer_gmByName_load(g_to_name(g, buf), (gm_bitmask_t*) positions, 1);
+  if (fer_gmByName_load(g_to_name(g, buf), (gm_bitmask_t*) positions, 1)) {
+    pm_setPct(g,0,statPos_getAvgPctGroup(g)); // XXX: enforce new meaning of m==0
+    return true;
+  }
+  return false;
 }
 
-int statPos_pctsByGroup_store(u8 g, shutterGroupPositionsT positions) {
+bool statPos_pctsByGroup_store(u8 g, shutterGroupPositionsT positions) {
   char buf[8];
   return fer_gmByName_store(g_to_name(g, buf), (gm_bitmask_t*) positions, 1);
 }

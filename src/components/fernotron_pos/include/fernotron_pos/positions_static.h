@@ -10,6 +10,7 @@
 #include "fernotron/types.h"
 #include "fernotron/fer_msg_plain.h"
 #include "app_config/callbacks.h"
+#include <stdbool.h>
 
 
 typedef uint8_t shutterGroupPositionsT[8];
@@ -21,8 +22,8 @@ int statPos_getPct(uint32_t a, uint8_t g, uint8_t m);
 
 int statPos_printAllPcts(void);
 
-int statPos_pctsByGroup_store(uint8_t g, shutterGroupPositionsT positions);
-int statPos_pctsByGroup_load(uint8_t g, const shutterGroupPositionsT positions);
+bool statPos_pctsByGroup_store(uint8_t g, shutterGroupPositionsT positions);
+bool statPos_pctsByGroup_load(uint8_t g, const shutterGroupPositionsT positions);
 void statPos_loopAutoSave();
 
 void ferPos_loop(void);

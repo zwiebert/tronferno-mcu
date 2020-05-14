@@ -39,6 +39,7 @@ user_init() {
 
   stor_setup();
   kvs_setup();
+  config_setup_txtio();
   config_setup_global();
 
   // print debug info
