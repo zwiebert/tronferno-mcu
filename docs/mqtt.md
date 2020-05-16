@@ -76,3 +76,34 @@
 * tfmcu/+/pct_out - current shutter position in percent (+ stands for shutter ID)
 
 * tfmc/gpi/+/level - change of level (H,L) on input pin (must have been set as input pin in config)
+
+
+#### Examples
+
+##### Defining a shutter device with FHEM MQTT2_Device
+
+
+~~~
+defmod Rollo_25 MQTT2_DEVICE Rollo
+attr Rollo_25 IODev mqtts
+attr Rollo_25 autocreate 0
+attr Rollo_25 readingList Rollo:tfmcu/status:.* status\
+Rollo:tfmcu/25/pct_out:.* state
+attr Rollo_25 room Tronferno
+attr Rollo_25 setList stop:noArg tfmcu/25/cmd stop\
+up:noArg tfmcu/25/cmd up\
+down:noArg tfmcu/25/cmd down\
+sun-down:noArg tfmcu/25/cmd sun-down\
+pct:slider,0,5,100  tfmcu/25/pct $EVTPART1\
+sun-auto:1,0 tfmcu/cli auto g=2 m=2 f=k  sun-auto=$EVTPART1
+attr Rollo_25 webCmd up:stop:down:sun-down:pct
+~~~
+
+* mqtts - MQTT2_Server device name
+* Rollo - MQTT Client ID configured in tronferno-mcu (default: tfmcu)
+* 25 - group 2, motor 5
+
+#### Info
+
+* [MQTT client configuration](mcu_config.md)
+

@@ -1,7 +1,7 @@
 // User configuration
 #pragma once
 
-#define APP_VERSION "0.10.6"
+#define APP_VERSION "0.10.7"
 
 #define FER_TRANSMITTER
 #define FER_RECEIVER
@@ -25,6 +25,7 @@
 #define USE_CUAS
 #define USE_JSON
 #define USE_CLI_MUTEX
+#define USE_CLI_TASK
 #define USE_OTA
 #define USE_TXTIO_MUTEX
 

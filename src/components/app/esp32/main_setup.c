@@ -152,8 +152,11 @@ void mcu_init() {
   io_puts("\r\n\r\n");
 
   ESP_ERROR_CHECK(esp_event_loop_create_default());
-
+#ifdef USE_CLI_TASK
+  cli_setup_task(true);
+#else
   lfPer_setBit(lf_loopCli);
+#endif
 #ifdef USE_TCPS
   lfPer_setBit(lf_loopTcpServer);
 #endif
