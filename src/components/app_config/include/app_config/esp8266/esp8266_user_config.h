@@ -8,6 +8,7 @@ extern const char *const build_time;
 //#undef USE_MQTT
 #undef USE_HTTP
 #undef USE_CLI_MUTEX
+#undef USE_CLI_TASK
 #undef USE_OTA
 #undef USE_LAN
 #undef WLAN_AP
