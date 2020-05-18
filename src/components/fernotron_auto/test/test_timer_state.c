@@ -11,6 +11,7 @@
 #include "time.h"
 #include <fernotron/types.h>
 #include "debug/debug.h"
+#include "config/config.h"
 
 bool succ;
 
@@ -41,7 +42,7 @@ static void test_timer_event4() {
   fam_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(20,54), tevt.next_event); // astro time
-  gm_bitmask_t test1 = {0,0x02,0,0,0,0,0,0};
+  gm_bitmask_t test1 = {0,(C.fer_usedMemberMask[1]&0x02),0,0,0,0,0,0};
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
 }
@@ -70,7 +71,7 @@ static void test_timer_event3() {
   fam_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(6,54), tevt.next_event);
-  gm_bitmask_t test1 = {0,0x02,0,0,0,0,0,0};
+  gm_bitmask_t test1 = {0,(C.fer_usedMemberMask[1]&0x02),0,0,0,0,0,0};
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskUp(&tevt), 8);
 
 }
@@ -99,7 +100,7 @@ static void test_timer_event2() {
   fam_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
-  gm_bitmask_t test1 = {0,0xfc,0,0,0,0,0,0};
+  gm_bitmask_t test1 = {0,(C.fer_usedMemberMask[1]&0xfc),0,0,0,0,0,0};
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
   now_tm = (struct tm){

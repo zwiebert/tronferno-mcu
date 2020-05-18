@@ -39,3 +39,13 @@
 #include "esp_attr.h"
 
 
+#ifdef UNIT_TESTING
+#undef USE_CLI_TASK
+#undef USE_NETWORK
+#undef USE_WLAN
+#undef USE_LAN
+#undef USE_WLAN_AP
+#undef USE_AP_FALLBACK
+#undef USE_MQTT
+#endif
+

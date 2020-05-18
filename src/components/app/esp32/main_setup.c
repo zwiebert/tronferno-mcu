@@ -28,7 +28,7 @@ static void tmr_setBit_txLoop_cb(TimerHandle_t xTimer) {
 void tmr_setBit_txLoop_start(u32 interval_ms) {
   TimerHandle_t tmr;
   int interval = pdMS_TO_TICKS(interval_ms);
-  tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, (void*) lf_createWifiAp, tmr_setBit_txLoop_cb);
+  tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, (void*) 0, tmr_setBit_txLoop_cb);
   if (xTimerStart(tmr, 10 ) != pdPASS) {
     printf("CheckNetworkTimer start error");
   }
@@ -162,16 +162,9 @@ void mcu_init() {
 #endif
 #ifdef USE_TCPS_TASK
 #endif
-#ifdef FER_TRANSMITTER
-  //lfPer_setBit(lf_loopFerTx);
-#endif
   fam_updateTimerEvent();
   lfPer_setBit(lf_loopFerTimerState);
-  //lfPer_setBit(lf_checkCuasTimeout);
-#ifdef USE_PAIRINGS
- // lfPer_setBit(lf_checkPairingTimeout);
-#endif
-//  lfPer_setBit(lf_loopFerPos);
+
 
 #ifdef USE_NETWORK
   enum nwConnection network = config_read_network_connection();

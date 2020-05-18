@@ -79,7 +79,7 @@ void loop_eventBits_check() {
 }
 #endif
 
-
+#ifdef USE_WLAN_AP
 static void tmr_checkNetwork_cb(TimerHandle_t xTimer) {
   if (!ipnet_isConnected()) {
     lf_setBit(lf_createWifiAp);
@@ -94,6 +94,7 @@ void tmr_checkNetwork_start() {
     printf("CheckNetworkTimer start error");
   }
 }
+#endif
 
 static void tmr_loopPeriodic_cb(TimerHandle_t xTimer) {
   lf_setBits(loop_flags_periodic);
