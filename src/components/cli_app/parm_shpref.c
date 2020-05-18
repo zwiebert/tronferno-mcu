@@ -45,8 +45,7 @@ static void output_message_kvs(const char *tag, const char *val) {
   so_arg_kvs_t arg = { .key = key, .val = val };
   so_output_message(SO_PRINT_KVS, &arg);
 }
-static void output_message_kvd(const char *tag, int val) {
-  char *key = strcat(strcpy(alloca(strlen(tag) + sizeof PARM_OPT_TAG_PREFIX), PARM_OPT_TAG_PREFIX), tag);
+static void output_message_kvd(const char *key, int val) {
   so_arg_kvd_t arg = { .key = key, .val = val };
   so_output_message(SO_PRINT_KVD, &arg);
 }

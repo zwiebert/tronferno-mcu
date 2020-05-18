@@ -20,23 +20,6 @@ int unit_testing;
 void mcu_init(void);
 
 void unity_suiteSetUp() {
-
   unit_testing = 1;
-
-#if 0
- mcu_init();
-#else
-  //config_setup();
-  config_setup_global();
-#ifdef USE_EG
-  loop_eventBits_setup();
-#endif
-  mutex_setup();
-  kvs_setup();
-  config_setup_txtio();
-  stor_setup();
-  ferPos_init();
-  config_setup_astro();
-#endif
-
+  mcu_init();
 }

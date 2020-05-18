@@ -408,7 +408,7 @@ function  gm_updHtml() {
 
 
 function shutterPrefs_updHtml() {
-  const key = "shp" + ast.g.toString() + ast.m.toString();
+  const key = "shs" + ast.g.toString() + ast.m.toString();
   let pref = ast.shutterPrefs[key];
   const mvut = document.getElementById("shpMvut");
   const mvdt = document.getElementById("shpMvdt");

@@ -8,11 +8,22 @@ endif
 
 
 unity_dir = $(build_dir)/unity
-COMP_DIRS := $(realpath ../../src/components ../../components-mcu/components ../../local/components-mcu/components)
+COMP_DIRS := $(realpath ../../src/components ../../components-mcu/components)
 COMPS := $(foreach dir,$(COMP_DIRS),$(shell cd $(dir) && ls))
 
 
 build_cmd := env COMP_DIRS="$(COMP_DIRS)" idf.py -C $(build_dir)/unity -B $(build_dir) -G Ninja
+
+V ?= $(VERBOSE)
+ifeq ("$(V)","1")
+Q :=
+vecho := @true
+build_cmd += -v
+else
+Q := @
+vecho := @echo
+endif
+
 
 .PHONY: build clean flash run all unity unity-clean
 
