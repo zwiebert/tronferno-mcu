@@ -90,5 +90,5 @@ typedef struct {
 } UartDevice;
 
 void uart_init(UartBautRate uart0_br, UartBautRate uart1_br);
-
+int uart_rx_buf_getc();
 
