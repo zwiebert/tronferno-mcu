@@ -14,12 +14,6 @@ Pleas note: You can change any of the pins to your liking in [MCU configuration]
   * RF transmitter: GPIO-16
   * Set-Endposition Button: NONE
 
-#### GPIO Pins ESP8266 
-
-  * RF receiver: GPIO-5
-  * RF transmitter: GPIO-4
-  * Set-Endposition Button: GPIO-0
-
 #### More Info
   * [supported hardware](hardware.md)
   

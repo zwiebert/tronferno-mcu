@@ -8,14 +8,6 @@
        * Olimex ESP32-Gateway Rev. E
   * SDK/toolchain: esp-idf / xtensa-esp32-elf
 
-
-##### ESP8266
-  * Still supported but in comparison to ESP32 its is missing HTTP server, firmware OTA, Ethernet, WIFI-accces-point.  
-  * Tested on: ESP8266 board with 4MB flash-ROM.
-  * SDK/Toolchain: ESP8266_NONOS_SDK (+ libm.a from esp-open-sdk) / xtensa-lx106-elf
-
-
-
 ##### AVR ATMEGA328P (on "Nano" board)
   * only basic functionality
   * firmware compiles (but too big to load) with: git checkout 80043d2e0bd5bd94be9053207e2fcf5aea391c71
