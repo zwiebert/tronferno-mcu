@@ -22,6 +22,9 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #endif
+#ifdef MCU_ESP8266
+#include "user_interface.h"
+#endif
 
 const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #ifndef NO_SPIFFS
@@ -58,6 +61,11 @@ int process_parmMcu(clpar p[], int len) {
 #ifdef MCU_ESP8266
       if (strcmp(val, "reset-info") == 0) {
         print_reset_info();
+      } else  if (strcmp(val, "mem-info") == 0) {
+        void es_io_putc(char c);
+        os_install_putc1(es_io_putc);
+        system_set_os_print(1);
+        system_print_meminfo();
       }
 #endif
 #ifndef NO_SPIFFS

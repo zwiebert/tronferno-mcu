@@ -46,7 +46,8 @@ void loop(void) {
 
 #if defined USE_NTP && defined MCU_ESP8266
   bool  ntp_update_system_time(unsigned interval_seconds);
-  ntp_update_system_time(SECS_PER_DAY);
+  if (ipnet_isConnected())
+    ntp_update_system_time(SECS_PER_DAY);
 #endif
 }
 #endif
