@@ -21,6 +21,8 @@ extern const char *const build_time;
 #undef POSIX_TIME
 #undef USE_TXTIO_MUTEX
 
+#undef USE_TIMER_DATA_KVS
+#undef TD_FS_TO_KVS
 
 #include "user_interface.h"
 #define IRAM_ATTR  __attribute__((section(".iram0.text")))

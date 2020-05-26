@@ -38,6 +38,8 @@
 
 #include "esp_attr.h"
 
+#undef USE_TIMER_DATA_FS
+
 
 #ifdef UNIT_TESTING
 #undef USE_CLI_TASK

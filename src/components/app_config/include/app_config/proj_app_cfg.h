@@ -54,6 +54,9 @@
 #define WIFI_AP_SSID "tronferno"
 #define WIFI_AP_PASSWD "tronferno"
 
+#define USE_TIMER_DATA_FS
+#define USE_TIMER_DATA_KVS
+#define TD_FS_TO_KVS
 
 #if defined MCU_ESP8266
 #include "app_config/esp8266/esp8266_user_config.h"
