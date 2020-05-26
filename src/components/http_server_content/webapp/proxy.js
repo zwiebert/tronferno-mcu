@@ -27,7 +27,7 @@ let proxy = httpProxy.createProxyServer({ ws: true });
 app.all("/*.json", (req, res) => {
     proxy.web(req, res, { target: mcu });
 });
-app.all("/doc", (req, res) => {
+app.all("/f/cli/*", (req, res) => {
     proxy.web(req, res, { target: mcu });
 });
 
@@ -50,14 +50,8 @@ app.get("/index.html", (req, res) => {
 app.get("/tfmcu_dev.html", (req, res) => {
     res.sendFile(cont_dir + '/tfmcu_dev.html');
 });
-app.get("/tfmcu_dev.js", (req, res) => {
+app.get("/f/js/tfmcu.js", (req, res) => {
     res.sendFile(cont_dir + '/tfmcu_dev.js');
-});
-app.get("/tfmcu.html", (req, res) => {
-  res.sendFile(cont_dir + '/tfmcu.html');
-});
-app.get("/tfmcu.js", (req, res) => {
-  res.sendFile(cont_dir + '/tfmcu.js');
 });
 
 

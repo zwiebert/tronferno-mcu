@@ -41,7 +41,12 @@ static void ws_send(void *arg) {
   for (int fd = 0; fd < ws_nfds; ++fd) {
     if (!FD_ISSET(fd, &ws_fds))
       continue;
-    httpd_ws_send_frame_async(a->hd, fd, &ws_pkt);
+    esp_err_t res = httpd_ws_send_frame_async(a->hd, fd, &ws_pkt);
+    if (res != ESP_OK) {
+      FD_CLR(fd, &ws_fds);
+      if (ws_nfds == fd + 1)
+        ws_nfds = fd;
+    }
   }
   free(a->json);
   free(a);
@@ -88,6 +93,10 @@ static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
     return httpd_queue_work(handle, ws_async_send, resp_arg);
 }
 
+//////////////////// static files ///////////////////////////////////////
+extern const u8 text_tfmcu_html[] asm("_binary_tfmcu_html_start");
+extern const char text_tfmcu_js[] asm("_binary_tfmcu_js_start");
+extern const char text_tfmcu_js_map[] asm("_binary_tfmcu_js_map_start");;
 
 ////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
@@ -97,12 +106,13 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   if (!check_access_allowed(req))
     return ESP_FAIL;
 
-  if ((ret = httpd_req_recv(req, buf, MIN(remaining, sizeof(buf)))) <= 0) {
+  if ((ret = httpd_req_recv(req, buf, MIN(remaining, (sizeof buf)-1))) <= 0) {
     return ESP_FAIL;
   }
 
   if (mutex_cliTake()) {
-    hts_query(HQT_NONE, buf, ret); // parse and process received command
+    buf[ret] = '\0';
+    hts_query0(HQT_NONE, buf); // parse and process received command
 
     httpd_resp_set_type(req, "application/json");
     httpd_resp_sendstr(req, sj_get_json());
@@ -114,37 +124,31 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   return ESP_OK;
 }
 
-static bool startsWith(const char *s1, int s1_len, const char *s2) {
-  size_t s2_len = strlen(s2);
-  return s1_len >= s2_len && (0 == strncmp(s1, s2, s2_len));
-}
+const struct {
+  const char *uri, *type, *file;
+} uri_file_map[] = { { .uri = "/f/js/tfmcu.js", .type = "text/javascript", .file = text_tfmcu_js }, //
+    //   { .uri = "/tfmcu.js.map", .type = "text/javascript",  .file = text_tfmcu_js_map }, //
+    //   { .uri = "", .file = "" }, //
 
-static bool endsWith(const char *s1, int s1_len, const char *s2) {
-  size_t s2_len = strlen(s2);
-  return s1_len >= s2_len && (0 == strncmp(s1 + s1_len - s2_len, s2, s2_len));
-}
-
-
-extern const char text_tfmcu_js[] asm("_binary_tfmcu_js_start");
-extern const char text_tfmcu_js_map[] asm("_binary_tfmcu_js_map_start");;
-struct { const char *uri, *type, *file; } uri_file_map[] = {
-    { .uri = "/tfmcu.js", .type = "text/javascript", .file = text_tfmcu_js},
- //   { .uri = "/tfmcu.js.map", .type = "text/javascript",  .file = text_tfmcu_js_map },
- //   { .uri = "", .file = "" },
-};
+    { .uri = "/f/cli/help/send", .file = cli_help_parmSend }, //
+    { .uri = "/f/cli/help/auto", .file = cli_help_parmTimer }, //
+    { .uri = "/f/cli/help/config", .file = cli_help_parmConfig }, //
+    { .uri = "/f/cli/help/mcu", .file = cli_help_parmMcu }, //
+    { .uri = "/f/cli/help/pair", .file = cli_help_parmPair }, //
+    { .uri = "/f/cli/help/shpref", .file = cli_help_parmShpref }, //
+    { .uri = "/f/cli/help/help", .file = cli_help_parmHelp }, //
+    };
 
 
-static esp_err_t handle_uri_tfmcu_js(httpd_req_t *req) {
+static esp_err_t handle_uri_get_file(httpd_req_t *req) {
   if (!check_access_allowed(req))
     return ESP_FAIL;
 
-  const char *uri = req->uri;
-  unsigned uri_len = strlen(uri);
-
   for (int i = 0; i < sizeof(uri_file_map) / sizeof(uri_file_map[0]); ++i) {
-    if (!endsWith(uri, uri_len, uri_file_map[i].uri))
+    if (strcmp(req->uri, uri_file_map[i].uri) != 0)
       continue;
-    httpd_resp_set_type(req, uri_file_map[i].type);
+    const char *type = (uri_file_map[i].type) ? uri_file_map[i].type : "text/plain;charset=\"UTF-8\"";
+    httpd_resp_set_type(req, type);
     httpd_resp_sendstr(req, uri_file_map[i].file);
     return ESP_OK;
   }
@@ -162,41 +166,6 @@ static esp_err_t handle_uri_tfmcu_html(httpd_req_t *req) {
   return ESP_OK;
 }
 
-static esp_err_t handle_uri_doc_post(httpd_req_t *req) {
-  int i;
-  char buf[64];
-  int ret, remaining = req->content_len;
-
-  static struct  {
-    const char *key, *txt;
-  } help_txt_map [] = {
-    { "cliparm_send", cli_help_parmSend},
-    { "cliparm_auto", cli_help_parmTimer},
-    { "cliparm_config", cli_help_parmConfig},
-    { "cliparm_mcu", cli_help_parmMcu},
-    { "cliparm_pair", cli_help_parmPair},
-    { "cliparm_shpref", cli_help_parmShpref},
-    { "cliparm_help", cli_help_parmHelp},
-  };
-
-  if (!check_access_allowed(req))
-    return ESP_FAIL;
-
-  if ((ret = httpd_req_recv(req, buf, MIN(remaining, sizeof(buf)))) <= 0) {
-    return ESP_FAIL;
-  }
-
-  for (i = 0; i < sizeof(help_txt_map) / sizeof(help_txt_map[0]); ++i) {
-    if (strncmp(buf, help_txt_map[i].key, ret) == 0) {
-      httpd_resp_sendstr(req, help_txt_map[i].txt);
-      httpd_resp_set_type(req, "text/plain;charset=\"UTF-8\"");
-      return ESP_OK;
-    }
-  }
-  return ESP_FAIL;
-}
-
-
 static esp_err_t handle_uri_ws(httpd_req_t *req) {
   int fd = httpd_req_to_sockfd(req);
   FD_SET(fd, &ws_fds);
@@ -205,8 +174,8 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   ESP_LOGI(TAG, "handle /ws using fd: %d", fd);
   uint8_t buf[128] = { 0 };
 
-  httpd_ws_frame_t ws_pkt = {.payload = buf, ws_pkt.type};
-  esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, 128);
+  httpd_ws_frame_t ws_pkt = {.payload = buf };
+  esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, (sizeof buf)-1);
 
   if (ret != ESP_OK) {
       ESP_LOGE(TAG, "httpd_ws_recv_frame failed with %d", ret);
@@ -215,32 +184,38 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   ESP_LOGI(TAG, "Got packet with message: %s", ws_pkt.payload);
   ESP_LOGI(TAG, "Packet type: %d", ws_pkt.type);
 
-  if (ws_pkt.type == HTTPD_WS_TYPE_CLOSE) {
+  if (ws_pkt.type == HTTPD_WS_TYPE_CLOSE) { // XXX: does nothing. remove this
     ESP_LOGI(TAG, "Close fd: %d", fd);
     FD_CLR(fd, &ws_fds);
   }
 
-  if (ws_pkt.type == HTTPD_WS_TYPE_TEXT &&
-      strcmp((char*)ws_pkt.payload,"Trigger async") == 0) {
-      return trigger_async_send(req->handle, req);
-  }
 
-  ret = httpd_ws_send_frame(req, &ws_pkt);
-  if (ret != ESP_OK) {
+  if (mutex_cliTake()) {
+    buf[ws_pkt.len] = '\0';
+    hts_query0(HQT_NONE, (char*)buf); // parse and process received command
+
+    ws_pkt.payload = (u8*)sj_get_json();
+    ws_pkt.len = strlen((char*)ws_pkt.payload);
+    ws_pkt.type = HTTPD_WS_TYPE_TEXT;
+
+    ret = httpd_ws_send_frame(req, &ws_pkt);
+    if (ret != ESP_OK) {
       ESP_LOGE(TAG, "httpd_ws_send_frame failed with %d", ret);
+    }
+
+    sj_free_buffer();
+    mutex_cliGive();
   }
   return ret;
 }
 
 ////////////////////////// URI definitions ////////////////////////////////
-extern const u8 text_tfmcu_html[] asm("_binary_tfmcu_html_start");
-//extern const u8 text_tfmcu_js[] asm("_binary_tfmcu_js_start");
+
 
 static const httpd_uri_t httpd_uris[] = {
     { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json, .user_ctx = NULL, },
+    { .uri = "/f/*", .method = HTTP_GET, .handler = handle_uri_get_file},
     { .uri = "/", .method = HTTP_GET, .handler = handle_uri_tfmcu_html, .user_ctx = (void*) text_tfmcu_html, },
-    { .uri = "/tfmcu.js*", .method = HTTP_GET, .handler = handle_uri_tfmcu_js},
-    { .uri = "/doc", .method = HTTP_POST, .handler = handle_uri_doc_post, .user_ctx = NULL, },
     { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true},
 };
 

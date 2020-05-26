@@ -11,5 +11,5 @@ idf_component_register(
     INCLUDE_DIRS . "./include"
     REQUIRES ""
     PRIV_REQUIRES net net_http_server config cli_app userio userio_app misc
-    EMBED_TXTFILES "./webapp/tfmcu.html" "./webapp/tfmcu.js" #"./webapp/tfmcu.js.map"
+    EMBED_TXTFILES "./webapp/build/tfmcu.html" "./webapp/build/tfmcu.js" #"./webapp/build/tfmcu.js.map"
    )

@@ -1,4 +1,4 @@
-all: tfmcu.html tfmcu.js
+all: build build/tfmcu.html build/tfmcu.js
 
 HTMLMIN ?= ~/.local/bin/htmlmin
 TERSER ?= terser --source-map
@@ -17,27 +17,29 @@ ifndef FLAVOR_LAN
 SED_OPTS += -e '/dev-no-lan-delete-line/d'
 endif
 
-outfiles := tfmcu.html tfmcu.js tfmcu_html.c tfmcu_js.c
+outfiles := build/tfmcu.html build/tfmcu.js build/tfmcu_html.c build/tfmcu_js.c
 
 .PHONY: clean
 clean:
 	-rm $(outfiles)
 
 # convert HTML or Javascript to C source const char array
-%_html.c : %.html
+build/%_html.c : %.html
 	cat $< null.txt | xxd -i | sed 's/unsigned/const/' > $@
-%_js.c : %.js
+build/%_js.c : %.js
 	cat $< null.txt | xxd -i | sed 's/unsigned/const/' > $@
 
 #adapt development HTML file for usage in MCU webserver
-%.html : %_dev.html
+build/%.html : %_dev.html
 	cat $< | sed  ${SED_OPTS} ${SED_OPTS_HTML} | ${HTMLMIN} >$@
 
 #adapt development Javascript file for usage in MCU webserver
-%.js : %_dev.js
+build/%.js : %_dev.js
 	cat $< | sed ${SED_OPTS} ${SED_OPTS_JS} | ${TERSER} -o $@
 
 .PHONY: proxy
 
 proxy:
 	while true; do ./proxy.js; done
+build:
+	mkdir -p build
