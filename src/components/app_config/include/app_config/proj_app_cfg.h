@@ -13,6 +13,7 @@
 #define USE_TCPS
 #define USE_TCPS_TASK
 #define USE_MQTT
+#define USE_WS
 #define USE_HTTP
 #define CONFIG_BLOB
 #define CONFIG_DICT

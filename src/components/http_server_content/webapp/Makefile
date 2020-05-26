@@ -1,7 +1,7 @@
 all: tfmcu.html tfmcu.js
 
 HTMLMIN ?= ~/.local/bin/htmlmin
-JSMIN ?= /usr/bin/python -m jsmin
+TERSER ?= terser --source-map
 
 SED_OPTS_HTML =  -e 's/tfmcu_dev.js/\/tfmcu.js/'
 SED_OPTS_JS =
@@ -35,7 +35,7 @@ clean:
 
 #adapt development Javascript file for usage in MCU webserver
 %.js : %_dev.js
-	cat $< | sed ${SED_OPTS} ${SED_OPTS_JS} >/tmp/tfmcu.js && ${JSMIN} /tmp/tfmcu.js >$@
+	cat $< | sed ${SED_OPTS} ${SED_OPTS_JS} | ${TERSER} -o $@
 
 .PHONY: proxy
 

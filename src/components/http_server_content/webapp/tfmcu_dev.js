@@ -32,6 +32,15 @@ class AppState {
     this.gmc_fetch = 0;
     this.load_fetch = FETCH_GMU;
     this.mEsp32BootCount = 0;
+    this.mWebSocket;
+  }
+
+  websocket() {
+    this.mWebSocket = new WebSocket('ws://'+window.location.host+'/ws');
+    this.mWebSocket.onopen = (evt) => { this.mWebSocket.send(JSON.stringify({"to":"tfmcu"})); };
+    this.mWebSocket.onmessage = (evt) => {  let json = evt.data; let obj = JSON.parse(json); this.http_handleResponses(obj); };
+    this.mWebSocket.onclose = (evt) => { dbLog(evt.reason); setTimeout(function() { this.websocket();  }, 1000);};
+    this.mWebSocket.onerror = (err) => { dbLog(err.msg); this.mWebSocket.close(); };
   }
 
   load() {
@@ -39,6 +48,8 @@ class AppState {
     this.tabIdx = this.mTabIdx;
     this.http_fetchByMask(this.load_fetch);
     this.tabVisibility = this.mTabVisibility;
+    setTimeout(()=>{ast.websocket();}, 1000);
+    //this.websocket();
   }
 
   set tabVisibility(value) {
@@ -55,7 +66,6 @@ class AppState {
     this.mPct = val;
     document.getElementById('spi').value = val;
     document.getElementById('spr').value = val;
-    shuPos_pctFetch_posRecieved(val);
   }
 
   get pct() {
@@ -530,50 +540,6 @@ function aliasControllers_fromHtml() { // XXX
     const key = opt.text;
     aliasTable_fromHtml(key);
   }
-}
-
-const shuPos_pctFetch = {
-  ivId: 0,
-  ms: 1000,
-  last_pct: 0,
-  last_last_pct: 0,
-};
-
-function shuPos_pctFetch_posRecieved(pct) {
-  const sppf = shuPos_pctFetch;
-  if (sppf.ivId) {
-    sppf.last_last_pct = sppf.last_pct;
-    sppf.last_pct = pct;
-  }
-}
-
-function shuPos_pctFetch_tick() {
-  const sppf = shuPos_pctFetch;
-  const pct = ast.pct;
-  if ((ast.g == 0 || ast.m == 0) || (pct === sppf.last_pct && sppf.last_pct === sppf.last_last_pct)) {
-    shuPos_pctFetch_stop();
-    return;
-  }
-  ast.http_fetchByMask(FETCH_POS);
-}
-
-function shuPos_pctFetch_start() {
-  if (ast.g == 0 || ast.m == 0)
-    return;
-
-  let sppf = shuPos_pctFetch;
-  if (!sppf.ivId)   {
-    sppf.ivId = setInterval(shuPos_pctFetch_tick, sppf.ms);
-    sppf.last_pct = -1;
-    sppf.last_last_pct = -2;
-    ast.http_fetchByMask(FETCH_POS);
-  }
-}
-
-function shuPos_pctFetch_stop() {
-  let sppf = shuPos_pctFetch;
-  clearInterval(sppf.ivId);
-  sppf.ivId = 0;
 }
 
 function onAliasesChanged() {
@@ -1087,7 +1053,6 @@ function http_postShutterCommand(c=document.getElementById('send-c').value) {
   var url = '/cmd.json';
   dbLog("url: "+url);
   http_postRequest(url, tfmcu);
-  shuPos_pctFetch_start();
 }
 
 // ----------------- firmware div ---------------
@@ -1141,7 +1106,6 @@ function onPos(pct) {
 
   let url = '/cmd.json';
   http_postRequest(url, tfmcu);
-  shuPos_pctFetch_start();
 }
 
 

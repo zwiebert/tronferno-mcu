@@ -6,6 +6,7 @@ extern const char *const build_time;
 #define ISO_BUILD_TIME build_time
 
 #undef USE_MQTT
+#undef USE_WS
 #undef USE_HTTP
 #undef USE_CLI_MUTEX
 #undef USE_CLI_TASK
