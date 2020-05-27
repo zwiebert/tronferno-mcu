@@ -51,7 +51,8 @@ app.get("/tfmcu_dev.html", (req, res) => {
     res.sendFile(cont_dir + '/tfmcu_dev.html');
 });
 app.get("/f/js/tfmcu.js", (req, res) => {
-    res.sendFile(cont_dir + '/tfmcu_dev.js');
+    //res.sendFile(cont_dir + '/tfmcu_dev.js');
+    res.sendFile(cont_dir + '/tfmcu/build/bundle.js');
 });
 
 

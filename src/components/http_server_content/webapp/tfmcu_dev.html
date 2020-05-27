@@ -5,7 +5,7 @@
     <title>Tronferno</title>
     <script type="text/javascript" src="f/js/tfmcu.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", onContentLoaded);
+      document.addEventListener("DOMContentLoaded", tfmcu);
     </script>
 
     <style>
@@ -275,8 +275,8 @@
           <button id="alias_unpair" type="button">Start Un-Pairing</button></span><br>
           <table>
             <tr><th>All</th><th>This G/E</th></tr>
-            <tr><td><select id="aliases" onchange="onAliasesChanged()" size="5"></select></td>
-            <td><select id="paired" onchange="onPairedChanged()" onClick="onPairedChanged()" size="5"></select></td>
+            <tr><td><select id="aliases" size="5"></select></td>
+            <td><select id="paired" size="5"></select></td>
           </table>
         <div id="divPairAll"> </div>
         <span id="aliasSaveReload"><button id="alias_reload" type="button">Reload</button>
@@ -371,7 +371,7 @@
 <!--  ------------------------------- dev-distro-delete-begin -------------------------------------------- -->
       <div id="testsdiv">
 
-          <br><br>Random Periodic Movement Commands: <button type="button" onclick="testPressed(true)">Test Start</button> <button type="button" onclick="testPressed(false)">Test Stop</button>
+          
       </div>
 <!--  ------------------------------- dev-distro-delete-end ----------------------------------------------- -->
 
