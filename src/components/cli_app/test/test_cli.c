@@ -21,12 +21,14 @@
 
 static void test_commandline() {
   char cl[] = "config verbose=? cu=?;";  //"timer g=2 m=2 weekly=08222000++++10552134+";
-  int n = cli_parseCommandline(cl);
+  clpar par[20] = {};
+  struct cli_parm clp = { .par = par, .size = 20 };
+  int n = cli_parseCommandline(cl, &clp);
   TEST_ASSERT_EQUAL(3, n);
 
   if (n > 0)
     if (sj_open_root_object("tfmcu")) {
-      cli_processParameters(cli_par, n);
+      cli_processParameters(&par, n);
       sj_close_root_object();
     }
 
