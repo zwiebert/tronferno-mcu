@@ -43,6 +43,10 @@ void appEsp32_main(void) {
 
   mcu_init();
   tmr_loopPeriodic_start();
+#ifdef TD_FS_TO_KVS
+  int timer_data_transition_fs_to_kvs();
+  timer_data_transition_fs_to_kvs();
+#endif
   while (1) {
     loop();
 #ifndef USE_EG

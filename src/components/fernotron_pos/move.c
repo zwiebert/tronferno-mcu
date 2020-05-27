@@ -77,6 +77,9 @@ static void ferPos_printMovingPct(u8 g, u8 m, u8 pct) {
       so_broadcast_message(SO_POS_PRINT_GMP, &gmp);
       sj_close_root_object();
       cli_print_json(sj_get_json());
+#ifdef USE_WS
+      ws_send_json(sj_get_json());
+#endif
     }
     mutex_cliGive();
   }

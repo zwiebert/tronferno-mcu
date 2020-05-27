@@ -17,6 +17,9 @@
 #include "storage/esp8266/spiffs_fs.h"
 #endif
 #include "debug/debug.h"
+#ifdef USE_HTTP
+#include "http_server_content/hts_clients.h"
+#endif
 
 #ifdef USE_FREERTOS
 #include "freertos/FreeRTOS.h"
@@ -114,8 +117,6 @@ int process_parmMcu(clpar p[], int len) {
         }
         io_putlf();
       }
-
-
 #ifdef USE_PAIRINGS
     } else if (strcmp(key, "dbp") == 0) {
       bool pair_so_output_all_pairings(void);

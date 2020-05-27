@@ -27,11 +27,21 @@ class AppState {
     this.mPair = {all:{}};
     this.mShutterPrefs = {};
     this.mPct = 0;
+    this.mPcts = {};
     this.docs = {};
     this.tfmcu_config = {};
     this.gmc_fetch = 0;
     this.load_fetch = FETCH_GMU;
     this.mEsp32BootCount = 0;
+    this.mWebSocket;
+  }
+
+  websocket() {
+    this.mWebSocket = new WebSocket('ws://'+window.location.host+'/ws');
+    this.mWebSocket.onopen = (evt) => { this.mWebSocket.send(JSON.stringify({"to":"tfmcu","cmd":{"p":"?"}})); };
+    this.mWebSocket.onmessage = (evt) => {  let json = evt.data; let obj = JSON.parse(json); this.http_handleResponses(obj); };
+    this.mWebSocket.onclose = (evt) => { dbLog(evt.reason); setTimeout(function() { this.websocket();  }, 1000);};
+    this.mWebSocket.onerror = (err) => { dbLog(err.msg); this.mWebSocket.close(); };
   }
 
   load() {
@@ -39,6 +49,8 @@ class AppState {
     this.tabIdx = this.mTabIdx;
     this.http_fetchByMask(this.load_fetch);
     this.tabVisibility = this.mTabVisibility;
+    setTimeout(()=>{ast.websocket();}, 1000);
+    //this.websocket();
   }
 
   set tabVisibility(value) {
@@ -55,11 +67,22 @@ class AppState {
     this.mPct = val;
     document.getElementById('spi').value = val;
     document.getElementById('spr').value = val;
-    shuPos_pctFetch_posRecieved(val);
   }
 
   get pct() {
     return this.mPct;
+  }
+
+  set pcts(obj) {
+    Object.assign(this.mPcts, obj);
+    let key = this.g.toString() + this.m.toString();
+    if (key in obj) {
+      this.pct = obj[key];
+    }
+  }
+
+  get pcts() {
+    return this.mPcts;
   }
 
   getAutoName() { return  "auto" + this.g.toString() + this.m.toString(); }
@@ -69,6 +92,7 @@ class AppState {
   linkAutoObj() { this.mAuto.link = this.getAutoObj(); }
 
   gmChanged() {
+    this.pct = this.pcts[this.g.toString() + this.m.toString()];
     shutterName_updHtml();
     this.linkAutoObj();
     this.automaticOptions_updHtml();
@@ -246,8 +270,7 @@ class AppState {
     }
 
     if ("pct" in obj) {
-      let key = this.g.toString() + this.m.toString();
-      this.pct = obj.pct[key];
+      this.pcts = obj.pct;
     }
 
     if ("pair" in obj) {
@@ -532,50 +555,6 @@ function aliasControllers_fromHtml() { // XXX
   }
 }
 
-const shuPos_pctFetch = {
-  ivId: 0,
-  ms: 1000,
-  last_pct: 0,
-  last_last_pct: 0,
-};
-
-function shuPos_pctFetch_posRecieved(pct) {
-  const sppf = shuPos_pctFetch;
-  if (sppf.ivId) {
-    sppf.last_last_pct = sppf.last_pct;
-    sppf.last_pct = pct;
-  }
-}
-
-function shuPos_pctFetch_tick() {
-  const sppf = shuPos_pctFetch;
-  const pct = ast.pct;
-  if ((ast.g == 0 || ast.m == 0) || (pct === sppf.last_pct && sppf.last_pct === sppf.last_last_pct)) {
-    shuPos_pctFetch_stop();
-    return;
-  }
-  ast.http_fetchByMask(FETCH_POS);
-}
-
-function shuPos_pctFetch_start() {
-  if (ast.g == 0 || ast.m == 0)
-    return;
-
-  let sppf = shuPos_pctFetch;
-  if (!sppf.ivId)   {
-    sppf.ivId = setInterval(shuPos_pctFetch_tick, sppf.ms);
-    sppf.last_pct = -1;
-    sppf.last_last_pct = -2;
-    ast.http_fetchByMask(FETCH_POS);
-  }
-}
-
-function shuPos_pctFetch_stop() {
-  let sppf = shuPos_pctFetch;
-  clearInterval(sppf.ivId);
-  sppf.ivId = 0;
-}
-
 function onAliasesChanged() {
   const pas =  document.getElementById("aliases");
   if (pas.selectedIndex >= 0) {
@@ -729,12 +708,12 @@ function configTr_genHtml(name,value) {
       '" name="'+name +'"' + (value ? " checked" : "") +'></td>';
   } else if (name === 'rf-rx-pin' || name === 'set-button-pin') {
     return '<td><label class="config-label">'+name+
-    '</label></td><td><input class="config-input" type="number" min="-1" max="39" id="cfg_'+name+
-    '" name="'+name+'" value="'+value+'"></td>';
+      '</label></td><td><input class="config-input" type="number" min="-1" max="39" id="cfg_'+name+
+      '" name="'+name+'" value="'+value+'"></td>';
   } else if (name === 'rf-tx-pin') {
     return '<td><label class="config-label">'+name+
-    '</label></td><td><input class="config-input" type="number" min="-1" max="33" id="cfg_'+name+
-    '" name="'+name+'" value="'+value+'"></td>';
+      '</label></td><td><input class="config-input" type="number" min="-1" max="33" id="cfg_'+name+
+      '" name="'+name+'" value="'+value+'"></td>';
   } else if (name === 'verbose') {
     return '<td><label class="config-label">'+name+
       '</label></td><td><input class="config-input" type="number" min="0" max="5" id="cfg_'+name+
@@ -742,9 +721,11 @@ function configTr_genHtml(name,value) {
   } else if (name === 'network') {
     return '<td><label class="config-label">'+name+
       '</label></td><td><select  class="config-input" id="cfg_'+name+'">'+
-      '<option value="wlan">Connect to existing WLAN</option>'+
+
+    '<option value="wlan">Connect to existing WLAN</option>'+
       '<option value="ap">AP (192.168.4.1, ssid/pw=tronferno)</option>'+
       '<option value="lan">Connect to Ethernet</option>'+ // dev-no-lan-delete-line
+      '<option value="none">No Network</option>'+
       '</select></td>';
   } else if (name === 'lan-phy') {
     return '<td><label class="config-label">'+name+
@@ -996,10 +977,10 @@ function req_cuasStart() {
 function gitTags_genHtml(json) {
   let html = '<button id="gitTag_netota" type="button" onClick="gitTags_netota();">Do flash selected firmware version: </button>'+
       '<select id="gitTags_select">';
-    json.forEach(item => {
-      const name = item.name;
-      html += '<option value="'+name+'">'+name+'</option>';
-    });
+  json.forEach(item => {
+    const name = item.name;
+    html += '<option value="'+name+'">'+name+'</option>';
+  });
 
   html += '</select>';
   document.getElementById('gitTags_div').innerHTML = html;
@@ -1011,27 +992,27 @@ function gitTags_handleResponse(json) {
 function gitTags_fetch() {
   const tag_url = "https://api.github.com/repos/zwiebert/tronferno-mcu-bin/tags";
   const fetch_data = {
-      method: "GET",
-      cache: "no-cache",
-      headers: {
-      },
-      referrer: "no-referrer",
-      //body: JSON.stringify(data),
-    };
-    return fetch(tag_url, fetch_data)
-      .then(response => {
-        if(!response.ok) {
-          console.log("error");
-          throw new Error("network repsonse failed");
-        }
-        return response.json();
-      })
+    method: "GET",
+    cache: "no-cache",
+    headers: {
+    },
+    referrer: "no-referrer",
+    //body: JSON.stringify(data),
+  };
+  return fetch(tag_url, fetch_data)
+    .then(response => {
+      if(!response.ok) {
+        console.log("error");
+        throw new Error("network repsonse failed");
+      }
+      return response.json();
+    })
 
-      .then((json) => gitTags_handleResponse(json))
+    .then((json) => gitTags_handleResponse(json))
 
-      .catch((error) => {
-        console.log("error: http_postRequest(): ", error);
-      });
+    .catch((error) => {
+      console.log("error: http_postRequest(): ", error);
+    });
 
 }
 function gitTags_netota() {
@@ -1087,7 +1068,6 @@ function http_postShutterCommand(c=document.getElementById('send-c').value) {
   var url = '/cmd.json';
   dbLog("url: "+url);
   http_postRequest(url, tfmcu);
-  shuPos_pctFetch_start();
 }
 
 // ----------------- firmware div ---------------
@@ -1141,7 +1121,6 @@ function onPos(pct) {
 
   let url = '/cmd.json';
   http_postRequest(url, tfmcu);
-  shuPos_pctFetch_start();
 }
 
 
@@ -1362,9 +1341,9 @@ function testPressed(enable) {
   }
 
   if (enable) {
-  ast.g = 7;
-  ast.m = 1;
-  test_randomCmd_interval = setInterval(test_randomCmd, 1000);
+    ast.g = 7;
+    ast.m = 1;
+    test_randomCmd_interval = setInterval(test_randomCmd, 1000);
   }
 }
 ///dev-distro-delete-end/
