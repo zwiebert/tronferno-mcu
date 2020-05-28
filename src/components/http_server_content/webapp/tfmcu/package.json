@@ -10,7 +10,9 @@
 		"jshint": "^2.11.1",
 		"rollup": "^2.10.9",
 		"rollup-plugin-eslint": "^7.0.0",
-		"rollup-plugin-terser": "^6.1.0"
+		"rollup-plugin-svelte": "^5.2.2",
+		"rollup-plugin-terser": "^6.1.0",
+		"svelte": "^3.23.0"
 	},
 	"jshintConfig": {
 		"esversion": 6,
