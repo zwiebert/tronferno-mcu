@@ -39,7 +39,7 @@ export default {
         }),
         ...isProduction ? [
             strip({
-                functions: ['testing.*', 'dbLog', 'console.*', 'assert.*'],
+                functions: ['testing.*', 'appDebug.*', 'console.*', 'assert.*'],
                 sourceMap: true
             })] : []
     ]

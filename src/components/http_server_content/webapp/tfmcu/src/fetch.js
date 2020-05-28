@@ -1,5 +1,5 @@
 'use strict';
-import { dbLog } from './app_debug.js';
+import * as appDebug from './app_debug.js';
 import * as appState from './app_state.js';
 import * as mcuFirmware from './netota.js';
 
@@ -17,7 +17,7 @@ export const FETCH_SHUTTER_NAME = 1024;
 
 
 export function http_postRequest(url = '', data = {}) {
-  dbLog("post-json: "+JSON.stringify(data));
+  appDebug.dbLog("post-json: "+JSON.stringify(data));
 
   const fetch_data = {
     method: "POST",
@@ -81,9 +81,9 @@ export function http_postShutterCommand(c=document.getElementById('send-c').valu
     c: c,
   };
   tfmcu.send = send;
-  dbLog(JSON.stringify(tfmcu));
+  appDebug.dbLog(JSON.stringify(tfmcu));
   var url = '/cmd.json';
-  dbLog("url: "+url);
+  appDebug.dbLog("url: "+url);
   http_postRequest(url, tfmcu);
 }
 

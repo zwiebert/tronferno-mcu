@@ -1,5 +1,5 @@
 'use strict';
-import { dbLog } from './app_debug.js';
+import * as appDebug from './app_debug.js';
 import * as appState from './app_state';
 import * as httpFetch from './fetch.js';
 

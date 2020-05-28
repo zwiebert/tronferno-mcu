@@ -1,6 +1,6 @@
 'use strict';
 
-import { dbLog } from './app_debug.js';
+import * as appDebug from './app_debug.js';
 import * as appState from './app_state.js';
 import * as httpFetch from './fetch.js';
 
@@ -44,7 +44,7 @@ export function mcuConfig_fromHtml_toMcu() {
   Object.keys(cfg).forEach(function(key, idx) {
     let new_val = 0;
     let el = document.getElementById('cfg_' + key);
-    dbLog("key: " + key);
+    appDebug.dbLog("key: " + key);
 
     switch (el.type) {
       case 'checkbox':
@@ -57,7 +57,7 @@ export function mcuConfig_fromHtml_toMcu() {
     if (new_val != old_val) {
       new_cfg[key] = new_val;
       has_changed = true;
-      dbLog(key);
+      appDebug.dbLog(key);
     }
   });
 

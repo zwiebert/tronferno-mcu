@@ -1,5 +1,5 @@
 'use strict';
-import { dbLog } from './app_debug.js';
+import * as appDebug from './app_debug.js';
 import * as shutterName from './shutter_name.js';
 import * as shutterPrefs from './shutter_prefs.js';
 import * as shutterAlias from './shutter_alias.js';
@@ -42,8 +42,8 @@ export class AppState {
     this.mWebSocket = new WebSocket('ws://' + window.location.host + '/ws');
     this.mWebSocket.onopen = (evt) => { this.mWebSocket.send(JSON.stringify({ "to": "tfmcu", "cmd": { "p": "?" } })); };
     this.mWebSocket.onmessage = (evt) => { let json = evt.data; let obj = JSON.parse(json); this.http_handleResponses(obj); };
-    this.mWebSocket.onclose = (evt) => { dbLog(evt.reason); setTimeout(function() { this.websocket(); }, 1000); };
-    this.mWebSocket.onerror = (err) => { dbLog(err.msg); this.mWebSocket.close(); };
+    this.mWebSocket.onclose = (evt) => { appDebug.dbLog(evt.reason); setTimeout(function() { this.websocket(); }, 1000); };
+    this.mWebSocket.onerror = (err) => { appDebug.dbLog(err.msg); this.mWebSocket.close(); };
   }
 
   load() {
@@ -98,7 +98,7 @@ export class AppState {
     shutterName.shn_updHtml();
     this.linkAutoObj();
     this.automaticOptions_updHtml();
-    dbLog(JSON.stringify(this));
+    appDebug.dbLog(JSON.stringify(this));
     if (this.gmc_fetch)
       httpFetch.http_fetchByMask(this.gmc_fetch);
     shutterAlias.aliasPaired_updHtml();
@@ -229,7 +229,7 @@ export class AppState {
   }
 
   http_handleResponses(obj) {
-    dbLog("reply-json: " + JSON.stringify(obj));
+    appDebug.dbLog("reply-json: " + JSON.stringify(obj));
 
     if ("config" in obj) {
       let config = obj.config;

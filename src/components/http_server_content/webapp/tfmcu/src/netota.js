@@ -1,5 +1,5 @@
 'use strict';
-import { dbLog } from './app_debug.js';
+import * as appDebug from './app_debug.js';
 import * as httpFetch from './fetch.js';
 import * as misc from './misc.js';
 
@@ -20,7 +20,7 @@ function netota_FetchFeedback() {
     "mcuFirmware": "?"
   };
   let url = '/cmd.json';
-  dbLog("url: " + url);
+  appDebug.dbLog("url: " + url);
   httpFetch.http_postRequest(url, netmcu);
 }
 
@@ -34,7 +34,7 @@ export function netFirmwareOTA(ota_name) {
     mcuFirmware: ota_name
   };
   let url = '/cmd.json';
-  dbLog("url: " + url);
+  appDebug.dbLog("url: " + url);
   httpFetch.http_postRequest(url, netmcu);
   document.getElementById("netota_progress_div").innerHTML = "<strong>Firmware is updating...<br></strong>" + '<progress id="netota_progress_bar" value="0" max="30">70 %</progress>';
   netota_intervalID = setInterval(netota_FetchFeedback, 1000);
