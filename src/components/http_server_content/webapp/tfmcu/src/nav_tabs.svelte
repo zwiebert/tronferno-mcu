@@ -75,4 +75,7 @@ export function navTabs_genHtml() {
     document.getElementById('tabbt' +  i.toString()).onclick = () => onNavTab(i);
   }
 }
+
 </script>
+
+

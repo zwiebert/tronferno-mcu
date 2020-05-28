@@ -7,7 +7,8 @@
 <script>document.addEventListener("DOMContentLoaded", tfmcu);</script>
     
     <style>
-    
+   
+
       * { font-size:100%; }
 
       .tab {
@@ -68,24 +69,6 @@
       }
 
 
-      #senddiv {
-      background-color: #eee;
-      display: grid;
-      width: 100%;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      grid-template-rows: repeat(6, 1fr);
-      grid-template-areas:
-      "mn  mn  mn  ."
-      "gi  pi  mi pr"
-      "gb  pl  mb pr"
-      ".   ub  .  pr"
-      ".   sb  .  pr"
-      "pb  db  .  pr"
-      ;
-      justify-items: center;
-      align-items: center;
-      grid-gap: 2px;
-      }
 
       #XXaliasdiv {
       background-color: #eee;
@@ -106,11 +89,7 @@
       grid-gap: 2px;
       }
 
-      #aliasHeader { grid-area: ah;}
-      #aliases { grid-area: as; }
-      #divPairAll { grid-area: at; }
-      #aliasSaveReload { grid-area: ar;}
-      #aliasPairUnpair { grid-area: ap; }
+
 
 
       #configdiv { background-color: #eee;  }
@@ -130,35 +109,7 @@
       .tab button {
       font-size: 100%;
       }
-      #senddiv {
-      width: 500px;
-      }
-      }
 
-
-
-      .sb {width: 5em; margin: 2px; }
-
-      #sgb, #smb { border-radius: 40%; }
-      #sgi, #spi, #smi { width: 2.5em; height: 2em; text-align: center; }
-      #sgb, #smb { width: 2em; height: 2em; }
-      #spr { height: 4em; }
-
-      #ssb { font-size: 60%;  font-stretch: ultra-condensed; height: 4em; border-radius: 100% }
-      #sub, #sdb { font-size: 125%; border-radius: 100% }
-
-      #smn { grid-area: mn; }
-      #sgi { grid-area: gi; }
-      #sgb { grid-area: gb; }
-      #spi { grid-area: pi; }
-      #spb { grid-area: pl; }
-      #smi { grid-area: mi; }
-      #smb { grid-area: mb; }
-      #sub { grid-area: ub; }
-      #ssb { grid-area: sb; }
-      #sdb { grid-area: db; }
-      #spr { grid-area: pr; }
-      #sspb { grid-area: pb; }
 
 
       .conf-table label { padding: 2px; width: 50vw; margin-right: 6px;}
@@ -190,7 +141,9 @@
       #position: absolute;
       #top: 40%;
       transform: rotate(270deg);
-      }    
+      }
+
+
     </style>
 </head>
 <body>
