@@ -1,7 +1,7 @@
 'use strict';
 import * as appDebug from './app_debug.js';
 import * as appState from './app_state.js';
-import * as mcuFirmware from './netota.js';
+import * as mcuFirmware from './mcu_firmware.svelte';
 
 export const FETCH_CONFIG = 1;
 export const FETCH_AUTO = 2;

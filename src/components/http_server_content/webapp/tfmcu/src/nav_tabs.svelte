@@ -1,5 +1,5 @@
+<script context="module">
 'use strict';
-import * as appDebug from './app_debug.js';
 import * as appState from './app_state';
 import * as httpFetch from './fetch.js';
 
@@ -75,3 +75,4 @@ export function navTabs_genHtml() {
     document.getElementById('tabbt' +  i.toString()).onclick = () => onNavTab(i);
   }
 }
+</script>

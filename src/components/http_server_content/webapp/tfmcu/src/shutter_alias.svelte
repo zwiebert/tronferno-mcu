@@ -1,3 +1,20 @@
+      <div id="aliasdiv">
+        <hr>
+        <h4 id="aliasHeader">Paired controllers</h4>
+        <p class="help_text">To register position changes made by commands sent from plain controllers and sun-sensors, these controllers have to be registered here.  Select G/E above and pair the controller here by start pairing and pressing STOP on the controller.</p>
+        <span id="aliasPairUnpair"><button id="alias_pair" type="button">Start Pairing</button>
+          <button id="alias_unpair" type="button">Start Un-Pairing</button></span><br>
+          <table>
+            <tr><th>All</th><th>This G/E</th></tr>
+            <tr><td><select id="aliases" size="5"></select></td>
+            <td><select id="paired" size="5"></select></td>
+          </table>
+        <div id="divPairAll"> </div>
+        <span id="aliasSaveReload"><button id="alias_reload" type="button">Reload</button>
+          <button id="alias_save" type="button">Save</button></span>
+      </div>
+
+<script context="module">
 'use strict';
 import * as appState from './app_state';
 import * as httpFetch from './fetch.js';
@@ -196,3 +213,4 @@ function aliasTable_genHtml() {
   html += '</table>';
   return html;
 }
+</script>

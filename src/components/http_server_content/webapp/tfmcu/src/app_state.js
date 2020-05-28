@@ -1,13 +1,13 @@
 'use strict';
 import * as appDebug from './app_debug.js';
 import * as shutterName from './shutter_name.js';
-import * as shutterPrefs from './shutter_prefs.js';
-import * as shutterAlias from './shutter_alias.js';
+import * as shutterPrefs from './shutter_prefs.svelte';
+import * as shutterAlias from './shutter_alias.svelte';
 import * as httpFetch from './fetch.js';
-import * as mcuFirmware from './netota.js';
+import * as mcuFirmware from './mcu_firmware.svelte';
 import * as cuas from './cuas.js';
-import * as mcuConfig from './mcu_config.js';
-import * as navTabs from './nav_tabs.js';
+import * as mcuConfig from './mcu_config.svelte';
+import * as navTabs from './nav_tabs.svelte';
 
 export let ast;
 
