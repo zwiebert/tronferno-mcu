@@ -3,6 +3,7 @@ import { dbLog } from './misc.js';
 import * as misc from './misc.js';
 import * as shutterName from './shutter_name.js';
 import * as shutterPrefs from './shutter_prefs.js';
+import * as shutterAlias from './shutter_alias.js';
 import * as a_http from './fetch.js';
 import * as ota from './netota.js';
 import * as cuas from './cuas.js';
@@ -100,7 +101,7 @@ export class AppState {
     dbLog(JSON.stringify(this));
     if (this.gmc_fetch)
       a_http.http_fetchByMask(this.gmc_fetch);
-    misc.aliasPaired_updHtml();
+    shutterAlias.aliasPaired_updHtml();
   }
 
   get g() {
@@ -171,12 +172,12 @@ export class AppState {
 
   aliases_add(key, val) {
     this.mPair.all[key] = val;
-    misc.aliasControllers_updHtml();
+    shutterAlias.aliasControllers_updHtml();
   }
 
   set aliases(value) {
     this.mPair.all = value;
-    misc.aliasControllers_updHtml();
+    shutterAlias.aliasControllers_updHtml();
   }
 
   get aliases() {

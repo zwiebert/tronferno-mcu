@@ -5,6 +5,10 @@ import * as aps from './app_state.js';
 import * as a_http from './fetch.js';
 
 
+export function mcuConfig_cbHtml() {
+  document.getElementById("csvb").onclick = () => mcuConfig_fromHtml_toMcu();
+}
+
 
 export function mcuConfigTable_genHtml(cfg) {
   var html = '<table id="cfg_table_id" class="conf-table">';
@@ -131,7 +135,7 @@ function configTr_genHtml(name, value) {
   } else {
     return '<td><label class="config-label">' + name +
       '</label></td><td><input class="config-input text" type="text" id="cfg_' + name +
-      '" name="' + name + '" value="' + value + '"></td>';
+      '" name="' + name + '" value="'  + value + '"></td>';
   }
 }
 
