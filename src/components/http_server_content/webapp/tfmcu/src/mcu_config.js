@@ -1,8 +1,8 @@
 'use strict';
 
-import { dbLog } from './misc.js';
-import * as aps from './app_state.js';
-import * as a_http from './fetch.js';
+import { dbLog } from './app_debug.js';
+import * as appState from './app_state.js';
+import * as httpFetch from './fetch.js';
 
 
 export function mcuConfig_cbHtml() {
@@ -36,7 +36,7 @@ export function mcuConfig_updHtml(cfg) {
 
 
 export function mcuConfig_fromHtml_toMcu() {
-  const cfg = aps.ast.tfmcu_config;
+  const cfg = appState.ast.tfmcu_config;
 
   var new_cfg = {};
   var has_changed = false;
@@ -64,7 +64,7 @@ export function mcuConfig_fromHtml_toMcu() {
   if (has_changed) {
     new_cfg.all = "?";
     var url = '/cmd.json';
-    a_http.http_postRequest(url, { config: new_cfg });
+    httpFetch.http_postRequest(url, { config: new_cfg });
   }
 }
 
@@ -142,7 +142,7 @@ function configTr_genHtml(name, value) {
 
 export function usedMembers_fromConfig() {
 
-  let s = aps.ast.tfmcu_config["gm-used"];
+  let s = appState.ast.tfmcu_config["gm-used"];
 
 
   let sa = s ? s.split('').reverse() : [];
@@ -154,7 +154,7 @@ export function usedMembers_fromConfig() {
     gmu[g] = um;
   }
 
-  aps.ast.gmu = gmu;
+  appState.ast.gmu = gmu;
 }
 
 export function usedMembers_updHtml_fromHtml() {

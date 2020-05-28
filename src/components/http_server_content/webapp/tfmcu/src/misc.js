@@ -1,19 +1,18 @@
 'use strict';
 
 
-import * as aps from './app_state.js';
+import * as appState from './app_state.js';
 import * as shutterPrefs from './shutter_prefs.js';
 import * as shutterName from './shutter_name.js';
 import * as shutterAlias from './shutter_alias.js';
 import * as shutterAuto from './shutter_auto.js';
-import * as ota from './netota.js';
-import * as a_http from './fetch.js';
+import * as mcuFirmware from './netota.js';
+import * as httpFetch from './fetch.js';
 import * as cuas from './cuas.js';
-import * as mcc from './mcu_config.js';
+import * as mcuConfig from './mcu_config.js';
 import * as navTabs from './nav_tabs.js';
 
 
-export function dbLog(msg) { console.log(msg); }
 
 
 
@@ -55,7 +54,7 @@ function req_reloadStart() {
 export function req_mcuRestart() {
   var json = { to: "tfmcu", config: { restart: "1" } };
   var url = '/cmd.json';
-  a_http.http_postRequest(url, json);
+  httpFetch.http_postRequest(url, json);
   req_reloadStart();
   //setTimeout(function(){ location.reload(); }, 10000);
 }
@@ -66,23 +65,23 @@ export function req_mcuRestart() {
 
 // ------------ cmd div --------------
 function onGPressed() {
-  aps.ast.g_next();
+  appState.ast.g_next();
 }
 
 function onMPressed() {
-  aps.ast.m_next();
+  appState.ast.m_next();
 }
 
 function onPos(pct) {
   let tfmcu = { to: "tfmcu" };
   tfmcu.send = {
-    g: aps.ast.g,
-    m: aps.ast.m,
+    g: appState.ast.g,
+    m: appState.ast.m,
     p: pct,
   };
 
   let url = '/cmd.json';
-  a_http.http_postRequest(url, tfmcu);
+  httpFetch.http_postRequest(url, tfmcu);
 }
 
 
@@ -91,24 +90,24 @@ function onPos(pct) {
 export function onContentLoaded() {
   navTabs.navTabs_genHtml();
 
-  aps.init();
+  appState.init();
 
-  a_http.http_postDocRequest('cliparm_config');
+  httpFetch.http_postDocRequest('cliparm_config');
 
   shutterPrefs.shp_cbHtml();
   shutterAlias.alias_cbHtml();
   shutterAuto.auto_cbHtml();
-  ota.netota_cbHtml();
-  mcc.mcuConfig_cbHtml();
+  mcuFirmware.netota_cbHtml();
+  mcuConfig.mcuConfig_cbHtml();
 
   document.getElementById("smn").onchange = () => shutterName.shn_fromHtml_toMcu();
 
   document.getElementById("sgb").onclick = () => onGPressed();
   document.getElementById("smb").onclick = () => onMPressed();
-  document.getElementById("sub").onclick = () => a_http.http_postShutterCommand('up');
-  document.getElementById("ssb").onclick = () => a_http.http_postShutterCommand('stop');
-  document.getElementById("sdb").onclick = () => a_http.http_postShutterCommand('down');
-  document.getElementById("sspb").onclick = () => a_http.http_postShutterCommand('sun-down');
+  document.getElementById("sub").onclick = () => httpFetch.http_postShutterCommand('up');
+  document.getElementById("ssb").onclick = () => httpFetch.http_postShutterCommand('stop');
+  document.getElementById("sdb").onclick = () => httpFetch.http_postShutterCommand('down');
+  document.getElementById("sspb").onclick = () => httpFetch.http_postShutterCommand('sun-down');
   document.getElementById("spb").onclick = () => onPos(document.getElementById("spi").value);
   document.getElementById("spr").onchange = () => onPos(document.getElementById("spr").value);
 
@@ -117,7 +116,7 @@ export function onContentLoaded() {
 
   
 
-  document.getElementById("crlb").onclick = () => a_http.http_fetchByMask(a_http.FETCH_CONFIG);
+  document.getElementById("crlb").onclick = () => httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
 
   document.getElementById("mrtb").onclick = () => req_mcuRestart();
 

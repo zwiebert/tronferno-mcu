@@ -1,6 +1,6 @@
 'use strict';
-import { dbLog } from './misc.js';
-import * as a_http from './fetch.js';
+import { dbLog } from './app_debug.js';
+import * as httpFetch from './fetch.js';
 import * as misc from './misc.js';
 
 
@@ -17,11 +17,11 @@ var netota_progressCounter = 0;
 function netota_FetchFeedback() {
   var netmcu = { to: "tfmcu" };
   netmcu.mcu = {
-    "ota": "?"
+    "mcuFirmware": "?"
   };
   let url = '/cmd.json';
   dbLog("url: " + url);
-  a_http.http_postRequest(url, netmcu);
+  httpFetch.http_postRequest(url, netmcu);
 }
 
 export const otaName_master = 'github-master';
@@ -31,11 +31,11 @@ export function netFirmwareOTA(ota_name) {
     return;
   var netmcu = { to: "tfmcu" };
   netmcu.mcu = {
-    ota: ota_name
+    mcuFirmware: ota_name
   };
   let url = '/cmd.json';
   dbLog("url: " + url);
-  a_http.http_postRequest(url, netmcu);
+  httpFetch.http_postRequest(url, netmcu);
   document.getElementById("netota_progress_div").innerHTML = "<strong>Firmware is updating...<br></strong>" + '<progress id="netota_progress_bar" value="0" max="30">70 %</progress>';
   netota_intervalID = setInterval(netota_FetchFeedback, 1000);
   netota_isInProgress = true;
@@ -88,7 +88,7 @@ export function gitTags_fetch() {
     .then((json) => gitTags_handleResponse(json))
 
     .catch((error) => {
-      console.log("error: a_http.http_postRequest(): ", error);
+      console.log("error: httpFetch.http_postRequest(): ", error);
     });
 
 }

@@ -1,12 +1,11 @@
 'use strict';
-import * as aps from './app_state.js';
-import * as a_http from './fetch.js';
-import * as misc from './misc.js';
-import * as ota from './netota.js';
+import * as appState from './app_state.js';
+import * as httpFetch from './fetch.js';
+import * as mcuFirmware from './netota.js';
 import * as navTabs from './nav_tabs.js';
 
 export function testing_netota() {
-  document.getElementById("netota").onclick = () => ota.netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);
+  document.getElementById("netota").onclick = () => mcuFirmware.netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);
 }
 
 export function testing_genHtml() {
@@ -31,7 +30,7 @@ function get_randomCmd() {
 function test_randomCmd() {
   const cmd = get_randomCmd();
   console.log(cmd);
-  a_http.http_postShutterCommand(cmd);
+  httpFetch.http_postShutterCommand(cmd);
 }
 
 let test_randomCmd_interval = 0;
@@ -43,11 +42,10 @@ function testPressed(enable) {
   }
 
   if (enable) {
-    aps.ast.g = 7;
-    aps.ast.m = 1;
+    appState.ast.g = 7;
+    appState.ast.m = 1;
     test_randomCmd_interval = setInterval(test_randomCmd, 1000);
   }
 }
-
 
 

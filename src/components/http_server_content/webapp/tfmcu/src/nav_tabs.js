@@ -1,16 +1,16 @@
 'use strict';
-import { dbLog } from './misc.js';
-import * as aps from './app_state';
-import * as a_http from './fetch.js';
+import { dbLog } from './app_debug.js';
+import * as appState from './app_state';
+import * as httpFetch from './fetch.js';
 
 
 //--------------- nav tabs ------------------
 export let tabs = [
-  { 'text': 'Command', 'div_id': ['senddiv'], fetch_gm: (a_http.FETCH_POS | a_http.FETCH_SHUTTER_NAME) },
-  { 'text': 'Automatic', 'div_id': ['senddiv', 'autodiv'], fetch_gm: (a_http.FETCH_AUTO | a_http.FETCH_POS | a_http.FETCH_SHUTTER_NAME) },
-  { 'text': 'Config', 'div_id': ['configdiv'], fetch: a_http.FETCH_CONFIG },
-  { 'text': 'Positions', 'div_id': ['senddiv', 'aliasdiv', 'shprefdiv'], fetch: a_http.FETCH_ALIASES, fetch_gm: a_http.FETCH_POS |  a_http.FETCH_SHUTTER_PREFS | a_http.FETCH_SHUTTER_NAME },
-  { 'text': 'Firmware', 'div_id': ['id-fwDiv'], fetch_init: (a_http.FETCH_VERSION |  a_http.FETCH_GIT_TAGS) },
+  { 'text': 'Command', 'div_id': ['senddiv'], fetch_gm: (httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME) },
+  { 'text': 'Automatic', 'div_id': ['senddiv', 'autodiv'], fetch_gm: (httpFetch.FETCH_AUTO | httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME) },
+  { 'text': 'Config', 'div_id': ['configdiv'], fetch: httpFetch.FETCH_CONFIG },
+  { 'text': 'Positions', 'div_id': ['senddiv', 'aliasdiv', 'shprefdiv'], fetch: httpFetch.FETCH_ALIASES, fetch_gm: httpFetch.FETCH_POS |  httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME },
+  { 'text': 'Firmware', 'div_id': ['id-fwDiv'], fetch_init: (httpFetch.FETCH_VERSION |  httpFetch.FETCH_GIT_TAGS) },
 ];
 let div_ids = [];
 
@@ -43,18 +43,18 @@ export function navTabs_updHtml(idx) {
   }
   if ('fetch_gm' in nt) {
     fetch |= nt.fetch_gm;
-    aps.ast.gmc_fetch = nt.fetch_gm;
+    appState.ast.gmc_fetch = nt.fetch_gm;
   } else {
-    aps.ast.gmc_fetch = 0;
+    appState.ast.gmc_fetch = 0;
   }
 
   if (fetch) {
-    a_http.http_fetchByMask(fetch);
+    httpFetch.http_fetchByMask(fetch);
   }
 }
 
 function onNavTab(idx) {
-  aps.ast.tabVisibility = idx;
+  appState.ast.tabVisibility = idx;
 }
 
 export function navTabs_genHtml() {

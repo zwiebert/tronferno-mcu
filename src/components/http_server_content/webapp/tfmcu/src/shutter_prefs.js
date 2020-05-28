@@ -1,6 +1,6 @@
 'use strict';
-import * as aps from './app_state';
-import * as a_http from './fetch.js';
+import * as appState from './app_state';
+import * as httpFetch from './fetch.js';
 
 export const UP = 0;
 export const DOWN = 1;
@@ -15,8 +15,8 @@ export function shp_cbHtml() {
 }
 
 export function shp_updHtml() {
-  const key = "shs" + aps.ast.g.toString() + aps.ast.m.toString();
-  let pref = aps.ast.shutterPrefs[key];
+  const key = "shs" + appState.ast.g.toString() + appState.ast.m.toString();
+  let pref = appState.ast.shutterPrefs[key];
   const mvut = document.getElementById("shpMvut");
   const mvdt = document.getElementById("shpMvdt");
   const mvspdt = document.getElementById("shpSpMvdt");
@@ -37,7 +37,7 @@ export function shp_fromHtml_toMcu() {
   const mvdt = document.getElementById("shpMvdt");
   const mvspdt = document.getElementById("shpSpMvdt");
 
-  let tfmcu = { "to": "tfmcu", "shpref": { "g": aps.ast.g, "m": aps.ast.m, "c": "store" } };
+  let tfmcu = { "to": "tfmcu", "shpref": { "g": appState.ast.g, "m": appState.ast.m, "c": "store" } };
   let pref = tfmcu.shpref;
 
   pref.mvut = Math.floor((parseFloat(mvut.value) * 10)).toString();
@@ -45,7 +45,7 @@ export function shp_fromHtml_toMcu() {
   pref.mvspdt = Math.floor((parseFloat(mvspdt.value) * 10)).toString();
 
   var url = '/cmd.json';
-  a_http.http_postRequest(url, tfmcu);
+  httpFetch.http_postRequest(url, tfmcu);
 }
 
 
@@ -75,13 +75,13 @@ export function shp_stopClock_do(direction) {
 
   if (direction === UP) {
     spsc.direction = UP;
-    a_http.http_postShutterCommand('up');
+    httpFetch.http_postShutterCommand('up');
   } else if (direction === DOWN) {
     spsc.direction = DOWN;
-    a_http.http_postShutterCommand('down');
+    httpFetch.http_postShutterCommand('down');
   } else if (direction === SUN_DOWN) {
     spsc.direction = SUN_DOWN;
-    a_http.http_postShutterCommand('sun-down');
+    httpFetch.http_postShutterCommand('sun-down');
   } else {
     return;
   }

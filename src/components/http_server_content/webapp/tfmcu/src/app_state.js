@@ -1,13 +1,12 @@
 'use strict';
-import { dbLog } from './misc.js';
-import * as misc from './misc.js';
+import { dbLog } from './app_debug.js';
 import * as shutterName from './shutter_name.js';
 import * as shutterPrefs from './shutter_prefs.js';
 import * as shutterAlias from './shutter_alias.js';
-import * as a_http from './fetch.js';
-import * as ota from './netota.js';
+import * as httpFetch from './fetch.js';
+import * as mcuFirmware from './netota.js';
 import * as cuas from './cuas.js';
-import * as mcc from './mcu_config.js';
+import * as mcuConfig from './mcu_config.js';
 import * as navTabs from './nav_tabs.js';
 
 export let ast;
@@ -34,7 +33,7 @@ export class AppState {
     this.docs = {};
     this.tfmcu_config = {};
     this.gmc_fetch = 0;
-    this.load_fetch = a_http.FETCH_GMU;
+    this.load_fetch = httpFetch.FETCH_GMU;
     this.mEsp32BootCount = 0;
     this.mWebSocket = 0;
   }
@@ -50,7 +49,7 @@ export class AppState {
   load() {
     gm_updHtml();
     this.tabIdx = this.mTabIdx;
-    a_http.http_fetchByMask(this.load_fetch);
+    httpFetch.http_fetchByMask(this.load_fetch);
     this.tabVisibility = this.mTabVisibility;
     setTimeout(() => { ast.websocket(); }, 1000);
     //this.websocket();
@@ -101,7 +100,7 @@ export class AppState {
     this.automaticOptions_updHtml();
     dbLog(JSON.stringify(this));
     if (this.gmc_fetch)
-      a_http.http_fetchByMask(this.gmc_fetch);
+      httpFetch.http_fetchByMask(this.gmc_fetch);
     shutterAlias.aliasPaired_updHtml();
   }
 
@@ -240,19 +239,19 @@ export class AppState {
       } else {
         this.tfmcu_config = Object.assign(this.tfmcu_config, config);
         if ("gm-used" in config) {
-          mcc.usedMembers_fromConfig();
+          mcuConfig.usedMembers_fromConfig();
         }
 
         if (!document.getElementById("cfg_table_id")) {
           if ("verbose" in config) {
-            document.getElementById("config-div").innerHTML = mcc.mcuConfigTable_genHtml(obj.config);
+            document.getElementById("config-div").innerHTML = mcuConfig.mcuConfigTable_genHtml(obj.config);
           }
         }
       }
 
       if (document.getElementById("cfg_table_id")) {
-        mcc.mcuConfig_updHtml(obj.config);
-        mcc.usedMembers_updHtml_fromHtml();
+        mcuConfig.mcuConfig_updHtml(obj.config);
+        mcuConfig.usedMembers_updHtml_fromHtml();
       }
     }
 
@@ -291,8 +290,8 @@ export class AppState {
         this.mEsp32BootCount = mcu["boot-count"];
         this.updateHtml_bootCount();
       }
-      if ("ota-state" in mcu) {
-        ota.netota_handle_otaState(mcu["ota-state"]);
+      if ("mcuFirmware-state" in mcu) {
+        mcuFirmware.netota_handle_otaState(mcu["mcuFirmware-state"]);
       }
 
     }

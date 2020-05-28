@@ -1,12 +1,12 @@
 'use strict';
-import * as aps from './app_state';
-import * as a_http from './fetch.js';
+import * as appState from './app_state';
+import * as httpFetch from './fetch.js';
 
 export function alias_cbHtml() {
   document.getElementById("alias_reload").onclick = () => onAliasesReload();
   document.getElementById("alias_save").onclick = () => onAliasesApply();
-  document.getElementById("alias_pair").onclick = () => a_http.http_fetchByMask(a_http.FETCH_ALIASES_START_PAIRING);
-  document.getElementById("alias_unpair").onclick = () => a_http.http_fetchByMask(a_http.FETCH_ALIASES_START_UNPAIRING);
+  document.getElementById("alias_pair").onclick = () => httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_PAIRING);
+  document.getElementById("alias_unpair").onclick = () => httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_UNPAIRING);
   document.getElementById("aliases").onchange = () => onAliasesChanged();
   document.getElementById("paired").onclick = () => onPairedChanged();
   document.getElementById("paired").onchange = () => onPairedChanged();
@@ -17,7 +17,7 @@ export function aliasControllers_updHtml() {
     document.getElementById("divPairAll").innerHTML = aliasTable_genHtml();
   }
 
-  const pad = aps.ast.aliases;
+  const pad = appState.ast.aliases;
   const pas = document.getElementById("aliases");
   const pas_sel = pas.selectedIndex;
   for (const key in pad) {
@@ -41,7 +41,7 @@ export function aliasControllers_updHtml() {
 }
 
 function aliasControllers_fromHtml() { // XXX
-  const pad = aps.ast.aliases;
+  const pad = appState.ast.aliases;
   const pas = document.getElementById("aliases");
   const pas_sel = pas.selectedIndex;
 
@@ -78,11 +78,11 @@ function onAliasesApply() {
   }
 }
 function onAliasesReload() {
-  a_http.http_fetchByMask(a_http.FETCH_ALIASES);
+  httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
 }
 
 function alias_isKeyPairedToM(key, g, m) {
-  const val = aps.ast.aliases[key];
+  const val = appState.ast.aliases[key];
 
   let chunks = [];
 
@@ -102,13 +102,13 @@ function alias_isKeyPairedToM(key, g, m) {
 }
 
 export function aliasPaired_updHtml() {
-  const g = aps.ast.g;
-  const m = aps.ast.m;
+  const g = appState.ast.g;
+  const m = appState.ast.m;
   const pas = document.getElementById("paired");
 
   for (let i = pas.options.length - 1; i >= 0; --i)
   pas.remove(i);
-  for (let key in aps.ast.aliases) {
+  for (let key in appState.ast.aliases) {
     if (!alias_isKeyPairedToM(key, g, m))
       continue;
 
@@ -118,7 +118,7 @@ export function aliasPaired_updHtml() {
   }
 }
 function aliasTable_updHtml(key) {
-  const val = aps.ast.aliases[key];
+  const val = appState.ast.aliases[key];
 
   let chunks = [];
 
@@ -174,7 +174,7 @@ function aliasTable_fromHtml_toMcu(key) {
   let tfmcu = { "to": "tfmcu", "pair": { "a": key, "mm": val, "c": "store" } };
 
   var url = '/cmd.json';
-  a_http.http_postRequest(url, tfmcu);
+  httpFetch.http_postRequest(url, tfmcu);
 
 }
 

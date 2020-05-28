@@ -1,10 +1,10 @@
 'use strict';
-import { dbLog } from './misc.js';
-import * as aps from './app_state';
-import * as a_http from './fetch.js';
+import { dbLog } from './app_debug.js';
+import * as appState from './app_state';
+import * as httpFetch from './fetch.js';
 
 export function auto_cbHtml() {
-  document.getElementById("arlb").onclick = () => a_http.http_fetchByMask(a_http.FETCH_AUTO);
+  document.getElementById("arlb").onclick = () => httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
   document.getElementById("asvb").onclick = () => {
     // disable button for 5 seconds while data is being sent to shutter
     // motor by RF
@@ -22,8 +22,8 @@ function req_automatic() {
   let auto = tfmcu.timer;
   let has_daily = false, has_weekly = false, has_astro = false;
 
-  auto.g = aps.ast.g;
-  auto.m = aps.ast.m;
+  auto.g = appState.ast.g;
+  auto.m = appState.ast.m;
 
   let f = "i";
   f += document.getElementById('tmci').checked ? "M" : "m";
@@ -47,7 +47,7 @@ function req_automatic() {
   }
 
   dbLog(JSON.stringify(tfmcu));
-  a_http.http_postRequest(url, tfmcu);
+  httpFetch.http_postRequest(url, tfmcu);
 }
 
 function clearAuto_updHtml() {
