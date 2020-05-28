@@ -1,25 +1,3 @@
-      <div id="id-fwDiv">
-        <h4>OTA Firmware Update</h4>
-        <div id="netota_controls">
-
-            <label><button id="netota_master" type="button">Do flash latest firmware</button></label><br><br>
-            <label><button id="netota_beta" type="button">Do Flash latest beta firmware</button></label><br><br>
-            <label><button id="netota" type="button">Do flash firmware from given URL</button> <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:3000/tronferno-mcu.bin"> </label><br><br><!--dev-distro-delete-line-->
-
-          <div id="gitTags_div"></div>
-        </div>
-        <div id="netota_progress_div"></div>
-        <div id="netota_restart_div"></div>
-
-        <h4>Firmware Info</h4>
-        <ul>
-          <li>MCU type: <span id="id_chip"></span></li>
-          <li>firmware version: <span id="id_firmware"></span></li>
-          <li>firmware build date: <span id="id_buildTime"></span></li>
-           <li><label>boot-count: <span id="id-bootCount"></span></label></li>
-        </ul>
-      </div>
-      
 <script context="module">
 'use strict';
 import * as appDebug from './app_debug.js';
@@ -143,3 +121,25 @@ export function netota_handle_otaState(ota_state) {
   }
 }
 </script>
+
+      <div id="id-fwDiv">
+        <h4>OTA Firmware Update</h4>
+        <div id="netota_controls">
+
+            <label><button id="netota_master" type="button">Do flash latest firmware</button></label><br><br>
+            <label><button id="netota_beta" type="button">Do Flash latest beta firmware</button></label><br><br>
+            <label><button id="netota" type="button">Do flash firmware from given URL</button> <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:3000/tronferno-mcu.bin"> </label><br><br><!--dev-distro-delete-line-->
+
+          <div id="gitTags_div"></div>
+        </div>
+        <div id="netota_progress_div"></div>
+        <div id="netota_restart_div"></div>
+
+        <h4>Firmware Info</h4>
+        <ul>
+          <li>MCU type: <span id="id_chip"></span></li>
+          <li>firmware version: <span id="id_firmware"></span></li>
+          <li>firmware build date: <span id="id_buildTime"></span></li>
+           <li><label>boot-count: <span id="id-bootCount"></span></label></li>
+        </ul>
+      </div>

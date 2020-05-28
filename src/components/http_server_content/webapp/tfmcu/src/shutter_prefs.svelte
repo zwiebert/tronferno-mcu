@@ -1,17 +1,4 @@
-<div id="shprefdiv">
-  <hr>
-  <h4>Moving Durations</h4>
-  <p class="help_text">To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.</p>
-  <br>
-  <table class="dur_table">
-    <tr><th>Direction</th><th>Duration (secs)</th><th>Stopclock</th></tr>
-    <tr><td>up to 100%</td><td><input id="shpMvut" type="number" min="0" value="0" step="0.1"></td><td><button id="shp_MvutButton">Start/Stop</button></td></tr>
-    <tr><td>down to 0%</td><td><input id="shpMvdt" type="number" min="0" value="0" step="0.1"></td><td><button id="shp_MvdtButton">Start/Stop</button></td></tr>
-    <tr><td>down to sun position</td><td><input id="shpSpMvdt" type="number" min="0" value="0" step="0.1"></td><td><button id="shp_SpMvdtButton">Start/Stop</button></td></tr>
-  </table>
-  <button id="shp_reload" type="button">Reload</button>
-  <button id="shp_save" type="button">Save</button>
-</div>
+
 
 <script context="module">
 'use strict';
@@ -116,3 +103,18 @@ export function shp_stopClock_stop() {
   }
 }
 </script>
+
+<div id="shprefdiv">
+  <hr>
+  <h4>Moving Durations</h4>
+  <p class="help_text">To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.</p>
+  <br>
+  <table class="dur_table">
+    <tr><th>Direction</th><th>Duration (secs)</th><th>Stopclock</th></tr>
+    <tr><td>up to 100%</td><td><input id="shpMvut" type="number" min="0" value="0" step="0.1"></td><td><button id="shp_MvutButton">Start/Stop</button></td></tr>
+    <tr><td>down to 0%</td><td><input id="shpMvdt" type="number" min="0" value="0" step="0.1"></td><td><button id="shp_MvdtButton">Start/Stop</button></td></tr>
+    <tr><td>down to sun position</td><td><input id="shpSpMvdt" type="number" min="0" value="0" step="0.1"></td><td><button id="shp_SpMvdtButton">Start/Stop</button></td></tr>
+  </table>
+  <button id="shp_reload" type="button">Reload</button>
+  <button id="shp_save" type="button">Save</button>
+</div>

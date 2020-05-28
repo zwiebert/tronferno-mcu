@@ -23,7 +23,7 @@ endif
 all: build bundle build/tfmcu.html
 
 .PHONY: bundle old
-bundle: node_modules
+bundle: tfmcu/node_modules
 	-cd ../../../.. && $(JSHINT) $(JS_SRC_DIR)/*.js
 	#cd ../../../.. && $(JSHINT) $(JS_BLD_DIR)/bundle.js
 	cd tfmcu && env $(buildTarget) npm run build
@@ -32,8 +32,8 @@ bundle: node_modules
 old: build build/tfmcu.html build/tfmcu.js
 	cd ../../../.. && jshint src/components/http_server_content/webapp/tfmcu_dev.js
 
-node_modules:
-	cd tfmcu && npm install
+tfmcu/node_modules:
+	test-d tfmcu/node_modules || cd tfmcu && npm install
 
 
 

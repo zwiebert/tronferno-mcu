@@ -85,6 +85,12 @@
       #spr { grid-area: pr; }
       #sspb { grid-area: pb; }
       
+      input[type="range"] {
+      /*position: absolute;*/
+      /*top: 40%; */
+      transform: rotate(270deg);
+      }
+      
 </style>
 
 <div id="senddiv" class="send">

@@ -1,48 +1,3 @@
-<div id="configdiv">
-  <h3>Configuration</h3>
-  <div  class="config" id="config-div">
-    <p><strong style="animation: blink .75s linear 4;">...try to load configuration data from MCU...</strong></p>
-    <!-- configuration widgets. javascript output goes here -->
-  </div>
-
-  <table id="gmu-table">
-    <tr>
-      <td><label class="config-label">Groups</label></td>
-      <td><label>1</label></td>
-      <td><label>2</label></td>
-      <td><label>3</label></td>
-      <td><label>4</label></td>
-      <td><label>5</label></td>
-      <td><label>6</label></td>
-      <td><label>7</label></td>
-    </tr>
-    <tr>
-      <td><label class="config-label">Members</label></td>
-      <td><input id="gmu1" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-      <td><input id="gmu2" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-      <td><input id="gmu3" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-      <td><input id="gmu4" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-      <td><input id="gmu5" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-      <td><input id="gmu6" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-      <td><input id="gmu7" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-    </tr>
-  </table>
-
-  <br>
-  <button id="crlb" type="button">Reload</button>
-  <button id="csvb" type="button">Save</button>
-  <br><br>
-  <button id="mrtb" type="button">Restart MCU</button><br>
-  <div id="config_restart_div"></div>
-
-  <section>
-    <h1>Configuration-Wizards</h1>
-    <ul>
-      <li><button id="id_cuasb" type="button">Scan Central-Unit-ID</button> <span id="id_cuasStatus"></span></li>
-    </ul>
-  </section>
-</div>
-
 <script context="module">
   'use strict';
 
@@ -234,3 +189,48 @@ function usedMembers_fromHtml_toHtml() {
   document.getElementById("cfg_gm-used").value = val;
 }
 </script>
+
+<div id="configdiv">
+  <h3>Configuration</h3>
+  <div  class="config" id="config-div">
+    <p><strong style="animation: blink .75s linear 4;">...try to load configuration data from MCU...</strong></p>
+    <!-- configuration widgets. javascript output goes here -->
+  </div>
+
+  <table id="gmu-table">
+    <tr>
+      <td><label class="config-label">Groups</label></td>
+      <td><label>1</label></td>
+      <td><label>2</label></td>
+      <td><label>3</label></td>
+      <td><label>4</label></td>
+      <td><label>5</label></td>
+      <td><label>6</label></td>
+      <td><label>7</label></td>
+    </tr>
+    <tr>
+      <td><label class="config-label">Members</label></td>
+      <td><input id="gmu1" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+      <td><input id="gmu2" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+      <td><input id="gmu3" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+      <td><input id="gmu4" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+      <td><input id="gmu5" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+      <td><input id="gmu6" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+      <td><input id="gmu7" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+    </tr>
+  </table>
+
+  <br>
+  <button id="crlb" type="button">Reload</button>
+  <button id="csvb" type="button">Save</button>
+  <br><br>
+  <button id="mrtb" type="button">Restart MCU</button><br>
+  <div id="config_restart_div"></div>
+
+  <section>
+    <h1>Configuration-Wizards</h1>
+    <ul>
+      <li><button id="id_cuasb" type="button">Scan Central-Unit-ID</button> <span id="id_cuasStatus"></span></li>
+    </ul>
+  </section>
+</div>

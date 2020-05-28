@@ -5,7 +5,7 @@ import * as httpFetch from './fetch.js';
 
 
 //--------------- nav tabs ------------------
-export let tabs = [
+export const tabs = [
   { 'text': 'Command', 'div_id': ['senddiv'], fetch_gm: (httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME) },
   { 'text': 'Automatic', 'div_id': ['senddiv', 'autodiv'], fetch_gm: (httpFetch.FETCH_AUTO | httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME) },
   { 'text': 'Config', 'div_id': ['configdiv'], fetch: httpFetch.FETCH_CONFIG },
@@ -67,7 +67,7 @@ export function navTabs_genHtml() {
   let html = '';
   for (let i = 0; i < tabs.length; ++i) {
     const tab = tabs[i];
-    html += '<button class="tablinks" id="tabbt' + i.toString() + '">' + tab.text + '</button>\n';
+    html += '<button class="tab" id="tabbt' + i.toString() + '">' + tab.text + '</button>\n';
 
     for (let k = 0; k < tabs[i].div_id.length; ++k) {
       const div_id = tabs[i].div_id[k];
@@ -81,6 +81,39 @@ export function navTabs_genHtml() {
 }
 
 </script>
+
+<style>      /* Style the buttons that are used to open the tab content */
+
+:global(.tab button) {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      transition: 0.3s;
+      }
+      
+            :global(.tab) {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+      }
+
+
+
+      /* Change background color of buttons on hover */
+      :global(.tab button:hover) {
+      background-color: #ddd;
+      }
+
+      /* Create an active/current tablink class */
+      :global(.tab button.active) {
+      background-color: #ccc;
+      }
+      
+      
+      </style>
 
 <div id="tabBar" class="tab">
 {@html navTabs_genHtml()}

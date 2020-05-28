@@ -9,6 +9,10 @@
   import Testing from "./testing.svelte";
 </script>
 
+<style>
+
+</style>
+
 <NavTabs />
 
 <div id="navTabs" class="container tabcontent">
