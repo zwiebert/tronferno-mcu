@@ -5,18 +5,15 @@
 import { onContentLoaded } from './misc.js';
 import * as testing from './testing.svelte';
 
-
+import * as misc from './misc.js';
 
 
 export default function() {
+  testing.testing_init();
   generate_html();
-
-  //console.log('version ' + version);
-  testing.testing_genHtml();
+  misc.app_cbHtml();
   onContentLoaded();
   testing.testing_netota();
-
-
 }
 
 

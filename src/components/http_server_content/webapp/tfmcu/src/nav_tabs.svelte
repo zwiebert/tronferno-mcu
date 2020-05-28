@@ -57,6 +57,12 @@ function onNavTab(idx) {
   appState.ast.tabVisibility = idx;
 }
 
+export function navTabs_cbHtml() {
+  for (let i = 0; i < tabs.length; ++i) {
+    document.getElementById('tabbt' +  i.toString()).onclick = () => onNavTab(i);
+  }
+}
+
 export function navTabs_genHtml() {
   let html = '';
   for (let i = 0; i < tabs.length; ++i) {
@@ -70,12 +76,14 @@ export function navTabs_genHtml() {
       }
     }
   }
-  document.getElementById('tabBar').innerHTML = html;
-  for (let i = 0; i < tabs.length; ++i) {
-    document.getElementById('tabbt' +  i.toString()).onclick = () => onNavTab(i);
-  }
+  
+  return html;
 }
 
 </script>
+
+<div id="tabBar" class="tab">
+{@html navTabs_genHtml()}
+</div>
 
 

@@ -10,6 +10,7 @@ import * as httpFetch from './fetch.js';
 import * as cuas from './cuas.js';
 import * as mcuConfig from './mcu_config.svelte';
 import * as navTabs from './nav_tabs.svelte';
+import * as testing from './testing.svelte';
 
 const reload_Progress = {
   ivId: 0,
@@ -54,21 +55,22 @@ export function req_mcuRestart() {
   //setTimeout(function(){ location.reload(); }, 10000);
 }
 
-export function onContentLoaded() {
-  navTabs.navTabs_genHtml();
-
-  appState.init();
-
-  httpFetch.http_postDocRequest('cliparm_config');
-
+export function app_cbHtml() {
+  navTabs.navTabs_cbHtml();
   shutterBasic.basic_cbHtml();
   shutterPrefs.shp_cbHtml();
   shutterAlias.alias_cbHtml();
   shutterAuto.auto_cbHtml();
   mcuFirmware.netota_cbHtml();
   mcuConfig.mcuConfig_cbHtml();
+  testing.testing_cbHtml();
 
   document.getElementById("crlb").onclick = () => httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
   document.getElementById("mrtb").onclick = () => req_mcuRestart();
   document.getElementById("id_cuasb").onclick = () => cuas.req_cuasStart();
+}
+
+export function onContentLoaded() {
+  appState.init();
+  httpFetch.http_postDocRequest('cliparm_config');
 }
