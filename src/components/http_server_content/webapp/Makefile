@@ -3,29 +3,11 @@ JSHINT := $(THIS_ROOT)/tfmcu/node_modules/jshint/bin/jshint
 JS_SRC_DIR := $(THIS_ROOT)/tfmcu/src
 JS_BLD_DIR := $(THIS_ROOT)/tfmcu/build
 
-all: build bundle build/tfmcu.html
-
-.PHONY: bundle old
-bundle: node_modules
-	cd tfmcu && env $(buildTarget) npm run build
-	cd ../../../.. && $(JSHINT) $(JS_SRC_DIR)/*.js
-	cd ../../../.. && $(JSHINT) $(JS_BLD_DIR)/bundle.js
-	cp $(JS_BLD_DIR)/bundle.min.js build/tfmcu.js
-
-old: build build/tfmcu.html build/tfmcu.js
-	cd ../../../.. && jshint src/components/http_server_content/webapp/tfmcu_dev.js
-
-node_modules:
-	cd tfmcu && npm install
-
 HTMLMIN ?= ~/.local/bin/htmlmin
-TERSER ?= terser --source-map
-
 SED_OPTS_HTML =  -e 's/tfmcu_dev.js/\/tfmcu.js/'
 SED_OPTS = -E -e '/dev-delete-line/d'
 
 buildTarget = buildTarget=DEV
-
 ifdef DISTRO
 ifeq ($(DISTRO),1)
 SED_OPTS +=  -e '/dev-distro-delete-line/d'  -e '/dev-distro-delete-begin/,/dev-distro-delete-end/d'
@@ -36,6 +18,24 @@ endif
 ifndef FLAVOR_LAN
 SED_OPTS += -e '/dev-no-lan-delete-line/d'
 endif
+
+
+all: build bundle build/tfmcu.html
+
+.PHONY: bundle old
+bundle: node_modules
+	-cd ../../../.. && $(JSHINT) $(JS_SRC_DIR)/*.js
+	#cd ../../../.. && $(JSHINT) $(JS_BLD_DIR)/bundle.js
+	cd tfmcu && env $(buildTarget) npm run build
+	cp $(JS_BLD_DIR)/bundle.min.js build/tfmcu.js
+
+old: build build/tfmcu.html build/tfmcu.js
+	cd ../../../.. && jshint src/components/http_server_content/webapp/tfmcu_dev.js
+
+node_modules:
+	cd tfmcu && npm install
+
+
 
 .PHONY: clean
 clean:

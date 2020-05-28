@@ -1,11 +1,12 @@
 'use strict';
-import {dbLog} from './misc.js';
+import { dbLog } from './misc.js';
 import * as misc from './misc.js';
 import * as shutterName from './shutter_name.js';
 import * as shutterPrefs from './shutter_prefs.js';
 import * as a_http from './fetch.js';
 import * as ota from './netota.js';
 import * as cuas from './cuas.js';
+import * as mcc from './mcu_config.js';
 
 export let ast;
 
@@ -21,10 +22,10 @@ export class AppState {
   constructor() {
     this.mG = Number.parseInt((localStorage.getItem("group") || "0"), 10);
     this.mM = Number.parseInt((localStorage.getItem("member") || "0"), 10);
-    this.mGmu = localStorage.getItem("gmu") || [0,1,2,3,4,5,6,7];
+    this.mGmu = localStorage.getItem("gmu") || [0, 1, 2, 3, 4, 5, 6, 7];
     this.mTabVisibility = Number.parseInt((localStorage.getItem("tab_vis") || "1"), 10);
-    this.mAuto = {link:{}, auto:{}};
-    this.mPair = {all:{}};
+    this.mAuto = { link: {}, auto: {} };
+    this.mPair = { all: {} };
     this.mShutterPrefs = {};
     this.mPct = 0;
     this.mPcts = {};
@@ -37,10 +38,10 @@ export class AppState {
   }
 
   websocket() {
-    this.mWebSocket = new WebSocket('ws://'+window.location.host+'/ws');
-    this.mWebSocket.onopen = (evt) => { this.mWebSocket.send(JSON.stringify({"to":"tfmcu","cmd":{"p":"?"}})); };
-    this.mWebSocket.onmessage = (evt) => {  let json = evt.data; let obj = JSON.parse(json); this.http_handleResponses(obj); };
-    this.mWebSocket.onclose = (evt) => { dbLog(evt.reason); setTimeout(function() { this.websocket();  }, 1000);};
+    this.mWebSocket = new WebSocket('ws://' + window.location.host + '/ws');
+    this.mWebSocket.onopen = (evt) => { this.mWebSocket.send(JSON.stringify({ "to": "tfmcu", "cmd": { "p": "?" } })); };
+    this.mWebSocket.onmessage = (evt) => { let json = evt.data; let obj = JSON.parse(json); this.http_handleResponses(obj); };
+    this.mWebSocket.onclose = (evt) => { dbLog(evt.reason); setTimeout(function() { this.websocket(); }, 1000); };
     this.mWebSocket.onerror = (err) => { dbLog(err.msg); this.mWebSocket.close(); };
   }
 
@@ -49,7 +50,7 @@ export class AppState {
     this.tabIdx = this.mTabIdx;
     a_http.http_fetchByMask(this.load_fetch);
     this.tabVisibility = this.mTabVisibility;
-    setTimeout(()=>{ast.websocket();}, 1000);
+    setTimeout(() => { ast.websocket(); }, 1000);
     //this.websocket();
   }
 
@@ -60,7 +61,7 @@ export class AppState {
   }
 
   get tabVisibility() {
-    return  this.mTabVisibility;
+    return this.mTabVisibility;
   }
 
   set pct(val) {
@@ -85,7 +86,7 @@ export class AppState {
     return this.mPcts;
   }
 
-  getAutoName() { return  "auto" + this.g.toString() + this.m.toString(); }
+  getAutoName() { return "auto" + this.g.toString() + this.m.toString(); }
 
   getAutoObj() { let key = this.getAutoName(); return (key in this.mAuto.auto) ? this.mAuto.auto[key] : {}; }
 
@@ -107,7 +108,7 @@ export class AppState {
   }
 
   g_next() {
-    for (let i = this.mG+1; i <= 7; ++i) {
+    for (let i = this.mG + 1; i <= 7; ++i) {
       if (this.mGmu[i] > 0) {
         this.g = i;
         return;
@@ -179,7 +180,7 @@ export class AppState {
   }
 
   get aliases() {
-    return  this.mPair.all;
+    return this.mPair.all;
   }
 
   set shutterPrefs(obj) {
@@ -215,11 +216,11 @@ export class AppState {
     if ("daily" in auto) {
       let d = auto.daily;
       let l = auto.daily.length;
-      up_elem.value = d.startsWith("-") ? "" : d.substring(0,2)+":"+d.substring(2,4);
-      down_elem.value = d.endsWith("-") ? "" : d.substring(l-4,l-2)+":"+d.substring(l-2);
+      up_elem.value = d.startsWith("-") ? "" : d.substring(0, 2) + ":" + d.substring(2, 4);
+      down_elem.value = d.endsWith("-") ? "" : d.substring(l - 4, l - 2) + ":" + d.substring(l - 2);
     }
     if ("asmin" in auto) {
-      document.getElementById("id_astroTime").innerHTML = "(today: "+ Math.floor((auto.asmin/60)).toString().padStart(2,'0') + ":" + (auto.asmin%60).toString().padStart(2,'0') + ")";
+      document.getElementById("id_astroTime").innerHTML = "(today: " + Math.floor((auto.asmin / 60)).toString().padStart(2, '0') + ":" + (auto.asmin % 60).toString().padStart(2, '0') + ")";
     } else {
       document.getElementById("id_astroTime").innerHTML = "";
     }
@@ -227,7 +228,7 @@ export class AppState {
   }
 
   http_handleResponses(obj) {
-    dbLog("reply-json: "+JSON.stringify(obj));
+    dbLog("reply-json: " + JSON.stringify(obj));
 
     if ("config" in obj) {
       let config = obj.config;
@@ -237,19 +238,19 @@ export class AppState {
       } else {
         this.tfmcu_config = Object.assign(this.tfmcu_config, config);
         if ("gm-used" in config) {
-          misc.usedMembers_fromConfig();
+          mcc.usedMembers_fromConfig();
         }
 
         if (!document.getElementById("cfg_table_id")) {
           if ("verbose" in config) {
-            document.getElementById("config-div").innerHTML = misc.mcuConfigTable_genHtml(obj.config);
+            document.getElementById("config-div").innerHTML = mcc.mcuConfigTable_genHtml(obj.config);
           }
         }
       }
 
       if (document.getElementById("cfg_table_id")) {
-        misc.mcuConfig_updHtml(obj.config);
-        misc.usedMembers_updHtml_fromHtml();
+        mcc.mcuConfig_updHtml(obj.config);
+        mcc.usedMembers_updHtml_fromHtml();
       }
     }
 
@@ -304,11 +305,11 @@ export class AppState {
   }
 
   http_handleDocResponses(name, text) {
-    this.docs[name] =  { 'text':text };
+    this.docs[name] = { 'text': text };
   }
 }
 
-function  gm_updHtml() {
+function gm_updHtml() {
   const g = ast.g;
   const m = ast.m;
   document.getElementById("sgi").value = g ? g : "A";

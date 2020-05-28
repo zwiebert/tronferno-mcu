@@ -6,6 +6,13 @@ export const UP = 0;
 export const DOWN = 1;
 export const SUN_DOWN = 2;
 
+export function shp_cbHtml() {
+  document.getElementById("shp_reload").onclick = () => shp_updHtml();
+  document.getElementById("shp_save").onclick = () => shp_fromHtml_toMcu();
+  document.getElementById("shp_MvutButton").onclick = () => shp_stopClock_do(UP);
+  document.getElementById("shp_MvdtButton").onclick = () => shp_stopClock_do(DOWN);
+  document.getElementById("shp_SpMvdtButton").onclick = () => shp_stopClock_do(SUN_DOWN);
+}
 
 export function shp_updHtml() {
   const key = "shs" + as.ast.g.toString() + as.ast.m.toString();
@@ -15,7 +22,7 @@ export function shp_updHtml() {
   const mvspdt = document.getElementById("shpSpMvdt");
 
   if (!pref) {
-    pref = {mvut:0, mvdt:0, mvspdt:0 };
+    pref = { mvut: 0, mvdt: 0, mvspdt: 0 };
   }
 
   if (pref) {
@@ -30,7 +37,7 @@ export function shp_fromHtml_toMcu() {
   const mvdt = document.getElementById("shpMvdt");
   const mvspdt = document.getElementById("shpSpMvdt");
 
-  let tfmcu = {"to":"tfmcu", "shpref":{"g":as.ast.g, "m":as.ast.m, "c":"store"}};
+  let tfmcu = { "to": "tfmcu", "shpref": { "g": as.ast.g, "m": as.ast.m, "c": "store" } };
   let pref = tfmcu.shpref;
 
   pref.mvut = Math.floor((parseFloat(mvut.value) * 10)).toString();
@@ -44,17 +51,17 @@ export function shp_fromHtml_toMcu() {
 
 let stopClock = {
   ms: 100,
-  direction:0,
-  ivId:0,
-  text_elem:null,
-  val:0,
+  direction: 0,
+  ivId: 0,
+  text_elem: null,
+  val: 0,
 };
 
 function shp_stopClock_tick() {
   let spsc = stopClock;
-  let elem = document.getElementById(spsc.direction == UP ? "shpMvut":  spsc.direction == DOWN  ? "shpMvdt" : spsc.direction == SUN_DOWN ? "shpSpMvdt" : -1);
+  let elem = document.getElementById(spsc.direction == UP ? "shpMvut" : spsc.direction == DOWN ? "shpMvdt" : spsc.direction == SUN_DOWN ? "shpSpMvdt" : -1);
 
-  spsc.val  += (spsc.ms / 100);
+  spsc.val += (spsc.ms / 100);
   elem.value = (spsc.val / 10.0).toString();
 }
 

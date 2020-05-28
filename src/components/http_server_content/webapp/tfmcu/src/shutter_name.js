@@ -3,7 +3,6 @@ import * as as from './app_state.js';
 import * as a_http from './fetch.js';
 
 
-
 export function shn_fromHtml_toMcu(){
   const val = document.getElementById("smn").value;
 
