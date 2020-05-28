@@ -4,6 +4,7 @@ import { terser } from 'rollup-plugin-terser';
 import strip from '@rollup/plugin-strip';
 import { eslint } from "rollup-plugin-eslint";
 import svelte from 'rollup-plugin-svelte';
+import resolve from '@rollup/plugin-node-resolve';
 
 const isProduction = process.env.buildTarget === "PROD";
 
@@ -43,33 +44,36 @@ export default {
         functions: ['testing.*', 'appDebug.*', 'console.*', 'assert.*'],
         sourceMap: true
       })] : [],
-      
-          svelte({
+
+      svelte({
+          dev: !isProduction //,          css: css => {	 css.write('build/bundle.css');  }
       // By default, all .svelte and .html files are compiled
-      extensions: ['.my-custom-extension'],
+      //extensions: ['.my-custom-extension'],
 
       // You can restrict which files are compiled
       // using `include` and `exclude`
-      include: 'src/components/**/*.svelte',
+      //include: 'src/*.svelte',
 
       // By default, the client-side compiler is used. You
       // can also use the server-side rendering compiler
-      generate: 'ssr',
-      
+      //generate: 'ssr',
+
       // ensure that extra attributes are added to head
       // elements for hydration (used with ssr: true)
-      hydratable: true,
+      //hydratable: true,
 
       // Optionally, preprocess components with svelte.preprocess:
-      // https://svelte.dev/docs#svelte_preprocess
+          // https://svelte.dev/docs#svelte_preprocess
+          /*
       preprocess: {
         style: ({ content }) => {
           return transformStyles(content);
         }
+
       },
 
       // Emit CSS as "files" for other plugins to process
-      emitCss: true,
+      emitCss: false,
 
       // Extract CSS into a separate file (recommended).
       // See note below
@@ -92,6 +96,16 @@ export default {
         // let Rollup handle all other warnings normally
         handler(warning);
       }
-    })
+      */
+      }),
+      // If you have external dependencies installed from
+      // npm, you'll most likely need these plugins. In
+      // some cases you'll need additional configuration -
+      // consult the documentation for details:
+      // https://github.com/rollup/plugins/tree/master/packages/commonjs
+      resolve({
+	  browser: true,
+	  dedupe: ['svelte']
+      })
   ]
 };

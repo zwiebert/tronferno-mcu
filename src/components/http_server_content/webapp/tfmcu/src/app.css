@@ -1,16 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Tronferno</title>
-<script type="text/javascript" src="f/js/tfmcu.js"></script>
-<script>
-      document.addEventListener("DOMContentLoaded", tfmcu);
-    
-    </script>
-    
-    <style>
-    
+
+
       * { font-size:100%; }
 
       .tab {
@@ -193,9 +182,5 @@
       #position: absolute;
       #top: 40%;
       transform: rotate(270deg);
-      }    
-    </style>
-</head>
-<body>
-</body>
-</html>
+      }
+
