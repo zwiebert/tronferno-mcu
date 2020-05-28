@@ -8,6 +8,7 @@ import * as a_http from './fetch.js';
 import * as ota from './netota.js';
 import * as cuas from './cuas.js';
 import * as mcc from './mcu_config.js';
+import * as navTabs from './nav_tabs.js';
 
 export let ast;
 
@@ -58,7 +59,7 @@ export class AppState {
   set tabVisibility(value) {
     this.mTabVisibility = value;
     localStorage.setItem("tab_vis", value.toString());
-    misc.navTabs_updHtml(parseInt(value));
+    navTabs.navTabs_updHtml(parseInt(value));
   }
 
   get tabVisibility() {

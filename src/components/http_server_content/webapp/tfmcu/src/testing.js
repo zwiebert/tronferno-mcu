@@ -3,13 +3,14 @@ import * as aps from './app_state.js';
 import * as a_http from './fetch.js';
 import * as misc from './misc.js';
 import * as ota from './netota.js';
+import * as navTabs from './nav_tabs.js';
 
 export function testing_netota() {
   document.getElementById("netota").onclick = () => ota.netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);
 }
 
 export function testing_genHtml() {
-  misc.tabs.push({ 'text': 'Tests', 'div_id': ['testsdiv'], });
+  navTabs.tabs.push({ 'text': 'Tests', 'div_id': ['testsdiv'], });
   test_random_periodic_movement_genHtml();
 }
 
