@@ -1,7 +1,7 @@
 'use strict';
 
 import { dbLog } from './misc.js';
-import * as as from './app_state.js';
+import * as aps from './app_state.js';
 import * as a_http from './fetch.js';
 
 
@@ -32,7 +32,7 @@ export function mcuConfig_updHtml(cfg) {
 
 
 export function mcuConfig_fromHtml_toMcu() {
-  const cfg = as.ast.tfmcu_config;
+  const cfg = aps.ast.tfmcu_config;
 
   var new_cfg = {};
   var has_changed = false;
@@ -138,7 +138,7 @@ function configTr_genHtml(name, value) {
 
 export function usedMembers_fromConfig() {
 
-  let s = as.ast.tfmcu_config["gm-used"];
+  let s = aps.ast.tfmcu_config["gm-used"];
 
 
   let sa = s ? s.split('').reverse() : [];
@@ -150,7 +150,7 @@ export function usedMembers_fromConfig() {
     gmu[g] = um;
   }
 
-  as.ast.gmu = gmu;
+  aps.ast.gmu = gmu;
 }
 
 export function usedMembers_updHtml_fromHtml() {

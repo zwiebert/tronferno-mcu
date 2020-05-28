@@ -1,5 +1,5 @@
 'use strict';
-import * as as from './app_state.js';
+import * as aps from './app_state.js';
 import * as a_http from './fetch.js';
 import * as misc from './misc.js';
 import * as ota from './netota.js';
@@ -42,8 +42,8 @@ function testPressed(enable) {
   }
 
   if (enable) {
-    as.ast.g = 7;
-    as.ast.m = 1;
+    aps.ast.g = 7;
+    aps.ast.m = 1;
     test_randomCmd_interval = setInterval(test_randomCmd, 1000);
   }
 }

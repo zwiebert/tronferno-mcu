@@ -1,5 +1,5 @@
 'use strict';
-import * as as from './app_state';
+import * as aps from './app_state';
 import * as a_http from './fetch.js';
 
 export const UP = 0;
@@ -15,8 +15,8 @@ export function shp_cbHtml() {
 }
 
 export function shp_updHtml() {
-  const key = "shs" + as.ast.g.toString() + as.ast.m.toString();
-  let pref = as.ast.shutterPrefs[key];
+  const key = "shs" + aps.ast.g.toString() + aps.ast.m.toString();
+  let pref = aps.ast.shutterPrefs[key];
   const mvut = document.getElementById("shpMvut");
   const mvdt = document.getElementById("shpMvdt");
   const mvspdt = document.getElementById("shpSpMvdt");
@@ -37,7 +37,7 @@ export function shp_fromHtml_toMcu() {
   const mvdt = document.getElementById("shpMvdt");
   const mvspdt = document.getElementById("shpSpMvdt");
 
-  let tfmcu = { "to": "tfmcu", "shpref": { "g": as.ast.g, "m": as.ast.m, "c": "store" } };
+  let tfmcu = { "to": "tfmcu", "shpref": { "g": aps.ast.g, "m": aps.ast.m, "c": "store" } };
   let pref = tfmcu.shpref;
 
   pref.mvut = Math.floor((parseFloat(mvut.value) * 10)).toString();

@@ -1,6 +1,6 @@
 'use strict';
 import {dbLog} from './misc.js';
-import * as as from './app_state.js';
+import * as aps from './app_state.js';
 import * as ota from './netota.js';
 
 export const FETCH_CONFIG = 1;
@@ -41,7 +41,7 @@ export function http_postRequest(url = '', data = {}) {
       return response.json();
     })
 
-    .then((json) => as.ast.http_handleResponses(json))
+    .then((json) => aps.ast.http_handleResponses(json))
 
     .catch((error) => {
       console.log("error: http_postRequest(): ", error);
@@ -64,7 +64,7 @@ export function http_postDocRequest(name) {
     .then(response => {
       if(response.ok) {
         response.text().then(text => {
-          as.ast.http_handleDocResponses(name, text);
+          aps.ast.http_handleDocResponses(name, text);
         });
       }
     });
@@ -72,8 +72,8 @@ export function http_postDocRequest(name) {
 
 export function http_postShutterCommand(c=document.getElementById('send-c').value) {
   var tfmcu = {to:"tfmcu"};
-  let g = as.ast.g.toString();
-  let m = as.ast.m.toString();
+  let g = aps.ast.g.toString();
+  let m = aps.ast.m.toString();
 
   var send = {
     g: g,
@@ -102,15 +102,15 @@ export function http_postShutterCommand(c=document.getElementById('send-c').valu
 
     if (mask & FETCH_AUTO)
       tfmcu.auto = {
-        g: as.ast.g,
-        m: as.ast.m,
+        g: aps.ast.g,
+        m: aps.ast.m,
         f: "uki",
       };
 
     if (mask & FETCH_POS)
       tfmcu.send = {
-        g: as.ast.g,
-        m: as.ast.m,
+        g: aps.ast.g,
+        m: aps.ast.m,
         p: "?",
       };
 
@@ -122,15 +122,15 @@ export function http_postShutterCommand(c=document.getElementById('send-c').valu
     if (mask & FETCH_ALIASES_START_PAIRING)
       tfmcu.pair = {
         a: "?",
-        g: as.ast.g,
-        m: as.ast.m,
+        g: aps.ast.g,
+        m: aps.ast.m,
         c: "pair"
       };
     if (mask & FETCH_ALIASES_START_UNPAIRING)
       tfmcu.pair = {
         a: "?",
-        g: as.ast.g,
-        m: as.ast.m,
+        g: aps.ast.g,
+        m: aps.ast.m,
         c: "unpair"
       };
 
@@ -138,8 +138,8 @@ export function http_postShutterCommand(c=document.getElementById('send-c').valu
       if (!('shpref' in tfmcu))
         tfmcu.shpref = {};
       Object.assign(tfmcu.shpref, {
-        g: as.ast.g,
-        m: as.ast.m,
+        g: aps.ast.g,
+        m: aps.ast.m,
         mvut: '?', mvdt: '?', mvspdt: '?', 'tag.NAME':'?',
       });
     }
@@ -148,8 +148,8 @@ export function http_postShutterCommand(c=document.getElementById('send-c').valu
       if (!('shpref' in tfmcu))
         tfmcu.shpref = {};
       Object.assign(tfmcu.shpref, {
-        g: as.ast.g,
-        m: as.ast.m,
+        g: aps.ast.g,
+        m: aps.ast.m,
         'tag.NAME':'?',
       });
     }

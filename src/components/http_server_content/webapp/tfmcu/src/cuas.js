@@ -1,6 +1,6 @@
 'use strict';
 import * as a_http from './fetch.js';
-import * as as from './app_state.js';
+import * as aps from './app_state.js';
 
 let cuas_Interval;
 let cuas_State = 0;

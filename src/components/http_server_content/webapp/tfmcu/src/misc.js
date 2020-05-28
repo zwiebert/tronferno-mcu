@@ -1,7 +1,7 @@
 'use strict';
 
 
-import * as as from './app_state.js';
+import * as aps from './app_state.js';
 import * as shutterPrefs from './shutter_prefs.js';
 import * as shutterName from './shutter_name.js';
 import * as ota from './netota.js';
@@ -19,7 +19,7 @@ export function aliasControllers_updHtml() {
     document.getElementById("divPairAll").innerHTML = aliasTable_genHtml();
   }
 
-  const pad = as.ast.aliases;
+  const pad = aps.ast.aliases;
   const pas = document.getElementById("aliases");
   const pas_sel = pas.selectedIndex;
   for (const key in pad) {
@@ -43,7 +43,7 @@ export function aliasControllers_updHtml() {
 }
 
 function aliasControllers_fromHtml() { // XXX
-  const pad = as.ast.aliases;
+  const pad = aps.ast.aliases;
   const pas = document.getElementById("aliases");
   const pas_sel = pas.selectedIndex;
 
@@ -84,7 +84,7 @@ function onAliasesReload() {
 }
 
 function alias_isKeyPairedToM(key, g, m) {
-  const val = as.ast.aliases[key];
+  const val = aps.ast.aliases[key];
 
   let chunks = [];
 
@@ -104,13 +104,13 @@ function alias_isKeyPairedToM(key, g, m) {
 }
 
 export function aliasPaired_updHtml() {
-  const g = as.ast.g;
-  const m = as.ast.m;
+  const g = aps.ast.g;
+  const m = aps.ast.m;
   const pas = document.getElementById("paired");
 
   for (let i = pas.options.length - 1; i >= 0; --i)
   pas.remove(i);
-  for (let key in as.ast.aliases) {
+  for (let key in aps.ast.aliases) {
     if (!alias_isKeyPairedToM(key, g, m))
       continue;
 
@@ -120,7 +120,7 @@ export function aliasPaired_updHtml() {
   }
 }
 function aliasTable_updHtml(key) {
-  const val = as.ast.aliases[key];
+  const val = aps.ast.aliases[key];
 
   let chunks = [];
 
@@ -249,18 +249,18 @@ export function req_mcuRestart() {
 
 // ------------ cmd div --------------
 function onGPressed() {
-  as.ast.g_next();
+  aps.ast.g_next();
 }
 
 function onMPressed() {
-  as.ast.m_next();
+  aps.ast.m_next();
 }
 
 function onPos(pct) {
   let tfmcu = { to: "tfmcu" };
   tfmcu.send = {
-    g: as.ast.g,
-    m: as.ast.m,
+    g: aps.ast.g,
+    m: aps.ast.m,
     p: pct,
   };
 
@@ -275,8 +275,8 @@ function req_automatic() {
   let auto = tfmcu.timer;
   let has_daily = false, has_weekly = false, has_astro = false;
 
-  auto.g = as.ast.g;
-  auto.m = as.ast.m;
+  auto.g = aps.ast.g;
+  auto.m = aps.ast.m;
 
   let f = "i";
   f += document.getElementById('tmci').checked ? "M" : "m";
@@ -321,9 +321,9 @@ function clearAuto_updHtml() {
 export let tabs = [
   { 'text': 'Command', 'div_id': ['senddiv'], fetch_gm: (a_http.FETCH_POS | a_http.FETCH_SHUTTER_NAME) },
   { 'text': 'Automatic', 'div_id': ['senddiv', 'autodiv'], fetch_gm: (a_http.FETCH_AUTO | a_http.FETCH_POS | a_http.FETCH_SHUTTER_NAME) },
-  { 'text':'Config', 'div_id':['configdiv'], fetch:a_http.FETCH_CONFIG },
-  { 'text':'Positions', 'div_id':['senddiv', 'aliasdiv', 'shprefdiv'], fetch:a_http.FETCH_ALIASES, fetch_gm:a_http.FETCH_POS|a_http.FETCH_SHUTTER_PREFS|a_http.FETCH_SHUTTER_NAME },
-  { 'text':'Firmware', 'div_id':['id-fwDiv'], fetch_init:(a_http.FETCH_VERSION|a_http.FETCH_GIT_TAGS)},
+  { 'text': 'Config', 'div_id': ['configdiv'], fetch: a_http.FETCH_CONFIG },
+  { 'text': 'Positions', 'div_id': ['senddiv', 'aliasdiv', 'shprefdiv'], fetch: a_http.FETCH_ALIASES, fetch_gm: a_http.FETCH_POS | a_http.FETCH_SHUTTER_PREFS | a_http.FETCH_SHUTTER_NAME },
+  { 'text': 'Firmware', 'div_id': ['id-fwDiv'], fetch_init: (a_http.FETCH_VERSION | a_http.FETCH_GIT_TAGS) },
 ];
 let div_ids = [];
 
@@ -356,9 +356,9 @@ export function navTabs_updHtml(idx) {
   }
   if ('fetch_gm' in nt) {
     fetch |= nt.fetch_gm;
-    as.ast.gmc_fetch = nt.fetch_gm;
+    aps.ast.gmc_fetch = nt.fetch_gm;
   } else {
-    as.ast.gmc_fetch = 0;
+    aps.ast.gmc_fetch = 0;
   }
 
   if (fetch) {
@@ -367,14 +367,14 @@ export function navTabs_updHtml(idx) {
 }
 
 function onNavTab(idx) {
-  as.ast.tabVisibility = idx;
+  aps.ast.tabVisibility = idx;
 }
 
 function navTabs_genHtml() {
   let html = '';
   for (let i = 0; i < tabs.length; ++i) {
     const tab = tabs[i];
-    html += '<button class="tablinks" id="tabbt'+i.toString()+'">'+tab.text+'</button>\n';
+    html += '<button class="tablinks" id="tabbt' + i.toString() + '">' + tab.text + '</button>\n';
 
     for (let k = 0; k < tabs[i].div_id.length; ++k) {
       const div_id = tabs[i].div_id[k];
@@ -393,7 +393,7 @@ function navTabs_genHtml() {
 export function onContentLoaded() {
   navTabs_genHtml();
 
-  as.init();
+  aps.init();
 
   a_http.http_postDocRequest('cliparm_config');
 
