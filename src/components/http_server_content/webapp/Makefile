@@ -25,7 +25,7 @@ all: build bundle build/tfmcu.html
 .PHONY: bundle old
 bundle: tfmcu/node_modules
 	-cd ../../../.. && $(JSHINT) $(JS_SRC_DIR)/*.js
-	#cd ../../../.. && $(JSHINT) $(JS_BLD_DIR)/bundle.js
+	-cd ../../../.. && $(JSHINT) $(JS_BLD_DIR)/bundle.js
 	cd tfmcu && env $(buildTarget) npm run build
 	cp $(JS_BLD_DIR)/bundle.min.js build/tfmcu.js
 

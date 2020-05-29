@@ -4,12 +4,24 @@
   import * as appDebug from './app_debug.js';
   import * as appState from './app_state.js';
   import * as httpFetch from './fetch.js';
+  import * as cuas from './cuas.js';
+  import * as misc from './misc.js';
 
-
-  export function mcuConfig_cbHtml() {
-  document.getElementById("csvb").onclick = () => mcuConfig_fromHtml_toMcu();
+  function hClick_Reload() {
+    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
   }
 
+  function hClick_Save() {
+    mcuConfig_fromHtml_toMcu();
+  }
+
+  function hClick_RestartMcu() {
+    misc.req_mcuRestart();
+  }
+
+  function hClick_ScanCU() {
+    cuas.req_cuasStart();
+  }
 
   export function mcuConfigTable_genHtml(cfg) {
   var html = '<table id="cfg_table_id" class="conf-table">';
@@ -221,16 +233,16 @@ function usedMembers_fromHtml_toHtml() {
   </table>
 
   <br>
-  <button id="crlb" type="button">Reload</button>
-  <button id="csvb" type="button">Save</button>
+  <button id="crlb" type="button" on:click={hClick_Reload}>Reload</button>
+  <button id="csvb" type="button" on:click={hClick_Save}>Save</button>
   <br><br>
-  <button id="mrtb" type="button">Restart MCU</button><br>
+  <button id="mrtb" type="button" on:click={hClick_RestartMcu}>Restart MCU</button><br>
   <div id="config_restart_div"></div>
 
   <section>
     <h1>Configuration-Wizards</h1>
     <ul>
-      <li><button id="id_cuasb" type="button">Scan Central-Unit-ID</button> <span id="id_cuasStatus"></span></li>
+      <li><button id="id_cuasb" type="button" on:click={hClick_ScanCU}>Scan Central-Unit-ID</button> <span id="id_cuasStatus"></span></li>
     </ul>
   </section>
 </div>

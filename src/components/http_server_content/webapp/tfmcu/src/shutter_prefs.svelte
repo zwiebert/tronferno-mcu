@@ -1,5 +1,3 @@
-
-
 <script context="module">
 'use strict';
 import * as appState from './app_state';
@@ -9,12 +7,24 @@ export const UP = 0;
 export const DOWN = 1;
 export const SUN_DOWN = 2;
 
-export function shp_cbHtml() {
-  document.getElementById("shp_reload").onclick = () => shp_updHtml();
-  document.getElementById("shp_save").onclick = () => shp_fromHtml_toMcu();
-  document.getElementById("shp_MvutButton").onclick = () => shp_stopClock_do(UP);
-  document.getElementById("shp_MvdtButton").onclick = () => shp_stopClock_do(DOWN);
-  document.getElementById("shp_SpMvdtButton").onclick = () => shp_stopClock_do(SUN_DOWN);
+function hClick_Reload() {
+  shp_updHtml();
+}
+
+function hClick_Save() {
+  shp_fromHtml_toMcu();
+}
+
+function hClick_Up() {
+  shp_stopClock_do(UP);
+}
+
+function hClick_Down() {
+  shp_stopClock_do(DOWN);
+}
+
+function hClick_Sun() {
+  shp_stopClock_do(SUN_DOWN);
 }
 
 export function shp_updHtml() {
@@ -111,10 +121,10 @@ export function shp_stopClock_stop() {
   <br>
   <table class="dur_table">
     <tr><th>Direction</th><th>Duration (secs)</th><th>Stopclock</th></tr>
-    <tr><td>up to 100%</td><td><input id="shpMvut" type="number" min="0" value="0" step="0.1"></td><td><button id="shp_MvutButton">Start/Stop</button></td></tr>
-    <tr><td>down to 0%</td><td><input id="shpMvdt" type="number" min="0" value="0" step="0.1"></td><td><button id="shp_MvdtButton">Start/Stop</button></td></tr>
-    <tr><td>down to sun position</td><td><input id="shpSpMvdt" type="number" min="0" value="0" step="0.1"></td><td><button id="shp_SpMvdtButton">Start/Stop</button></td></tr>
+    <tr><td>up to 100%</td><td><input id="shpMvut" type="number" min="0" value="0" step="0.1"></td><td><button id="shp_MvutButton" on:click={hClick_Up}>Start/Stop</button></td></tr>
+    <tr><td>down to 0%</td><td><input id="shpMvdt" type="number" min="0" value="0" step="0.1"></td><td><button id="shp_MvdtButton" on:click={hClick_Down}>Start/Stop</button></td></tr>
+    <tr><td>down to sun position</td><td><input id="shpSpMvdt" type="number" min="0" value="0" step="0.1"></td><td><button id="shp_SpMvdtButton" on:click={hClick_Sun}>Start/Stop</button></td></tr>
   </table>
-  <button id="shp_reload" type="button">Reload</button>
-  <button id="shp_save" type="button">Save</button>
+  <button id="shp_reload" type="button" on:click={hClick_Reload}>Reload</button>
+  <button id="shp_save" type="button" on:click={hClick_Save}>Save</button>
 </div>

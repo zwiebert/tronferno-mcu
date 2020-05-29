@@ -37,7 +37,7 @@ export default {
     json(),
     ...isProduction ? [
       strip({
-        functions: ['testing.*', 'appDebug.*', 'console.*', 'assert.*'],
+        functions: ['testing.*', 'testing_*', 'appDebug.*', 'console.*', 'assert.*'],
         sourceMap: true
       })] : [],
 

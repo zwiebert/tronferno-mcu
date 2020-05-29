@@ -1,19 +1,15 @@
 'use strict';
 // src/main.js
-//import { version } from '../package.json';
 
-import { onContentLoaded } from './misc.js';
 import * as testing from './testing.svelte';
-
-import * as misc from './misc.js';
-
+import * as appState from './app_state.js';
+import * as httpFetch from './fetch.js';
 
 export default function() {
   testing.testing_init();
   generate_html();
-  misc.app_cbHtml();
-  onContentLoaded();
-  testing.testing_netota();
+  appState.init();
+  httpFetch.http_postDocRequest('cliparm_config');
 }
 
 

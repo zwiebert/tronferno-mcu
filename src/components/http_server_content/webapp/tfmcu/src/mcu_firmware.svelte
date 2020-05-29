@@ -5,11 +5,6 @@ import * as httpFetch from './fetch.js';
 import * as misc from './misc.js';
 
 
-export function netota_cbHtml() {
-  document.getElementById("netota_master").onclick = () => netFirmwareOTA(otaName_master);
-  document.getElementById("netota_beta").onclick = () => netFirmwareOTA(otaName_beta);
-}
-
 // ----------------- firmware div ---------------
 var netota_intervalID = 0;
 var netota_isInProgress = false;
@@ -125,11 +120,8 @@ export function netota_handle_otaState(ota_state) {
       <div id="id-fwDiv">
         <h4>OTA Firmware Update</h4>
         <div id="netota_controls">
-
-            <label><button id="netota_master" type="button">Do flash latest firmware</button></label><br><br>
-            <label><button id="netota_beta" type="button">Do Flash latest beta firmware</button></label><br><br>
-            <label><button id="netota" type="button">Do flash firmware from given URL</button> <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:3000/tronferno-mcu.bin"> </label><br><br><!--dev-distro-delete-line-->
-
+            <label><button id="netota_master" type="button" on:click={() => netFirmwareOTA(otaName_master)}>Do flash latest firmware</button></label><br><br>
+            <label><button id="netota_beta" type="button" on:click={() => netFirmwareOTA(otaName_beta)}>Do Flash latest beta firmware</button></label><br><br>
           <div id="gitTags_div"></div>
         </div>
         <div id="netota_progress_div"></div>

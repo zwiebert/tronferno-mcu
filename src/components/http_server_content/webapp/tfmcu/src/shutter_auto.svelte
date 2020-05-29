@@ -4,17 +4,19 @@ import * as appDebug from './app_debug.js';
 import * as appState from './app_state';
 import * as httpFetch from './fetch.js';
 
-export function auto_cbHtml() {
-  document.getElementById("arlb").onclick = () => httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
-  document.getElementById("asvb").onclick = () => {
-    // disable button for 5 seconds while data is being sent to shutter
-    // motor by RF
-    document.getElementById("asvb").disabled = true;
-    setTimeout(() => { document.getElementById("asvb").disabled = false; }, 5000);
-
-    req_automatic();
-  };
+function hClick_Reload() {
+  httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
 }
+
+function hClick_Save() {
+  // disable button for 5 seconds while data is being sent to shutter
+  // motor by RF
+  document.getElementById("asvb").disabled = true;
+  setTimeout(() => { document.getElementById("asvb").disabled = false; }, 5000);
+
+  req_automatic();
+}
+
 
 // -------------  auto div -------------------------------
 function req_automatic() {
@@ -107,8 +109,8 @@ function clearAuto_updHtml() {
   </table>
 
   <br>
-  <button id="arlb" class="sb" type="button">Reload</button>
-  <button id="asvb" class="sb" type="button">Save</button>
+  <button id="arlb" class="sb" type="button" on:click={hClick_Reload}>Reload</button>
+  <button id="asvb" class="sb" type="button" on:click={hClick_Save}>Save</button>
   <br>
 </div>
 

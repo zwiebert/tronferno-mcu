@@ -1,27 +1,46 @@
 <script context="module">
+  'use strict';
   import * as shutterName from './shutter_name.js';
-
-  export function basic_cbHtml() {
-  document.getElementById("smn").onchange = () => shutterName.shn_fromHtml_toMcu();
-  document.getElementById("sgb").onclick = () => onGPressed();
-  document.getElementById("smb").onclick = () => onMPressed();
-  document.getElementById("sub").onclick = () => httpFetch.http_postShutterCommand('up');
-  document.getElementById("ssb").onclick = () => httpFetch.http_postShutterCommand('stop');
-  document.getElementById("sdb").onclick = () => httpFetch.http_postShutterCommand('down');
-  document.getElementById("sspb").onclick = () => httpFetch.http_postShutterCommand('sun-down');
-  document.getElementById("spb").onclick = () => onPos(document.getElementById("spi").value);
-  document.getElementById("spr").onchange = () => onPos(document.getElementById("spr").value);
-  }
+  import * as appState from './app_state.js';
+  import * as httpFetch from './fetch.js';
 
   //------------ cmd div --------------
-  function onGPressed() {
+  function hClick_G() {
   appState.ast.g_next();
   }
 
-  function onMPressed() {
+  function hClick_M() {
   appState.ast.m_next();
   }
+  
+  function hClick_P() {
+    onPos(document.getElementById("spi").value);
+  }
 
+  function hClick_Stop() {
+    httpFetch.http_postShutterCommand('stop');
+  }
+  
+  function hClick_Up() {
+    httpFetch.http_postShutterCommand('up');
+  }
+  
+  function hClick_Down() {
+    httpFetch.http_postShutterCommand('down');
+  }
+  
+  function hClick_Sun() {
+    httpFetch.http_postShutterCommand('sun-down');
+  }
+  
+  function hChange_Name() {
+    shutterName.shn_fromHtml_toMcu();
+  }
+  
+  function hChange_Pos() {
+    onPos(document.getElementById("spr").value);
+  }
+  
   function onPos(pct) {
   let tfmcu = { to: "tfmcu" };
   tfmcu.send = {
@@ -94,17 +113,17 @@
 </style>
 
 <div id="senddiv" class="send">
-  <input id="smn" type = "text" name = "name" value="">
+  <input id="smn" type = "text" name = "name" value="" on:change={hChange_Name}>
   <input id="sgi" type = "text" name = "g" value="A">
   <input id="spi" type = "number" min="0" max="100" name = "p" value="100">
-  <input id="spr" type = "range" min="0" max="100" name = "p" value="100">
+  <input id="spr" type = "range" min="0" max="100" name = "p" value="100" on:change={hChange_Pos}>
   <input id="smi" type = "text" name = "m" value="A">
   <br>
-  <button id="sgb" type="button">G</button>
-  <button id="spb" type="button">Position</button>
-  <button id="smb" type="button">E</button>
-  <br><button id="sub" class="sb" type="button">&#x25b2;</button>
-  <br><button id="ssb" class="sb" type="button">STOP</button>
-  <br><button id="sdb" class="sb" type="button">&#x25bc;</button>
-  <br><button id="sspb" class="sb" type="button">Sun</button>
+  <button id="sgb" type="button" on:click={hClick_G}>G</button>
+  <button id="spb" type="button" on:click={hClick_P}>Position</button>
+  <button id="smb" type="button" on:click={hClick_M}>E</button>
+  <br><button id="sub" class="sb" type="button" on:click={hClick_Up}>&#x25b2;</button>
+  <br><button id="ssb" class="sb" type="button" on:click={hClick_Stop}>STOP</button>
+  <br><button id="sdb" class="sb" type="button" on:click={hClick_Down}>&#x25bc;</button>
+  <br><button id="sspb" class="sb" type="button" on:click={hClick_Sun}>Sun</button>
 </div>

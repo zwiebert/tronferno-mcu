@@ -3,14 +3,12 @@
 import * as appState from './app_state';
 import * as httpFetch from './fetch.js';
 
-export function alias_cbHtml() {
-  document.getElementById("alias_reload").onclick = () => onAliasesReload();
-  document.getElementById("alias_save").onclick = () => onAliasesApply();
-  document.getElementById("alias_pair").onclick = () => httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_PAIRING);
-  document.getElementById("alias_unpair").onclick = () => httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_UNPAIRING);
-  document.getElementById("aliases").onchange = () => onAliasesChanged();
-  document.getElementById("paired").onclick = () => onPairedChanged();
-  document.getElementById("paired").onchange = () => onPairedChanged();
+function hClick_Pair() {
+  httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_PAIRING);
+}
+
+function hClick_UnPair() {
+  httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_UNPAIRING);
 }
 
 export function aliasControllers_updHtml() {
@@ -211,14 +209,14 @@ function aliasTable_genHtml() {
         <hr>
         <h4 id="aliasHeader">Paired controllers</h4>
         <p class="help_text">To register position changes made by commands sent from plain controllers and sun-sensors, these controllers have to be registered here.  Select G/E above and pair the controller here by start pairing and pressing STOP on the controller.</p>
-        <span id="aliasPairUnpair"><button id="alias_pair" type="button">Start Pairing</button>
-          <button id="alias_unpair" type="button">Start Un-Pairing</button></span><br>
+        <span id="aliasPairUnpair"><button id="alias_pair" type="button" on:click={hClick_Pair}>Start Pairing</button>
+          <button id="alias_unpair" type="button" on:click={hClick_UnPair}>Start Un-Pairing</button></span><br>
           <table>
             <tr><th>All</th><th>This G/E</th></tr>
-            <tr><td><select id="aliases" size="5"></select></td>
-            <td><select id="paired" size="5"></select></td>
+            <tr><td><select id="aliases" size="5" on:change={onAliasesChanged}></select></td>
+            <td><select id="paired" size="5" on:click={onPairedChanged} on:change={onPairedChanged}></select></td>
           </table>
         <div id="divPairAll"> </div>
-        <span id="aliasSaveReload"><button id="alias_reload" type="button">Reload</button>
-          <button id="alias_save" type="button">Save</button></span>
+        <span id="aliasSaveReload"><button id="alias_reload" type="button" on:click={onAliasesReload}>Reload</button>
+          <button id="alias_save" type="button" on:click={onAliasesApply}>Save</button></span>
       </div>

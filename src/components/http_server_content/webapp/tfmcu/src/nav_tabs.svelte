@@ -57,18 +57,9 @@ function onNavTab(idx) {
   appState.ast.tabVisibility = idx;
 }
 
-export function navTabs_cbHtml() {
-  for (let i = 0; i < tabs.length; ++i) {
-    document.getElementById('tabbt' +  i.toString()).onclick = () => onNavTab(i);
-  }
-}
-
-export function navTabs_genHtml() {
-  let html = '';
+function navTabs_init() {
   for (let i = 0; i < tabs.length; ++i) {
     const tab = tabs[i];
-    html += '<button class="tab" id="tabbt' + i.toString() + '">' + tab.text + '</button>\n';
-
     for (let k = 0; k < tabs[i].div_id.length; ++k) {
       const div_id = tabs[i].div_id[k];
       if (!div_ids.includes(div_id)) {
@@ -76,15 +67,14 @@ export function navTabs_genHtml() {
       }
     }
   }
-  
-  return html;
 }
 
+navTabs_init();
 </script>
 
 <style>      /* Style the buttons that are used to open the tab content */
 
-:global(.tab button) {
+.tab button {
       background-color: inherit;
       float: left;
       border: none;
@@ -94,7 +84,7 @@ export function navTabs_genHtml() {
       transition: 0.3s;
       }
       
-            :global(.tab) {
+            .tab {
       overflow: hidden;
       border: 1px solid #ccc;
       background-color: #f1f1f1;
@@ -103,12 +93,12 @@ export function navTabs_genHtml() {
 
 
       /* Change background color of buttons on hover */
-      :global(.tab button:hover) {
+     .tab button:hover {
       background-color: #ddd;
       }
 
       /* Create an active/current tablink class */
-      :global(.tab button.active) {
+    .tab button.active {
       background-color: #ccc;
       }
       
@@ -116,7 +106,10 @@ export function navTabs_genHtml() {
       </style>
 
 <div id="tabBar" class="tab">
-{@html navTabs_genHtml()}
+{#each tabs as tab, i}
+<button class="tab" id="tabbt{i}" on:click={() => onNavTab(i)}>{tab.text}</button>
+{/each}
 </div>
 
+  
 
