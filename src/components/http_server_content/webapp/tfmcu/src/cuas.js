@@ -5,21 +5,21 @@ let cuas_Interval;
 let cuas_State = 0;
 
 export function req_cuasStatus() {
-  var json = { to: "tfmcu", config: { cuas: "?" } };
-  var url = '/cmd.json';
+  let json = { to: "tfmcu", config: { cuas: "?" } };
+  let url = '/cmd.json';
   httpFetch.http_postRequest(url, json);
 }
 
 export function req_cuasStart() {
-  var json = { to: "tfmcu", config: { cu: "auto" } };
-  var url = '/cmd.json';
+  let json = { to: "tfmcu", config: { cu: "auto" } };
+  let url = '/cmd.json';
   httpFetch.http_postRequest(url, json);
   cuas_State = 0;
   cuas_Interval = window.setInterval(req_cuasStatus, 1000);
 }
 
 export function cuas_handle_cuasState(config) {
-  if (config.cuas == cuas_State)
+  if (config.cuas === cuas_State)
     return;
 
   let s = "";

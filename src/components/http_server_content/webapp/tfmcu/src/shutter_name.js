@@ -8,7 +8,7 @@ export function shn_fromHtml_toMcu() {
 
   let tfmcu = { "to":"tfmcu", "shpref":{"g":appState.ast.g, "m":appState.ast.m, "tag.NAME":val }};
 
-  var url = '/cmd.json';
+  let url = '/cmd.json';
     httpFetch.http_postRequest(url, tfmcu);
   }
 

@@ -6,12 +6,12 @@ import * as misc from './misc.js';
 
 
 // ----------------- firmware div ---------------
-var netota_intervalID = 0;
-var netota_isInProgress = false;
-var netota_progressCounter = 0;
+let netota_intervalID = 0;
+let netota_isInProgress = false;
+let netota_progressCounter = 0;
 
 function netota_FetchFeedback() {
-  var netmcu = { to: "tfmcu" };
+  let netmcu = { to: "tfmcu" };
   netmcu.mcu = {
     "mcuFirmware": "?"
   };
@@ -25,7 +25,7 @@ export const otaName_beta = 'github-beta';
 export function netFirmwareOTA(ota_name) {
   if (netota_isInProgress)
     return;
-  var netmcu = { to: "tfmcu" };
+  let netmcu = { to: "tfmcu" };
   netmcu.mcu = {
     mcuFirmware: ota_name
   };
@@ -108,7 +108,7 @@ export function netota_handle_otaState(ota_state) {
       document.getElementById("ota_reboot").onclick = () => misc.req_mcuRestart();
       break;
   }
-  if (netota_isInProgress && ota_state != 1) {
+  if (netota_isInProgress && ota_state !== 1) {
     clearInterval(netota_intervalID);
     netota_progressCounter = 0;
     netota_isInProgress = false;

@@ -11,6 +11,7 @@ export const tabs = [
   { 'text': 'Config', 'div_id': ['configdiv'], fetch: httpFetch.FETCH_CONFIG },
   { 'text': 'Positions', 'div_id': ['senddiv', 'aliasdiv', 'shprefdiv'], fetch: httpFetch.FETCH_ALIASES, fetch_gm: httpFetch.FETCH_POS |  httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME },
   { 'text': 'Firmware', 'div_id': ['id-fwDiv'], fetch_init: (httpFetch.FETCH_VERSION |  httpFetch.FETCH_GIT_TAGS) },
+  { 'text': 'Tests', 'div_id': ['testsdiv'], },
 ];
 let div_ids = [];
 
@@ -24,7 +25,7 @@ export function navTabs_updHtml(idx) {
     idx = 0;
 
   for (let i = 0; i < tabs.length; ++i) {
-    document.getElementById('tabbt' + i.toString()).style.backgroundColor = (i == idx) ? BGC1 : BGC0;
+    document.getElementById('tabbt' + i.toString()).style.backgroundColor = (i === idx) ? BGC1 : BGC0;
   }
 
   for (let div_id of div_ids) {
@@ -94,11 +95,11 @@ navTabs_init();
 
       /* Change background color of buttons on hover */
      .tab button:hover {
-      background-color: #ddd;
+      background-color: rgb(197, 185, 185);
       }
 
       /* Create an active/current tablink class */
-    .tab button.active {
+    .tab button:active {
       background-color: #ccc;
       }
       

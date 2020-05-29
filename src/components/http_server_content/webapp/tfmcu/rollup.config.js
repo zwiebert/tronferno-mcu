@@ -2,7 +2,7 @@
 import json from '@rollup/plugin-json';
 import { terser } from 'rollup-plugin-terser';
 import strip from '@rollup/plugin-strip';
-//import { eslint } from "rollup-plugin-eslint";
+import { eslint } from "rollup-plugin-eslint";
 import svelte from 'rollup-plugin-svelte';
 import resolve from '@rollup/plugin-node-resolve';
 
@@ -40,7 +40,7 @@ export default {
         functions: ['testing.*', 'testing_*', 'appDebug.*', 'console.*', 'assert.*'],
         sourceMap: true
       })] : [],
-
+    eslint(),
     svelte({
       dev: !isProduction //,          css: css => {	 css.write('build/bundle.css');  }
       // By default, all .svelte and .html files are compiled

@@ -22,7 +22,7 @@ export function aliasControllers_updHtml() {
   for (const key in pad) {
     let exist = false;
     for (let opt of pas.options) {
-      if (opt.text == key) {
+      if (opt.text === key) {
         exist = true;
       }
     }
@@ -96,7 +96,7 @@ function alias_isKeyPairedToM(key, g, m) {
 
   const b = parseInt(chunks[g], 16);
 
-  return (b & (1 << m)) != 0;
+  return (b & (1 << m)) !== 0;
 
 }
 
@@ -132,7 +132,7 @@ function aliasTable_updHtml(key) {
     const gn = (g > g_max) ? 0 : parseInt(chunks[g], 16);
 
     for (let m = 1; m <= 7; ++m) {
-      const isAliased = (gn & (1 << m)) != 0;
+      const isAliased = (gn & (1 << m)) !== 0;
       document.getElementById("cbAlias_" + g.toString() + m.toString()).checked = isAliased;
     }
   }
@@ -150,7 +150,7 @@ function aliasTable_fromHtml(key) {
         gn |= (1 << m);
       }
     }
-    if (gn == 0) {
+    if (gn === 0) {
       ++null_run;
     } else {
       for (; null_run > 0; --null_run) {
@@ -172,7 +172,7 @@ function aliasTable_fromHtml_toMcu(key) {
 
   let tfmcu = { "to": "tfmcu", "pair": { "a": key, "mm": val, "c": "store" } };
 
-  var url = '/cmd.json';
+  let url = '/cmd.json';
   httpFetch.http_postRequest(url, tfmcu);
 
 }
@@ -213,8 +213,8 @@ function aliasTable_genHtml() {
           <button id="alias_unpair" type="button" on:click={hClick_UnPair}>Start Un-Pairing</button></span><br>
           <table>
             <tr><th>All</th><th>This G/E</th></tr>
-            <tr><td><select id="aliases" size="5" on:change={onAliasesChanged}></select></td>
-            <td><select id="paired" size="5" on:click={onPairedChanged} on:change={onPairedChanged}></select></td>
+            <tr><td><select id="aliases" size="5" on:blur={onAliasesChanged}></select></td>
+            <td><select id="paired" size="5" on:click={onPairedChanged} on:blur={onPairedChanged}></select></td>
           </table>
         <div id="divPairAll"> </div>
         <span id="aliasSaveReload"><button id="alias_reload" type="button" on:click={onAliasesReload}>Reload</button>

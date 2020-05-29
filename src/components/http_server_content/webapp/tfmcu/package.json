@@ -2,12 +2,14 @@
 	"name": "tfmcu",
 	"version": "0.11.0",
 	"scripts": {
-		"build": "rollup -c"
+		"build": "rollup -c",
+		"lint": "eslint . --ext .js,.svelte"
 	},
 	"devDependencies": {
 		"@rollup/plugin-json": "^4.0.3",
 		"@rollup/plugin-node-resolve": "^8.0.0",
 		"@rollup/plugin-strip": "^1.3.3",
+		"eslint-plugin-svelte3": "^2.7.3",
 		"jshint": "^2.11.1",
 		"rollup": "^2.10.9",
 		"rollup-plugin-eslint": "^7.0.0",

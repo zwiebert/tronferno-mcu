@@ -30,9 +30,9 @@ function req_automatic() {
 
   let f = "i";
   f += document.getElementById('tmci').checked ? "M" : "m";
-  f += (has_daily = document.getElementById('tdci').checked) ? "D" : "d";
-  f += (has_weekly = document.getElementById('twci').checked) ? "W" : "w";
-  f += (has_astro = document.getElementById('taci').checked) ? "A" : "a";
+  f += ((has_daily = document.getElementById('tdci').checked)) ? "D" : "d";
+  f += ((has_weekly = document.getElementById('twci').checked)) ? "W" : "w";
+  f += ((has_astro = document.getElementById('taci').checked)) ? "A" : "a";
   f += document.getElementById('trci').checked ? "R" : "r";
   f += document.getElementById('tsci').checked ? "S" : "s";
   auto.f = f;

@@ -4,10 +4,8 @@ import * as shutterName from './shutter_name.js';
 import * as shutterPrefs from './shutter_prefs.svelte';
 import * as shutterAlias from './shutter_alias.svelte';
 import * as httpFetch from './fetch.js';
-import * as mcuFirmware from './mcu_firmware.svelte';
-import * as cuas from './cuas.js';
-import * as mcuConfig from './mcu_config.svelte';
 import * as navTabs from './nav_tabs.svelte';
+import * as httpResp from './http_resp.js';
 
 export let ast;
 
@@ -40,8 +38,9 @@ export class AppState {
 
   websocket() {
     this.mWebSocket = new WebSocket('ws://' + window.location.host + '/ws');
+    // eslint-disable-next-line no-unused-vars
     this.mWebSocket.onopen = (evt) => { this.mWebSocket.send(JSON.stringify({ "to": "tfmcu", "cmd": { "p": "?" } })); };
-    this.mWebSocket.onmessage = (evt) => { let json = evt.data; let obj = JSON.parse(json); this.http_handleResponses(obj); };
+    this.mWebSocket.onmessage = (evt) => { let json = evt.data; let obj = JSON.parse(json); httpResp.http_handleResponses(obj); };
     this.mWebSocket.onclose = (evt) => { appDebug.dbLog(evt.reason); setTimeout(function() { this.websocket(); }, 1000); };
     this.mWebSocket.onerror = (err) => { appDebug.dbLog(err.msg); this.mWebSocket.close(); };
   }
@@ -125,7 +124,7 @@ export class AppState {
   set g(value) {
     this.mG = value;
     localStorage.setItem("group", value.toString());
-    if (value != 0) {
+    if (value !== 0) {
       if (this.mM > this.gmu[value]) {
         value = this.gmu[value];
         this.mM = value;
@@ -228,78 +227,7 @@ export class AppState {
 
   }
 
-  http_handleResponses(obj) {
-    appDebug.dbLog("reply-json: " + JSON.stringify(obj));
 
-    if ("config" in obj) {
-      let config = obj.config;
-
-      if ("cuas" in config) {
-        cuas.cuas_handle_cuasState(config);
-      } else {
-        this.tfmcu_config = Object.assign(this.tfmcu_config, config);
-        if ("gm-used" in config) {
-          mcuConfig.usedMembers_fromConfig();
-        }
-
-        if (!document.getElementById("cfg_table_id")) {
-          if ("verbose" in config) {
-            document.getElementById("config-div").innerHTML = mcuConfig.mcuConfigTable_genHtml(obj.config);
-          }
-        }
-      }
-
-      if (document.getElementById("cfg_table_id")) {
-        mcuConfig.mcuConfig_updHtml(obj.config);
-        mcuConfig.usedMembers_updHtml_fromHtml();
-      }
-    }
-
-    if ("pct" in obj) {
-      this.pcts = obj.pct;
-    }
-
-    if ("pair" in obj) {
-      const pair = obj.pair;
-      if ("all" in pair) {
-        this.aliases = pair.all;
-      }
-      if ("a" in pair && "mm" in pair) {
-        this.aliases_add(pair.a, pair.mm);
-      }
-
-    }
-
-    if ("shs" in obj) {
-      const shs = obj.shs;
-      this.shutterPrefs = shs;
-    }
-
-    if ("mcu" in obj) {
-      let mcu = obj.mcu;
-      if ("chip" in mcu) {
-        document.getElementById("id_chip").innerHTML = mcu.chip;
-      }
-      if ("firmware" in mcu) {
-        document.getElementById("id_firmware").innerHTML = mcu.firmware;
-      }
-      if ("build-time" in mcu) {
-        document.getElementById("id_buildTime").innerHTML = mcu["build-time"];
-      }
-      if ("boot-count" in mcu) {
-        this.mEsp32BootCount = mcu["boot-count"];
-        this.updateHtml_bootCount();
-      }
-      if ("mcuFirmware-state" in mcu) {
-        mcuFirmware.netota_handle_otaState(mcu["mcuFirmware-state"]);
-      }
-
-    }
-
-    if (this.getAutoName() in obj) {
-      this.auto = obj[this.getAutoName()];
-    }
-  }
 
   updateHtml_bootCount() {
     document.getElementById("id-bootCount").innerHTML = this.mEsp32BootCount.toString();

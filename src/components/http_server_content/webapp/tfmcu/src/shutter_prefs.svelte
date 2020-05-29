@@ -57,7 +57,7 @@ export function shp_fromHtml_toMcu() {
   pref.mvdt = Math.floor((parseFloat(mvdt.value) * 10)).toString();
   pref.mvspdt = Math.floor((parseFloat(mvspdt.value) * 10)).toString();
 
-  var url = '/cmd.json';
+  let url = '/cmd.json';
   httpFetch.http_postRequest(url, tfmcu);
 }
 
@@ -72,7 +72,7 @@ let stopClock = {
 
 function shp_stopClock_tick() {
   let spsc = stopClock;
-  let elem = document.getElementById(spsc.direction == UP ? "shpMvut" : spsc.direction == DOWN ? "shpMvdt" : spsc.direction == SUN_DOWN ? "shpSpMvdt" : -1);
+  let elem = document.getElementById(spsc.direction === UP ? "shpMvut" : spsc.direction === DOWN ? "shpMvdt" : spsc.direction === SUN_DOWN ? "shpSpMvdt" : -1);
 
   spsc.val += (spsc.ms / 100);
   elem.value = (spsc.val / 10.0).toString();

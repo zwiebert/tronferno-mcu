@@ -24,7 +24,8 @@
   }
 
   export function mcuConfigTable_genHtml(cfg) {
-  var html = '<table id="cfg_table_id" class="conf-table">';
+  let html = '<table id="cfg_table_id" class="conf-table">';
+    // eslint-disable-next-line no-unused-vars
     Object.keys(cfg).forEach(function(key, idx) {
     html += '<tr id="cfg_' + key + '_tr">' + configTr_genHtml(key, cfg[key]) + '</tr>' + "\n";
     });
@@ -33,12 +34,13 @@
   }
 
   export function mcuConfig_updHtml(cfg) {
+  // eslint-disable-next-line no-unused-vars
   Object.keys(cfg).forEach(function(key, idx) {
     let el = document.getElementById('cfg_' + key);
 
     switch (el.type) {
       case 'checkbox':
-        el.checked = cfg[key] != 0;
+        el.checked = cfg[key] !== 0;
         break;
       default:
         el.value = cfg[key];
@@ -51,9 +53,10 @@
 export function mcuConfig_fromHtml_toMcu() {
   const cfg = appState.ast.tfmcu_config;
 
-  var new_cfg = {};
-  var has_changed = false;
+  let new_cfg = {};
+  let has_changed = false;
   usedMembers_fromHtml_toHtml();
+  // eslint-disable-next-line no-unused-vars
   Object.keys(cfg).forEach(function(key, idx) {
     let new_val = 0;
     let el = document.getElementById('cfg_' + key);
@@ -67,7 +70,7 @@ export function mcuConfig_fromHtml_toMcu() {
         new_val = el.value;
     }
     let old_val = cfg[key];
-    if (new_val != old_val) {
+    if (new_val !== old_val) {
       new_cfg[key] = new_val;
       has_changed = true;
       appDebug.dbLog(key);
@@ -76,7 +79,7 @@ export function mcuConfig_fromHtml_toMcu() {
 
   if (has_changed) {
     new_cfg.all = "?";
-    var url = '/cmd.json';
+    let url = '/cmd.json';
     httpFetch.http_postRequest(url, { config: new_cfg });
   }
 }
@@ -190,7 +193,7 @@ function usedMembers_fromHtml_toHtml() {
   for (let i = 7; i >= 1; --i) {
     let id = "gmu" + (i.toString());
     let mct = document.getElementById(id).value;
-    if (mct != '0' || written) {
+    if (mct !== '0' || written) {
       val += mct;
       written = true;
     }

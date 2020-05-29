@@ -1,6 +1,7 @@
 'use strict';
 import * as appDebug from './app_debug.js';
 import * as appState from './app_state.js';
+import * as httpResp from './http_resp.js';
 import * as mcuFirmware from './mcu_firmware.svelte';
 
 export const FETCH_CONFIG = 1;
@@ -41,7 +42,7 @@ export function http_postRequest(url = '', data = {}) {
       return response.json();
     })
 
-    .then((json) => appState.ast.http_handleResponses(json))
+    .then((json) => httpResp.http_handleResponses(json))
 
     .catch((error) => {
       console.log("error: http_postRequest(): ", error);
@@ -71,18 +72,18 @@ export function http_postDocRequest(name) {
 }
 
 export function http_postShutterCommand(c=document.getElementById('send-c').value) {
-  var tfmcu = {to:"tfmcu"};
+  let tfmcu = {to:"tfmcu"};
   let g = appState.ast.g.toString();
   let m = appState.ast.m.toString();
 
-  var send = {
+  let send = {
     g: g,
     m: m,
     c: c,
   };
   tfmcu.send = send;
   appDebug.dbLog(JSON.stringify(tfmcu));
-  var url = '/cmd.json';
+  let url = '/cmd.json';
   appDebug.dbLog("url: "+url);
   http_postRequest(url, tfmcu);
 }
