@@ -5,6 +5,10 @@
   import * as httpFetch from './fetch.js';
 
   //------------ cmd div --------------
+  export function sb_show(visible) {
+    document.getElementById("senddiv").style.display = visible ? "" : "none";
+  }
+
   function hClick_G() {
   appState.ast.g_next();
   }

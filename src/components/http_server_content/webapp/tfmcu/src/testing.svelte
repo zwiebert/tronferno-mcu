@@ -10,7 +10,7 @@ export function testing_netota() {
 }
 
 export function testing_init() {
-  navTabs.tabs.push({ 'text': 'Tests', 'div_id': ['testsdiv'], });
+  navTabs.navTab_addTab({ 'text': 'Tests', 'div_id': ['testsdiv'], }, -1);
 }
 
 const test_cmds = ['up', 'down', 'stop'];
@@ -40,6 +40,7 @@ function testPressed(enable) {
   }
 }
 
+testing_init();
 
 </script>
 

@@ -5,7 +5,8 @@ import * as shutterPrefs from './shutter_prefs.svelte';
 import * as shutterAlias from './shutter_alias.svelte';
 import * as httpFetch from './fetch.js';
 import * as navTabs from './nav_tabs.svelte';
-import * as httpResp from './http_resp.js';
+
+import * as connWs from './net/conn_ws.js';
 
 export let ast;
 
@@ -36,22 +37,14 @@ export class AppState {
     this.mWebSocket = 0;
   }
 
-  websocket() {
-    this.mWebSocket = new WebSocket('ws://' + window.location.host + '/ws');
-    // eslint-disable-next-line no-unused-vars
-    this.mWebSocket.onopen = (evt) => { this.mWebSocket.send(JSON.stringify({ "to": "tfmcu", "cmd": { "p": "?" } })); };
-    this.mWebSocket.onmessage = (evt) => { let json = evt.data; let obj = JSON.parse(json); httpResp.http_handleResponses(obj); };
-    this.mWebSocket.onclose = (evt) => { appDebug.dbLog(evt.reason); setTimeout(function() { this.websocket(); }, 1000); };
-    this.mWebSocket.onerror = (err) => { appDebug.dbLog(err.msg); this.mWebSocket.close(); };
-  }
+
 
   load() {
     gm_updHtml();
     this.tabIdx = this.mTabIdx;
     httpFetch.http_fetchByMask(this.load_fetch);
     this.tabVisibility = this.mTabVisibility;
-    setTimeout(() => { ast.websocket(); }, 1000);
-    //this.websocket();
+    setTimeout(() => { ast.mWebSocket = connWs.websocket(); }, 1000);
   }
 
   set tabVisibility(value) {

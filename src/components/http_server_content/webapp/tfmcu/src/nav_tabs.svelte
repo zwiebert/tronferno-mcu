@@ -11,9 +11,20 @@ export const tabs = [
   { 'text': 'Config', 'div_id': ['configdiv'], fetch: httpFetch.FETCH_CONFIG },
   { 'text': 'Positions', 'div_id': ['senddiv', 'aliasdiv', 'shprefdiv'], fetch: httpFetch.FETCH_ALIASES, fetch_gm: httpFetch.FETCH_POS |  httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME },
   { 'text': 'Firmware', 'div_id': ['id-fwDiv'], fetch_init: (httpFetch.FETCH_VERSION |  httpFetch.FETCH_GIT_TAGS) },
-  { 'text': 'Tests', 'div_id': ['testsdiv'], },
 ];
-let div_ids = [];
+let div_ids = new Set();
+
+// idx: -1=end, 0=begin, N=specific_position
+export function navTab_addTab(tab,idx) {
+    if (idx > 0) {
+     tabs[idx] = tab;
+   } else if (idx < 0) {
+     tabs.push(tab);
+   } else {
+     tabs.unshift(tab);
+   }
+}
+
 
 export function navTabs_updHtml(idx) {
   const NONE = "none";
@@ -58,19 +69,11 @@ function onNavTab(idx) {
   appState.ast.tabVisibility = idx;
 }
 
-function navTabs_init() {
-  for (let i = 0; i < tabs.length; ++i) {
-    const tab = tabs[i];
-    for (let k = 0; k < tabs[i].div_id.length; ++k) {
-      const div_id = tabs[i].div_id[k];
-      if (!div_ids.includes(div_id)) {
-        div_ids.push(div_id);
-      }
-    }
-  }
+function init_tab(idx) {
+  tabs[idx].div_id.forEach(div_ids.add, div_ids);
+  return '';
 }
 
-navTabs_init();
 </script>
 
 <style>      /* Style the buttons that are used to open the tab content */
@@ -103,12 +106,14 @@ navTabs_init();
       background-color: #ccc;
       }
       
+
       
       </style>
 
 <div id="tabBar" class="tab">
 {#each tabs as tab, i}
 <button class="tab" id="tabbt{i}" on:click={() => onNavTab(i)}>{tab.text}</button>
+{init_tab(i)}
 {/each}
 </div>
 
