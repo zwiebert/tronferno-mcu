@@ -1,7 +1,8 @@
 <script context="module">
 'use strict';
-import * as appState from './app_state';
+import * as appState from './app_state.svelte';
 import * as httpFetch from './fetch.js';
+import {G,M, GM, Pct, Name} from './store/curr_shutter.js';
 
 function hClick_Pair() {
   httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_PAIRING);
@@ -101,8 +102,8 @@ function alias_isKeyPairedToM(key, g, m) {
 }
 
 export function aliasPaired_updHtml() {
-  const g = appState.ast.g;
-  const m = appState.ast.m;
+  let g = G.get();
+  let m = M.get();
   const pas = document.getElementById("paired");
 
   for (let i = pas.options.length - 1; i >= 0; --i)

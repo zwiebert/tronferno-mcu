@@ -1,9 +1,11 @@
 'use strict';
 import * as appDebug from './app_debug.js';
-import * as appState from './app_state.js';
+import * as appState from './app_state.svelte';
 import * as mcuFirmware from './mcu_firmware.svelte';
 import * as cuas from './cuas.js';
 import * as mcuConfig from './mcu_config.svelte';
+import {McuConfig} from './store/mcu_config.js';
+import {Pcts,Prefs} from './store/shutters.js';
 
 export function http_handleResponses(obj) {
     appDebug.dbLog("reply-json: " + JSON.stringify(obj));
@@ -14,7 +16,7 @@ export function http_handleResponses(obj) {
       if ("cuas" in config) {
         cuas.cuas_handle_cuasState(config);
       } else {
-        appState.ast.tfmcu_config = Object.assign(appState.ast.tfmcu_config, config);
+        McuConfig.update(config);
         if ("gm-used" in config) {
           mcuConfig.usedMembers_fromConfig();
         }
@@ -33,7 +35,7 @@ export function http_handleResponses(obj) {
     }
 
     if ("pct" in obj) {
-      appState.ast.pcts = obj.pct;
+      Pcts.update(obj.pct);
     }
 
     if ("pair" in obj) {
@@ -48,8 +50,7 @@ export function http_handleResponses(obj) {
     }
 
     if ("shs" in obj) {
-      const shs = obj.shs;
-      appState.ast.shutterPrefs = shs;
+      Prefs.update(obj.shs);
     }
 
     if ("mcu" in obj) {
@@ -65,7 +66,7 @@ export function http_handleResponses(obj) {
       }
       if ("boot-count" in mcu) {
         appState.ast.mEsp32BootCount = mcu["boot-count"];
-        appState.ast.updateHtml_bootCount();
+        mcuFirmware.updateHtml_bootCount();
       }
       if ("mcuFirmware-state" in mcu) {
         mcuFirmware.netota_handle_otaState(mcu["mcuFirmware-state"]);
@@ -76,4 +77,8 @@ export function http_handleResponses(obj) {
     if (appState.ast.getAutoName() in obj) {
       appState.ast.auto = obj[appState.ast.getAutoName()];
     }
+  }
+
+  export function http_handleDocResponses(name, text) {
+    appState.ast.docs[name] = { 'text': text };
   }

@@ -1,41 +1,10 @@
-
-
       * { font-size:100%; }
-
+      
       .help_text {
         displayXX:none;
         font-size:90%;
       }
-      
-      .tab {
-      overflow: hidden;
-      border: 1px solid #ccc;
-      background-color: #f1f1f1;
-      }
-
-      /* Style the buttons that are used to open the tab content */
-      .tab button {
-      background-color: inherit;
-      float: left;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      padding: 14px 16px;
-      transition: 0.3s;
-      font-size: 270%;
-
-      }
-
-      /* Change background color of buttons on hover */
-      .tab button:hover {
-      background-color: #ddd;
-      }
-
-      /* Create an active/current tablink class */
-      .tab button.active {
-      background-color: #ccc;
-      }
-
+ 
       /* Style the tab content */
       .tabcontent {
       displayXX: none;
@@ -100,7 +69,7 @@
       .tab button {
       font-size: 100%;
       }
-
+      }
 
 
       .conf-table label { padding: 2px; width: 50vw; margin-right: 6px;}
@@ -127,10 +96,3 @@
       50.01% { opacity: 0; }
       100% { opacity: 0; }
       }
-
-      input[type="range"] {
-      #position: absolute;
-      #top: 40%;
-      transform: rotate(270deg);
-      }
-

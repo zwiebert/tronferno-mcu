@@ -3,6 +3,7 @@
 import * as appDebug from './app_debug.js';
 import * as httpFetch from './fetch.js';
 import * as misc from './misc.js';
+import * as appState from './app_state.svelte';
 
 
 // ----------------- firmware div ---------------
@@ -114,6 +115,10 @@ export function netota_handle_otaState(ota_state) {
     netota_isInProgress = false;
     document.getElementById("netota_controls").style.display = "";
   }
+}
+
+export function updateHtml_bootCount() {
+  document.getElementById("id-bootCount").innerHTML = appState.ast.mEsp32BootCount.toString();
 }
 </script>
 

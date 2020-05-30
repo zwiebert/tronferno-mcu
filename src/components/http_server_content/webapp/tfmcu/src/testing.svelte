@@ -1,6 +1,6 @@
 <script context="module">
 'use strict';
-import * as appState from './app_state.js';
+import * as appState from './app_state.svelte';
 import * as httpFetch from './fetch.js';
 import * as mcuFirmware from './mcu_firmware.svelte';
 import * as navTabs from './nav_tabs.svelte';

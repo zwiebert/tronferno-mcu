@@ -1,11 +1,14 @@
 <script context="module">
   'use strict';
-
+  import {Gmu} from './store/mcu_config.js';
+  import {McuConfig} from './store/mcu_config.js';
   import * as appDebug from './app_debug.js';
-  import * as appState from './app_state.js';
-  import * as httpFetch from './fetch.js';
+   import * as httpFetch from './fetch.js';
   import * as cuas from './cuas.js';
   import * as misc from './misc.js';
+
+  let mcu_config = {};
+  McuConfig.subscribe(value => mcu_config = value);
 
   function hClick_Reload() {
     httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
@@ -51,7 +54,7 @@
 
 
 export function mcuConfig_fromHtml_toMcu() {
-  const cfg = appState.ast.tfmcu_config;
+  const cfg = mcu_config;
 
   let new_cfg = {};
   let has_changed = false;
@@ -158,7 +161,7 @@ function configTr_genHtml(name, value) {
 
 export function usedMembers_fromConfig() {
 
-  let s = appState.ast.tfmcu_config["gm-used"];
+  let s = mcu_config["gm-used"];
 
 
   let sa = s ? s.split('').reverse() : [];
@@ -170,7 +173,7 @@ export function usedMembers_fromConfig() {
     gmu[g] = um;
   }
 
-  appState.ast.gmu = gmu;
+  Gmu.set(gmu);
 }
 
 export function usedMembers_updHtml_fromHtml() {

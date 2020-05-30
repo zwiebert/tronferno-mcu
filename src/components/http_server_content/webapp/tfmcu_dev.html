@@ -2,113 +2,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Tronferno</title>
 <script type="text/javascript" src="f/js/tfmcu.js"></script>
+<link rel="stylesheet" type="text/css" href="f/css/global.css">   
+<link rel="stylesheet" type="text/css" href="f/css/tfmcu.css">
+
+<title>Tronferno</title>
 <script>document.addEventListener("DOMContentLoaded", tfmcu);</script>
-    
-    <style>
-      * { font-size:100%; }
-      
-      .help_text {
-        displayXX:none;
-        font-size:90%;
-      }
- 
-      /* Style the tab content */
-      .tabcontent {
-      displayXX: none;
-      padding: 6px 12px;
-      border: 1px solid #ccc;
-      border-top: none;
-      }
 
-      .container {
-      border: 1px solid #ccc;
-      background-color: #eee;
-      font-size: 270%;
-      }
-
-      .cb {
-      width: 1em;
-      height: 1em;
-      }
-
-      input:focus {
-      font-size: 100%;
-      }
-
-
-
-      #XXaliasdiv {
-      background-color: #eee;
-      display: grid;
-      /*width: 100%; */
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: repeat(6, 1fr);
-      grid-template-areas:
-      "ah . "
-      "ap ap "
-      "as at "
-      "as at "
-      "as at "
-      "ar ar "
-      ;
-      justify-items: center;
-      align-items: center;
-      grid-gap: 2px;
-      }
-
-
-
-
-      #configdiv { background-color: #eee;  }
-
-      #autodiv { background-color: #eee; }
-
-      @media only screen and (max-resolution: 96dpi )  {
-      .container, .tab button {
-      font-size: 200%;
-      }
-      }
-
-      @media (min-width: 1000px) {
-      .container {
-      font-size: 100%;
-      }
-      .tab button {
-      font-size: 100%;
-      }
-      }
-
-
-      .conf-table label { padding: 2px; width: 50vw; margin-right: 6px;}
-      .conf-table .text { width: 100%; }
-      #cfg_gm-used_tr, #tf_tr { display: none; }
-
-
-      h3 {
-      display: none;
-      text-align: center;
-      margin-top: 0px;
-      background-color: hsl(220, 60%, 60%); color: white;
-      grid-area: header; justify-self: stretch; align-self: start;
-      }
-
-      .dur_table {
-        border: 2px solid black;
-        padding: 2px;
-      }
-
-      @keyframes blink {
-      0% { opacity: 1; }
-      50% { opacity: 1; }
-      50.01% { opacity: 0; }
-      100% { opacity: 0; }
-      }
-
-
-
-    </style>
 </head>
 <body>
 </body>

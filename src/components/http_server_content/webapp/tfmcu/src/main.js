@@ -2,7 +2,7 @@
 // src/main.js
 
 //import * as testing from './testing.svelte';
-import * as appState from './app_state.js';
+import * as appState from './app_state.svelte';
 import * as httpFetch from './fetch.js';
 
 export default function() {

@@ -1,8 +1,8 @@
 'use strict';
 import * as appDebug from './app_debug.js';
-import * as appState from './app_state.js';
 import * as httpResp from './http_resp.js';
 import * as mcuFirmware from './mcu_firmware.svelte';
+import {G,M} from './store/curr_shutter.js';
 
 export const FETCH_CONFIG = 1;
 export const FETCH_AUTO = 2;
@@ -65,7 +65,7 @@ export function http_postDocRequest(name) {
     .then(response => {
       if(response.ok) {
         response.text().then(text => {
-          appState.ast.http_handleDocResponses(name, text);
+          httpResp.http_handleDocResponses(name, text);
         });
       }
     });
@@ -73,8 +73,8 @@ export function http_postDocRequest(name) {
 
 export function http_postShutterCommand(c=document.getElementById('send-c').value) {
   let tfmcu = {to:"tfmcu"};
-  let g = appState.ast.g.toString();
-  let m = appState.ast.m.toString();
+  let g = G.get().toString();
+  let m = M.get().toString();
 
   let send = {
     g: g,
@@ -90,6 +90,8 @@ export function http_postShutterCommand(c=document.getElementById('send-c').valu
 
  export function http_fetchByMask(mask) {
     let tfmcu = {to:"tfmcu"};
+    let g = G.get();
+    let m = M.get();
 
     if (mask & FETCH_CONFIG)
       tfmcu.config = { all: "?" };
@@ -103,15 +105,15 @@ export function http_postShutterCommand(c=document.getElementById('send-c').valu
 
     if (mask & FETCH_AUTO)
       tfmcu.auto = {
-        g: appState.ast.g,
-        m: appState.ast.m,
+        g: g,
+        m: m,
         f: "uki",
       };
 
     if (mask & FETCH_POS)
       tfmcu.send = {
-        g: appState.ast.g,
-        m: appState.ast.m,
+        g: g,
+        m: m,
         p: "?",
       };
 
@@ -123,15 +125,15 @@ export function http_postShutterCommand(c=document.getElementById('send-c').valu
     if (mask & FETCH_ALIASES_START_PAIRING)
       tfmcu.pair = {
         a: "?",
-        g: appState.ast.g,
-        m: appState.ast.m,
+        g: g,
+        m: m,
         c: "pair"
       };
     if (mask & FETCH_ALIASES_START_UNPAIRING)
       tfmcu.pair = {
         a: "?",
-        g: appState.ast.g,
-        m: appState.ast.m,
+        g: g,
+        m: m,
         c: "unpair"
       };
 
@@ -139,8 +141,8 @@ export function http_postShutterCommand(c=document.getElementById('send-c').valu
       if (!('shpref' in tfmcu))
         tfmcu.shpref = {};
       Object.assign(tfmcu.shpref, {
-        g: appState.ast.g,
-        m: appState.ast.m,
+        g: g,
+        m: m,
         mvut: '?', mvdt: '?', mvspdt: '?', 'tag.NAME':'?',
       });
     }
@@ -149,8 +151,8 @@ export function http_postShutterCommand(c=document.getElementById('send-c').valu
       if (!('shpref' in tfmcu))
         tfmcu.shpref = {};
       Object.assign(tfmcu.shpref, {
-        g: appState.ast.g,
-        m: appState.ast.m,
+        g: g,
+        m: m,
         'tag.NAME':'?',
       });
     }

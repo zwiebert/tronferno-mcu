@@ -1,7 +1,25 @@
+<script>
+'use strict';
+import {TabIdx } from './store/app_state.js';
+import { onMount,onDestroy } from 'svelte';
+
+let on_destroy = [];
+onMount(() => {
+    navTabs_updHtml($TabIdx);
+    on_destroy.push(TabIdx.subscribe(idx => navTabs_updHtml(idx)));
+  });
+onDestroy(() => {
+    for (const fn of on_destroy) {
+      fn();
+    }
+});
+</script>
+
 <script context="module">
 'use strict';
-import * as appState from './app_state';
 import * as httpFetch from './fetch.js';
+import { GmcFetch} from './store/app_state.js';
+
 
 
 //--------------- nav tabs ------------------
@@ -55,18 +73,14 @@ export function navTabs_updHtml(idx) {
   }
   if ('fetch_gm' in nt) {
     fetch |= nt.fetch_gm;
-    appState.ast.gmc_fetch = nt.fetch_gm;
+    GmcFetch.set(nt.fetch_gm);
   } else {
-    appState.ast.gmc_fetch = 0;
+    GmcFetch.set(0);
   }
 
   if (fetch) {
     httpFetch.http_fetchByMask(fetch);
   }
-}
-
-function onNavTab(idx) {
-  appState.ast.tabVisibility = idx;
 }
 
 function init_tab(idx) {
@@ -112,7 +126,7 @@ function init_tab(idx) {
 
 <div id="tabBar" class="tab">
 {#each tabs as tab, i}
-<button class="tab" id="tabbt{i}" on:click={() => onNavTab(i)}>{tab.text}</button>
+<button class="tab" id="tabbt{i}" on:click={() => TabIdx.set(i)}>{tab.text}</button>
 {init_tab(i)}
 {/each}
 </div>

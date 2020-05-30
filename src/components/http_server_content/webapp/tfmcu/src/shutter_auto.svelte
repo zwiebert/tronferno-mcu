@@ -1,7 +1,22 @@
+<script>
+'use strict';
+import {Auto} from './store/curr_shutter.js';
+import { onMount,onDestroy } from 'svelte';
+
+let on_destroy = [];
+onMount(() => {
+    on_destroy.push(Auto.subscribe(auto => automaticOptions_updHtml(auto)));
+  });
+onDestroy(() => {
+    for (const fn of on_destroy) {
+      fn();
+    }
+});
+</script>
 <script context="module">
 'use strict';
 import * as appDebug from './app_debug.js';
-import * as appState from './app_state';
+import * as appState from './app_state.svelte';
 import * as httpFetch from './fetch.js';
 
 function hClick_Reload() {
@@ -66,6 +81,41 @@ function clearAuto_updHtml() {
   document.getElementById('tsci').checked = false;
   document.getElementById('tmci').checked = false;
 }
+
+ export function automaticOptions_updHtml(auto) {
+     auto = auto ? auto : {};
+     console.log("auto upd");
+    document.getElementById('tfti').value = ("f" in auto) ? auto.f : "";
+
+    document.getElementById('tati').value = ("astro" in auto) ? auto.astro : "";
+    document.getElementById('twti').value = ("weekly" in auto) ? auto.weekly : "";
+
+    let f = ("f" in auto) ? auto.f : "";
+    document.getElementById('tdci').checked = f.indexOf("D") >= 0;
+    document.getElementById('twci').checked = f.indexOf("W") >= 0;
+    document.getElementById('taci').checked = f.indexOf("A") >= 0;
+    document.getElementById('trci').checked = f.indexOf("R") >= 0;
+    document.getElementById('tsci').checked = f.indexOf("S") >= 0;
+    document.getElementById('tmci').checked = f.indexOf("M") >= 0;
+
+    let up_elem = document.getElementById('tduti');
+    let down_elem = document.getElementById('tddti');
+    up_elem.value = "";
+    down_elem.value = "";
+
+    if ("daily" in auto) {
+      let d = auto.daily;
+      let l = auto.daily.length;
+      up_elem.value = d.startsWith("-") ? "" : d.substring(0, 2) + ":" + d.substring(2, 4);
+      down_elem.value = d.endsWith("-") ? "" : d.substring(l - 4, l - 2) + ":" + d.substring(l - 2);
+    }
+    if ("asmin" in auto) {
+      document.getElementById("id_astroTime").innerHTML = "(today: " + Math.floor((auto.asmin / 60)).toString().padStart(2, '0') + ":" + (auto.asmin % 60).toString().padStart(2, '0') + ")";
+    } else {
+      document.getElementById("id_astroTime").innerHTML = "";
+    }
+
+  }
 
 </script>
 

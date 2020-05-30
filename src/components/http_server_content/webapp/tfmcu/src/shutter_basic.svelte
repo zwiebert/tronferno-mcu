@@ -1,20 +1,41 @@
-<script context="module">
+<script>
   'use strict';
-  import * as shutterName from './shutter_name.js';
-  import * as appState from './app_state.js';
+  import {G,M, GM, Pct, Name} from './store/curr_shutter.js';
+
+  import * as appState from './app_state.svelte';
   import * as httpFetch from './fetch.js';
 
-  //------------ cmd div --------------
-  export function sb_show(visible) {
-    document.getElementById("senddiv").style.display = visible ? "" : "none";
+ 
+  let name = "";
+
+  $: name = $Name;
+ 
+  Name.subscribe(val => console.log("name: "+val));
+
+ $: {
+   $GM;
+   if (appState.ast) {
+     appState.ast.gmChanged();
+   }
+   name = $Name;
+}
+
+ function shn_fromHtml_toMcu(val) {
+  let tfmcu = { "to":"tfmcu", "shpref":{"g":$G, "m":$M, "tag.NAME":val }};
+
+  let url = '/cmd.json';
+    httpFetch.http_postRequest(url, tfmcu);
   }
+
+ 
+
 
   function hClick_G() {
-  appState.ast.g_next();
-  }
+    G.increment();
+    }
 
   function hClick_M() {
-  appState.ast.m_next();
+    M.increment();
   }
   
   function hClick_P() {
@@ -38,7 +59,7 @@
   }
   
   function hChange_Name() {
-    shutterName.shn_fromHtml_toMcu();
+    shn_fromHtml_toMcu(name);
   }
   
   function hChange_Pos() {
@@ -114,14 +135,16 @@
       transform: rotate(270deg);
       }
       
+
+
 </style>
 
 <div id="senddiv" class="send">
-  <input id="smn" type = "text" name = "name" value="" on:change={hChange_Name}>
-  <input id="sgi" type = "text" name = "g" value="A">
-  <input id="spi" type = "number" min="0" max="100" name = "p" value="100">
-  <input id="spr" type = "range" min="0" max="100" name = "p" value="100" on:change={hChange_Pos}>
-  <input id="smi" type = "text" name = "m" value="A">
+  <input id="smn" type = "text" name = "name" bind:value="{name}" on:change={hChange_Name}>
+  <input id="sgi" type = "text" name = "g" value="{($G ? $G : "A")}">
+  <input id="spi" type = "number" min="0" max="100" name = "p" value="{$Pct}">
+  <input id="spr" type = "range" min="0" max="100" name = "p" value="{$Pct}" on:change={hChange_Pos}>
+  <input id="smi" type = "text" name = "m" value="{($G ? ($M ? $M : "A") : "")}">
   <br>
   <button id="sgb" type="button" on:click={hClick_G}>G</button>
   <button id="spb" type="button" on:click={hClick_P}>Position</button>

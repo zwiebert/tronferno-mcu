@@ -54,7 +54,14 @@ app.get("/f/js/tfmcu.js", (req, res) => {
     //res.sendFile(cont_dir + '/tfmcu_dev.js');
     res.sendFile(cont_dir + '/tfmcu/build/bundle.js');
 });
-
+app.get("/f/css/global.css", (req, res) => {
+    //res.sendFile(cont_dir + '/tfmcu_dev.js');
+    res.sendFile(cont_dir + '/tfmcu/src/app.css');
+});
+app.get("/f/css/tfmcu.css", (req, res) => {
+    //res.sendFile(cont_dir + '/tfmcu_dev.js');
+    res.sendFile(cont_dir + '/tfmcu/build/bundle.css');
+});
 
 // ESP32 firware image for OTA update
 app.get("/tronferno-mcu.bin", (req, res) => {
