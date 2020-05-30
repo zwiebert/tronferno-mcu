@@ -5,7 +5,7 @@ import * as mcuFirmware from './mcu_firmware.svelte';
 import * as cuas from './cuas.js';
 import * as mcuConfig from './mcu_config.svelte';
 import {McuConfig} from './store/mcu_config.js';
-import {Pcts,Prefs} from './store/shutters.js';
+import {Pcts,Prefs,Aliases,Autos} from './store/shutters.js';
 
 export function http_handleResponses(obj) {
     appDebug.dbLog("reply-json: " + JSON.stringify(obj));
@@ -41,12 +41,15 @@ export function http_handleResponses(obj) {
     if ("pair" in obj) {
       const pair = obj.pair;
       if ("all" in pair) {
-        appState.ast.aliases = pair.all;
+        Aliases.set(pair.all);
       }
       if ("a" in pair && "mm" in pair) {
-        appState.ast.aliases_add(pair.a, pair.mm);
+        let key = pair.a;
+        let val = pair.mm;
+        let all = {};
+        all[key] = val;
+        Aliases.update(all);
       }
-
     }
 
     if ("shs" in obj) {
@@ -73,9 +76,18 @@ export function http_handleResponses(obj) {
       }
 
     }
-
-    if (appState.ast.getAutoName() in obj) {
-      appState.ast.auto = obj[appState.ast.getAutoName()];
+    {
+    let autos = {};
+    let autos_count = 0;
+    for (const key in obj) {
+      if (key.startsWith('auto')) {
+        autos[key] = obj[key];
+        ++autos_count;
+      }
+    }
+    if (autos_count) {
+      Autos.update(autos);
+    }
     }
   }
 

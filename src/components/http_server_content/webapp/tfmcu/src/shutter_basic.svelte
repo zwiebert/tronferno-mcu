@@ -1,24 +1,26 @@
 <script>
   'use strict';
   import {G,M, GM, Pct, Name} from './store/curr_shutter.js';
-
   import * as appState from './app_state.svelte';
   import * as httpFetch from './fetch.js';
+  import {GmcFetch} from './store/app_state.js';
+  import { onMount,onDestroy } from 'svelte';
+ 
+  import * as shutterAlias from './shutter_alias.svelte'; //XXX:
+
+let on_destroy = [];
+onMount(() => {
+     on_destroy.push(GM.subscribe(() => gmChanged()));
+  });
+onDestroy(() => {
+    for (const fn of on_destroy) {
+      fn();
+    }
+});
 
  
   let name = "";
-
   $: name = $Name;
- 
-  Name.subscribe(val => console.log("name: "+val));
-
- $: {
-   $GM;
-   if (appState.ast) {
-     appState.ast.gmChanged();
-   }
-   name = $Name;
-}
 
  function shn_fromHtml_toMcu(val) {
   let tfmcu = { "to":"tfmcu", "shpref":{"g":$G, "m":$M, "tag.NAME":val }};
@@ -27,7 +29,10 @@
     httpFetch.http_postRequest(url, tfmcu);
   }
 
- 
+  function gmChanged() {
+    if ($GmcFetch)
+      httpFetch.http_fetchByMask($GmcFetch);
+  }
 
 
   function hClick_G() {

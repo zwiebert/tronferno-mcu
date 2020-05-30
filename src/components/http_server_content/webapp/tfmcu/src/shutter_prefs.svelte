@@ -75,8 +75,6 @@ let stopClock = {
 
 function shp_stopClock_tick() {
   let spsc = stopClock;
-  let elem = document.getElementById(spsc.direction === UP ? "shpMvut" : spsc.direction === DOWN ? "shpMvdt" : spsc.direction === SUN_DOWN ? "shpSpMvdt" : -1);
-
   spsc.val += (spsc.ms / 100);
   
   if (spsc.direction === UP) {

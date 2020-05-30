@@ -1,8 +1,24 @@
-<script context="module">
+<script>
 'use strict';
-import * as appState from './app_state.svelte';
 import * as httpFetch from './fetch.js';
-import {G,M, GM, Pct, Name} from './store/curr_shutter.js';
+import {G,M,GM} from './store/curr_shutter.js';
+import {Aliases} from './store/shutters.js';
+
+import { onMount,onDestroy } from 'svelte';
+ 
+let on_destroy = [];
+onMount(() => {
+     on_destroy.push(GM.subscribe(() => gmChanged()));
+  });
+onDestroy(() => {
+    for (const fn of on_destroy) {
+      fn();
+    }
+});
+
+function gmChanged() {
+  aliasPaired_updHtml();
+}
 
 function hClick_Pair() {
   httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_PAIRING);
@@ -12,12 +28,12 @@ function hClick_UnPair() {
   httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_UNPAIRING);
 }
 
-export function aliasControllers_updHtml() {
+function aliasControllers_updHtml() {
   if (document.getElementById("divPairAll").innerHTML.length < 20) {
     document.getElementById("divPairAll").innerHTML = aliasTable_genHtml();
   }
 
-  const pad = appState.ast.aliases;
+  const pad = $Aliases;
   const pas = document.getElementById("aliases");
   const pas_sel = pas.selectedIndex;
   for (const key in pad) {
@@ -41,7 +57,7 @@ export function aliasControllers_updHtml() {
 }
 
 function aliasControllers_fromHtml() { // XXX
-  const pad = appState.ast.aliases;
+  const pad = $Aliases;
   const pas = document.getElementById("aliases");
   const pas_sel = pas.selectedIndex;
 
@@ -82,7 +98,7 @@ function onAliasesReload() {
 }
 
 function alias_isKeyPairedToM(key, g, m) {
-  const val = appState.ast.aliases[key];
+  const val = $Aliases[key];
 
   let chunks = [];
 
@@ -108,7 +124,7 @@ export function aliasPaired_updHtml() {
 
   for (let i = pas.options.length - 1; i >= 0; --i)
   pas.remove(i);
-  for (let key in appState.ast.aliases) {
+  for (let key in $Aliases) {
     if (!alias_isKeyPairedToM(key, g, m))
       continue;
 
@@ -118,7 +134,7 @@ export function aliasPaired_updHtml() {
   }
 }
 function aliasTable_updHtml(key) {
-  const val = appState.ast.aliases[key];
+  const val = $Aliases[key];
 
   let chunks = [];
 

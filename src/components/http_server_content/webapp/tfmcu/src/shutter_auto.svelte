@@ -1,23 +1,31 @@
 <script>
 'use strict';
-import {Auto} from './store/curr_shutter.js';
+import * as appDebug from './app_debug.js';
+import * as appState from './app_state.svelte';
+import * as httpFetch from './fetch.js';
+import {Auto,G,M,GM} from './store/curr_shutter.js';
 import { onMount,onDestroy } from 'svelte';
+import {Autos} from './store/shutters.js';
 
 let on_destroy = [];
 onMount(() => {
     on_destroy.push(Auto.subscribe(auto => automaticOptions_updHtml(auto)));
+    on_destroy.push(GM.subscribe(() => gmChanged()));
   });
 onDestroy(() => {
     for (const fn of on_destroy) {
       fn();
     }
 });
-</script>
-<script context="module">
-'use strict';
-import * as appDebug from './app_debug.js';
-import * as appState from './app_state.svelte';
-import * as httpFetch from './fetch.js';
+
+
+  function gmChanged() {
+    if (appState.ast) {
+       appDebug.dbLog("ast: " + JSON.stringify(appState.ast));
+       appDebug.dbLog("autos: " + JSON.stringify($Autos));
+    }
+  }
+
 
 function hClick_Reload() {
   httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
@@ -34,57 +42,11 @@ function hClick_Save() {
 
 
 // -------------  auto div -------------------------------
-function req_automatic() {
-  let url = '/cmd.json';
-  let tfmcu = { to: "tfmcu", timer: {} };
-  let auto = tfmcu.timer;
-  let has_daily = false, has_weekly = false, has_astro = false;
 
-  auto.g = appState.ast.g;
-  auto.m = appState.ast.m;
 
-  let f = "i";
-  f += document.getElementById('tmci').checked ? "M" : "m";
-  f += ((has_daily = document.getElementById('tdci').checked)) ? "D" : "d";
-  f += ((has_weekly = document.getElementById('twci').checked)) ? "W" : "w";
-  f += ((has_astro = document.getElementById('taci').checked)) ? "A" : "a";
-  f += document.getElementById('trci').checked ? "R" : "r";
-  f += document.getElementById('tsci').checked ? "S" : "s";
-  auto.f = f;
-
-  if (has_weekly)
-    auto.weekly = document.getElementById('twti').value;
-  if (has_astro)
-    auto.astro = document.getElementById('tati').value;
-  if (has_daily) {
-    let tdu = document.getElementById('tduti').value;
-    let tdd = document.getElementById('tddti').value;
-    let td = tdu.length !== 5 ? "-" : tdu.substring(0, 2) + tdu.substring(3, 5);
-    td += tdd.length !== 5 ? "-" : tdd.substring(0, 2) + tdd.substring(3, 5);
-    auto.daily = td;
-  }
-
-  appDebug.dbLog(JSON.stringify(tfmcu));
-  httpFetch.http_postRequest(url, tfmcu);
-}
-
-function clearAuto_updHtml() {
-  document.getElementById('tfti').value = "";
-  document.getElementById('tduti').value = "";
-  document.getElementById('tddti').value = "";
-  document.getElementById('tati').value = "";
-  document.getElementById('twti').value = "";
-  document.getElementById('tdci').checked = false;
-  document.getElementById('twci').checked = false;
-  document.getElementById('taci').checked = false;
-  document.getElementById('trci').checked = false;
-  document.getElementById('tsci').checked = false;
-  document.getElementById('tmci').checked = false;
-}
-
- export function automaticOptions_updHtml(auto) {
+ function automaticOptions_updHtml(auto) {
      auto = auto ? auto : {};
-     console.log("auto upd");
+     console.log("auto upd", JSON.stringify(auto));
     document.getElementById('tfti').value = ("f" in auto) ? auto.f : "";
 
     document.getElementById('tati').value = ("astro" in auto) ? auto.astro : "";
@@ -117,6 +79,39 @@ function clearAuto_updHtml() {
 
   }
 
+function req_automatic() {
+  let url = '/cmd.json';
+  let tfmcu = { to: "tfmcu", timer: {} };
+  let auto = tfmcu.timer;
+  let has_daily = false, has_weekly = false, has_astro = false;
+
+  auto.g = $G;
+  auto.m = $M;
+
+  let f = "i";
+  f += document.getElementById('tmci').checked ? "M" : "m";
+  f += ((has_daily = document.getElementById('tdci').checked)) ? "D" : "d";
+  f += ((has_weekly = document.getElementById('twci').checked)) ? "W" : "w";
+  f += ((has_astro = document.getElementById('taci').checked)) ? "A" : "a";
+  f += document.getElementById('trci').checked ? "R" : "r";
+  f += document.getElementById('tsci').checked ? "S" : "s";
+  auto.f = f;
+
+  if (has_weekly)
+    auto.weekly = document.getElementById('twti').value;
+  if (has_astro)
+    auto.astro = document.getElementById('tati').value;
+  if (has_daily) {
+    let tdu = document.getElementById('tduti').value;
+    let tdd = document.getElementById('tddti').value;
+    let td = tdu.length !== 5 ? "-" : tdu.substring(0, 2) + tdu.substring(3, 5);
+    td += tdd.length !== 5 ? "-" : tdd.substring(0, 2) + tdd.substring(3, 5);
+    auto.daily = td;
+  }
+
+  appDebug.dbLog(JSON.stringify(tfmcu));
+  httpFetch.http_postRequest(url, tfmcu);
+}
 </script>
 
 <div id="autodiv" class="auto">
