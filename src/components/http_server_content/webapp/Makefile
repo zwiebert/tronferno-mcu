@@ -22,11 +22,13 @@ SED_OPTS += -e '/dev-no-lan-delete-line/d'
 endif
 
 bundle_out = build/tfmcu.js build/tfmcu.css build/global.css build/tfmcu.css.map
+bundle_files = $(JS_BLD_DIR)/bundle.min.js $(JS_BLD_DIR)/bundle.css $(JS_BLD_DIR)/bundle.css.map $(JS_SRC_DIR)/app.css
 
-all: bundle build/tfmcu.html build/tfmcu.js
+all: build/tfmcu.html build/tfmcu.js
 
 build/tfmcu.html: build $(bundle_out) # HTML may be merged with files from bundle
 $(bundle_out): build
+
 
 build/tfmcu.js: $(JS_BLD_DIR)/bundle.min.js
 	cp -p $< $@  
@@ -37,9 +39,7 @@ build/tfmcu.css.map: $(JS_BLD_DIR)/bundle.css.map
 build/global.css: $(JS_SRC_DIR)/app.css
 	cp -p $< $@ 
 
-
-.PHONY: bundle
-bundle: tfmcu/node_modules
+bundle $(bundle_files): tfmcu/node_modules
 	-cd ../../../.. && $(JSHINT) $(JS_SRC_DIR)/*.js
 	#-cd ../../../.. && $(JSHINT) $(JS_BLD_DIR)/bundle.js
 	cd tfmcu && env $(buildTarget) npm run build
