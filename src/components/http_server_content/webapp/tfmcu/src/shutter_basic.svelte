@@ -6,8 +6,6 @@
   import {GmcFetch} from './store/app_state.js';
   import { onMount,onDestroy } from 'svelte';
  
-  import * as shutterAlias from './shutter_alias.svelte'; //XXX:
-
 let on_destroy = [];
 onMount(() => {
      on_destroy.push(GM.subscribe(() => gmChanged()));
@@ -74,8 +72,8 @@ onDestroy(() => {
   function onPos(pct) {
   let tfmcu = { to: "tfmcu" };
   tfmcu.send = {
-  g: appState.ast.g,
-  m: appState.ast.m,
+  g: $G,
+  m: $M,
   p: pct,
   };
 

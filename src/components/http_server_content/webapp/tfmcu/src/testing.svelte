@@ -4,6 +4,7 @@ import * as appState from './app_state.svelte';
 import * as httpFetch from './fetch.js';
 import * as mcuFirmware from './mcu_firmware.svelte';
 import * as navTabs from './nav_tabs.svelte';
+  import {G,M} from './store/curr_shutter.js';
 
 export function testing_netota() {
   //document.getElementById("netota").onclick = () => mcuFirmware.netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);
@@ -34,8 +35,8 @@ function testPressed(enable) {
   }
 
   if (enable) {
-    appState.ast.g = 7;
-    appState.ast.m = 1;
+    G.set(7);
+    M.set(1);
     test_randomCmd_interval = setInterval(test_randomCmd, 1000);
   }
 }
