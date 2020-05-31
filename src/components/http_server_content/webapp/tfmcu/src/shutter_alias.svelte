@@ -231,14 +231,14 @@
     </tr>
     <tr>
       <td>
-        <select id="aliases" size="5" on:blur={onAliasesChanged} />
+        <select id="aliases" size="5" on:click={onAliasesChanged} on:change={onAliasesChanged} />
       </td>
       <td>
         <select
           id="paired"
           size="5"
           on:click={onPairedChanged}
-          on:blur={onPairedChanged} />
+          on:change={onPairedChanged} />
       </td>
     </tr>
   </table>

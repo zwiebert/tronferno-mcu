@@ -44,6 +44,13 @@ export default {
     svelte({
       dev: !isProduction //
       , css: css => {	 css.write('build/bundle.css');  }
+      , onwarn: (warning, handler) => {
+    // e.g. don't warn on <marquee> elements, cos they're cool
+    if (warning.code === 'a11y-no-onchange') return;
+
+    // let Rollup handle all other warnings normally
+    handler(warning);
+  }
       // By default, all .svelte and .html files are compiled
       //extensions: ['.my-custom-extension'],
 

@@ -17,6 +17,7 @@ module.exports = {
     }
   ],
   rules: {
+    "a11y-no-onchange":"off",
     "no-var": "error",
     "semi": "error",
     "max-params": [
