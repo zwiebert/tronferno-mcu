@@ -4,8 +4,10 @@ JS_SRC_DIR := $(THIS_ROOT)/tfmcu/src
 JS_BLD_DIR := $(THIS_ROOT)/tfmcu/build
 
 HTMLMIN ?= ~/.local/bin/htmlmin
+INCFILES ?= perl ./include_files.pl
+
 SED_OPTS_HTML =  -e 's/tfmcu_dev.js/\/tfmcu.js/'
-SED_OPTS = -E -e '/dev-delete-line/d'
+SED_OPTS = -E -e '/dev-delete-line/d' -e '/dev-delete-begin/,/dev-delete-end/d'
 
 buildTarget = buildTarget=DEV
 ifdef DISTRO
@@ -28,6 +30,8 @@ bundle: tfmcu/node_modules
 	#-cd ../../../.. && $(JSHINT) $(JS_BLD_DIR)/bundle.js
 	cd tfmcu && env $(buildTarget) npm run build
 	cp $(JS_BLD_DIR)/bundle.min.js build/tfmcu.js
+	cp $(JS_BLD_DIR)/bundle.css build/tfmcu.css
+	cp $(JS_SRC_DIR)/app.css build/global.css
 
 old: build build/tfmcu.html build/tfmcu.js
 	cd ../../../.. && jshint src/components/http_server_content/webapp/tfmcu_dev.js
@@ -47,7 +51,7 @@ build/%_html.c : %.html
 
 #adapt development HTML file for usage in MCU webserver
 build/%.html : %_dev.html
-	cat $< | sed  ${SED_OPTS} ${SED_OPTS_HTML} | ${HTMLMIN} >$@
+	cat $< | ${INCFILES} | sed  ${SED_OPTS} ${SED_OPTS_HTML} | ${HTMLMIN} >$@
 
 .PHONY: proxy
 

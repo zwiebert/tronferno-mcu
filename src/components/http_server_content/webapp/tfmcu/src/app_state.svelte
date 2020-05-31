@@ -7,7 +7,6 @@ const load_fetch = httpFetch.FETCH_GMU;
 export class AppState {
 
   constructor() {
-    this.mPair = { all: {} };
     this.docs = {};
     this.mEsp32BootCount = 0;
     this.mWebSocket = 0;

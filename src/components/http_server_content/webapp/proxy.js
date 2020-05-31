@@ -50,6 +50,9 @@ app.get("/index.html", (req, res) => {
 app.get("/tfmcu_dev.html", (req, res) => {
     res.sendFile(cont_dir + '/tfmcu_dev.html');
 });
+app.get("/tfmcu.html", (req, res) => {
+    res.sendFile(cont_dir + '/build/tfmcu.html');
+});
 app.get("/f/js/tfmcu.js", (req, res) => {
     //res.sendFile(cont_dir + '/tfmcu_dev.js');
     res.sendFile(cont_dir + '/tfmcu/build/bundle.js');
