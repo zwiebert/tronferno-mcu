@@ -42,7 +42,8 @@ export default {
       })] : [],
     eslint(),
     svelte({
-      dev: !isProduction //,          css: css => {	 css.write('build/bundle.css');  }
+      dev: !isProduction //
+      , css: css => {	 css.write('build/bundle.css');  }
       // By default, all .svelte and .html files are compiled
       //extensions: ['.my-custom-extension'],
 
