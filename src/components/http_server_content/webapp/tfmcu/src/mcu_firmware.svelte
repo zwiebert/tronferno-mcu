@@ -3,8 +3,7 @@
 import * as appDebug from './app_debug.js';
 import * as httpFetch from './fetch.js';
 import * as misc from './misc.js';
-import * as appState from './app_state.svelte';
-
+import {McuBootCount} from './store/mcu_firmware.js';
 
 // ----------------- firmware div ---------------
 let netota_intervalID = 0;
@@ -117,9 +116,6 @@ export function netota_handle_otaState(ota_state) {
   }
 }
 
-export function updateHtml_bootCount() {
-  document.getElementById("id-bootCount").innerHTML = appState.ast.mEsp32BootCount.toString();
-}
 </script>
 
       <div id="id-fwDiv">
@@ -137,6 +133,6 @@ export function updateHtml_bootCount() {
           <li>MCU type: <span id="id_chip"></span></li>
           <li>firmware version: <span id="id_firmware"></span></li>
           <li>firmware build date: <span id="id_buildTime"></span></li>
-           <li><label>boot-count: <span id="id-bootCount"></span></label></li>
+           <li><label>boot-count: <span id="id-bootCount">{$McuBootCount}</span></label></li>
         </ul>
       </div>

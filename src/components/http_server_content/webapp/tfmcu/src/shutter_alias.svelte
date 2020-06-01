@@ -231,14 +231,22 @@
     </tr>
     <tr>
       <td>
-        <select id="aliases" size="5" on:click={onAliasesChanged} on:change={onAliasesChanged} />
+        <select
+          id="aliases"
+          size="5"
+          on:click={onAliasesChanged}
+          on:change={onAliasesChanged}
+          on:blur={onAliasesChanged}
+           />
       </td>
       <td>
         <select
           id="paired"
           size="5"
           on:click={onPairedChanged}
-          on:change={onPairedChanged} />
+          on:change={onPairedChanged}
+          on:blur={onPairedChanged}
+           />
       </td>
     </tr>
   </table>

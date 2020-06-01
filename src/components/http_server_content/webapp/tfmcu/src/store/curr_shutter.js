@@ -1,6 +1,5 @@
-import { writable, derived } from 'svelte/store';
 'use strict';
-import * as appState from '../app_state.svelte';
+import { writable, derived } from 'svelte/store';
 import {Gmu} from './mcu_config.js';
 import {Pcts,Prefs,Autos} from './shutters.js';
 
@@ -15,8 +14,6 @@ export const G = (() => {
 	return {
 		subscribe,
 		increment: () => {
-			if (!appState.ast)
-				return;
 			for (let i = g + 1; i <= 7; ++i) {
 				if (gmu[i] > 0) {
 					set(i);
@@ -42,7 +39,7 @@ export const M = (() => {
 	return {
 		subscribe,
 		increment: () => {
-			if (g && appState.ast)
+			if (g)
 				set((m >= gmu[g]) ? 0 : m + 1);
 		},
 		set: (val) => { if (g) set(val); return !g; },
@@ -51,7 +48,8 @@ export const M = (() => {
 	};
 })();
 
-export const GM = derived([G, M], ([g, m]) =>  g.toString() + m.toString());
+export const M0 = derived([G, M], ([g, m]) => g === 0 ? 0 : Math.min(gmu[g],m));
+export const GM = derived([G, M0], ([g, m]) =>  g.toString() + m.toString());
 export const Auto = derived([GM, Autos], ([gm, autos]) =>  autos["auto"+gm] || {});
 export const Pct = derived([GM, Pcts], ([gm, pcts]) =>  pcts[gm]);
 export const Pref = derived([GM, Prefs], ([gm, prefs]) =>  prefs["shs"+gm] || {});

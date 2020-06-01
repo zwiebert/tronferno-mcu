@@ -2,10 +2,13 @@
 'use strict';
 import {TabIdx } from './store/app_state.js';
 import { onMount,onDestroy } from 'svelte';
+import * as httpFetch from './fetch.js';
+import { GmcFetch} from './store/app_state.js';
+
+export let nav_tabs = [];
 
 let on_destroy = [];
 onMount(() => {
-    navTabs_updHtml($TabIdx);
     on_destroy.push(TabIdx.subscribe(idx => navTabs_updHtml(idx)));
   });
 onDestroy(() => {
@@ -13,43 +16,14 @@ onDestroy(() => {
       fn();
     }
 });
-</script>
-
-<script context="module">
-'use strict';
-import * as httpFetch from './fetch.js';
-import { GmcFetch} from './store/app_state.js';
 
 
-
-//--------------- nav tabs ------------------
-export const tabs = [
-  { 'text': 'Command', 'div_id': ['senddiv'], fetch_gm: (httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME) },
-  { 'text': 'Automatic', 'div_id': ['senddiv', 'autodiv'], fetch_gm: (httpFetch.FETCH_AUTO | httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME) },
-  { 'text': 'Config', 'div_id': ['configdiv'], fetch: httpFetch.FETCH_CONFIG },
-  { 'text': 'Positions', 'div_id': ['senddiv', 'aliasdiv', 'shprefdiv'], fetch: httpFetch.FETCH_ALIASES, fetch_gm: httpFetch.FETCH_POS |  httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME },
-  { 'text': 'Firmware', 'div_id': ['id-fwDiv'], fetch_init: (httpFetch.FETCH_VERSION |  httpFetch.FETCH_GIT_TAGS) },
-];
-let div_ids = new Set();
-
-// idx: -1=end, 0=begin, N=specific_position
-export function navTab_addTab(tab,idx) {
-    if (idx > 0) {
-     tabs[idx] = tab;
-   } else if (idx < 0) {
-     tabs.push(tab);
-   } else {
-     tabs.unshift(tab);
-   }
-}
-
-
-export function navTabs_updHtml(idx) {
+ function navTabs_updHtml(idx) {
   const NONE = "none";
   const SHOW = "";
   const BGC1 = "hsl(220, 60%, 60%)";
   const BGC0 = "#eee";
-
+console.log("tidxupd: ", idx);
   if (!(0 <= idx && idx < tabs.length))
     idx = 0;
 
@@ -83,11 +57,18 @@ export function navTabs_updHtml(idx) {
   }
 }
 
+//--------------- nav tabs ------------------
+ 
+
+
+let div_ids = new Set();
+
+let tabs = [...nav_tabs];
+
 function init_tab(idx) {
   tabs[idx].div_id.forEach(div_ids.add, div_ids);
   return '';
 }
-
 </script>
 
 <style>      /* Style the buttons that are used to open the tab content */
@@ -131,5 +112,4 @@ function init_tab(idx) {
 {/each}
 </div>
 
-  
-
+ 

@@ -1,7 +1,6 @@
 <script>
 'use strict';
 import * as appDebug from './app_debug.js';
-import * as appState from './app_state.svelte';
 import * as httpFetch from './fetch.js';
 import {Auto,G,M,GM} from './store/curr_shutter.js';
 import { onMount,onDestroy } from 'svelte';
@@ -20,10 +19,7 @@ onDestroy(() => {
 
 
   function gmChanged() {
-    if (appState.ast) {
-       appDebug.dbLog("ast: " + JSON.stringify(appState.ast));
        appDebug.dbLog("autos: " + JSON.stringify($Autos));
-    }
   }
 
 

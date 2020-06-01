@@ -11,7 +11,7 @@ export function testing_netota() {
 }
 
 export function testing_init() {
-  navTabs.navTab_addTab({ 'text': 'Tests', 'div_id': ['testsdiv'], }, -1);
+  //navTabs.navTab_addTab({ 'text': 'Tests', 'div_id': ['testsdiv'], }, -1);
 }
 
 const test_cmds = ['up', 'down', 'stop'];

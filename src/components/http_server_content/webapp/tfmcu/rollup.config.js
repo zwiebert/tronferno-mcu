@@ -6,7 +6,7 @@ import { eslint } from "rollup-plugin-eslint";
 import svelte from 'rollup-plugin-svelte';
 import resolve from '@rollup/plugin-node-resolve';
 
-const isProduction = process.env.buildTarget === "PROD";
+export const isProduction = process.env.buildTarget === "PROD";
 
 
 
@@ -20,14 +20,21 @@ export default {
   input: 'src/main.js',
   output: [{
     file: 'build/bundle.js',
+    sourcemap: true,
     format: 'iife',
     name: 'tfmcu',
+   // sourcemapPathTransform: relativePath => {      return relativePath.substr(2);},
     plugins: [
     ]
   }, {
     file: 'build/bundle.min.js',
     format: 'iife',
     name: 'tfmcu',
+    sourcemap: true,
+    sourcemapPathTransform: relativePath => {
+      // will transform e.g. "src/main.js" -> "main.js"
+      return relativePath.substr(2);
+    },
     plugins: [
       terser()
     ]
@@ -38,6 +45,7 @@ export default {
     ...isProduction ? [
       strip({
         functions: ['testing.*', 'testing_*', 'appDebug.*', 'console.*', 'assert.*'],
+        labels: ['testing'],
         sourceMap: true
       })] : [],
     eslint(),

@@ -57,6 +57,10 @@ app.get("/f/js/tfmcu.js", (req, res) => {
     //res.sendFile(cont_dir + '/tfmcu_dev.js');
     res.sendFile(cont_dir + '/tfmcu/build/bundle.js');
 });
+app.get("/f/js/bundle.js.map", (req, res) => {
+    //res.sendFile(cont_dir + '/tfmcu_dev.js');
+    res.sendFile(cont_dir + '/tfmcu/build/bundle.js.map');
+});
 app.get("/f/css/global.css", (req, res) => {
     //res.sendFile(cont_dir + '/tfmcu_dev.js');
     res.sendFile(cont_dir + '/tfmcu/src/app.css');
@@ -64,6 +68,10 @@ app.get("/f/css/global.css", (req, res) => {
 app.get("/f/css/tfmcu.css", (req, res) => {
     //res.sendFile(cont_dir + '/tfmcu_dev.js');
     res.sendFile(cont_dir + '/tfmcu/build/bundle.css');
+});
+app.get("/src/", (req, res) => {
+    //res.sendFile(cont_dir + '/tfmcu_dev.js');
+    res.sendFile(cont_dir + '/tfmcu/src/');
 });
 
 // ESP32 firware image for OTA update

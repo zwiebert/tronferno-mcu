@@ -24,7 +24,7 @@ function req_reloadTick() {
 
 function req_reloadStart() {
   const rpr = reload_Progress;
-  let e = null;
+
   for (let div of rpr.divs) {
     let e = document.getElementById(div);
     if (e.offsetParent === null)
@@ -39,8 +39,8 @@ function req_reloadStart() {
 }
 
 export function req_mcuRestart() {
-  var json = { to: "tfmcu", config: { restart: "1" } };
-  var url = '/cmd.json';
+  let json = { to: "tfmcu", config: { restart: "1" } };
+  let url = '/cmd.json';
   httpFetch.http_postRequest(url, json);
   req_reloadStart();
   //setTimeout(function(){ location.reload(); }, 10000);

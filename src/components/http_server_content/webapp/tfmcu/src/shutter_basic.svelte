@@ -1,7 +1,6 @@
 <script>
   'use strict';
-  import {G,M, GM, Pct, Name} from './store/curr_shutter.js';
-  import * as appState from './app_state.svelte';
+  import {G,M,M0,GM, Pct, Name} from './store/curr_shutter.js';
   import * as httpFetch from './fetch.js';
   import {GmcFetch} from './store/app_state.js';
   import { onMount,onDestroy } from 'svelte';
@@ -21,7 +20,7 @@ onDestroy(() => {
   $: name = $Name;
 
  function shn_fromHtml_toMcu(val) {
-  let tfmcu = { "to":"tfmcu", "shpref":{"g":$G, "m":$M, "tag.NAME":val }};
+  let tfmcu = { "to":"tfmcu", "shpref":{"g":$G, "m":$M0, "tag.NAME":val }};
 
   let url = '/cmd.json';
     httpFetch.http_postRequest(url, tfmcu);
@@ -31,7 +30,6 @@ onDestroy(() => {
     if ($GmcFetch)
       httpFetch.http_fetchByMask($GmcFetch);
   }
-
 
   function hClick_G() {
     G.increment();
@@ -147,7 +145,7 @@ onDestroy(() => {
   <input id="sgi" type = "text" name = "g" value="{($G ? $G : "A")}">
   <input id="spi" type = "number" min="0" max="100" name = "p" value="{$Pct}">
   <input id="spr" type = "range" min="0" max="100" name = "p" value="{$Pct}" on:change={hChange_Pos}>
-  <input id="smi" type = "text" name = "m" value="{($G ? ($M ? $M : "A") : "")}">
+  <input id="smi" type = "text" name = "m" value="{($G ? ($M0 ? $M0 : "A") : "")}">
   <br>
   <button id="sgb" type="button" on:click={hClick_G}>G</button>
   <button id="spb" type="button" on:click={hClick_P}>Position</button>

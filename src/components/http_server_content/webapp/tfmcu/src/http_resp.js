@@ -6,6 +6,8 @@ import * as cuas from './cuas.js';
 import * as mcuConfig from './mcu_config.svelte';
 import {McuConfig} from './store/mcu_config.js';
 import {Pcts,Prefs,Aliases,Autos} from './store/shutters.js';
+import {McuBootCount} from './store/mcu_firmware.js';
+import {McuDocs} from './store/mcu_docs.js';
 
 export function http_handleResponses(obj) {
     appDebug.dbLog("reply-json: " + JSON.stringify(obj));
@@ -68,8 +70,7 @@ export function http_handleResponses(obj) {
         document.getElementById("id_buildTime").innerHTML = mcu["build-time"];
       }
       if ("boot-count" in mcu) {
-        appState.ast.mEsp32BootCount = mcu["boot-count"];
-        mcuFirmware.updateHtml_bootCount();
+        McuBootCount.set(mcu["boot-count"]);
       }
       if ("mcuFirmware-state" in mcu) {
         mcuFirmware.netota_handle_otaState(mcu["mcuFirmware-state"]);
@@ -92,5 +93,8 @@ export function http_handleResponses(obj) {
   }
 
   export function http_handleDocResponses(name, text) {
-    appState.ast.docs[name] = { 'text': text };
+    let obj = {};
+    obj[name] = { 'text': text };
+    McuDocs.update(obj);
+    
   }
