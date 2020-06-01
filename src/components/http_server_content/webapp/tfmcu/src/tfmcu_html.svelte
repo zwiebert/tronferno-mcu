@@ -8,6 +8,7 @@
   import McuFirmware from "./mcu_firmware.svelte";
   import Testing from "./testing.svelte";
   import * as httpFetch from "./fetch.js";
+  import McuFwGitTags from "./mcu_firmware_git_tags.svelte";
 
   export let isProduction = false;
 
@@ -42,12 +43,21 @@
     },
   ];
 
- 
-    // eslint-disable-next-line no-unused-labels
-    testing: if (!isProduction) {
-       navTabs = navTabs.concat([{ text: "Tests", div_id: ["testsdiv"] }]);
-    }
-  
+  let fwbtns = [
+    { name: "latest master firmware", ota_name: "github-master" },
+    { name: "latest beta firmware", ota_name: "github-beta" },
+  ];
+
+  // eslint-disable-next-line no-unused-labels
+  testing: if (!isProduction) {
+    navTabs.push({ text: "Tests", div_id: ["testsdiv"] });
+    fwbtns.push({
+      name: "firmware from given URL",
+      ota_name: "netotaFromURL",
+      input: "input",
+      input_value: "http://192.168.1.70:3000/tronferno-mcu.bin",
+    });
+  }
 </script>
 
 <style>
@@ -63,9 +73,9 @@
   <ShutterAlias />
   <ShutterPrefs />
   <McuConfig />
-  <McuFirmware />
+  <McuFirmware fwbtns={fwbtns} McuFwGitTags={McuFwGitTags}/>
   {#if !isProduction}
-  <Testing />
+    <Testing />
   {/if}
 
 </div>

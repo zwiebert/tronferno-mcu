@@ -1,12 +1,11 @@
 'use strict';
 import * as appDebug from './app_debug.js';
-import * as appState from './app_state.svelte';
 import * as mcuFirmware from './mcu_firmware.svelte';
 import * as cuas from './cuas.js';
 import * as mcuConfig from './mcu_config.svelte';
 import {McuConfig} from './store/mcu_config.js';
 import {Pcts,Prefs,Aliases,Autos} from './store/shutters.js';
-import {McuBootCount} from './store/mcu_firmware.js';
+import { McuBootCount, McuGitTagNames } from "./store/mcu_firmware.js";
 import {McuDocs} from './store/mcu_docs.js';
 
 export function http_handleResponses(obj) {
@@ -97,4 +96,12 @@ export function http_handleResponses(obj) {
     obj[name] = { 'text': text };
     McuDocs.update(obj);
     
+  }
+
+  export function gitTags_handleResponse(json) {
+    let names = [];
+    json.forEach((item) => {
+      names.push(item.name);
+    });
+    McuGitTagNames.set(names);
   }

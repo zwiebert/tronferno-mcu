@@ -1,7 +1,7 @@
 'use strict';
-import { writable, derived } from 'svelte/store';
-import {Gmu} from './mcu_config.js';
-import {Pcts,Prefs,Autos} from './shutters.js';
+import { derived, writable } from 'svelte/store';
+import { Gmu } from './mcu_config.js';
+import { Autos, Pcts, Prefs } from './shutters.js';
 
 let g = 0;
 let m = 0;
@@ -48,19 +48,19 @@ export const M = (() => {
 	};
 })();
 
-export const M0 = derived([G, M], ([g, m]) => g === 0 ? 0 : Math.min(gmu[g],m));
-export const GM = derived([G, M0], ([g, m]) =>  g.toString() + m.toString());
-export const Auto = derived([GM, Autos], ([gm, autos]) =>  autos["auto"+gm] || {});
-export const Pct = derived([GM, Pcts], ([gm, pcts]) =>  pcts[gm]);
-export const Pref = derived([GM, Prefs], ([gm, prefs]) =>  prefs["shs"+gm] || {});
-export const Name = derived(Pref, pref =>  pref['tag.NAME'] || '');
-export const PrefMvut = derived(Pref, pref =>  pref.mvut || 0);
-export const PrefMvdt = derived(Pref, pref =>  pref.mvdt || 0);
-export const PrefMvspdt = derived(Pref, pref =>  pref.mvspdt || 0);
+export const M0 = derived([G, M], ([g, m]) => g === 0 ? 0 : Math.min(gmu[g], m));
+export const GM = derived([G, M0], ([g, m]) => g.toString() + m.toString());
+export const Auto = derived([GM, Autos], ([gm, autos]) => autos["auto" + gm] || {});
+export const Pct = derived([GM, Pcts], ([gm, pcts]) => pcts[gm]);
+export const Pref = derived([GM, Prefs], ([gm, prefs]) => prefs["shs" + gm] || {});
+export const Name = derived(Pref, pref => pref['tag.NAME'] || '');
+export const PrefMvut = derived(Pref, pref => pref.mvut || 0);
+export const PrefMvdt = derived(Pref, pref => pref.mvdt || 0);
+export const PrefMvspdt = derived(Pref, pref => pref.mvspdt || 0);
 
 
-G.subscribe(value => { localStorage.setItem("group", value ? value.toString() : "0"); g = value;});
-M.subscribe(value => { localStorage.setItem("member", value ? value.toString() : "0"); m = value;});
+G.subscribe(value => { localStorage.setItem("group", value ? value.toString() : "0"); g = value; });
+M.subscribe(value => { localStorage.setItem("member", value ? value.toString() : "0"); m = value; });
 Gmu.subscribe(value => gmu = value);
 
 //const store = writable(localStorage.getItem("store") || "");

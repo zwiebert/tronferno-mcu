@@ -1,14 +1,8 @@
 <script context="module">
 'use strict';
-import * as appState from './app_state.svelte';
 import * as httpFetch from './fetch.js';
-import * as mcuFirmware from './mcu_firmware.svelte';
-import * as navTabs from './nav_tabs.svelte';
-  import {G,M} from './store/curr_shutter.js';
+import {G,M} from './store/curr_shutter.js';
 
-export function testing_netota() {
-  //document.getElementById("netota").onclick = () => mcuFirmware.netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);
-}
 
 export function testing_init() {
   //navTabs.navTab_addTab({ 'text': 'Tests', 'div_id': ['testsdiv'], }, -1);
