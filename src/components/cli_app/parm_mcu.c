@@ -17,10 +17,16 @@
 #include "storage/esp8266/spiffs_fs.h"
 #endif
 #include "debug/debug.h"
+#ifdef USE_HTTP
+#include "http_server_content/hts_clients.h"
+#endif
 
 #ifdef USE_FREERTOS
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#endif
+#ifdef MCU_ESP8266
+#include "user_interface.h"
 #endif
 
 const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
@@ -58,6 +64,11 @@ int process_parmMcu(clpar p[], int len) {
 #ifdef MCU_ESP8266
       if (strcmp(val, "reset-info") == 0) {
         print_reset_info();
+      } else  if (strcmp(val, "mem-info") == 0) {
+        void es_io_putc(char c);
+        os_install_putc1(es_io_putc);
+        system_set_os_print(1);
+        system_print_meminfo();
       }
 #endif
 #ifndef NO_SPIFFS
@@ -106,8 +117,6 @@ int process_parmMcu(clpar p[], int len) {
         }
         io_putlf();
       }
-
-
 #ifdef USE_PAIRINGS
     } else if (strcmp(key, "dbp") == 0) {
       bool pair_so_output_all_pairings(void);

@@ -152,8 +152,8 @@ uart0_rx_intr_handler(void *para)
 
     }
     // zwiebert: added my handle code here /////////////////////////
-    rx_copy(pRxBuff->pRcvMsgBuff, pRxBuff->pWritePos); // copy buffer
-    pRxBuff->pWritePos = pRxBuff->pRcvMsgBuff ; // empty buffer
+    //rx_copy(pRxBuff->pRcvMsgBuff, pRxBuff->pWritePos); // copy buffer
+    //pRxBuff->pWritePos = pRxBuff->pRcvMsgBuff ; // empty buffer
     ////////////////////////////////////////////////////////////////
 }
 
@@ -193,6 +193,19 @@ uart_init(UartBautRate uart0_br, UartBautRate uart1_br)
     ETS_UART_INTR_ENABLE();
 
     // install uart1 putc callback
-    os_install_putc1((void *)uart1_write_char);
+    //os_install_putc1((void *)uart1_write_char);
 }
 
+int uart_rx_buf_getc() {
+  RcvMsgBuff *rxb = &UartDev.rcv_buff;
+  if (!rxb)
+    return -1;
+
+  if (rxb->pWritePos == rxb->pReadPos)
+    return -1;
+
+  uint8_t c = *rxb->pReadPos;
+  rxb->pReadPos = ((rxb->pRcvMsgBuff + rxb->RcvBuffSize) <= rxb->pReadPos) ? rxb->pRcvMsgBuff : rxb->pReadPos + 1;
+
+  return c;
+}

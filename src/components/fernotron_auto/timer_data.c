@@ -6,11 +6,18 @@
  */
 #include "app_config/proj_app_cfg.h"
 #include "timer_data_fs.h"
+#include "timer_data_kvs.h"
 #include "fernotron_auto/fau_tdata_store.h"
 #include "misc/int_types.h"
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 bool timer_data_changed;
+
+#ifdef USE_TIMER_DATA_KVS
+#define save_timer_data_fs save_timer_data_kvs
+#define erase_timer_data_fs erase_timer_data_kvs
+#define read_timer_data_fs read_timer_data_kvs
+#endif
 
 
 bool save_timer_data(timer_data_t *p, u8 g, u8 m) {

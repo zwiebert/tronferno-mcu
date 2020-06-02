@@ -16,34 +16,20 @@
 #include "txtio/inout.h"
 #include "driver/uart.h"
 
-
-
-
 extern int ets_uart_printf(const char *fmt, ...);
 
 int es_io_putc(char c) {
+  uart_tx_one_char(c);
+  return 1;
   ets_uart_printf("%c", c);
   return 1;
 }
 
-#define RX_BUFSIZE 128
-static u8 buf[RX_BUFSIZE];
-static volatile u8 head = 0, tail = 0;
-
-void IRAM_ATTR rx_copy(u8 *start, u8 *end) {
-  while (start < end) {
-    buf[tail++] = *start++;
-    tail %= RX_BUFSIZE;
-  }
-}
 
 int  es_io_getc(void) {
+  return uart_rx_buf_getc();
   int result = -1;
 
-  if (head != tail) {
-    result = buf[head++] & 0xFF;
-    head %= RX_BUFSIZE;
-  }
 
   return result;
 }
