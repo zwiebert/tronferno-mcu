@@ -2,11 +2,26 @@
 import * as appDebug from './app_debug.js';
 import * as mcuFirmware from './mcu_firmware.svelte';
 import * as cuas from './cuas.js';
-import * as mcuConfig from './mcu_config.svelte';
-import {McuConfig} from './store/mcu_config.js';
+import {McuConfig, Gmu} from './store/mcu_config.js';
 import {Pcts,Prefs,Aliases,Autos} from './store/shutters.js';
 import { McuBootCount, McuGitTagNames } from "./store/mcu_firmware.js";
 import {McuDocs} from './store/mcu_docs.js';
+
+
+
+function parse_gmu(s) {
+
+
+  let sa = s ? s.split('').reverse() : [];
+
+  let gmu = [0, 1, 2, 3, 4, 5, 6, 7];
+
+  for (let g = 1; g < 8; ++g) {
+    let um = sa[g] ? parseInt(sa[g]) : 0;
+    gmu[g] = um;
+  }
+  return gmu;
+}
 
 export function http_handleResponses(obj) {
     appDebug.dbLog("reply-json: " + JSON.stringify(obj));
@@ -19,19 +34,8 @@ export function http_handleResponses(obj) {
       } else {
         McuConfig.update(config);
         if ("gm-used" in config) {
-          mcuConfig.usedMembers_fromConfig();
+          Gmu.set(parse_gmu(config["gm-used"]));
         }
-
-        if (!document.getElementById("cfg_table_id")) {
-          if ("verbose" in config) {
-            document.getElementById("config-div").innerHTML = mcuConfig.mcuConfigTable_genHtml(obj.config);
-          }
-        }
-      }
-
-      if (document.getElementById("cfg_table_id")) {
-        mcuConfig.mcuConfig_updHtml(obj.config);
-        mcuConfig.usedMembers_updHtml_fromHtml();
       }
     }
 

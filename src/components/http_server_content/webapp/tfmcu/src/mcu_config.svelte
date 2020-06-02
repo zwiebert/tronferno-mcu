@@ -1,20 +1,45 @@
-<script context="module">
+<script>
   'use strict';
-  import {Gmu} from './store/mcu_config.js';
-  import {McuConfig} from './store/mcu_config.js';
+  import {McuConfig, McuConfigKeys, Gmu} from './store/mcu_config.js';
   import * as appDebug from './app_debug.js';
-   import * as httpFetch from './fetch.js';
+  import * as httpFetch from './fetch.js';
   import * as cuas from './cuas.js';
   import * as misc from './misc.js';
 
-  let mcu_config = {};
-  McuConfig.subscribe(value => mcu_config = value);
+
+
+  $: mcuConfigKeys = $McuConfigKeys;
+  $: mcuConfig = $McuConfig;
+  $: gmu = $Gmu;
+
+  export function reload_config() {
+  // eslint-disable-next-line no-unused-vars
+  Object.keys($McuConfig).forEach(function(key, idx) {
+    let el = document.getElementById('cfg_' + key);
+
+    switch (el.type) {
+      case 'checkbox':
+        el.checked = $McuConfig[key] !== 0;
+        break;
+      default:
+        el.value = $McuConfig[key];
+    }
+  });
+
+       for(let i=1; i <= 7;++i) {
+        document.getElementById('gmu'+i.toString()).value = $Gmu[i];
+     }
+  }
+
 
   function hClick_Reload() {
+
+    reload_config();
     httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
   }
 
   function hClick_Save() {
+    usedMembers_fromHtml_toHtml();
     mcuConfig_fromHtml_toMcu();
   }
 
@@ -26,35 +51,12 @@
     cuas.req_cuasStart();
   }
 
-  export function mcuConfigTable_genHtml(cfg) {
-  let html = '<table id="cfg_table_id" class="conf-table">';
-    // eslint-disable-next-line no-unused-vars
-    Object.keys(cfg).forEach(function(key, idx) {
-    html += '<tr id="cfg_' + key + '_tr">' + configTr_genHtml(key, cfg[key]) + '</tr>' + "\n";
-    });
-    html += '</table>';
-  return html;
-  }
-
-  export function mcuConfig_updHtml(cfg) {
-  // eslint-disable-next-line no-unused-vars
-  Object.keys(cfg).forEach(function(key, idx) {
-    let el = document.getElementById('cfg_' + key);
-
-    switch (el.type) {
-      case 'checkbox':
-        el.checked = cfg[key] !== 0;
-        break;
-      default:
-        el.value = cfg[key];
-    }
-  });
-  }
 
 
 
-export function mcuConfig_fromHtml_toMcu() {
-  const cfg = mcu_config;
+
+ function mcuConfig_fromHtml_toMcu() {
+  const cfg = $McuConfig;
 
   let new_cfg = {};
   let has_changed = false;
@@ -88,106 +90,7 @@ export function mcuConfig_fromHtml_toMcu() {
 }
 
 
-function configTr_genHtml(name, value) {
-  if (name.endsWith("-enable")) {
-    return '<td><label class="config-label">' + name +
-      '</label></td><td><input class="config-input cb" type="checkbox" id="cfg_' + name +
-      '" name="' + name + '"' + (value ? " checked" : "") + '></td>';
-  } else if (name === 'rf-rx-pin' || name === 'set-button-pin') {
-    return '<td><label class="config-label">' + name +
-      '</label></td><td><input class="config-input" type="number" min="-1" max="39" id="cfg_' + name +
-      '" name="' + name + '" value="' + value + '"></td>';
-  } else if (name === 'rf-tx-pin') {
-    return '<td><label class="config-label">' + name +
-      '</label></td><td><input class="config-input" type="number" min="-1" max="33" id="cfg_' + name +
-      '" name="' + name + '" value="' + value + '"></td>';
-  } else if (name === 'verbose') {
-    return '<td><label class="config-label">' + name +
-      '</label></td><td><input class="config-input" type="number" min="0" max="5" id="cfg_' + name +
-      '" name="' + name + '" value="' + value + '"></td>';
-  } else if (name === 'network') {
-    return '<td><label class="config-label">' + name +
-      '</label></td><td><select  class="config-input" id="cfg_' + name + '">' +
 
-      '<option value="wlan">Connect to existing WLAN</option>' +
-      '<option value="ap">AP (192.168.4.1, ssid/pw=tronferno)</option>' +
-      '<option value="lan">Connect to Ethernet</option>' + // dev-no-lan-delete-line
-      '<option value="none">No Network</option>' +
-      '</select></td>';
-  } else if (name === 'lan-phy') {
-    return '<td><label class="config-label">' + name +
-      '</label></td><td><select  class="config-input" id="cfg_' + name + '">' +
-      '<option value="lan8270">LAN8270</option>' +
-      '<option value="rtl8201">RTL8201</option>' +
-      '<option value="ip101">IP101</option>' +
-      '</select></td>';
-  } else if (name === 'lan-pwr-gpio') {
-    return '<td><label class="config-label">' + name +
-      '</label></td><td><input class="config-input" type="number" min="-1" max="36" id="cfg_' + name +
-      '" name="' + name + '" value="' + value + '"></td>';
-  } else if (name === 'astro-correction') {
-    return '<td><label class="config-label">' + name +
-      '</label></td><td><select  class="config-input" id="cfg_' + name + '">' +
-      '<option value="0">average</option>' +
-      '<option value="1">not too late or dark</option>' +
-      '<option value="2">not too early or bright</option>' +
-      '</select></td>';
-  } else if (name.startsWith('gpio')) {
-    return '<td><label class="config-label">' + name +
-      '</label></td><td><select  class="config-input" id="cfg_' + name + '">' +
-      '<option value="i">Input (Pull.FLoating)</option>' +
-      '<option value="ih">Input (Pull.Up)</option>' +
-      '<option value="il">Input (Pull.Down)</option>' +
-      '<option value="O">Output</option>' +
-      '<option value="Ol">Output (Level.Low)</option>' +
-      '<option value="Oh">Output (Level.High)</option>' +
-      '<option value="o">Output (OpenDrain)</option>' +
-      '<option value="ol">Output (OpenDrain + Level.Low)</option>' +
-      '<option value="oh">Output (OpenDrain + Level.High)</option>' +
-      '<option value="Q">Input/Output</option>' +
-      '<option value="Ql">Input/Output (Level.Low)</option>' +
-      '<option value="Qh">Input/Output (Level.High)</option>' +
-      '<option value="q">Input/Output (OpenDrain)</option>' +
-      '<option value="ql">Input/Output (OpenDrain + Level.Low)</option>' +
-      '<option value="qh">Input/Output (OpenDrain + Level.High)</option>' +
-      '</select></td>';
-  } else {
-    return '<td><label class="config-label">' + name +
-      '</label></td><td><input class="config-input text" type="text" id="cfg_' + name +
-      '" name="' + name + '" value="'  + value + '"></td>';
-  }
-}
-
-
-export function usedMembers_fromConfig() {
-
-  let s = mcu_config["gm-used"];
-
-
-  let sa = s ? s.split('').reverse() : [];
-
-  let gmu = [0, 1, 2, 3, 4, 5, 6, 7];
-
-  for (let g = 1; g < 8; ++g) {
-    let um = sa[g] ? parseInt(sa[g]) : 0;
-    gmu[g] = um;
-  }
-
-  Gmu.set(gmu);
-}
-
-export function usedMembers_updHtml_fromHtml() {
-  let val = document.getElementById("cfg_gm-used").value; // HEX string! not a number!
-
-  while (val.length < 8)
-    val = "0" + val;
-
-  let g = 1;
-  for (let i = 6; i >= 0; --i, ++g) {
-    let id = "gmu" + (g.toString());
-    document.getElementById(id).value = val[i];
-  }
-}
 
 function usedMembers_fromHtml_toHtml() {
   let val = "";
@@ -208,33 +111,124 @@ function usedMembers_fromHtml_toHtml() {
 }
 </script>
 
+<script context="module">
+  let mcu_config = {};
+  McuConfig.subscribe(value => mcu_config = value);
+
+  export function mcuConfig_updHtml(cfg) {
+  // eslint-disable-next-line no-unused-vars
+  Object.keys(cfg).forEach(function(key, idx) {
+    let el = document.getElementById('cfg_' + key);
+
+    switch (el.type) {
+      case 'checkbox':
+        el.checked = cfg[key] !== 0;
+        break;
+      default:
+        el.value = cfg[key];
+    }
+  });
+  }
+
+
+
+ export function usedMembers_updHtml_fromHtml() {
+  let val = document.getElementById("cfg_gm-used").value; // HEX string! not a number!
+
+  while (val.length < 8)
+    val = "0" + val;
+
+  let g = 1;
+  for (let i = 6; i >= 0; --i, ++g) {
+    let id = "gmu" + (g.toString());
+    document.getElementById(id).value = val[i];
+  }
+}
+export function mcuConfigTable_genHtml() {}
+</script>
+
 <div id="configdiv">
   <h3>Configuration</h3>
   <div  class="config" id="config-div">
-    <p><strong style="animation: blink .75s linear 4;">...try to load configuration data from MCU...</strong></p>
-    <!-- configuration widgets. javascript output goes here -->
+
+  <table id="cfg_table_id" class="conf-table">
+  {#each mcuConfigKeys as name}
+  <tr>
+  {#if (name.endsWith("-enable"))}
+        <td><label class="config-label">{name}</label></td>
+        <td><input class="config-input cb" type="checkbox" id="cfg_{name}" name="{name}" checked={mcuConfig[name]}>
+        </td>
+  {:else if (name === 'rf-rx-pin' || name === 'set-button-pin')}
+        <td><label class="config-label">{name}</label></td>
+        <td><input class="config-input" type="number" min="-1" max="39" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
+  {:else if (name === 'rf-tx-pin')}
+        <td><label class="config-label">{name}</label></td><td><input class="config-input" type="number" min="-1" max="33" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
+  {:else if (name === 'verbose')}
+        <td><label class="config-label">{name}</label></td><td><input class="config-input" type="number" min="0" max="5" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
+  {:else if (name === 'network')}
+      <td><label class="config-label">{name}</label></td><td><select  class="config-input" id="cfg_{name}">
+      <option value="wlan">Connect to existing WLAN</option>
+      <option value="ap">AP (192.168.4.1, ssid/pw=tronferno)</option>
+      <option value="lan">Connect to Ethernet</option> <!-- dev-no-lan-delete-line --> 
+      <option value="none">No Network</option>
+      '</select></td>
+  {:else if (name === 'lan-phy')}
+        <td><label class="config-label">{name}</label></td><td><select  class="config-input" id="cfg_{name}">
+      <option value="lan8270">LAN8270</option>
+      <option value="rtl8201">RTL8201</option>
+      <option value="ip101">IP101</option>
+      '</select></td>
+  {:else if (name === 'lan-pwr-gpio')}
+       <td><label class="config-label">{name}</label></td><td><input class="config-input" type="number" min="-1" max="36" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
+  {:else if (name === 'astro-correction')}
+       <td><label class="config-label">{name}</label></td><td><select  class="config-input" id="cfg_{name}">
+      <option value="0">average</option>
+      <option value="1">not too late or dark</option>
+      <option value="2">not too early or bright</option>
+      '</select></td>
+  {:else if (name.startsWith('gpio'))}
+       <td><label class="config-label">{name}</label></td><td><select  class="config-input" id="cfg_{name}">
+      <option value="i">Input (Pull.FLoating)</option>
+      <option value="ih">Input (Pull.Up)</option>
+      <option value="il">Input (Pull.Down)</option>
+      <option value="O">Output</option>
+      <option value="Ol">Output (Level.Low)</option>
+      <option value="Oh">Output (Level.High)</option>
+      <option value="o">Output (OpenDrain)</option>
+      <option value="ol">Output (OpenDrain + Level.Low)</option>
+      <option value="oh">Output (OpenDrain + Level.High)</option>
+      <option value="Q">Input/Output</option>
+      <option value="Ql">Input/Output (Level.Low)</option>
+      <option value="Qh">Input/Output (Level.High)</option>
+      <option value="q">Input/Output (OpenDrain)</option>
+      <option value="ql">Input/Output (OpenDrain + Level.Low)</option>
+      <option value="qh">Input/Output (OpenDrain + Level.High)</option>
+      '</select></td>
+  {:else}
+       <td><label class="config-label">{name}</label></td><td><input class="config-input text" type="text" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
+  {/if}
+
+  </tr>
+  {/each}
+
+  </table>
+    
   </div>
 
   <table id="gmu-table">
     <tr>
       <td><label class="config-label">Groups</label></td>
-      <td><label>1</label></td>
-      <td><label>2</label></td>
-      <td><label>3</label></td>
-      <td><label>4</label></td>
-      <td><label>5</label></td>
-      <td><label>6</label></td>
-      <td><label>7</label></td>
+      {#each {length:7} as _, i}
+        <td><label>{i+1}</label></td>
+      {/each}
     </tr>
     <tr>
       <td><label class="config-label">Members</label></td>
-      <td><input id="gmu1" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-      <td><input id="gmu2" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-      <td><input id="gmu3" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-      <td><input id="gmu4" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-      <td><input id="gmu5" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-      <td><input id="gmu6" style="width:2em;" type="number" min="0" max="7" value="7"></td>
-      <td><input id="gmu7" style="width:2em;" type="number" min="0" max="7" value="7"></td>
+      {#each gmu as n, i}
+        {#if i > 0}
+           <td><input id="gmu{i}" style="width:2em;" type="number" min="0" max="7" value="{n}"></td>
+        {/if}
+      {/each}
     </tr>
   </table>
 

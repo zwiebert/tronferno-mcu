@@ -31,10 +31,6 @@ console.log("tidxupd: ", idx);
     document.getElementById('tabbt' + i.toString()).style.backgroundColor = (i === idx) ? BGC1 : BGC0;
   }
 
-  for (let div_id of div_ids) {
-    document.getElementById(div_id).style.display = tabs[idx].div_id.includes(div_id) ? SHOW : NONE;
-  }
-
   const nt = tabs[idx];
 
   let fetch = 0;
@@ -59,16 +55,8 @@ console.log("tidxupd: ", idx);
 
 //--------------- nav tabs ------------------
  
-
-
-let div_ids = new Set();
-
 let tabs = [...nav_tabs];
 
-function init_tab(idx) {
-  tabs[idx].div_id.forEach(div_ids.add, div_ids);
-  return '';
-}
 </script>
 
 <style>      /* Style the buttons that are used to open the tab content */
@@ -108,7 +96,6 @@ function init_tab(idx) {
 <div id="tabBar" class="tab">
 {#each tabs as tab, i}
 <button class="tab" id="tabbt{i}" on:click={() => TabIdx.set(i)}>{tab.text}</button>
-{init_tab(i)}
 {/each}
 </div>
 

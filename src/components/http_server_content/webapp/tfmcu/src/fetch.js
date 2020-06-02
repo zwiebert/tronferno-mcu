@@ -14,9 +14,12 @@ export const FETCH_SHUTTER_PREFS = 128;
 export const FETCH_GMU = 256;
 export const FETCH_GIT_TAGS = 512;
 export const FETCH_SHUTTER_NAME = 1024;
+export const FETCH_ALL_POS = 2048;
 
 
-export function http_postRequest(url = '', data = {}) {
+const MAX_RETRY_COUNT = 3;
+
+export function http_postRequest(url = '', data = {}, state = { retry_count:0 }) {
   appDebug.dbLog("post-json: " + JSON.stringify(data));
 
   const fetch_data = {
@@ -36,6 +39,9 @@ export function http_postRequest(url = '', data = {}) {
     .then(response => {
       if (!response.ok) {
         console.log("error");
+        if (state.retry_count++ < MAX_RETRY_COUNT) {
+          return http_postRequest(url, data, state);
+        }
         throw new Error("network repsonse failed");
       }
       return response.json();
@@ -111,6 +117,13 @@ export function http_fetchByMask(mask) {
 
   if (mask & FETCH_POS)
     tfmcu.send = {
+      g: g,
+      m: m,
+      p: "?",
+    };
+
+    if (mask & FETCH_ALL_POS)
+    tfmcu.cmd = {
       g: g,
       m: m,
       p: "?",

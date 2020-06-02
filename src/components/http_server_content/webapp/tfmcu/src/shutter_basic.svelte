@@ -16,8 +16,9 @@ onDestroy(() => {
 });
 
  
-  let name = "";
-  $: name = $Name;
+  $: name = $Name || '';
+  $: vm = $G ? ($M0 ? $M0 : 'A') : '';
+  $: vg = $G ? $G : 'A';
 
  function shn_fromHtml_toMcu(val) {
   let tfmcu = { "to":"tfmcu", "shpref":{"g":$G, "m":$M0, "tag.NAME":val }};
@@ -142,10 +143,10 @@ onDestroy(() => {
 
 <div id="senddiv" class="send">
   <input id="smn" type = "text" name = "name" bind:value="{name}" on:change={hChange_Name}>
-  <input id="sgi" type = "text" name = "g" value="{($G ? $G : "A")}">
+  <input id="sgi" type = "text" name = "g" value="{vg}">
   <input id="spi" type = "number" min="0" max="100" name = "p" value="{$Pct}">
   <input id="spr" type = "range" min="0" max="100" name = "p" value="{$Pct}" on:change={hChange_Pos}>
-  <input id="smi" type = "text" name = "m" value="{($G ? ($M0 ? $M0 : "A") : "")}">
+  <input id="smi" type = "text" name = "m" value="{vm}">
   <br>
   <button id="sgb" type="button" on:click={hClick_G}>G</button>
   <button id="spb" type="button" on:click={hClick_P}>Position</button>
