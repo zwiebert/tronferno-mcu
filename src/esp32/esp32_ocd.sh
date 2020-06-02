@@ -1,6 +1,6 @@
 #!/bin/sh
 
-part_ota0=0x280000
+part_ota0=0x100000
 part_ota_init=0x10000
 
 ocd_cmd="openocd -f $HOME/esp/ft2232.cfg -f /usr/local/share/openocd/scripts/board/esp-wroom-32.cfg"
