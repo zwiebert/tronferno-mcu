@@ -10,12 +10,11 @@
   import Testing from "./testing.svelte";
   import * as httpFetch from "./fetch.js";
   import McuFwGitTags from "./mcu_firmware_git_tags.svelte";
-  import {TabIdx } from './store/app_state.js';
+  import { TabIdx } from "./store/app_state.js";
 
   export let isProduction = false;
 
   $: tabIdx = $TabIdx;
-  
 
   let navTabs = [
     {
@@ -75,28 +74,21 @@
 <div id="navTabs" class="container tabcontent">
 
   {#if tabIdx === 0}
-  <ShutterBasic />
-  <ShutterPosViews />
-{:else if tabIdx === 1}
-  <ShutterBasic />
+    <ShutterBasic />
+    <ShutterPosViews />
+  {:else if tabIdx === 1}
+    <ShutterBasic />
     <ShutterAuto />
-{:else if tabIdx === 2}
-  <McuConfig />
-{:else if tabIdx === 3}
-<ShutterBasic />
-  <ShutterAlias />
-  <ShutterPrefs />
-{:else if tabIdx === 4}
-
-  <McuFirmware fwbtns={fwbtns} McuFwGitTags={McuFwGitTags}/>
+  {:else if tabIdx === 2}
+    <McuConfig />
+  {:else if tabIdx === 3}
+    <ShutterBasic />
+    <ShutterAlias />
+    <ShutterPrefs />
+  {:else if tabIdx === 4}
+    <McuFirmware {fwbtns} {McuFwGitTags} />
   {:else if tabIdx === 5}
     <Testing />
-{/if}
-
-  
-
-
-
-
+  {/if}
 
 </div>

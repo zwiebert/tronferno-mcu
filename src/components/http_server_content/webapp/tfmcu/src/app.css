@@ -1,23 +1,6 @@
       * { font-size:100%; }
       
-     #pvtable {
-      background-color: rgb(255, 255, 255);
-      border: 1px solid black;
-     } 
-     .pvtd {
- 
-      border: 1px solid black;
-     } 
-      .pvbar {
-        background-color: rgb(66, 15, 15);
-    }
-    .pvbar-border {
-      background-color: rgb(103, 155, 223);
-      border: 1px solid black;
-      width: 3em;
-      height:4em;
-    }
-    
+
 
       .help_text {
         displayXX:none;

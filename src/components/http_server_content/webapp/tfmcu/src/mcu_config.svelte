@@ -147,6 +147,13 @@ function usedMembers_fromHtml_toHtml() {
 export function mcuConfigTable_genHtml() {}
 </script>
 
+
+<style>
+#cfg_gm-used {
+  visibility: hidden;
+}
+</style>
+
 <div id="configdiv">
   <h3>Configuration</h3>
   <div  class="config" id="config-div">
@@ -171,13 +178,13 @@ export function mcuConfigTable_genHtml() {}
       <option value="ap">AP (192.168.4.1, ssid/pw=tronferno)</option>
       <option value="lan">Connect to Ethernet</option> <!-- dev-no-lan-delete-line --> 
       <option value="none">No Network</option>
-      '</select></td>
+      </select></td>
   {:else if (name === 'lan-phy')}
         <td><label class="config-label">{name}</label></td><td><select  class="config-input" id="cfg_{name}">
       <option value="lan8270">LAN8270</option>
       <option value="rtl8201">RTL8201</option>
       <option value="ip101">IP101</option>
-      '</select></td>
+      </select></td>
   {:else if (name === 'lan-pwr-gpio')}
        <td><label class="config-label">{name}</label></td><td><input class="config-input" type="number" min="-1" max="36" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
   {:else if (name === 'astro-correction')}
@@ -185,7 +192,7 @@ export function mcuConfigTable_genHtml() {}
       <option value="0">average</option>
       <option value="1">not too late or dark</option>
       <option value="2">not too early or bright</option>
-      '</select></td>
+      </select></td>
   {:else if (name.startsWith('gpio'))}
        <td><label class="config-label">{name}</label></td><td><select  class="config-input" id="cfg_{name}">
       <option value="i">Input (Pull.FLoating)</option>
@@ -203,9 +210,9 @@ export function mcuConfigTable_genHtml() {}
       <option value="q">Input/Output (OpenDrain)</option>
       <option value="ql">Input/Output (OpenDrain + Level.Low)</option>
       <option value="qh">Input/Output (OpenDrain + Level.High)</option>
-      '</select></td>
-  {:else}
-       <td><label class="config-label">{name}</label></td><td><input class="config-input text" type="text" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
+      </select></td>
+  {:else if name !== 'gm-used'}
+      <td><label class="config-label">{name}</label></td><td><input class="config-input text" type="text" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
   {/if}
 
   </tr>
@@ -215,6 +222,7 @@ export function mcuConfigTable_genHtml() {}
     
   </div>
 
+  <input type="text" id="cfg_gm-used" />
   <table id="gmu-table">
     <tr>
       <td><label class="config-label">Groups</label></td>
