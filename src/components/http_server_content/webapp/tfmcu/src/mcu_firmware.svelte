@@ -116,7 +116,7 @@ onDestroy(() => {
 
     {#if McuFwGitTags}
       <!-- svelte-ignore reactive-component -->
-      <McuFwGitTags />
+       <svelte:component this={McuFwGitTags}/>
     {/if}
   </div>
  

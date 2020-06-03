@@ -1,5 +1,5 @@
 <script>
-  import { Pcts, Prefs } from "./store/shutters.js";
+  import { Pcts, Names } from "./store/shutters.js";
 
   export let g;
   export let m;
@@ -9,18 +9,18 @@
   let pct = 50;
 
   $: pct = $Pcts[gm] || 0;
-  $: name = ($Prefs["shs" + gm] || {})["tag.NAME"] || gm;
+  $: name = $Names[gm] || gm;
 
 </script>
 
 <style>
   .pvbar {
-    background-color: rgb(66, 15, 15);
+    background-color: #4e4a22;
   }
   .pvbar-border {
     background-color: rgb(103, 155, 223);
     border: 1px solid black;
-    width: 3em;
+    width: 100%;
     height: 4em;
   }
 </style>

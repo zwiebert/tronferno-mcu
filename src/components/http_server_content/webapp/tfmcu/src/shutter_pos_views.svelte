@@ -1,7 +1,7 @@
 <script>
    import * as httpFetch from "./fetch.js";
   import { Gmu } from "./store/mcu_config.js";
-  import { Prefs } from "./store/shutters.js";
+  import { Names } from "./store/shutters.js";
   import { G, M } from "./store/curr_shutter.js";
   import ShutterPosView from "./shutter_pos_view.svelte";
   import { onMount,onDestroy } from 'svelte';
@@ -18,7 +18,6 @@ onDestroy(() => {
 
 
   $: gmu = $Gmu;
-  $: prefs = $Prefs;
 
   function set_gm(g, m) {
     G.set(g);
@@ -27,7 +26,7 @@ onDestroy(() => {
 </script>
 
 <style>
-  #pvtable {
+  #pvtable, .pvgroup {
     background-color: rgb(255, 255, 255);
     border: 1px solid black;
   }
@@ -38,13 +37,13 @@ onDestroy(() => {
 </style>
 
 <div id="posviewdiv">
-  <table id="pvtable">
     {#each gmu as shutterCt, g}
+      <table id="pvtable{g}" class="pvgroup"> 
       <tr>
         {#if g > 0 && shutterCt > 0}
           <th on:click={() => set_gm(g, 0)}>
     
-            {(prefs['shs' + g.toString() + '0'] || {})['tag.NAME'] || 'G' + g.toString()}
+            {$Names[g.toString() + '0'] || 'G' + g.toString()}
 
           </th>
           {#each { length: shutterCt } as _, m}
@@ -54,6 +53,6 @@ onDestroy(() => {
           {/each}
         {/if}
       </tr>
+      </table>
     {/each}
-  </table>
 </div>

@@ -3,7 +3,7 @@ import * as appDebug from './app_debug.js';
 import * as mcuFirmware from './mcu_firmware.svelte';
 import * as cuas from './cuas.js';
 import {McuConfig, Gmu} from './store/mcu_config.js';
-import {Pcts,Prefs,Aliases,Autos} from './store/shutters.js';
+import {Pcts,Prefs,Aliases,Autos,Names} from './store/shutters.js';
 import { McuBootCount, McuGitTagNames } from "./store/mcu_firmware.js";
 import {McuDocs} from './store/mcu_docs.js';
 
@@ -58,7 +58,20 @@ export function http_handleResponses(obj) {
     }
 
     if ("shs" in obj) {
-      Prefs.update(obj.shs);
+      let shs = obj.shs;
+      Prefs.update(shs);
+      let names = {};
+      let names_ct = 0;
+      for (const key in shs) {
+        if (key.startsWith('shs')) {
+          names[key.substr(3)] = shs[key]['tag.NAME'];
+          ++names_ct;
+        }
+      }
+      if (names_ct > 0) {
+        Names.update(names);
+        console.log("names: ", JSON.stringify(names));
+      }      
     }
 
     if ("mcu" in obj) {

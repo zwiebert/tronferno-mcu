@@ -114,7 +114,7 @@ function req_automatic() {
   <hr>
   <h3>Automatic</h3>
   <table>
-    <tr id="tf_tr">
+    <tr id="tf_tr" style="display:none;">
       <td><label>flags</label></td>
       <td></td>
       <td><input id="tfti" style="width:5em;" type = "text" name = "g" value=""></td>

@@ -1,6 +1,7 @@
 <script>
   'use strict';
   import {G,M,M0,GM, Pct, Name} from './store/curr_shutter.js';
+  import { Gmu } from './store/mcu_config.js';
   import * as httpFetch from './fetch.js';
   import { onMount,onDestroy } from 'svelte';
 
@@ -33,11 +34,27 @@ onDestroy(() => {
   }
 
   function hClick_G() {
-    G.increment();
+    let g = $G;
+    const g_max = 7;
+    for (g=g+1; g <= 7; ++g) {
+      if ($Gmu[g]) {
+        break;
+      }
+    }
+    if (g > g_max) {
+       g = 0;
     }
 
+    $G = g;
+  }
+
   function hClick_M() {
-    M.increment();
+    let m = $M + 1;
+    let m_max = $Gmu[$G];
+    if (m > m_max)
+      m = 0;
+
+    $M = m;
   }
   
   function hClick_P() {

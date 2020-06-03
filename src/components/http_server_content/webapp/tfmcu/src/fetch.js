@@ -1,7 +1,7 @@
 'use strict';
 import * as appDebug from './app_debug.js';
 import * as httpResp from './http_resp.js';
-import { G, M } from './store/curr_shutter.js';
+import { G, M0 } from './store/curr_shutter.js';
 
 export const FETCH_CONFIG = 1;
 export const FETCH_AUTO = 2;
@@ -18,6 +18,13 @@ export const FETCH_ALL_POS = 2048;
 
 
 const MAX_RETRY_COUNT = 3;
+
+
+let g;
+G.subscribe((value)=>g=value);
+let m;
+M0.subscribe((value)=>m=value);
+
 
 export function http_postRequest(url = '', data = {}, state = { retry_count:0 }) {
   appDebug.dbLog("post-json: " + JSON.stringify(data));
@@ -78,12 +85,10 @@ export function http_postDocRequest(name) {
 
 export function http_postShutterCommand(c = document.getElementById('send-c').value) {
   let tfmcu = { to: "tfmcu" };
-  let g = G.get().toString();
-  let m = M.get().toString();
 
   let send = {
-    g: g,
-    m: m,
+    g: g.toString(),
+    m: m.toString(),
     c: c,
   };
   tfmcu.send = send;
@@ -95,8 +100,6 @@ export function http_postShutterCommand(c = document.getElementById('send-c').va
 
 export function http_fetchByMask(mask) {
   let tfmcu = { to: "tfmcu" };
-  let g = G.get();
-  let m = M.get();
 
   if (mask & FETCH_CONFIG)
     tfmcu.config = { all: "?" };
