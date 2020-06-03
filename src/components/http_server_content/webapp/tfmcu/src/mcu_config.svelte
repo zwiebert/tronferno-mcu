@@ -61,10 +61,6 @@ onDestroy(() => {
     cuas.req_cuasStart();
   }
 
-
-
-
-
  function mcuConfig_fromHtml_toMcu() {
   const cfg = $McuConfig;
 
@@ -99,9 +95,6 @@ onDestroy(() => {
   }
 }
 
-
-
-
 function usedMembers_fromHtml_toHtml() {
   let val = "";
 
@@ -124,12 +117,13 @@ function usedMembers_fromHtml_toHtml() {
 <style>
 .conf-table label { padding: 2px; width: 50vw; margin-right: 6px;}
 .conf-table .text { width: 100%; }
-#cfg_gm-used_tr, #tf_tr { display: none; }
+
 </style>
 
 <div id="configdiv">
   <h3>Configuration</h3>
   <div  class="config" id="config-div">
+
 
   <table id="cfg_table_id" class="conf-table">
   {#each mcuConfigKeys as name}
@@ -195,7 +189,8 @@ function usedMembers_fromHtml_toHtml() {
     
   </div>
 
-  <input type="text" id="cfg_gm-used" />
+  <input type="text" id="cfg_gm-used" value="{mcuConfig['gm-used']}" style="display:none;"/>
+
   <table id="gmu-table">
     <tr>
       <td><label class="config-label">Groups</label></td>

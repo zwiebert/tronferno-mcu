@@ -34,11 +34,7 @@ onDestroy(() => {
   .pvtd {
     border: 1px solid black;
   }
-    .pvgr {
-  background-color: rgb(139, 107, 107);
-  width: 100%;
-  height: 100%;
-  }
+
 </style>
 
 <div id="posviewdiv">

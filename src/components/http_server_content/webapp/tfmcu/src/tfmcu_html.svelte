@@ -4,7 +4,7 @@
   import ShutterAuto from "./shutter_auto.svelte";
   import ShutterAlias from "./shutter_alias.svelte";
   import ShutterPrefs from "./shutter_prefs.svelte";
-  import ShutterPosViews, * as shutterPosViews from "./shutter_pos_views.svelte";
+  import ShutterPosViews from "./shutter_pos_views.svelte";
   import McuConfig from "./mcu_config.svelte";
   import McuFirmware from "./mcu_firmware.svelte";
   import Testing from "./testing.svelte";

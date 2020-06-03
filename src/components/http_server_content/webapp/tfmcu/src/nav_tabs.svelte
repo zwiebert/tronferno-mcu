@@ -16,8 +16,6 @@
   });
 
   function navTabs_updHtml(idx) {
-    const NONE = "none";
-    const SHOW = "";
     const BGC1 = "hsl(220, 60%, 60%)";
     const BGC0 = "#eee";
     console.log("tidxupd: ", idx);
