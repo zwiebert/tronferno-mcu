@@ -8,7 +8,7 @@
 
   let pct = 50;
 
-  $: pct = $Pcts[gm] || 44;
+  $: pct = $Pcts[gm] || 0;
   $: name = ($Prefs["shs" + gm] || {})["tag.NAME"] || gm;
 
 </script>

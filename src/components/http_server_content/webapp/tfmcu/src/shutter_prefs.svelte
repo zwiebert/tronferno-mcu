@@ -122,6 +122,13 @@ function shp_stopClock_stop() {
 }
 </script>
 
+<style>
+ .dur_table {
+   border: 2px solid black;
+   padding: 2px;
+  }
+</style>
+
 <div id="shprefdiv">
   <hr>
   <h4>Moving Durations</h4>

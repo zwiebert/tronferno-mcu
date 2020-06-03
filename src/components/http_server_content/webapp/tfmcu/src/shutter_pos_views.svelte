@@ -1,14 +1,21 @@
-<script context="module">
-  import * as httpFetch from "./fetch.js";
-  export const fetch_init = httpFetch.FETCH_GMU;
-  export const div = "posviewdiv";
-</script>
-
 <script>
+   import * as httpFetch from "./fetch.js";
   import { Gmu } from "./store/mcu_config.js";
   import { Prefs } from "./store/shutters.js";
   import { G, M } from "./store/curr_shutter.js";
   import ShutterPosView from "./shutter_pos_view.svelte";
+  import { onMount,onDestroy } from 'svelte';
+  
+  let on_destroy = [];
+onMount(() => {
+    httpFetch.http_fetchByMask(httpFetch.FETCH_GMU|httpFetch.FETCH_ALL_POS);
+  });
+onDestroy(() => {
+    for (const fn of on_destroy) {
+      fn();
+    }
+});
+
 
   $: gmu = $Gmu;
   $: prefs = $Prefs;

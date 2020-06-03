@@ -10,6 +10,7 @@
   onMount(() => {
     on_destroy.push(GM.subscribe(() => gmChanged()));
     on_destroy.push(Aliases.subscribe(() => aliasControllers_updHtml()));
+    httpFetch.http_fetchByMask(httpFetch.FETCH_GMU);
   });
   onDestroy(() => {
     for (const fn of on_destroy) {

@@ -2,9 +2,10 @@
   'use strict';
   import {G,M,M0,GM, Pct, Name} from './store/curr_shutter.js';
   import * as httpFetch from './fetch.js';
-  import {GmcFetch} from './store/app_state.js';
   import { onMount,onDestroy } from 'svelte';
- 
+
+  export let gmc_fetch_mask = 0;
+
 let on_destroy = [];
 onMount(() => {
      on_destroy.push(GM.subscribe(() => gmChanged()));
@@ -28,8 +29,7 @@ onDestroy(() => {
   }
 
   function gmChanged() {
-    if ($GmcFetch)
-      httpFetch.http_fetchByMask($GmcFetch);
+      httpFetch.http_fetchByMask(httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME | gmc_fetch_mask);
   }
 
   function hClick_G() {

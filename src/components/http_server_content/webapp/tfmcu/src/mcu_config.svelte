@@ -5,7 +5,17 @@
   import * as httpFetch from './fetch.js';
   import * as cuas from './cuas.js';
   import * as misc from './misc.js';
-
+  import { onMount,onDestroy } from 'svelte';
+  
+  let on_destroy = [];
+onMount(() => {
+    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
+  });
+onDestroy(() => {
+    for (const fn of on_destroy) {
+      fn();
+    }
+});
 
 
   $: mcuConfigKeys = $McuConfigKeys;
@@ -111,47 +121,10 @@ function usedMembers_fromHtml_toHtml() {
 }
 </script>
 
-<script context="module">
-  let mcu_config = {};
-  McuConfig.subscribe(value => mcu_config = value);
-
-  export function mcuConfig_updHtml(cfg) {
-  // eslint-disable-next-line no-unused-vars
-  Object.keys(cfg).forEach(function(key, idx) {
-    let el = document.getElementById('cfg_' + key);
-
-    switch (el.type) {
-      case 'checkbox':
-        el.checked = cfg[key] !== 0;
-        break;
-      default:
-        el.value = cfg[key];
-    }
-  });
-  }
-
-
-
- export function usedMembers_updHtml_fromHtml() {
-  let val = document.getElementById("cfg_gm-used").value; // HEX string! not a number!
-
-  while (val.length < 8)
-    val = "0" + val;
-
-  let g = 1;
-  for (let i = 6; i >= 0; --i, ++g) {
-    let id = "gmu" + (g.toString());
-    document.getElementById(id).value = val[i];
-  }
-}
-export function mcuConfigTable_genHtml() {}
-</script>
-
-
 <style>
-#cfg_gm-used {
-  visibility: hidden;
-}
+.conf-table label { padding: 2px; width: 50vw; margin-right: 6px;}
+.conf-table .text { width: 100%; }
+#cfg_gm-used_tr, #tf_tr { display: none; }
 </style>
 
 <div id="configdiv">

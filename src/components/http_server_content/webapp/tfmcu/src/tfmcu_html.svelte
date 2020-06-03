@@ -17,35 +17,11 @@
   $: tabIdx = $TabIdx;
 
   let navTabs = [
-    {
-      text: "Command",
-      div_id: ["senddiv", shutterPosViews.div],
-      fetch_init: httpFetch.FETCH_ALL_POS | shutterPosViews.fetch_init,
-      fetch_gm: httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME,
-    },
-    {
-      text: "Automatic",
-      div_id: ["senddiv", "autodiv"],
-      fetch_gm:
-        httpFetch.FETCH_AUTO |
-        httpFetch.FETCH_POS |
-        httpFetch.FETCH_SHUTTER_NAME,
-    },
-    { text: "Config", div_id: ["configdiv"], fetch: httpFetch.FETCH_CONFIG },
-    {
-      text: "Positions",
-      div_id: ["senddiv", "aliasdiv", "shprefdiv"],
-      fetch: httpFetch.FETCH_ALIASES,
-      fetch_gm:
-        httpFetch.FETCH_POS |
-        httpFetch.FETCH_SHUTTER_PREFS |
-        httpFetch.FETCH_SHUTTER_NAME,
-    },
-    {
-      text: "Firmware",
-      div_id: ["id-fwDiv"],
-      fetch_init: httpFetch.FETCH_VERSION | httpFetch.FETCH_GIT_TAGS,
-    },
+    { text: "Command" },
+    { text: "Automatic" },
+    { text: "Config" },
+    { text: "Positions" },
+    { text: "Firmware" },
   ];
 
   let fwbtns = [
@@ -66,23 +42,44 @@
 </script>
 
 <style>
+  .container {
+    border: 1px solid #ccc;
+    background-color: #eee;
+    font-size: 270%;
+  }
 
+  @media only screen and (max-resolution: 96dpi) {
+    .container {
+      font-size: 200%;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .container {
+      font-size: 100%;
+    }
+  }
+  .tabcontent {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+  }
 </style>
 
 <NavTabs nav_tabs={navTabs} />
-
 <div id="navTabs" class="container tabcontent">
-
   {#if tabIdx === 0}
     <ShutterBasic />
     <ShutterPosViews />
   {:else if tabIdx === 1}
-    <ShutterBasic />
+    <ShutterBasic
+      gmc_fetch_mask={httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME} />
     <ShutterAuto />
   {:else if tabIdx === 2}
     <McuConfig />
   {:else if tabIdx === 3}
-    <ShutterBasic />
+    <ShutterBasic
+      gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME} />
     <ShutterAlias />
     <ShutterPrefs />
   {:else if tabIdx === 4}
@@ -90,5 +87,4 @@
   {:else if tabIdx === 5}
     <Testing />
   {/if}
-
 </div>

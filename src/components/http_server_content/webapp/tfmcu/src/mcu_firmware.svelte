@@ -4,6 +4,18 @@
   
   export let fwbtns = [];
   export let McuFwGitTags;
+  import { onMount,onDestroy } from 'svelte';
+  
+  let on_destroy = [];
+onMount(() => {
+     httpFetch.http_fetchByMask(httpFetch.FETCH_VERSION | httpFetch.FETCH_GIT_TAGS);
+  });
+onDestroy(() => {
+    for (const fn of on_destroy) {
+      fn();
+    }
+});
+
 
 </script>
 
