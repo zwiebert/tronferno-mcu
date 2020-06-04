@@ -1,7 +1,7 @@
 'use strict';
 import { writable } from 'svelte/store';
+import { PersistentIntStore } from './custom_stores.js';
 
-export const TabIdx = writable(Number.parseInt((localStorage.getItem("tab_idx") || "0"), 10));
-TabIdx.subscribe(value => localStorage.setItem("tab_idx", value ? value.toString() : "0"));
+export const TabIdx = PersistentIntStore("tab_idx");
 
 export const McuWebsocket = writable(0);

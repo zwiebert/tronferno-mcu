@@ -35,6 +35,7 @@ h3 {
   align-self: start;
 }
 
+
 @keyframes blink {
   0% {
     opacity: 1;

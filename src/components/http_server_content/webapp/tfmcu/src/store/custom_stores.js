@@ -70,3 +70,28 @@ export function PersistentIntStore(name) {
 
 	return result;
 }
+
+function read_storage_string(name) {
+	return localStorage.getItem(name) || '';
+}
+function save_storage_string(name, value) {
+	localStorage.setItem(name, value ? value.toString() : "0");
+}
+
+export function PersistentStringStore(name) {
+
+	const { subscribe, set } = writable(read_storage_string(name));
+
+	function my_set(value) {
+		save_storage_string(name, value);
+		set(value);
+	}
+
+	let result = {
+		subscribe,
+		set: my_set,
+		reset: () => my_set(0)
+	};
+
+	return result;
+}

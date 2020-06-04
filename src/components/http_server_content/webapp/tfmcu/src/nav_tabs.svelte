@@ -7,7 +7,7 @@
 
   let on_destroy = [];
   onMount(() => {
-    on_destroy.push(TabIdx.subscribe((idx) => navTabs_updHtml(idx)));
+ 
   });
   onDestroy(() => {
     for (const fn of on_destroy) {
@@ -15,29 +15,13 @@
     }
   });
 
-  function navTabs_updHtml(idx) {
-    const BGC1 = "hsl(220, 60%, 60%)";
-    const BGC0 = "#eee";
-    console.log("tidxupd: ", idx);
-    if (!(0 <= idx && idx < tabs.length)) idx = 0;
-
-    for (let i = 0; i < tabs.length; ++i) {
-      document.getElementById("tabbt" + i.toString()).style.backgroundColor =
-        i === idx ? BGC1 : BGC0;
-    }
-  }
-
-  //--------------- nav tabs ------------------
-
-  let tabs = [...nav_tabs];
 </script>
 
 <style>
   /* Style the buttons that are used to open the tab content */
 
-  .tab button {
+  .tab {
     background-color: inherit;
-    float: left;
     border: none;
     outline: none;
     cursor: pointer;
@@ -52,30 +36,46 @@
   }
 
   /* Change background color of buttons on hover */
-  .tab button:hover {
-    background-color: rgb(197, 185, 185);
-  }
-
-  /* Create an active/current tablink class */
-  .tab button:active {
+  .tabbt:hover {
     background-color: #ccc;
   }
 
+  /* Create an active/current tablink class */
+  .tabbt:active {
+    background-color: hsl(220, 60%, 60%);
+  }
+
   @media only screen and (max-resolution: 96dpi) {
-    .tab button {
+    .tabbt {
       font-size: 200%;
     }
   }
   @media (min-width: 1000px) {
-    .tab button {
+    .tabbt {
       font-size: 100%;
     }
   }
+
+  .tabbt {
+    border:none;
+    outline:none;
+    padding: 14px 16px;
+    transition: 0.3s;
+    overflow: hidden;
+  }
+ .tabbt-active {
+   background-color: hsl(220, 60%, 60%);
+ }
+
+ .tabbt-inactive {
+   background-color: inherit;
+ }
+
 </style>
 
 <div id="tabBar" class="tab">
-  {#each tabs as tab, i}
-    <button class="tab" id="tabbt{i}" on:click={() => TabIdx.set(i)}>
+  {#each nav_tabs as tab, i}
+    <button class="tabbt {$TabIdx === i ? 'tabbt-active' : 'tabbt-inactive'}" id="tabbt{i}" on:click={() => TabIdx.set(i)}>
       {tab.text}
     </button>
   {/each}

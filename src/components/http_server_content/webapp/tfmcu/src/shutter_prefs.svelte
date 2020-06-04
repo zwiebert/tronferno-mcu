@@ -130,7 +130,6 @@ function shp_stopClock_stop() {
 </style>
 
 <div id="shprefdiv">
-  <hr>
   <h4>Moving Durations</h4>
   <p class="help_text">To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.</p>
   <br>

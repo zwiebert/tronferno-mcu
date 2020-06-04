@@ -1,6 +1,7 @@
 <script>
   import NavTabs from "./nav_tabs.svelte";
   import ShutterBasic from "./shutter_basic.svelte";
+  import ShutterGM from "./shutter_gm.svelte";
   import ShutterAuto from "./shutter_auto.svelte";
   import ShutterAlias from "./shutter_alias.svelte";
   import ShutterPrefs from "./shutter_prefs.svelte";
@@ -67,20 +68,24 @@
 </style>
 
 <NavTabs nav_tabs={navTabs} />
+
 <div id="navTabs" class="container tabcontent">
   {#if tabIdx === 0}
     <ShutterBasic />
     <ShutterPosViews />
   {:else if tabIdx === 1}
-    <ShutterBasic
+    <ShutterGM
       gmc_fetch_mask={httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME} />
+    <hr />
     <ShutterAuto />
   {:else if tabIdx === 2}
     <McuConfig />
   {:else if tabIdx === 3}
-    <ShutterBasic
+    <ShutterGM
       gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME} />
+    <hr />
     <ShutterAlias />
+    <hr />
     <ShutterPrefs />
   {:else if tabIdx === 4}
     <McuFirmware {fwbtns} {McuFwGitTags} />

@@ -206,7 +206,6 @@
 </style>
 
 <div id="aliasdiv">
-  <hr />
   <h4 id="aliasHeader">Paired controllers</h4>
   <p class="help_text">
     To register position changes made by commands sent from plain controllers
