@@ -1,7 +1,7 @@
 <script>
   "use strict";
   import * as httpFetch from "./fetch.js";
-  import { G, M, GM } from "./store/curr_shutter.js";
+  import { G, M0, GM } from "./store/curr_shutter.js";
   import { Aliases } from "./store/shutters.js";
 
   import { onMount, onDestroy } from "svelte";
@@ -113,14 +113,12 @@
     return (b & (1 << m)) !== 0;
   }
 
-  export function aliasPaired_updHtml() {
-    let g = G.get();
-    let m = M.get();
+  function aliasPaired_updHtml() {
     const pas = document.getElementById("paired");
 
     for (let i = pas.options.length - 1; i >= 0; --i) pas.remove(i);
     for (let key in $Aliases) {
-      if (!alias_isKeyPairedToM(key, g, m)) continue;
+      if (!alias_isKeyPairedToM(key, $G, $M0)) continue;
 
       let option = document.createElement("option");
       option.text = key;
