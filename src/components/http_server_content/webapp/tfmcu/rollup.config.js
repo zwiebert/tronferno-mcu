@@ -5,6 +5,7 @@ import strip from '@rollup/plugin-strip';
 import { eslint } from "rollup-plugin-eslint";
 import svelte from 'rollup-plugin-svelte';
 import resolve from '@rollup/plugin-node-resolve';
+import sveltePreprocess from 'svelte-preprocess';
 
 export const isProduction = process.env.buildTarget === "PROD";
 
@@ -59,6 +60,7 @@ export default {
     // let Rollup handle all other warnings normally
     handler(warning);
   }
+  , preprocess: sveltePreprocess(),
       // By default, all .svelte and .html files are compiled
       //extensions: ['.my-custom-extension'],
 

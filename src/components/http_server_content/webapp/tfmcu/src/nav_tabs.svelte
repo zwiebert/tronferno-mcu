@@ -17,7 +17,7 @@
 
 </script>
 
-<style>
+<style type="text/scss">
   /* Style the buttons that are used to open the tab content */
 
   .tab {
