@@ -3,6 +3,7 @@ JSHINT := $(THIS_ROOT)/tfmcu/node_modules/jshint/bin/jshint
 JS_SRC_DIR := $(THIS_ROOT)/tfmcu/src
 JS_BLD_DIR := $(THIS_ROOT)/tfmcu/build
 
+
 HTMLMIN ?= ~/.local/bin/htmlmin
 INCFILES ?= perl ./include_files.pl
 
@@ -21,27 +22,27 @@ ifndef FLAVOR_LAN
 SED_OPTS += -e '/dev-no-lan-delete-line/d'
 endif
 
-bundle_out = build/tfmcu.js build/tfmcu.css build/global.css build/tfmcu.css.map
-bundle_files = $(JS_BLD_DIR)/bundle.min.js $(JS_BLD_DIR)/bundle.css $(JS_BLD_DIR)/bundle.css.map $(JS_SRC_DIR)/app.css
+bundle_out = build/tfmcu.js build/tfmcu.js.map build/tfmcu.css build/tfmcu.css.map
+bundle_files = $(JS_BLD_DIR)/tfmcu.min.js $(JS_BLD_DIR)/tfmcu.css $(JS_BLD_DIR)/tfmcu.css.map 
 
 all: build/tfmcu.html build/tfmcu.js
 
-build/tfmcu.html: build $(bundle_out) # HTML may be merged with files from bundle
+build/tfmcu.html: build $(bundle_out) # HTML may be merged with files from tfmcu
 $(bundle_out): build
 
 
-build/tfmcu.js: $(JS_BLD_DIR)/bundle.min.js
+build/tfmcu.js: $(JS_BLD_DIR)/tfmcu.js
 	cp -p $< $@  
-build/tfmcu.css: $(JS_BLD_DIR)/bundle.css
+build/tfmcu.js.map: $(JS_BLD_DIR)/tfmcu.js.map
+	cp -p $< $@  
+build/tfmcu.css: $(JS_BLD_DIR)/tfmcu.css
 	cp -p $< $@
-build/tfmcu.css.map: $(JS_BLD_DIR)/bundle.css.map
-	cp -p $< $@ 
-build/global.css: $(JS_SRC_DIR)/app.css
+build/tfmcu.css.map: $(JS_BLD_DIR)/tfmcu.css.map
 	cp -p $< $@ 
 
-bundle $(bundle_files): tfmcu/node_modules
+tfmcu $(bundle_files): tfmcu/node_modules
 	-cd ../../../.. && $(JSHINT) $(JS_SRC_DIR)/*.js
-	#-cd ../../../.. && $(JSHINT) $(JS_BLD_DIR)/bundle.js
+	#-cd ../../../.. && $(JSHINT) $(JS_BLD_DIR)/tfmcu.js
 	cd tfmcu && env $(buildTarget) npm run build
 
 tfmcu/node_modules:

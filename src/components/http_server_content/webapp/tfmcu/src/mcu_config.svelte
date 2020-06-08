@@ -114,7 +114,7 @@ function usedMembers_fromHtml_toHtml() {
 }
 </script>
 
-<style>
+<style type="text/scss">
 .conf-table label { padding: 2px; width: 50vw; margin-right: 6px;}
 .conf-table .text { width: 100%; }
 

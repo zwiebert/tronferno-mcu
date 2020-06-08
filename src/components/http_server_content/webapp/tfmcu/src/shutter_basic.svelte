@@ -100,7 +100,7 @@ onDestroy(() => {
 
 </script>
 
-<style>
+<style type="text/scss">
 
       #senddiv {
       background-color: #eee;

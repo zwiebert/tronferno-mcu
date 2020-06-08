@@ -15,9 +15,10 @@
 
 </script>
 
-<style>
+<style type="text/scss">
+ 
   .pvbar {
-    background-color: #4e4a22;
+    background-color: #111730;
   }
   .pvbar-border {
     background-color: rgb(103, 155, 223);
@@ -25,14 +26,12 @@
     width: 100%;
     height: 4em;
   }
-    .pvbar-sel {
-  
-  }
+
     .pvname-unsel {
     border: 4px solid white;
   }
       .pvname-sel {
-    border: 4px solid rgb(145, 23, 23);
+    border: 4px solid rgb(66, 23, 145);
   }
 </style>
 

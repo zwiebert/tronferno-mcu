@@ -25,7 +25,7 @@ onDestroy(() => {
   }
 </script>
 
-<style>
+<style type="text/scss">
   #pvtable, .pvgroup {
     background-color: rgb(255, 255, 255);
     border: 1px solid black;

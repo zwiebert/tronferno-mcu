@@ -65,7 +65,7 @@ onDestroy(() => {
   
 </script>
 
-<style>
+<style type="text/scss">
 
       #shugmdiv {
       background-color: #eee;

@@ -1,12 +1,18 @@
-<script context="module">
+<script>
 'use strict';
 import * as httpFetch from './fetch.js';
 import {G,M} from './store/curr_shutter.js';
+import { onMount, onDestroy } from 'svelte';
 
-
-export function testing_init() {
-  //navTabs.navTab_addTab({ 'text': 'Tests', 'div_id': ['testsdiv'], }, -1);
-}
+let on_destroy = [];
+onMount(() => {
+  
+  });
+onDestroy(() => {
+    for (const fn of on_destroy) {
+      fn();
+    }
+});
 
 const test_cmds = ['up', 'down', 'stop'];
 function get_randomCmd() {
@@ -35,8 +41,6 @@ function testPressed(enable) {
   }
 }
 
-testing_init();
-
 </script>
 
 
@@ -45,4 +49,11 @@ testing_init();
  <br><br>Random Periodic Movement Commands:
  <button id="test_rpm_start" type="button" on:click={() => testPressed(true)}>Test Start</button> 
  <button id="test_rpm_stop" type="button" on:click={() => testPressed(false)}>Test Stop</button>
+
+<ul>
+<li> ScreenWidth: {window.screen.width}</li>
+<li> ScreenHeight: {window.screen.height}</li>
+<li> PixelRatio: {window.devicePixelRatio}</li>
+</ul>
+ 
  </div>

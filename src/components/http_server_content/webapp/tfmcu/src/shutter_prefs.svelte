@@ -122,7 +122,7 @@ function shp_stopClock_stop() {
 }
 </script>
 
-<style>
+<style type="text/scss">
  .dur_table {
    border: 2px solid black;
    padding: 2px;

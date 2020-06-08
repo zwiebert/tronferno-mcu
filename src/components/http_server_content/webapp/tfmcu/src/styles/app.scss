@@ -3,7 +3,7 @@
 }
 
 .help_text {
-  displayXX: none;
+  display: none;
   font-size: 90%;
 }
 
@@ -35,6 +35,7 @@ h3 {
   align-self: start;
 }
 
+$color_bg: #ceee;
 
 @keyframes blink {
   0% {

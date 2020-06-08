@@ -12,6 +12,7 @@
   import * as httpFetch from "./fetch.js";
   import McuFwGitTags from "./mcu_firmware_git_tags.svelte";
   import { TabIdx } from "./store/app_state.js";
+  import Layout from "./layout.svelte";
 
   export let isProduction = false;
 
@@ -42,30 +43,28 @@
   }
 </script>
 
-<style>
+<style type="text/scss">
   .container {
     border: 1px solid #ccc;
     background-color: #eee;
-    font-size: 270%;
+    font-size: 100%;
   }
 
-  @media only screen and (max-resolution: 96dpi) {
+ /* small screen */
+  @media only screen and (max-device-width: 360px) {
     .container {
       font-size: 200%;
     }
   }
 
-  @media (min-width: 1000px) {
-    .container {
-      font-size: 100%;
-    }
-  }
   .tabcontent {
     padding: 6px 12px;
     border: 1px solid #ccc;
     border-top: none;
   }
 </style>
+
+<Layout />
 
 <NavTabs nav_tabs={navTabs} />
 

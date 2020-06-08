@@ -95,3 +95,33 @@ export function PersistentStringStore(name) {
 
 	return result;
 }
+
+
+function read_storage_val(name, def_value) {
+	try {
+	let obj = JSON.parse(localStorage.getItem(name) || JSON.stringify(def_value));
+	return obj.value;
+	} catch (e) {
+		return def_value;
+	}
+}
+function save_storage_val(name, value) {
+	localStorage.setItem(name, JSON.stringify({ value: value }));
+}
+
+export function PersistentValStore(name, def_value) {
+
+	const { subscribe, set } = writable(read_storage_val(name, def_value));
+
+	function my_set(value) {
+		save_storage_val(name, value);
+		set(value);
+	}
+
+	let result = {
+		subscribe,
+		set: my_set,
+	};
+
+	return result;
+}

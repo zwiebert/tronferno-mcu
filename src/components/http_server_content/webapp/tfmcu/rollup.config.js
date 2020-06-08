@@ -9,9 +9,6 @@ import sveltePreprocess from 'svelte-preprocess';
 
 export const isProduction = process.env.buildTarget === "PROD";
 
-
-
-
 export default {
   onwarn(warning, rollupWarn) {
     if (warning.code !== 'CIRCULAR_DEPENDENCY') {
@@ -19,16 +16,16 @@ export default {
     }
   },
   input: 'src/main.js',
-  output: [{
-    file: 'build/bundle.js',
+  output: [...!isProduction ? [ {
+    file: 'build_dev/tfmcu.js',
     sourcemap: true,
     format: 'iife',
     name: 'tfmcu',
-   // sourcemapPathTransform: relativePath => {      return relativePath.substr(2);},
+    // sourcemapPathTransform: relativePath => {      return relativePath.substr(2);},
     plugins: [
     ]
-  }, {
-    file: 'build/bundle.min.js',
+  }] : [ {
+    file: 'build/tfmcu.js',
     format: 'iife',
     name: 'tfmcu',
     sourcemap: true,
@@ -39,8 +36,7 @@ export default {
     plugins: [
       terser()
     ]
-  }
-  ],
+  }]],
   plugins: [
     json(),
     ...isProduction ? [
@@ -51,66 +47,18 @@ export default {
       })] : [],
     eslint(),
     svelte({
-      dev: !isProduction //
-      , css: css => {	 css.write('build/bundle.css');  }
-      , onwarn: (warning, handler) => {
-    // e.g. don't warn on <marquee> elements, cos they're cool
-    if (warning.code === 'a11y-no-onchange') return;
+      dev: !isProduction,
+      //emitCss: true,
+      css: css => { css.write(isProduction ? 'build/tfmcu.css' : 'build_dev/tfmcu.css'); },
+      onwarn: (warning, handler) => {
+        // e.g. don't warn on <marquee> elements, cos they're cool
+        if (warning.code === 'a11y-no-onchange') return;
 
-    // let Rollup handle all other warnings normally
-    handler(warning);
-  }
-  , preprocess: sveltePreprocess(),
-      // By default, all .svelte and .html files are compiled
-      //extensions: ['.my-custom-extension'],
+        // let Rollup handle all other warnings normally
+        handler(warning);
+      },
+      preprocess: sveltePreprocess(),
 
-      // You can restrict which files are compiled
-      // using `include` and `exclude`
-      //include: 'src/*.svelte',
-
-      // By default, the client-side compiler is used. You
-      // can also use the server-side rendering compiler
-      //generate: 'ssr',
-
-      // ensure that extra attributes are added to head
-      // elements for hydration (used with ssr: true)
-      //hydratable: true,
-
-      // Optionally, preprocess components with svelte.preprocess:
-      // https://svelte.dev/docs#svelte_preprocess
-      /*
-  preprocess: {
-    style: ({ content }) => {
-      return transformStyles(content);
-    }
-
-  },
-
-  // Emit CSS as "files" for other plugins to process
-  emitCss: false,
-
-  // Extract CSS into a separate file (recommended).
-  // See note below
-  css: function (css) {
-    console.log(css.code); // the concatenated CSS
-    console.log(css.map); // a sourcemap
-
-    // creates `main.css` and `main.css.map` — pass `false`
-    // as the second argument if you don't want the sourcemap
-    css.write('public/main.css');
-  },
-
-  // Warnings are normally passed straight to Rollup. You can
-  // optionally handle them here, for example to squelch
-  // warnings with a particular code
-  onwarn: (warning, handler) => {
-    // e.g. don't warn on <marquee> elements, cos they're cool
-    if (warning.code === 'a11y-distracting-elements') return;
-
-    // let Rollup handle all other warnings normally
-    handler(warning);
-  }
-  */
     }),
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In

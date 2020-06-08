@@ -6,15 +6,12 @@
   export let nav_tabs = [];
 
   let on_destroy = [];
-  onMount(() => {
- 
-  });
+  onMount(() => {});
   onDestroy(() => {
     for (const fn of on_destroy) {
       fn();
     }
   });
-
 </script>
 
 <style type="text/scss">
@@ -45,37 +42,35 @@
     background-color: hsl(220, 60%, 60%);
   }
 
-  @media only screen and (max-resolution: 96dpi) {
+  /* small screen */
+  @media only screen and (max-device-width: 360px) {
     .tabbt {
       font-size: 200%;
     }
   }
-  @media (min-width: 1000px) {
-    .tabbt {
-      font-size: 100%;
-    }
-  }
 
   .tabbt {
-    border:none;
-    outline:none;
+    border: none;
+    outline: none;
     padding: 14px 16px;
     transition: 0.3s;
     overflow: hidden;
   }
- .tabbt-active {
-   background-color: hsl(220, 60%, 60%);
- }
+  .tabbt-active {
+    background-color: hsl(220, 60%, 60%);
+  }
 
- .tabbt-inactive {
-   background-color: inherit;
- }
-
+  .tabbt-inactive {
+    background-color: inherit;
+  }
 </style>
 
 <div id="tabBar" class="tab">
   {#each nav_tabs as tab, i}
-    <button class="tabbt {$TabIdx === i ? 'tabbt-active' : 'tabbt-inactive'}" id="tabbt{i}" on:click={() => TabIdx.set(i)}>
+    <button
+      class="tabbt {$TabIdx === i ? 'tabbt-active' : 'tabbt-inactive'}"
+      id="tabbt{i}"
+      on:click={() => TabIdx.set(i)}>
       {tab.text}
     </button>
   {/each}

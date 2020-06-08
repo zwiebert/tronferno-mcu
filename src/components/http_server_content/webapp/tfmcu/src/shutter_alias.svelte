@@ -187,7 +187,7 @@
   }
 </script>
 
-<style>
+<style type="text/scss">
   #aliasHeader {
     grid-area: ah;
   }
