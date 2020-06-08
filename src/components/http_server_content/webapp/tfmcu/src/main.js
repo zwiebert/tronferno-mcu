@@ -18,7 +18,7 @@ export default function () {
 function generate_html() {
   let isProduction = true;
   // eslint-disable-next-line no-unused-labels 
-  testing: isProduction = false;
+  testing: { isProduction = false; }
 
   // eslint-disable-next-line no-unused-vars    
   const app = new App({

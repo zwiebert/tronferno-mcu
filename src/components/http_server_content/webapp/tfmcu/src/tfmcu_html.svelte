@@ -18,11 +18,14 @@
 
   $: tabIdx = $TabIdx;
 
+  $: visibleMcuConfig = false;
+  $: visiblePairedControllers = false;
+  $: visibleMovementDurations = false;
+
   let navTabs = [
-    { text: "Command" },
-    { text: "Automatic" },
-    { text: "Config" },
-    { text: "Positions" },
+    { text: "Move" },
+    { text: "Auto" },
+    { text: "Settings" },
     { text: "Firmware" },
   ];
 
@@ -75,20 +78,35 @@
   {:else if tabIdx === 1}
     <ShutterGM
       gmc_fetch_mask={httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME} />
-    <hr />
+    <h3>Automatic</h3>
     <ShutterAuto />
   {:else if tabIdx === 2}
+
+   <h3>MCU Config</h3>
+    <button on:click={() => {visibleMcuConfig ^= true;}}>{visibleMcuConfig ? '-' : '+'}</button>
+    {#if visibleMcuConfig}
     <McuConfig />
-  {:else if tabIdx === 3}
-    <ShutterGM
+    {/if}
+
+    <h3>Paired Controllers</h3>
+    <button on:click={() => {visiblePairedControllers ^= true;}}>{visiblePairedControllers ? '-' : '+'}</button>
+    {#if visiblePairedControllers}
+        <ShutterGM
       gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME} />
-    <hr />
     <ShutterAlias />
-    <hr />
+    {/if}
+
+    <h3>Movement Durations</h3>
+    <button on:click={() => {visibleMovementDurations ^= true;}}>{visibleMovementDurations ? '-' : '+'}</button>
+    {#if visibleMovementDurations}
+        <ShutterGM
+      gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME} />
     <ShutterPrefs />
-  {:else if tabIdx === 4}
+    {/if}
+
+  {:else if tabIdx === 3}
     <McuFirmware {fwbtns} {McuFwGitTags} />
-  {:else if tabIdx === 5}
+  {:else if tabIdx === 4}
     <Testing />
   {/if}
 </div>

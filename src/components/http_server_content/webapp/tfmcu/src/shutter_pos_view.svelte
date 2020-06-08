@@ -1,6 +1,6 @@
 <script>
   import { Pcts, Names } from "./store/shutters.js";
-  import {G,M,M0,GM, Pct, Name} from './store/curr_shutter.js';
+  import {G,M0 } from './store/curr_shutter.js';
 
   export let g;
   export let m;

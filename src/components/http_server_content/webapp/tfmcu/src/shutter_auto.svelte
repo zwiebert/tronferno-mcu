@@ -111,7 +111,6 @@ function req_automatic() {
 </script>
 
 <div id="autodiv" class="auto">
-  <h3>Automatic</h3>
   <table>
     <tr id="tf_tr" style="display:none;">
       <td><label>flags</label></td>

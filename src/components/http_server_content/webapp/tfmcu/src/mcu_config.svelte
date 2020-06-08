@@ -121,10 +121,7 @@ function usedMembers_fromHtml_toHtml() {
 </style>
 
 <div id="configdiv">
-  <h3>Configuration</h3>
   <div  class="config" id="config-div">
-
-
   <table id="cfg_table_id" class="conf-table">
   {#each mcuConfigKeys as name}
   <tr>

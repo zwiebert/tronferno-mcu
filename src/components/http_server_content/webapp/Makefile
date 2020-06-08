@@ -22,10 +22,11 @@ ifndef FLAVOR_LAN
 SED_OPTS += -e '/dev-no-lan-delete-line/d'
 endif
 
-bundle_out = build/tfmcu.js build/tfmcu.js.map build/tfmcu.css build/tfmcu.css.map
-bundle_files = $(JS_BLD_DIR)/tfmcu.min.js $(JS_BLD_DIR)/tfmcu.css $(JS_BLD_DIR)/tfmcu.css.map 
+bundle_out = build/tfmcu.js build/tfmcu.js.map build/tfmcu.css build/tfmcu.css.map build/tfmcu.html
+bundle_files = $(JS_BLD_DIR)/tfmcu.js $(JS_BLD_DIR)/tfmcu.js.map $(JS_BLD_DIR)/tfmcu.css $(JS_BLD_DIR)/tfmcu.css.map 
 
-all: build/tfmcu.html build/tfmcu.js
+.PHONY: bundle
+all: bundle $(bundle_out)
 
 build/tfmcu.html: build $(bundle_out) # HTML may be merged with files from tfmcu
 $(bundle_out): build
@@ -40,7 +41,7 @@ build/tfmcu.css: $(JS_BLD_DIR)/tfmcu.css
 build/tfmcu.css.map: $(JS_BLD_DIR)/tfmcu.css.map
 	cp -p $< $@ 
 
-tfmcu $(bundle_files): tfmcu/node_modules
+bundle $(bundle_files): tfmcu/node_modules
 	-cd ../../../.. && $(JSHINT) $(JS_SRC_DIR)/*.js
 	#-cd ../../../.. && $(JSHINT) $(JS_BLD_DIR)/tfmcu.js
 	cd tfmcu && env $(buildTarget) npm run build
