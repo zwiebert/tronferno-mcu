@@ -30,7 +30,7 @@
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 14px 16px;
+    padding: 3px 4px;
     transition: 0.3s;
   }
 
@@ -50,17 +50,10 @@
     background-color: hsl(220, 60%, 60%);
   }
 
-  /* small screen */
-  @media only screen and (max-device-width: 360px) {
-    .tabbt {
-      font-size: 2rem;
-    }
-  }
-
   .tabbt {
     border: none;
     outline: none;
-    padding: 14px 16px;
+    padding: 3x 4px;
     transition: 0.3s;
     overflow: hidden;
   }

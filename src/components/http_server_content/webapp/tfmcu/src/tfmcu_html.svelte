@@ -25,15 +25,16 @@
 
   let navTabs = [
     { text: "Move" },
+    { text: "Pct" },
     { text: "Auto" },
     { text: "Settings" },
     { text: "Firmware" },
   ];
 
   let navTabsSettings = [
-    { text: "MCU Config" },
-    { text: "Paired Controllers" },
-    { text: "Movement Durations" },
+    { text: "MCU" },
+    { text: "Aliases" },
+    { text: "Durations" },
   ];
 
   let fwbtns = [
@@ -60,13 +61,6 @@
     font-size: 100%;
   }
 
-  /* small screen */
-  @media only screen and (max-device-width: 360px) {
-    .container {
-      font-size: 200%;
-    }
-  }
-
   .tabcontent {
     padding: 6px 12px;
     border: 1px solid #ccc;
@@ -81,16 +75,15 @@
 <div id="navTabs" class="container tabcontent">
   {#if tabIdxMain === 0}
     <ShutterBasic />
-    <!-- <br />
-    <ShutterPosViews /> -->
+  {:else if tabIdxMain === 1}
     <br />
     <ShutterPosTable />
-  {:else if tabIdxMain === 1}
+  {:else if tabIdxMain === 2}
     <ShutterGM
       gmc_fetch_mask={httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME} />
     <br />
     <ShutterAuto />
-  {:else if tabIdxMain === 2}
+  {:else if tabIdxMain === 3}
     <NavTabs nav_tabs={navTabsSettings} name="settings" />
     {#if tabIdxSettings === 0}
       <McuConfig />
@@ -109,9 +102,9 @@
       <br />
       <ShutterPrefs />
     {/if}
-  {:else if tabIdxMain === 3}
-    <McuFirmware {fwbtns} {McuFwGitTags} />
   {:else if tabIdxMain === 4}
+    <McuFirmware {fwbtns} {McuFwGitTags} />
+  {:else if tabIdxMain === 5}
     <Testing />
   {/if}
 </div>

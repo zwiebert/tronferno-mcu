@@ -68,7 +68,7 @@ onDestroy(() => {
       background-color: #eee;
       display: grid;
       width: 50%;
-      grid-template-columns: 3em 3em 12em 3em 3em;
+      grid-template-columns: 3rem 3rem 8rem 3rem 3rem;
       grid-template-rows: repeat(1, 1fr);
       grid-template-areas:
       "gi gb  mn  mb mi"
@@ -79,9 +79,9 @@ onDestroy(() => {
       }
 
       #sgb, #smb { border-radius: 40%; }
-      #sgi, #smi { width: 2.5em; height: 2em; text-align: center; }
-      #sgb, #smb { width: 2em; height: 2em; }
-      #smn { width: 10em; height: 2em; text-align: center;}
+      #sgi, #smi { width: 2.5rem; height: 2rem; text-align: center; }
+      #sgb, #smb { width: 2rem; height: 2rem; }
+      #smn { width: 8rem; height: 2rem; text-align: center;}
 
 
       #smn { grid-area: mn; }

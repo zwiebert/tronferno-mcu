@@ -130,16 +130,16 @@ onDestroy(() => {
       <span id="id_chip" />
     </li>
     <li>
-      firmware version:
+      Version:
       <span id="id_firmware" />
     </li>
     <li>
-      firmware build date:
+      Build Date:
       <span id="id_buildTime" />
     </li>
     <li>
       <label>
-        boot-count:
+        Boot Count:
         <span id="id-bootCount">{$McuBootCount}</span>
       </label>
     </li>

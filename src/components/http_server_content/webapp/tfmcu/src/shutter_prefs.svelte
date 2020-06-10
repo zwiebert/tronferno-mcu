@@ -18,14 +18,14 @@ onDestroy(() => {
     }
 });
 
-let mvut = 0;
-let mvdt = 0;
-let mvspdt = 0;
+$: mvut = 0;
+$: mvdt = 0;
+$: mvspdt = 0;
 
 function shp_updHtml() {
    mvut = $PrefMvut / 10.0;
    mvdt = $PrefMvdt / 10.0;
-   mvspdt = $PrefMvspdt;
+   mvspdt = $PrefMvspdt / 10.0;
 }
 
 function hClick_Reload() {
@@ -76,13 +76,14 @@ let stopClock = {
 function shp_stopClock_tick() {
   let spsc = stopClock;
   spsc.val += (spsc.ms / 100);
+  let secs = spsc.val / 10.0;
   
   if (spsc.direction === UP) {
-    mvut = spsc.val;
+    mvut = secs;
   } else if (spsc.direction === DOWN) {
-    mvdt = spsc.val;
+    mvdt = secs;
   } else {
-    mvspdt = spsc.val;
+    mvspdt = secs;
   }
 }
 
@@ -127,6 +128,9 @@ function shp_stopClock_stop() {
    border: 2px solid black;
    padding: 2px;
   }
+  .stpclk {
+   width: 5rem;
+  }
 </style>
 
 <div id="shprefdiv">
@@ -135,9 +139,9 @@ function shp_stopClock_stop() {
   
   <table class="dur_table top_table">
     <tr><th>Direction</th><th>Duration (secs)</th><th>Stopclock</th></tr>
-    <tr><td>up to 100%</td><td><input id="shpMvut" type="number" min="0" bind:value="{mvut}" step="0.1"></td><td><button id="shp_MvutButton" on:click={hClick_Up}>Start/Stop</button></td></tr>
-    <tr><td>down to 0%</td><td><input id="shpMvdt" type="number" min="0" bind:value="{mvdt}" step="0.1"></td><td><button id="shp_MvdtButton" on:click={hClick_Down}>Start/Stop</button></td></tr>
-    <tr><td>down to sun position</td><td><input id="shpSpMvdt" type="number" min="0" bind:value="{mvspdt}" step="0.1"></td><td><button id="shp_SpMvdtButton" on:click={hClick_Sun}>Start/Stop</button></td></tr>
+    <tr><td>up to 100%</td><td><input class="stpclk" id="shpMvut" type="number" min="0" bind:value="{mvut}" step="0.1"></td><td><button id="shp_MvutButton" on:click={hClick_Up}>Start/Stop</button></td></tr>
+    <tr><td>down to 0%</td><td><input class="stpclk" id="shpMvdt" type="number" min="0" bind:value="{mvdt}" step="0.1"></td><td><button id="shp_MvdtButton" on:click={hClick_Down}>Start/Stop</button></td></tr>
+    <tr><td>down to sun position</td><td><input class="stpclk" id="shpSpMvdt" type="number" min="0" bind:value="{mvspdt}" step="0.1"></td><td><button id="shp_SpMvdtButton" on:click={hClick_Sun}>Start/Stop</button></td></tr>
   </table>
   <button id="shp_reload" type="button" on:click={hClick_Reload}>Reload</button>
   <button id="shp_save" type="button" on:click={hClick_Save}>Save</button>

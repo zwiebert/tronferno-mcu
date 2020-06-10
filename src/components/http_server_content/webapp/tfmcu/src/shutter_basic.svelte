@@ -106,15 +106,16 @@ onDestroy(() => {
       background-color: #eee;
       display: grid;
       width: 100%;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      grid-template-rows: repeat(6, 1fr);
+      grid-template-columns: 6rem 6rem 6rem;
+      grid-template-rows: repeat(7, 1fr);
       grid-template-areas:
-      "mn  mn  mn  ."
-      "gi  pi  mi pr"
-      "gb  pl  mb pr"
-      ".   ub  .  pr"
-      ".   sb  .  pr"
-      "pb  db  .  pr"
+      "mn  mn  mn"
+      "pr  pr  pr"
+      "gi  pi  mi"
+      "gb  pl  mb"
+      ".   ub  . "
+      ".   sb  ."
+      "pb  db  ."
       ;
       justify-items: center;
       align-items: center;
@@ -130,7 +131,7 @@ onDestroy(() => {
       #sgb, #smb { border-radius: 40%; }
       #sgi, #spi, #smi { width: 2.5em; height: 2em; text-align: center; }
       #sgb, #smb { width: 2em; height: 2em; }
-      #spr { height: 4em; }
+      #sprXXX { height: 3em; }
 
       #ssb { font-size: 60%;  font-stretch: ultra-condensed; height: 4em; border-radius: 100% }
       #sub, #sdb { font-size: 125%; border-radius: 100% }
@@ -148,12 +149,7 @@ onDestroy(() => {
       #spr { grid-area: pr; }
       #sspb { grid-area: pb; }
       
-      input[type="range"] {
-      /*position: absolute;*/
-      /*top: 40%; */
-      transform: rotate(270deg);
-      }
-      
+  
 
 
 </style>
