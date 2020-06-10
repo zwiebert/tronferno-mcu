@@ -116,13 +116,13 @@ function usedMembers_fromHtml_toHtml() {
 
 <style type="text/scss">
 .conf-table label { padding: 2px; width: 50vw; margin-right: 6px;}
-.conf-table .text { width: 100%; }
-
+//.conf-table  { width: 100%; }
+.text { width: 100%; }
 </style>
 
 <div id="configdiv">
   <div  class="config" id="config-div">
-  <table id="cfg_table_id" class="conf-table">
+  <table id="cfg_table_id" class="conf-table top_table">
   {#each mcuConfigKeys as name}
   <tr>
   {#if (name.endsWith("-enable"))}

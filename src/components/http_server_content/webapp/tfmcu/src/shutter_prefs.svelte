@@ -130,9 +130,10 @@ function shp_stopClock_stop() {
 </style>
 
 <div id="shprefdiv">
-  <p class="help_text">To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.</p>
-  <br>
-  <table class="dur_table">
+  <p class="help_text">To measure the duration of up/down movements, press Start/Stop to start both movement and clock.
+   After the movement stops by itself, press again to stop the clock. <br></p>
+  
+  <table class="dur_table top_table">
     <tr><th>Direction</th><th>Duration (secs)</th><th>Stopclock</th></tr>
     <tr><td>up to 100%</td><td><input id="shpMvut" type="number" min="0" bind:value="{mvut}" step="0.1"></td><td><button id="shp_MvutButton" on:click={hClick_Up}>Start/Stop</button></td></tr>
     <tr><td>down to 0%</td><td><input id="shpMvdt" type="number" min="0" bind:value="{mvdt}" step="0.1"></td><td><button id="shp_MvdtButton" on:click={hClick_Down}>Start/Stop</button></td></tr>

@@ -15,19 +15,23 @@ export function OptionStore() {
 }
 
 
-function read_storage(name) {
-	return JSON.parse(localStorage.getItem(name) || '{}');
+function read_storage_obj(name) {
+	let obj = JSON.parse(localStorage.getItem(name) || '{}');
+	if (typeof obj === 'object' && !Array.isArray(obj)) {
+		return obj;
+	}
+	return {};
 }
-function save_storage(name, obj) {
+function save_storage_obj(name, obj) {
 	localStorage.setItem(name, JSON.stringify(obj));
 }
 
 export function PersistentOptionStore(name) {
 
-	const { subscribe, set, update } = writable(read_storage(name));
+	const { subscribe, set, update } = writable(read_storage_obj(name));
 
 	function my_set(value) {
-		save_storage(name, value);
+		save_storage_obj(name, value);
 		set(value);
 	}
 
@@ -35,7 +39,7 @@ export function PersistentOptionStore(name) {
 		subscribe,
 		update: obj => update(old => {
 			let new_obj = Object.assign(old, obj);
-			save_storage(name, new_obj);
+			save_storage_obj(name, new_obj);
 			return new_obj;
 		}),
 		set: my_set,
@@ -99,8 +103,8 @@ export function PersistentStringStore(name) {
 
 function read_storage_val(name, def_value) {
 	try {
-	let obj = JSON.parse(localStorage.getItem(name) || JSON.stringify(def_value));
-	return obj.value;
+		let obj = JSON.parse(localStorage.getItem(name) || JSON.stringify(def_value));
+		return obj.value;
 	} catch (e) {
 		return def_value;
 	}

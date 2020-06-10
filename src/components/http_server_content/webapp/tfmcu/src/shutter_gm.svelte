@@ -25,13 +25,6 @@ onDestroy(() => {
   $: vm = $G ? ($M0 ? $M0 : 'A') : '';
   $: vg = $G ? $G : 'A';
 
- function shn_fromHtml_toMcu(val) {
-  let tfmcu = { "to":"tfmcu", "shpref":{"g":$G, "m":$M0, "tag.NAME":val }};
-
-  let url = '/cmd.json';
-    httpFetch.http_postRequest(url, tfmcu);
-  }
-
   function gmChanged() {
       httpFetch.http_fetchByMask(httpFetch.FETCH_SHUTTER_NAME | gmc_fetch_mask);
   }
@@ -78,7 +71,7 @@ onDestroy(() => {
       grid-template-columns: 3em 3em 12em 3em 3em;
       grid-template-rows: repeat(1, 1fr);
       grid-template-areas:
-      "gi  gb mn mb mi"
+      "gi gb  mn  mb mi"
       ;
       justify-items: center;
       align-items: center;

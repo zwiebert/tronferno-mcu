@@ -1,7 +1,7 @@
 'use strict';
 import { writable } from 'svelte/store';
-import { PersistentIntStore } from './custom_stores.js';
+import { PersistentOptionStore } from './custom_stores.js';
 
-export const TabIdx = PersistentIntStore("tab_idx");
+export const TabIdx = PersistentOptionStore("TabIdx");
 
 export const McuWebsocket = writable(0);

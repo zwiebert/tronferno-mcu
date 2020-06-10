@@ -210,7 +210,7 @@
     To register position changes made by commands sent from plain controllers
     and sun-sensors, these controllers have to be registered here. Select G/E
     above and pair the controller here by start pairing and pressing STOP on the
-    controller.
+    controller. <br>
   </p>
   <span id="aliasPairUnpair">
     <button id="alias_pair" type="button" on:click={hClick_Pair}>
@@ -221,7 +221,7 @@
     </button>
   </span>
   <br />
-  <table>
+  <table class="top_table">
     <tr>
       <th>All</th>
       <th>This G/E</th>

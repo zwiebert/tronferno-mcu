@@ -3,7 +3,15 @@
   import { TabIdx } from "./store/app_state.js";
   import { onMount, onDestroy } from "svelte";
 
+  export let name = "nav_tab";
   export let nav_tabs = [];
+
+  function setTabIdx(idx) {
+    let obj = {};
+    obj[name] = idx;
+    TabIdx.update(obj);
+    console.log(JSON.stringify($TabIdx));
+  }
 
   let on_destroy = [];
   onMount(() => {});
@@ -45,7 +53,7 @@
   /* small screen */
   @media only screen and (max-device-width: 360px) {
     .tabbt {
-      font-size: 200%;
+      font-size: 2rem;
     }
   }
 
@@ -68,9 +76,9 @@
 <div id="tabBar" class="tab">
   {#each nav_tabs as tab, i}
     <button
-      class="tabbt {$TabIdx === i ? 'tabbt-active' : 'tabbt-inactive'}"
+      class="tabbt {$TabIdx[name] === i ? 'tabbt-active' : 'tabbt-inactive'}"
       id="tabbt{i}"
-      on:click={() => TabIdx.set(i)}>
+      on:click={() => setTabIdx(i)}>
       {tab.text}
     </button>
   {/each}

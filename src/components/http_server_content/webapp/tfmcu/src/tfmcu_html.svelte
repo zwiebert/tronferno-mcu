@@ -6,6 +6,7 @@
   import ShutterAlias from "./shutter_alias.svelte";
   import ShutterPrefs from "./shutter_prefs.svelte";
   import ShutterPosViews from "./shutter_pos_views.svelte";
+  import ShutterPosTable from "./shutter_pos_table.svelte";
   import McuConfig from "./mcu_config.svelte";
   import McuFirmware from "./mcu_firmware.svelte";
   import Testing from "./testing.svelte";
@@ -16,8 +17,8 @@
 
   export let isProduction = false;
 
-  $: tabIdx = $TabIdx;
-
+  $: tabIdxMain = $TabIdx["main"];
+  $: tabIdxSettings = $TabIdx["settings"];
   $: visibleMcuConfig = false;
   $: visiblePairedControllers = false;
   $: visibleMovementDurations = false;
@@ -27,6 +28,12 @@
     { text: "Auto" },
     { text: "Settings" },
     { text: "Firmware" },
+  ];
+
+  let navTabsSettings = [
+    { text: "MCU Config" },
+    { text: "Paired Controllers" },
+    { text: "Movement Durations" },
   ];
 
   let fwbtns = [
@@ -53,7 +60,7 @@
     font-size: 100%;
   }
 
- /* small screen */
+  /* small screen */
   @media only screen and (max-device-width: 360px) {
     .container {
       font-size: 200%;
@@ -69,44 +76,42 @@
 
 <Layout />
 
-<NavTabs nav_tabs={navTabs} />
+<NavTabs nav_tabs={navTabs} name="main" />
 
 <div id="navTabs" class="container tabcontent">
-  {#if tabIdx === 0}
+  {#if tabIdxMain === 0}
     <ShutterBasic />
-    <ShutterPosViews />
-  {:else if tabIdx === 1}
+    <!-- <br />
+    <ShutterPosViews /> -->
+    <br />
+    <ShutterPosTable />
+  {:else if tabIdxMain === 1}
     <ShutterGM
       gmc_fetch_mask={httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME} />
-    <h3>Automatic</h3>
+    <br />
     <ShutterAuto />
-  {:else if tabIdx === 2}
-
-   <h3>MCU Config</h3>
-    <button on:click={() => {visibleMcuConfig ^= true;}}>{visibleMcuConfig ? '-' : '+'}</button>
-    {#if visibleMcuConfig}
-    <McuConfig />
+  {:else if tabIdxMain === 2}
+    <NavTabs nav_tabs={navTabsSettings} name="settings" />
+    {#if tabIdxSettings === 0}
+      <McuConfig />
     {/if}
 
-    <h3>Paired Controllers</h3>
-    <button on:click={() => {visiblePairedControllers ^= true;}}>{visiblePairedControllers ? '-' : '+'}</button>
-    {#if visiblePairedControllers}
-        <ShutterGM
-      gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME} />
-    <ShutterAlias />
+    {#if tabIdxSettings === 1}
+      <ShutterGM
+        gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME} />
+      <br />
+      <ShutterAlias />
     {/if}
 
-    <h3>Movement Durations</h3>
-    <button on:click={() => {visibleMovementDurations ^= true;}}>{visibleMovementDurations ? '-' : '+'}</button>
-    {#if visibleMovementDurations}
-        <ShutterGM
-      gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME} />
-    <ShutterPrefs />
+    {#if tabIdxSettings === 2}
+      <ShutterGM
+        gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME} />
+      <br />
+      <ShutterPrefs />
     {/if}
-
-  {:else if tabIdx === 3}
+  {:else if tabIdxMain === 3}
     <McuFirmware {fwbtns} {McuFwGitTags} />
-  {:else if tabIdx === 4}
+  {:else if tabIdxMain === 4}
     <Testing />
   {/if}
 </div>
