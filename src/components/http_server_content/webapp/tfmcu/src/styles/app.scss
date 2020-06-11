@@ -54,8 +54,18 @@ $color_bg: #ceee;
   }
 }
 
+@media only screen and (max-device-width: 360px) {
+  .full-width {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
 
-.top_table {
-  border: 2px solid black;
-  padding: 2px;
- }
+  .top_table {
+    width: inherit;
+    //@extend .full-width; 
+  }
+}

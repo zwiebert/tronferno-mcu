@@ -115,12 +115,12 @@ function usedMembers_fromHtml_toHtml() {
 </script>
 
 <style type="text/scss">
-.conf-table label { padding: 2px; width: 50vw; margin-right: 6px;}
-//.conf-table  { width: 100%; }
-.config-input { width: 100%; }
+.conf-table label { padding: 2px; margin-right: 3px;}
+.config-input input[type="text"] { width: inherit; }
+.config-input input[type="number"]  { width: 5rem; }
 </style>
 
-<div id="configdiv">
+<div id="configdiv" class="top-div">
   <div  class="config" id="config-div">
   <table id="cfg_table_id" class="conf-table top_table">
   {#each mcuConfigKeys as name}
@@ -129,13 +129,19 @@ function usedMembers_fromHtml_toHtml() {
         <td><label class="config-label">{name}</label></td>
         <td><input class="config-input cb" type="checkbox" id="cfg_{name}" name="{name}" checked={mcuConfig[name]}>
         </td>
+  {:else if (name === 'latitude')}
+        <td><label class="config-label">{name}</label></td>
+        <td><input class="config-input number" type="number" min="-90" max="90" step="0.01" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
+  {:else if (name === 'longitude')}
+        <td><label class="config-label">{name}</label></td>
+        <td><input class="config-input number" type="number" min="-180" max="180" step="0.01" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
   {:else if (name === 'rf-rx-pin' || name === 'set-button-pin')}
         <td><label class="config-label">{name}</label></td>
-        <td><input class="config-input" type="number" min="-1" max="39" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
+        <td><input class="config-input number" type="number" min="-1" max="39" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
   {:else if (name === 'rf-tx-pin')}
-        <td><label class="config-label">{name}</label></td><td><input class="config-input" type="number" min="-1" max="33" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
+        <td><label class="config-label">{name}</label></td><td><input class="config-input number" type="number" min="-1" max="33" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
   {:else if (name === 'verbose')}
-        <td><label class="config-label">{name}</label></td><td><input class="config-input" type="number" min="0" max="5" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
+        <td><label class="config-label">{name}</label></td><td><input class="config-input number" type="number" min="0" max="5" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
   {:else if (name === 'network')}
       <td><label class="config-label">{name}</label></td><td><select  class="config-input" id="cfg_{name}">
       <option value="wlan">Existing WLAN</option>
@@ -150,7 +156,7 @@ function usedMembers_fromHtml_toHtml() {
       <option value="ip101">IP101</option>
       </select></td>
   {:else if (name === 'lan-pwr-gpio')}
-       <td><label class="config-label">{name}</label></td><td><input class="config-input" type="number" min="-1" max="36" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
+       <td><label class="config-label">{name}</label></td><td><input class="config-input number" type="number" min="-1" max="36" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
   {:else if (name === 'astro-correction')}
        <td><label class="config-label">{name}</label></td><td><select  class="config-input" id="cfg_{name}">
       <option value="0">average</option>

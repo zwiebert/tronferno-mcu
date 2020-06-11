@@ -122,10 +122,6 @@ onDestroy(() => {
       grid-gap: 2px;
       }
       
-      #senddiv {
-      width: 500px;
-      }
-   
       .sb {width: 5em; margin: 2px; }
 
       #sgb, #smb { border-radius: 40%; }
@@ -154,7 +150,7 @@ onDestroy(() => {
 
 </style>
 
-<div id="senddiv" class="send">
+<div id="senddiv" class="send full-width">
   <input id="smn" type = "text" name = "name" bind:value="{name}" on:change={hChange_Name}>
   <input id="sgi" type = "text" name = "g" value="{vg}">
   <input id="spi" type = "number" min="0" max="100" name = "p" value="{$Pct}">

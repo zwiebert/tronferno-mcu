@@ -31,6 +31,7 @@
     cursor: pointer;
     padding: 3px 4px;
     transition: 0.3s;
+    width:inherit;
   }
 
   .tab {

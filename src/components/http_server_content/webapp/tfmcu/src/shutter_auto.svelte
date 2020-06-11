@@ -110,6 +110,15 @@ function req_automatic() {
 }
 </script>
 
+
+<style type="text/scss">
+@media only screen and (min-device-width: 361px) {
+  #twti {
+    width:30em;
+  }
+}
+</style>
+
 <div id="autodiv" class="auto">
   <table class="top_table">
     <tr id="tf_tr" style="display:none;">
@@ -125,7 +134,7 @@ function req_automatic() {
     <tr>
       <td><label>weekly</label></td>
       <td><input id="twci" class="cb" type = "checkbox" value=""></td>
-      <td><input id="twti" style="width:50vw;" type = "text" name = "g" value=""></td>
+      <td><input id="twti" type = "text" name = "g" value=""></td>
     </tr>
     <tr>
       <td><label>astro</label></td>

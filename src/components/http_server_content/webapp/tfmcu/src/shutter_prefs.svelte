@@ -125,7 +125,6 @@ function shp_stopClock_stop() {
 
 <style type="text/scss">
  .dur_table {
-   border: 2px solid black;
    padding: 2px;
   }
   .stpclk {
@@ -143,6 +142,7 @@ function shp_stopClock_stop() {
     <tr><td>down to 0%</td><td><input class="stpclk" id="shpMvdt" type="number" min="0" bind:value="{mvdt}" step="0.1"></td><td><button id="shp_MvdtButton" on:click={hClick_Down}>Start/Stop</button></td></tr>
     <tr><td>down to sun position</td><td><input class="stpclk" id="shpSpMvdt" type="number" min="0" bind:value="{mvspdt}" step="0.1"></td><td><button id="shp_SpMvdtButton" on:click={hClick_Sun}>Start/Stop</button></td></tr>
   </table>
+  
   <button id="shp_reload" type="button" on:click={hClick_Reload}>Reload</button>
   <button id="shp_save" type="button" on:click={hClick_Save}>Save</button>
 </div>
