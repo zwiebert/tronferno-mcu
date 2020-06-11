@@ -10,7 +10,6 @@
     let obj = {};
     obj[name] = idx;
     TabIdx.update(obj);
-    console.log(JSON.stringify($TabIdx));
   }
 
   let on_destroy = [];
@@ -36,18 +35,8 @@
 
   .tab {
     overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
-  }
-
-  /* Change background color of buttons on hover */
-  .tabbt:hover {
-    background-color: #ccc;
-  }
-
-  /* Create an active/current tablink class */
-  .tabbt:active {
-    background-color: hsl(220, 60%, 60%);
+    // border: 1px solid #ccc;
+    background-color: #cededf;
   }
 
   .tabbt {

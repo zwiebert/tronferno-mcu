@@ -117,7 +117,7 @@ function usedMembers_fromHtml_toHtml() {
 <style type="text/scss">
 .conf-table label { padding: 2px; width: 50vw; margin-right: 6px;}
 //.conf-table  { width: 100%; }
-.text { width: 100%; }
+.config-input { width: 100%; }
 </style>
 
 <div id="configdiv">
@@ -138,9 +138,9 @@ function usedMembers_fromHtml_toHtml() {
         <td><label class="config-label">{name}</label></td><td><input class="config-input" type="number" min="0" max="5" id="cfg_{name}" name="{name}" value="{mcuConfig[name]}"></td>
   {:else if (name === 'network')}
       <td><label class="config-label">{name}</label></td><td><select  class="config-input" id="cfg_{name}">
-      <option value="wlan">Connect to existing WLAN</option>
-      <option value="ap">AP (192.168.4.1, ssid/pw=tronferno)</option>
-      <option value="lan">Connect to Ethernet</option> <!-- dev-no-lan-delete-line --> 
+      <option value="wlan">Existing WLAN</option>
+      <option value="ap">WLAN Accesspoint</option>
+      <option value="lan">Ethernet</option> <!-- dev-no-lan-delete-line --> 
       <option value="none">No Network</option>
       </select></td>
   {:else if (name === 'lan-phy')}
