@@ -37,7 +37,6 @@
   .tab {
     overflow: hidden;
     // border: 1px solid #ccc;
-    background-color: #cededf;
   }
 
   .tabbt {
@@ -47,19 +46,13 @@
     transition: 0.3s;
     overflow: hidden;
   }
-  .tabbt-active {
-    background-color: hsl(220, 60%, 60%);
-  }
 
-  .tabbt-inactive {
-    background-color: inherit;
-  }
 </style>
 
 <div id="tabBar" class="tab">
   {#each nav_tabs as tab, i}
     <button
-      class="tabbt {$TabIdx[name] === i ? 'tabbt-active' : 'tabbt-inactive'}"
+      class="tabbt {$TabIdx[name] === i ? 'is-selected' : ''}"
       id="tabbt{i}"
       on:click={() => setTabIdx(i)}>
       {tab.text}

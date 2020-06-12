@@ -1,17 +1,21 @@
-$color_bg_select: hsl(220, 60%, 60%);
-$color_fg_select: white;
-$color_bg: lightgrey;
-$color_fg: black;
+$color_bg_select: hsl(152, 47%, 42%);
+$color_fg_select: rgb(186, 194, 78);
+$color_bg: #F8F8E0;
+$color_fg: black; // #278727;
+
+.is-selected {
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+}
 
 .is-active {
   background-color: $color_bg_select;
   color: $color_fg_select;
 }
-
-* {
+html {
   //font-size: 100%;
-  background-color: $color_bg;
-  color: $color_fg;
+ background-color: $color_bg;
+color: $color_fg;
 }
 
 .help_text {

@@ -38,14 +38,15 @@
 </script>
 
 <style type="text/scss">
-
 th {
   text-align: left;
 }
+.is-active { color:red;}
+
 
 </style>
 
-<tr class="{$GM === gm ? "is-active":""}">
+<tr class="{$GM === gm ? 'is-selected' : ''}">
   <th on:click={set_gm}>{name}</th>
   <td>{pct}%</td>
   <td>

@@ -57,7 +57,7 @@ export default {
         // let Rollup handle all other warnings normally
         handler(warning);
       },
-      preprocess: sveltePreprocess(),
+      preprocess: sveltePreprocess({postcss: false}),
 
     }),
     // If you have external dependencies installed from
