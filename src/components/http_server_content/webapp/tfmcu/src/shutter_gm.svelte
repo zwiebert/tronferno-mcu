@@ -65,7 +65,6 @@ onDestroy(() => {
 <style type="text/scss">
 
       #shugmdiv {
-      background-color: #eee;
       display: grid;
       width: 50%;
       grid-template-columns: 3rem 3rem 8rem 3rem 3rem;

@@ -1,6 +1,6 @@
 <script>
   import { Pcts, Names } from "./store/shutters.js";
-  import { G, M0, M } from "./store/curr_shutter.js";
+  import { G, M0, M, GM} from "./store/curr_shutter.js";
   import * as httpFetch from "./fetch.js";
 
   export let g;
@@ -45,7 +45,7 @@ th {
 
 </style>
 
-<tr>
+<tr class="{$GM === gm ? "is-active":""}">
   <th on:click={set_gm}>{name}</th>
   <td>{pct}%</td>
   <td>

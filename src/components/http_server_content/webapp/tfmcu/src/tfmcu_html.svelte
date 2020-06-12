@@ -57,7 +57,6 @@
 <style type="text/scss">
   .container {
     border: 1px solid #ccc;
-    background-color: #eee;
     font-size: 100%;
   }
 

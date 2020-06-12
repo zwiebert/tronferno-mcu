@@ -1,5 +1,17 @@
+$color_bg_select: hsl(220, 60%, 60%);
+$color_fg_select: white;
+$color_bg: lightgrey;
+$color_fg: black;
+
+.is-active {
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+}
+
 * {
-  font-size: 100%;
+  //font-size: 100%;
+  background-color: $color_bg;
+  color: $color_fg;
 }
 
 .help_text {
@@ -12,29 +24,15 @@
   height: 1em;
 }
 
-input:focus {
-  font-size: 100%;
-}
-
-#configdiv {
-  background-color: #eee;
-}
-
-#autodiv {
-  background-color: #eee;
-}
-
 h3 {
   text-align: center;
   margin-top: 0px;
-  background-color: hsl(220, 60%, 60%);
-  color: white;
+  background-color: $color_bg_select;
+  color: $color_fg_select;
   grid-area: header;
   justify-self: stretch;
   align-self: start;
 }
-
-$color_bg: #ceee;
 
 @keyframes blink {
   0% {

@@ -103,7 +103,6 @@ onDestroy(() => {
 <style type="text/scss">
 
       #senddiv {
-      background-color: #eee;
       display: grid;
       width: 100%;
       grid-template-columns: 6rem 6rem 6rem;
