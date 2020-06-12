@@ -1,4 +1,4 @@
-$color_bg_select: hsl(152, 47%, 42%);
+$color_bg_select: #399d6e;
 $color_fg_select: rgb(186, 194, 78);
 $color_bg: #F8F8E0;
 $color_fg: black; // #278727;
@@ -13,8 +13,8 @@ $color_fg: black; // #278727;
   color: $color_fg_select;
 }
 html {
-  //font-size: 100%;
- background-color: $color_bg;
+font-size: 100%;
+background-color: $color_bg;
 color: $color_fg;
 }
 
@@ -71,3 +71,4 @@ h3 {
     //@extend .full-width; 
   }
 }
+

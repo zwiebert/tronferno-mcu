@@ -42,7 +42,7 @@
   .tabbt {
     border: none;
     outline: none;
-    padding: 3x 4px;
+    padding: 3px 4px;
     transition: 0.3s;
     overflow: hidden;
   }
@@ -52,7 +52,7 @@
 <div id="tabBar" class="tab">
   {#each nav_tabs as tab, i}
     <button
-      class="tabbt {$TabIdx[name] === i ? 'is-selected' : ''}"
+      class="px-3 py-4 tabbt {$TabIdx[name] === i ? 'is-selected' : ''}"
       id="tabbt{i}"
       on:click={() => setTabIdx(i)}>
       {tab.text}

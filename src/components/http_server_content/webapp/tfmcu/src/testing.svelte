@@ -43,8 +43,6 @@ function testPressed(enable) {
 
 </script>
 
-
-
  <div id="testsdiv">
  <br><br>Random Periodic Movement Commands:
  <button id="test_rpm_start" type="button" on:click={() => testPressed(true)}>Test Start</button> 
