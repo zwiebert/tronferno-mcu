@@ -128,7 +128,7 @@
   <div class="config" id="config-div">
     <table id="cfg_table_id" class="conf-table top_table">
       {#each mcuConfigKeys as name, i}
-        <tr class={i % 2 ? 'bg-yellow-400' : 'bg-yellow-600'}>
+        <tr class={i % 2 ? 'bg-yellow-200' : 'bg-yellow-300'}>
 
           {#if name !== 'gm-used'}
             <td>

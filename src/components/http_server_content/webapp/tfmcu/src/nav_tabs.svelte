@@ -52,7 +52,7 @@
 <div id="tabBar" class="tab">
   {#each nav_tabs as tab, i}
     <button
-      class="px-3 py-4 tabbt {$TabIdx[name] === i ? 'is-selected' : ''}"
+      class="px-3 py-4 tabbt {$TabIdx[name] === i ? 'is-selected' : ''} text-lg font-medium"
       id="tabbt{i}"
       on:click={() => setTabIdx(i)}>
       {tab.text}
