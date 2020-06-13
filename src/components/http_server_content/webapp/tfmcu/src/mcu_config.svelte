@@ -6,6 +6,7 @@
   import * as cuas from "./cuas.js";
   import * as misc from "./misc.js";
   import { onMount, onDestroy } from "svelte";
+  import { ReloadProgress } from './store/app_state.js';
 
   let on_destroy = [];
   onMount(() => {
@@ -326,7 +327,10 @@
   </button>
   <br />
   <div id="config_restart_div" />
-
+  {#if $ReloadProgress > 0}
+    <strong>Wait for MCU to restart...</strong><br>
+    <progress id="reload_progress_bar" value="{$ReloadProgress}" max="100"></progress>
+  {/if}
   <section>
     <h1>Configuration-Wizards</h1>
     <ul>

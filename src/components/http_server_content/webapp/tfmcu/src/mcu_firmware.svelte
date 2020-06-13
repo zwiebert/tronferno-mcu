@@ -1,6 +1,7 @@
 <script>
   "use strict";
   import { McuBootCount } from "./store/mcu_firmware.js";
+  import { ReloadProgress } from './store/app_state.js';
   
   export let fwbtns = [];
   export let McuFwGitTags;
@@ -121,6 +122,10 @@ onDestroy(() => {
   </div>
  
   <div id="netota_progress_div" />
+    {#if $ReloadProgress > 0}
+    <strong>Wait for MCU to restart...</strong><br>
+    <progress id="reload_progress_bar" value="{$ReloadProgress}" max="100"></progress>
+  {/if}
   <div id="netota_restart_div" />
 
   <h4>Firmware Info</h4>

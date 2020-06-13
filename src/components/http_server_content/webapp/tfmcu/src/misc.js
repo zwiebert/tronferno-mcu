@@ -1,5 +1,6 @@
 'use strict';
 
+import { ReloadProgress } from './store/app_state.js';
 
 import * as httpFetch from './fetch.js';
 
@@ -8,7 +9,6 @@ const reload_Progress = {
   ms: 1000,
   count: 12,
   counter: 0,
-  divs: ["netota_restart_div", "config_restart_div"],
 };
 
 function req_reloadTick() {
@@ -18,24 +18,14 @@ function req_reloadTick() {
     location.reload();
     clearInterval(rpr.ivId); // may be useless after reload...
   } else {
-    document.getElementById("reload_progress_bar").value = rpr.counter;
+    ReloadProgress.set(reload_Progress.counter * 100 / reload_Progress.count);
   }
 }
 
 function req_reloadStart() {
   const rpr = reload_Progress;
 
-  for (let div of rpr.divs) {
-    let e = document.getElementById(div);
-    if (e.offsetParent === null)
-      continue;
-
-    let html = '<strong>Wait for MCU to restart...</strong><br>';
-    html += '<progress id="reload_progress_bar" value="0" max="' + rpr.count.toString() + '">0%</progress>';
-    e.innerHTML = html;
-    rpr.ivId = setInterval(req_reloadTick, rpr.ms);
-    break;
-  }
+  rpr.ivId = setInterval(req_reloadTick, rpr.ms);
 }
 
 export function req_mcuRestart() {
