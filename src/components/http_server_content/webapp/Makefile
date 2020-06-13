@@ -4,6 +4,17 @@ JS_SRC_DIR := $(THIS_ROOT)/tfmcu/src
 JS_BLD_DIR := $(THIS_ROOT)/tfmcu/build
 
 
+SRC_DIRS := $(addprefix $(THIS_ROOT)/tfmcu/,. src src/store src/net src/styles)
+
+SRC_JS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.js))
+SRC_ALL += $(SRC_JS)
+SRC_SVELTE := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.svelte))
+SRC_ALL += $(SRC_SVELTE)
+SRC_CSS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.css))
+SRC_ALL += $(SRC_CSS)
+SRC_SCSS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.css))
+SRC_ALL += $(SRC_SCSS)
+
 HTMLMIN ?= ~/.local/bin/htmlmin
 INCFILES ?= perl ./include_files.pl
 
@@ -26,30 +37,23 @@ bundle_out = build/tfmcu.js build/tfmcu.js.map build/tfmcu.css build/tfmcu.css.m
 bundle_files = $(JS_BLD_DIR)/tfmcu.js $(JS_BLD_DIR)/tfmcu.js.map $(JS_BLD_DIR)/tfmcu.css $(JS_BLD_DIR)/tfmcu.css.map 
 
 .PHONY: bundle
-all: bundle $(bundle_out)
+all: build/tfmcu.html build/tfmcu.js
 
-build/tfmcu.html: build $(bundle_out) # HTML may be merged with files from tfmcu
+
+
+$(addprefix tfmcu/build_dev/tfmcu,.js .css .js.map .css.map): $(SRC_ALL) tfmcu/node_modules
+	cd tfmcu && env buildTarget=DEV npm run build
+$(addprefix tfmcu/build/tfmcu,.js .css .js.map .css.map): $(SRC_ALL) tfmcu/node_modules
+	cd tfmcu && env buildTarget=PROD npm run build
+
+build/tfmcu.%: tfmcu/build/tfmcu.%
+	cp -p $< $@  
+
+build/tfmcu.html: build build/tfmcu.css ./tfmcu_dev.html
 $(bundle_out): build
-
-
-build/tfmcu.js: $(JS_BLD_DIR)/tfmcu.js
-	cp -p $< $@  
-build/tfmcu.js.map: $(JS_BLD_DIR)/tfmcu.js.map
-	cp -p $< $@  
-build/tfmcu.css: $(JS_BLD_DIR)/tfmcu.css
-	cp -p $< $@
-build/tfmcu.css.map: $(JS_BLD_DIR)/tfmcu.css.map
-	cp -p $< $@ 
-
-bundle $(bundle_files): tfmcu/node_modules
-	-cd ../../../.. && $(JSHINT) $(JS_SRC_DIR)/*.js
-	#-cd ../../../.. && $(JSHINT) $(JS_BLD_DIR)/tfmcu.js
-	cd tfmcu && env $(buildTarget) npm run build
 
 tfmcu/node_modules:
 	test-d tfmcu/node_modules || cd tfmcu && npm install
-
-
 
 .PHONY: clean
 clean:
