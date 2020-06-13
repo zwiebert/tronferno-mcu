@@ -55,23 +55,14 @@
 </script>
 
 <style type="text/scss">
-  .container {
-    border: 1px solid #ccc;
-    font-size: 100%;
-  }
 
-  .tabcontent {
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-top: none;
-  }
 </style>
 
 <Layout />
 
 <NavTabs nav_tabs={navTabs} name="main" />
 
-<div id="navTabs" class="container tabcontent">
+<div id="navTabs" class="px-1 py-3 border-none">
   {#if tabIdxMain === 0}
     <ShutterBasic />
   {:else if tabIdxMain === 1}
