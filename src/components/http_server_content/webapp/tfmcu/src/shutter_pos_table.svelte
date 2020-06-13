@@ -1,8 +1,6 @@
 <script>
   import * as httpFetch from "./fetch.js";
   import { Gmu } from "./store/mcu_config.js";
-  import { Names, Pcts } from "./store/shutters.js";
-  import { G, M } from "./store/curr_shutter.js";
   import ShutterPosTableRow from "./shutter_pos_table_row.svelte";
   import { onMount, onDestroy } from "svelte";
 
@@ -18,10 +16,6 @@
 
   $: gmu = $Gmu;
 
-  function set_gm(g, m) {
-    G.set(g);
-    M.set(m);
-  }
 </script>
 
 <style type="text/scss">

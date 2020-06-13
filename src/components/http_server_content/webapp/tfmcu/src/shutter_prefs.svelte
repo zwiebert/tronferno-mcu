@@ -124,23 +124,18 @@ function shp_stopClock_stop() {
 </script>
 
 <style type="text/scss">
- .dur_table {
-   padding: 2px;
-  }
-  .stpclk {
-   width: 5rem;
-  }
+
 </style>
 
 <div id="shprefdiv">
   <p class="help_text">To measure the duration of up/down movements, press Start/Stop to start both movement and clock.
    After the movement stops by itself, press again to stop the clock. <br></p>
   
-  <table class="dur_table top_table">
+  <table class="dur_table top_table p-2">
     <tr><th>Direction</th><th>Duration (secs)</th><th>Stopclock</th></tr>
-    <tr><td>up to 100%</td><td><input class="stpclk" id="shpMvut" type="number" min="0" bind:value="{mvut}" step="0.1"></td><td><button id="shp_MvutButton" on:click={hClick_Up}>Start/Stop</button></td></tr>
-    <tr><td>down to 0%</td><td><input class="stpclk" id="shpMvdt" type="number" min="0" bind:value="{mvdt}" step="0.1"></td><td><button id="shp_MvdtButton" on:click={hClick_Down}>Start/Stop</button></td></tr>
-    <tr><td>down to sun position</td><td><input class="stpclk" id="shpSpMvdt" type="number" min="0" bind:value="{mvspdt}" step="0.1"></td><td><button id="shp_SpMvdtButton" on:click={hClick_Sun}>Start/Stop</button></td></tr>
+    <tr><td>up to 100%</td><td><input class="w-20" id="shpMvut" type="number" min="0" bind:value="{mvut}" step="0.1"></td><td><button id="shp_MvutButton" on:click={hClick_Up}>Start/Stop</button></td></tr>
+    <tr><td>down to 0%</td><td><input class="w-20" id="shpMvdt" type="number" min="0" bind:value="{mvdt}" step="0.1"></td><td><button id="shp_MvdtButton" on:click={hClick_Down}>Start/Stop</button></td></tr>
+    <tr><td>down to sun position</td><td><input class="w-20" id="shpSpMvdt" type="number" min="0" bind:value="{mvspdt}" step="0.1"></td><td><button id="shp_SpMvdtButton" on:click={hClick_Sun}>Start/Stop</button></td></tr>
   </table>
   
   <button id="shp_reload" type="button" on:click={hClick_Reload}>Reload</button>
