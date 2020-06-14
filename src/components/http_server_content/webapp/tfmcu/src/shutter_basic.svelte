@@ -4,6 +4,7 @@
   import { Gmu } from './store/mcu_config.js';
   import * as httpFetch from './fetch.js';
   import { onMount,onDestroy } from 'svelte';
+  import DisplayIcons from './display_icons.svelte';
 
   export let gmc_fetch_mask = 0;
 
@@ -30,7 +31,7 @@ onDestroy(() => {
   }
 
   function gmChanged() {
-      httpFetch.http_fetchByMask(httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME | gmc_fetch_mask);
+      httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO | httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME | gmc_fetch_mask);
   }
 
   function hClick_G() {
@@ -106,9 +107,10 @@ onDestroy(() => {
       display: grid;
       width: 100%;
       grid-template-columns: 6rem 6rem 6rem;
-      grid-template-rows: repeat(7, 1fr);
+      grid-template-rows: repeat(8, 1fr);
       grid-template-areas:
       "mn  mn  mn"
+      "di  di  di"
       "pr  pr  pr"
       "gi  pi  mi"
       "gb  pl  mb"
@@ -143,6 +145,7 @@ onDestroy(() => {
       #sdb { grid-area: db; }
       #spr { grid-area: pr; }
       #sspb { grid-area: pb; }
+      #sdi { grid-area: di; }
       
   
 
@@ -163,4 +166,8 @@ onDestroy(() => {
   <br><button id="ssb" class="sb" type="button" on:click={hClick_Stop}>STOP</button>
   <br><button id="sdb" class="sb" type="button" on:click={hClick_Down}>&#x25bc;</button>
   <br><button id="sspb" class="sb" type="button" on:click={hClick_Sun}>Sun</button>
+
+  <div id="sdi"><DisplayIcons/></div>
+
 </div>
+
