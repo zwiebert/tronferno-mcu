@@ -23,19 +23,8 @@
   $: visiblePairedControllers = false;
   $: visibleMovementDurations = false;
 
-  let navTabs = [
-    { text: "Move" },
-    { text: "Pct" },
-    { text: "Auto" },
-    { text: "Settings" },
-    { text: "Firmware" },
-  ];
-
-  let navTabsSettings = [
-    { text: "MCU" },
-    { text: "Aliases" },
-    { text: "Durations" },
-  ];
+  let navTabs = ["Move", "Pct", "Auto", "Settings", "Firmware"];
+  let navTabsSettings = ["MCU", "Aliases", "Durations"];
 
   let fwbtns = [
     { name: "latest master firmware", ota_name: "github-master" },
@@ -44,7 +33,7 @@
 
   // eslint-disable-next-line no-unused-labels
   testing: if (!isProduction) {
-    navTabs.push({ text: "Tests", div_id: ["testsdiv"] });
+    navTabs.push("Tests");
     fwbtns.push({
       name: "firmware from given URL",
       ota_name: "netotaFromURL",
@@ -62,7 +51,7 @@
 
 <NavTabs nav_tabs={navTabs} name="main" />
 
-<div id="navTabs" class="px-1 py-3 border-none">
+<div id="navTabs" class="px-1 border-none">
   {#if tabIdxMain === 0}
     <ShutterBasic />
   {:else if tabIdxMain === 1}

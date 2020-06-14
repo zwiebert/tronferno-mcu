@@ -59,7 +59,6 @@ onDestroy(() => {
     $M = Number.parseInt(gm.substr(1,1));
   }
   
-  
 </script>
 
 <style type="text/scss">

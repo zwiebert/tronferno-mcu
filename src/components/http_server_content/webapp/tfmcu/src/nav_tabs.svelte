@@ -21,10 +21,10 @@
 <div id="tabBar" class="overflow-hidden">
   {#each nav_tabs as tab, i}
     <button
-      class="px-3 py-4 tabbt {$TabIdx[name] === i ? 'is-selected' : ''} text-lg font-medium border-none outline-none"
+      class="p-0 m-1 tabbt {($TabIdx[name] || 0) === i ? 'is-selected' : ''} text-lg font-medium border-none outline-none"
       id="tabbt{i}"
       on:click={() => setTabIdx(i)}>
-      {tab.text}
+      {tab}
     </button>
   {/each}
 </div>

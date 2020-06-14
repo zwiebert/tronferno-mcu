@@ -1,6 +1,6 @@
 <script>
   import { Pcts, Names } from "./store/shutters.js";
-  import { G, M0, M, GM} from "./store/curr_shutter.js";
+  import { G, M0, M, GM } from "./store/curr_shutter.js";
   import * as httpFetch from "./fetch.js";
 
   export let g;
@@ -38,9 +38,10 @@
 </script>
 
 <style type="text/scss">
+
 </style>
 
-<tr class="{$GM === gm ? 'is-selected' : ''}">
+<tr class={$GM === gm ? 'is-selected' : ''}>
   <th class="text-left" on:click={set_gm}>{name}</th>
   <td>{pct}%</td>
   <td>
