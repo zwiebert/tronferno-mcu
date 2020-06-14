@@ -41,5 +41,8 @@
 			"fetch": true,
 			"location": true
 		}
+	},
+	"dependencies": {
+		"svelte-icons": "^2.1.0"
 	}
 }
