@@ -69,6 +69,10 @@ app.get("/f/css/tfmcu.css", (req, res) => {
     //res.sendFile(cont_dir + '/tfmcu_dev.js');
     res.sendFile(cont_dir + '/tfmcu/build_dev/tfmcu.css');
 });
+app.get("/f/css/tfmcu.css.map", (req, res) => {
+    //res.sendFile(cont_dir + '/tfmcu_dev.js');
+    res.sendFile(cont_dir + '/tfmcu/build_dev/tfmcu.css.map');
+});
 app.get("/src/", (req, res) => {
     //res.sendFile(cont_dir + '/tfmcu_dev.js');
     res.sendFile(cont_dir + '/tfmcu/src/');

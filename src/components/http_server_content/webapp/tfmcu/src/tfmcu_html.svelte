@@ -1,11 +1,13 @@
 <script>
   import NavTabs from "./nav_tabs.svelte";
-  import ShutterBasic from "./shutter_basic.svelte";
+  import ShutterMove from "./shutter_move.svelte";
   import ShutterGM from "./shutter_gm.svelte";
   import ShutterAuto from "./shutter_auto.svelte";
   import ShutterAlias from "./shutter_alias.svelte";
   import ShutterPrefs from "./shutter_prefs.svelte";
-  import ShutterPosViews from "./shutter_pos_views.svelte";
+  import ShutterSun from "./shutter_sun.svelte";
+  import ShutterPct from "./shutter_pct.svelte";
+  import ShutterName from "./shutter_name.svelte";
   import ShutterPosTable from "./shutter_pos_table.svelte";
   import McuConfig from "./mcu_config.svelte";
   import McuFirmware from "./mcu_firmware.svelte";
@@ -17,14 +19,14 @@
 
   export let isProduction = false;
 
-  $: tabIdxMain = $TabIdx["main"];
-  $: tabIdxSettings = $TabIdx["settings"];
+  $: tabIdxMain = $TabIdx["main"] || 0;
+  $: tabIdxSettings = $TabIdx["settings"] || 0;
   $: visibleMcuConfig = false;
   $: visiblePairedControllers = false;
   $: visibleMovementDurations = false;
 
   let navTabs = ["Move", "Pct", "Auto", "Settings", "Firmware"];
-  let navTabsSettings = ["MCU", "Aliases", "Durations"];
+  let navTabsSettings = ["MCU", "Aliases", "Durations", "Name"];
 
   let fwbtns = [
     { name: "latest master firmware", ota_name: "github-master" },
@@ -44,45 +46,81 @@
 </script>
 
 <style type="text/scss">
+  @import "./styles/app.scss";
 
+  .area {
+    @apply mt-4 p-2 bg-area;
+  }
 </style>
 
 <Layout />
 
-<NavTabs nav_tabs={navTabs} name="main" />
+<div id="navTabs" class="flex flex-col items-center px-1 border-none">
+  <NavTabs nav_tabs={navTabs} name="main" />
 
-<div id="navTabs" class="px-1 border-none">
   {#if tabIdxMain === 0}
-    <ShutterBasic />
+    <div class="mt-4 p-2">
+      <ShutterGM
+        gmc_fetch_mask={httpFetch.FETCH_AUTO | httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME} />
+    </div>
+
+    <div class="area">
+      <ShutterMove />
+    </div>
+
+    <div class="area">
+      <ShutterPct />
+    </div>
+
+    <div class="area">
+      <ShutterSun />
+    </div>
   {:else if tabIdxMain === 1}
-    <br />
-    <ShutterPosTable />
+    <div class="area">
+      <ShutterPosTable />
+    </div>
   {:else if tabIdxMain === 2}
-    <ShutterGM
-      gmc_fetch_mask={httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME} />
-    <br />
-    <ShutterAuto />
+    <div class="mt-4 p-2">
+      <ShutterGM
+        gmc_fetch_mask={httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME} />
+    </div>
+    <div class="area">
+      <ShutterAuto />
+    </div>
   {:else if tabIdxMain === 3}
     <NavTabs nav_tabs={navTabsSettings} name="settings" />
     {#if tabIdxSettings === 0}
-      <McuConfig />
-    {/if}
-
-    {#if tabIdxSettings === 1}
-      <ShutterGM
-        gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME} />
-      <br />
-      <ShutterAlias />
-    {/if}
-
-    {#if tabIdxSettings === 2}
-      <ShutterGM
-        gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME} />
-      <br />
-      <ShutterPrefs />
+      <div class="area">
+        <McuConfig />
+      </div>
+    {:else if tabIdxSettings === 1}
+      <div class="mt-4 p-2">
+        <ShutterGM
+          gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME} />
+      </div>
+      <div class="area">
+        <ShutterAlias />
+      </div>
+    {:else if tabIdxSettings === 2}
+      <div class="mt-4 p-2">
+        <ShutterGM
+          gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME} />
+      </div>
+      <div class="area">
+        <ShutterPrefs />
+      </div>
+    {:else if tabIdxSettings === 3}
+      <div class="mt-4 p-2">
+        <ShutterGM gmc_fetch_mask={httpFetch.FETCH_SHUTTER_NAME} />
+      </div>
+      <div class="area">
+        <ShutterName />
+      </div>
     {/if}
   {:else if tabIdxMain === 4}
-    <McuFirmware {fwbtns} {McuFwGitTags} />
+    <div class="area">
+      <McuFirmware {fwbtns} {McuFwGitTags} />
+    </div>
   {:else if tabIdxMain === 5}
     <Testing />
   {/if}

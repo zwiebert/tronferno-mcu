@@ -167,7 +167,16 @@ onDestroy(() => {
   <br><button id="sdb" class="sb" type="button" on:click={hClick_Down}>&#x25bc;</button>
   <br><button id="sspb" class="sb" type="button" on:click={hClick_Sun}>Sun</button>
 
-  <div id="sdi"><DisplayIcons/></div>
+  <div id="sdi" class="flex bg-gray-400 p-1">
+    <div class="h-4 w-4 text-gray-800">
+     {vg}
+    </div>
+
+  <DisplayIcons/>
+      <div class="h-4 w-4 text-gray-800">
+     {vm}
+    </div>
+  </div>
 
 </div>
 

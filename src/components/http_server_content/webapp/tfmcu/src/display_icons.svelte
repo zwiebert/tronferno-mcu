@@ -37,7 +37,7 @@
 
 </style>
 
-<div class="flex border-black bg-gray-400 p-1">
+<div class="flex p-1">
   <div class="h-4 w-4 text-gray-800">
     {#if hasDailyUp}
       <FaLongArrowAltUp />

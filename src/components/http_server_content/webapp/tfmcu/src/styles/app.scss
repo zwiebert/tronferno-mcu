@@ -2,6 +2,11 @@ $color_bg_select: #399d6e;
 $color_fg_select: rgb(186, 194, 78);
 $color_bg: #F8F8E0;
 $color_fg: black; // #278727;
+$color_bg_area: #e7e791;
+
+.bg-area {
+  background-color: $color_bg_area;
+}
 
 .is-selected {
   background-color: $color_bg_select;
