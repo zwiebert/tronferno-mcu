@@ -4,7 +4,7 @@ import * as mcuFirmware from './mcu_firmware.svelte';
 import * as cuas from './cuas.js';
 import {McuConfig, Gmu} from './store/mcu_config.js';
 import {Pcts,Prefs,Aliases,Autos,Names} from './store/shutters.js';
-import { McuBootCount, McuGitTagNames } from "./store/mcu_firmware.js";
+import { McuBootCount, McuGitTagNames, McuFirmwareBuildDate, McuChipId, McuFirmwareVersion } from "./store/mcu_firmware.js";
 import {McuDocs} from './store/mcu_docs.js';
 
 
@@ -77,13 +77,13 @@ export function http_handleResponses(obj) {
     if ("mcu" in obj) {
       let mcu = obj.mcu;
       if ("chip" in mcu) {
-        document.getElementById("id_chip").innerHTML = mcu.chip;
+        McuChipId.set(mcu.chip);
       }
       if ("firmware" in mcu) {
-        document.getElementById("id_firmware").innerHTML = mcu.firmware;
+        McuFirmwareVersion.set(mcu.firmware);
       }
       if ("build-time" in mcu) {
-        document.getElementById("id_buildTime").innerHTML = mcu["build-time"];
+        McuFirmwareBuildDate.set(mcu["build-time"]);
       }
       if ("boot-count" in mcu) {
         McuBootCount.set(mcu["boot-count"]);

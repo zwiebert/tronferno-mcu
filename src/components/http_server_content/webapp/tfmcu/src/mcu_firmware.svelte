@@ -1,25 +1,3 @@
-<script>
-  "use strict";
-  import { McuBootCount } from "./store/mcu_firmware.js";
-  import { ReloadProgress } from './store/app_state.js';
-  
-  export let fwbtns = [];
-  export let McuFwGitTags;
-  import { onMount,onDestroy } from 'svelte';
-  
-  let on_destroy = [];
-onMount(() => {
-     httpFetch.http_fetchByMask(httpFetch.FETCH_VERSION | httpFetch.FETCH_GIT_TAGS);
-  });
-onDestroy(() => {
-    for (const fn of on_destroy) {
-      fn();
-    }
-});
-
-
-</script>
-
 <script context="module">
   import * as misc from "./misc.js";
   import * as appDebug from "./app_debug.js";
@@ -28,7 +6,6 @@ onDestroy(() => {
   let netota_intervalID = 0;
   let netota_progressCounter = 0;
   let netota_isInProgress = false;
-  
 
   function netota_FetchFeedback() {
     let netmcu = { to: "tfmcu" };
@@ -89,6 +66,34 @@ onDestroy(() => {
   }
 </script>
 
+<script>
+  "use strict";
+  import {
+    McuBootCount,
+    McuGitTagNames,
+    McuFirmwareBuildDate,
+    McuChipId,
+    McuFirmwareVersion,
+  } from "./store/mcu_firmware.js";
+  import { ReloadProgress } from "./store/app_state.js";
+
+  export let fwbtns = [];
+  export let McuFwGitTags;
+  import { onMount, onDestroy } from "svelte";
+
+  let on_destroy = [];
+  onMount(() => {
+    httpFetch.http_fetchByMask(
+      httpFetch.FETCH_VERSION | httpFetch.FETCH_GIT_TAGS
+    );
+  });
+  onDestroy(() => {
+    for (const fn of on_destroy) {
+      fn();
+    }
+  });
+</script>
+
 <div id="id-fwDiv">
   <h4>OTA Firmware Update</h4>
   <div id="netota_controls">
@@ -117,36 +122,23 @@ onDestroy(() => {
 
     {#if McuFwGitTags}
       <!-- svelte-ignore reactive-component -->
-       <svelte:component this={McuFwGitTags}/>
+      <svelte:component this={McuFwGitTags} />
     {/if}
   </div>
- 
+
   <div id="netota_progress_div" />
-    {#if $ReloadProgress > 0}
-    <strong>Wait for MCU to restart...</strong><br>
-    <progress id="reload_progress_bar" value="{$ReloadProgress}" max="100"></progress>
+  {#if $ReloadProgress > 0}
+    <strong>Wait for MCU to restart...</strong>
+    <br />
+    <progress id="reload_progress_bar" value={$ReloadProgress} max="100" />
   {/if}
   <div id="netota_restart_div" />
 
   <h4>Firmware Info</h4>
   <ul>
-    <li>
-      MCU type:
-      <span id="id_chip" />
-    </li>
-    <li>
-      Version:
-      <span id="id_firmware" />
-    </li>
-    <li>
-      Build Date:
-      <span id="id_buildTime" />
-    </li>
-    <li>
-      <label>
-        Boot Count:
-        <span id="id-bootCount">{$McuBootCount}</span>
-      </label>
-    </li>
+    <li>MCU type: {$McuChipId}</li>
+    <li>Version: {$McuFirmwareVersion}</li>
+    <li>Build Date: {$McuFirmwareBuildDate}</li>
+    <li>Boot Count: {$McuBootCount}</li>
   </ul>
 </div>
