@@ -2,7 +2,7 @@
   "use strict";
   import * as httpFetch from "./fetch.js";
   import { G, M0, GM } from "./store/curr_shutter.js";
-  import { Gmu } from "./store/mcu_config.js";
+  import { Gmu, GmuMaxM } from "./store/mcu_config.js";
   import { Aliases } from "./store/shutters.js";
 
   import { onMount, onDestroy } from "svelte";
@@ -257,7 +257,9 @@
       <tr>
         <th />
         {#each [1, 2, 3, 4, 5, 6, 7] as m}
-          <th>m{m}</th>
+          {#if m <= $GmuMaxM}
+            <th>m{m}</th>
+          {/if}
         {/each}
       </tr>
       {#each [1, 2, 3, 4, 5, 6, 7] as g}
@@ -265,9 +267,11 @@
           <tr>
             <th>g{g}</th>
             {#each [1, 2, 3, 4, 5, 6, 7] as m}
-              <td>
-                <input id="cbAlias_{g}{m}" type="checkbox" />
-              </td>
+              {#if m <= $Gmu[g]}
+                <td>
+                  <input id="cbAlias_{g}{m}" type="checkbox" />
+                </td>
+              {/if}
             {/each}
           </tr>
         {/if}
