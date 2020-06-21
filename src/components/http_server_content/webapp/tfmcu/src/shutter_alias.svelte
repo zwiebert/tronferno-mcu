@@ -2,6 +2,7 @@
   "use strict";
   import * as httpFetch from "./fetch.js";
   import { G, M0, GM } from "./store/curr_shutter.js";
+  import { Gmu } from "./store/mcu_config.js";
   import { Aliases } from "./store/shutters.js";
 
   import { onMount, onDestroy } from "svelte";
@@ -141,9 +142,12 @@
 
       for (let m = 1; m <= 7; ++m) {
         const isAliased = (gn & (1 << m)) !== 0;
-        document.getElementById(
+        let cb = document.getElementById(
           "cbAlias_" + g.toString() + m.toString()
-        ).checked = isAliased;
+        );
+        if (cb) {
+          cb.checked = isAliased;
+        }
       }
     }
   }
@@ -155,9 +159,10 @@
     for (let g = 1; g <= 7; ++g) {
       let gn = 0;
       for (let m = 1; m <= 7; ++m) {
-        const isAliased = document.getElementById(
+        let cb = document.getElementById(
           "cbAlias_" + g.toString() + m.toString()
-        ).checked;
+        );
+        const isAliased = cb && cb.checked;
         if (isAliased) {
           gn |= 1 << m;
         }
@@ -210,7 +215,8 @@
     To register position changes made by commands sent from plain controllers
     and sun-sensors, these controllers have to be registered here. Select G/E
     above and pair the controller here by start pairing and pressing STOP on the
-    controller. <br>
+    controller.
+    <br />
   </p>
   <span id="aliasPairUnpair">
     <button id="alias_pair" type="button" on:click={hClick_Pair}>
@@ -233,8 +239,7 @@
           size="5"
           on:click={onAliasesChanged}
           on:change={onAliasesChanged}
-          on:blur={onAliasesChanged}
-           />
+          on:blur={onAliasesChanged} />
       </td>
       <td>
         <select
@@ -242,8 +247,7 @@
           size="5"
           on:click={onPairedChanged}
           on:change={onPairedChanged}
-          on:blur={onPairedChanged}
-           />
+          on:blur={onPairedChanged} />
       </td>
     </tr>
   </table>
@@ -257,14 +261,16 @@
         {/each}
       </tr>
       {#each [1, 2, 3, 4, 5, 6, 7] as g}
-        <tr>
-          <th>g{g}</th>
-          {#each [1, 2, 3, 4, 5, 6, 7] as m}
-            <td>
-              <input id="cbAlias_{g}{m}" type="checkbox" />
-            </td>
-          {/each}
-        </tr>
+        {#if $Gmu[g] > 0}
+          <tr>
+            <th>g{g}</th>
+            {#each [1, 2, 3, 4, 5, 6, 7] as m}
+              <td>
+                <input id="cbAlias_{g}{m}" type="checkbox" />
+              </td>
+            {/each}
+          </tr>
+        {/if}
       {/each}
     </table>
   </div>
