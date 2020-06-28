@@ -4,6 +4,7 @@
   import { G, M0, GM } from "./store/curr_shutter.js";
   import { Gmu, GmuMaxM } from "./store/mcu_config.js";
   import { Aliases } from "./store/shutters.js";
+  import { Verbose } from "./store/app_state.js";
 
   import { onMount, onDestroy } from "svelte";
 
@@ -211,13 +212,13 @@
 </style>
 
 <div id="aliasdiv">
-  <p class="help_text">
-    To register position changes made by commands sent from plain controllers
-    and sun-sensors, these controllers have to be registered here. Select G/E
-    above and pair the controller here by start pairing and pressing STOP on the
-    controller.
-    <br />
-  </p>
+    <p class="help-text-v{$Verbose}">
+      To register position changes made by commands sent from plain controllers
+      and sun-sensors, these controllers have to be registered here. Select G/E
+      above and pair the controller here by start pairing and pressing STOP on
+      the controller.
+      <br />
+    </p>
   <span id="aliasPairUnpair">
     <button id="alias_pair" type="button" on:click={hClick_Pair}>
       Start Pairing

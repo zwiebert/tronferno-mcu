@@ -5,6 +5,7 @@
   import ShutterAuto from "./shutter_auto.svelte";
   import ShutterAlias from "./shutter_alias.svelte";
   import ShutterPrefs from "./shutter_prefs.svelte";
+  import PrefApp from "./pref_app.svelte";
   import ShutterSun from "./shutter_sun.svelte";
   import ShutterPct from "./shutter_pct.svelte";
   import ShutterName from "./shutter_name.svelte";
@@ -26,7 +27,7 @@
   $: visibleMovementDurations = false;
 
   let navTabs = ["Move", "Pct", "Auto", "Settings", "Firmware"];
-  let navTabsSettings = ["MCU", "Aliases", "Durations", "Name"];
+  let navTabsSettings = ["MCU", "Aliases", "Durations", "Name", "App"];
 
   let fwbtns = [
     { name: "latest master firmware", ota_name: "github-master" },
@@ -115,6 +116,10 @@
       </div>
       <div class="area">
         <ShutterName />
+      </div>
+    {:else if tabIdxSettings === 4}
+      <div class="area">
+        <PrefApp />
       </div>
     {/if}
   {:else if tabIdxMain === 4}

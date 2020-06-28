@@ -23,8 +23,11 @@ background-color: $color_bg;
 color: $color_fg;
 }
 
-.help_text {
-  display: none;
+.help-text-v0 {
+  display:none;
+}
+
+.help-text-v1 {
   font-size: 90%;
 }
 

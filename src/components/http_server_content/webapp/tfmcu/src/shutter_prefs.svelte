@@ -2,7 +2,9 @@
 'use strict';
 import * as httpFetch from './fetch.js';
 import {G,M, GM,PrefMvut,PrefMvdt,PrefMvspdt} from './store/curr_shutter.js';
+import { Verbose } from "./store/app_state.js";
 import { onMount, onDestroy } from 'svelte';
+
 
 export const UP = 0;
 export const DOWN = 1;
@@ -128,7 +130,7 @@ function shp_stopClock_stop() {
 </style>
 
 <div id="shprefdiv">
-  <p class="help_text">To measure the duration of up/down movements, press Start/Stop to start both movement and clock.
+  <p class="help-text-v{$Verbose}">To measure the duration of up/down movements, press Start/Stop to start both movement and clock.
    After the movement stops by itself, press again to stop the clock. <br></p>
   
   <table class="dur_table top_table p-2">
