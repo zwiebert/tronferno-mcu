@@ -94,9 +94,9 @@ static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
 }
 
 //////////////////// static files ///////////////////////////////////////
-extern const u8 text_tfmcu_html[] asm("_binary_tfmcu_html_start");
-extern const char text_tfmcu_js[] asm("_binary_tfmcu_js_start");
-extern const char text_tfmcu_js_map[] asm("_binary_tfmcu_js_map_start");;
+extern const u8 text_wapp_html[] asm("_binary_wapp_html_start");
+extern const char text_wapp_js[] asm("_binary_wapp_js_start");
+extern const char text_wapp_js_map[] asm("_binary_wapp_js_map_start");;
 
 ////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
@@ -126,8 +126,8 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 
 const struct {
   const char *uri, *type, *file;
-} uri_file_map[] = { { .uri = "/f/js/tfmcu.js", .type = "text/javascript", .file = text_tfmcu_js }, //
-    //   { .uri = "/tfmcu.js.map", .type = "text/javascript",  .file = text_tfmcu_js_map }, //
+} uri_file_map[] = { { .uri = "/f/js/wapp.js", .type = "text/javascript", .file = text_wapp_js }, //
+    //   { .uri = "/wapp.js.map", .type = "text/javascript",  .file = text_wapp_js_map }, //
     //   { .uri = "", .file = "" }, //
 
     { .uri = "/f/cli/help/send", .file = cli_help_parmSend }, //
@@ -215,7 +215,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
 static const httpd_uri_t httpd_uris[] = {
     { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json, .user_ctx = NULL, },
     { .uri = "/f/*", .method = HTTP_GET, .handler = handle_uri_get_file},
-    { .uri = "/", .method = HTTP_GET, .handler = handle_uri_tfmcu_html, .user_ctx = (void*) text_tfmcu_html, },
+    { .uri = "/", .method = HTTP_GET, .handler = handle_uri_tfmcu_html, .user_ctx = (void*) text_wapp_html, },
     { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true},
 };
 

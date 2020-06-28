@@ -1,10 +1,10 @@
 THIS_ROOT := $(realpath .)
-JSHINT := $(THIS_ROOT)/tfmcu/node_modules/jshint/bin/jshint
-JS_SRC_DIR := $(THIS_ROOT)/tfmcu/src
-JS_BLD_DIR := $(THIS_ROOT)/tfmcu/build
+JSHINT := $(THIS_ROOT)/njs/node_modules/jshint/bin/jshint
+JS_SRC_DIR := $(THIS_ROOT)/njs/src
+JS_BLD_DIR := $(THIS_ROOT)/njs/build
 
 
-SRC_DIRS := $(addprefix $(THIS_ROOT)/tfmcu/,. src src/store src/net src/styles)
+SRC_DIRS := $(addprefix $(THIS_ROOT)/njs/,. src src/store src/net src/styles)
 
 SRC_JS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.js))
 SRC_ALL += $(SRC_JS)
@@ -18,7 +18,7 @@ SRC_ALL += $(SRC_SCSS)
 HTMLMIN ?= ~/.local/bin/htmlmin
 INCFILES ?= perl ./include_files.pl
 
-SED_OPTS_HTML =  -e 's/tfmcu_dev.js/\/tfmcu.js/'
+SED_OPTS_HTML =  -e 's/wapp_dev.js/\/wapp.js/'
 SED_OPTS = -E -e '/dev-delete-line/d' -e '/dev-delete-begin/,/dev-delete-end/d'
 
 buildTarget = buildTarget=DEV
@@ -33,31 +33,31 @@ ifndef FLAVOR_LAN
 SED_OPTS += -e '/dev-no-lan-delete-line/d'
 endif
 
-bundle_out = build/tfmcu.js build/tfmcu.js.map build/tfmcu.css build/tfmcu.css.map build/tfmcu.html
-bundle_files = $(JS_BLD_DIR)/tfmcu.js $(JS_BLD_DIR)/tfmcu.js.map $(JS_BLD_DIR)/tfmcu.css $(JS_BLD_DIR)/tfmcu.css.map 
+bundle_out = build/wapp.js build/wapp.js.map build/wapp.css build/wapp.css.map build/wapp.html
+bundle_files = $(JS_BLD_DIR)/wapp.js $(JS_BLD_DIR)/wapp.js.map $(JS_BLD_DIR)/wapp.css $(JS_BLD_DIR)/wapp.css.map 
 
 .PHONY: bundle
-all: build/tfmcu.html build/tfmcu.js
+all: build/wapp.html build/wapp.js
 
 
 
-$(addprefix tfmcu/build_dev/tfmcu,.js .css .js.map .css.map): $(SRC_ALL) tfmcu/node_modules
-	cd tfmcu && env buildTarget=DEV npm run build
-$(addprefix tfmcu/build/tfmcu,.js .css .js.map .css.map): $(SRC_ALL) tfmcu/node_modules
-	cd tfmcu && env buildTarget=PROD npm run build
+$(addprefix njs/build_dev/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
+	cd njs && env buildTarget=DEV npm run build
+$(addprefix njs/build/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
+	cd njs && env buildTarget=PROD npm run build
 
-build/tfmcu.%: tfmcu/build/tfmcu.%
+build/wapp.%: njs/build/wapp.%
 	cp -p $< $@  
 
-build/tfmcu.html: build build/tfmcu.css ./tfmcu_dev.html
+build/wapp.html: build build/wapp.css ./wapp_dev.html
 $(bundle_out): build
 
-tfmcu/node_modules:
-	test-d tfmcu/node_modules || cd tfmcu && npm install
+njs/node_modules:
+	test-d njs/node_modules || cd njs && npm install
 
 .PHONY: clean
 clean:
-	-rm build/* tfmcu/build/*
+	-rm build/* njs/build/*
 
 # convert HTML or Javascript to C source const char array
 build/%_html.c : %.html

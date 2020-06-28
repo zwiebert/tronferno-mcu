@@ -17,7 +17,7 @@ export default {
   },
   input: 'src/main.js',
   output: [...!isProduction ? [ {
-    file: 'build_dev/tfmcu.js',
+    file: 'build_dev/wapp.js',
     sourcemap: true,
     format: 'iife',
     name: 'tfmcu',
@@ -25,7 +25,7 @@ export default {
     plugins: [
     ]
   }] : [ {
-    file: 'build/tfmcu.js',
+    file: 'build/wapp.js',
     format: 'iife',
     name: 'tfmcu',
     sourcemap: true,
@@ -49,7 +49,7 @@ export default {
     svelte({
       dev: !isProduction,
       //emitCss: true,
-      css: css => { css.write(isProduction ? 'build/tfmcu.css' : 'build_dev/tfmcu.css'); },
+      css: css => { css.write(isProduction ? 'build/wapp.css' : 'build_dev/wapp.css'); },
       onwarn: (warning, handler) => {
         // e.g. don't warn on <marquee> elements, cos they're cool
         if (warning.code === 'a11y-no-onchange') return;

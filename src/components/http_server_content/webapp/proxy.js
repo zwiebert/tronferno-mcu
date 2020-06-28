@@ -45,37 +45,37 @@ server.on('upgrade', function (req, socket, head) {
 
 // static files of MCU HTTP server
 app.get("/index.html", (req, res) => {
-    res.sendFile(cont_dir + '/tfmcu_dev.html');
+    res.sendFile(cont_dir + '/wapp_dev.html');
 });
-app.get("/tfmcu_dev.html", (req, res) => {
-    res.sendFile(cont_dir + '/tfmcu_dev.html');
+app.get("/wapp_dev.html", (req, res) => {
+    res.sendFile(cont_dir + '/wapp_dev.html');
 });
-app.get("/tfmcu.html", (req, res) => {
-    res.sendFile(cont_dir + '/build/tfmcu.html');
+app.get("/wapp.html", (req, res) => {
+    res.sendFile(cont_dir + '/build/wapp.html');
 });
-app.get("/f/js/tfmcu.js", (req, res) => {
-    //res.sendFile(cont_dir + '/tfmcu_dev.js');
-    res.sendFile(cont_dir + '/tfmcu/build_dev/tfmcu.js');
+app.get("/f/js/wapp.js", (req, res) => {
+    //res.sendFile(cont_dir + '/wapp_dev.js');
+    res.sendFile(cont_dir + '/njs/build_dev/wapp.js');
 });
-app.get("/f/js/tfmcu.js.map", (req, res) => {
-    //res.sendFile(cont_dir + '/tfmcu_dev.js');
-    res.sendFile(cont_dir + '/tfmcu/build_dev/tfmcu.js.map');
+app.get("/f/js/wapp.js.map", (req, res) => {
+    //res.sendFile(cont_dir + '/wapp_dev.js');
+    res.sendFile(cont_dir + '/njs/build_dev/wapp.js.map');
 });
 app.get("/f/css/global.css", (req, res) => {
-    //res.sendFile(cont_dir + '/tfmcu_dev.js');
-    res.sendFile(cont_dir + '/tfmcu/src/app.css');
+    //res.sendFile(cont_dir + '/wapp_dev.js');
+    res.sendFile(cont_dir + '/njs/src/app.css');
 });
-app.get("/f/css/tfmcu.css", (req, res) => {
-    //res.sendFile(cont_dir + '/tfmcu_dev.js');
-    res.sendFile(cont_dir + '/tfmcu/build_dev/tfmcu.css');
+app.get("/f/css/wapp.css", (req, res) => {
+    //res.sendFile(cont_dir + '/wapp_dev.js');
+    res.sendFile(cont_dir + '/njs/build_dev/wapp.css');
 });
-app.get("/f/css/tfmcu.css.map", (req, res) => {
-    //res.sendFile(cont_dir + '/tfmcu_dev.js');
-    res.sendFile(cont_dir + '/tfmcu/build_dev/tfmcu.css.map');
+app.get("/f/css/wapp.css.map", (req, res) => {
+    //res.sendFile(cont_dir + '/wapp_dev.js');
+    res.sendFile(cont_dir + '/njs/build_dev/wapp.css.map');
 });
 app.get("/src/", (req, res) => {
-    //res.sendFile(cont_dir + '/tfmcu_dev.js');
-    res.sendFile(cont_dir + '/tfmcu/src/');
+    //res.sendFile(cont_dir + '/wapp_dev.js');
+    res.sendFile(cont_dir + '/njs/src/');
 });
 
 // ESP32 firware image for OTA update
