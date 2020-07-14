@@ -1,5 +1,3 @@
-#define CONFIG_HTTPD_WS_SUPPORT 1
-
 #include <esp_wifi.h>
 #include <esp_event.h>
 #include <esp_log.h>
@@ -129,7 +127,6 @@ const struct {
 } uri_file_map[] = { { .uri = "/f/js/wapp.js", .type = "text/javascript", .file = text_wapp_js }, //
     //   { .uri = "/wapp.js.map", .type = "text/javascript",  .file = text_wapp_js_map }, //
     //   { .uri = "", .file = "" }, //
-
     { .uri = "/f/cli/help/send", .file = cli_help_parmSend }, //
     { .uri = "/f/cli/help/auto", .file = cli_help_parmTimer }, //
     { .uri = "/f/cli/help/config", .file = cli_help_parmConfig }, //

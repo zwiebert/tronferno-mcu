@@ -39,8 +39,6 @@ bundle_files = $(JS_BLD_DIR)/wapp.js $(JS_BLD_DIR)/wapp.js.map $(JS_BLD_DIR)/wap
 .PHONY: bundle
 all: build/wapp.html build/wapp.js
 
-
-
 $(addprefix njs/build_dev/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
 	cd njs && env buildTarget=DEV npm run build
 $(addprefix njs/build/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
@@ -63,7 +61,7 @@ clean:
 build/%_html.c : %.html
 	cat $< null.txt | xxd -i | sed 's/unsigned/const/' > $@
 
-#adapt development HTML file for usage in MCU webserver
+# adapt development HTML file for usage in MCU webserver
 build/%.html : %_dev.html
 	cat $< | ${INCFILES} | sed  ${SED_OPTS} ${SED_OPTS_HTML} | ${HTMLMIN} >$@
 

@@ -20,14 +20,14 @@ export default {
     file: 'build_dev/wapp.js',
     sourcemap: true,
     format: 'iife',
-    name: 'tfmcu',
+    name: 'wapp',
     // sourcemapPathTransform: relativePath => {      return relativePath.substr(2);},
     plugins: [
     ]
   }] : [ {
     file: 'build/wapp.js',
     format: 'iife',
-    name: 'tfmcu',
+    name: 'wapp',
     sourcemap: true,
     sourcemapPathTransform: relativePath => {
       // will transform e.g. "src/main.js" -> "main.js"
