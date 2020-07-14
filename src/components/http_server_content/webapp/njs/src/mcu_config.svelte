@@ -75,6 +75,9 @@
         case "checkbox":
           new_val = el.checked ? 1 : 0;
           break;
+        case "number":
+          new_val = el.valueAsNumber;
+          break;
         default:
           new_val = el.value;
       }
