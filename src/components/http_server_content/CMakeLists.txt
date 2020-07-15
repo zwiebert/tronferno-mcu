@@ -11,5 +11,6 @@ idf_component_register(
     INCLUDE_DIRS . "./include"
     REQUIRES ""
     PRIV_REQUIRES net net_http_server config cli_app userio userio_app misc
-    EMBED_TXTFILES "./webapp/build/wapp.html" "./webapp/build/wapp.js" #"./webapp/build/wapp.js.map"
+    EMBED_TXTFILES "./webapp/build/wapp.html"
+    EMBED_FILES  "./webapp/build/wapp.js.gz"  "./webapp/build/wapp.css.gz" #"./webapp/build/wapp.js.map.gz" 
    )

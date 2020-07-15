@@ -37,7 +37,8 @@ bundle_out = build/wapp.js build/wapp.js.map build/wapp.css build/wapp.css.map b
 bundle_files = $(JS_BLD_DIR)/wapp.js $(JS_BLD_DIR)/wapp.js.map $(JS_BLD_DIR)/wapp.css $(JS_BLD_DIR)/wapp.css.map 
 
 .PHONY: bundle
-all: build/wapp.html build/wapp.js
+all: build/wapp.html build/wapp.js build/wapp.js.gz build/wapp.js.map build/wapp.js.map.gz build/wapp.js.map.br build/wapp.css build/wapp.css.gz
+
 
 $(addprefix njs/build_dev/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
 	cd njs && env buildTarget=DEV npm run build
@@ -46,6 +47,11 @@ $(addprefix njs/build/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modul
 
 build/wapp.%: njs/build/wapp.%
 	cp -p $< $@  
+
+%.gz:%
+	gzip --keep --force --best $< 
+%.br:%
+	brotli --keep --force --best $<
 
 build/wapp.html: build build/wapp.css ./wapp_dev.html
 $(bundle_out): build
