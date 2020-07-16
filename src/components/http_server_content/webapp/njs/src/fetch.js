@@ -1,7 +1,7 @@
-'use strict';
-import * as appDebug from './app_debug.js';
-import * as httpResp from './http_resp.js';
-import { G, M0 } from './store/curr_shutter.js';
+"use strict";
+import * as appDebug from "./app_debug.js";
+import * as httpResp from "./http_resp.js";
+import { G, M0 } from "./store/curr_shutter.js";
 
 export const FETCH_CONFIG = 1;
 export const FETCH_AUTO = 2;
@@ -15,18 +15,20 @@ export const FETCH_GMU = 256;
 export const FETCH_GIT_TAGS = 512;
 export const FETCH_SHUTTER_NAME = 1024;
 export const FETCH_ALL_POS = 2048;
-
+export const FETCH_BOOT_COUNT = 2048;
 
 const MAX_RETRY_COUNT = 3;
 
-
 let g;
-G.subscribe((value)=>g=value);
+G.subscribe((value) => (g = value));
 let m;
-M0.subscribe((value)=>m=value);
+M0.subscribe((value) => (m = value));
 
-
-export function http_postRequest(url = '', data = {}, state = { retry_count:0 }) {
+export function http_postRequest(
+  url = "",
+  data = {},
+  state = { retry_count: 0 }
+) {
   appDebug.dbLog("post-json: " + JSON.stringify(data));
 
   const fetch_data = {
@@ -39,11 +41,8 @@ export function http_postRequest(url = '', data = {}, state = { retry_count:0 })
     body: JSON.stringify(data),
   };
 
-
-
   return fetch(url, fetch_data)
-
-    .then(response => {
+    .then((response) => {
       if (!response.ok) {
         console.log("error");
         if (state.retry_count++ < MAX_RETRY_COUNT) {
@@ -59,11 +58,10 @@ export function http_postRequest(url = '', data = {}, state = { retry_count:0 })
     .catch((error) => {
       console.log("error: http_postRequest(): ", error);
     });
-
 }
 
 export function http_postDocRequest(name) {
-  let url = '/doc';
+  let url = "/doc";
   // Default options are marked with *
   return fetch(url, {
     method: "POST",
@@ -73,17 +71,18 @@ export function http_postDocRequest(name) {
     },
     referrer: "no-referrer",
     body: name,
-  })
-    .then(response => {
-      if (response.ok) {
-        response.text().then(text => {
-          httpResp.http_handleDocResponses(name, text);
-        });
-      }
-    });
+  }).then((response) => {
+    if (response.ok) {
+      response.text().then((text) => {
+        httpResp.http_handleDocResponses(name, text);
+      });
+    }
+  });
 }
 
-export function http_postShutterCommand(c = document.getElementById('send-c').value) {
+export function http_postShutterCommand(
+  c = document.getElementById("send-c").value
+) {
   let tfmcu = { to: "tfmcu" };
 
   let send = {
@@ -93,7 +92,7 @@ export function http_postShutterCommand(c = document.getElementById('send-c').va
   };
   tfmcu.send = send;
   appDebug.dbLog(JSON.stringify(tfmcu));
-  let url = '/cmd.json';
+  let url = "/cmd.json";
   appDebug.dbLog("url: " + url);
   http_postRequest(url, tfmcu);
 }
@@ -101,15 +100,15 @@ export function http_postShutterCommand(c = document.getElementById('send-c').va
 export function http_fetchByMask(mask) {
   let tfmcu = { to: "tfmcu" };
 
-  if (mask & FETCH_CONFIG)
-    tfmcu.config = { all: "?" };
+  if (mask & FETCH_CONFIG) tfmcu.config = { all: "?" };
 
-  if (mask & FETCH_GMU)
-    tfmcu.config = { 'gm-used': "?" };
+  if (mask & FETCH_GMU) tfmcu.config = { "gm-used": "?" };
 
-  if (mask & FETCH_VERSION)
-    tfmcu.mcu = { version: "?", 'boot-count': '?' };
+  if (mask & FETCH_BOOT_COUNT) add_kv(tfmcu, "mcu", "boot-count", "?");
 
+  if (mask & FETCH_VERSION) {
+    add_kv(tfmcu, "mcu", "version", "?");
+  }
 
   if (mask & FETCH_AUTO)
     tfmcu.auto = {
@@ -125,75 +124,68 @@ export function http_fetchByMask(mask) {
       p: "?",
     };
 
-    if (mask & FETCH_ALL_POS)
+  if (mask & FETCH_ALL_POS)
     tfmcu.cmd = {
       g: g,
       m: m,
       p: "?",
     };
 
-  if (mask & FETCH_ALIASES)
-    tfmcu.pair = {
-      c: "read_all"
-    };
+  if (mask & FETCH_ALIASES) add_kv(tfmcu, "pair", "c", "read_all");
 
-  if (mask & FETCH_ALIASES_START_PAIRING)
-    tfmcu.pair = {
-      a: "?",
-      g: g,
-      m: m,
-      c: "pair"
-    };
-  if (mask & FETCH_ALIASES_START_UNPAIRING)
-    tfmcu.pair = {
-      a: "?",
-      g: g,
-      m: m,
-      c: "unpair"
-    };
+  if (mask & (FETCH_ALIASES_START_UNPAIRING | FETCH_ALIASES_START_PAIRING)) {
+    add_kv(tfmcu, "pair", "g", g);
+    add_kv(tfmcu, "pair", "m", m);
+    add_kv(tfmcu, "pair", "a", "?");
+    add_kv(
+      tfmcu,
+      "pair",
+      "c",
+      mask & FETCH_ALIASES_START_PAIRING ? "pair" : "unpair"
+    );
+  }
 
   if (mask & FETCH_SHUTTER_PREFS) {
-    if (!('shpref' in tfmcu))
-      tfmcu.shpref = {};
-    Object.assign(tfmcu.shpref, {
-      g: g,
-      m: m,
-      mvut: '?', mvdt: '?', mvspdt: '?', 'tag.NAME': '?',
-    });
+    add_kv(tfmcu, "shpref", "g", g);
+    add_kv(tfmcu, "shpref", "m", m);
+    add_kv(tfmcu, "shpref", "mvut", "?");
+    add_kv(tfmcu, "shpref", "mvdt", "?");
+    add_kv(tfmcu, "shpref", "mvspdt", "?");
+    add_kv(tfmcu, "shpref", "tag.NAME", "?");
   }
 
   if (mask & FETCH_SHUTTER_NAME) {
-    if (!('shpref' in tfmcu))
-      tfmcu.shpref = {};
-    Object.assign(tfmcu.shpref, {
-      g: g,
-      m: m,
-      'tag.NAME': '?',
-    });
+    add_kv(tfmcu, "shpref", "g", g);
+    add_kv(tfmcu, "shpref", "m", m);
+    add_kv(tfmcu, "shpref", "tag.NAME", "?");
   }
 
-  let url = '/cmd.json';
+  let url = "/cmd.json";
   http_postRequest(url, tfmcu);
 
-  if (mask & FETCH_GIT_TAGS)
-    gitTags_fetch();
-
+  if (mask & FETCH_GIT_TAGS) gitTags_fetch();
 }
 
+function add_kv(root, cmd, key, val) {
+  if (!(cmd in root)) root[cmd] = {};
 
+  root[cmd][key] = val;
+}
 
 export function fetchWithTimeout(url, data, timeout) {
   return new Promise((resolve, reject) => {
     // Set timeout timer
     let timer = setTimeout(
-      () => reject(new Error('Request timed out')),
+      () => reject(new Error("Request timed out")),
       timeout
     );
 
-    fetch(url, data).then(
-      response => resolve(response),
-      err => reject(err)
-    ).finally(() => clearTimeout(timer));
+    fetch(url, data)
+      .then(
+        (response) => resolve(response),
+        (err) => reject(err)
+      )
+      .finally(() => clearTimeout(timer));
   });
 }
 
