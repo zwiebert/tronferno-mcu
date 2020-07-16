@@ -3,6 +3,7 @@
 	"version": "0.11.0",
 	"scripts": {
 		"build": "rollup -c",
+		"autobuild": "useTailwind=yes rollup -c -w",
 		"lint": "eslint . --ext .js,.svelte"
 	},
 	"devDependencies": {

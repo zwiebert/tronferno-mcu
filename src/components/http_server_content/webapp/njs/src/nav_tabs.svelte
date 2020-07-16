@@ -21,7 +21,7 @@
 <div id="tabBar" class="overflow-hidden">
   {#each nav_tabs as tab, i}
     <button
-      class="p-0 m-1 tabbt {($TabIdx[name] || 0) === i ? 'is-selected' : ''} text-lg font-medium border-none outline-none"
+      class="p-0 m-1  {($TabIdx[name] || 0) === i ? 'is-selected' : 'bg-transparent'} text-lg font-medium border-none outline-none tabbt"
       id="tabbt{i}"
       on:click={() => setTabIdx(i)}>
       {tab}

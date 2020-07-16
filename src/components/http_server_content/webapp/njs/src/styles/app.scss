@@ -3,12 +3,15 @@ $color_fg_select: rgb(186, 194, 78);
 $color_bg: #F8F8E0;
 $color_fg: black; // #278727;
 $color_bg_area: #e7e791;
+$color_border:  rgb(74, 195, 74);
+$color_bg_nav: #f6f6ba;
+$color_bg_nav1: #ececa4;
 
 .bg-area {
   background-color: $color_bg_area;
 }
 
-.is-selected {
+.tabbt.is-selected {
   background-color: $color_bg_select;
   color: $color_fg_select;
 }
@@ -17,6 +20,29 @@ $color_bg_area: #e7e791;
   background-color: $color_bg_select;
   color: $color_fg_select;
 }
+
+.navtab-main {
+  border-radius: .5rem;
+  padding:0;
+  background-color: $color_bg_nav;
+  border: thin dotted $color_border;
+}
+
+.navtab-sub {
+  border-radius: .5rem;
+  padding:0;
+  background-color: $color_bg_nav1;
+  border: thin dotted $color_border;
+}
+
+.area {
+  border-radius: .75rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: $color_bg_area;
+  border: thin solid $color_border;
+}
+
 html {
 font-size: 100%;
 background-color: $color_bg;
@@ -80,3 +106,12 @@ h3 {
   }
 }
 
+
+select,button,input {
+  background-color: $color_bg;
+  border: thin solid $color_border;
+}
+
+input {
+  background-color: white;
+}

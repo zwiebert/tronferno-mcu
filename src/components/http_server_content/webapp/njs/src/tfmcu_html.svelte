@@ -57,8 +57,9 @@
 <Layout />
 
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
+  <div class="navtab-main">
   <NavTabs nav_tabs={navTabs} name="main" />
-
+  </div>
   {#if tabIdxMain === 0}
     <div class="mt-4 p-2">
       <ShutterGM
@@ -89,7 +90,9 @@
       <ShutterAuto />
     </div>
   {:else if tabIdxMain === 3}
+  <div class="navtab-sub">
     <NavTabs nav_tabs={navTabsSettings} name="settings" />
+  </div>
     {#if tabIdxSettings === 0}
       <div class="area">
         <McuConfig />

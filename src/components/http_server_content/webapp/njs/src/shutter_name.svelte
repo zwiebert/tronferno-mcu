@@ -4,7 +4,6 @@
   import * as httpFetch from "./fetch.js";
   import { onMount, onDestroy } from "svelte";
 
-
   let on_destroy = [];
   onMount(() => {});
   onDestroy(() => {
@@ -31,8 +30,8 @@
 
 </style>
 
-<input
-  type="text"
-  name="name"
-  bind:value={name}
-  on:change={hChange_Name} />
+<div class="text-center">
+  <label>Enter new name:</label>
+  <br />
+  <input type="text" name="name" bind:value={name} on:change={hChange_Name} />
+</div>
