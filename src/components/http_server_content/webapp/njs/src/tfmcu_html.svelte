@@ -11,7 +11,8 @@
   import ShutterName from "./shutter_name.svelte";
   import ShutterPosTable from "./shutter_pos_table.svelte";
   import McuConfig from "./mcu_config.svelte";
-  import McuFirmware from "./mcu_firmware.svelte";
+  import McuFirmwareUpd from "./mcu_firmware_upd.svelte";
+  import McuFirmwareInfo from "./mcu_firmware_info.svelte";
   import Testing from "./testing.svelte";
   import * as httpFetch from "./fetch.js";
   import McuFwGitTags from "./mcu_firmware_git_tags.svelte";
@@ -127,7 +128,11 @@
     {/if}
   {:else if tabIdxMain === 4}
     <div class="area">
-      <McuFirmware {fwbtns} {McuFwGitTags} />
+     
+        <h4>NetMCU ESP32</h4>
+        <McuFirmwareUpd {fwbtns}  {McuFwGitTags} chip="" updSecs="15" />
+        <McuFirmwareInfo />
+     
     </div>
   {:else if tabIdxMain === 5}
     <Testing />
