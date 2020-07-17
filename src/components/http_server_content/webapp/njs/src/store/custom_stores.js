@@ -103,8 +103,8 @@ export function PersistentStringStore(name) {
 
 function read_storage_val(name, def_value) {
 	try {
-		let obj = JSON.parse(localStorage.getItem(name) || JSON.stringify(def_value));
-		return obj.value;
+		let obj = JSON.parse(localStorage.getItem(name));
+		return obj.value || def_value;
 	} catch (e) {
 		return def_value;
 	}
