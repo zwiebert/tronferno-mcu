@@ -1,9 +1,8 @@
 <script>
   "use strict";
-  import { G, M, M0, GM, Pct, Name } from "./store/curr_shutter.js";
+  import { G, M0, Name } from "./store/curr_shutter.js";
   import * as httpFetch from "./fetch.js";
   import { onMount, onDestroy } from "svelte";
-  import DisplayIcons from "./display_icons.svelte";
 
   let on_destroy = [];
   onMount(() => {});
@@ -17,17 +16,6 @@
   $: vm = $G ? ($M0 ? $M0 : "A") : "";
   $: vg = $G ? $G : "A";
 
-  function shn_fromHtml_toMcu(val) {
-    let tfmcu = { to: "tfmcu", shpref: { g: $G, m: $M0, "tag.NAME": val } };
-
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
-  }
-
-  function hClick_P() {
-    onPos(document.getElementById("spi").value);
-  }
-
   function hClick_Stop() {
     httpFetch.http_postShutterCommand("stop");
   }
@@ -40,29 +28,6 @@
     httpFetch.http_postShutterCommand("down");
   }
 
-  function hClick_Sun() {
-    httpFetch.http_postShutterCommand("sun-down");
-  }
-
-  function hChange_Name() {
-    shn_fromHtml_toMcu(name);
-  }
-
-  function hChange_Pos() {
-    onPos(document.getElementById("spr").value);
-  }
-
-  function onPos(pct) {
-    let tfmcu = { to: "tfmcu" };
-    tfmcu.send = {
-      g: $G,
-      m: $M,
-      p: pct,
-    };
-
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
-  }
 </script>
 
 <style type="text/scss">

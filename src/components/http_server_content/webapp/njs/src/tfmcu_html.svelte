@@ -48,11 +48,7 @@
 </script>
 
 <style type="text/scss">
-  @import "./styles/app.scss";
 
-  .area {
-    @apply mt-4 p-2 bg-area;
-  }
 </style>
 
 <Layout />

@@ -1,5 +1,5 @@
 'use strict';
-import { writable, derived } from 'svelte/store';
+import {  derived } from 'svelte/store';
 import { OptionStore, PersistentValStore} from './custom_stores.js';
 
 
