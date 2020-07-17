@@ -37,7 +37,7 @@ bundle_out = build/wapp.js build/wapp.js.map build/wapp.css build/wapp.css.map b
 bundle_files = $(JS_BLD_DIR)/wapp.js $(JS_BLD_DIR)/wapp.js.map $(JS_BLD_DIR)/wapp.css $(JS_BLD_DIR)/wapp.css.map 
 
 .PHONY: bundle
-all: build/wapp.html build/wapp.js build/wapp.js.gz build/wapp.js.map build/wapp.js.map.gz build/wapp.js.map.br build/wapp.css build/wapp.css.gz
+all: build/wapp.html.gz.c build/wapp.js.c build/wapp.js.gz.c build/wapp.js.map.br.c build/wapp.css.gz.c
 
 
 $(addprefix njs/build_dev/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
@@ -52,7 +52,9 @@ build/wapp.%: njs/build/wapp.%
 	gzip --keep --force --best $< 
 %.br:%
 	brotli --keep --force --best $<
-
+build/%.c:build/%
+	xxd -i  $< | sed 's/unsigned/const/' > $@
+	
 build/wapp.html: build build/wapp.css ./wapp_dev.html
 $(bundle_out): build
 

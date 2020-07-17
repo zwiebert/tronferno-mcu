@@ -66,7 +66,6 @@ void ws_send_json(const char *json) {
  */
 static void ws_async_send(void *arg)
 {
-  ESP_LOGI(TAG, "ws_async_send");
     static const char * data = "Async data";
     struct async_resp_arg *resp_arg = arg;
     httpd_handle_t hd = resp_arg->hd;
@@ -82,23 +81,14 @@ static void ws_async_send(void *arg)
     free(resp_arg);
 }
 
-static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
-{
-  ESP_LOGI(TAG, "trigger_async_send");
-    struct async_resp_arg *resp_arg = malloc(sizeof(struct async_resp_arg));
-    resp_arg->hd = req->handle;
-    resp_arg->fd = httpd_req_to_sockfd(req);
-    return httpd_queue_work(handle, ws_async_send, resp_arg);
-}
-
 //////////////////// static files ///////////////////////////////////////
-extern const u8 text_wapp_html[] asm("_binary_wapp_html_start");
-extern const char text_wapp_js_gz[] asm("_binary_wapp_js_gz_start");
-extern const char text_wapp_js_gz_end[] asm("_binary_wapp_js_gz_end");
-extern const char text_wapp_js_map_gz[] asm("_binary_wapp_js_map_gz_start");
-extern const char text_wapp_js_map_gz_end[] asm("_binary_wapp_js_map_gz_end");
-extern const char text_wapp_css_gz[] asm("_binary_wapp_css_gz_start");
-extern const char text_wapp_css_gz_end[] asm("_binary_wapp_css_gz_end");
+#include "../webapp/build/wapp.html.gz.c"
+#include "../webapp/build/wapp.js.gz.c"
+#include "../webapp/build/wapp.css.gz.c"
+#ifdef SERVE_JS_MAP
+#include "../webapp/build/wapp.js.map.br.c"
+#endif
+
 
 ////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
@@ -126,54 +116,69 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   return ESP_OK;
 }
 
-struct file_map { const char *uri, *type, *file, *file_gz, *file_gz_end; };
-const struct file_map uri_file_map[] = {
-    { .uri = "/f/js/wapp.js", .type = "text/javascript", .file_gz = text_wapp_js_gz, .file_gz_end = text_wapp_js_gz_end  }, //
- //   { .uri = "/f/js/wapp.js.map", .type = "text/javascript",  .file_gz = text_wapp_js_map_gz, .file_gz_end = text_wapp_js_map_gz_end }, //
-    { .uri = "/f/css/wapp.css", .type = "text/css", .file_gz = text_wapp_css_gz, .file_gz_end = text_wapp_css_gz_end  }, //
-    { .uri = "/f/cli/help/send", .file = cli_help_parmSend }, //
-    { .uri = "/f/cli/help/auto", .file = cli_help_parmTimer }, //
-    { .uri = "/f/cli/help/config", .file = cli_help_parmConfig }, //
-    { .uri = "/f/cli/help/mcu", .file = cli_help_parmMcu }, //
-    { .uri = "/f/cli/help/pair", .file = cli_help_parmPair }, //
-    { .uri = "/f/cli/help/shpref", .file = cli_help_parmShpref }, //
-    { .uri = "/f/cli/help/help", .file = cli_help_parmHelp }, //
+
+
+struct file_map { const char *uri, *type, *file; u32 file_size; };
+
+#ifdef SERVE_BR
+const struct file_map uri_file_map_br[] = {
+#ifdef SERVE_JS_MAP
+    { .uri = "/f/js/wapp.js.map", .type = "text/javascript",  .file = build_wapp_js_map_br, .file_size = sizeof build_wapp_js_map_br }, //
+#endif
     };
+#endif
+
+const struct file_map uri_file_map_gz[] = {
+    { .uri = "/f/css/wapp.css", .type = "text/css", .file = build_wapp_css_gz, .file_size = sizeof build_wapp_css_gz }, //
+    { .uri = "/", .type = "text/html", .file = build_wapp_html_gz, .file_size = sizeof build_wapp_html_gz }, //
+    { .uri = "/f/js/wapp.js", .type = "text/javascript", .file = build_wapp_js_gz, .file_size = sizeof build_wapp_js_gz }, //
+    };
+
+const struct file_map uri_file_map[] =  {
+        { .uri = "/f/cli/help/send", .file = cli_help_parmSend }, //
+        { .uri = "/f/cli/help/auto", .file = cli_help_parmTimer }, //
+        { .uri = "/f/cli/help/config", .file = cli_help_parmConfig }, //
+        { .uri = "/f/cli/help/mcu", .file = cli_help_parmMcu }, //
+        { .uri = "/f/cli/help/pair", .file = cli_help_parmPair }, //
+        { .uri = "/f/cli/help/shpref", .file = cli_help_parmShpref }, //
+        { .uri = "/f/cli/help/help", .file = cli_help_parmHelp }, //
+};
+
+
+static esp_err_t respond_file(httpd_req_t *req, const struct file_map *fm, const char *content_encoding) {
+  httpd_resp_set_type(req, fm->type ? fm->type : "text/plain;charset=\"UTF-8\"");
+  if (content_encoding)
+    httpd_resp_set_hdr(req, "content-encoding", content_encoding);
+  if (fm->file_size)
+    httpd_resp_send(req, fm->file, fm->file_size);
+  else
+    httpd_resp_sendstr(req, fm->file);
+  return ESP_OK;
+}
 
 
 static esp_err_t handle_uri_get_file(httpd_req_t *req) {
   if (!check_access_allowed(req))
     return ESP_FAIL;
 
-  for (int i = 0; i < sizeof(uri_file_map) / sizeof(uri_file_map[0]); ++i) {
-    const struct file_map *fm = &uri_file_map[i];
-    if (strcmp(req->uri, fm->uri) != 0)
-      continue;
-    const char *type = (fm->type) ? fm->type : "text/plain;charset=\"UTF-8\"";
-    httpd_resp_set_type(req, type);
-    if (fm->file_gz) {
-      httpd_resp_set_hdr(req, "content-encoding", "gzip");
-      httpd_resp_send(req, fm->file_gz, fm->file_gz_end - fm->file_gz);
-      return ESP_OK;
-    }
+#ifdef SERVE_BR
+  for (int i = 0; i < sizeof(uri_file_map_br) / sizeof(uri_file_map_br[0]); ++i) {
+    if (strcmp(req->uri, uri_file_map_br[i].uri) == 0)
+      return respond_file(req, &uri_file_map_br[i], "br");
+  }
+#endif
 
-    if (fm->file) {
-      httpd_resp_sendstr(req, fm->file);
-      return ESP_OK;
-    }
+  for (int i = 0; i < sizeof(uri_file_map_gz) / sizeof(uri_file_map_gz[0]); ++i) {
+    if (strcmp(req->uri, uri_file_map_gz[i].uri) == 0)
+      return respond_file(req, &uri_file_map_gz[i], "gzip");
+  }
+
+  for (int i = 0; i < sizeof(uri_file_map) / sizeof(uri_file_map[0]); ++i) {
+    if (strcmp(req->uri, uri_file_map[i].uri) == 0)
+      return respond_file(req, &uri_file_map[i], "");
   }
 
   return ESP_FAIL;
-}
-
-static esp_err_t handle_uri_tfmcu_html(httpd_req_t *req) {
-  if (!check_access_allowed(req))
-    return ESP_FAIL;
-
-  httpd_resp_set_type(req, "text/html");
-  httpd_resp_sendstr(req, (const char*) req->user_ctx);
-
-  return ESP_OK;
 }
 
 static esp_err_t handle_uri_ws(httpd_req_t *req) {
@@ -181,7 +186,6 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   FD_SET(fd, &ws_fds);
   if (ws_nfds <= fd)
     ws_nfds = 1 + fd;
-  ESP_LOGI(TAG, "handle /ws using fd: %d", fd);
   uint8_t buf[128] = { 0 };
 
   httpd_ws_frame_t ws_pkt = {.payload = buf };
@@ -191,8 +195,6 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
       ESP_LOGE(TAG, "httpd_ws_recv_frame failed with %d", ret);
       return ret;
   }
-  ESP_LOGI(TAG, "Got packet with message: %s", ws_pkt.payload);
-  ESP_LOGI(TAG, "Packet type: %d", ws_pkt.type);
 
   if (ws_pkt.type == HTTPD_WS_TYPE_CLOSE) { // XXX: does nothing. remove this
     ESP_LOGI(TAG, "Close fd: %d", fd);
@@ -220,23 +222,17 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
 }
 
 ////////////////////////// URI definitions ////////////////////////////////
-
-
 static const httpd_uri_t httpd_uris[] = {
-    { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json, .user_ctx = NULL, },
-    { .uri = "/f/*", .method = HTTP_GET, .handler = handle_uri_get_file},
-    { .uri = "/", .method = HTTP_GET, .handler = handle_uri_tfmcu_html, .user_ctx = (void*) text_wapp_html, },
-    { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true},
+    { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json },
+    { .uri = "/f/*", .method = HTTP_GET, .handler = handle_uri_get_file },
+    { .uri = "/", .method = HTTP_GET, .handler = handle_uri_get_file },
+    { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true },
 };
 
 
 ///////// public ///////////////
 void hts_register_uri_handlers(httpd_handle_t server) {
-  int i;
-
-
-  ESP_LOGI(TAG, "Registering URI handlers");
-  for (i = 0; i < sizeof(httpd_uris) / sizeof(httpd_uri_t); ++i) {
+  for (int i = 0; i < sizeof(httpd_uris) / sizeof(httpd_uri_t); ++i) {
     ESP_ERROR_CHECK(httpd_register_uri_handler(server, &httpd_uris[i]));
   }
 
