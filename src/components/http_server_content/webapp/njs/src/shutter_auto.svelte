@@ -1,5 +1,6 @@
 <script>
 'use strict';
+import { _ } from './services/i18n';
 import * as appDebug from './app_debug.js';
 import * as httpFetch from './fetch.js';
 import {Auto,G,M,GM} from './store/curr_shutter.js';
@@ -157,8 +158,8 @@ function req_automatic() {
   </table>
 
   <br>
-  <button id="arlb" class="sb" type="button" on:click={hClick_Reload}>Reload</button>
-  <button id="asvb" class="sb" type="button" on:click={hClick_Save}>Save</button>
+  <button id="arlb" class="sb" type="button" on:click={hClick_Reload}>{$_('app.reload')}</button>
+  <button id="asvb" class="sb" type="button" on:click={hClick_Save}>{$_('app.save')}</button>
   <br>
 </div>
 

@@ -1,4 +1,5 @@
 <script>
+  import { _ } from './services/i18n';
   import * as appDebug from "./app_debug.js";
   import * as httpFetch from "./fetch.js";
   import * as misc from "./misc.js";
@@ -139,21 +140,20 @@ $: {
       <strong>
         Update succeeded
         <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}>
-          Restart MCU
+          $_('app.restart')
         </button>
         <br />
         <br />
       </strong>
     {:else if $McuFirmwareUpdState === 1}
-      <strong>
-        Firmware is updating...
-        <br />
+      <strong>{$_('app.msg_waitForMcuRestart')}       
       </strong>
+      <br />
       <br />
       <progress value={$McuFirmwareUpdProgress} max="{updSecs}" />
     {/if}
     {#if $ReloadProgress > 0}
-      <strong>Wait for MCU to restart...</strong>
+      <strong>{$_('app.msg_waitForMcuRestart')}</strong>
       <br />
       <progress value={$ReloadProgress} max="100" />
     {/if}

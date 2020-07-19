@@ -1,5 +1,6 @@
 <script>
 'use strict';
+import { _ } from './services/i18n';
 import * as httpFetch from './fetch.js';
 import {G,M, GM,PrefMvut,PrefMvdt,PrefMvspdt} from './store/curr_shutter.js';
 import { Verbose } from "./store/app_state.js";
@@ -134,12 +135,12 @@ function shp_stopClock_stop() {
    After the movement stops by itself, press again to stop the clock. <br></p>
   
   <table class="dur_table top_table p-2">
-    <tr><th>Direction</th><th>Duration (secs)</th><th>Stopclock</th></tr>
+    <tr><th>{$_('app.direction')}</th><th>{$_('app.duration')}</th><th>{$_('app.stopClock')}</th></tr>
     <tr><td>up to 100%</td><td><input class="w-20" id="shpMvut" type="number" min="0" bind:value="{mvut}" step="0.1"></td><td><button id="shp_MvutButton" on:click={hClick_Up}>Start/Stop</button></td></tr>
     <tr><td>down to 0%</td><td><input class="w-20" id="shpMvdt" type="number" min="0" bind:value="{mvdt}" step="0.1"></td><td><button id="shp_MvdtButton" on:click={hClick_Down}>Start/Stop</button></td></tr>
     <tr><td>down to sun position</td><td><input class="w-20" id="shpSpMvdt" type="number" min="0" bind:value="{mvspdt}" step="0.1"></td><td><button id="shp_SpMvdtButton" on:click={hClick_Sun}>Start/Stop</button></td></tr>
   </table>
   
-  <button id="shp_reload" type="button" on:click={hClick_Reload}>Reload</button>
-  <button id="shp_save" type="button" on:click={hClick_Save}>Save</button>
+  <button id="shp_reload" type="button" on:click={hClick_Reload}>{$_('app.reload')}</button>
+  <button id="shp_save" type="button" on:click={hClick_Save}>{$_('app.save')}</button>
 </div>
