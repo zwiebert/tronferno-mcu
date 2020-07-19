@@ -6,7 +6,14 @@
 <script type="text/javascript" src="f/js/wapp.js"></script>
 <link rel="stylesheet" type="text/css" href="f/css/wapp.css">
 <title>Tronferno</title>
-<script>document.addEventListener("DOMContentLoaded", wapp);</script>
+<script>
+console.log("3");
+if (document.readyState === 'loading') {  // Loading hasn't finished yet
+  document.addEventListener('DOMContentLoaded', () => wapp());
+} else {
+  wapp();
+}
+</script>
 </head>
 <body>
 </body>

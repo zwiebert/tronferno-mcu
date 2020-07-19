@@ -60,21 +60,18 @@ export function http_postRequest(
     });
 }
 
-export function http_postDocRequest(name) {
-  let url = "/doc";
-  // Default options are marked with *
-  return fetch(url, {
-    method: "POST",
+export function getFile(url) {
+  const fetch_data = {
+    method: "GET",
     cache: "no-cache",
-    headers: {
-      "Content-Type": "text/plain",
-    },
+    headers: {},
     referrer: "no-referrer",
-    body: name,
-  }).then((response) => {
+  };
+
+  return fetch(url, fetch_data).then((response) => {
     if (response.ok) {
       response.text().then((text) => {
-        httpResp.http_handleDocResponses(name, text);
+        httpResp.http_handleDocResponses(url, text);
       });
     }
   });
