@@ -28,8 +28,6 @@
   $: visiblePairedControllers = false;
   $: visibleMovementDurations = false;
 
-  let navTabsSettings = ["MCU", "Aliases", "Durations", "Name", "App"];
-
   let fwbtns = [
     { name: "latest master firmware", ota_name: "github-master" },
     { name: "latest beta firmware", ota_name: "github-beta" },
@@ -57,7 +55,7 @@
   <NavTabs nav_tabs={[$_('app.nav_main_move'), $_('app.nav_main_percent'),$_('app.nav_main_auto'),
    $_('app.nav_main_config'), $_('app.nav_main_firmware'), ...isProduction ? [] : ["Test"]]} name="main" />
   </div>
-  {#if tabIdxMain === 0}
+  {#if !tabIdxMain}
     <div class="mt-4 p-2">
       <ShutterGM
         gmc_fetch_mask={httpFetch.FETCH_AUTO | httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME} />
@@ -91,7 +89,7 @@
     <NavTabs nav_tabs={[$_('app.nav_cfg_mcu'), $_('app.nav_cfg_aliases'), 
     $_('app.nav_cfg_durations'), $_('app.nav_cfg_name'), $_('app.nav_cfg_app')]} name="settings" />
   </div>
-    {#if tabIdxSettings === 0}
+    {#if !tabIdxSettings}
       <div class="area">
         <McuConfig />
       </div>

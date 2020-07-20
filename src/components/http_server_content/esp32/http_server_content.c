@@ -148,23 +148,20 @@ static esp_err_t handle_uri_get_file(httpd_req_t *req) {
     return ESP_FAIL;
 
   struct file_map fm = {};
-  const char *encoding = "";
+  const char *encoding = "gzip";
 
   if (strcmp(req->uri, URI_WAPP_HTML) == 0) {
     fm.file = build_wapp_html_gz;
     fm.file_size = build_wapp_html_gz_len;
     fm.type = "text/html";
-    encoding = "gz";
   } else  if (strcmp(req->uri, URI_WAPP_CSS) == 0) {
     fm.file = build_wapp_css_gz;
     fm.file_size = build_wapp_css_gz_len;
     fm.type = "text/css";
-    encoding = "gz";
   } else  if (strcmp(req->uri, URI_WAPP_JS) == 0) {
     fm.file = build_wapp_js_gz;
     fm.file_size = build_wapp_js_gz_len;
     fm.type = "text/javascript";
-    encoding = "gz";
 #ifdef SERVE_JS_MAP
   } else  if (strcmp(req->uri, URI_WAPP_JS_MAP) == 0) {
     fm.file = build_wapp_js_map_br;
