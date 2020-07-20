@@ -26,6 +26,13 @@ const en = {
         "direction":"Direction",
         "duration":"Duration (secs)",
         "stopClock":"StopClock",
+        "downToZero":"down to 0%",
+        "downSunPos":"down to sun position",
+        "upTo100":"up to 100%",
+    },
+    "help": {
+        "hint_durStopClock":"To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.",
+        "hint_shutterAlias":"To register position changes made by commands sent from plain controllers and sun-sensors, these controllers have to be registered here. Select G/E above and pair the controller here by start pairing and pressing STOP on the controller.",
     }
 } ;
 
@@ -41,8 +48,14 @@ const de = {
         "direction":"Richtung",
         "stopClock":"Stopp-Uhr",
         "msg_enterNewName":"Neuer Name:",
- 
-    }
+        "downToZero":"Abwärts bis 0%",
+        "downSunPos":"Abwärts bis Sonnenposition",
+        "upTo100":"Aufwärts bis 100%", 
+    },
+    "help": {
+        "hint_durStopClock":"Zum Messen der Dauer der Rollandenbewegungen. Drücke Start/Stop zum gleichzeitigen Starten von Bewegung und Stoppuhr. Sobald der Rollladen stoppt, Start/Stop erneut drücken um die Stoppuhr anzuhalten.",
+        "hint_shutterAlias":"Zum Zuordnen von Bewegungen durch Kommandos von Handsendern und Sonnensensoren müssen diese registriert werden. Bitte G/E auswählen und Pair oder Unpair starten, dann STOP am Handsender drücken.",
+     }
 } ;
 
 function setupI18n({ withLocale: _locale } = { withLocale: 'en' }) {
