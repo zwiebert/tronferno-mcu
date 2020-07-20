@@ -18,9 +18,7 @@ $(1): $$(addsuffix -$(1),$(mcus))
 endef
 $(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(tgt))))
 
-.PHONY: http_content http_proxy http_clean
-http_content:
-	cd src/components/http_server_content/webapp && make
+.PHONY: http_proxy http_clean
 http_proxy:
 	cd src/components/http_server_content/webapp && make proxy
 http_clean:
@@ -68,9 +66,9 @@ endef
 $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
-esp32-all: http_content
+esp32-all:
 	$(esp32_build_cmd) reconfigure all
-esp32-lan: http_content
+esp32-lan:
 	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
 
 ########### OpenOCD ###################

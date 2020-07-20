@@ -12,6 +12,7 @@
 #include "cli/mutex.h"
 #include "net/http/server/esp32/register_uris.h"
 
+#include "webapp/content.h"
 
 static const char *TAG="APP";
 
@@ -81,14 +82,6 @@ static void ws_async_send(void *arg)
     free(resp_arg);
 }
 
-//////////////////// static files ///////////////////////////////////////
-#include "../webapp/build/wapp.html.gz.c"
-#include "../webapp/build/wapp.js.gz.c"
-#include "../webapp/build/wapp.css.gz.c"
-#ifdef SERVE_JS_MAP
-#include "../webapp/build/wapp.js.map.br.c"
-#endif
-
 
 ////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
@@ -120,20 +113,6 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 
 struct file_map { const char *uri, *type, *file; u32 file_size; };
 
-#ifdef SERVE_BR
-const struct file_map uri_file_map_br[] = {
-#ifdef SERVE_JS_MAP
-    { .uri = "/f/js/wapp.js.map", .type = "text/javascript",  .file = build_wapp_js_map_br, .file_size = sizeof build_wapp_js_map_br }, //
-#endif
-    };
-#endif
-
-const struct file_map uri_file_map_gz[] = {
-    { .uri = "/f/css/wapp.css", .type = "text/css", .file = build_wapp_css_gz, .file_size = sizeof build_wapp_css_gz }, //
-    { .uri = "/", .type = "text/html", .file = build_wapp_html_gz, .file_size = sizeof build_wapp_html_gz }, //
-    { .uri = "/f/js/wapp.js", .type = "text/javascript", .file = build_wapp_js_gz, .file_size = sizeof build_wapp_js_gz }, //
-    };
-
 const struct file_map uri_file_map[] =  {
         { .uri = "/f/cli/help/send", .file = cli_help_parmSend }, //
         { .uri = "/f/cli/help/auto", .file = cli_help_parmTimer }, //
@@ -143,7 +122,6 @@ const struct file_map uri_file_map[] =  {
         { .uri = "/f/cli/help/shpref", .file = cli_help_parmShpref }, //
         { .uri = "/f/cli/help/help", .file = cli_help_parmHelp }, //
 };
-
 
 static esp_err_t respond_file(httpd_req_t *req, const struct file_map *fm, const char *content_encoding) {
   httpd_resp_set_type(req, fm->type ? fm->type : "text/plain;charset=\"UTF-8\"");
@@ -156,29 +134,54 @@ static esp_err_t respond_file(httpd_req_t *req, const struct file_map *fm, const
   return ESP_OK;
 }
 
+#define URI_WAPP_HTML "/"
+#define URI_WAPP_CSS "/f/css/wapp.css"
+#define URI_WAPP_JS "/f/js/wapp.js"
+#define URI_WAPP_JS_MAP "/f/js/wapp.js.map"
+#define URI_WAPP_HTML "/"
+#define URI_WAPP_CSS "/f/css/wapp.css"
+#define URI_WAPP_JS "/f/js/wapp.js"
+#define URI_WAPP_JS_MAP "/f/js/wapp.js.map"
 
 static esp_err_t handle_uri_get_file(httpd_req_t *req) {
   if (!check_access_allowed(req))
     return ESP_FAIL;
 
-#ifdef SERVE_BR
-  for (int i = 0; i < sizeof(uri_file_map_br) / sizeof(uri_file_map_br[0]); ++i) {
-    if (strcmp(req->uri, uri_file_map_br[i].uri) == 0)
-      return respond_file(req, &uri_file_map_br[i], "br");
-  }
+  struct file_map fm = {};
+  const char *encoding = "";
+
+  if (strcmp(req->uri, URI_WAPP_HTML) == 0) {
+    fm.file = build_wapp_html_gz;
+    fm.file_size = build_wapp_html_gz_len;
+    fm.type = "text/html";
+    encoding = "gz";
+  } else  if (strcmp(req->uri, URI_WAPP_CSS) == 0) {
+    fm.file = build_wapp_css_gz;
+    fm.file_size = build_wapp_css_gz_len;
+    fm.type = "text/css";
+    encoding = "gz";
+  } else  if (strcmp(req->uri, URI_WAPP_JS) == 0) {
+    fm.file = build_wapp_js_gz;
+    fm.file_size = build_wapp_js_gz_len;
+    fm.type = "text/javascript";
+    encoding = "gz";
+#ifdef SERVE_JS_MAP
+  } else  if (strcmp(req->uri, URI_WAPP_JS_MAP) == 0) {
+    fm.file = build_wapp_js_map_br;
+    fm.file_size = build_wapp_js_map_br_len;
+    fm.type = "text/javascript";
+    encoding = "br";
 #endif
-
-  for (int i = 0; i < sizeof(uri_file_map_gz) / sizeof(uri_file_map_gz[0]); ++i) {
-    if (strcmp(req->uri, uri_file_map_gz[i].uri) == 0)
-      return respond_file(req, &uri_file_map_gz[i], "gzip");
+  } else {
+    for (int i = 0; i < sizeof(uri_file_map) / sizeof(uri_file_map[0]); ++i) {
+      if (strcmp(req->uri, uri_file_map[i].uri) == 0)
+        return respond_file(req, &uri_file_map[i], "");
+    }
+    return ESP_FAIL;
   }
 
-  for (int i = 0; i < sizeof(uri_file_map) / sizeof(uri_file_map[0]); ++i) {
-    if (strcmp(req->uri, uri_file_map[i].uri) == 0)
-      return respond_file(req, &uri_file_map[i], "");
-  }
+  return respond_file(req, &fm, encoding);
 
-  return ESP_FAIL;
 }
 
 static esp_err_t handle_uri_ws(httpd_req_t *req) {
