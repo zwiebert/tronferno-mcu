@@ -1,5 +1,6 @@
 <script>
   "use strict";
+  import { _ } from './services/i18n';
   import { McuConfig, McuConfigKeys, Gmu } from "./store/mcu_config.js";
   import * as appDebug from "./app_debug.js";
   import * as httpFetch from "./fetch.js";
@@ -321,17 +322,17 @@
   </table>
 
   <br />
-  <button id="crlb" type="button" on:click={hClick_Reload}>Reload</button>
-  <button id="csvb" type="button" on:click={hClick_Save}>Save</button>
+  <button id="crlb" type="button" on:click={hClick_Reload}>{$_('app.reload')}</button>
+  <button id="csvb" type="button" on:click={hClick_Save}>{$_('app.save')}</button>
   <br />
   <br />
   <button id="mrtb" type="button" on:click={hClick_RestartMcu}>
-    Restart MCU
+    {$_('app.restartMcu')}
   </button>
   <br />
   <div id="config_restart_div" />
   {#if $ReloadProgress > 0}
-    <strong>Wait for MCU to restart...</strong><br>
+    <strong>>$_('app.msg_waitForMcuRestart')</strong><br>
     <progress id="reload_progress_bar" value="{$ReloadProgress}" max="100"></progress>
   {/if}
   <section>
@@ -339,7 +340,7 @@
     <ul>
       <li>
         <button id="id_cuasb" type="button" on:click={hClick_ScanCU}>
-          Scan Central-Unit-ID
+          {$_('app.wizard_cuas')}
         </button>
         <span id="id_cuasStatus" />
       </li>

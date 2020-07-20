@@ -1,5 +1,6 @@
 <script>
   "use strict";
+  import { _ } from './services/i18n';
   import * as httpFetch from "./fetch.js";
   import { G, M0, GM } from "./store/curr_shutter.js";
   import { Gmu, GmuMaxM } from "./store/mcu_config.js";
@@ -282,10 +283,10 @@
 
   <span id="aliasSaveReload">
     <button id="alias_reload" type="button" on:click={onAliasesReload}>
-      Reload
+      {$_('app.reload')}
     </button>
     <button id="alias_save" type="button" on:click={onAliasesApply}>
-      Save
+      {$_('app.save')}
     </button>
   </span>
 </div>

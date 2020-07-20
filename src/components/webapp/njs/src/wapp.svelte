@@ -1,4 +1,5 @@
 <script>
+  import { _ } from './services/i18n';
   import NavTabs from "./nav_tabs.svelte";
   import ShutterMove from "./shutter_move.svelte";
   import ShutterGM from "./shutter_gm.svelte";
@@ -27,7 +28,6 @@
   $: visiblePairedControllers = false;
   $: visibleMovementDurations = false;
 
-  let navTabs = ["Move", "Pct", "Auto", "Settings", "Firmware"];
   let navTabsSettings = ["MCU", "Aliases", "Durations", "Name", "App"];
 
   let fwbtns = [
@@ -37,7 +37,6 @@
 
   // eslint-disable-next-line no-unused-labels
   testing: if (!isProduction) {
-    navTabs.push("Tests");
     fwbtns.push({
       name: "firmware from given URL",
       ota_name: "netotaFromURL",
@@ -55,7 +54,8 @@
 
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
-  <NavTabs nav_tabs={navTabs} name="main" />
+  <NavTabs nav_tabs={[$_('app.nav_main_move'), $_('app.nav_main_percent'),$_('app.nav_main_auto'),
+   $_('app.nav_main_config'), $_('app.nav_main_firmware'), ...isProduction ? [] : ["Test"]]} name="main" />
   </div>
   {#if tabIdxMain === 0}
     <div class="mt-4 p-2">
@@ -88,7 +88,8 @@
     </div>
   {:else if tabIdxMain === 3}
   <div class="navtab-sub">
-    <NavTabs nav_tabs={navTabsSettings} name="settings" />
+    <NavTabs nav_tabs={[$_('app.nav_cfg_mcu'), $_('app.nav_cfg_aliases'), 
+    $_('app.nav_cfg_durations'), $_('app.nav_cfg_name'), $_('app.nav_cfg_app')]} name="settings" />
   </div>
     {#if tabIdxSettings === 0}
       <div class="area">

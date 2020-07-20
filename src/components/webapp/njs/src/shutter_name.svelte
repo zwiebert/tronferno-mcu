@@ -1,5 +1,6 @@
 <script>
   "use strict";
+  import { _ } from './services/i18n';
   import { G, M0, Name } from "./store/curr_shutter.js";
   import * as httpFetch from "./fetch.js";
   import { onMount, onDestroy } from "svelte";
@@ -31,7 +32,7 @@
 </style>
 
 <div class="text-center">
-  <label>Enter new name:</label>
+  <label>{$_('app.msg_enterNewName')}</label>
   <br />
   <input type="text" name="name" bind:value={name} on:change={hChange_Name} />
 </div>

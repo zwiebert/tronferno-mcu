@@ -1,7 +1,7 @@
 'use strict';
 // src/main.js
 
-import App from './tfmcu_html.svelte';
+import App from './main.svelte';
 import * as appState from './app_state.svelte';
 import * as connWs from './net/conn_ws.js';
 
