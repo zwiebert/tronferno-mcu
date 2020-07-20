@@ -5,7 +5,7 @@
   import { G, M0, GM } from "./store/curr_shutter.js";
   import { Gmu, GmuMaxM } from "./store/mcu_config.js";
   import { Aliases } from "./store/shutters.js";
-  import { Verbose } from "./store/app_state.js";
+  import { ShowHelp } from "./store/app_state.js";
 
   import { onMount, onDestroy } from "svelte";
 
@@ -213,7 +213,7 @@
 </style>
 
 <div id="aliasdiv">
-    <p class="help-text-v{$Verbose}">
+    <p class="{$ShowHelp}">
       {$_('help.hint_shutterAlias')}
       <br />
     </p>

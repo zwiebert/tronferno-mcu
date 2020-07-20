@@ -1,10 +1,10 @@
 <script>
   "use strict";
-  import { Verbose } from "./store/app_state.js";
+  import { Verbose, TabIdx } from "./store/app_state.js";
+
 </script>
 
-<label>Verbosity:</label>
-<select bind:value={$Verbose}>
-  <option value="0">0</option>
-  <option value="1">1</option>
-</select>
+<table>
+  <tr><th></th><td></td></tr>
+  <tr><th>Show Help</th><td><input type="checkbox" bind:checked={$TabIdx.showHelp} /></td></tr>
+</table>

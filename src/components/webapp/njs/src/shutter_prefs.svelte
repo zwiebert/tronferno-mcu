@@ -3,7 +3,7 @@
 import { _ } from './services/i18n';
 import * as httpFetch from './fetch.js';
 import {G,M, GM,PrefMvut,PrefMvdt,PrefMvspdt} from './store/curr_shutter.js';
-import { Verbose } from "./store/app_state.js";
+import { ShowHelp } from "./store/app_state.js";
 import { onMount, onDestroy } from 'svelte';
 
 
@@ -131,7 +131,7 @@ function shp_stopClock_stop() {
 </style>
 
 <div id="shprefdiv">
-  <p class="help-text-v{$Verbose}">{$_('help.hint_durStopClock')}<br></p>
+  <p class="{$ShowHelp}">{$_('help.hint_durStopClock')}<br></p>
   
   <table class="dur_table top_table p-2">
     <tr><th>{$_('app.direction')}</th><th>{$_('app.duration')}</th><th>{$_('app.stopClock')}</th></tr>
