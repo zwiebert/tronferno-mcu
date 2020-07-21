@@ -1,6 +1,6 @@
 <script>
   import { _ } from "./services/i18n";
-
+  import * as misc from "./misc.js";
   import NavTabs from "./nav_tabs.svelte";
   import { TabIdx } from "./store/app_state.js";
 
@@ -16,8 +16,6 @@
 
   import PaneDeveloper from "./panes/developer.svelte";
 
-  export let isProduction = false;
-
   $: tabIdxMain = $TabIdx["main"] || 0;
   $: tabIdxSettings = $TabIdx["settings"] || 0;
 </script>
@@ -25,7 +23,7 @@
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
     <NavTabs
-      nav_tabs={[$_('app.nav_main_move'), $_('app.nav_main_percent'), $_('app.nav_main_auto'), $_('app.nav_main_config'), $_('app.nav_main_firmware'), ...(isProduction ? [] : ['Test'])]}
+      nav_tabs={[$_('app.nav_main_move'), $_('app.nav_main_percent'), $_('app.nav_main_auto'), $_('app.nav_main_config'), $_('app.nav_main_firmware'), ...(!misc.NODE_ENV_DEV ? [] : ['Test'])]}
       name="main" />
   </div>
   {#if !tabIdxMain}
@@ -52,8 +50,8 @@
       <PaneWappSettings />
     {/if}
   {:else if tabIdxMain === 4}
-    <PaneFirmwareEsp32 {isProduction} />
-  {:else if tabIdxMain === 5}
+    <PaneFirmwareEsp32 />
+  {:else if misc.NODE_ENV_DEV && tabIdxMain === 5}
     <PaneDeveloper />
   {/if}
 </div>

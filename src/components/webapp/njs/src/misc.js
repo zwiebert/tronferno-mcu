@@ -4,6 +4,8 @@ import { ReloadProgress } from './store/app_state.js';
 
 import * as httpFetch from './fetch.js';
 
+export const NODE_ENV_DEV = true;
+
 const reload_Progress = {
   ivId: 0,
   ms: 1000,

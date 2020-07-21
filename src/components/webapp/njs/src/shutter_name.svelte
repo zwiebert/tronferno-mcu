@@ -3,15 +3,6 @@
   import { _ } from './services/i18n';
   import { G, M0, Name } from "./store/curr_shutter.js";
   import * as httpFetch from "./fetch.js";
-  import { onMount, onDestroy } from "svelte";
-
-  let on_destroy = [];
-  onMount(() => {});
-  onDestroy(() => {
-    for (const fn of on_destroy) {
-      fn();
-    }
-  });
 
   $: name = $Name || "";
 

@@ -7,7 +7,7 @@ import svelte from 'rollup-plugin-svelte';
 import resolve from '@rollup/plugin-node-resolve';
 import sveltePreprocess from 'svelte-preprocess';
 
-export const isProduction = process.env.buildTarget === "PROD";
+export const isProduction = process.env.NODE_ENV === "production";
 
 export default {
   onwarn(warning, rollupWarn) {
@@ -78,7 +78,13 @@ export default {
         // let Rollup handle all other warnings normally
         handler(warning);
       },
-      preprocess: sveltePreprocess({postcss: true}),
+      preprocess: sveltePreprocess({
+        postcss: true,
+        replace: [
+          ['misc.NODE_ENV_DEV', !isProduction ? 'false' : 'true'],
+          ['//NODE_ENV_DEV', isProduction ? 'if(false)' : 'if(true)'],
+       ],      
+      }),
 
     }),
     // If you have external dependencies installed from
