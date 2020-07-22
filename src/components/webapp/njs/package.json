@@ -24,7 +24,7 @@
 		"svelte": "^3.24.0",
 		"svelte-i18n": "^3.0.4",
 		"svelte-preprocess": "^3.9.12",
-		"tailwindcss": "^1.5.1"
+		"tailwindcss": "^1.5.2"
 	},
 	"jshintConfig": {
 		"esversion": 6,
