@@ -9,7 +9,7 @@
     { name: "latest beta firmware", ota_name: "github-beta" },
   ];
 
-  if (misc.NODE_ENV_DEV) {
+  if (!misc.DISTRO) {
     fwbtns.push({
       name: "firmware from given URL",
       ota_name: "netotaFromURL",

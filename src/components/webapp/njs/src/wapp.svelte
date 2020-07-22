@@ -51,7 +51,7 @@
     {/if}
   {:else if tabIdxMain === 4}
     <PaneFirmwareEsp32 />
-  {:else if misc.NODE_ENV_DEV && tabIdxMain === 5}
+  {:else if !misc.DISTRO && tabIdxMain === 5}
     <PaneDeveloper />
   {/if}
 </div>
