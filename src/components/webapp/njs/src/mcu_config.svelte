@@ -9,6 +9,12 @@
   import { onMount, onDestroy } from "svelte";
   import { ReloadProgress } from './store/app_state.js';
 
+  import McuConfigGpio from "./components/mcu_config/gpio.svelte";
+  import McuConfigNetwork from "./components/mcu_config/network.svelte";
+  import McuConfigLanPhy from "./components/mcu_config/lan_phy.svelte";
+  import McuConfigNumber from "./components/mcu_config/number.svelte";
+  import McuConfigEnable from "./components/mcu_config/enable.svelte";
+
   let on_destroy = [];
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
@@ -117,16 +123,7 @@
 </script>
 
 <style type="text/scss">
-  .conf-table label {
-    padding: 2px;
-    margin-right: 3px;
-  }
-  .config-input.text {
-    width: inherit;
-  }
-  .config-input.number {
-    width: 5rem;
-  }
+
 </style>
 
 <div id="configdiv" class="top-div">
@@ -143,98 +140,61 @@
 
           {#if name.endsWith('-enable')}
             <td>
-              <input
-                class="config-input cb"
-                type="checkbox"
-                id="cfg_{name}"
-                {name}
-                checked={mcuConfig[name]} />
+              <McuConfigEnable {name} value={mcuConfig[name]} />
             </td>
-          {:else if name === 'latitude'}
+            {:else if name === 'latitude'}
             <td>
-              <input
-                class="config-input number"
-                type="number"
+              <McuConfigNumber
+                {name}
+                value={mcuConfig[name]}
                 min="-90"
                 max="90"
-                step="0.01"
-                id="cfg_{name}"
-                {name}
-                value={mcuConfig[name]} />
+                step="0.01" />
             </td>
           {:else if name === 'longitude'}
             <td>
-              <input
-                class="config-input number"
-                type="number"
+              <McuConfigNumber
+                {name}
+                value={mcuConfig[name]}
                 min="-180"
                 max="180"
-                step="0.01"
-                id="cfg_{name}"
-                {name}
-                value={mcuConfig[name]} />
+                step="0.01" />
             </td>
           {:else if name === 'rf-rx-pin' || name === 'set-button-pin'}
             <td>
-              <input
-                class="config-input number"
-                type="number"
-                min="-1"
-                max="39"
-                id="cfg_{name}"
+              <McuConfigNumber
                 {name}
-                value={mcuConfig[name]} />
+                value={mcuConfig[name]}
+                min="-1"
+                max="39" />
             </td>
           {:else if name === 'rf-tx-pin'}
             <td>
-              <input
-                class="config-input number"
-                type="number"
-                min="-1"
-                max="33"
-                id="cfg_{name}"
+              <McuConfigNumber
                 {name}
-                value={mcuConfig[name]} />
+                value={mcuConfig[name]}
+                min="-1"
+                max="33" />
             </td>
           {:else if name === 'verbose'}
             <td>
-              <input
-                class="config-input number"
-                type="number"
-                min="0"
-                max="5"
-                id="cfg_{name}"
-                {name}
-                value={mcuConfig[name]} />
+              <McuConfigNumber {name} value={mcuConfig[name]} min="0" max="5" />
             </td>
           {:else if name === 'network'}
             <td>
-              <select class="config-input" id="cfg_{name}" value={mcuConfig[name]}>
-                <option value="wlan">Existing WLAN</option>
-                <option value="ap">WLAN Accesspoint</option>
-                <option value="lan">Ethernet</option>
-                <!-- dev-no-lan-delete-line -->
-                <option value="none">No Network</option>
-              </select>
+              <McuConfigNetwork {name} value={mcuConfig[name]} />
             </td>
           {:else if name === 'lan-phy'}
             <td>
-              <select class="config-input" id="cfg_{name}" value={mcuConfig[name]}>
-                <option value="lan8270">LAN8270</option>
-                <option value="rtl8201">RTL8201</option>
-                <option value="ip101">IP101</option>
-              </select>
+              <McuConfigLanPhy {name} value={mcuConfig[name]} />
             </td>
-          {:else if name === 'lan-pwr-gpio'}
+            {:else if name === 'lan-pwr-gpio'}
             <td>
-              <input
-                class="config-input number"
-                type="number"
-                min="-1"
-                max="36"
-                id="cfg_{name}"
+              <McuConfigNumber
                 {name}
-                value={mcuConfig[name]} />
+                value={mcuConfig[name]}
+                min="-1"
+                max="36" />
             </td>
           {:else if name === 'astro-correction'}
             <td>
@@ -246,25 +206,7 @@
             </td>
           {:else if name.startsWith('gpio')}
             <td>
-              <select class="config-input" id="cfg_{name}" value={mcuConfig[name]}>
-                <option value="i">Input (Pull.FLoating)</option>
-                <option value="ih">Input (Pull.Up)</option>
-                <option value="il">Input (Pull.Down)</option>
-                <option value="O">Output</option>
-                <option value="Ol">Output (Level.Low)</option>
-                <option value="Oh">Output (Level.High)</option>
-                <option value="o">Output (OpenDrain)</option>
-                <option value="ol">Output (OpenDrain + Level.Low)</option>
-                <option value="oh">Output (OpenDrain + Level.High)</option>
-                <option value="Q">Input/Output</option>
-                <option value="Ql">Input/Output (Level.Low)</option>
-                <option value="Qh">Input/Output (Level.High)</option>
-                <option value="q">Input/Output (OpenDrain)</option>
-                <option value="ql">Input/Output (OpenDrain + Level.Low)</option>
-                <option value="qh">
-                  Input/Output (OpenDrain + Level.High)
-                </option>
-              </select>
+              <McuConfigGpio {name} value={mcuConfig[name]} />
             </td>
           {:else if name !== 'gm-used'}
             <td>

@@ -115,3 +115,14 @@ select,button,input {
 input {
   background-color: white;
 }
+
+.conf-table label {
+  padding: 2px;
+  margin-right: 3px;
+}
+.config-input.text {
+  width: inherit;
+}
+.config-input.number {
+  width: 5rem;
+}
