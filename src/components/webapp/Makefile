@@ -32,10 +32,11 @@ SED_OPTS += -e '/dev-no-lan-delete-line/d'
 endif
 
 bundle_out = build/wapp.js build/wapp.js.map build/wapp.css build/wapp.css.map build/wapp.html
-bundle_files = $(JS_BLD_DIR)/wapp.js $(JS_BLD_DIR)/wapp.js.map $(JS_BLD_DIR)/wapp.css $(JS_BLD_DIR)/wapp.css.map 
+bundle_files = $(JS_BLD_DIR)/wapp.js $(JS_BLD_DIR)/wapp.js.map $(JS_BLD_DIR)/wapp.css $(JS_BLD_DIR)/wapp.css.map
+bundle_c = build/wapp.html.gz.c build/wapp.js.gz.c build/wapp.js.map.gz.c build/wapp.js.map.br.c build/wapp.css.gz.c build/wapp.css.map.gz.c build/wapp.css.map.br.c
 
 .PHONY: bundle
-all: build/wapp.html.gz.c build/wapp.js.c build/wapp.js.gz.c build/wapp.js.map.br.c build/wapp.css.gz.c
+all: $(bundle_c)
 
 $(addprefix njs/build_dev/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
 	cd njs && env NODE_ENV=development npm run build

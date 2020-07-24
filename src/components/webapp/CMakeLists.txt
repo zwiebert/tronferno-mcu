@@ -2,9 +2,9 @@ set(srcs
 "../webapp/build/wapp.html.gz.c"
 "../webapp/build/wapp.js.gz.c"
 "../webapp/build/wapp.css.gz.c"
-"../webapp/build/wapp.js.map.br.c"
+"../webapp/build/wapp.js.map.gz.c" "../webapp/build/wapp.js.map.br.c"
+"../webapp/build/wapp.css.map.gz.c" "../webapp/build/wapp.css.map.br.c"
 )
-
 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
@@ -22,7 +22,8 @@ idf_component_register(
      OUTPUT "${COMPONENT_DIR}/build/wapp.html.gz.c"
             "${COMPONENT_DIR}/build/wapp.js.gz.c"
             "${COMPONENT_DIR}/build/wapp.css.gz.c"
-            "${COMPONENT_DIR}/build/wapp.js.map.br.c"
+            "${COMPONENT_DIR}/build/wapp.js.map.gz.c" "${COMPONENT_DIR}/build/wapp.js.map.br.c"
+            "${COMPONENT_DIR}/build/wapp.css.map.gz.c" "${COMPONENT_DIR}/build/wapp.css.map.br.c"
              ${COMPONENT_DIR}/_force.h   
      COMMAND make all -C ${COMPONENT_DIR}
      VERBATIM)
