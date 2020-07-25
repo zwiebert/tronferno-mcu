@@ -1,11 +1,20 @@
-$color_bg_select: #399d6e;
-$color_fg_select: rgb(186, 194, 78);
-$color_bg: #F8F8E0;
-$color_fg: black; // #278727;
-$color_bg_area: #e7e791;
-$color_border:  rgb(74, 195, 74);
-$color_bg_nav: #f6f6ba;
-$color_bg_nav1: #ececa4;
+$color_bg_select: hsl(152, 47%, 42%);
+$color_fg_select: hsl(64, 49%, 53%);
+$color_bg: hsl(60, 63%, 93%);
+$color_fg: hsl(0, 0%, 0%); // #278727;
+$color_bg_area: hsl(60, 64%, 74%);
+$color_bg_main_area: hsl(60, 56%, 68%);
+$color_border:  hsl(120, 50%, 53%);
+$color_main_border:  hsl(120, 50%, 40%);
+$color_bg_nav: hsl(60, 77%, 85%);
+$color_bg_nav1: hsl(60, 65%, 78%);
+
+.bg-selected {
+  background-color: $color_bg_select;
+}
+.fg-selected {
+  color: $color_fg_select;
+}
 
 .bg-area {
   background-color: $color_bg_area;
@@ -33,6 +42,14 @@ $color_bg_nav1: #ececa4;
   padding:0;
   background-color: $color_bg_nav1;
   border: thin dotted $color_border;
+}
+
+.main-area {
+  border-radius: .75rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: $color_bg_main_area;
+  border: thin solid $color_border;
 }
 
 .area {

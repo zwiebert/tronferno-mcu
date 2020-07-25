@@ -7,7 +7,7 @@
   import * as httpFetch from "../fetch.js";
 </script>
 
-<div class="area">
+<div class="main-area">
   <div class="mt-4 p-2">
     <ShutterGM
       gmc_fetch_mask={httpFetch.FETCH_AUTO | httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME} />
