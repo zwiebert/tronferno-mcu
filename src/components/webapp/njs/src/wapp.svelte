@@ -13,6 +13,7 @@
   import PaneFirmwareEsp32 from "./panes/firmware_esp32.svelte";
   import PaneWappSettings from "./panes/wapp_settings.svelte";
   import PaneMcuSettings from "./panes/mcu_settings.svelte";
+  import Pane2411 from "./panes/2411.svelte";
 
   import PaneDeveloper from "./panes/developer.svelte";
 
@@ -23,16 +24,18 @@
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
     <NavTabs
-      nav_tabs={[$_('app.nav_main_move'), $_('app.nav_main_percent'), $_('app.nav_main_auto'), $_('app.nav_main_config'), $_('app.nav_main_firmware'), ...(!misc.NODE_ENV_DEV ? [] : ['Test'])]}
+      nav_tabs={[$_('app.nav_main_move'), '2411', $_('app.nav_main_percent'), $_('app.nav_main_auto'), $_('app.nav_main_config'), $_('app.nav_main_firmware'), ...(!misc.NODE_ENV_DEV ? [] : ['Test'])]}
       name="main" />
   </div>
   {#if !tabIdxMain}
     <PaneShutterControl />
   {:else if tabIdxMain === 1}
-    <PaneShuttersPct />
+    <Pane2411 />
   {:else if tabIdxMain === 2}
-    <PaneShutterAuto />
+    <PaneShuttersPct />
   {:else if tabIdxMain === 3}
+    <PaneShutterAuto />
+  {:else if tabIdxMain === 4}
     <div class="navtab-sub">
       <NavTabs
         nav_tabs={[$_('app.nav_cfg_mcu'), $_('app.nav_cfg_aliases'), $_('app.nav_cfg_durations'), $_('app.nav_cfg_name'), $_('app.nav_cfg_app')]}
@@ -49,9 +52,9 @@
     {:else if tabIdxSettings === 4}
       <PaneWappSettings />
     {/if}
-  {:else if tabIdxMain === 4}
+  {:else if tabIdxMain === 5}
     <PaneFirmwareEsp32 />
-  {:else if !misc.DISTRO && tabIdxMain === 5}
+  {:else if !misc.DISTRO && tabIdxMain === 6}
     <PaneDeveloper />
   {/if}
 </div>

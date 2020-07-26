@@ -7,6 +7,7 @@
   import { onMount, onDestroy } from "svelte";
 
   export let gmc_fetch_mask = 0;
+  export let hideGroups = false;
 
   let on_destroy = [];
   onMount(() => {
@@ -66,23 +67,30 @@
   }
 </style>
 
-
-
 <div id="flex shugmdiv">
-
+  <!--
   <button id="sgb" type="button" on:click={hClick_G}>G{vg}</button>
-
   <button id="smb" disabled="{vm === ''}" type="button" on:click={hClick_M}>E{vm}</button>
-
+-->
   <select
-  id="smn"
-  class="text-center"
-  bind:value={gm}
-  on:change={hChange_Name}
-  on:blur={hChange_Name}>
-  {#each nameKeys as nk}
-    <option value={nk}>{$Names[nk]}</option>
-  {/each}
-</select>
+    id="smn"
+    class="text-center"
+    bind:value={gm}
+    on:change={hChange_Name}
+    on:blur={hChange_Name}>
+
+    <option value="00" disabled={hideGroups}>A</option>
+    {#each [1, 2, 3, 4, 5, 6, 7] as g}
+      {#if $Gmu[g]}
+        {#each { length: $Gmu[g] + 1 } as _, m}
+          <option
+            value={g.toString() + m.toString()}
+            disabled={m === 0 && hideGroups}>
+            {g}{m === 0 ? 'A' : m} {$Names[g.toString() + m.toString()] || ''}
+          </option>
+        {/each}
+      {/if}
+    {/each}
+  </select>
 
 </div>
