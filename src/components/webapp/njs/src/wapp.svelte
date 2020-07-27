@@ -24,7 +24,7 @@
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
     <NavTabs
-      nav_tabs={[$_('app.nav_main_move'), '2411', $_('app.nav_main_percent'), $_('app.nav_main_auto'), $_('app.nav_main_config'), $_('app.nav_main_firmware'), ...(!misc.NODE_ENV_DEV ? [] : ['Test'])]}
+      nav_tabs={[$_('app.nav_main_move'), '2411', $_('app.nav_main_percent'), $_('app.nav_main_auto'), $_('app.nav_main_config'), ...(!misc.NODE_ENV_DEV ? [] : ['Test'])]}
       name="main" />
   </div>
   {#if !tabIdxMain}
@@ -38,7 +38,7 @@
   {:else if tabIdxMain === 4}
     <div class="navtab-sub">
       <NavTabs
-        nav_tabs={[$_('app.nav_cfg_mcu'), $_('app.nav_cfg_aliases'), $_('app.nav_cfg_durations'), $_('app.nav_cfg_name'), $_('app.nav_cfg_app')]}
+        nav_tabs={[$_('app.nav_cfg_mcu'), $_('app.nav_cfg_aliases'), $_('app.nav_cfg_durations'), $_('app.nav_cfg_name'), $_('app.nav_cfg_app'), $_('app.nav_main_firmware')]}
         name="settings" />
     </div>
     {#if !tabIdxSettings}
@@ -51,10 +51,10 @@
       <PaneShutterName />
     {:else if tabIdxSettings === 4}
       <PaneWappSettings />
+      {:else if tabIdxSettings === 5}
+      <PaneFirmwareEsp32 />
     {/if}
-  {:else if tabIdxMain === 5}
-    <PaneFirmwareEsp32 />
-  {:else if !misc.DISTRO && tabIdxMain === 6}
+  {:else if !misc.DISTRO && tabIdxMain === 5}
     <PaneDeveloper />
   {/if}
 </div>

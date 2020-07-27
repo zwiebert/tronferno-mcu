@@ -103,10 +103,16 @@
 </script>
 
 <style type="text/scss">
+  button {
+    background-color: white;
+    border: thin solid grey;
+  }
+
   .ft2411-sbt {
-    font-size: 60%;
+    font-size: 100%;
     font-stretch: ultra-condensed;
-    height: 4em;
+    height: 4rem;
+    width: 4rem;
     border-radius: 100%;
   }
 
@@ -136,14 +142,14 @@
 
   <div class="flex justify-between">
     <button
-      class=""
+      class="text-lg  pt-1 pb-2 pl-2 pr-4"
       style="border-radius: 40%;"
       type="button"
       on:click={hClick_G}>
       G
     </button>
     <button
-      class=""
+      class="text-lg pt-1 pb-2  pl-4 pr-2"
       style="border-radius: 40%;"
       type="button"
       on:click={hClick_M}>
@@ -153,13 +159,13 @@
 
 <div class="flex flex-col items-center">
 
-    <button id="sub" class="w-32 ft2411-udbt" type="button" on:click={hClick_Up}>
+    <button id="sub" class="w-32 h-10 ft2411-udbt mt-4" type="button" on:click={hClick_Up}>
       &#x25b2;
     </button>
 
 <div class="flex flex-row content-between items-center">
     <button
-      class="m-2 ft2411-mbt"
+      class="h-24 w-8 m-2 mr-6 ft2411-mbt"
       type="button">
       M
     </button>
@@ -172,7 +178,7 @@
     </button>
 
     <button
-      class="m-2 ft2411-mbt"
+      class="h-24 w-8 m-2 ml-6 ft2411-mbt"
       type="button"
       >
       OK
@@ -181,7 +187,7 @@
 </div>
 
     <button
-      class="w-32 ft2411-udbt"
+      class="w-32 h-10 ft2411-udbt"
       type="button"
       on:click={hClick_Down}>
       &#x25bc;
