@@ -132,7 +132,7 @@
 
     <div class="h-6 text-center">{name}</div>
 
-    <div class="flex">
+    <div class="flex justify-between">
       <div class="h-6 w-4">{vg}</div>
       <DisplayIcons />
       <div class="h-6 w-4">{vm}</div>

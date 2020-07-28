@@ -8,6 +8,7 @@ $color_border:  hsl(120, 50%, 53%);
 $color_main_border:  hsl(120, 50%, 40%);
 $color_bg_nav: hsl(60, 77%, 85%);
 $color_bg_nav1: hsl(60, 65%, 78%);
+$color_bg_bt: hsl(60, 64%, 64%);;
 
 .bg-selected {
   background-color: $color_bg_select;
@@ -126,7 +127,13 @@ h3 {
 
 select,button,input {
   background-color: $color_bg;
-  border: thin solid $color_border;
+  border: thin solid darken($color_bg_area, 30%);;
+}
+
+button {
+  background-color: lighten($color_bg_area, 10%);
+  padding: .5rem;
+  margin: .5rem;
 }
 
 input {
@@ -143,3 +150,4 @@ input {
 .config-input.number {
   width: 5rem;
 }
+

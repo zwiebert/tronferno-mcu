@@ -20,7 +20,6 @@
 </script>
 
 <div class="area">
-  <h4>NetMCU ESP32</h4>
   <McuFirmwareUpd {fwbtns} {McuFwGitTags} chip="" updSecs="15" />
   <McuFirmwareInfo />
 </div>
