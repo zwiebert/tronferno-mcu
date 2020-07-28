@@ -1,13 +1,13 @@
 <script>
   "use strict";
-  import { _ } from './services/i18n';
+  import { _ } from "./services/i18n";
   import { McuConfig, McuConfigKeys, Gmu } from "./store/mcu_config.js";
   import * as appDebug from "./app_debug.js";
   import * as httpFetch from "./fetch.js";
   import * as cuas from "./cuas.js";
   import * as misc from "./misc.js";
   import { onMount, onDestroy } from "svelte";
-  import { ReloadProgress } from './store/app_state.js';
+  import { ReloadProgress } from "./store/app_state.js";
 
   import McuConfigGpio from "./components/mcu_config/gpio.svelte";
   import McuConfigNetwork from "./components/mcu_config/network.svelte";
@@ -123,169 +123,159 @@
 </script>
 
 <style type="text/scss">
-
+  @import "./styles/app.scss";
+  .row1 {
+    background-color: darken($color_bg_area, 10%);
+  }
+  .row2 {
+    background-color: lighten($color_bg_area, 10%);
+  }
 </style>
 
-<div id="configdiv" class="top-div">
-  <div class="config" id="config-div">
-    <table id="cfg_table_id" class="conf-table top_table">
-      {#each mcuConfigKeys as name, i}
-        <tr class={i % 2 ? 'bg-yellow-200' : 'bg-yellow-300'}>
+<div class="config" id="config-div">
+  <table id="cfg_table_id" class="conf-table top_table">
+    {#each mcuConfigKeys as name, i}
+      <tr class={i % 2 ? 'row1' : 'row2'}>
 
-          {#if name !== 'gm-used'}
-            <td>
-              <label class="config-label">{name}</label>
-            </td>
-          {/if}
-
-          {#if name.endsWith('-enable')}
-            <td>
-              <McuConfigEnable {name} value={mcuConfig[name]} />
-            </td>
-            {:else if name === 'latitude'}
-            <td>
-              <McuConfigNumber
-                {name}
-                value={mcuConfig[name]}
-                min="-90"
-                max="90"
-                step="0.01" />
-            </td>
-          {:else if name === 'longitude'}
-            <td>
-              <McuConfigNumber
-                {name}
-                value={mcuConfig[name]}
-                min="-180"
-                max="180"
-                step="0.01" />
-            </td>
-          {:else if name === 'rf-rx-pin' || name === 'set-button-pin'}
-            <td>
-              <McuConfigNumber
-                {name}
-                value={mcuConfig[name]}
-                min="-1"
-                max="39" />
-            </td>
-          {:else if name === 'rf-tx-pin'}
-            <td>
-              <McuConfigNumber
-                {name}
-                value={mcuConfig[name]}
-                min="-1"
-                max="33" />
-            </td>
-          {:else if name === 'verbose'}
-            <td>
-              <McuConfigNumber {name} value={mcuConfig[name]} min="0" max="5" />
-            </td>
-          {:else if name === 'network'}
-            <td>
-              <McuConfigNetwork {name} value={mcuConfig[name]} />
-            </td>
-          {:else if name === 'lan-phy'}
-            <td>
-              <McuConfigLanPhy {name} value={mcuConfig[name]} />
-            </td>
-            {:else if name === 'lan-pwr-gpio'}
-            <td>
-              <McuConfigNumber
-                {name}
-                value={mcuConfig[name]}
-                min="-1"
-                max="36" />
-            </td>
-          {:else if name === 'astro-correction'}
-            <td>
-              <select class="config-input" id="cfg_{name}">
-                <option value="0">average</option>
-                <option value="1">not too late or dark</option>
-                <option value="2">not too early or bright</option>
-              </select>
-            </td>
-          {:else if name.startsWith('gpio')}
-            <td>
-              <McuConfigGpio {name} value={mcuConfig[name]} />
-            </td>
-          {:else if name !== 'gm-used'}
-            <td>
-              <input
-                class="config-input text"
-                type="text"
-                id="cfg_{name}"
-                {name}
-                value={mcuConfig[name]} />
-            </td>
-          {/if}
-
-        </tr>
-      {/each}
-
-    </table>
-
-  </div>
-
-  <input
-    type="text"
-    id="cfg_gm-used"
-    value={mcuConfig['gm-used']}
-    style="display:none;" />
-
-  <table id="gmu-table">
-    <tr>
-      <td>
-        <label class="config-label">Groups</label>
-      </td>
-      {#each { length: 7 } as _, i}
-        <td>
-          <label>{i + 1}</label>
-        </td>
-      {/each}
-    </tr>
-    <tr>
-      <td>
-        <label class="config-label">Members</label>
-      </td>
-      {#each gmu as n, i}
-        {#if i > 0}
+        {#if name !== 'gm-used'}
           <td>
-            <input
-              id="gmu{i}"
-              style="width:2em;"
-              type="number"
-              min="0"
-              max="7"
-              value={n} />
+            <label class="config-label">{name}</label>
           </td>
         {/if}
-      {/each}
-    </tr>
+
+        {#if name.endsWith('-enable')}
+          <td>
+            <McuConfigEnable {name} value={mcuConfig[name]} />
+          </td>
+        {:else if name === 'latitude'}
+          <td>
+            <McuConfigNumber
+              {name}
+              value={mcuConfig[name]}
+              min="-90"
+              max="90"
+              step="0.01" />
+          </td>
+        {:else if name === 'longitude'}
+          <td>
+            <McuConfigNumber
+              {name}
+              value={mcuConfig[name]}
+              min="-180"
+              max="180"
+              step="0.01" />
+          </td>
+        {:else if name === 'rf-rx-pin' || name === 'set-button-pin'}
+          <td>
+            <McuConfigNumber {name} value={mcuConfig[name]} min="-1" max="39" />
+          </td>
+        {:else if name === 'rf-tx-pin'}
+          <td>
+            <McuConfigNumber {name} value={mcuConfig[name]} min="-1" max="33" />
+          </td>
+        {:else if name === 'verbose'}
+          <td>
+            <McuConfigNumber {name} value={mcuConfig[name]} min="0" max="5" />
+          </td>
+        {:else if name === 'network'}
+          <td>
+            <McuConfigNetwork {name} value={mcuConfig[name]} />
+          </td>
+        {:else if name === 'lan-phy'}
+          <td>
+            <McuConfigLanPhy {name} value={mcuConfig[name]} />
+          </td>
+        {:else if name === 'lan-pwr-gpio'}
+          <td>
+            <McuConfigNumber {name} value={mcuConfig[name]} min="-1" max="36" />
+          </td>
+        {:else if name === 'astro-correction'}
+          <td>
+            <select class="config-input" id="cfg_{name}">
+              <option value="0">average</option>
+              <option value="1">not too late or dark</option>
+              <option value="2">not too early or bright</option>
+            </select>
+          </td>
+        {:else if name.startsWith('gpio')}
+          <td>
+            <McuConfigGpio {name} value={mcuConfig[name]} />
+          </td>
+        {:else if name !== 'gm-used'}
+          <td>
+            <input
+              class="config-input text"
+              type="text"
+              id="cfg_{name}"
+              {name}
+              value={mcuConfig[name]} />
+          </td>
+        {/if}
+
+      </tr>
+    {/each}
+
   </table>
 
-  <br />
-  <button id="crlb" type="button" on:click={hClick_Reload}>{$_('app.reload')}</button>
-  <button id="csvb" type="button" on:click={hClick_Save}>{$_('app.save')}</button>
-  <br />
-  <br />
-  <button id="mrtb" type="button" on:click={hClick_RestartMcu}>
-    {$_('app.restartMcu')}
-  </button>
-  <br />
-  <div id="config_restart_div" />
-  {#if $ReloadProgress > 0}
-    <strong>>$_('app.msg_waitForMcuRestart')</strong><br>
-    <progress id="reload_progress_bar" value="{$ReloadProgress}" max="100"></progress>
-  {/if}
-  <section>
-    <h1>Configuration-Wizards</h1>
-    <ul>
-      <li>
-        <button id="id_cuasb" type="button" on:click={hClick_ScanCU}>
-          {$_('app.wizard_cuas')}
-        </button>
-        <span id="id_cuasStatus" />
-      </li>
-    </ul>
-  </section>
 </div>
+
+<input
+  type="text"
+  id="cfg_gm-used"
+  value={mcuConfig['gm-used']}
+  style="display:none;" />
+
+<table id="gmu-table">
+  <tr>
+    <td>
+      <label class="config-label">Groups</label>
+    </td>
+    {#each { length: 7 } as _, i}
+      <td>
+        <label>{i + 1}</label>
+      </td>
+    {/each}
+  </tr>
+  <tr>
+    <td>
+      <label class="config-label">Members</label>
+    </td>
+    {#each gmu as n, i}
+      {#if i > 0}
+        <td>
+          <input
+            id="gmu{i}"
+            style="width:2em;"
+            type="number"
+            min="0"
+            max="7"
+            value={n} />
+        </td>
+      {/if}
+    {/each}
+  </tr>
+</table>
+
+<button type="button" on:click={hClick_Reload}>{$_('app.reload')}</button>
+<button type="button" on:click={hClick_Save}>{$_('app.save')}</button>
+<button type="button" on:click={hClick_RestartMcu}>
+  {$_('app.restartMcu')}
+</button>
+
+{#if $ReloadProgress > 0}
+  <strong>>$_('app.msg_waitForMcuRestart')</strong>
+  <br />
+  <progress id="reload_progress_bar" value={$ReloadProgress} max="100" />
+{/if}
+
+<section>
+  <h4>Configuration-Wizards</h4>
+  <ul>
+    <li>
+      <button id="id_cuasb" type="button" on:click={hClick_ScanCU}>
+        {$_('app.wizard_cuas')}
+      </button>
+      <span id="id_cuasStatus" />
+    </li>
+  </ul>
+</section>

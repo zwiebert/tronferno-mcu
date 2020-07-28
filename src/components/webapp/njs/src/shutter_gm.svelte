@@ -67,7 +67,7 @@
   }
 </style>
 
-<div id="flex shugmdiv">
+<div class="text-center">
   <!--
   <button id="sgb" type="button" on:click={hClick_G}>G{vg}</button>
   <button id="smb" disabled="{vm === ''}" type="button" on:click={hClick_M}>E{vm}</button>

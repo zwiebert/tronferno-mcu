@@ -6,7 +6,3 @@
 <div class="area">
   <Testing />
 </div>
-
-<div class="area">
-    <Ui2411 />
-  </div>

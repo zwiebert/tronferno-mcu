@@ -1,18 +1,32 @@
-$color_bg_select: hsl(152, 47%, 42%);
-$color_fg_select: hsl(64, 49%, 53%);
-$color_bg: hsl(60, 63%, 93%);
+$color_a: hsl(70, 30%, 80%);
+$color_b: hsl(100, 50%, 50%);
+
+$color_bg_select: $color_b;
+$color_fg_select: lighten($color_a, 30%);
+$color_bg: lighten($color_a, 50%);
 $color_fg: hsl(0, 0%, 0%); // #278727;
-$color_bg_area: hsl(60, 64%, 74%);
-$color_bg_main_area: hsl(60, 56%, 68%);
-$color_border:  hsl(120, 50%, 53%);
-$color_main_border:  hsl(120, 50%, 40%);
-$color_bg_nav: hsl(60, 77%, 85%);
-$color_bg_nav1: hsl(60, 65%, 78%);
-$color_bg_bt: hsl(60, 64%, 64%);;
+
+
+
+$color_bg_nav: $color_a;
+$color_bg_nav_select: $color_b;
+$color_bg_nav1: darken($color_bg_nav, 5%);
+$color_bg_nav1_select: darken($color_bg_nav_select, 5%);
+$color_bg_nav2: darken($color_bg_nav1, 5%);
+$color_bg_nav2_select: darken($color_bg_nav1_select, 5%);
+
+$color_bg_main_area: darken($color_bg_nav1, 5%);
+$color_border_main_area: darken($color_bg_main_area, 20%);
+
+$color_bg_area: lighten($color_bg_main_area, 2.5%);
+$color_border_area: darken($color_bg_area, 20%);
+
+$color_border: darken($color_b, 5%);
 
 .bg-selected {
   background-color: $color_bg_select;
 }
+
 .fg-selected {
   color: $color_fg_select;
 }
@@ -33,16 +47,26 @@ $color_bg_bt: hsl(60, 64%, 64%);;
 
 .navtab-main {
   border-radius: .5rem;
-  padding:0;
+  padding: 0;
   background-color: $color_bg_nav;
   border: thin dotted $color_border;
+
+  .tabbt.is-selected {
+    background-color: $color_bg_nav_select;
+    color: $color_fg_select;
+  }
 }
 
 .navtab-sub {
   border-radius: .5rem;
-  padding:0;
+  padding: 0;
   background-color: $color_bg_nav1;
   border: thin dotted $color_border;
+
+  .tabbt.is-selected {
+    background-color: $color_bg_nav1_select;
+    color: $color_fg_select;
+  }
 }
 
 .main-area {
@@ -50,7 +74,7 @@ $color_bg_bt: hsl(60, 64%, 64%);;
   margin-top: 1rem;
   padding: 0.5rem;
   background-color: $color_bg_main_area;
-  border: thin solid $color_border;
+  border: thin solid $color_border_main_area;
 }
 
 .area {
@@ -58,17 +82,17 @@ $color_bg_bt: hsl(60, 64%, 64%);;
   margin-top: 1rem;
   padding: 0.5rem;
   background-color: $color_bg_area;
-  border: thin solid $color_border;
+  border: thin solid $color_border_area;
 }
 
 html {
-font-size: 100%;
-background-color: $color_bg;
-color: $color_fg;
+  font-size: 100%;
+  background-color: $color_bg;
+  color: $color_fg;
 }
 
 .help-text-v0 {
-  display:none;
+  display: none;
 }
 
 .help-text-v1 {
@@ -125,9 +149,12 @@ h3 {
 }
 
 
-select,button,input {
+select,
+button,
+input {
   background-color: $color_bg;
-  border: thin solid darken($color_bg_area, 30%);;
+  border: thin solid darken($color_bg_area, 5%);
+  ;
 }
 
 button {
@@ -144,10 +171,11 @@ input {
   padding: 2px;
   margin-right: 3px;
 }
+
 .config-input.text {
   width: inherit;
 }
+
 .config-input.number {
   width: 5rem;
 }
-
