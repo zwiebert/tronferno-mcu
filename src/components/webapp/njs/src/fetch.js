@@ -94,7 +94,24 @@ export function http_postShutterCommand(
   http_postRequest(url, tfmcu);
 }
 
-export function http_fetchByMask(mask) {
+let fetchMask = 0;
+function async_fetchByMask() {
+  let mask = fetchMask;
+  fetchMask = 0;
+  http_fetchByMask(mask, true);
+}
+
+export function http_fetchByMask(mask, synchron) {
+  if (!mask) {
+    return;
+  }
+
+  if (!synchron) {
+    fetchMask |= mask;
+    setTimeout(async_fetchByMask, 125);
+    return;
+  }
+  
   let tfmcu = { to: "tfmcu" };
 
   if (mask & FETCH_CONFIG) tfmcu.config = { all: "?" };
