@@ -160,7 +160,7 @@ table, th, td {
         <br />
       </strong>
     {:else if $McuFirmwareUpdState === 1}
-      <strong>{$_('app.msg_waitForMcuRestart')}</strong>
+      <strong>{$_('app.msg_firmwareIsUpdating')}</strong>
       <br />
       <br />
       <progress value={$McuFirmwareUpdProgress} max={updSecs} />
