@@ -13,7 +13,7 @@ export const SUN_DOWN = 2;
 
 let on_destroy = [];
 onMount(() => {
-    on_destroy.push(GM.subscribe(() => shp_updHtml()));
+    httpFetch.http_fetchByMask(httpFetch.FETCH_SHUTTER_PREFS);
   });
 onDestroy(() => {
     for (const fn of on_destroy) {
@@ -21,9 +21,9 @@ onDestroy(() => {
     }
 });
 
-$: mvut = 0;
-$: mvdt = 0;
-$: mvspdt = 0;
+$: mvut = $PrefMvut / 10.0;
+$: mvdt = $PrefMvdt / 10.0;
+$: mvspdt = $PrefMvspdt / 10.0;
 
 function shp_updHtml() {
    mvut = $PrefMvut / 10.0;
