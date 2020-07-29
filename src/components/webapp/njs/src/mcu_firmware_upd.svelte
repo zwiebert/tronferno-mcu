@@ -154,7 +154,7 @@ table, th, td {
       <strong>
         Update succeeded
         <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}>
-          {$_('app.restart')}
+          {$_('app.restartMcu')}
         </button>
         <br />
         <br />
