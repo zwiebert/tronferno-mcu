@@ -157,19 +157,6 @@ process_parmConfig(clpar p[], int len) {
 
     if (key == NULL || val == NULL) {  // don't allow any default values in config
       return cli_replyFailure();
-    } else if (strcmp(key, "pw") == 0) {
-      if (val && strcmp(C.app_configPassword, val) == 0) {
-        pw_ok = true;
-        so_output_message(SO_CFGPASSWD_OK, NULL);
-      } else {
-        so_output_message(SO_CFGPASSWD_WRONG, NULL);
-        return cli_replyFailure();
-      }
-    } else if (!pw_ok) {
-      so_output_message(SO_CFGPASSWD_MISSING, NULL);
-      return cli_replyFailure();
-
-
 #if ENABLE_RESTART
     } else if (strcmp(key, "restart") == 0) {
 #ifdef MCU_ESP32

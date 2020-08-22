@@ -13,6 +13,9 @@
 #include "cli_app/cli_app.h"
 #include "userio/status_json.h"
 #include "fernotron/fsb.h"
+#include "cli/cli.h"
+#include "userio_app/status_output.h"
+#include "config/config.h"
 
 
 fsbT default_sender;
@@ -128,6 +131,36 @@ const struct parm_handlers parm_handlers = {
     .count = sizeof(handlers) / sizeof(handlers[0]),
 };
 
+
+/////////////// setup //////////////////
+
+static bool cliApp_checkPassword(clpar p[], int len, so_target_bits tgt) {
+  if (len < 2)
+    return true;
+
+  if (strcmp(p[0].key, "config") != 0)
+    return true;
+
+  if (!C.app_configPassword[0])
+    return true;
+  if (strcmp(p[1].key, "pw") == 0) {
+    if (strcmp(p[1].val, C.app_configPassword) == 0) {
+      so_output_message(SO_CFGPASSWD_OK, NULL);
+      return true;
+    } else {
+      so_output_message(SO_CFGPASSWD_WRONG, NULL);
+    }
+  } else {
+    so_output_message(SO_CFGPASSWD_MISSING, NULL);
+  }
+
+  return false;
+}
+
+
+void cliApp_setup() {
+  cli_hook_checkPassword = cliApp_checkPassword;
+}
 
 
 
