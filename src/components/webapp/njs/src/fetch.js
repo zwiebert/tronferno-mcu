@@ -2,6 +2,7 @@
 import * as appDebug from "./app_debug.js";
 import * as httpResp from "./http_resp.js";
 import { G, M0 } from "./store/curr_shutter.js";
+import { ws_isOpen } from "./net/conn_ws";
 
 export const FETCH_CONFIG = 1;
 export const FETCH_AUTO = 2;
@@ -16,6 +17,8 @@ export const FETCH_GIT_TAGS = 512;
 export const FETCH_SHUTTER_NAME = 1024;
 export const FETCH_ALL_POS = 2048;
 export const FETCH_BOOT_COUNT = 2048;
+
+const FETCHES_REPLY_BY_WS =  0;
 
 const MAX_RETRY_COUNT = 3;
 
@@ -98,6 +101,11 @@ let fetchMask = 0;
 function async_fetchByMask() {
   let mask = fetchMask;
   fetchMask = 0;
+  if ((mask & FETCHES_REPLY_BY_WS) && !ws_isOpen()) {
+   fetchMask = mask & FETCHES_REPLY_BY_WS;
+   mask &=  ~FETCHES_REPLY_BY_WS;
+   setTimeout(async_fetchByMask, 125);
+  }
   http_fetchByMask(mask, true);
 }
 
@@ -107,8 +115,9 @@ export function http_fetchByMask(mask, synchron) {
   }
 
   if (!synchron) {
+    if (!fetchMask)
+      setTimeout(async_fetchByMask, 125);
     fetchMask |= mask;
-    setTimeout(async_fetchByMask, 125);
     return;
   }
   
