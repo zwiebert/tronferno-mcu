@@ -5,7 +5,7 @@ tgts := all
 
 default: print-help
 
-clean : esp32-test-clean esp32-fullclean esp8266-clean
+clean : esp32-test-clean esp32-fullclean esp8266-clean http_clean
 	make -C test/esp32 clean
 
 print-help:
@@ -18,18 +18,18 @@ $(1): $$(addsuffix -$(1),$(mcus))
 endef
 $(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(tgt))))
 
-.PHONY: http_content http_proxy
-http_content :
-	cd src/components/http_server_content/webapp && make
+.PHONY: http_proxy http_clean
 http_proxy:
-	cd src/components/http_server_content/webapp && make proxy
+	cd src/components/webapp && make proxy
+http_clean:
+	cd src/components/webapp && make clean
 
 esp8266_build_cmd := make -C src/esp8266
 esp8266_tgts_auto := all clean flash app-flash flashinit flasherase spiffs
 
 define GEN_RULE
 .PHONY: esp8266-$(1)
-esp8266-$(1): http_content
+esp8266-$(1):
 	$(esp8266_build_cmd) $(1)
 endef
 $(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
@@ -66,15 +66,15 @@ endef
 $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
-esp32-all: http_content
+esp32-all:
 	$(esp32_build_cmd) reconfigure all
-esp32-lan: http_content
+esp32-lan:
 	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
 
 ########### OpenOCD ###################
 esp32_ocd_sh :=  sh $(realpath ./src/esp32/esp32_ocd.sh)
 
-esp32-flash-ocd: http_content
+esp32-flash-ocd:
 	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash)
 esp32-flash-app-ocd:
 	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash_app)
@@ -88,7 +88,7 @@ esp32_test_tgts_auto := build clean flash run all all-ocd flash-ocd flash-app-oc
 
 define GEN_RULE
 .PHONY: esp32-$(1)
-esp32-test-$(1): http_content
+esp32-test-$(1):
 	make -C test/esp32 $(1)
 endef
 $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))

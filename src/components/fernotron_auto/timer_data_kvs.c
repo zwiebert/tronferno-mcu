@@ -10,6 +10,7 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
 #include "debug/debug.h"
+#include <alloca.h>
 
 #ifndef TEST_HOST
 #define printf ets_printf

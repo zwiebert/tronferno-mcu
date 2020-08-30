@@ -1,5 +1,3 @@
-#define CONFIG_HTTPD_WS_SUPPORT 1
-
 #include <esp_wifi.h>
 #include <esp_event.h>
 #include <esp_log.h>
@@ -14,6 +12,14 @@
 #include "cli/mutex.h"
 #include "net/http/server/esp32/register_uris.h"
 
+#include "webapp/content.h"
+
+#define URI_WAPP_HTML "/"
+#define URI_WAPP_CSS "/f/css/wapp.css"
+#define URI_WAPP_JS "/f/js/wapp.js"
+//#define URI_WAPP_JS_MAP "/f/js/wapp.js.map"
+//#define URI_WAPP_CSS_MAP "/f/css/wapp.css.map"
+//#define SERVE_BR
 
 static const char *TAG="APP";
 
@@ -68,7 +74,6 @@ void ws_send_json(const char *json) {
  */
 static void ws_async_send(void *arg)
 {
-  ESP_LOGI(TAG, "ws_async_send");
     static const char * data = "Async data";
     struct async_resp_arg *resp_arg = arg;
     httpd_handle_t hd = resp_arg->hd;
@@ -84,19 +89,6 @@ static void ws_async_send(void *arg)
     free(resp_arg);
 }
 
-static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
-{
-  ESP_LOGI(TAG, "trigger_async_send");
-    struct async_resp_arg *resp_arg = malloc(sizeof(struct async_resp_arg));
-    resp_arg->hd = req->handle;
-    resp_arg->fd = httpd_req_to_sockfd(req);
-    return httpd_queue_work(handle, ws_async_send, resp_arg);
-}
-
-//////////////////// static files ///////////////////////////////////////
-extern const u8 text_tfmcu_html[] asm("_binary_tfmcu_html_start");
-extern const char text_tfmcu_js[] asm("_binary_tfmcu_js_start");
-extern const char text_tfmcu_js_map[] asm("_binary_tfmcu_js_map_start");;
 
 ////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
@@ -124,46 +116,87 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   return ESP_OK;
 }
 
-const struct {
-  const char *uri, *type, *file;
-} uri_file_map[] = { { .uri = "/f/js/tfmcu.js", .type = "text/javascript", .file = text_tfmcu_js }, //
-    //   { .uri = "/tfmcu.js.map", .type = "text/javascript",  .file = text_tfmcu_js_map }, //
-    //   { .uri = "", .file = "" }, //
 
-    { .uri = "/f/cli/help/send", .file = cli_help_parmSend }, //
-    { .uri = "/f/cli/help/auto", .file = cli_help_parmTimer }, //
-    { .uri = "/f/cli/help/config", .file = cli_help_parmConfig }, //
-    { .uri = "/f/cli/help/mcu", .file = cli_help_parmMcu }, //
-    { .uri = "/f/cli/help/pair", .file = cli_help_parmPair }, //
-    { .uri = "/f/cli/help/shpref", .file = cli_help_parmShpref }, //
-    { .uri = "/f/cli/help/help", .file = cli_help_parmHelp }, //
-    };
+
+struct file_map { const char *uri, *type, *file; u32 file_size; };
+
+const struct file_map uri_file_map[] =  {
+        { .uri = "/f/cli/help/send", .file = cli_help_parmSend }, //
+        { .uri = "/f/cli/help/auto", .file = cli_help_parmTimer }, //
+        { .uri = "/f/cli/help/config", .file = cli_help_parmConfig }, //
+        { .uri = "/f/cli/help/mcu", .file = cli_help_parmMcu }, //
+        { .uri = "/f/cli/help/pair", .file = cli_help_parmPair }, //
+        { .uri = "/f/cli/help/shpref", .file = cli_help_parmShpref }, //
+        { .uri = "/f/cli/help/help", .file = cli_help_parmHelp }, //
+};
+
+static esp_err_t respond_file(httpd_req_t *req, const struct file_map *fm, const char *content_encoding) {
+  httpd_resp_set_type(req, fm->type ? fm->type : "text/plain;charset=\"UTF-8\"");
+  if (content_encoding)
+    httpd_resp_set_hdr(req, "content-encoding", content_encoding);
+  if (fm->file_size)
+    httpd_resp_send(req, fm->file, fm->file_size);
+  else
+    httpd_resp_sendstr(req, fm->file);
+  return ESP_OK;
+}
+
+
 
 
 static esp_err_t handle_uri_get_file(httpd_req_t *req) {
   if (!check_access_allowed(req))
     return ESP_FAIL;
 
-  for (int i = 0; i < sizeof(uri_file_map) / sizeof(uri_file_map[0]); ++i) {
-    if (strcmp(req->uri, uri_file_map[i].uri) != 0)
-      continue;
-    const char *type = (uri_file_map[i].type) ? uri_file_map[i].type : "text/plain;charset=\"UTF-8\"";
-    httpd_resp_set_type(req, type);
-    httpd_resp_sendstr(req, uri_file_map[i].file);
-    return ESP_OK;
+  struct file_map fm = {};
+  const char *encoding = "gzip";
+
+  if (strcmp(req->uri, URI_WAPP_HTML) == 0) {
+    fm.file = build_wapp_html_gz;
+    fm.file_size = build_wapp_html_gz_len;
+    fm.type = "text/html";
+  } else  if (strcmp(req->uri, URI_WAPP_CSS) == 0) {
+    fm.file = build_wapp_css_gz;
+    fm.file_size = build_wapp_css_gz_len;
+    fm.type = "text/css";
+  } else  if (strcmp(req->uri, URI_WAPP_JS) == 0) {
+    fm.file = build_wapp_js_gz;
+    fm.file_size = build_wapp_js_gz_len;
+    fm.type = "text/javascript";
+#ifdef URI_WAPP_JS_MAP
+  } else  if (strcmp(req->uri, URI_WAPP_JS_MAP) == 0) {
+    fm.type = "text/javascript";
+#ifdef SERVE_BR
+    fm.file = build_wapp_js_map_br;
+    fm.file_size = build_wapp_js_map_br_len;
+    encoding = "br";
+#else
+    fm.file = build_wapp_js_map_gz;
+    fm.file_size = build_wapp_js_map_gz_len;
+#endif
+#endif
+#ifdef URI_WAPP_CSS_MAP
+  } else  if (strcmp(req->uri, URI_WAPP_CSS_MAP) == 0) {
+    fm.type = "text/css";
+#ifdef SERVE_BR
+    fm.file = build_wapp_css_map_br;
+    fm.file_size = build_wapp_css_map_br_len;
+    encoding = "br";
+#else
+    fm.file = build_wapp_css_map_gz;
+    fm.file_size = build_wapp_css_map_gz_len;
+#endif
+#endif
+  } else {
+    for (int i = 0; i < sizeof(uri_file_map) / sizeof(uri_file_map[0]); ++i) {
+      if (strcmp(req->uri, uri_file_map[i].uri) == 0)
+        return respond_file(req, &uri_file_map[i], "");
+    }
+    return ESP_FAIL;
   }
 
-  return ESP_FAIL;
-}
+  return respond_file(req, &fm, encoding);
 
-static esp_err_t handle_uri_tfmcu_html(httpd_req_t *req) {
-  if (!check_access_allowed(req))
-    return ESP_FAIL;
-
-  httpd_resp_set_type(req, "text/html");
-  httpd_resp_sendstr(req, (const char*) req->user_ctx);
-
-  return ESP_OK;
 }
 
 static esp_err_t handle_uri_ws(httpd_req_t *req) {
@@ -171,7 +204,6 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   FD_SET(fd, &ws_fds);
   if (ws_nfds <= fd)
     ws_nfds = 1 + fd;
-  ESP_LOGI(TAG, "handle /ws using fd: %d", fd);
   uint8_t buf[128] = { 0 };
 
   httpd_ws_frame_t ws_pkt = {.payload = buf };
@@ -181,8 +213,6 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
       ESP_LOGE(TAG, "httpd_ws_recv_frame failed with %d", ret);
       return ret;
   }
-  ESP_LOGI(TAG, "Got packet with message: %s", ws_pkt.payload);
-  ESP_LOGI(TAG, "Packet type: %d", ws_pkt.type);
 
   if (ws_pkt.type == HTTPD_WS_TYPE_CLOSE) { // XXX: does nothing. remove this
     ESP_LOGI(TAG, "Close fd: %d", fd);
@@ -210,23 +240,17 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
 }
 
 ////////////////////////// URI definitions ////////////////////////////////
-
-
 static const httpd_uri_t httpd_uris[] = {
-    { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json, .user_ctx = NULL, },
-    { .uri = "/f/*", .method = HTTP_GET, .handler = handle_uri_get_file},
-    { .uri = "/", .method = HTTP_GET, .handler = handle_uri_tfmcu_html, .user_ctx = (void*) text_tfmcu_html, },
-    { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true},
+    { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json },
+    { .uri = "/f/*", .method = HTTP_GET, .handler = handle_uri_get_file },
+    { .uri = "/", .method = HTTP_GET, .handler = handle_uri_get_file },
+    { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true },
 };
 
 
 ///////// public ///////////////
 void hts_register_uri_handlers(httpd_handle_t server) {
-  int i;
-
-
-  ESP_LOGI(TAG, "Registering URI handlers");
-  for (i = 0; i < sizeof(httpd_uris) / sizeof(httpd_uri_t); ++i) {
+  for (int i = 0; i < sizeof(httpd_uris) / sizeof(httpd_uri_t); ++i) {
     ESP_ERROR_CHECK(httpd_register_uri_handler(server, &httpd_uris[i]));
   }
 

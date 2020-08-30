@@ -1,5 +1,5 @@
 SRC_BASE ?= ../..
-CPPFLAGS += -DMCU_ESP8266 #-I app_config/proj_app_cfg.h
+CPPFLAGS += -DMCU_ESP8266 -DM_PI=3.14159265358979323846 #-I app_config/proj_app_cfg.h
 
 # Main settings includes
 include	 $(SRC_BASE)/src/esp8266/settings.mk
@@ -22,7 +22,7 @@ COMPSHARE_DIR=components-mcu/components
 COMPSHARE_PATH := $(SRC_BASE)/$(COMPSHARE_DIR)
 COMP_PATH := $(SRC_BASE)/$(COMP_DIR)
 
-COMPSHARE = txtio net debug cli key_value_store misc misc_time userio config_kvs net_mqtt net_http_server storage storage/esp8266/spiffs/src  net_mqtt/esp8266/esp_mqtt/mqtt
+COMPSHARE = txtio net debug cli key_value_store misc misc_time userio config_kvs net_mqtt net_http_server storage storage/esp8266/spiffs/src  net_mqtt/esp8266/esp_mqtt/mqtt jsmn
 COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app 
 MODULES	=  src/esp8266 src/esp8266/driver src/lib/time
 LIBS   =  gcc hal phy pp net80211 lwip wpa main crypto 

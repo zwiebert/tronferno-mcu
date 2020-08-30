@@ -9,7 +9,7 @@ endif
 EXTRA_INCDIR   += $(EXTRA_BASE)/include
 
 # compiler flags using during compilation of source files
-CFLAGS          =  -std=gnu90 -Wpointer-arith -Wundef -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -mno-serialize-volatile -D__ets__ -DICACHE_FLASH
+CFLAGS          =  -std=c99 -Wpointer-arith -Wundef -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -mno-serialize-volatile -D__ets__ -DICACHE_FLASH
 CXXFLAGS        = -Os -g -O2  -Wpointer-arith -Wundef -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -mno-serialize-volatile -D__ets__ -DICACHE_FLASH -fno-rtti -fno-exceptions
 
 # linker flags used to generate the main object file
@@ -128,7 +128,7 @@ $(TARGET_OUT): $(APP_AR_IROM) $(GEN_LIBS)
 	$(vecho) "Run gen_appbin"
 	#$(NM) --print-size --size-sort --radix=d $@
 	$(SIZE) -A -d $@
-	$(Q) python $(SDK_TOOLS)/gen_appbin.py $@ 0 $(mode) $(freqdiv) $(size_map) $(app)
+	$(Q) python2 $(SDK_TOOLS)/gen_appbin.py $@ 0 $(mode) $(freqdiv) $(size_map) $(app)
 	$(Q) mv eagle.app.flash.bin $(FW_BASE)/eagle.flash.bin
 	$(Q) mv eagle.app.v6.irom0text.bin $(FW_BASE)/eagle.irom0text.bin
 	$(Q) rm eagle.app.v6.*
