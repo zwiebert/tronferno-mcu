@@ -6,6 +6,7 @@
 #include "userio_app/status_output.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
+#include "misc/itoa.h"
 #include "debug/debug.h"
 
 #ifndef DISTRIBUTION
@@ -24,8 +25,7 @@
 #define CFG_PARTNAME "nvs"
 #define KEY_PREFIX "cpair_"
 
-extern char *itoa(int val, char *s, int radix);
-extern char *ltoa(long val, char *s, int radix);
+
   
 static void  fixController(const char *key, gm_bitmask_t *gm) {
   // there seems to be existing keys which cannot be found by iteration.

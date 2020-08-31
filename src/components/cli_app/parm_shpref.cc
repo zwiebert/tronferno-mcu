@@ -41,7 +41,7 @@ static void output_message_begin(u8 g, u8 m) {
   so_output_message(SO_SHPREF_OBJ_GM_begin, &gm);
 }
 static void output_message_kvs(const char *tag, const char *val) {
-  char *key = strcat(strcpy(alloca(strlen(tag) + sizeof PARM_OPT_TAG_PREFIX), PARM_OPT_TAG_PREFIX), tag);
+  char *key = strcat(strcpy((char*)alloca(strlen(tag) + sizeof PARM_OPT_TAG_PREFIX), PARM_OPT_TAG_PREFIX), tag);
   so_arg_kvs_t arg = { .key = key, .val = val };
   so_output_message(SO_PRINT_KVS, &arg);
 }

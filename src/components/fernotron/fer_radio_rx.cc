@@ -53,7 +53,7 @@ static bool input_level, input_edge_pos, input_edge_neg;
 static u16 aTicks, pTicks, nTicks;
 static u16 wordsToReceive;
 // flags
-volatile u8 frx_messageReceived;
+volatile fmsg_type frx_messageReceived;
 static u16 word_pair_buffer[2];
 static struct frx_counter frxCount;
 
@@ -185,7 +185,7 @@ static int IRAM_ATTR frx_receive_message(void) {
 
 void IRAM_ATTR  frx_clear(void) {
   frxCount = (struct frx_counter) {};
-  frx_messageReceived = 0;
+  frx_messageReceived = MSG_TYPE_NONE;
   wordsToReceive = WORDS_MSG_PLAIN;
 }
 

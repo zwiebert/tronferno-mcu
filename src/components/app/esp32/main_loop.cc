@@ -69,12 +69,13 @@ u32 loop_eventBits_wait() {
 
 void loop_eventBits_check() {
   u32 lf = loop_eventBits_wait();
-  for (enum loop_flagbits i = 0; lf; ++i, (lf >>= 1)) {
+  for (int i = 0; lf; ++i, (lf >>= 1)) {
+    auto fb = static_cast<loop_flagbits>(i);
     if (!GET_BIT(lf, 0))
       continue;
 
-    if (lfa_table[i])
-      (lfa_table[i])();
+    if (lfa_table[fb])
+      (lfa_table[fb])();
   }
 }
 #endif

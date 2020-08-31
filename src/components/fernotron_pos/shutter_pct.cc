@@ -129,7 +129,7 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
 
       if (mutex_cliTake()) {
         if (sj_open_root_object("tfmcu")) {
-          so_arg_gmp_t gmp[3] = { { g, m, pct }, { g, 0, pm_getPct(g, 0) }, { ~0, ~0, ~0 } };
+          so_arg_gmp_t gmp[3] = { { g, m, pct }, { g, 0, (u8)pm_getPct(g, 0) }, { 0xff, 0xff, 0xff } };
           so_broadcast_message(SO_POS_PRINT_GMPA, gmp);
           sj_close_root_object();
           cli_print_json(sj_get_json());

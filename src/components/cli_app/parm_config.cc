@@ -119,12 +119,14 @@ const char *const cfg_args_network[nwLEN] = {
 const char *const *cfg_args[SO_CFG_size] = {
 };
 
+#define CI(cb) static_cast<configItem>(cb)
+
 #define isValid_optStr(cfg, new) true
-#define set_optStr(v, cb) config_save_item_s(cb, v)
+#define set_optStr(v, cb) config_save_item_s(CI(cb), v)
 #define set_optBlob(v, cb) config_save_item_b(cb, &v, sizeof v)
 #define set_optStr_ifValid set_optStr
-#define set_opt(t, v, cb) (config_save_item_##t(cb,v) && config_item_modified(cb))
-#define set_optN(t, v, cb) (config_save_item_n_##t(cb,v) && config_item_modified(cb))
+#define set_opt(t, v, cb) (config_save_item_##t(CI(cb),v) && config_item_modified(CI(cb)))
+#define set_optN(t, v, cb) (config_save_item_n_##t(CI(cb),v) && config_item_modified(CI(cb)))
 
 #define has_changed() SET_BIT(*changed_mask, so_key)
 
@@ -292,7 +294,7 @@ process_parmConfig(clpar p[], int len) {
 
         case SO_CFG_ASTRO_CORRECTION: {
           NODEFAULT();
-          enum astroCorrection ac = atoi(val);
+          auto ac = static_cast<astroCorrection>(atoi(val));
           if (set_optN(i8, ac, CB_ASTRO_CORRECTION))
             hasChanged_geo = true;
         }
@@ -336,7 +338,6 @@ process_parmConfig(clpar p[], int len) {
       }
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
-      mcu_pin_mode ps;
 
       if (*val == '?') {
         so_output_message(SO_CFG_GPIO_PIN, &gpio_number);
@@ -346,7 +347,8 @@ process_parmConfig(clpar p[], int len) {
       } else {
         const char *error = "unknown gpio config";
 
-        for (ps = 0; pin_mode_args[ps]; ++ps) {
+        for (int i = 0; pin_mode_args[i]; ++i) {
+          auto ps = static_cast<mcu_pin_mode>(i);
           if (pin_mode_args[ps] == *val) {
             mcu_pin_level pl = val[1] == 'h' ? PIN_HIGH : val[1] == 'l' ? PIN_LOW : val[1] == 'm' ? PIN_HIGH_LOW : PIN_FLOATING;
             error = pin_set_mode(gpio_number, ps, pl);

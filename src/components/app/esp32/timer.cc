@@ -106,10 +106,8 @@ static void IRAM_ATTR intTimer_isr(void *args) {
 
 static void intTimer_init(timer_group_t timer_group, timer_idx_t timer_idx, timer_autoreload_t auto_reload, unsigned interval_us) {
 
-  timer_config_t config = {
-      .divider = TIMER_DIVIDER, .counter_dir = TIMER_COUNT_DOWN, .counter_en = TIMER_PAUSE, .alarm_en = TIMER_ALARM_EN,
-      .intr_type = TIMER_INTR_LEVEL, .auto_reload = auto_reload
-  };
+  timer_config_t config = { .alarm_en = TIMER_ALARM_EN,.counter_en = TIMER_PAUSE,  .intr_type =
+      TIMER_INTR_LEVEL, .counter_dir = TIMER_COUNT_DOWN, .auto_reload = auto_reload, .divider = TIMER_DIVIDER};
 
   timer_init(timer_group, timer_idx, &config);
   timer_set_counter_value(timer_group, timer_idx, (1ULL * interval_us * TIMER_SCALE_US));

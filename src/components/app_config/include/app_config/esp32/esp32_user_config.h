@@ -40,7 +40,6 @@
 
 #undef USE_TIMER_DATA_FS
 
-void ws_send_json(const char *json);
 #define ws_print_json ws_send_json
 
 #ifdef UNIT_TESTING

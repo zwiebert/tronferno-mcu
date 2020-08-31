@@ -6,7 +6,7 @@
  */
 
 #pragma once
-
+#ifndef __cplusplus
 #ifdef MCU_ESP8266
 #include <c_types.h>
 #endif
@@ -20,3 +20,4 @@ typedef unsigned char bool;
 #define FALSE           false
 #endif
 
+#endif

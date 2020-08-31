@@ -12,6 +12,7 @@
 #include "fer_msg_plain.h"
 #include "fer_radio_timings.h"
 #include "fer_msg_attachment_enum.h"
+#include <misc/bcd.h>
 
 #define FER_PRG_BYTE_CT          9
 #define FER_PRG_PACK_CT         18   // 18 lines per program-frame
@@ -24,8 +25,6 @@
 // weekday by number in prg[0][fpr0_RTC_wday]
 // values of high nibble of fpr0_RTC_wday (bit flags?)
 #define FLAG_TIMER_DATA 0x8
-
-extern uint8_t bcd2dec(uint8_t bcd);
 
 #define FPR_RTC_START_ROW  0
 #define FPR_RTC_START_COL  0

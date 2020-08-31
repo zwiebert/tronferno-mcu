@@ -7,9 +7,9 @@
 #define FER_CMD_BYTE_CT    6
 #define FER_CMD_ADDR_CT    3
 
-#define ENUMBF(type) uint8_t
+#define ENUMBF(type) type
 
-struct fer_cmd {
+struct FerCmd {
   uint8_t addr[FER_CMD_ADDR_CT];
 
   ENUMBF(fer_memb) memb :4;
@@ -22,7 +22,7 @@ union fer_cmd_row {
   uint8_t bd[FER_CMD_BYTE_CT];
 
   struct {
-    struct fer_cmd cmd;
+    struct FerCmd cmd;
     uint8_t checkSum;
   } __attribute__((__packed__)) sd;
 

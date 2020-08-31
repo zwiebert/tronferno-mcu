@@ -56,6 +56,7 @@ void cu_auto_set_check_timeout() {
     cuas_DISABLE_cb();
   }
 }
+#define CI(cb) static_cast<configItem>(cb)
 
 bool cu_auto_set_check(const fsbT *fsb) {
   if (end_time == 0)
@@ -63,13 +64,13 @@ bool cu_auto_set_check(const fsbT *fsb) {
 
   if (FSB_ADDR_IS_CENTRAL(fsb)) {
     u32 cu = FSB_GET_DEVID(fsb);
-    config_save_item_n_u32(CB_CUID, cu);
-    config_item_modified(CB_CUID);
+    config_save_item_n_u32(CI(CB_CUID), cu);
+    config_item_modified(CI(CB_CUID));
     end_time = 0;
     so_output_message(SO_CUAS_DONE, NULL);
     cuas_state = CUAS_SUCCESS;
-    config_save_item_n_u32(CB_CUID, cu);
-    config_item_modified(CB_CUID);
+    config_save_item_n_u32(CI(CB_CUID), cu);
+    config_item_modified(CI(CB_CUID));
     cuas_active = false;
     cuas_DISABLE_cb();
     return true;

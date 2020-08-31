@@ -47,7 +47,7 @@ static int delete_shadowded_kv(u8 group, u8 memb) {
 
   kvshT handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE);
   if (handle) {
-    char *key = alloca(td_key_len(tag) + 1);
+    char key[td_key_len(tag) + 1];
     for (g = 0; g <= 7; ++g) {
       for (m = 0; m <= 7; ++m) {
         if ((group == 0 || group == g) && (memb == 0 || (memb == m && gm_GetBit(&C.fer_usedMemberMask, g, m)))) {
@@ -80,7 +80,7 @@ bool  save_timer_data_kvs(timer_data_t *p, u8 g, u8 m) {
 
   kvshT handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE);
   if (handle) {
-    char *key = td_make_key(alloca(td_key_len(tag) + 1), tag, g, m);
+    char *key = td_make_key((char*)alloca(td_key_len(tag) + 1), tag, g, m);
     success = kvs_rw_blob(handle, key, p, sizeof(*p), true);
     kvs_commit(handle);
     kvs_close(handle);
@@ -95,7 +95,7 @@ bool  read_timer_data_kvs(timer_data_t *p, u8 *g, u8 *m, bool wildcard) {
 
   kvshT handle = kvs_open(TD_KVS_NAMESPACE, kvs_READ);
   if (handle) {
-    char *key = td_make_key(alloca(td_key_len(tag) + 1), tag, *g, *m);
+    char *key = td_make_key((char*)alloca(td_key_len(tag) + 1), tag, *g, *m);
     success = kvs_rw_blob(handle, key, p, sizeof(*p), false);
 
     if (!success && wildcard) {
@@ -126,7 +126,7 @@ int timer_data_transition_fs_to_kvs() {
       timer_data_t td;
       if (read_timer_data_fs(&td, &g, &m, false)) {
         if (handle || (handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE))) {
-          char *key = td_make_key(alloca(td_key_len(tag) + 1), tag, g, m);
+          char *key = td_make_key((char*)alloca(td_key_len(tag) + 1), tag, g, m);
           if (!kvs_rw_blob(handle, key, &td, sizeof(td), true)) {
             error = true;
             continue;

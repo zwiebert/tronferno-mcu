@@ -17,6 +17,7 @@
 #include "userio_app/status_output.h"
 #include "config/config.h"
 
+#define CI(cb) static_cast<configItem>(cb)
 
 fsbT default_sender;
 
@@ -53,7 +54,7 @@ bool  config_receiver(const char *val) {
   } else {
     return false;
   }
-  config_save_item_n_i8(CB_RECV, C.app_recv);
+  config_save_item_n_i8(CI(CB_RECV), C.app_recv);
   return true;
 }
 
@@ -66,7 +67,7 @@ config_transmitter(const char *val) {
   } else {
     return false;
   }
-  config_save_item_n_i8(CB_TRANSM, C.app_transm);
+  config_save_item_n_i8(CI(CB_TRANSM), C.app_transm);
   return true;
 }
 
@@ -87,7 +88,7 @@ bool  asc2group(const char *s, fer_grp *grp) {
   if (s) {
     int g = atoi(s);
     if (0 <= g && g <= 7) {
-      *grp = g;
+      *grp = ngrp2fer_grp(g);
       return true;
     }
   }
@@ -99,7 +100,18 @@ bool  asc2memb(const char *s, fer_memb *memb) {
 
     int m = atoi(s);
     if (0 <= m && m <= 7) {
-      *memb = (m == 0 ? fer_memb_Broadcast : (fer_memb) (m - 1) + fer_memb_M1);
+      *memb = nmb2fer_memb(m);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool asc2u8(const char *s, u8 *n, u8 limit) {
+  if (s) {
+    int g = atoi(s);
+    if (0 <= g && g <= limit) {
+      *n = g;
       return true;
     }
   }

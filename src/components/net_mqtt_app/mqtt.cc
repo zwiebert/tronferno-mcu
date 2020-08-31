@@ -105,7 +105,7 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
   }
 
   if (mutex_cliTake()) {
-    char *line = alloca(40 + data_len);
+    char line[40 + data_len];
     if (topic_endsWith(topic, topic_len, TOPIC_GPO_END)) {
       const char *addr = strstr(topic, TOPIC_GPO_MID);
       if (!addr)
@@ -187,7 +187,7 @@ void io_mqttApp_published(int msg_id) {
 
 void io_mqttApp_setup(const char *topic_root) {
   if (topic_root && *topic_root && (!io_mqtt_topic_root || 0 != strcmp(io_mqtt_topic_root, topic_root))) {
-    char *tr = malloc(strlen(topic_root)+1);
+    char *tr = (char*)malloc(strlen(topic_root)+1);
     if (tr) {
       strcpy (tr, topic_root);
       free(io_mqtt_topic_root);

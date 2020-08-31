@@ -62,7 +62,7 @@ bool ferSp_strByM_store(const char *src, const char *tag, uint8_t g, uint8_t m) 
   bool success = false;
   kvshT handle = kvs_open(STS_KVS_NAMESPACE, kvs_WRITE);
   if (handle) {
-    char *key = sts_make_key(alloca(sts_key_len(tag) + 1), tag, g, m);
+    char *key = sts_make_key((char*)alloca(sts_key_len(tag) + 1), tag, g, m);
     success = kvs_rw_str(handle, key, (char*)src, 0, true);
     kvs_commit(handle);
     kvs_close(handle);
@@ -75,7 +75,7 @@ bool ferSp_strByM_load(char *dst, unsigned size, const char *tag, uint8_t g, uin
   bool success = false;
   kvshT handle = kvs_open(STS_KVS_NAMESPACE, kvs_READ);
   if (handle) {
-    char *key = sts_make_key(alloca(sts_key_len(tag) + 1), tag, g, m);
+    char *key = sts_make_key((char*)alloca(sts_key_len(tag) + 1), tag, g, m);
     success = kvs_rw_str(handle, key, dst, size, false);
     kvs_close(handle);
   }
@@ -104,14 +104,14 @@ static kvs_cbrT ferSp_strByM_forEach_cb(const char *key, kvs_type_t type, void *
 }
 
 int ferSp_strByM_forEach(const char *tag, uint8_t g, uint8_t m, ferSp_strCallBackT callback) {
-  char *key = sts_make_key(alloca(sts_key_len(tag) + 1), tag, g, m);
+  char *key = sts_make_key((char*)alloca(sts_key_len(tag) + 1), tag, g, m);
   struct cb_args cb_args = { .callback = callback };
   return kvs_foreach(STS_KVS_NAMESPACE, KVS_TYPE_STR, key, ferSp_strByM_forEach_cb, &cb_args);
 }
 bool ferSp_strByM_forOne(const char *tag, uint8_t g, uint8_t m, ferSp_strCallBackT callback) {
-  char *key = sts_make_key(alloca(sts_key_len(tag) + 1), tag, g, m);
+  char *key = sts_make_key((char*)alloca(sts_key_len(tag) + 1), tag, g, m);
   struct cb_args cb_args = { .callback = callback };
-  return kvsCb_match == ferSp_strByM_forEach_cb(key, 0, &cb_args);
+  return kvsCb_match == ferSp_strByM_forEach_cb(key, KVS_TYPE_none, &cb_args);
 }
 
 

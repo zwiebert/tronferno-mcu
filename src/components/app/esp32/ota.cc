@@ -16,6 +16,7 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "misc/int_types.h"
+#include "misc/cstring_utils.hh"
 
 static const char *TAG = "ESP32_OTA";
 extern const u8 ca_cert_pem[];
@@ -52,7 +53,7 @@ static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
     return ESP_OK;
 }
 
-static char *Firmware_url = 0;
+static csu Firmware_url;
 
 void simple_ota_example_task(void * pvParameter) {
 
@@ -68,14 +69,13 @@ void simple_ota_example_task(void * pvParameter) {
     state = ota_FAIL;
     // ESP_LOGE(TAG, "Firmware upgrade failed");
   }
-  free(Firmware_url);
+  Firmware_url = "";
   vTaskDelete(NULL);
 }
 
 bool ota_doUpdate(const char *firmware_url) {
-  Firmware_url = malloc(strlen(firmware_url) + 1);
-  strcpy(Firmware_url, firmware_url);
-  io_printf_v(vrb3, "OTA: url=<%s>\n", Firmware_url);
+  Firmware_url = firmware_url;;
+  io_printf_v(vrb3, "OTA: url=<%s>\n", Firmware_url.ptr());
   xTaskCreate(&simple_ota_example_task, "ota_example_task", 16384, NULL, 5, NULL);
   return false;
 }

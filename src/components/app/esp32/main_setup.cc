@@ -1,6 +1,7 @@
 #include "main.h"
 #include "misc/time/run_time.h"
 #include "key_value_store/kvs_wrapper.h"
+#include "cli/mutex.h"
 
 void loop_setBit_mcuRestart() {
   lf_setBit(lf_mcuRestart);
@@ -117,7 +118,7 @@ void ntpApp_setup(void) {
   config_setup_ntpClient();
 }
 
-void main_setup_ip_dependent() {
+extern "C" void main_setup_ip_dependent() { //XXX called from library
   static int once;
   so_output_message(SO_INET_PRINT_ADDRESS, 0);
   if (!once) {
@@ -205,7 +206,6 @@ void mcu_init() {
     tmr_checkNetwork_start();
 #endif
 #ifdef USE_CLI_MUTEX
-  void mutex_setup(void);
   mutex_setup();
 #endif
   //setup_udp();

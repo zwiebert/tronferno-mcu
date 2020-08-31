@@ -44,8 +44,8 @@ bool commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   }
 
   fer_cmd fc = fer_cmd_None;
-  fer_grp group = g;
-  fer_memb memb = m == 0 ? 0 : m + 7;
+  fer_grp group = ngrp2fer_grp(g);
+  fer_memb memb = nmb2fer_memb(m);
 
   if (is_our_cu && g > 0 && m > 0) {
     curr_pct = statPos_getPct(a, g, m);

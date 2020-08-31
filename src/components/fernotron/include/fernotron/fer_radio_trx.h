@@ -16,7 +16,7 @@
 #define WORDS_MSG_RTC (2*BYTES_MSG_RTC)
 #define WORDS_MSG_TIMER  (2*BYTES_MSG_TIMER)
 
-extern volatile uint8_t frx_messageReceived;
+extern volatile fmsg_type frx_messageReceived;
 extern volatile bool ftx_messageToSend_isReady;
 extern volatile uint16_t ftx_messageToSend_wordCount;
 

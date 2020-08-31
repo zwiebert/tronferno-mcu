@@ -127,7 +127,7 @@ int process_parmMcu(clpar p[], int len) {
 #ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
-      mcu_pin_state ps = 0, ps_result = 0;
+
 
       if (!is_gpio_number_usable(gpio_number, true)) {
         reply_message("gpio:error", "gpio number cannot be used");
@@ -135,12 +135,13 @@ int process_parmMcu(clpar p[], int len) {
       } else {
 
         const char *error = NULL;
-        for (ps = 0; pin_state_args[ps] != 0; ++ps) {
-          if (pin_state_args[ps] == *val) {
+        int psi;
+        for (psi = 0; pin_state_args[psi] != 0; ++psi) {
+          if (pin_state_args[psi] == *val) {
             break;
           }
         }
-
+        mcu_pin_state ps = (mcu_pin_state)psi, ps_result = PIN_READ;
         switch (ps) {
 
           case PIN_CLEAR:
@@ -191,7 +192,7 @@ int process_parmMcu(clpar p[], int len) {
         const char *tag = val + strlen(OTA_FWURL_TAG_COOKIE);
         int url_len = strlen(OTA_FWURL_TAG_HEAD) + strlen(OTA_FWURL_TAG_TAIL) + strlen(tag);
         char *url;
-        if ((url = alloca(url_len + 1))) {
+        if ((url = (char*)alloca(url_len + 1))) {
           strcat(strcat(strcpy(url, OTA_FWURL_TAG_HEAD), tag), OTA_FWURL_TAG_TAIL);
           ota_doUpdate(url);
         }

@@ -41,11 +41,11 @@
 bool so_output_message2(so_msg_t mt, const void *arg);
 
 void so_broadcast_message(so_msg_t mt, void *arg) {
-  so_output_message_tgt(mt, arg, (SO_TGT_MQTT|SO_TGT_CLI|SO_TGT_WS|SO_TGT_FLAG_JSON|SO_TGT_FLAG_TXT));
+  so_output_message_tgt(mt, arg, static_cast<so_target_bits>(SO_TGT_MQTT|SO_TGT_CLI|SO_TGT_WS|SO_TGT_FLAG_JSON|SO_TGT_FLAG_TXT));
 }
 
 void so_output_message_tgt(so_msg_t mt, void *arg, so_target_bits tgt) {
-  so_target_bits old_tgt = so_target;
+  auto old_tgt = so_target;
   so_target = tgt;
 
   so_output_message(mt, arg);
@@ -53,7 +53,7 @@ void so_output_message_tgt(so_msg_t mt, void *arg, so_target_bits tgt) {
   so_target = old_tgt;
 }
 
-void  so_output_message(so_msg_t mt, void *arg) {
+void  so_output_message(so_msg_t mt, const void *arg) {
   static u16 pras_msgid, cuas_msgid;
   char buf[64];
   int i;
@@ -102,7 +102,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
 
   case SO_MCU_OTA:
 #ifdef USE_OTA
-    so_out_x_reply_entry_ss("ota-url", arg);
+    so_out_x_reply_entry_ss("ota-url", static_cast<const char*>(arg));
 #endif
     break;
   case SO_MCU_OTA_STATE:
@@ -136,7 +136,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
   /////////////////////////////////////////////////////////////////////////////////
   case SO_CFG_all: {
     for (i = SO_CFG_begin + 1; i < SO_CFG_end; ++i) {
-      so_output_message(i, NULL);
+      so_output_message(static_cast<so_msg_t>(i), NULL);
     }
   }
     break;
@@ -345,7 +345,7 @@ void  so_output_message(so_msg_t mt, void *arg) {
 
     /////////////////////////////////////////////////////////////////////////////////
   case SO_TIMER_EVENT_PRINT: {
-    so_arg_gm_t *a = arg;
+    auto a = static_cast<const so_arg_gm_t*>(arg);
     so_print_timer_event_minutes(a->g, a->m);
   }
     break;
@@ -358,13 +358,13 @@ void  so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_TIMER_PRINT: {
-    so_arg_gm_t *a = arg;
+    auto a = static_cast<const so_arg_gm_t*>(arg);;
     so_print_timer(a->g, a->m);
   }
     break;
 
   case SO_ASTRO_MINUTES_PRINT: {
-    so_arg_gm_t *a = arg;
+    auto a = static_cast<const so_arg_gm_t*>(arg);;
     u8 g = a->g, m = a->m;
     timer_minutes_t tmi;
     if (fau_get_timer_minutes_now(&tmi, &g, &m, true)) {
@@ -383,7 +383,7 @@ break;
     break;
 
   case SO_SHPREF_OBJ_GM_begin: {
-    so_arg_gm_t *a = arg;
+    auto a = static_cast<const so_arg_gm_t*>(arg);;
     char buf[] = "shs00";
     buf[3] += a->g;
     buf[4] += a->m;
@@ -396,20 +396,20 @@ break;
 
 
   case SO_PRINT_KVD: {
-    so_arg_kvd_t *a = arg;
+    auto a = static_cast<const so_arg_kvd_t*>(arg);
     so_out_x_reply_entry_sd(a->key, a->val);
   }
   break;
 
   case SO_PRINT_KVS: {
-    so_arg_kvs_t *a = arg;
+    auto a = static_cast<const so_arg_kvs_t*>(arg);
     so_out_x_reply_entry_ss(a->key, a->val);
   }
   break;
 
 
   case SO_POS_PRINT_GMP: {
-    so_arg_gmp_t *a = arg;
+    auto a = static_cast<const so_arg_gmp_t*>(arg);
     if (so_cco) {
       io_puts("A:position:");
       io_puts(" g="), io_putd(a->g);
@@ -435,7 +435,7 @@ break;
     break;
 
   case SO_POS_PRINT_GMPA: {
-    so_arg_gmp_t *a = arg;
+    auto a = static_cast<const so_arg_gmp_t*>(arg);
 
 
     if (so_cco)
@@ -467,7 +467,7 @@ break;
     break;
 
   case SO_POS_PRINT_MMP: {
-    so_arg_mmp_t *a = arg;
+    auto a = static_cast<const so_arg_mmp_t*>(arg);
     if (so_cco)
       io_puts("U:position:"), io_puts(" p="), io_putd(a->p), io_puts(" mm="), so_print_gmbitmask(a->mm), io_puts(";\n");
     if (so_jco) {
@@ -525,13 +525,13 @@ break;
     break;
 
   case SO_PAIR_PRINT_AMM: {
-    so_arg_amm_t *a = arg;
+    auto a = static_cast<const so_arg_amm_t*>(arg);
     io_puts("pair a="), io_print_hex(a->a, false), io_puts(" mm="), so_print_gmbitmask(a->mm), io_puts(";\n");
   }
     break;
 
   case SO_PAIR_PRINT_KMM: {
-    so_arg_kmm_t *a = arg;
+    auto a = static_cast<const so_arg_kmm_t*>(arg);
     //io_puts("pair a="), io_puts(a->key), io_puts(" mm="), so_print_gmbitmask(a->mm), io_puts(";\n");
     char buf[20];
     so_gmbitmask_to_str(buf, a->mm);
@@ -540,7 +540,7 @@ break;
     break;
 
   case SO_PAIR_PRINT_KMM_SINGLE: {
-    so_arg_kmm_t *a = arg;
+    auto a = static_cast<const so_arg_kmm_t*>(arg);
     //io_puts("pair a="), io_puts(a->key), io_puts(" mm="), so_print_gmbitmask(a->mm), io_puts(";\n");
     char buf[20];
     so_gmbitmask_to_str(buf, a->mm);

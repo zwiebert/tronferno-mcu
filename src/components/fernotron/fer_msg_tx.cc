@@ -46,7 +46,7 @@ bool fer_send_msg(const fsbT *fsb, fmsg_type msgType, i8 repeats) {
 bool fer_send_delayed_msg(const fsbT *fsb, fmsg_type msgType, u16 delay, i8 repeats) {
   precond(fsb);
 
-  struct sf msg = { .fsb = *fsb, .mt = msgType, .s10 = (delay + get_now_time_ts()), .repeats = repeats };
+  struct sf msg = { .fsb = *fsb, .s10 = (delay + (u32)get_now_time_ts()), .mt = msgType, .repeats = repeats };
   if (!ftx_pushMsg(&msg))
     return false;
 
@@ -89,8 +89,8 @@ fsbT* get_fsb(u32 a, u8 g, u8 m, fer_cmd cmd) {
   fer_init_sender(&fsb, a);
 
   if (FSB_ADDR_IS_CENTRAL(&fsb)) {
-    FSB_PUT_GRP(&fsb, g);
-    FSB_PUT_MEMB(&fsb, m == 0 ? 0 : m + 7);
+    FSB_PUT_NGRP(&fsb, g);
+    FSB_PUT_NMEMB(&fsb, m);
   }
   FSB_PUT_CMD(&fsb, cmd);
 
