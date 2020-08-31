@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+#include "fer_app_cfg.h"
 
 #include "fer_radio_parity.h"
 #include "misc/int_types.h"

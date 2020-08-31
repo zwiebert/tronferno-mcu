@@ -21,19 +21,19 @@ static int t2m(int hour, int minute) {
 
 static void test_timer_event4() {
   erase_timer_data(0,0);
-  timer_data_t t1 = {.astro = 15, .bf = 0, .daily = "03452123", .weekly = "" };
+  timer_data_t t1 = {15, 0, "03452123", "" };
   save_timer_data(&t1, 1, 0);
-  timer_data_t t2 = {.astro = 0, .bf = 0, .daily = "", .weekly = "06542109+++0822-07082211+" };
+  timer_data_t t2 = {0, 0, "", "06542109+++0822-07082211+" };
   save_timer_data(&t2, 1, 1);
 
   struct tm now_tm = {
      .tm_sec = 0,
      .tm_min = 0,
      .tm_hour = 18,
-     .tm_wday = 3,
      .tm_mday = 22,
      .tm_mon = 3, // april
      .tm_year = 120,
+     .tm_wday = 3,
   };
 
 
@@ -50,19 +50,19 @@ static void test_timer_event4() {
 
 static void test_timer_event3() {
   erase_timer_data(0,0);
-  timer_data_t t1 = {.astro = 20000, .bf = 0, .daily = "03452123", .weekly = "" };
+  timer_data_t t1 = {20000, 0, "03452123", "" };
   save_timer_data(&t1, 1, 0);
-  timer_data_t t2 = {.astro = 20000, .bf = 0, .daily = "", .weekly = "06542109+++0822-07082211+" };
+  timer_data_t t2 = {20000, 0, "", "06542109+++0822-07082211+" };
   save_timer_data(&t2, 1, 1);
 
   struct tm now_tm = {
      .tm_sec = 0,
      .tm_min = 0,
      .tm_hour = 5,
-     .tm_wday = 1,
      .tm_mday = 2,
      .tm_mon = 3,
      .tm_year = 120,
+     .tm_wday = 1,
   };
 
 
@@ -79,19 +79,19 @@ static void test_timer_event3() {
 
 static void test_timer_event2() {
   erase_timer_data(0,0);
-  timer_data_t t1 = {.astro = 20000, .bf = 0, .daily = "03452123", .weekly = "" };
+  timer_data_t t1 = {20000, 0, "03452123", "" };
   save_timer_data(&t1, 1, 0);
-  timer_data_t t2 = {.astro = 20000, .bf = 0, .daily = "04562345", .weekly = "" };
+  timer_data_t t2 = {20000, 0, "04562345", "" };
   save_timer_data(&t2, 1, 1);
 
   struct tm now_tm = {
      .tm_sec = 0,
      .tm_min = 0,
      .tm_hour = 19,
-     .tm_wday = 1,
      .tm_mday = 2,
      .tm_mon = 3,
      .tm_year = 120,
+     .tm_wday = 1,
   };
 
 
@@ -103,15 +103,15 @@ static void test_timer_event2() {
   gm_bitmask_t test1 = {0,(C.fer_usedMemberMask[1]&0xfc),0,0,0,0,0,0};
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
-  now_tm = (struct tm){
+  now_tm = tm {
        .tm_sec = 0,
        .tm_min = 0,
        .tm_hour = 22,
-       .tm_wday = 1,
        .tm_mday = 2,
        .tm_mon = 3,
        .tm_year = 120,
-    };
+       .tm_wday = 1,
+  };
 
   now_time = mktime(&now_tm);
 
@@ -125,19 +125,20 @@ struct tm test_tm, *test_tmp;
 
 static void test_timer_event() {
   erase_timer_data(0,0);
-  timer_data_t t1 = {.astro = 20000, .bf = 0, .daily = "04562345", .weekly = "" };
+
+  timer_data_t t1 = {20000, 0, "04562345", "" };
   save_timer_data(&t1, 1, 0);
-  timer_data_t t2 = {.astro = 20000, .bf = 0, .daily = "03452123", .weekly = "" };
+  timer_data_t t2 = {20000, 0, "03452123", "" };
   save_timer_data(&t2, 1, 1);
 
   struct tm now_tm = {
      .tm_sec = 0,
      .tm_min = 0,
      .tm_hour = 19,
-     .tm_wday = 1,
      .tm_mday = 2,
      .tm_mon = 3,
      .tm_year = 120,
+     .tm_wday = 1,
   };
 
   minutes_t now_minutes = t2m(now_tm.tm_hour, now_tm.tm_min);
@@ -183,15 +184,15 @@ static void test_timer_event() {
 
   TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
 
-  now_tm = (struct tm){
+  now_tm = tm {
        .tm_sec = 0,
        .tm_min = 0,
        .tm_hour = 22,
-       .tm_wday = 1,
        .tm_mday = 2,
        .tm_mon = 3,
        .tm_year = 120,
-    };
+       .tm_wday = 1,
+  };
 
   now_time = mktime(&now_tm);
 
@@ -201,17 +202,17 @@ static void test_timer_event() {
 
 
 static void test_timer_minutes() {
-  timer_data_t t1 = {.astro = 20000, .bf = 0, .daily = "04562345", .weekly = "" };
-  timer_data_t t2 = {.astro = 20000, .bf = 0, .daily = "", .weekly = "06542109+++0822-07082211+" };
+  timer_data_t t1 = {20000,  0, "04562345", "" };
+  timer_data_t t2 = {20000,  0, "", "06542109+++0822-07082211+" };
 
   struct tm tm = {
      .tm_sec = 0,
      .tm_min = 0,
      .tm_hour = 19,
-     .tm_wday = 1,
      .tm_mday = 2,
      .tm_mon = 3,
      .tm_year = 120,
+     .tm_wday = 1,
   };
 
   minutes_t now = t2m(tm.tm_hour, tm.tm_min);
@@ -349,7 +350,7 @@ gm_bitmask_t manual_bits;
 config C;
 
 static struct cfg_astro cfg_astro =
-    { .geo_longitude = 13.38, .geo_latitude = 52.5, .geo_timezone = 1, .astroCorrection = acAverage, };
+    { .astroCorrection = acAverage, .geo_longitude = 13.38, .geo_latitude = 52.5, .geo_timezone = 1,  };
 void setUp() {
 
   C.fer_usedMembers = ~0U;

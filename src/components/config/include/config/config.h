@@ -62,7 +62,7 @@ typedef struct {
 extern config C;
 extern const bool always_true, always_false;
 
-#ifndef TEST_HOST
+#if 1//ndef TEST_HOST
 #define cfg_getCuId() C.fer_centralUnitID
 #endif
 

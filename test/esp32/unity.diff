@@ -1,34 +1,21 @@
-cd ./build/unity && diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app .
 diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt ./CMakeLists.txt
---- /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt	2020-03-26 20:41:38.470987000 +0100
-+++ ./CMakeLists.txt	2020-03-26 22:10:45.759294999 +0100
-@@ -2,8 +2,8 @@
+--- /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt	2020-06-27 19:34:16.831893207 +0200
++++ ./CMakeLists.txt	2020-08-31 03:54:17.335377220 +0200
+@@ -2,8 +2,9 @@
  # CMakeLists in this exact order for cmake to work correctly
  cmake_minimum_required(VERSION 3.5)
  
--set(EXTRA_COMPONENT_DIRS "$ENV{IDF_PATH}/examples/cxx/experimental/experimental_cpp_component/"
--                         "$ENV{IDF_PATH}/examples/peripherals/rmt/ir_protocols/components")
-+set(EXTRA_COMPONENT_DIRS $ENV{COMP_DIRS})
+-list(APPEND EXTRA_COMPONENT_DIRS "$ENV{IDF_PATH}/examples/cxx/experimental/experimental_cpp_component/"
+-                                 "$ENV{IDF_PATH}/examples/peripherals/rmt/ir_protocols/components")
++list(APPEND EXTRA_COMPONENT_DIRS $ENV{COMP_DIRS})
 +set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DUNIT_TESTING")
++
  
  include($ENV{IDF_PATH}/tools/cmake/project.cmake)
  project(unit-test-app)
-diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt.orig ./CMakeLists.txt.orig
---- /home/bertw/esp/esp-idf/tools/unit-test-app/CMakeLists.txt.orig	1970-01-01 01:00:00.000000000 +0100
-+++ ./CMakeLists.txt.orig	2020-03-26 22:10:45.759294999 +0100
-@@ -0,0 +1,9 @@
-+# The following lines of boilerplate have to be in your project's
-+# CMakeLists in this exact order for cmake to work correctly
-+cmake_minimum_required(VERSION 3.5)
-+
-+set(EXTRA_COMPONENT_DIRS "$ENV{IDF_PATH}/examples/cxx/experimental/experimental_cpp_component/"
-+                         "$ENV{IDF_PATH}/examples/peripherals/rmt/ir_protocols/components")
-+
-+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-+project(unit-test-app)
 diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/main/app_main.c ./main/app_main.c
 --- /home/bertw/esp/esp-idf/tools/unit-test-app/main/app_main.c	2019-12-14 10:03:56.989231000 +0100
-+++ ./main/app_main.c	2020-03-26 22:10:45.759294999 +0100
++++ ./main/app_main.c	2020-08-31 03:13:38.091315283 +0200
 @@ -2,5 +2,7 @@
  
  void app_main(void)
@@ -37,9 +24,23 @@ diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/main/app_main.c ./main/app
 +  unity_suiteSetUp();
      test_main();
  }
+diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/main/app_main.c.rej ./main/app_main.c.rej
+--- /home/bertw/esp/esp-idf/tools/unit-test-app/main/app_main.c.rej	1970-01-01 01:00:00.000000000 +0100
++++ ./main/app_main.c.rej	2020-08-31 03:50:49.735371948 +0200
+@@ -0,0 +1,10 @@
++--- home/bertw/esp/esp-idf/tools/unit-test-app/main/app_main.c	2019-12-14 10:03:56.989231000 +0100
+++++ main/app_main.c	2020-03-26 22:10:45.759294999 +0100
++@@ -2,5 +2,7 @@
++ 
++ void app_main(void)
++ {
+++  void unity_suiteSetUp(); //avoid weak linking problems by having our own name
+++  unity_suiteSetUp();
++     test_main();
++ }
 diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_app.csv ./partition_table_unit_test_app.csv
 --- /home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_app.csv	2019-12-14 10:03:56.989231000 +0100
-+++ ./partition_table_unit_test_app.csv	2020-03-26 22:10:45.763297000 +0100
++++ ./partition_table_unit_test_app.csv	2020-08-31 03:13:38.091315283 +0200
 @@ -1,17 +1,11 @@
 -# Special partition table for unit test app
 -#
@@ -66,4 +67,35 @@ diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_
  nvs_key,    data, nvs_keys, ,        0x1000, encrypted
  
 -# Note: still 1MB of a 4MB flash left free for some other purpose
-Makefile:28: recipe for target 'diff' failed
+diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_app.csv.rej ./partition_table_unit_test_app.csv.rej
+--- /home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_app.csv.rej	1970-01-01 01:00:00.000000000 +0100
++++ ./partition_table_unit_test_app.csv.rej	2020-08-31 03:50:49.735371948 +0200
+@@ -0,0 +1,28 @@
++--- home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_app.csv	2019-12-14 10:03:56.989231000 +0100
+++++ partition_table_unit_test_app.csv	2020-03-26 22:10:45.763297000 +0100
++@@ -1,17 +1,11 @@
++-# Special partition table for unit test app
++-#
++-# Name,     Type, SubType, Offset,   Size, Flags
++-# Note: if you have increased the bootloader size, make sure to update the offsets to avoid overlap
++-nvs,        data, nvs,      0x9000,  0x4000
++-otadata,    data, ota,      0xd000,  0x2000
++-phy_init,   data, phy,      0xf000,  0x1000
++-factory,    0,    0,        0x10000, 0x260000
++-# these OTA partitions are used for tests, but can't fit real OTA apps in them
++-# (done this way to reduce total flash usage.)
++-ota_0,      0,    ota_0,    ,        64K
++-ota_1,      0,    ota_1,    ,        64K
++-# flash_test partition used for SPI flash tests, WL FAT tests, and SPIFFS tests
+++# Name,   Type, SubType, Offset,  Size, Flags
+++# Note: if you change the phy_init or app partition offset, make sure to change the offset in Kconfig.projbuild
+++nvs,      data, nvs,     0x9000,  0x6000,
+++phy_init, data, phy,     0xf000,  0x1000,
+++ota_0,    app,  ota_0,   0x10000, 1M,
+++storage,  data, spiffs, 0x110000, 0xF0000,
+++ota_1,    app,  ota_1,  0x200000, 1M,
+++otadata,  data, ota,    0x300000, 0x2000,
++ flash_test, data, fat,      ,        528K
++ nvs_key,    data, nvs_keys, ,        0x1000, encrypted
++ 
++-# Note: still 1MB of a 4MB flash left free for some other purpose

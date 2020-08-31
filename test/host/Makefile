@@ -42,7 +42,8 @@ COMPSHARE_DIR=components-mcu/components
 COMPSHARE_PATH := $(SRC_BASE)/$(COMPSHARE_DIR)
 COMP_PATH := $(SRC_BASE)/$(COMP_DIR)
 EXTRA_INCDIR = test_runner #$(COPMSHARE_PATH)/storage/spiffs/src
-C_WARN ?= -Wall -Wno-unused-result
+C_WARN ?= -Wall -Wextra -Wno-unused-result -Wno-missing-field-initializers
+
 
 COMPSHARE = txtio net debug cli key_value_store misc misc_time config_kvs userio net_mqtt net_http_server storage storage/esp8266/spiffs/src
 COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app 
@@ -59,8 +60,14 @@ $(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,$(COMP_DIR),$(com
 
 INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
 
-build/test_%.out:
-	$(Q) gcc  -g3 $(C_WARN) -flto -O1 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm #-H
+#build/test_%.out:
+	#$(Q) g++  -std=gnu++2a -g3 $(C_WARN) -fpermissive -flto -O1 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm #-H
+
+CPPFLAGS := -DHOST_TESTING -DTEST_HOST -DTEST $(INCLUDE)
+CFLAGS := -g3 $(C_WARN) -flto -O1 
+CC := gcc
+CXXFLAGS := -std=gnu++2a -g3 $(C_WARN) $(CPP_FLAGS) -fpermissive -flto -O1
+CXX := g++
 
 
 %.log:%.out
@@ -68,17 +75,38 @@ build/test_%.out:
 	$(Q) cd ./test_env && echo "** Run test: $<\n" && ../$< >../$@ 2>&1 || ($(grep_results) ../$@ && false)
 	$(Q) $(grep_results) $@ || true
 
+./build/config_kvs.o: $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.o)
+	$(CC) -c -o $@ $< 
+	
+%.c.o : %.c
+	$(CC)  $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+%.cc.o : %.cc
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@  $<
 
-setup=test_runner/setup.c
+
+.PHONY:cfiles
+
+cfiles: build/config_kvs.o
+
+comm=test_runner/setup.o unity/src/unity.o test_runner/test_runner.o
 ################################
-build/test_pos.out:   $(addprefix $(COMP_PATH)/fernotron_pos/,test/test_positions.c shutter_pct.c shutter_prefs_kvs.c move.c move_buf.c) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c)
-build/test_config.out:   $(addprefix $(COMP_PATH)/config/,test/test_config.c config.c config_kvs.c config_stor.c) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c storage/esp8266/storage.c misc/esp32/itoa.c config_kvs/config_kvs.c)
-build/test_kvs.out:  $(addprefix $(COMPSHARE_PATH)/key_value_store/,test/test_kvs.c esp8266/kvs_posix.c)
-build/test_gm.out:   $(addprefix $(COMP_PATH)/fernotron/,test/test_gm.c gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c)
-build/test_prg.out:  $(addprefix $(COMP_PATH)/fernotron/,test/test_prg.c astro.c fer_rawmsg_build.c) $(COMPSHARE_PATH)/misc/bcd.c $(COMPSHARE_PATH)/misc/sun.c
-build/test_msg_tx.out:  $(addprefix $(COMP_PATH)/fernotron/,test/test_msg_tx.c fer_msg_tx.c fer_msg_tx_queue.c fer_radio_rx.c fer_radio_tx.c fer_msg_basic.c fer_rawmsg_buffer.c fer_rawmsg_build.c astro.c) $(addprefix $(COMPSHARE_PATH)/, misc/bcd.c misc/sun.c)
-build/test_timer_data.out:   $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_data.c timer_data.c timer_data_kvs.c)  $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c)
-build/test_timer_state.out:  $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_state.c timer_minutes.c timer_event.c timer_data.c timer_data_kvs.c) $(COMP_PATH)/fernotron/astro.c $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,storage/esp8266/storage.c misc/bcd.c misc/sun.c key_value_store/esp8266/kvs_posix.c)
-build/test_alias.out:  $(addprefix $(COMP_PATH)/fernotron_alias/,test/test_alias.c pairings_kvs.c) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c misc/esp32/itoa.c)
+build/test_pos.out:   $(comm) $(addprefix $(COMP_PATH)/fernotron_pos/,test/test_positions.cc.o shutter_pct.cc.o shutter_prefs_kvs.cc.o move.cc.o move_buf.cc.o) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.cc.o)  $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o)
+	$(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
+build/test_config.out: $(comm) $(addprefix $(COMP_PATH)/config/,test/test_config.cc.o config.cc.o config_kvs.cc.o config_stor.cc.o) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.cc.o) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o storage/esp8266/storage.c.o misc/esp32/itoa.c.o config_kvs/config_kvs.c.o )
+	$(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
+build/test_kvs.out:  $(comm) $(addprefix $(COMPSHARE_PATH)/key_value_store/,test/test_kvs.o)  $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o )
+	$(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
+build/test_gm.out:  $(comm)  $(addprefix $(COMP_PATH)/fernotron/,test/test_gm.cc.o gmbitmask_kvs.cc.o) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o )
+	$(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
+build/test_prg.out:  $(comm) $(addprefix $(COMP_PATH)/fernotron/,test/test_prg.cc.o astro.cc.o fer_rawmsg_build.cc.o) $(COMPSHARE_PATH)/misc/bcd.c.o $(COMPSHARE_PATH)/misc/sun.c.o 
+	$(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
+build/test_msg_tx.out:  $(comm) $(addprefix $(COMP_PATH)/fernotron/,test/test_msg_tx.cc.o fer_msg_tx.cc.o fer_msg_tx_queue.cc.o fer_radio_rx.cc.o fer_radio_tx.cc.o fer_radio_parity.cc.o fer_msg_basic.cc.o fer_rawmsg_buffer.cc.o fer_rawmsg_build.cc.o astro.cc.o) $(addprefix $(COMPSHARE_PATH)/, misc/bcd.c.o misc/sun.c.o )
+	$(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
+build/test_timer_data.out:  $(comm)  $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_data.cc.o timer_data.cc.o timer_data_kvs.cc.o)  $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o )
+	$(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
+build/test_timer_state.out:  $(comm) $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_state.cc.o timer_minutes.cc.o timer_event.cc.o timer_data.cc.o timer_data_kvs.cc.o) $(COMP_PATH)/fernotron/astro.cc.o $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.cc.o) $(addprefix $(COMPSHARE_PATH)/,storage/esp8266/storage.c.o misc/bcd.c.o misc/sun.c.o key_value_store/esp8266/kvs_posix.c.o )
+	$(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
+build/test_alias.out:  $(comm) $(addprefix $(COMP_PATH)/fernotron_alias/,test/test_alias.cc.o pairings_kvs.cc.o) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.cc.o) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o misc/esp32/itoa.c.o )
+	$(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
 
 

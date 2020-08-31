@@ -25,6 +25,7 @@ bool  is_gpio_number_usable(int gpio_number, bool cli);
 void gpio_get_levels(unsigned long long gpio_mask, char *buf, int buf_size);
 
 
+
 struct cfg_gpio {
   int8_t out_rf, in_rf, in_setButton;
 #ifdef ACCESS_GPIO
