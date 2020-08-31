@@ -1,13 +1,6 @@
-set(srcs fernotron.c esp32/timer.c esp32/ota.c esp32/main.c esp32/main_setup.c esp32/main_loop.c rtc.c esp32/unity_setup.c) 
+set(srcs fernotron.cc esp32/timer.cc esp32/ota.cc esp32/main.cc esp32/main_setup.cc esp32/main_loop.cc rtc.cc esp32/unity_setup.cc) 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
-
-if(DEFINED ENV{DISTRO})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
-endif()
-if(DEFINED ENV{FLAVOR_LAN})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFLAVOR_LAN")
-endif()
 
 idf_component_register(
     SRCS ${srcs}
@@ -18,3 +11,5 @@ idf_component_register(
                   esp_https_ota
     EMBED_TXTFILES ./esp32/ca_cert.pem
 )
+
+component_compile_options(-${component_compile_opts})

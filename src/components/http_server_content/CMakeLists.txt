@@ -1,11 +1,4 @@
-set(srcs esp32/http_server_content.c)
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
-
-if(DEFINED ENV{DISTRO})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
-endif()
-
+set(srcs esp32/http_server_content.cc)
 
 idf_component_register(
     SRCS ${srcs}
@@ -13,3 +6,4 @@ idf_component_register(
     REQUIRES ""
     PRIV_REQUIRES net net_http_server config cli_app userio userio_app misc webapp
    )
+component_compile_options(-${component_compile_opts})

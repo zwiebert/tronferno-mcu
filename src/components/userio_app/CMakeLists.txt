@@ -1,16 +1,9 @@
-set(srcs status_output.c status_output_switch.c so_out.c so_print.c) 
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
-
-if(DEFINED ENV{DISTRO})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
-endif()
-if(DEFINED ENV{FLAVOR_LAN})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFLAVOR_LAN")
-endif()
+set(srcs status_output.cc status_output_switch.cc so_out.cc so_print.cc) 
 
 idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
     REQUIRES userio 
     PRIV_REQUIRES fernotron app fernotron_pos net_mqtt_app misc)
+    
+component_compile_options(-${component_compile_opts})

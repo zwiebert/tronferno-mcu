@@ -1,4 +1,4 @@
-set(srcs esp32/http_server_content.c)
+set(srcs esp32/http_server_content.cc)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 

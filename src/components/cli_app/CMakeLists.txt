@@ -1,23 +1,12 @@
-set(srcs cli.c  cli_out.c
-    parm_help.c
-    parm_alias.c
-    parm_auto.c
-    parm_cmd.c
-    parm_config.c parm_config_switch.c
-    parm_mcu.c
-    parm_shpref.c
+set(srcs cli.cc  cli_out.cc
+    parm_help.cc
+    parm_alias.cc
+    parm_auto.cc
+    parm_cmd.cc
+    parm_config.cc parm_config_switch.cc
+    parm_mcu.cc
+    parm_shpref.cc
 )
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
-
-if(DEFINED ENV{DISTRO})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
-endif()
-
-if(DEFINED ENV{FLAVOR_LAN})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFLAVOR_LAN")
-endif()
-
 
 idf_component_register(
     SRCS ${srcs} 
@@ -25,3 +14,5 @@ idf_component_register(
     REQUIRES cli fernotron userio_app 
     PRIV_REQUIRES net net_mqtt_app app misc userio txtio fernotron_alias fernotron_pos debug http_server_content
 )
+
+component_compile_options(-${component_compile_opts})

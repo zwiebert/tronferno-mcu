@@ -1,10 +1,4 @@
-set(srcs pairings.c pairings_kvs.c) 
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
-
-if(DEFINED ENV{DISTRO})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
-endif()
+set(srcs pairings.cc pairings_kvs.cc) 
 
 idf_component_register(
     SRCS ${srcs} 
@@ -12,3 +6,5 @@ idf_component_register(
     REQUIRES fernotron 
     PRIV_REQUIRES fernotron_auto app app_config misc userio_app
 )
+
+component_compile_options(-${component_compile_opts})

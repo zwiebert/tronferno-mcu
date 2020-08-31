@@ -6,17 +6,12 @@ set(srcs
 "../webapp/build/wapp.css.map.gz.c" "../webapp/build/wapp.css.map.br.c"
 )
 
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
-
-if(DEFINED ENV{DISTRO})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
-endif()
-
 idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS . "./include"
    )
+   
+ component_compile_options(-${component_compile_opts})
  
  add_custom_command(
      OUTPUT "${COMPONENT_DIR}/build/wapp.html.gz.c"
