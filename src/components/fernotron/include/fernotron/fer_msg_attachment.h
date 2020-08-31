@@ -62,7 +62,7 @@ typedef uint8_t last_byte_data[FER_PRG_BYTE_CT];
 typedef uint8_t fer_astro_bd[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];
 typedef uint8_t fer_wdtimer_bd[FPR_TIMER_HEIGHT][FER_PRG_BYTE_CT];
 
-struct fer_rtc_sd {
+struct __attribute__((__packed__)) fer_rtc_sd {
   uint8_t secs, mint, hour;
   uint8_t wDayMask;
   uint8_t days, mont, wday;
@@ -77,8 +77,8 @@ struct fer_rtc_sd {
       uint8_t unused_5 :1;
       uint8_t unused_6 :1;
       uint8_t sunAuto :1;
-    } __attribute__((__packed__)) bits;
-  } __attribute__((__packed__)) flags;
+    }  bits;
+  }  flags;
   uint8_t checkSum;
 };
 
@@ -101,14 +101,14 @@ struct fer_timer_row {
   uint8_t checkSum;
 };
 
-union fer_wdtimer {
+union __attribute__((__packed__)) fer_wdtimer {
   fer_wdtimer_bd bd;
 
   struct fer_timer_row rows_arr[4];
 
-  struct {
+  struct  {
     struct fer_timer_row sun_mon, tue_wed, thu_fri, sat_daily;
-  } __attribute__((__packed__)) rows;
+  }  rows;
 
   struct {
     struct fer_timer sun, mon;
@@ -119,15 +119,15 @@ union fer_wdtimer {
     uint8_t cs2;
     struct fer_timer sat, daily;
     uint8_t cs3;
-  } __attribute__((__packed__)) days;
+  }  days;
 };
 
-union fer_astro_row {
+union __attribute__((__packed__)) fer_astro_row {
   uint8_t bd[FER_PRG_BYTE_CT];
-  struct {
+  struct  {
     struct fer_time times[4];
     uint8_t checkSum;
-  } __attribute__((__packed__)) sd;
+  }  sd;
 };
 
 union fer_astro {
@@ -138,11 +138,15 @@ union fer_astro {
 typedef uint8_t last_byte_data[FER_PRG_BYTE_CT];
 typedef uint8_t astro_byte_data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];
 
-typedef struct fer_raw_msg {
+typedef struct __attribute__((__packed__)) fer_raw_msg {
   union fer_cmd_row cmd;
   union fer_rtc rtc;
   union fer_wdtimer wdtimer;
   astro_byte_data astro;
   last_byte_data last;
-} __attribute__((__packed__)) fer_rawMsg;
+}  fer_rawMsg;
+
+#ifdef __cplusplus
+static_assert(sizeof(fer_raw_msg) == FER_CMD_BYTE_CT + FER_PRG_PACK_CT * FER_PRG_BYTE_CT);
+#endif
 

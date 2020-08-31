@@ -7,9 +7,12 @@
 #define FER_CMD_BYTE_CT    6
 #define FER_CMD_ADDR_CT    3
 
+#ifdef __cplusplus
 #define ENUMBF(type) type
-
-struct FerCmd {
+#else
+#define ENUMBF(type) uint16_t
+#endif
+struct __attribute__ ((packed)) FerCmd  {
   uint8_t addr[FER_CMD_ADDR_CT];
 
   ENUMBF(fer_memb) memb :4;
@@ -18,15 +21,22 @@ struct FerCmd {
   ENUMBF(fer_grp) grp :4;
 };
 
+
+
 union fer_cmd_row {
   uint8_t bd[FER_CMD_BYTE_CT];
 
-  struct {
+  struct __attribute__((__packed__)) {
     struct FerCmd cmd;
     uint8_t checkSum;
-  } __attribute__((__packed__)) sd;
+  } sd;
 
 };
+
+#ifdef __cplusplus
+static_assert(sizeof(FerCmd) == FER_CMD_BYTE_CT - 1);
+static_assert(sizeof(fer_cmd_row) == FER_CMD_BYTE_CT);
+#endif
 
 // high nibble of data[fer_dat_ADDR_2]
 ////// device type
