@@ -13,9 +13,7 @@
 #include "misc/bcd.h"
 #include "app/rtc.h"
 #include "cli_app/cli_imp.h"
-#ifndef NO_SPIFFS
-#include "storage/esp8266/spiffs_fs.h"
-#endif
+
 #include "debug/debug.h"
 #ifdef USE_HTTP
 #include "http_server_content/hts_clients.h"
@@ -27,7 +25,17 @@
 #endif
 #ifdef MCU_ESP8266
 #include "user_interface.h"
+#ifndef NO_SPIFFS
+#include "storage/esp8266/spiffs_fs.h"
 #endif
+#endif
+
+#ifdef TEST_HOST
+#define ets_printf printf
+#endif
+
+
+#include <alloca.h>
 
 const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #ifndef NO_SPIFFS

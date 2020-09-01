@@ -20,8 +20,8 @@ COMP_DIR=src/components
 COMPSHARE_DIR=components-mcu/components
 COMPSHARE_PATH := $(BUILD_BASE)/$(COMPSHARE_DIR)
 COMP_PATH := $(BUILD_BASE)/$(COMP_DIR)
-COMPSHARE = txtio net debug cli key_value_store misc misc_time config_kvs userio net_mqtt net_http_server storage storage/esp8266/spiffs/src stm32
-COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app
+COMPSHARE = txtio net debug cli key_value_store misc misc_time config_kvs userio net_mqtt net_http_server storage storage/esp8266/spiffs/src stm32 jsmn
+COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app http_server_content
 comm=$(addprefix $(BUILD_BASE)/,test_runner/setup.o unity/src/unity.o test_runner/test_runner.o) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o)
 CXX_SRC := $(shell find $(SRC_BASE)/$(COMP_DIR) $(SRC_BASE)/$(COMPSHARE_DIR) -name '*.cc' -and -not '(' -wholename '*/esp8266/*' -or  -wholename '*/esp32/*' -or -wholename '*/nanopb/*' ')' )
 C_SRC := $(shell find $(SRC_BASE)/$(COMP_DIR)  $(SRC_BASE)/$(COMPSHARE_DIR) -name '*.c' -and -not '(' -wholename '*/esp8266/*' -or  -wholename '*/esp32/*' -or -wholename '*/nanopb/*' -or -wholename '*/jsmn/*' ')')
@@ -127,7 +127,7 @@ build_lib:
 define build_test
 build/$(basename $(basename $(notdir $(1)))): $(1)
 	$(vecho) "LD $(1) ($$@,$$<)"
-	$(Q) $(CXX)  $(LDFLAGS) -lc $$^ $(LOADLIBES) $(LDLIBS) -o $$@
+	$(Q) $(CXX)  $(LDFLAGS) $$^ $(LDLIBS) -o $$@
 endef
 
 $(foreach test_obj,$(TEST_OBJ),$(eval $(call build_test,$(test_obj))))

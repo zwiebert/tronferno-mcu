@@ -64,6 +64,8 @@
 #include "app_config/esp32/esp32_user_config.h"
 #elif defined TEST_HOST
 #define IRAM_ATTR
+#define NO_SPIFFS
+#undef USE_FREERTOS
 #undef ACCESS_GPIO
 #undef USE_ESP_GET_TIME
 #undef MDR_TIME
