@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fau_tminutes.h"
+#include <time.h>
 
 typedef struct {
   gm_bitmask_t member_mask[2];

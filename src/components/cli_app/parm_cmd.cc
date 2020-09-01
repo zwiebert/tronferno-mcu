@@ -15,6 +15,7 @@
 #include "userio_app/status_output.h"
 #include "config/config.h"
 #include "cli_app/cli_fer.h"
+#include <stdlib.h>
 
 
 #define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)

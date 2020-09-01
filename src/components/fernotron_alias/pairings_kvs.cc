@@ -95,7 +95,7 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
   return result;
 }
 
-#define a2key(a)     char key[] = KEY_PREFIX "10abcd"; ltoa(a, &key[sizeof(KEY_PREFIX) - 1], 16);
+#define a2key(a)     char key[] = KEY_PREFIX "10abcd"; itoa(a, &key[sizeof(KEY_PREFIX) - 1], 16);
 
 
 
@@ -139,7 +139,7 @@ pair_controller(u32 controller, u8 g, u8 m, bool unpair) {
   precond (1 <= g && g <= 7 && 1 <= m && m <= 7);
 
   char key[] = "cpair_10abcd";
-  ltoa(controller, key+6, 16);
+  itoa(controller, key+6, 16);
 
   bool success = add_rm_controller(key, g, m, unpair);
   return success;

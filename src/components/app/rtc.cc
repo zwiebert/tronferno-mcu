@@ -3,6 +3,7 @@
 
 #include "app/rtc.h"
 
+#include <stdlib.h>
 
 #include <time.h>
 #ifdef POSIX_TIME

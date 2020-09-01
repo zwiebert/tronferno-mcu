@@ -15,6 +15,8 @@
 #include "fernotron_auto/fau_tdata_store.h"
 #include "config/config.h"
 
+#include <stdlib.h>
+
 gm_bitmask_t manual_bits;
 
 enum {

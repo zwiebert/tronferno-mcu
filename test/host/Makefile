@@ -1,12 +1,4 @@
-.PHONY: all tests clean_out init all_tests
-
-
-TESTS =  test_pos test_config  test_timer_state test_alias test_timer_data test_msg_tx test_prg test_kvs test_gm 
-
-.PHONY: $(TESTS)
-
-make = make --no-print-dir
-
+.PHONY: all tests clean_out clean init all_tests
 
 ifeq ("$(V)","1")
 Q :=
@@ -16,43 +8,33 @@ Q := @
 vecho := @echo
 endif
 
-grep_results := ! grep -H -e IGNORE -e FAIL -e Aborted 
+make := make --no-print-dir
+grep_results := ! grep -H -e IGNORE -e FAIL -e Aborted
 
-all_tests:
-	$(Q) $(make) all C_WARN='-w'
 
-all: clean_out init
-	@echo "\n### Making and running tests: " $(TESTS) "\n"
-	$(Q) $(make) -B tests
-	
-$(TESTS):
-	$(Q) $(make) -B $(addsuffix .log,$(addprefix build/,$@))
 
-clean_out:
-	$(Q) -rm -f build/test_*
-	$(Q) -rm -rf test_env/*
-init:
-	$(Q) mkdir -p build
-	$(Q) mkdir -p test_env
-
-	
-tests = $(addsuffix .log,$(addprefix build/,$(TESTS)))
-tests: $(tests)
-	$(Q) $(grep_results) build/*.log
 
 SRC_BASE=../..
-BLD_BASE=./build/src
+BUILD_BASE=./build/src
 COMP_DIR=src/components
 COMPSHARE_DIR=components-mcu/components
-COMPSHARE_PATH := $(BLD_BASE)/$(COMPSHARE_DIR)
-COMP_PATH := $(BLD_BASE)/$(COMP_DIR)
+COMPSHARE_PATH := $(BUILD_BASE)/$(COMPSHARE_DIR)
+COMP_PATH := $(BUILD_BASE)/$(COMP_DIR)
+COMPSHARE = txtio net debug cli key_value_store misc misc_time config_kvs userio net_mqtt net_http_server storage storage/esp8266/spiffs/src stm32
+COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app
+comm=$(addprefix $(BUILD_BASE)/,test_runner/setup.o unity/src/unity.o test_runner/test_runner.o) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o)
+CXX_SRC := $(shell find $(SRC_BASE)/$(COMP_DIR) $(SRC_BASE)/$(COMPSHARE_DIR) -name '*.cc' -and -not '(' -wholename '*/esp8266/*' -or  -wholename '*/esp32/*' -or -wholename '*/nanopb/*' ')' )
+C_SRC := $(shell find $(SRC_BASE)/$(COMP_DIR)  $(SRC_BASE)/$(COMPSHARE_DIR) -name '*.c' -and -not '(' -wholename '*/esp8266/*' -or  -wholename '*/esp32/*' -or -wholename '*/nanopb/*' -or -wholename '*/jsmn/*' ')')
+C_OBJ         := $(patsubst %.c,$(BUILD_BASE)/%.c.o,$(subst $(SRC_BASE)/,,$(C_SRC)))
+CXX_OBJ       := $(patsubst %.cc,$(BUILD_BASE)/%.cc.o,$(subst $(SRC_BASE)/,,$(CXX_SRC)))
+VALID_OBJ     = $(shell find $(BUILD_BASE) -name '*.o' -and -not -wholename '*/test/test_*.o')  $(comm)
+TEST_OBJ      = $(shell find $(BUILD_BASE) -name '*.o' -and -wholename '*/test/test_*.o')
+TEST_NAMES    = $(basename $(basename $(notdir $(TEST_OBJ))))
+TEST_PROGS    = $(addprefix build/,$(TEST_NAMES))
+TEST_LOGS     = $(addsuffix .log,$(TEST_PROGS))
+
+
 EXTRA_INCDIR = test_runner #$(COPMSHARE_PATH)/storage/spiffs/src
-C_WARN ?= -Wall -Wextra -Wno-unused-result -Wno-missing-field-initializers
-
-
-COMPSHARE = txtio net debug cli key_value_store misc misc_time config_kvs userio net_mqtt net_http_server storage storage/esp8266/spiffs/src
-COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app 
-
 define GEN_COMPONENTS
 EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include #$(SRC_BASE)/$(1)/$(2)/include/$(2)
 MODULES += $(1)/$(2)
@@ -62,15 +44,17 @@ endif
 endef
 $(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,$(COMPSHARE_DIR),$(component))))
 $(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,$(COMP_DIR),$(component))))
-
 INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
 
 CC := gcc
 CXX := g++
-
-CPPFLAGS := -DHOST_TESTING -DTEST_HOST -DTEST $(INCLUDE)
-CFLAGS := -g3 $(C_WARN) -flto -O1 
+C_WARN ?= -Wall -Wextra -Wno-unused-result -Wno-missing-field-initializers
+TESTING_DEFS :=
+CPPFLAGS := -DHOST_TESTING -DTEST_HOST -DTEST $(TESTING_DEFS) $(INCLUDE)
+CFLAGS := -g3 $(C_WARN) -flto -O1
 CXXFLAGS := -std=gnu++2a -g3 $(C_WARN) -fpermissive -flto -O1
+LDLIBS += build/obj.a -lc
+
 
 
 %.log:%
@@ -79,36 +63,71 @@ CXXFLAGS := -std=gnu++2a -g3 $(C_WARN) -fpermissive -flto -O1
 	$(Q) $(grep_results) $@
 
 
-$(BLD_BASE)/%.o : ./%.c
+$(BUILD_BASE)/%.o : ./%.c
 	$(vecho) "CC $@"
 	$(Q) mkdir -p $(dir $@)
 	$(Q) $(CC)  $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
-$(BLD_BASE)/%.c.o : $(SRC_BASE)/%.c
+$(BUILD_BASE)/%.c.o : $(SRC_BASE)/%.c
 	$(vecho) "CC $@"
 	$(Q) mkdir -p $(dir $@)
 	$(Q) $(CC)  $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
-$(BLD_BASE)/%.cc.o : $(SRC_BASE)/%.cc
+$(BUILD_BASE)/%.cc.o : $(SRC_BASE)/%.cc
 	$(vecho) "CXX $@"
 	$(Q) mkdir -p $(dir $@)
 	$(Q) $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@  $<
 
-comm=$(addprefix $(BLD_BASE)/,test_runner/setup.o unity/src/unity.o test_runner/test_runner.o)
+
+all_tests:
+	$(Q) $(make) all C_WARN='-w'
+
+all: clean_out init
+	@echo "\n### Making and running tests: " $(TESTS) "\n"
+	$(Q) $(make) -B tests
+
+tests: $(TEST_LOGS)
+	$(Q) $(grep_results) build/*.log
+
+.PHONY: $(TEST_NAMES)
+$(TEST_NAMES):
+	$(Q) $(make) -B $(addsuffix .log,$(addprefix build/,$@))
+
+clean:
+	$(Q) -rm -rf build/
+	$(Q) -rm -rf test_env/*
+clean_out:
+	$(Q) -rm -f build/test_*
+	$(Q) -rm -rf test_env/*
+init: build_lib
+	$(Q) mkdir -p build
+	$(Q) mkdir -p test_env
+
+
+print_test_names:
+	$(Q) echo $(TEST_NAMES)
+print_test_progs:
+	$(Q) echo $(TEST_PROGS)
+print_test_obj:
+	$(Q) echo $(TEST_OBJ)
+print_cxx_src:
+	$(Q) echo $(CXX_SRC)
+
+
+build/obj.a: $(VALID_OBJ)
+		$(Q) $(AR) cr $@ $^
+
+
+.PHONY: build_lib
+
+build_lib:
+	-make -j -k $(CXX_OBJ) $(C_OBJ)
+	make build/obj.a
+
 ################################
-build/test_pos:   $(comm) $(addprefix $(COMP_PATH)/fernotron_pos/,test/test_positions.cc.o shutter_pct.cc.o shutter_prefs_kvs.cc.o move.cc.o move_buf.cc.o) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.cc.o)  $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o)
-	$(Q) $(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
-build/test_config: $(comm) $(addprefix $(COMP_PATH)/config/,test/test_config.cc.o config.cc.o config_kvs.cc.o config_stor.cc.o) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.cc.o) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o storage/esp8266/storage.c.o misc/esp32/itoa.c.o config_kvs/config_kvs.c.o )
-	$(Q) $(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
-build/test_kvs:  $(comm) $(addprefix $(COMPSHARE_PATH)/key_value_store/,test/test_kvs.c.o)  $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o )
-	$(Q) $(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
-build/test_gm:  $(comm)  $(addprefix $(COMP_PATH)/fernotron/,test/test_gm.cc.o gmbitmask_kvs.cc.o) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o )
-	$(Q) $(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
-build/test_prg:  $(comm) $(addprefix $(COMP_PATH)/fernotron/,test/test_prg.cc.o astro.cc.o fer_rawmsg_build.cc.o) $(COMPSHARE_PATH)/misc/bcd.c.o $(COMPSHARE_PATH)/misc/sun.c.o 
-	$(Q) $(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
-build/test_msg_tx:  $(comm) $(addprefix $(COMP_PATH)/fernotron/,test/test_msg_tx.cc.o fer_msg_tx.cc.o fer_msg_tx_queue.cc.o fer_radio_rx.cc.o fer_radio_tx.cc.o fer_radio_parity.cc.o fer_msg_basic.cc.o fer_rawmsg_buffer.cc.o fer_rawmsg_build.cc.o astro.cc.o) $(addprefix $(COMPSHARE_PATH)/, misc/bcd.c.o misc/sun.c.o )
-	$(Q) $(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
-build/test_timer_data:  $(comm)  $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_data.cc.o timer_data.cc.o timer_data_kvs.cc.o)  $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o )
-	$(Q) $(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
-build/test_timer_state:  $(comm) $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_state.cc.o timer_minutes.cc.o timer_event.cc.o timer_data.cc.o timer_data_kvs.cc.o) $(COMP_PATH)/fernotron/astro.cc.o $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.cc.o) $(addprefix $(COMPSHARE_PATH)/,storage/esp8266/storage.c.o misc/bcd.c.o misc/sun.c.o key_value_store/esp8266/kvs_posix.c.o )
-	$(Q) $(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
-build/test_alias:  $(comm) $(addprefix $(COMP_PATH)/fernotron_alias/,test/test_alias.cc.o pairings_kvs.cc.o) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.cc.o) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c.o misc/esp32/itoa.c.o )
-	$(Q) $(CXX) $(LDFLAGS) $(LOADLIBES) $(LDLIBS) -o $@  $^
+
+define build_test
+build/$(basename $(basename $(notdir $(1)))): $(1)
+	$(vecho) "LD $(1) ($$@,$$<)"
+	$(Q) $(CXX)  $(LDFLAGS) -lc $$^ $(LOADLIBES) $(LDLIBS) -o $$@
+endef
+
+$(foreach test_obj,$(TEST_OBJ),$(eval $(call build_test,$(test_obj))))

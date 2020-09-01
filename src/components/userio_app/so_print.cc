@@ -22,6 +22,7 @@
 
 #include "misc/int_macros.h"
 #include "misc/ftoa.h"
+#include "misc/itoa.h"
 #include <string.h>
 #include <stdio.h>
 #include <time.h>

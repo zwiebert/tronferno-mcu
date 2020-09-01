@@ -13,6 +13,8 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
 
+#include <string.h>
+
 #define CI(cb) static_cast<configItem>(cb)
 
 #if 1

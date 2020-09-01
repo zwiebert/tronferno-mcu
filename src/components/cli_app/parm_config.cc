@@ -29,6 +29,7 @@
 #include "gpio/pin.h"
 #include "app/loop.h"
 
+#include <stdlib.h>
 
 #define ENABLE_RESTART 1 // allow software reset
 

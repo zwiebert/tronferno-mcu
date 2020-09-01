@@ -8,7 +8,7 @@
 #include "fernotron_auto/fau_tdata_store.h"
 #include "fernotron_auto/fau_tevent.h"
 #include "fernotron/astro.h"
-#include "time.h"
+#include <time.h>
 #include <fernotron/types.h>
 #include "debug/debug.h"
 #include "config/config.h"
@@ -346,8 +346,8 @@ TEST_CASE("timer next event", "[fernotron_auto]") {
 
 #ifdef TEST_HOST
 #include "config/config.h"
-gm_bitmask_t manual_bits;
-config C;
+//gm_bitmask_t manual_bits;
+//config C;
 
 static struct cfg_astro cfg_astro =
     { .astroCorrection = acAverage, .geo_longitude = 13.38, .geo_latitude = 52.5, .geo_timezone = 1,  };

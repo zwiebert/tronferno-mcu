@@ -4,7 +4,7 @@
 #include "fer_msg_plain.h"
 #include "misc/int_macros.h"
 
-typedef union fsb {
+typedef union fsbT {
   uint8_t data[5];
   struct FerCmd sd;
 } fsbT;

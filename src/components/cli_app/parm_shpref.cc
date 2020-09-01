@@ -7,6 +7,7 @@
 #include "debug/debug.h"
 #include <string.h>
 #include <alloca.h>
+#include <stdlib.h>
 
 #if defined DISTRIBUTION || 0
 #define D(x) x

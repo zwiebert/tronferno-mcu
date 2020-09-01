@@ -7,6 +7,7 @@
 #include "userio_app/status_output.h"
 #include "misc/int_macros.h"
 #include "misc/int_types.h"
+#include <string.h>
 
 #define isValid_optStr(cfg, new) true
 #define set_optStr(v, cb) if (config_save_item_s(cb, v)) has_changed(cb)

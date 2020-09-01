@@ -2,6 +2,7 @@
 #include "misc/bcd.h"
 #include "fernotron/fer_rawmsg_buffer.h"
 #include "misc/int_macros.h"
+#include <stdlib.h>
 #include <string.h>
 
 bool
@@ -50,6 +51,7 @@ timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
 }
 
 bool fill_rtc_buf(fsbT *fsb, time_t rtc) {
+  (void)fsb;
   fmsg_raw_init(txmsg);
   fmsg_raw_from_rtc(txmsg, rtc, true);
   return true;
