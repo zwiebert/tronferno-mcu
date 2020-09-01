@@ -1,8 +1,12 @@
-#include "types.h"
 #include <misc/int_macros.h>
 #include <utility>
+#include <stdint.h>
+#include <string.h>
+#include <misc/int_types.h>
 
+typedef uint8_t gmBitMaskT[8];
 typedef uint8_t gT, mT;
+
 using gm_pairT = std::pair<gT, mT>;
 
 #pragma GCC push_options
@@ -41,15 +45,16 @@ public:
 class GmBitMask {
 
 private:
-  gm_bitmask_t mBm;
+  gmBitMaskT mBm;
 
 public:
   void clear() {
-    memset(mBm, 0, sizeof(gm_bitmask_t));
+    memset(mBm, 0, sizeof(gmBitMaskT));
   }
   uint8_t getByte(gT g) const {
     return mBm[g];
   }
+  uint8_t& operator[](int idx) { return mBm[idx]; }
   void setByte(gT g, uint8_t b) {
     mBm[g] = b;
   }
@@ -65,8 +70,30 @@ public:
   void setBit(gT g, mT m) {
     SET_BIT(mBm[g], m);
   }
+
+  bool isAllClear() const {
+    for (int i = 0; i < 8; ++i)
+      if (getByte(i))
+        return false;
+    return true;
+  }
+
+  void fromNibbleCounters(u32 um) {
+    int g, m;
+    clear();
+    for (g=0; g < 8; ++g, (um >>=4)) {
+      u8 u = um & 0x07;
+      for (m=1; m <= u; ++m) {
+        setBit(g,m);
+      }
+    }
+  }
+
   GmBitMask(): mBm{} {}
-  GmBitMask(gm_bitmask_t bm) { memcpy(mBm, bm, sizeof(mBm)); }
+  GmBitMask(gmBitMaskT bm) :mBm{} { //XXX
+    if (bm)
+      memcpy(mBm, bm, sizeof(mBm));
+  }
 
   class iterator: public gm_iterator {
     GmBitMask *mPtr;
@@ -87,11 +114,13 @@ public:
     }
   };
 
-  iterator begin() {
-    auto it = iterator(this);
+  iterator begin(gT g = 0, mT m = 0) {
+    auto it = iterator(this, g, m);
     return it->getBit(0, 0) ? it : ++it;
   }
 
+
+  operator gmBitMaskT*() { return &mBm; } //XXX
 };
 
 

@@ -7,6 +7,36 @@
 
 #pragma once
 
+#if 1
+#include "fernotron/gm_bitmask.hh"
+//using gm_bitmask_t = GmBitMask;
+typedef GmBitMask gm_bitmask_t;
+
+#include <stdint.h>
+#include "stdbool.h"
+#include "misc/int_macros.h"
+
+
+
+#define gm_Initializer {}
+#define gm_Clear(gm) (gm)->clear()
+#define gm_GetByte(gm, g) (gm)->getByte(g)
+#define gm_SetByte(gm, g, b) (gm)->setByte(g, b)
+#define gm_PutBit(gm, g, m, val) (gm)->putBit(g, m, val)
+#define gm_ClrBit(gm, g, m) (gm)->clearBit(g, m)
+#define gm_GetBit(gm, g, m) (gm)->getBit(g, m)
+#define gm_SetBit(gm, g, m) (gm)->setBit(g, m)
+#define gm_isAllClear(gm) (gm)->isAllClear()
+#define gm_fromNibbleCounters(gm, um) (gm)->fromNibbleCounters(um)
+
+//bool gm_getNext(gm_bitmask_t *gm, uint8_t *gp, uint8_t *mp);
+
+// read/save one or more elements of type gm_bitmask_t
+bool fer_gmByName_load(const char *name, const gmBitMaskT *gm, int count);
+bool fer_gmByName_store(const char *name, gmBitMaskT *gm, int count);
+
+
+#else
 #include <stdint.h>
 #include "stdbool.h"
 #include "misc/int_macros.h"
@@ -33,3 +63,4 @@ bool fer_gmByName_store(const char *name, gm_bitmask_t *gm, int count);
 
 void gm_fromNibbleCounters(gm_bitmask_t *gm, uint32_t um);
 
+#endif

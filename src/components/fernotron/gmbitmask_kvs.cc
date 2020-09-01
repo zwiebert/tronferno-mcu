@@ -27,7 +27,7 @@
 
 
 
-static bool store (const char *name, gm_bitmask_t *gm, int count, bool write) {
+static bool store (const char *name, gmBitMaskT *gm, int count, bool write) {
   char nb[NB_SIZE] = NB_PFX;
   strncat (nb, name, NB_N);
   bool success = false;
@@ -45,15 +45,15 @@ static bool store (const char *name, gm_bitmask_t *gm, int count, bool write) {
   return success;
 }
 
-bool fer_gmByName_load(const char *name, const gm_bitmask_t *gm, int count) {
-  return store (name, (gm_bitmask_t*)gm, count, false);
+bool fer_gmByName_load(const char *name, const gmBitMaskT *gm, int count) {
+  return store (name, (gmBitMaskT*)gm, count, false);
 }
 
-bool fer_gmByName_store(const char *name, gm_bitmask_t *gm, int count) {
+bool fer_gmByName_store(const char *name, gmBitMaskT *gm, int count) {
   return store (name, gm, count, true);
 }
 
-
+#ifndef gm_isAllClear
 bool gm_isAllClear(gm_bitmask_t *gm) {
   int i;
   for (i = 0; i < 8; ++i)
@@ -75,6 +75,17 @@ int gm_countSetBits(gm_bitmask_t *gm) {
   }
   return remaining;
 }
+void gm_fromNibbleCounters(gm_bitmask_t *gm, u32 um) {
+  int g, m;
+  gm_Clear(gm);
+  for (g=0; g < 8; ++g, (um >>=4)) {
+    u8 u = um & 0x07;
+    for (m=1; m <= u; ++m) {
+      gm_SetBit(gm,g,m);
+    }
+  }
+}
+
 
 bool gm_getNext(gm_bitmask_t *gm, u8 *gp, u8 *mp) {
   precond(gm && gp && mp);
@@ -108,14 +119,5 @@ bool gm_getNext(gm_bitmask_t *gm, u8 *gp, u8 *mp) {
   return false;
 }
 
+#endif
 
-void gm_fromNibbleCounters(gm_bitmask_t *gm, u32 um) {
-  int g, m;
-  gm_Clear(gm);
-  for (g=0; g < 8; ++g, (um >>=4)) {
-    u8 u = um & 0x07;
-    for (m=1; m <= u; ++m) {
-      gm_SetBit(gm,g,m);
-    }
-  }
-}

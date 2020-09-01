@@ -132,8 +132,9 @@ static bool fam_get_next_timer_event_earliest(gm_bitmask_t *mask_result, minutes
     }
   }
 
-  for ((g = 1), (m = ~0); gm_getNext(&C.fer_usedMemberMask, &g, &m);) {
-    if (gm_GetBit(&manual_bits, g, m))
+  for (auto it = C.fer_usedMemberMask.begin(1); it; ++it) {
+    u8 g = it.getG(), m = it.getM();
+    if (manual_bits.getBit(g, m))
       continue;
 
     if (set_earliest(g, m, &earliest, tm_now, minutes_now, mask_result)) {
@@ -170,8 +171,9 @@ bool fam_get_next_timer_event(timer_event_t *evt, const time_t *now_time) {
 
   evt->next_event = earliest;
 
-  for ((g = 0), (m = ~0); gm_getNext(&existing_members, &g, &m);) {
-    if (gm_GetBit(&manual_bits, g, m))
+  for (auto it = C.fer_usedMemberMask.begin(); it; ++it) {
+    u8 g = it.getG(), m = it.getM();
+    if (manual_bits.getBit(g, m))
       continue;
 
     timer_minutes_t timi;

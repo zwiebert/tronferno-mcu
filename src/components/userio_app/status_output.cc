@@ -475,17 +475,15 @@ break;
     char buf[] = "pct255";
     itoa(a->p, buf+3, 10);
     sj_add_array(buf);
-    u8 g, m;
-    for (g = 1, m = ~0; gm_getNext(a->mm, &g, &m);) {
-      sj_add_value_d(g * 10 + m);
+    for (auto it = a->mm->begin(1); it; ++it) {
+      sj_add_value_d(it.getG() * 10 + it.getM());
     }
     sj_close_array();
 #else
-      u8 g, m;
-      for (g = 1, m = ~0; gm_getNext(a->mm, &g, &m);) {
+    for (auto it = a->mm->begin(1); it; ++it) {
         char buf[] = "00";
-        buf[0] += g;
-        buf[1] += m;
+        buf[0] += it.getG();
+        buf[1] += it.getM();
         sj_add_key_value_pair_d(buf, a->p);
       }
 #endif

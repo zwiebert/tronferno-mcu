@@ -162,11 +162,12 @@ statPos_setPcts(gm_bitmask_t *mm, u8 p) {
 #if 0
 int
 statPos_printAllPcts() {
-  u8 g, m, g2, m2;
+  u8 g2, m2;
   gm_bitmask_t msk = { 0, };
 
   so_output_message(SO_POS_begin, 0);
-  for (g = 1, m = ~0; gm_getNext(&C.fer_usedMemberMask, &g, &m);) {
+  for (auto it = C.fer_usedMemberMask.begin(1); it; ++it) {
+    u8 g = it.getG(), m = it.getM();
     if (pm_isGroupUnused(g))
       continue;
     if (pm_isMemberUnused(g, m))
@@ -284,7 +285,7 @@ static char *g_to_name(u8 g, char *buf) {
 
 bool statPos_pctsByGroup_load(u8 g, const shutterGroupPositionsT positions) {
   char buf[8];
-  if (fer_gmByName_load(g_to_name(g, buf), (gm_bitmask_t*) positions, 1)) {
+  if (fer_gmByName_load(g_to_name(g, buf), (gmBitMaskT*) positions, 1)) {
     pm_setPct(g,0,statPos_getAvgPctGroup(g)); // XXX: enforce new meaning of m==0
     return true;
   }
@@ -293,6 +294,6 @@ bool statPos_pctsByGroup_load(u8 g, const shutterGroupPositionsT positions) {
 
 bool statPos_pctsByGroup_store(u8 g, shutterGroupPositionsT positions) {
   char buf[8];
-  return fer_gmByName_store(g_to_name(g, buf), (gm_bitmask_t*) positions, 1);
+  return fer_gmByName_store(g_to_name(g, buf), (gmBitMaskT*) positions, 1);
 }
 

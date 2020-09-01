@@ -40,10 +40,12 @@ struct filter {
 };
 
 static int ferPos_filter_mm(gm_bitmask_t *mm, struct filter *filter) {
-  u8 g, m;
+
   int remaining = 0;
 
-  for ((g = 0), (m = ~0); gm_getNext(mm, &g, &m);) {
+
+    for (auto it = mm->begin(); it; ++it) {
+      u8 g = it.getG(), m = it.getM();
 
     if (filter->sun_not_ready_to_move_down && !ferPos_shouldMove_sunDown(g, m))
       goto filter_out;
@@ -64,8 +66,9 @@ static int ferPos_filter_mm(gm_bitmask_t *mm, struct filter *filter) {
   if (filter->same_direction) {
     struct mv *mv;
     for (mv = mv_getFirst(); mv; mv = mv_getNext(mv)) {
-      for ((g = 0), (m = ~0); gm_getNext(mm, &g, &m);) {
-        if (!gm_GetBit(&mv->mask, g, m))
+      for (auto it = mm->begin(); it; ++it) {
+        u8 g = it.getG(), m = it.getM();
+        if (!mv->mask.getBit(g, m))
           continue;
 
         if (filter->same_direction) {
