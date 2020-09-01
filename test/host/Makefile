@@ -52,7 +52,7 @@ TEST_LOGS     = $(addprefix $(LOG_BASE)/,$(addsuffix .log,$(TEST_NAMES)))
 EXTRA_INCDIR = test_runner $(COMP_INC_PATHS)
 INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
 
-C_WARN ?= -Wall -Wextra -Wno-unused-result -Wno-missing-field-initializers
+C_WARN += -Wall -Wextra -Wno-unused-result -Wno-missing-field-initializers -Wno-clobbered
 TESTING_DEFS :=
 CPPFLAGS :=  -MMD -DHOST_TESTING -DTEST_HOST -DTEST $(TESTING_DEFS) $(INCLUDE)
 CFLAGS := -g3 $(C_WARN) -flto -O1
