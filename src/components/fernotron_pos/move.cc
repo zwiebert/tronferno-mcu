@@ -87,40 +87,41 @@ static void ferPos_printMovingPct(u8 g, u8 m, u8 pct) {
 
 // check if a moving shutter has reached its end position
 int ferPos_mvCheck_mv(struct mv *mv, unsigned now_ts) {
-  u8 g, m, pct;
+  u8 pct;
   int stopped_count = 0;
 
   u16 duration_ts = now_ts - mv->start_time;
 
-  for (g = 1; g < 8; ++g) {
-    for (m = 1; m < 8; ++m) {
-      if (!gm_GetBit(&mv->mask, g, m))
-        continue;
+  for (gm_iterator it; it; ++it) {
+    const gT g = it.getG();
+    const mT m = it.getM();
+    if (!mv->mask.getBit(g, m))
+      continue;
 
-      pct = simPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), duration_ts);
+    pct = simPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), duration_ts);
 
-      if ((direction_isUp(mv->dir) && pct == PCT_UP) || (!direction_isUp(mv->dir) && pct == PCT_DOWN)) {
-        ferPos_stop_mv(mv, g, m, pct);
-        ++stopped_count;
-        continue;
-      }
-
-      if (mv->dir == DIRECTION_SUN_DOWN && ferPos_shouldStop_sunDown(g, m, duration_ts)) {
-        ferPos_stop_mv(mv, g, m, pct);
-        ++stopped_count;
-        continue;
-      }
-
-      ferPos_printMovingPct(g, m, pct);
+    if ((direction_isUp(mv->dir) && pct == PCT_UP) || (!direction_isUp(mv->dir) && pct == PCT_DOWN)) {
+      ferPos_stop_mv(mv, g, m, pct);
+      ++stopped_count;
+      continue;
     }
+
+    if (mv->dir == DIRECTION_SUN_DOWN && ferPos_shouldStop_sunDown(g, m, duration_ts)) {
+      ferPos_stop_mv(mv, g, m, pct);
+      ++stopped_count;
+      continue;
+    }
+
+    ferPos_printMovingPct(g, m, pct);
   }
+
   return stopped_count;
 }
 
 
 void ferPos_mvCheck_mvi(struct mv *mv) {
   if (ferPos_mvCheck_mv(mv, get_now_time_ts()))
-    if (gm_isAllClear(&mv->mask))
+    if (mv->mask.isAllClear())
       mv_free(mv);
 }
 
@@ -160,7 +161,7 @@ bool ferPos_shouldMove_sunDown(u8 g, u8 m) {
   if (pct_curr <= pct_sun)
     return false;
 
-  if (gm_GetBit(&manual_bits, g, m))
+  if (manual_bits.getBit(g, m))
     return false;
 
   timer_data_t td = { };
@@ -215,7 +216,7 @@ int simPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
 
   struct mv *mv;
   for (mv = mv_getFirst(); mv; mv = mv_getNext(mv)) {
-    if (gm_GetBit(&mv->mask, g, m)) {
+    if (mv->mask.getBit(g, m)) {
       u16 duration_ts = now_ts - mv->start_time;
       u8 pct = simPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), duration_ts);
       return pct;

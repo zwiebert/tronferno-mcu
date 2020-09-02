@@ -36,7 +36,7 @@
 #define MBR_MAX 7
 
 
-#define cfg_isMemberUnused(g,m) !gm_GetBit(&C.fer_usedMemberMask, g, m)
+#define cfg_isMemberUnused(g,m) !C.fer_usedMemberMask.getBit(g, m)
 
 static shutterGroupPositionsT pos_map[8];
 static u8  pos_map_changed;
@@ -101,19 +101,20 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   precond(0 < g && g <= 7 && 0 < m && m <= 7);
   int result = -1;
 
+
 #ifndef TEST_HOST
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, pct=%d\n", __func__, a, (int)g, (int)m, (int)pct));
 #ifdef USE_PAIRINGS
   if (!(a == 0 || a == cfg_getCuId())) {
     gm_bitmask_t gm;
     if (pair_getControllerPairings(a, &gm))
-    for (g=1; g <= GRP_MAX; ++g) {
-      for (m=1; m <= MBR_MAX; ++m) {
-        if (gm_GetBit(&gm, g, m)) {
+      for (gm_iterator it(1,1,true); it; ++it) {
+        const gT g = it.getG();
+        const mT m = it.getM();
+        if (gm.getBit(g, m)) {
           // recursion for each paired g/m
           statPos_setPct(0, g, m, pct);
         }
-      }
     }
     return 0;
   }
@@ -129,7 +130,7 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
 
       if (mutex_cliTake()) {
         if (sj_open_root_object("tfmcu")) {
-          so_arg_gmp_t gmp[3] = { { g, m, pct }, { g, 0, (u8)pm_getPct(g, 0) }, { 0xff, 0xff, 0xff } };
+          so_arg_gmp_t gmp[3] = { { g, m, pct }, { g, 0, (u8) pm_getPct(g, 0) }, { 0xff, 0xff, 0xff } };
           so_broadcast_message(SO_POS_PRINT_GMPA, gmp);
           sj_close_root_object();
           cli_print_json(sj_get_json());
@@ -143,83 +144,48 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   }
 #endif
 
-    return result;
+  return result;
 }
 
-int 
-statPos_setPcts(gm_bitmask_t *mm, u8 p) {
-  u8 g, m;
-
-  for (g = 1; g <= GRP_MAX; ++g) {
-    for (m = 1; m <= MBR_MAX; ++m) {
-      if (gm_GetBit(mm, g, m)) {
-        statPos_setPct(0, g, m, p);
-      }
+int statPos_setPcts(gm_bitmask_t *mm, u8 p) {
+  for (gm_iterator it(1, 1, true); it; ++it) {
+    const gT g = it.getG();
+    const mT m = it.getM();
+    if (mm->getBit(g, m)) {
+      statPos_setPct(0, g, m, p);
     }
   }
   return 0;
 }
-#if 0
-int
-statPos_printAllPcts() {
-  u8 g2, m2;
-  gm_bitmask_t msk = { 0, };
 
-  so_output_message(SO_POS_begin, 0);
-  for (auto it = C.fer_usedMemberMask.begin(1); it; ++it) {
-    u8 g = it.getG(), m = it.getM();
-    if (pm_isGroupUnused(g))
-      continue;
-    if (pm_isMemberUnused(g, m))
-      continue; //
-    if (gm_GetBit(&msk, g, m))
-      continue; // was already processed by a previous pass
-
-    u8 pct = pm_getPct(g, m);
-    gm_bitmask_t pos_msk = { 0, };
-    for (g2 = g; g2 < 8; ++g2) {
-      for (m2 = 0; m2 < 8; ++m2) {
-        if (pm_getPct(g2,m2) == pct) {
-          gm_SetBit(&pos_msk, g2, m2); // mark as being equal to pct
-          gm_SetBit(&msk, g2, m2); // mark as already processed
-        }
-      }
-    }
-    so_arg_mmp_t mmp = { &pos_msk, pct };
-    so_output_message(SO_POS_PRINT_MMP, &mmp);
-  }
-  so_output_message(SO_POS_end, 0);
-  return 0;
-}
-#else
 int 
 statPos_printAllPcts() {
-  u8 g, m, g2, m2;
   gm_bitmask_t msk = {0,};
 
   so_output_message(SO_POS_begin, 0);
-  for (g=1; g < 8; ++g) {
+  for (gT g=1; g < 8; ++g) {
     if (pm_isGroupUnused(g))
       continue;
-    for (m=0; m < 8; ++m) {
+    for (mT m=0; m < 8; ++m) {
       if (pm_isMemberUnused(g,m))
         continue; //
       if (m != 0 && cfg_isMemberUnused(g,m))
         continue; //
 
-      if (gm_GetBit(&msk, g, m))
+      if (msk.getBit(g, m))
         continue; // was already processed by a previous pass
 
       u8 pct = pm_getPct(g,m);
       gm_bitmask_t pos_msk = {0,};
-      for (g2=g; g2 < 8; ++g2) {
-        for (m2=0; m2 < 8; ++m2) {
-          if (pm_getPct(g2,m2) == pct) {
-            if (m2 != 0 && cfg_isMemberUnused(g2,m2))
-              continue;
-            gm_SetBit(&pos_msk, g2, m2); // mark as being equal to pct
-            gm_SetBit(&msk, g2, m2); // mark as already processed
-          }
+      for (gm_iterator it(g); it; ++it) {
+        const gT g2 = it.getG();
+        const mT m2 = it.getM();
+
+        if (pm_getPct(g2,m2) == pct) {
+          if (m2 != 0 && cfg_isMemberUnused(g2, m2))
+            continue;
+          pos_msk.setBit(g2, m2); // mark as being equal to pct
+          msk.setBit(g2, m2); // mark as already processed
         }
       }
       so_arg_mmp_t mmp = { &pos_msk, pct };
@@ -229,7 +195,7 @@ statPos_printAllPcts() {
   so_output_message(SO_POS_end, 0);
   return 0;
 }
-#endif
+
 static void ferPos_autoSavePositions_iv(int interval_ts) {
   DT(ets_printf("%s: interval_tx=%d\n", __func__, interval_ts));
   static unsigned next_save_pos;

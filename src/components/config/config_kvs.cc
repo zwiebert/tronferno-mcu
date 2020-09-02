@@ -60,7 +60,7 @@ bool config_item_modified(enum configItem item) {
 #endif
     case CB_USED_MEMBERS:
       kvsR(u32, item, C.fer_usedMembers);
-      gm_fromNibbleCounters(&C.fer_usedMemberMask, C.fer_usedMembers);
+      C.fer_usedMemberMask.fromNibbleCounters(C.fer_usedMembers);
       break;
     case CB_VERBOSE:
       config_setup_txtio();

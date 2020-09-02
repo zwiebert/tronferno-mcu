@@ -13,15 +13,19 @@ using gm_pairT = std::pair<gT, mT>;
 #pragma GCC optimize ("O0")
 
 class gm_iterator {
-  uint16_t mGm;
+  uint8_t mGm;
+  const bool mSkipGroups: 1;
 public:
-  gm_iterator(gT g, mT m) :
-      mGm(0x3f & ((g << 3) | m)) {
+  gm_iterator(gT g = 0, mT m = 0, bool skip_groups = false) :
+      mGm(0x3f & ((g << 3) | m)), mSkipGroups(skip_groups) {
   }
   gm_iterator& operator++() {
     if ((mGm & ~0x3f) == 0) {
       ++mGm;
     }
+    if (mSkipGroups && (getM() == 0 || getG() == 0))
+      ++mGm;
+
     return *this;
   }
 

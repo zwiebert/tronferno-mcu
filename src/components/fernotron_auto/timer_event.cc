@@ -106,7 +106,7 @@ static int set_earliest(u8 g, u8 m, minutes_t *earliest, const struct tm *tm_now
       result = 1;
     else if (temp < *earliest) {
       *earliest = temp;
-      gm_Clear(gm);
+      gm->clear();
       result = 2;
     }
   }
@@ -122,13 +122,13 @@ static bool fam_get_next_timer_event_earliest(gm_bitmask_t *mask_result, minutes
 
   if (set_earliest(0, 0, &earliest, tm_now, minutes_now, mask_result)) {
     for (g = 1; g <= MAX_GRP; ++g) {
-      gm_SetByte(mask_result, g, gm_GetByte(&C.fer_usedMemberMask, g));
+      (*mask_result)[g] = C.fer_usedMemberMask[g];
     }
   }
 
   for (g = 1; g <= MAX_GRP; ++g) {
     if (set_earliest(g, 0, &earliest, tm_now, minutes_now, mask_result)) {
-      gm_SetByte(mask_result, g, gm_GetByte(&C.fer_usedMemberMask, g));
+      (*mask_result)[g] = C.fer_usedMemberMask[g];
     }
   }
 
@@ -138,11 +138,11 @@ static bool fam_get_next_timer_event_earliest(gm_bitmask_t *mask_result, minutes
       continue;
 
     if (set_earliest(g, m, &earliest, tm_now, minutes_now, mask_result)) {
-      gm_SetBit(mask_result, g, m);
+      mask_result->setBit(g, m);
     }
   }
 
-  if (gm_isAllClear(mask_result))
+  if (mask_result->isAllClear())
     earliest = MINUTES_DISABLED;
 
   result = (earliest != MINUTES_DISABLED);
@@ -150,7 +150,7 @@ static bool fam_get_next_timer_event_earliest(gm_bitmask_t *mask_result, minutes
   if (result && earliest_result)
     *earliest_result = earliest;
 
-  postcond(result == !gm_isAllClear(mask_result));
+  postcond(result == !mask_result->isAllClear());
   return result;
 }
 
@@ -185,11 +185,11 @@ bool fam_get_next_timer_event(timer_event_t *evt, const time_t *now_time) {
     if (temp <= earliest) {
 
       if (timi.minutes[DAILY_UP_MINTS] == earliest || timi.minutes[WEEKLY_UP_MINTS] == earliest) {
-        gm_SetBit(te_getMaskUp(evt), g, m);
+        te_getMaskUp(evt)->setBit(g, m);
 
       }
       if (timi.minutes[ASTRO_MINTS] == earliest || timi.minutes[DAILY_DOWN_MINTS] == earliest || timi.minutes[WEEKLY_DOWN_MINTS] == earliest) {
-        gm_SetBit(te_getMaskDown(evt), g, m);
+        te_getMaskDown(evt)->setBit(g, m);
       }
     }
   }

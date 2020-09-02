@@ -32,11 +32,10 @@ enum rtclock {
   rtcNone, rtcAvrTime
 };
 
-#ifdef USE_NETWORK
 enum nwConnection {
   nwNone, nwWlanSta, nwWlanAp, nwLan, nwLEN,
 };
-#endif
+
 
 #ifdef POSIX_TIME
 void cfg_tz2timezone(void);
@@ -110,6 +109,7 @@ uint32_t config_read_baud();
 const char* config_read_tz(char *d, unsigned d_size);
 float config_read_timezone();
 enum dst config_read_dst();
+
 enum nwConnection config_read_network_connection();
 
 void config_setup_astro();

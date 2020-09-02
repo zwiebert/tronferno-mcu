@@ -10,6 +10,7 @@
 #include "storage/storage.h"
 #include "misc/int_types.h"
 #include "debug/debug.h"
+#include "fernotron/types.h"
 
 #ifndef TEST_HOST
 #define printf ets_printf
@@ -44,19 +45,20 @@ static bool  read_data2(timer_data_t *p, const char *file_name) {
   return stor_fileRead(file_name, p, sizeof (timer_data_t));
 }
 
-static int  delete_shadowded_files(u8 group, u8 memb) {
+static int delete_shadowded_files(u8 group, u8 memb) {
   int g, m, result = 0;
   DB2(printf("delete shadowed files(group=%d, memb=%d)\n", (int)group, (int)memb));
-  for (g = 0; g <= 7; ++g) {
-    for (m = 0; m <= 7; ++m) {
-      if ((group == 0 || group == g) && (memb == 0 || (memb == m && gm_GetBit(&C.fer_usedMemberMask, g, m)))) {
-        if (stor_fileDelete(gm_to_file_name(g, m))) {
-          DB2(printf("shadow deleted: g=%d, m=%d, fid=%s\n", (int)g, (int)m, gm_to_file_name(g, m)));
-          ++result;
-        }
+  for (gm_iterator it; it; ++it) {
+    const gT g = it.getG();
+    const mT m = it.getM();
+    if ((group == 0 || group == g) && (memb == 0 || (memb == m && C.fer_usedMemberMask.getBit(g, m)))) {
+      if (stor_fileDelete(gm_to_file_name(g, m))) {
+        DB2(printf("shadow deleted: g=%d, m=%d, fid=%s\n", (int)g, (int)m, gm_to_file_name(g, m)));
+        ++result;
       }
     }
   }
+
   return result;
 }
 

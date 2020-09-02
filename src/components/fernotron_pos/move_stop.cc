@@ -27,8 +27,8 @@
 
 void ferPos_stop_mv(struct mv *mv, u8 g, u8 m, u8 pct) {
   statPos_setPct(0, g, m, pct);
-  gm_ClrBit(&mv->mask, g, m);
-  if (gm_isAllClear(&mv->mask))
+  mv->mask.clearBit(g, m);
+  if (mv->mask.isAllClear())
     mv_free(mv);
 }
 
@@ -58,11 +58,11 @@ void ferPos_stop_mvi_mm(struct mv *mv, gm_bitmask_t *mm, u32 now_ts) {
 
   for (auto it = mm->begin(1); it; ++it) {
     u8 g = it.getG(), m = it.getM();
-    gm_ClrBit(&mv->mask, g, m);
+    mv->mask.clearBit(g, m);
     statPos_setPct(0, g, m, simPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), now_ts - mv->start_time));  // update pct table now
   }
 
-  if (gm_isAllClear(&mv->mask)) {
+  if (mv->mask.isAllClear()) {
     mv_free(mv);
   }
 }

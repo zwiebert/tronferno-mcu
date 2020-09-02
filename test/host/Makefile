@@ -30,7 +30,7 @@ SRC_DIR_EXCLUDE = esp8266 esp32 nonopb node_modules
 SRC_DIR_EXCLUDE_FIND = 
 
 comm=$(addprefix $(BUILD_OBJ_PATH)/,test_runner/setup.o unity/src/unity.o test_runner/test_runner.o)
-TEST_RUNNER_C_SRC = test_runner/setup.c unity/src/unity.c test_runner/test_runner.c
+TEST_RUNNER_C_SRC = test_runner/setup.c unity/src/unity.c test_runner/test_runner.c test_runner/mock.cc
 TEST_RUNNER_C_OBJ = $(addprefix $(BUILD_OBJ_PATH)/,$(addsuffix .o,$(TEST_RUNNER_C_SRC)))
 
 CXX_SRC := $(shell find $(COMP_PATHS) '(' -name '*.cc' -or -name '*.cpp' ')' \
@@ -38,12 +38,14 @@ CXX_SRC := $(shell find $(COMP_PATHS) '(' -name '*.cc' -or -name '*.cpp' ')' \
                    -or -wholename '*/node_modules/*' ')' )
 C_SRC := $(shell find $(COMP_PATHS) -name '*.c' \
                    -and -not '(' -wholename '*/esp8266/*' -or  -wholename '*/esp32/*' -or -wholename '*/nanopb/*' \
-                   -or -wholename '*/jsmn/*' -or -wholename '*/node_modules/*' ')') 
+                   -or -wholename '*/jsmn/*' -or -wholename '*/node_modules/*' -or -wholename '*/esp8266/spiffs/*' ')')
+TEST_SRC := $(shell find $(COMP_PATHS) -maxdepth 2 -and '(' -name '*.c' -or -name '*.cc' ')' -and -wholename '*/test/test_*')
                    
 C_OBJ         := $(addsuffix .o,$(subst $(SRC_BASE)/,$(BUILD_OBJ_PATH)/,$(C_SRC))) $(TEST_RUNNER_C_OBJ)
 CXX_OBJ       := $(addsuffix .o,$(subst $(SRC_BASE)/,$(BUILD_OBJ_PATH)/,$(CXX_SRC)))
 VALID_OBJ     = $(shell find $(BUILD_OBJ_PATH) -name '*.o' -and -not -wholename '*/test/test_*.o')
-TEST_OBJ      = $(shell find $(BUILD_OBJ_PATH) -name '*.o' -and -wholename '*/test/test_*.o')
+TEST_OBJ         := $(addsuffix .o,$(subst $(SRC_BASE)/,$(BUILD_OBJ_PATH)/,$(TEST_SRC)))
+#TEST_OBJ      = $(shell find $(BUILD_OBJ_PATH) -name '*.o' -and -wholename '*/test/test_*.o')
 TEST_NAMES    = $(basename $(basename $(notdir $(TEST_OBJ))))
 TEST_PROGS    = $(addprefix $(TEST_BASE)/,$(TEST_NAMES))
 TEST_LOGS     = $(addprefix $(LOG_BASE)/,$(addsuffix .log,$(TEST_NAMES)))
@@ -55,13 +57,14 @@ INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
 C_WARN += -Wall -Wextra -Wno-unused-result -Wno-missing-field-initializers -Wno-clobbered
 TESTING_DEFS :=
 CPPFLAGS :=  -MMD -DHOST_TESTING -DTEST_HOST -DTEST $(TESTING_DEFS) $(INCLUDE)
-CFLAGS := -g3 $(C_WARN) -flto -O1
-CXXFLAGS := -std=gnu++2a -g3 $(C_WARN) -fpermissive -flto -O1
+CFLAGS := -g3 $(C_WARN) -flto -O2
+CXXFLAGS := -std=gnu++2a -g3 $(C_WARN) -fpermissive -flto -O2 -flto
 LDLIBS += build/obj.a -lc
 
 
 all:
-	$(Q) $(make)  -s -j init C_WARN='-w' &&	$(make)  -s -j $(TEST_NAMES) grep C_WARN='-w'
+	$(Q) $(make)  -s -j init C_WARN='-w'
+	$(make)  -s $(TEST_NAMES) grep C_WARN='-w'
 
 tests: init $(TEST_NAMES) grep
 
@@ -92,6 +95,7 @@ $(LOG_BASE)/%.log:$(TEST_BASE)/%
 	
 # make lib from all non-test objs
 $(BUILD_BASE)/obj.a: $(VALID_OBJ)
+	  $(vecho) "AR $@"
 		$(Q) $(AR) cr $@ $^
 
 # create objs by compiling sources
@@ -99,6 +103,10 @@ $(BUILD_OBJ_PATH)/%.c.o : ./%.c
 	$(vecho) "CC $@"
 	$(Q) mkdir -p $(dir $@)
 	$(Q) $(COMPILE.c) -o $@ $<
+$(BUILD_OBJ_PATH)/%.cc.o : ./%.cc
+	$(vecho) "CXX $@"
+	$(Q) mkdir -p $(dir $@)
+	$(Q) $(COMPILE.cc) -o $@ $<
 $(BUILD_OBJ_PATH)/%.c.o : $(SRC_BASE)/%.c
 	$(vecho) "CC $@"
 	$(Q) mkdir -p $(dir $@)
@@ -116,6 +124,8 @@ print_test_obj:
 	$(info $(TEST_OBJ))
 print_cxx_src:
 	$(info $(CXX_SRC))
+print_test_src:
+	$(info $(TEST_SRC))
 print_cxx_obj:
 	$(info $(CXX_OBJ))
 print_c_src:
@@ -136,9 +146,9 @@ build_lib:
 ################################
 
 define build_test
-build/$(basename $(basename $(notdir $(1)))): $(1)
+build/$(basename $(basename $(notdir $(1)))): $(1) $(BUILD_BASE)/obj.a
 	$(vecho) "LINK.cc $(1)"
-	$(Q)  $(LINK.cc) $$< $(LOADLIBES) $(LDLIBS) -o $$@
+	$(Q)  $(LINK.cc) $$^ $(LOADLIBES) $(LDLIBS) -o $$@
 endef
 
 $(foreach test_obj,$(TEST_OBJ),$(eval $(call build_test,$(test_obj))))

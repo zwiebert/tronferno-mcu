@@ -43,21 +43,22 @@ static char* td_make_key(char *key, const char *tag, u8 g, u8 m) {
 #define tag ""
 
 static int delete_shadowded_kv(u8 group, u8 memb) {
-  int g, m, result = 0;
+  int result = 0;
   DB2(printf("delete shadowed files(group=%d, memb=%d)\n", (int)group, (int)memb));
 
   kvshT handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE);
   if (handle) {
     char key[td_key_len(tag) + 1];
-    for (g = 0; g <= 7; ++g) {
-      for (m = 0; m <= 7; ++m) {
-        if ((group == 0 || group == g) && (memb == 0 || (memb == m && gm_GetBit(&C.fer_usedMemberMask, g, m)))) {
-          if (kvs_erase_key(handle, td_make_key(key, tag, group, memb))) {
-            DB2(printf("shadow deleted: g=%d, m=%d, key=%s\n", (int)g, (int)m, key));
-            ++result;
-          }
+    for (gm_iterator it; it; ++it) {
+      const gT g = it.getG();
+      const mT m = it.getM();
+      if ((group == 0 || group == g) && (memb == 0 || (memb == m && C.fer_usedMemberMask.getBit(g, m)))) {
+        if (kvs_erase_key(handle, td_make_key(key, tag, group, memb))) {
+          DB2(printf("shadow deleted: g=%d, m=%d, key=%s\n", (int)g, (int)m, key));
+          ++result;
         }
       }
+
     }
     kvs_commit(handle);
     kvs_close(handle);
@@ -118,27 +119,27 @@ bool  read_timer_data_kvs(timer_data_t *p, u8 *g, u8 *m, bool wildcard) {
 #include "timer_data_fs.h"
 
 int timer_data_transition_fs_to_kvs() {
-  u8 g, m, result = 0;
+  u8 result = 0;
   bool error = false;
 
   kvshT handle = 0;
-  for (g = 0; g <= 7; ++g) {
-    for (m = 0; m <= 7; ++m) {
-      timer_data_t td;
-      if (read_timer_data_fs(&td, &g, &m, false)) {
-        if (handle || (handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE))) {
-          char *key = td_make_key((char*)alloca(td_key_len(tag) + 1), tag, g, m);
-          if (!kvs_rw_blob(handle, key, &td, sizeof(td), true)) {
-            error = true;
-            continue;
-          }
-          DB2(printf("copied timer data from fs to kvs: g=%d, m=%d, key=%s\n", (int)g, (int)m, key));
-          ++result;
-        } else {
-          postcond(!"kvs");
-        }
+  for (gm_iterator it; it; ++it) {
+    gT g = it.getG();
+    mT m = it.getM();
+    timer_data_t td;
+    if (read_timer_data_fs(&td, &g, &m, false)) {
+      if (handle || (handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE))) {
+        char *key = td_make_key((char*) alloca(td_key_len(tag) + 1), tag, g, m);
+        if (!kvs_rw_blob(handle, key, &td, sizeof(td), true)) {
+          error = true;
+          continue;
+        }DB2(printf("copied timer data from fs to kvs: g=%d, m=%d, key=%s\n", (int)g, (int)m, key));
+        ++result;
+      } else {
+        postcond(!"kvs");
       }
     }
+
   }
 
   if (handle) {

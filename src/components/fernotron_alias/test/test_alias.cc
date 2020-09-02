@@ -23,7 +23,7 @@ static int pair_and_read_back(unsigned a, uint8_t g, uint8_t m, bool unpair) {
   if (!pair_getControllerPairings(a, &gm))
     return -2;
 
-  gm_PutBit(&gme, g, m, !unpair);
+  gme.putBit(g, m, !unpair);
   return 0;
 }
 
@@ -32,7 +32,7 @@ static void test_pair_multiple_members() {
   pair_rmController(A);
   TEST_ASSERT_FALSE(pair_getControllerPairings(A, &gm));
 
-  gm_Clear(&gme);
+  gme.clear();
 
   TEST_ASSERT_EQUAL(0, pair_and_read_back(A, 1, 2, false));
   TEST_ASSERT_EQUAL_HEX8_ARRAY(gme, gm, SIZE_GM);
@@ -69,5 +69,6 @@ TEST_CASE("pair multiple members", "[fernotron_alias]")
 #ifdef TEST_HOST
 typedef int so_msg_t;
 void  so_output_message(so_msg_t mt, void *arg) {}
+void so_output_message(so_msg_t mt, const void *arg) {}
 #endif
 

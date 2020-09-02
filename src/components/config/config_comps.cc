@@ -73,7 +73,7 @@ void config_setup_global() {
     kvsR(u32, CB_BAUD, C.mcu_serialBaud);
     kvs_close(h);
   }
-  gm_fromNibbleCounters(&C.fer_usedMemberMask, C.fer_usedMembers);
+  C.fer_usedMemberMask.fromNibbleCounters(C.fer_usedMembers);
   FSB_PUT_DEVID(&default_sender, C.fer_centralUnitID);
 }
 uint32_t config_read_used_members() {

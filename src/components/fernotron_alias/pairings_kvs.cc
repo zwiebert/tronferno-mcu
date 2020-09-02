@@ -65,12 +65,12 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
   if (handle) {
     gm_bitmask_t gm;
     if (!kvs_rw_blob(handle, key, &gm, sizeof gm, false)) {
-      gm_Clear(&gm);
+      gm.clear();
     }
 
-    gm_PutBit(&gm, g, m, !remove);
+    gm.putBit(g, m, !remove);
 
-    bool not_empty = !gm_isAllClear(&gm);
+    bool not_empty = !gm.isAllClear();
 
     if (not_empty) {
       success = kvs_rw_blob(handle, key, &gm, sizeof gm, true);

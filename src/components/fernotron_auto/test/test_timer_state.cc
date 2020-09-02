@@ -12,6 +12,7 @@
 #include <fernotron/types.h>
 #include "debug/debug.h"
 #include "config/config.h"
+#include <misc/int_types.h>
 
 bool succ;
 
@@ -42,7 +43,8 @@ static void test_timer_event4() {
   fam_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(20,54), tevt.next_event); // astro time
-  gm_bitmask_t test1 = {0,(C.fer_usedMemberMask[1]&0x02),0,0,0,0,0,0};
+  gm_bitmask_t test1;
+  test1[1] = C.fer_usedMemberMask[1]&0x02;
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
 }
@@ -71,7 +73,8 @@ static void test_timer_event3() {
   fam_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(6,54), tevt.next_event);
-  gm_bitmask_t test1 = {0,(C.fer_usedMemberMask[1]&0x02),0,0,0,0,0,0};
+  gm_bitmask_t test1;
+  test1[1] = C.fer_usedMemberMask[1]&0x02;
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskUp(&tevt), 8);
 
 }
@@ -100,7 +103,8 @@ static void test_timer_event2() {
   fam_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
-  gm_bitmask_t test1 = {0,(C.fer_usedMemberMask[1]&0xfc),0,0,0,0,0,0};
+  gm_bitmask_t test1;
+  test1[1] = C.fer_usedMemberMask[1]&0xf2;
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
   now_tm = tm {
@@ -354,7 +358,26 @@ static struct cfg_astro cfg_astro =
 void setUp() {
 
   C.fer_usedMembers = ~0U;
-  gm_fromNibbleCounters(&C.fer_usedMemberMask, C.fer_usedMembers);
+  C.fer_usedMemberMask.fromNibbleCounters(C.fer_usedMembers);
   astro_init_and_reinit(&cfg_astro);
 }
 #endif
+
+#ifdef TEST_HOST
+#ifndef cfg_getCuId
+uint32_t cfg_getCuId() { return 0x801234; }
+#endif
+#include "time.h"
+
+uint32_t run_time_ts() {
+  clock_t c = clock();
+  return c / (CLOCKS_PER_SEC/10);
+}
+uint32_t run_time_s() {
+  clock_t c = clock();
+  return c / CLOCKS_PER_SEC;
+}
+void mutex_cliTake(){}
+void mutex_cliGive(){}
+#endif
+

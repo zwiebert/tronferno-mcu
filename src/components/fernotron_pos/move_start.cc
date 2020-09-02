@@ -59,7 +59,7 @@ static int ferPos_filter_mm(gm_bitmask_t *mm, struct filter *filter) {
     ++remaining;
     continue;
     filter_out:
-    gm_ClrBit(mm, g, m);
+    mm->clearBit(g, m);
 
   }
 
@@ -80,7 +80,7 @@ static int ferPos_filter_mm(gm_bitmask_t *mm, struct filter *filter) {
 
         continue;
         filter_out_mv: --remaining;
-        gm_ClrBit(mm, g, m);
+        mm->clearBit(g, m);
       }
     }
   }
@@ -92,7 +92,7 @@ static void ferPos_createMovement_mm(struct mv *mv, gm_bitmask_t *mm, u32 now_ts
   u8 g;
 
   for (g = 1; g <= GRP_MAX; ++g) {
-    mv->mask[g] = gm_GetByte(mm, g);
+    mv->mask[g] = mm->getByte(g);
   }
 
   mv->start_time = now_ts;
@@ -107,7 +107,7 @@ struct mv *ferPos_addToMovement_mm(gm_bitmask_t *mm, u32 now_ts, enum direction 
     if (dir == mv->dir && now_ts == mv->start_time) {
       // add to an in-use bitmask, if having same start_time and direction
       for (g = 1; g <= GRP_MAX; ++g) {
-        mv->mask[g] |= gm_GetByte(mm, g);
+        mv->mask[g] |= mm->getByte(g);
       }
       return mv;
     }
@@ -163,7 +163,7 @@ int simPos_registerMovingShutters(gm_bitmask_t *mm, fer_cmd cmd) {
 
   ferPos_filter_mm(mm, &filter);
 
-  if (gm_isAllClear(mm))
+  if (mm->isAllClear())
     return -1;
 
   if (direction_isStop(dir) || direction_isMove(dir)) {
@@ -196,12 +196,12 @@ int simPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_cmd cmd) {
   gm_bitmask_t mm = { 0, };
   if (g == 0) {
     for (g = 1; g <= GRP_MAX; ++g) {
-      gm_SetByte(&mm, g, 0xfe);
+      mm[g] = 0xfe;
     }
   } else if (m == 0) {
-    gm_SetByte(&mm, g, 0xfe);
+     mm[g] = 0xfe;
   } else {
-    gm_SetBit(&mm, g, m);
+    mm.setBit(g, m);
   }
 
   return simPos_registerMovingShutters(&mm, cmd);

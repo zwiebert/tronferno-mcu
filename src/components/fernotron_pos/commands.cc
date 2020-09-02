@@ -39,7 +39,7 @@ bool commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
 
   if (is_cu && m == 0) {
     gm_bitmask_t gm = { 0, };
-    gm_SetByte(&gm, g, 0xfe);
+    gm[g] = 0xfe;
     return commands_moveShuttersToPct(a, &gm, pct, repeats);
   }
 
@@ -106,7 +106,7 @@ bool   commands_moveShuttersToPct(u32 a, gm_bitmask_t *gm, u8 pct, u8 repeats) {
     for (m=1; m <= MBR_MAX; ++m) {
       if (m > um)
         break;
-      if (!gm_GetBit(gm, g, m))
+      if (!gm->getBit(g, m))
         continue;
 
       if (!commands_moveShutterToPct(a, g, m, pct, 0)) {
