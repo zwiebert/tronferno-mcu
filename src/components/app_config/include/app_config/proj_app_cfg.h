@@ -64,7 +64,6 @@
 
 #if defined TEST_HOST
 #define IRAM_ATTR
-
 //#undef FER_TRANSMITTER
 #undef FER_RECEIVER
 #undef USE_NETWORK
@@ -115,7 +114,6 @@
 
 #elif defined MCU_ESP32
 #include "app_config/esp32/esp32_user_config.h"
-
 #else
 #error "no supported MCU"
 #define IRAM_ATTR
