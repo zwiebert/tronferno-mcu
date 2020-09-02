@@ -21,7 +21,7 @@
 #include "fernotron_auto/fau_tdata_store.h"
 #include "cli_app/cli_imp.h"
 #include "cli_app/cli_fer.h"
-#include "cli/mutex.h"
+#include "cli/mutex.hh"
 
 #include "move.h"
 

@@ -9,7 +9,7 @@
 #include "config/config.h"
 #include "cli_app/cli_imp.h"
 #include "misc/int_types.h"
-#include "cli/mutex.h"
+#include "cli/mutex.hh"
 #include "net/http/server/esp32/register_uris.h"
 
 #include "webapp/content.h"
@@ -103,7 +103,7 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
     return ESP_FAIL;
   }
 
-  if (mutex_cliTake()) {
+  if (cli_mutex.lock()) {
     buf[ret] = '\0';
     hts_query0(HQT_NONE, buf); // parse and process received command
 
@@ -111,7 +111,7 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
     httpd_resp_sendstr(req, sj_get_json());
 
     sj_free_buffer();
-    mutex_cliGive();
+    cli_mutex.unlock();
   }
 
   return ESP_OK;
@@ -221,7 +221,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   }
 
 
-  if (mutex_cliTake()) {
+  if (cli_mutex.lock()) {
     buf[ws_pkt.len] = '\0';
     hts_query0(HQT_NONE, (char*)buf); // parse and process received command
 
@@ -235,7 +235,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
     }
 
     sj_free_buffer();
-    mutex_cliGive();
+    cli_mutex.unlock();
   }
   return ret;
 }

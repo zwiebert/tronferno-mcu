@@ -1,7 +1,7 @@
 #include "main.h"
 #include "misc/time/run_time.h"
 #include "key_value_store/kvs_wrapper.h"
-#include "cli/mutex.h"
+#include "cli/mutex.hh"
 
 void loop_setBit_mcuRestart() {
   lf_setBit(lf_mcuRestart);
@@ -141,7 +141,6 @@ extern "C" void main_setup_ip_dependent() { //XXX called from library
 
 
 void mcu_init() {
-  uart_mutex = xSemaphoreCreateRecursiveMutex();
 #ifdef USE_EG
   loop_eventBits_setup();
 #endif
@@ -205,10 +204,6 @@ void mcu_init() {
   if (network != nwWlanAp)
     tmr_checkNetwork_start();
 #endif
-#ifdef USE_CLI_MUTEX
-  mutex_setup();
-#endif
-  //setup_udp();
   intTimer_setup();
   stor_setup();
   main_setup();

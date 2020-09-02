@@ -10,7 +10,6 @@
 #include <esp_attr.h>
 
 
-SemaphoreHandle_t uart_mutex;
 i32 boot_counter;
 
 void lfa_createWifiAp() {

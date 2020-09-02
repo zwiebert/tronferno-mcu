@@ -107,7 +107,6 @@ extern volatile uint32_t loop_flags;
 extern uint32_t loop_flags_periodic;
 extern i32 boot_counter;
 extern bool wifi_ap_active;
-extern SemaphoreHandle_t uart_mutex;
 
 void lfa_createWifiAp(void);
 void lfa_gotIpAddr(void);

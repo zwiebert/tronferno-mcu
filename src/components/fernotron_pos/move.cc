@@ -20,7 +20,7 @@
 #include "fernotron_auto/fau_tdata_store.h"
 #include "cli_app/cli_imp.h"
 #include "cli_app/cli_fer.h"
-#include "cli/mutex.h"
+#include "cli/mutex.hh"
 #include "misc/time/periodic.h"
 #include "misc/time/run_time.h"
 
@@ -71,7 +71,7 @@ u8 ferPos_mGetSunPct(u8 g, u8 m) {
 
 
 static void ferPos_printMovingPct(u8 g, u8 m, u8 pct) {
-  if (mutex_cliTake()) {
+  if (cli_mutex.lock()) {
     so_arg_gmp_t gmp = { g, m, pct };
     if (sj_open_root_object("tfmcu")) {
       so_broadcast_message(SO_POS_PRINT_GMP, &gmp);
@@ -81,7 +81,7 @@ static void ferPos_printMovingPct(u8 g, u8 m, u8 pct) {
       ws_send_json(sj_get_json());
 #endif
     }
-    mutex_cliGive();
+    cli_mutex.unlock();
   }
 }
 

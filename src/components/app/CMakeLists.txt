@@ -1,7 +1,5 @@
 set(srcs fernotron.cc esp32/timer.cc esp32/ota.cc esp32/main.cc esp32/main_setup.cc esp32/main_loop.cc rtc.cc esp32/unity_setup.cc) 
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
-
 idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS "./include" ../.. 

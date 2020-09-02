@@ -11,7 +11,7 @@
 #include "config/config.h"
 #include "fernotron_pos/shutter_pct.h"
 #include "fernotron/astro.h"
-#include "cli/mutex.h"
+#include "cli/mutex.hh"
 
  void loop_eventBits_setup();
 

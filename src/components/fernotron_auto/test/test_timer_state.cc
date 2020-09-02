@@ -377,7 +377,6 @@ uint32_t run_time_s() {
   clock_t c = clock();
   return c / CLOCKS_PER_SEC;
 }
-void mutex_cliTake(){}
-void mutex_cliGive(){}
+
 #endif
 

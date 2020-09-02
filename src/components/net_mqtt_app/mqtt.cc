@@ -14,7 +14,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "cli/cli.h"
-#include "cli/mutex.h"
+#include "cli/mutex.hh"
 #include "userio/status_json.h"
 #include "userio_app/status_output.h"
 #include "gpio/pin.h"
@@ -104,7 +104,7 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
     return; // all topics start with this
   }
 
-  if (mutex_cliTake()) {
+  if (cli_mutex.lock()) {
     char line[40 + data_len];
     if (topic_endsWith(topic, topic_len, TOPIC_GPO_END)) {
       const char *addr = strstr(topic, TOPIC_GPO_MID);
@@ -163,7 +163,7 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
       io_mqtt_publish_topic_end_get_json(TOPIC_CLI_OUT_END);
 
     }
-    RETURN: mutex_cliGive();
+    RETURN: cli_mutex.unlock();
   }
 }
 
