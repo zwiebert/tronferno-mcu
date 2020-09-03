@@ -15,4 +15,4 @@ idf_component_register(
     PRIV_REQUIRES net net_mqtt_app app misc userio txtio fernotron_alias fernotron_pos debug http_server_content
 )
 
-component_compile_options(-${component_compile_opts})
+component_compile_options(${component_compile_opts})

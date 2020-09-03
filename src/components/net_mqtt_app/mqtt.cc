@@ -104,16 +104,16 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
     return; // all topics start with this
   }
 
-  if (cli_mutex.lock()) {
+  if (auto lock = ThreadLock(cli_mutex)) {
     char line[40 + data_len];
     if (topic_endsWith(topic, topic_len, TOPIC_GPO_END)) {
       const char *addr = strstr(topic, TOPIC_GPO_MID);
       if (!addr)
-        goto RETURN;
+        return;
       addr += strlen(TOPIC_GPO_MID);
       const char *addr_end = strchr(addr, '/');
       if (!addr_end)
-        goto RETURN;
+        return;
       int addr_len = addr_end - addr;
 
       sprintf(line, "mcu gpio%.*s=%.*s", addr_len, addr, data_len, data);
@@ -131,7 +131,7 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
       } else if (addr_len == 8) {
         sprintf(line, "send a=%.*s g=%c m=%c p=%.*s", 6, addr, addr[6], addr[7], data_len, data);
       } else {
-        goto RETURN;
+       return;
         // wrong topic format in wildcard
       }
       cli_process_cmdline(line, SO_TGT_MQTT);
@@ -147,7 +147,7 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
       } else if (addr_len == 8) {
         sprintf(line, "send a=%.*s g=%c m=%c c=%.*s", 6, addr, addr[6], addr[7], data_len, data);
       } else {
-        goto RETURN;
+        return;
         // wrong topic format in wildcard
       }
       cli_process_cmdline(line, SO_TGT_MQTT);
@@ -163,7 +163,6 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
       io_mqtt_publish_topic_end_get_json(TOPIC_CLI_OUT_END);
 
     }
-    RETURN: cli_mutex.unlock();
   }
 }
 
