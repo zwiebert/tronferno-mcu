@@ -36,8 +36,6 @@
 #define D(x)
 
 
-
-
 bool so_output_message2(so_msg_t mt, const void *arg);
 
 void so_broadcast_message(so_msg_t mt, void *arg) {
@@ -110,13 +108,13 @@ void  so_output_message(so_msg_t mt, const void *arg) {
     so_out_x_reply_entry_sd("ota-state", ota_getState());
 #endif
     break;
-
+#ifndef TEST_HOST
   case SO_MCU_BOOT_COUNT: {
     extern i32 boot_counter;
     so_out_x_reply_entry_sl("boot-count", boot_counter);
   }
     break;
-
+#endif
   case SO_MCU_end:
     so_out_x_close();
     break;
@@ -546,14 +544,14 @@ break;
     so_out_x_reply_entry_ss("mm", buf);
   }
     break;
-
+#ifdef USE_NETWORK
   case SO_INET_PRINT_ADDRESS: {
     char buf[20];
     ipnet_addr_as_string(buf, 20);
     io_puts("tf: ipaddr: "), io_puts(buf), io_puts(";\n");
   }
   break;
-
+#endif
   default:
 #ifndef DISTRIBUTION
     io_puts("internal_error:so_output_message() unhandled message: "), io_putd(mt), io_putlf();

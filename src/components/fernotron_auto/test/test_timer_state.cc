@@ -104,7 +104,7 @@ static void test_timer_event2() {
 
   TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
   gm_bitmask_t test1;
-  test1[1] = C.fer_usedMemberMask[1]&0xf2;
+  test1[1] = C.fer_usedMemberMask[1]&0xfc;
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
   now_tm = tm {

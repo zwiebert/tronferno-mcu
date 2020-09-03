@@ -17,7 +17,7 @@
 
 #define CI(cb) static_cast<configItem>(cb)
 
-#if 1
+
 #include "gpio/pin.h"
 struct cfg_gpio* config_read_gpio(struct cfg_gpio *c) {
   kvshT h;
@@ -32,11 +32,13 @@ struct cfg_gpio* config_read_gpio(struct cfg_gpio *c) {
   }
   return c;
 }
+
 void config_setup_gpio() {
   struct cfg_gpio c = { .out_rf = MY_RFOUT_GPIO, .in_rf = MY_RFIN_GPIO, .in_setButton = MY_SETBUTTON_GPIO };
   config_read_gpio(&c);
   setup_pin(&c);
 }
+
 int8_t config_read_rfout_gpio() {
   return config_read_item_i8(CI(CB_RFOUT_GPIO), MY_RFOUT_GPIO);
 }
@@ -46,7 +48,7 @@ int8_t config_read_rfin_gpio() {
 int8_t config_read_setbutton_gpio() {
   return config_read_item_i8(CI(CB_SETBUTTON_GPIO), MY_SETBUTTON_GPIO);
 }
-#endif
+
 
 #if 1
 #include "app/fernotron.h"

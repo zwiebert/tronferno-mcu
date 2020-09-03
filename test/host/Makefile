@@ -4,6 +4,8 @@
 
 .PHONY: all clean init tests build_lib
 
+test_blacklist :=  test_config_keys
+
 ifeq ("$(V)","1")
 Q :=
 vecho := @true
@@ -46,7 +48,7 @@ CXX_OBJ       := $(addsuffix .o,$(subst $(SRC_BASE)/,$(BUILD_OBJ_PATH)/,$(CXX_SR
 VALID_OBJ     = $(shell find $(BUILD_OBJ_PATH) -name '*.o' -and -not -wholename '*/test/test_*.o')
 TEST_OBJ         := $(addsuffix .o,$(subst $(SRC_BASE)/,$(BUILD_OBJ_PATH)/,$(TEST_SRC)))
 #TEST_OBJ      = $(shell find $(BUILD_OBJ_PATH) -name '*.o' -and -wholename '*/test/test_*.o')
-TEST_NAMES    = $(basename $(basename $(notdir $(TEST_OBJ))))
+TEST_NAMES    = $(filter-out $(test_blacklist),$(basename $(basename $(notdir $(TEST_OBJ)))))
 TEST_PROGS    = $(addprefix $(TEST_BASE)/,$(TEST_NAMES))
 TEST_LOGS     = $(addprefix $(LOG_BASE)/,$(addsuffix .log,$(TEST_NAMES)))
 
@@ -78,6 +80,7 @@ grep:
 clean:
 	$(Q) -rm -rf build/
 	$(Q) -rm -rf test_env/*
+	$(Q) -rm -rf logs/*
 
 init: build_lib
 
@@ -110,11 +113,11 @@ $(BUILD_OBJ_PATH)/%.cc.o : ./%.cc
 $(BUILD_OBJ_PATH)/%.c.o : $(SRC_BASE)/%.c
 	$(vecho) "CC $@"
 	$(Q) mkdir -p $(dir $@)
-	$(Q) $(COMPILE.c) -o $@ $<
+	$(Q) $(COMPILE.c) -o $@ $<  || (echo "$@" >> $(BUILD_BASE)/failed_compiles.txt && false)
 $(BUILD_OBJ_PATH)/%.cc.o : $(SRC_BASE)/%.cc
 	$(vecho) "CXX $@"
 	$(Q) mkdir -p $(dir $@)
-	$(Q) $(COMPILE.cc) -o $@  $<
+	$(Q) $(COMPILE.cc) -o $@  $<  || (echo "$@" >> $(BUILD_BASE)/failed_compiles.txt && false)
 
 print_test_names:
 	$(info $(TEST_NAMES))
