@@ -18,7 +18,7 @@
 #define has_changed(cb) SET_BIT(*changed_mask, cb)
 
 #ifdef USE_LAN
-const char *const cfg_args_lanPhy[lanPhyLEN] = { "none", "lan8270", "rtl8201", "ip101", };
+const char *cfg_args_lanPhy[lanPhyLEN] = { "none", "lan8270", "rtl8201", "ip101", };
 #endif
 
 bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask) {
