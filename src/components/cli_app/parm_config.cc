@@ -98,25 +98,6 @@ const char cli_help_parmConfig[]  =
 ;
 
 
-//key strings used for parsing and printing config commands by CLI/HTTP/MQTT
-//keys must be in same order as their SO_CFG_xxx counterparts in so_msg_t
-const char *const cfg_keys[SO_CFG_size] = {
-    "cu", "baud", "rtc",
-    "network", "wlan-ssid", "wlan-password", "ntp-server", "lan-phy", "lan-pwr-gpio",
-    "longitude", "latitude", "timezone", "dst", "tz", "verbose",
-    "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-client-id",
-    "http-enable", "http-user", "http-password",
-    "gm-used",
-    "astro-correction",
-    "rf-tx-pin", "rf-rx-pin", "set-button-pin", "gpio",
-};
-
-#ifdef USE_NETWORK
-const char *const cfg_args_network[nwLEN] = {
-    ARG_NW_NONE, ARG_NW_WLAN, ARG_NW_WLAN_AP, ARG_NW_LAN,
-};
-#endif
-
 const char *const *cfg_args[SO_CFG_size] = {
 };
 
