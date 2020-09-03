@@ -3,20 +3,9 @@
   import { G, M, M0, GM, Pct, Name } from "./store/curr_shutter.js";
   import { Gmu } from "./store/mcu_config.js";
   import * as httpFetch from "./fetch.js";
-  import { onMount, onDestroy } from "svelte";
   import DisplayIcons from "./display_icons.svelte";
 
-  export let gmc_fetch_mask = 0;
 
-  let on_destroy = [];
-  onMount(() => {
-    on_destroy.push(GM.subscribe(() => gmChanged()));
-  });
-  onDestroy(() => {
-    for (const fn of on_destroy) {
-      fn();
-    }
-  });
 
   $: name = $Name || "";
   $: vm = $G ? ($M0 ? $M0 : "A") : "";
@@ -27,15 +16,6 @@
 
     let url = "/cmd.json";
     httpFetch.http_postRequest(url, tfmcu);
-  }
-
-  function gmChanged() {
-    httpFetch.http_fetchByMask(
-      httpFetch.FETCH_AUTO |
-        httpFetch.FETCH_POS |
-        httpFetch.FETCH_SHUTTER_NAME |
-        gmc_fetch_mask
-    );
   }
 
   function hClick_G() {

@@ -1,17 +1,13 @@
 <script>
   "use strict";
-  import { Auto } from "./store/curr_shutter.js";
-  import { onMount, onDestroy } from "svelte";
+  import { GM, Auto } from "./store/curr_shutter.js";
+  import * as httpFetch from "./fetch.js";
 
-  let on_destroy = [];
-  onMount(() => {
-    //on_destroy.push(Auto.subscribe(auto => automaticOptions_updHtml(auto)));
-  });
-  onDestroy(() => {
-    for (const fn of on_destroy) {
-      fn();
-    }
-  });
+  $: {
+    $GM;
+    httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME);
+  }
+
 
   $: hasWeekly = "f" in $Auto && $Auto.f.indexOf("W") >= 0;
   $: hasDaily = "f" in $Auto && $Auto.f.indexOf("D") >= 0;
