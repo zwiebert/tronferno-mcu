@@ -56,10 +56,14 @@ config TF_USE_STM32OTA
   bool "Activate STM32OTA"
   default y
 
-config TF_USE_TCPS
-  bool "Activate TCPS"
+config TF_USE_CUAS
+  bool "Activate CUAS"
   default n
-  
+
+config TF_USE_TCPS
+  bool "Activate TCPS (non task)"
+  default n
+    
 config TF_USE_TCPS_TASK
   bool "Activate TCPS_TASK"
   default y
@@ -68,8 +72,8 @@ config TF_USE_EG
   bool "Activate EG"
   default y
 
-config TF_USE_LPH
-  bool "Activate LPH"
+config TF_USE_SEP
+  bool "Activate SEP"
   default y
 
 config TF_USE_WS
@@ -80,6 +84,14 @@ config TF_USE_CLI_MUTEX
   bool "Activate CLI_MUTEX"
   default y
 
+config TF_USE_CLI_TASK
+  bool "Activate CLI_TASK"
+  default y
+
+config TF_USE_TXTIO_MUTEX
+  bool "Activate TXTIO_MUTEX"
+  default y
+    
 config TF_USE_NETWORK
   bool "Activate NETWORK"
   default y
@@ -87,5 +99,46 @@ config TF_USE_NETWORK
 config TF_USE_AP_FALLBACK
   bool "Activate AP_FALLBACK"
   default y
+  
+  
+config TF_USE_CONFIG_KVS
+  bool "Activate CONFIG_KVS"
+  default y
+  
+config TF_USE_ESP_GET_TIME
+  bool "Activate ESP_GET_TIME"
+  default y
 
+config TF_USE_FER_TRANSMITTER
+  bool "Activate FER_TRANSMITTER"
+  default y
+ 
+config TF_USE_FER_RECEIVER
+  bool "Activate FER_RECEIVER"
+  default y
+
+config TF_USE_PAIRINGS
+  bool "Activate USE_PAIRINGS"
+  default y 
+ 
+config TF_USE_GPIO_PINS
+  bool "Activate USE_GPIO_PINS"
+  default y 
+ 
+config TF_USE_TIMER_DATA_FS
+  bool "Activate USE_TIMER_DATA_FS"
+  default n
+  
+config TF_USE_TIMER_DATA_KVS
+  bool "Activate USE_TIMER_DATA_KVS"
+  default y
+ 
+config TF_USE_FREERTOS
+  bool "Activate USE_FREERTOS"
+  default y
+
+config TF_USE_MDR_TIME
+  bool "Activate USE_MDR_TIME"
+  default n
+  
   endmenu

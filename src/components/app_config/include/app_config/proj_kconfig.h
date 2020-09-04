@@ -3,8 +3,6 @@
 */
 
 #pragma once
-#include <sdkconfig.h>
-
 
 #ifdef CONFIG_TF_USE_HTTP
 #define  USE_HTTP
@@ -216,6 +214,21 @@ constexpr bool use_STM32OTA = false;
 #define use_STM32OTA 0
 #endif
 #endif
+#ifdef CONFIG_TF_USE_CUAS
+#define  USE_CUAS
+#ifdef __cplusplus
+constexpr bool use_CUAS = true;
+#else
+#define use_CUAS 1
+#endif
+#else
+#define NO_USE_CUAS
+#ifdef __cplusplus
+constexpr bool use_CUAS = false;
+#else
+#define use_CUAS 0
+#endif
+#endif
 #ifdef CONFIG_TF_USE_TCPS
 #define  USE_TCPS
 #ifdef __cplusplus
@@ -261,19 +274,19 @@ constexpr bool use_EG = false;
 #define use_EG 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_LPH
-#define  USE_LPH
+#ifdef CONFIG_TF_USE_SEP
+#define  USE_SEP
 #ifdef __cplusplus
-constexpr bool use_LPH = true;
+constexpr bool use_SEP = true;
 #else
-#define use_LPH 1
+#define use_SEP 1
 #endif
 #else
-#define NO_USE_LPH
+#define NO_USE_SEP
 #ifdef __cplusplus
-constexpr bool use_LPH = false;
+constexpr bool use_SEP = false;
 #else
-#define use_LPH 0
+#define use_SEP 0
 #endif
 #endif
 #ifdef CONFIG_TF_USE_WS
@@ -306,6 +319,36 @@ constexpr bool use_CLI_MUTEX = false;
 #define use_CLI_MUTEX 0
 #endif
 #endif
+#ifdef CONFIG_TF_USE_CLI_TASK
+#define  USE_CLI_TASK
+#ifdef __cplusplus
+constexpr bool use_CLI_TASK = true;
+#else
+#define use_CLI_TASK 1
+#endif
+#else
+#define NO_USE_CLI_TASK
+#ifdef __cplusplus
+constexpr bool use_CLI_TASK = false;
+#else
+#define use_CLI_TASK 0
+#endif
+#endif
+#ifdef CONFIG_TF_USE_TXTIO_MUTEX
+#define  USE_TXTIO_MUTEX
+#ifdef __cplusplus
+constexpr bool use_TXTIO_MUTEX = true;
+#else
+#define use_TXTIO_MUTEX 1
+#endif
+#else
+#define NO_USE_TXTIO_MUTEX
+#ifdef __cplusplus
+constexpr bool use_TXTIO_MUTEX = false;
+#else
+#define use_TXTIO_MUTEX 0
+#endif
+#endif
 #ifdef CONFIG_TF_USE_NETWORK
 #define  USE_NETWORK
 #ifdef __cplusplus
@@ -334,5 +377,155 @@ constexpr bool use_AP_FALLBACK = true;
 constexpr bool use_AP_FALLBACK = false;
 #else
 #define use_AP_FALLBACK 0
+#endif
+#endif
+#ifdef CONFIG_TF_USE_CONFIG_KVS
+#define  USE_CONFIG_KVS
+#ifdef __cplusplus
+constexpr bool use_CONFIG_KVS = true;
+#else
+#define use_CONFIG_KVS 1
+#endif
+#else
+#define NO_USE_CONFIG_KVS
+#ifdef __cplusplus
+constexpr bool use_CONFIG_KVS = false;
+#else
+#define use_CONFIG_KVS 0
+#endif
+#endif
+#ifdef CONFIG_TF_USE_ESP_GET_TIME
+#define  USE_ESP_GET_TIME
+#ifdef __cplusplus
+constexpr bool use_ESP_GET_TIME = true;
+#else
+#define use_ESP_GET_TIME 1
+#endif
+#else
+#define NO_USE_ESP_GET_TIME
+#ifdef __cplusplus
+constexpr bool use_ESP_GET_TIME = false;
+#else
+#define use_ESP_GET_TIME 0
+#endif
+#endif
+#ifdef CONFIG_TF_USE_FER_TRANSMITTER
+#define  USE_FER_TRANSMITTER
+#ifdef __cplusplus
+constexpr bool use_FER_TRANSMITTER = true;
+#else
+#define use_FER_TRANSMITTER 1
+#endif
+#else
+#define NO_USE_FER_TRANSMITTER
+#ifdef __cplusplus
+constexpr bool use_FER_TRANSMITTER = false;
+#else
+#define use_FER_TRANSMITTER 0
+#endif
+#endif
+#ifdef CONFIG_TF_USE_FER_RECEIVER
+#define  USE_FER_RECEIVER
+#ifdef __cplusplus
+constexpr bool use_FER_RECEIVER = true;
+#else
+#define use_FER_RECEIVER 1
+#endif
+#else
+#define NO_USE_FER_RECEIVER
+#ifdef __cplusplus
+constexpr bool use_FER_RECEIVER = false;
+#else
+#define use_FER_RECEIVER 0
+#endif
+#endif
+#ifdef CONFIG_TF_USE_PAIRINGS
+#define  USE_PAIRINGS
+#ifdef __cplusplus
+constexpr bool use_PAIRINGS = true;
+#else
+#define use_PAIRINGS 1
+#endif
+#else
+#define NO_USE_PAIRINGS
+#ifdef __cplusplus
+constexpr bool use_PAIRINGS = false;
+#else
+#define use_PAIRINGS 0
+#endif
+#endif
+#ifdef CONFIG_TF_USE_GPIO_PINS
+#define  USE_GPIO_PINS
+#ifdef __cplusplus
+constexpr bool use_GPIO_PINS = true;
+#else
+#define use_GPIO_PINS 1
+#endif
+#else
+#define NO_USE_GPIO_PINS
+#ifdef __cplusplus
+constexpr bool use_GPIO_PINS = false;
+#else
+#define use_GPIO_PINS 0
+#endif
+#endif
+#ifdef CONFIG_TF_USE_TIMER_DATA_FS
+#define  USE_TIMER_DATA_FS
+#ifdef __cplusplus
+constexpr bool use_TIMER_DATA_FS = true;
+#else
+#define use_TIMER_DATA_FS 1
+#endif
+#else
+#define NO_USE_TIMER_DATA_FS
+#ifdef __cplusplus
+constexpr bool use_TIMER_DATA_FS = false;
+#else
+#define use_TIMER_DATA_FS 0
+#endif
+#endif
+#ifdef CONFIG_TF_USE_TIMER_DATA_KVS
+#define  USE_TIMER_DATA_KVS
+#ifdef __cplusplus
+constexpr bool use_TIMER_DATA_KVS = true;
+#else
+#define use_TIMER_DATA_KVS 1
+#endif
+#else
+#define NO_USE_TIMER_DATA_KVS
+#ifdef __cplusplus
+constexpr bool use_TIMER_DATA_KVS = false;
+#else
+#define use_TIMER_DATA_KVS 0
+#endif
+#endif
+#ifdef CONFIG_TF_USE_FREERTOS
+#define  USE_FREERTOS
+#ifdef __cplusplus
+constexpr bool use_FREERTOS = true;
+#else
+#define use_FREERTOS 1
+#endif
+#else
+#define NO_USE_FREERTOS
+#ifdef __cplusplus
+constexpr bool use_FREERTOS = false;
+#else
+#define use_FREERTOS 0
+#endif
+#endif
+#ifdef CONFIG_TF_USE_MDR_TIME
+#define  USE_MDR_TIME
+#ifdef __cplusplus
+constexpr bool use_MDR_TIME = true;
+#else
+#define use_MDR_TIME 1
+#endif
+#else
+#define NO_USE_MDR_TIME
+#ifdef __cplusplus
+constexpr bool use_MDR_TIME = false;
+#else
+#define use_MDR_TIME 0
 #endif
 #endif

@@ -6,8 +6,6 @@ cat <<EOF
 */
 
 #pragma once
-#include <sdkconfig.h>
-
 
 EOF
 

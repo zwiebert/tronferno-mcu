@@ -2,7 +2,7 @@
 # compiles any other portable component source files into build/obj.a
 
 
-.PHONY: all clean init tests build_lib
+.PHONY: all clean init tests build_lib sdkconfig
 
 test_blacklist :=  test_config_keys
 
@@ -30,6 +30,8 @@ COMP_PATHS = $(shell find $(addprefix $(SRC_BASE)/,$(addsuffix /*,$(COMP_DIRS)))
 COMP_INC_PATHS = $(addsuffix /include,$(COMP_PATHS))
 SRC_DIR_EXCLUDE = esp8266 esp32 nonopb node_modules
 SRC_DIR_EXCLUDE_FIND = 
+SDKCONFIG := $(SRC_BASE)/src/esp32/build/config/sdkconfig.h
+HOST_SDKCONFIG := $(SRC_BASE)/$(COMP_DIR)/app_config/include/app_config/host/sdkconfig.h
 
 comm=$(addprefix $(BUILD_OBJ_PATH)/,test_runner/setup.o unity/src/unity.o test_runner/test_runner.o)
 TEST_RUNNER_C_SRC = test_runner/setup.c unity/src/unity.c test_runner/test_runner.c test_runner/mock.cc
@@ -145,6 +147,14 @@ print_comp_inc_paths:
 build_lib:
 	-make -j -k $(CXX_OBJ) $(C_OBJ)
 	make build/obj.a
+
+sdkconfig:
+	make -B $(HOST_SDKCONFIG)
+
+test_runner/sdkconfig.h: $(SDKCONFIG)
+	grep CONFIG_TF_ $< >$@
+$(HOST_SDKCONFIG): $(SDKCONFIG)
+	grep CONFIG_TF_ $< >$@
 
 ################################
 
