@@ -40,8 +40,6 @@
 
 #undef USE_TIMER_DATA_FS
 
-#define ws_print_json ws_send_json
-
 #ifdef UNIT_TESTING
 #undef USE_CLI_TASK
 #undef USE_NETWORK

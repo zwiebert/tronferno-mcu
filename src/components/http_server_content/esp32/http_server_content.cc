@@ -254,3 +254,11 @@ void hts_register_uri_handlers(httpd_handle_t server) {
   }
 
 }
+
+
+
+void hts_setup_content() {
+  hts_set_register_uri_handlers_cb(hts_register_uri_handlers);
+  hts_set_ws_print_json_cb(ws_send_json);
+}
+

@@ -2,6 +2,7 @@
 #include "misc/time/run_time.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "cli/mutex.hh"
+#include "net/http/server/content/setup.h"
 
 void loop_setBit_mcuRestart() {
   lf_setBit(lf_mcuRestart);
@@ -196,6 +197,9 @@ void mcu_init() {
   default:
     break;
   }
+#ifdef USE_HTTP
+    hts_setup_content();
+#endif
 #endif
 
   config_setup_gpio();
