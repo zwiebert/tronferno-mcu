@@ -1,7 +1,7 @@
 // override entries from sdkconfig if necessary
 #define MCU_TYPE "host"
 
-#include <sdkconfig.h>
+#include "./sdkconfig.h"
 
 // override entries from sdkconfig if necessary
 

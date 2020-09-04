@@ -151,8 +151,8 @@ build_lib:
 sdkconfig:
 	make -B $(HOST_SDKCONFIG)
 
-test_runner/sdkconfig.h: $(SDKCONFIG)
-	grep CONFIG_TF_ $< >$@
+#test_runner/sdkconfig.h: $(SDKCONFIG)
+#	grep CONFIG_TF_ $< >$@
 $(HOST_SDKCONFIG): $(SDKCONFIG)
 	grep CONFIG_TF_ $< >$@
 
