@@ -1,6 +1,8 @@
 #pragma once
 #define MCU_TYPE "esp32"
 
+#include <sdkconfig.h>
+
 // override entries from sdkconfig if necessary
 
 //#undef CONFIG_TF_USE_HTTP

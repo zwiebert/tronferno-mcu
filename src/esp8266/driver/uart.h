@@ -1,5 +1,10 @@
 #pragma once
 
+
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 #include "uart_register.h"
 
 #define RX_BUFF_SIZE    0x100
@@ -91,4 +96,11 @@ typedef struct {
 
 void uart_init(UartBautRate uart0_br, UartBautRate uart1_br);
 int uart_rx_buf_getc();
+int uart_tx_one_char(uint8_t);
+int uart_rx_buf_getc();
 
+#define UartBaudRate UartBautRate
+
+#ifdef __cplusplus
+}
+#endif

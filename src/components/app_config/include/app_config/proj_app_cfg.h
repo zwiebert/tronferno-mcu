@@ -26,10 +26,6 @@
 #define TD_FS_TO_KVS
 
 
-
-#include <sdkconfig.h>
-
-
 #if defined TEST_HOST
 #include "app_config/host/proj_app_cfg.h"
 

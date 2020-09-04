@@ -1,5 +1,6 @@
 #pragma once
-
+#include <app_config/proj_app_cfg.h>
+#ifdef USE_OTA
 #include "firmware_update/ota.h"
 
 #ifdef USE_LAN
@@ -14,5 +15,5 @@
 #define OTA_FWURL_TAG_TAIL "/firmware/esp32/tronferno-mcu.bin"
 #define OTA_FWURL_TAG_COOKIE "tag:"
 
-
+#endif
 

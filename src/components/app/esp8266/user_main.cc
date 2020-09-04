@@ -24,6 +24,8 @@
 #include "app/common.h"
 #include "config/config.h"
 
+#include "main.h"
+
 #define printf ets_uart_printf
 
 

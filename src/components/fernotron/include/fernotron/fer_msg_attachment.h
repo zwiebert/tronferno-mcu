@@ -147,6 +147,6 @@ typedef struct __attribute__((__packed__)) fer_raw_msg {
 }  fer_rawMsg;
 
 #ifdef __cplusplus
-static_assert(sizeof(fer_raw_msg) == FER_CMD_BYTE_CT + FER_PRG_PACK_CT * FER_PRG_BYTE_CT);
+static_assert(sizeof(fer_raw_msg) == FER_CMD_BYTE_CT + FER_PRG_PACK_CT * FER_PRG_BYTE_CT, "wrong msg size");
 #endif
 

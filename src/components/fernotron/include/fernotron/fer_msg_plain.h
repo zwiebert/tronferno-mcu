@@ -34,8 +34,8 @@ union fer_cmd_row {
 };
 
 #ifdef __cplusplus
-static_assert(sizeof(FerCmd) == FER_CMD_BYTE_CT - 1);
-static_assert(sizeof(fer_cmd_row) == FER_CMD_BYTE_CT);
+static_assert(sizeof(FerCmd) == FER_CMD_BYTE_CT - 1, "wrong msg size");
+static_assert(sizeof(fer_cmd_row) == FER_CMD_BYTE_CT, "wrong msg size");
 #endif
 
 // high nibble of data[fer_dat_ADDR_2]

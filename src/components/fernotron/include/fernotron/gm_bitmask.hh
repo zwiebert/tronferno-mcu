@@ -9,8 +9,11 @@ typedef uint8_t gT, mT;
 
 using gm_pairT = std::pair<gT, mT>;
 
+
+#ifdef D_NO_OPT
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
+#endif
 
 class gm_iterator {
   uint8_t mGm;
@@ -128,5 +131,6 @@ public:
 };
 
 
-
+#ifdef D_NO_OPT
 #pragma GCC pop_options
+#endif

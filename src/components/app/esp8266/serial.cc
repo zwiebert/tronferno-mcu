@@ -18,6 +18,7 @@
 
 extern int ets_uart_printf(const char *fmt, ...);
 
+
 int es_io_putc(char c) {
   uart_tx_one_char(c);
   return 1;
@@ -37,5 +38,5 @@ int  es_io_getc(void) {
 void 
 setup_serial(u32 baudrate) {
   // Configure the UART
-  uart_init(baudrate, baudrate); // FIXME: the baud_rate parameter has no effect
+  uart_init((UartBaudRate)baudrate, (UartBaudRate)baudrate); // FIXME: the baud_rate parameter has no effect
 }

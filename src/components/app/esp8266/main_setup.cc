@@ -18,6 +18,8 @@
 #include "net/tcp_cli_server.h"
 #include "config/config.h"
 
+#include "main.h"
+
 extern void intTimer_setup(void);
 extern void setup_serial(u32 baudrate);
 extern void setup_notImplemented(void);
@@ -26,8 +28,7 @@ void task_setup(void);
 i32 boot_counter;
 
 // hardware specific main setup
-void
-user_init() {
+void user_init() {
   // load config and setup serial interface
 
   setup_serial(115200);
@@ -49,7 +50,7 @@ user_init() {
   config_setup_gpio();
   config_setup_wifiStation();
   config_setup_cliTcpServer();
-  setup_udp();
+ // setup_udp();
   main_setup();
   task_setup();
   intTimer_setup();

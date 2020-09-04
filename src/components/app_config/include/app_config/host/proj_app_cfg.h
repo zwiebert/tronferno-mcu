@@ -1,6 +1,10 @@
 // override entries from sdkconfig if necessary
 #define MCU_TYPE "host"
 
+#include <sdkconfig.h>
+
+// override entries from sdkconfig if necessary
+
 #undef CONFIG_TF_USE_HTTP
 #undef CONFIG_TF_USE_LAN
 #undef CONFIG_TF_USE_WLAN

@@ -1,7 +1,10 @@
+#include "app_config/proj_app_cfg.h"
 #include "user_interface.h"
 #include <os_type.h>
 #include <ets_sys.h>
 #include <osapi.h>
+
+#include "main.h"
 
 
 #if ((SPI_FLASH_SIZE_MAP == 0) || (SPI_FLASH_SIZE_MAP == 1))
