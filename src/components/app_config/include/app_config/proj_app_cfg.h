@@ -3,36 +3,28 @@
 
 #define APP_VERSION "0.10.9"
 
+#include "proj_kconfig.h"
+
 #define FER_TRANSMITTER
 #define FER_RECEIVER
-#define USE_NETWORK
-#define USE_NTP
-#define USE_WLAN
-#define USE_WLAN_AP
-#define USE_LAN
-#define USE_TCPS
-#define USE_TCPS_TASK
-#define USE_MQTT
-#define USE_WS
-#define USE_HTTP
+
+#ifdef USE_POSIX_TIME
+#define POSIX_TIME 1
+#endif
+
 #define CONFIG_BLOB
 #define CONFIG_DICT
 #define USE_CONFIG_KVS
 #define ACCESS_GPIO
-#define POSIX_TIME 1
 #define USE_ESP_GET_TIME
 #define MDR_TIME
 #define USE_PAIRINGS
 #define USE_CUAS
-#define USE_JSON
-#define USE_CLI_MUTEX
 #define USE_CLI_TASK
-#define USE_OTA
 #define USE_TXTIO_MUTEX
 #define USE_TIMER_DATA_FS
 #define USE_TIMER_DATA_KVS
 #define USE_EG
-#define USE_AP_FALLBACK
 #define USE_SEP
 
 //#define USE_PCT_ARRAY

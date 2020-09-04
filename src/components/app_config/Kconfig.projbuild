@@ -1,0 +1,91 @@
+menu "Tronferno Project Configuration"
+    
+config TF_USE_HTTP
+  bool "Activate HTTP"
+  default y
+
+config TF_USE_LAN
+  bool "Activate LAN"
+  default y
+
+config TF_USE_WLAN
+  bool "Activate WLAN"
+  default y
+
+config TF_USE_WLAN_AP
+  bool "Activate WLAN_AP"
+  default y
+
+config TF_USE_NTP
+  bool "Activate NTP"
+  default y
+ 
+config TF_USE_JSON
+  bool "Activate JSON"
+  default y
+
+config TF_USE_MQTT
+  bool "Activate MQTT"
+  default y
+
+config TF_USE_POSIX_TIME
+  bool "Activate POSIX_TIME"
+  default y
+
+config TF_USE_SERIAL
+  bool "Activate SERIAL"
+  default y
+
+config TF_USE_WDG
+  bool "Activate WDG"
+  default y
+
+config TF_USE_FS
+  bool "Activate FS"
+  default y
+
+config TF_USE_HTTP_CLIENT
+  bool "Activate HTTP_CLIENT"
+  default y
+
+config TF_USE_OTA
+  bool "Activate OTA"
+  default y
+
+config TF_USE_STM32OTA
+  bool "Activate STM32OTA"
+  default y
+
+config TF_USE_TCPS
+  bool "Activate TCPS"
+  default n
+  
+config TF_USE_TCPS_TASK
+  bool "Activate TCPS_TASK"
+  default y
+
+config TF_USE_EG
+  bool "Activate EG"
+  default y
+
+config TF_USE_LPH
+  bool "Activate LPH"
+  default y
+
+config TF_USE_WS
+  bool "Activate WS"
+  default y
+
+config TF_USE_CLI_MUTEX
+  bool "Activate CLI_MUTEX"
+  default y
+
+config TF_USE_NETWORK
+  bool "Activate NETWORK"
+  default y
+
+config TF_USE_AP_FALLBACK
+  bool "Activate AP_FALLBACK"
+  default y
+
+  endmenu
