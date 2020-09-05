@@ -3,9 +3,9 @@
 #include "cli_app/cli_config.h"
 #include <string.h>
 
-#include "fernotron_sep/set_endpos.h"
+#include "fernotron/sep/set_endpos.h"
 #include "userio_app/status_output.h"
-#include "fernotron_cuas/cuid_auto_set.h"
+#include "fernotron/cuas/cuid_auto_set.h"
 #include "app_config/proj_app_cfg.h"
 #include "config/config.h"
 #include "app/rtc.h"

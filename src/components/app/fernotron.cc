@@ -1,19 +1,19 @@
 #include <string.h>
 
-#include "fernotron_sep/set_endpos.h"
-#include "fernotron_pos/shutter_pct.h"
+#include "fernotron/sep/set_endpos.h"
+#include "fernotron/pos/shutter_pct.h"
 #include "app_config/proj_app_cfg.h"
 
 
-#include "fernotron_auto/fau_tevent.h"
+#include "fernotron/auto/fau_tevent.h"
 #include "cli/cli.h"
 #include "config/config.h"
-#include "fernotron_cuas/cuid_auto_set.h"
+#include "fernotron/cuas/cuid_auto_set.h"
 #include "debug/dbg.h"
 #include "app/rtc.h"
-#include "fernotron_alias/pairings.h"
+#include "fernotron/alias/pairings.h"
 #include "userio_app/status_output.h"
-#include "fernotron_txtio/fer_print.h"
+#include "fernotron/txtio/fer_print.h"
 #include "fernotron/astro.h"
 #include "fernotron/fer_msg_attachment.h"
 #include "fernotron/fer_msg_tx.h"
