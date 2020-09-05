@@ -5,8 +5,8 @@
  *      Author: bertw
  */
 #include "unity.h"
-#include "fernotron_auto/fau_tdata_store.h"
-#include "fernotron_auto/fau_tevent.h"
+#include "fernotron/auto/fau_tdata_store.h"
+#include "fernotron/auto/fau_tevent.h"
 #include "fernotron/astro.h"
 #include <time.h>
 #include <fernotron/types.h>
@@ -335,12 +335,12 @@ static void test_timer_minutes() {
 }
 
 
-TEST_CASE("calculate timer minutes", "[fernotron_auto]") {
+TEST_CASE("calculate timer minutes", "[fernotron/auto]") {
 
   test_timer_minutes();
 }
 
-TEST_CASE("timer next event", "[fernotron_auto]") {
+TEST_CASE("timer next event", "[fernotron/auto]") {
 
   test_timer_event();
   test_timer_event2();

@@ -6,7 +6,7 @@
  */
 
 #include "app_config/proj_app_cfg.h"
-#include "fernotron_pos/shutter_pct.h"
+#include "fernotron/pos/shutter_pct.h"
 #include "../move.h"
 
 #include "unity.h"
@@ -28,7 +28,7 @@ void   test_set_get_pct() {
 
 
 
-TEST_CASE("set/get pct", "[fernotron_pos]") {
+TEST_CASE("set/get pct", "[fernotron/pos]") {
  test_set_get_pct();
 }
 

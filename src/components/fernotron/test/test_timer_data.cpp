@@ -6,8 +6,8 @@
  */
 
 #include "unity.h"
-#include "fernotron_auto/fau_tdata_store.h"
-#include "fernotron_auto/fau_tminutes.h"
+#include "fernotron/auto/fau_tdata_store.h"
+#include "fernotron/auto/fau_tminutes.h"
 #include "fernotron/astro.h"
 #include "time.h"
 #include "debug/dbg.h"
@@ -43,7 +43,7 @@ static void test_save_and_restore() {
 
 }
 
-TEST_CASE("save and restore timer data", "[fernotron_auto]") {
+TEST_CASE("save and restore timer data", "[fernotron/auto]") {
   test_save_and_restore();
 }
 

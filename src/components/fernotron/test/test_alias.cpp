@@ -6,7 +6,7 @@
  */
 
 #include "unity.h"
-#include "fernotron_alias/pairings.h"
+#include "fernotron/alias/pairings.h"
 #include "txtio/inout.h"
 #include <string.h>
 
@@ -60,7 +60,7 @@ static void test_pair_multiple_members() {
 
 
 
-TEST_CASE("pair multiple members", "[fernotron_alias]")
+TEST_CASE("pair multiple members", "[fernotron/alias]")
 {
   test_pair_multiple_members();
 }

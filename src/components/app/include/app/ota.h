@@ -15,8 +15,11 @@
 #define OTA_FWURL_TAG_TAIL "/firmware/esp32/tronferno-mcu.bin"
 #define OTA_FWURL_TAG_COOKIE "tag:"
 
+extern const char ca_cert_pem[];
+inline bool app_doFirmwareUpdate(const char *firmwareURL, const char *cert = ca_cert_pem) { return ota_doUpdate(firmwareURL, cert); }
+
 #endif
 
-extern const char ca_cert_pem[];
 
-inline bool app_doFirmwareUpdate(const char *firmwareURL, const char *cert = ca_cert_pem) { return ota_doUpdate(firmwareURL, cert); }
+
+
