@@ -9,7 +9,7 @@
 #include "fernotron/fer_msg_rx.h"
 #include "fernotron/fer_rawmsg_buffer.h"
 #include "fernotron/timer_data.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include <string.h>
 
 

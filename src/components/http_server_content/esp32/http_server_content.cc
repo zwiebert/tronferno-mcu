@@ -23,7 +23,9 @@
 
 static const char *TAG="APP";
 
+#ifdef USE_WS
 /*
+ *
  * Structure holding server handle
  * and internal socket fd in order
  * to use out of request send
@@ -89,7 +91,7 @@ static void ws_async_send(void *arg)
     httpd_ws_send_frame_async(hd, fd, &ws_pkt);
     free(resp_arg);
 }
-
+#endif
 
 ////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
@@ -199,6 +201,7 @@ static esp_err_t handle_uri_get_file(httpd_req_t *req) {
 
 }
 
+#ifdef USE_WS
 static esp_err_t handle_uri_ws(httpd_req_t *req) {
   int fd = httpd_req_to_sockfd(req);
   FD_SET(fd, &ws_fds);
@@ -237,13 +240,15 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   }
   return ret;
 }
-
+#endif
 ////////////////////////// URI definitions ////////////////////////////////
 static const httpd_uri_t httpd_uris[] = {
     { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json },
     { .uri = "/f/*", .method = HTTP_GET, .handler = handle_uri_get_file },
     { .uri = "/", .method = HTTP_GET, .handler = handle_uri_get_file },
+#ifdef USE_WS
     { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true },
+#endif
 };
 
 
@@ -259,6 +264,8 @@ void hts_register_uri_handlers(httpd_handle_t server) {
 
 void hts_setup_content() {
   hts_set_register_uri_handlers_cb(hts_register_uri_handlers);
+#ifdef USE_WS
   hts_set_ws_print_json_cb(ws_send_json);
+#endif
 }
 

@@ -32,7 +32,7 @@
 #elif defined MCU_ESP8266
 #include "app_config/esp8266/proj_app_cfg.h"
 
-#elif defined MCU_ESP32
+#elif defined MCU_ESP32 || defined ESP_PLATFORM
 #include "app_config/esp32/proj_app_cfg.h"
 
 #else

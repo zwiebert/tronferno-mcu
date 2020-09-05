@@ -14,7 +14,7 @@
 #include "app/rtc.h"
 #include "cli_app/cli_imp.h"
 
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #ifdef USE_HTTP
 #include "http_server_content/hts_clients.h"
 #endif

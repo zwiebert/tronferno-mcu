@@ -28,7 +28,7 @@
 #include "net/tcp_cli_server.h"
 #include "net/wifi_ap.h"
 #include "net/wifistation.h"
-#include "nvs_flash.h"
+//#include "nvs_flash.h"
 #include "storage/storage.h"
 #include "string.h"
 #include "txtio/inout.h"

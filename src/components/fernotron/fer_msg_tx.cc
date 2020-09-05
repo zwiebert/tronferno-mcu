@@ -5,7 +5,7 @@
 #include "fer_app_cfg.h"
 #include "fernotron/fer_rawmsg_buffer.h"
 #include "fernotron/fer_msg_tx.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include "app/timer.h"
 #include "app/loop.h"
 #include "misc/time/run_time.h"

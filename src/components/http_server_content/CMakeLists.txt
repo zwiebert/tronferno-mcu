@@ -5,5 +5,6 @@ idf_component_register(
     INCLUDE_DIRS . "./include"
     REQUIRES ""
     PRIV_REQUIRES net net_http_server config cli_app userio userio_app misc webapp
+                  mbedtls
    )
-component_compile_options(-${component_compile_opts})
+component_compile_options(${component_compile_opts})

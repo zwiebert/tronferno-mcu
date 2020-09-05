@@ -6,4 +6,4 @@ idf_component_register(SRCS ${srcs}
     PRIV_REQUIRES cli config app userio_app txtio
 )
 
-component_compile_options(-${component_compile_opts})
+component_compile_options(${component_compile_opts})

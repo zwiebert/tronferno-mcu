@@ -10,7 +10,7 @@
 #include "fernotron_auto/fau_tminutes.h"
 #include "fernotron/astro.h"
 #include "time.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 
 timer_data_t td, tde = td_initializer;
 bool succ;

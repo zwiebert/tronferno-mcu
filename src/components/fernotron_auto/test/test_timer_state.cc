@@ -10,7 +10,7 @@
 #include "fernotron/astro.h"
 #include <time.h>
 #include <fernotron/types.h>
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include "config/config.h"
 #include <misc/int_types.h>
 

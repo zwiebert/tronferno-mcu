@@ -9,7 +9,7 @@
 #include "cli/cli.h"
 #include "config/config.h"
 #include "fernotron_cuas/cuid_auto_set.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include "app/rtc.h"
 #include "fernotron_alias/pairings.h"
 #include "userio_app/status_output.h"

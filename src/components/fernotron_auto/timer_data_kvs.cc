@@ -9,7 +9,7 @@
 #include "config/config.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include <alloca.h>
 #include <string.h>
 

@@ -6,7 +6,7 @@
 #include "fernotron_pos/shutter_prefs.h"
 
 #include "config/config.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include "userio_app/status_output.h"
 #include "userio/status_json.h"

@@ -9,7 +9,7 @@
 #include "fernotron/astro.h"
 #include <string.h>
 #include "fer_app_cfg.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 
 #include "fernotron/fer_rawmsg_buffer.h"
 //#include "app/rtc.h"

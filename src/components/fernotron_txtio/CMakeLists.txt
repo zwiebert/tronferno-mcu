@@ -5,4 +5,4 @@ idf_component_register(SRCS ${srcs}
     REQUIRES fernotron 
     PRIV_REQUIRES fernotron txtio misc
 )
-component_compile_options(-${component_compile_opts})
+component_compile_options(${component_compile_opts})

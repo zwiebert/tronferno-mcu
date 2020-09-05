@@ -7,7 +7,7 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
 #include "misc/itoa.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 
 #ifndef DISTRIBUTION
 #define D(x)

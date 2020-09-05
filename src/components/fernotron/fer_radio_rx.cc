@@ -10,7 +10,7 @@
 #include "fernotron/fer_msg_tx.h"
 #include "fernotron/extern.h"
 #include "app/loop.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include "misc/int_macros.h"
 
 

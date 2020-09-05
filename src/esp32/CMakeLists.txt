@@ -28,9 +28,7 @@ endif()
 if(DEFINED ENV{FLAVOR_LAN})
 add_compile_definitions(FLAVOR_LAN)
 endif()
-if(DEFINED ENV{CELLAR})
-add_compile_definitions(CELLAR)
-endif()
+
 
 project(tronferno-mcu esptool_py)
 

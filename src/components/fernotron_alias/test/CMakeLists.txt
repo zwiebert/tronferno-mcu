@@ -1,3 +1,5 @@
+FILE(GLOB src test_*.cc test_*.c)
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 
 if(DEFINED ENV{DISTRO})
@@ -8,7 +10,7 @@ if(DEFINED ENV{FLAVOR_LAN})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFLAVOR_LAN")
 endif()
 
-idf_component_register(SRC_DIRS "."
+idf_component_register(SRC_DIRS .
                        INCLUDE_DIRS "."
                        REQUIRES unity fernotron_alias fernotron_pos app txtio)
                        

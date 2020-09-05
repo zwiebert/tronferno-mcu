@@ -9,7 +9,7 @@
 #include "config/config.h"
 #include "storage/storage.h"
 #include "misc/int_types.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include "fernotron/types.h"
 
 #ifndef TEST_HOST

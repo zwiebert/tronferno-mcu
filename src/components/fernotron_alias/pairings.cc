@@ -7,7 +7,7 @@
 #include "fernotron_alias/pairings.h"
 #include "app/rtc.h"
 #include "userio_app/status_output.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include "misc/int_types.h"
 
 #if defined DISTRIBUTION || 0

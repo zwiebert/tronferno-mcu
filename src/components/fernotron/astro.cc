@@ -16,7 +16,7 @@
 #include "fernotron/astro.h"
 #include "misc/sun.h"
 #include "misc/bcd.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include "misc/int_macros.h"
 
 #include <string.h>

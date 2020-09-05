@@ -15,7 +15,7 @@
 #include "fernotron/fer_rawmsg_buffer.h"
 #include "fernotron/fer_msg_tx.h"
 #include "fernotron/extern.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 
 struct ftrx_counter {
   u16 Words;

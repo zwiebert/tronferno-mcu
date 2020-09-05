@@ -7,7 +7,7 @@
 
 #include "cli/cli.h"
 #include "txtio/inout.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include "cli_app/cli_imp.h"
 #include <string.h>
 

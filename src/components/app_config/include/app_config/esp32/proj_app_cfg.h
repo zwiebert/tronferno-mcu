@@ -48,6 +48,7 @@
 #undef CONFIG_TF_USE_WLAN_AP
 #undef CONFIG_TF_USE_AP_FALLBACK
 #undef CONFIG_TF_USE_MQTT
+#undef CONFIG_TF_USE_WS
 #endif
 
 #ifndef FLAVOR_LAN

@@ -15,7 +15,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "config/config.h"
 #include "fernotron_pos/shutter_pct.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 
 
 #include <string.h>

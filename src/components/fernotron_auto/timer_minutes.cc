@@ -5,7 +5,7 @@
 #include "app/rtc.h"
 #include "fernotron/astro.h"
 #include "config/config.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include "time.h"
 #include "fernotron_pos/shutter_pct.h"

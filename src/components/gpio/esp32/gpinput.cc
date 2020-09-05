@@ -5,14 +5,12 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
-#include "nvs_flash.h"
-#include "nvs.h"
 #include "driver/gpio.h"
 
 #include "app_config/proj_app_cfg.h"
 #include "gpio/gpinput.h"
 #include "misc/int_types.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 
 
 #ifndef DISTRIBUTION

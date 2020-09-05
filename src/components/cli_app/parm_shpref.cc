@@ -4,7 +4,7 @@
 #include "cli_app/cli_imp.h"
 #include "userio_app/status_output.h"
 #include "misc/int_types.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include <string.h>
 #include <alloca.h>
 #include <stdlib.h>

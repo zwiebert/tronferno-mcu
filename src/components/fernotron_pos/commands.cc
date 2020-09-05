@@ -15,7 +15,7 @@
 #include "cli_app/cli_imp.h"
 #include "cli_app/cli_fer.h"
 #include "config/config.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 
 #define GRP_COUNT 7
 #define MBR_COUNT 7

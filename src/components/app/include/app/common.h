@@ -15,7 +15,7 @@ typedef bool logicLevel;
 #define NO_POSTCOND
 #endif
 
-#include "debug/debug.h"
+#include "debug/dbg.h"
 
 void mcu_delay_us(u16 us);
 void  mcu_delayedRestart(unsigned delay_ms);
