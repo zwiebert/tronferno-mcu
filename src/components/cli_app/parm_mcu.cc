@@ -12,7 +12,7 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/bcd.h"
 #include "app/rtc.h"
-#include "cli_app/cli_imp.h"
+#include "cli_imp.h"
 
 #include "debug/dbg.h"
 #ifdef USE_HTTP
@@ -192,24 +192,24 @@ int process_parmMcu(clpar p[], int len) {
         so_output_message(SO_MCU_OTA_STATE, 0);
       } else if (strcmp(val, "github-master") == 0) {
         so_output_message(SO_MCU_OTA, OTA_FWURL_MASTER);
-        ota_doUpdate(OTA_FWURL_MASTER);
+        ota_doUpdate(OTA_FWURL_MASTER, ca_cert_pem);
       } else if (strcmp(val, "github-beta") == 0) {
         so_output_message(SO_MCU_OTA, OTA_FWURL_BETA);
-        ota_doUpdate(OTA_FWURL_BETA);
+        ota_doUpdate(OTA_FWURL_BETA, ca_cert_pem);
       } else if (0 == strncmp(val, OTA_FWURL_TAG_COOKIE, strlen(OTA_FWURL_TAG_COOKIE))) {
         const char *tag = val + strlen(OTA_FWURL_TAG_COOKIE);
         int url_len = strlen(OTA_FWURL_TAG_HEAD) + strlen(OTA_FWURL_TAG_TAIL) + strlen(tag);
         char *url;
         if ((url = (char*)alloca(url_len + 1))) {
           strcat(strcat(strcpy(url, OTA_FWURL_TAG_HEAD), tag), OTA_FWURL_TAG_TAIL);
-          ota_doUpdate(url);
+          ota_doUpdate(url, ca_cert_pem);
         }
       } else {
 #ifdef DISTRIBUTION
         ets_printf("forbidden: ota update from given URL\n");
 #else
         ets_printf("doing ota update from given URL\n");
-        ota_doUpdate(val);
+        ota_doUpdate(val, ca_cert_pem);
 #endif
       }
 #endif

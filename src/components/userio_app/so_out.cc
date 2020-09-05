@@ -7,7 +7,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "so_out.h"
 
-#include "cli_app/cli_imp.h" // FIXME?
+#include "cli_app/cli_app.h" // FIXME?
 #include "cli_app/cli_config.h"
 #include "txtio/inout.h"
 #include "userio/status_json.h"

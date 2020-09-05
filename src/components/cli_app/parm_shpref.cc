@@ -1,7 +1,7 @@
 
 #include "app_config/proj_app_cfg.h"
 #include "fernotron_pos/shutter_prefs.h"
-#include "cli_app/cli_imp.h"
+#include "cli_imp.h"
 #include "userio_app/status_output.h"
 #include "misc/int_types.h"
 #include "debug/dbg.h"

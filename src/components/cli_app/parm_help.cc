@@ -8,7 +8,7 @@
 #include "cli/cli.h"
 #include "txtio/inout.h"
 #include "debug/dbg.h"
-#include "cli_app/cli_imp.h"
+#include "cli_imp.h"
 #include <string.h>
 
 int process_parmHelp(clpar p[], int len) {

@@ -1,4 +1,5 @@
 #include "main.h"
+#include <cli/cli.h>
 
 EventGroupHandle_t loop_event_group;
 #define EVT_BITS  ((1 << lf_Len) - 1)

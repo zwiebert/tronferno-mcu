@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "fernotron_pos/shutter_pct.h"
-#include "cli_app/cli_imp.h"
+#include "cli_imp.h"
 #include "cli_app/cli_fer.h"
 #include "app/common.h"
 #include "fernotron_alias/pairings.h"

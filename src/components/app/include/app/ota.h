@@ -17,3 +17,6 @@
 
 #endif
 
+extern const char ca_cert_pem[];
+
+inline bool app_doFirmwareUpdate(const char *firmwareURL, const char *cert = ca_cert_pem) { return ota_doUpdate(firmwareURL, cert); }

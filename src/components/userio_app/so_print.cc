@@ -7,7 +7,7 @@
 #include "app/rtc.h"
 #include "cli_app/cli_config.h"
 #include "cli_app/cli_fer.h"
-#include "cli_app/cli_imp.h" // FIXME?
+#include "cli_app/cli_app.h" // FIXME?
 #include "config/config.h"
 #include "fernotron_alias/pairings.h"
 #include "fernotron_auto/fau_tdata_store.h"

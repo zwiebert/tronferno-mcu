@@ -9,7 +9,7 @@
 #include <string.h>
 #include "config/config.h"
 #include "misc/bcd.h"
-#include "cli_app/cli_imp.h"
+#include "cli_imp.h"
 #include "cli_app/cli_app.h"
 #include "userio/status_json.h"
 #include "fernotron/fsb.h"

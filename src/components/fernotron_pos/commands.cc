@@ -12,7 +12,7 @@
 #include "fernotron_pos/shutter_pct.h"
 #include "app_config/proj_app_cfg.h"
 
-#include "cli_app/cli_imp.h"
+#include "cli_app/cli_app.h"
 #include "cli_app/cli_fer.h"
 #include "config/config.h"
 #include "debug/dbg.h"

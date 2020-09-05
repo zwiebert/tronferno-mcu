@@ -3,6 +3,7 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "cli/mutex.hh"
 #include "net/http/server/content/setup.h"
+#include <cli/cli.h>
 
 void loop_setBit_mcuRestart() {
   lf_setBit(lf_mcuRestart);

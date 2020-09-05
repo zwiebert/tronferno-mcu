@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "cli_imp.h"
 #include "fernotron/fsb.h"
 
 bool cli_parm_to_ferCMD(const char *token, fer_cmd *cmd);

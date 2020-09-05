@@ -6,10 +6,10 @@ set(PROJECT_NAME "tronferno-mcu")
 
 set(EXTRA_COMPONENT_DIRS ../../components-mcu/components ../components)
 
-set(COMPONENTS
-    fernotron fernotron_pos fernotron_alias fernotron_cuas fernotron_sep fernotron_auto fernotron_txtio http_server_content
+set(COMPONENTS app misc_time firmware_update #app_config
+    #fernotron fernotron_pos fernotron_alias fernotron_cuas fernotron_sep fernotron_auto fernotron_txtio http_server_content
 
-    app userio_app net net_mqtt_app net_http_server debug gpio key_value_store storage cli_app config  txtio misc
+    #userio_app net net_mqtt_app net_http_server debug gpio key_value_store storage cli_app config  txtio misc misc_time
 
 	bootloader esptool_py partition_table soc log spi_flash micro-ecc main efuse driver esp_rom  
 

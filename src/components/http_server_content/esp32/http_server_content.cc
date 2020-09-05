@@ -7,7 +7,7 @@
 #include "net/http/server/http_server.h"
 #include "userio/status_json.h"
 #include "config/config.h"
-#include "cli_app/cli_imp.h"
+#include "cli_app/cli_app.h"
 #include "misc/int_types.h"
 #include "cli/mutex.hh"
 #include "net/http/server/esp32/register_uris.h"
