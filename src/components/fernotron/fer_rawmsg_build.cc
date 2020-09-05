@@ -13,7 +13,7 @@
 
 #include "fernotron/fer_rawmsg_buffer.h"
 //#include "app/rtc.h"
-//#include "fernotron_auto/astro.h"
+//#include "fernotron/auto/astro.h"
 //#include "config/config.h"
 #include "misc/bcd.h"
 

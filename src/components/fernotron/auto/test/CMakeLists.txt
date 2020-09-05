@@ -10,7 +10,7 @@ endif()
 
 idf_component_register(SRC_DIRS "."
                        INCLUDE_DIRS "." ../include 
-                       PRIV_INCLUDE_DIRS ../include/fernotron
-                       PRIV_REQUIRES config
+                       PRIV_INCLUDE_DIRS ../include/
+                        PRIV_REQUIRES config
                        REQUIRES app unity txtio)
                             

@@ -3,12 +3,12 @@
 #include <string.h>
 
 #include "app/ota.h"
-#include "fernotron_sep/set_endpos.h"
-#include "fernotron_pos/shutter_pct.h"
+#include "fernotron/sep/set_endpos.h"
+#include "fernotron/pos/shutter_pct.h"
 #include "txtio/inout.h"
 #include "gpio/pin.h"
 #include "userio_app/status_output.h"
-#include "fernotron_auto/fau_tevent.h"
+#include "fernotron/auto/fau_tevent.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/bcd.h"
 #include "app/rtc.h"

@@ -9,7 +9,7 @@
 #include "storage/storage.h"
 #include "txtio/inout.h"
 #include "config/config.h"
-#include "fernotron_pos/shutter_pct.h"
+#include "fernotron/pos/shutter_pct.h"
 #include "fernotron/astro.h"
 #include "cli/mutex.hh"
 #endif
