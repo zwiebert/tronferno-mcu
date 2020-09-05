@@ -11,9 +11,9 @@
 #include <string.h>
 
 #define A 0x101234
-gm_bitmask_t gm, gme;
+static gm_bitmask_t gm, gme;
 const gm_bitmask_t gmz;
-bool succ;
+static bool succ;
 #define SIZE_GM sizeof (gm_bitmask_t)
 
 

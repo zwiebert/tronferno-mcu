@@ -11,5 +11,6 @@ endif()
 idf_component_register(SRC_DIRS "."
                        INCLUDE_DIRS "." ../include 
                        PRIV_INCLUDE_DIRS ../ ../include/cli_app
-                       REQUIRES app unity txtio)
+                       PRIV_REQUIRES config
+                       REQUIRES app unity txtio cli)
                             

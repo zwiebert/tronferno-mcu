@@ -11,5 +11,6 @@ endif()
 idf_component_register(SRC_DIRS "."
                        INCLUDE_DIRS "." ../include 
                        PRIV_INCLUDE_DIRS ../include/fernotron_auto
+                        PRIV_REQUIRES config
                        REQUIRES app unity fernotron_alias fernotron_pos txtio)
                             

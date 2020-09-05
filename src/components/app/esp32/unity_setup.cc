@@ -24,7 +24,7 @@ void mcu_init(void);
 
 
 #ifdef UNIT_TESTING
-
+extern "C" void unity_suiteSetUp();
 void unity_suiteSetUp() {
   unit_testing = 1;
   mcu_init();
@@ -32,12 +32,13 @@ void unity_suiteSetUp() {
 
 class UnitySuiteSetup {
 public:
-  UnitySuiteSetup() {
+  UnitySuiteSetup(): x(4) {
     unit_testing = 1;
     mcu_init();
   }
+  int x;
 };
 
-UnitySuiteSetup uss;
+//volatile UnitySuiteSetup uss;
 
 #endif

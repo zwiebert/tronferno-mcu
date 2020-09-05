@@ -43,7 +43,7 @@ CXX_SRC := $(shell find $(COMP_PATHS) '(' -name '*.cc' -or -name '*.cpp' ')' \
 C_SRC := $(shell find $(COMP_PATHS) -name '*.c' \
                    -and -not '(' -wholename '*/esp8266/*' -or  -wholename '*/esp32/*' -or -wholename '*/nanopb/*' \
                    -or -wholename '*/jsmn/*' -or -wholename '*/node_modules/*' -or -wholename '*/esp8266/spiffs/*' ')')
-TEST_SRC := $(shell find $(COMP_PATHS) -maxdepth 2 -and '(' -name '*.c' -or -name '*.cc' ')' -and -wholename '*/test/test_*')
+TEST_SRC := $(shell find $(COMP_PATHS) -maxdepth 2 -and '(' -name '*.c' -or -name '*.cc' -or -name '*.cpp' ')' -and -wholename '*/test/test_*')
                    
 C_OBJ         := $(addsuffix .o,$(subst $(SRC_BASE)/,$(BUILD_OBJ_PATH)/,$(C_SRC))) $(TEST_RUNNER_C_OBJ)
 CXX_OBJ       := $(addsuffix .o,$(subst $(SRC_BASE)/,$(BUILD_OBJ_PATH)/,$(CXX_SRC)))
@@ -117,6 +117,10 @@ $(BUILD_OBJ_PATH)/%.c.o : $(SRC_BASE)/%.c
 	$(Q) mkdir -p $(dir $@)
 	$(Q) $(COMPILE.c) -o $@ $<  || (echo "$@" >> $(BUILD_BASE)/failed_compiles.txt && false)
 $(BUILD_OBJ_PATH)/%.cc.o : $(SRC_BASE)/%.cc
+	$(vecho) "CXX $@"
+	$(Q) mkdir -p $(dir $@)
+	$(Q) $(COMPILE.cc) -o $@  $<  || (echo "$@" >> $(BUILD_BASE)/failed_compiles.txt && false)
+$(BUILD_OBJ_PATH)/%.cpp.o : $(SRC_BASE)/%.cpp
 	$(vecho) "CXX $@"
 	$(Q) mkdir -p $(dir $@)
 	$(Q) $(COMPILE.cc) -o $@  $<  || (echo "$@" >> $(BUILD_BASE)/failed_compiles.txt && false)
