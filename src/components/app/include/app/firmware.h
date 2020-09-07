@@ -20,6 +20,8 @@ inline bool app_doFirmwareUpdate(const char *firmwareURL, const char *cert = ca_
 
 #endif
 
+void mcu_delay_us(u16 us);
+void mcu_restart(void);
 
 
 

@@ -9,7 +9,7 @@
 #include "so_print.h"
 
 #include "app/common.h"
-#include "app/ota.h"
+#include "app/firmware.h"
 #include "app/rtc.h"
 #include "cli_app/cli_config.h"
 #include "cli_app/cli_fer.h"

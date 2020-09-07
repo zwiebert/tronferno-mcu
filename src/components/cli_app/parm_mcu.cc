@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-#include "app/ota.h"
+#include "app/firmware.h"
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "txtio/inout.h"

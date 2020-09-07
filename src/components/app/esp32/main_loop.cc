@@ -1,5 +1,23 @@
+#include "app_config/proj_app_cfg.h"
+
 #include "main.h"
 #include <cli/cli.h>
+#include <freertos/event_groups.h>
+#include <freertos/projdefs.h>
+#include <freertos/timers.h>
+#include <cstdio>
+#include "misc/int_types.h"
+#include "fernotron/auto/fau_tevent.h"
+#include "fernotron/pos/positions_dynamic.h"
+#include "fernotron/pos/positions_static.h"
+#include "fernotron/alias/pairings.h"
+#include "fernotron/sep/set_endpos.h"
+#include "fernotron/fer_msg_rx.h"
+#include "fernotron/fer_msg_tx.h"
+#include "net/ipnet.h"
+#include "gpio/pin.h"
+
+#include "../app_private.h"
 
 EventGroupHandle_t loop_event_group;
 #define EVT_BITS  ((1 << lf_Len) - 1)

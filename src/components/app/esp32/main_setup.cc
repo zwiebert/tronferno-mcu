@@ -1,9 +1,29 @@
+#include "app_config/proj_app_cfg.h"
 #include "main.h"
+#include "cli_app/cli_app.h"
 #include "misc/time/run_time.h"
 #include "key_value_store/kvs_wrapper.h"
-#include "cli/mutex.hh"
 #include "net/http/server/content/setup.h"
-#include <cli/cli.h>
+#include "app/common.h"
+#include "app/timer.h"
+#include "config/config.h"
+#include "fernotron/auto/fau_tevent.h"
+#include "key_value_store/kvs_wrapper.h"
+#include "net/ipnet.h"
+#include "storage/storage.h"
+#include "txtio/inout.h"
+#include <esp_attr.h>
+#include <esp_err.h>
+#include <esp_event.h>
+#include <esp_netif.h>
+#include <esp32/rom/ets_sys.h>
+#include <freertos/projdefs.h>
+#include <freertos/timers.h>
+#include <ctime>
+#include "config_kvs/config.h"
+#include "userio_app/status_output.h"
+#include "../app_private.h"
+#include "fernotron/types.h"
 
 void loop_setBit_mcuRestart() {
   lf_setBit(lf_mcuRestart);
