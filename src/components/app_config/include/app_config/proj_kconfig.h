@@ -4,7 +4,7 @@
 
 #pragma once
 
-#ifdef CONFIG_TF_USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
 #define  USE_HTTP
 #ifdef __cplusplus
 constexpr bool use_HTTP = true;
@@ -19,7 +19,7 @@ constexpr bool use_HTTP = false;
 #define use_HTTP 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_LAN
+#ifdef CONFIG_APP_USE_LAN
 #define  USE_LAN
 #ifdef __cplusplus
 constexpr bool use_LAN = true;
@@ -34,7 +34,7 @@ constexpr bool use_LAN = false;
 #define use_LAN 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_WLAN
+#ifdef CONFIG_APP_USE_WLAN
 #define  USE_WLAN
 #ifdef __cplusplus
 constexpr bool use_WLAN = true;
@@ -49,7 +49,7 @@ constexpr bool use_WLAN = false;
 #define use_WLAN 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_WLAN_AP
+#ifdef CONFIG_APP_USE_WLAN_AP
 #define  USE_WLAN_AP
 #ifdef __cplusplus
 constexpr bool use_WLAN_AP = true;
@@ -64,7 +64,7 @@ constexpr bool use_WLAN_AP = false;
 #define use_WLAN_AP 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_NTP
+#ifdef CONFIG_APP_USE_NTP
 #define  USE_NTP
 #ifdef __cplusplus
 constexpr bool use_NTP = true;
@@ -79,7 +79,7 @@ constexpr bool use_NTP = false;
 #define use_NTP 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_JSON
+#ifdef CONFIG_APP_USE_JSON
 #define  USE_JSON
 #ifdef __cplusplus
 constexpr bool use_JSON = true;
@@ -94,7 +94,7 @@ constexpr bool use_JSON = false;
 #define use_JSON 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
 #define  USE_MQTT
 #ifdef __cplusplus
 constexpr bool use_MQTT = true;
@@ -109,7 +109,7 @@ constexpr bool use_MQTT = false;
 #define use_MQTT 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_POSIX_TIME
+#ifdef CONFIG_APP_USE_POSIX_TIME
 #define  USE_POSIX_TIME
 #ifdef __cplusplus
 constexpr bool use_POSIX_TIME = true;
@@ -124,7 +124,7 @@ constexpr bool use_POSIX_TIME = false;
 #define use_POSIX_TIME 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_SERIAL
+#ifdef CONFIG_APP_USE_SERIAL
 #define  USE_SERIAL
 #ifdef __cplusplus
 constexpr bool use_SERIAL = true;
@@ -139,7 +139,7 @@ constexpr bool use_SERIAL = false;
 #define use_SERIAL 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_WDG
+#ifdef CONFIG_APP_USE_WDG
 #define  USE_WDG
 #ifdef __cplusplus
 constexpr bool use_WDG = true;
@@ -154,7 +154,7 @@ constexpr bool use_WDG = false;
 #define use_WDG 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_FS
+#ifdef CONFIG_APP_USE_FS
 #define  USE_FS
 #ifdef __cplusplus
 constexpr bool use_FS = true;
@@ -169,7 +169,7 @@ constexpr bool use_FS = false;
 #define use_FS 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_HTTP_CLIENT
+#ifdef CONFIG_APP_USE_HTTP_CLIENT
 #define  USE_HTTP_CLIENT
 #ifdef __cplusplus
 constexpr bool use_HTTP_CLIENT = true;
@@ -184,7 +184,7 @@ constexpr bool use_HTTP_CLIENT = false;
 #define use_HTTP_CLIENT 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_OTA
+#ifdef CONFIG_APP_USE_OTA
 #define  USE_OTA
 #ifdef __cplusplus
 constexpr bool use_OTA = true;
@@ -199,7 +199,7 @@ constexpr bool use_OTA = false;
 #define use_OTA 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_STM32OTA
+#ifdef CONFIG_APP_USE_STM32OTA
 #define  USE_STM32OTA
 #ifdef __cplusplus
 constexpr bool use_STM32OTA = true;
@@ -214,7 +214,7 @@ constexpr bool use_STM32OTA = false;
 #define use_STM32OTA 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_CUAS
+#ifdef CONFIG_APP_USE_CUAS
 #define  USE_CUAS
 #ifdef __cplusplus
 constexpr bool use_CUAS = true;
@@ -229,7 +229,7 @@ constexpr bool use_CUAS = false;
 #define use_CUAS 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_TCPS
+#ifdef CONFIG_APP_USE_TCPS
 #define  USE_TCPS
 #ifdef __cplusplus
 constexpr bool use_TCPS = true;
@@ -244,7 +244,7 @@ constexpr bool use_TCPS = false;
 #define use_TCPS 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_TCPS_TASK
+#ifdef CONFIG_APP_USE_TCPS_TASK
 #define  USE_TCPS_TASK
 #ifdef __cplusplus
 constexpr bool use_TCPS_TASK = true;
@@ -259,7 +259,7 @@ constexpr bool use_TCPS_TASK = false;
 #define use_TCPS_TASK 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_EG
+#ifdef CONFIG_APP_USE_EG
 #define  USE_EG
 #ifdef __cplusplus
 constexpr bool use_EG = true;
@@ -274,7 +274,7 @@ constexpr bool use_EG = false;
 #define use_EG 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_SEP
+#ifdef CONFIG_APP_USE_SEP
 #define  USE_SEP
 #ifdef __cplusplus
 constexpr bool use_SEP = true;
@@ -289,7 +289,7 @@ constexpr bool use_SEP = false;
 #define use_SEP 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_WS
+#ifdef CONFIG_APP_USE_WS
 #define  USE_WS
 #ifdef __cplusplus
 constexpr bool use_WS = true;
@@ -304,7 +304,7 @@ constexpr bool use_WS = false;
 #define use_WS 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_CLI_MUTEX
+#ifdef CONFIG_APP_USE_CLI_MUTEX
 #define  USE_CLI_MUTEX
 #ifdef __cplusplus
 constexpr bool use_CLI_MUTEX = true;
@@ -319,7 +319,7 @@ constexpr bool use_CLI_MUTEX = false;
 #define use_CLI_MUTEX 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_CLI_TASK
+#ifdef CONFIG_APP_USE_CLI_TASK
 #define  USE_CLI_TASK
 #ifdef __cplusplus
 constexpr bool use_CLI_TASK = true;
@@ -334,7 +334,7 @@ constexpr bool use_CLI_TASK = false;
 #define use_CLI_TASK 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_TXTIO_MUTEX
+#ifdef CONFIG_APP_USE_TXTIO_MUTEX
 #define  USE_TXTIO_MUTEX
 #ifdef __cplusplus
 constexpr bool use_TXTIO_MUTEX = true;
@@ -349,7 +349,7 @@ constexpr bool use_TXTIO_MUTEX = false;
 #define use_TXTIO_MUTEX 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
 #define  USE_NETWORK
 #ifdef __cplusplus
 constexpr bool use_NETWORK = true;
@@ -364,7 +364,7 @@ constexpr bool use_NETWORK = false;
 #define use_NETWORK 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_AP_FALLBACK
+#ifdef CONFIG_APP_USE_AP_FALLBACK
 #define  USE_AP_FALLBACK
 #ifdef __cplusplus
 constexpr bool use_AP_FALLBACK = true;
@@ -379,7 +379,7 @@ constexpr bool use_AP_FALLBACK = false;
 #define use_AP_FALLBACK 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_CONFIG_KVS
+#ifdef CONFIG_APP_USE_CONFIG_KVS
 #define  USE_CONFIG_KVS
 #ifdef __cplusplus
 constexpr bool use_CONFIG_KVS = true;
@@ -394,7 +394,7 @@ constexpr bool use_CONFIG_KVS = false;
 #define use_CONFIG_KVS 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_ESP_GET_TIME
+#ifdef CONFIG_APP_USE_ESP_GET_TIME
 #define  USE_ESP_GET_TIME
 #ifdef __cplusplus
 constexpr bool use_ESP_GET_TIME = true;
@@ -409,7 +409,7 @@ constexpr bool use_ESP_GET_TIME = false;
 #define use_ESP_GET_TIME 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_FER_TRANSMITTER
+#ifdef CONFIG_APP_USE_FER_TRANSMITTER
 #define  USE_FER_TRANSMITTER
 #ifdef __cplusplus
 constexpr bool use_FER_TRANSMITTER = true;
@@ -424,7 +424,7 @@ constexpr bool use_FER_TRANSMITTER = false;
 #define use_FER_TRANSMITTER 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_FER_RECEIVER
+#ifdef CONFIG_APP_USE_FER_RECEIVER
 #define  USE_FER_RECEIVER
 #ifdef __cplusplus
 constexpr bool use_FER_RECEIVER = true;
@@ -439,7 +439,7 @@ constexpr bool use_FER_RECEIVER = false;
 #define use_FER_RECEIVER 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_PAIRINGS
+#ifdef CONFIG_APP_USE_PAIRINGS
 #define  USE_PAIRINGS
 #ifdef __cplusplus
 constexpr bool use_PAIRINGS = true;
@@ -454,7 +454,7 @@ constexpr bool use_PAIRINGS = false;
 #define use_PAIRINGS 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
 #define  USE_GPIO_PINS
 #ifdef __cplusplus
 constexpr bool use_GPIO_PINS = true;
@@ -469,7 +469,7 @@ constexpr bool use_GPIO_PINS = false;
 #define use_GPIO_PINS 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_TIMER_DATA_FS
+#ifdef CONFIG_APP_USE_TIMER_DATA_FS
 #define  USE_TIMER_DATA_FS
 #ifdef __cplusplus
 constexpr bool use_TIMER_DATA_FS = true;
@@ -484,7 +484,7 @@ constexpr bool use_TIMER_DATA_FS = false;
 #define use_TIMER_DATA_FS 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_TIMER_DATA_KVS
+#ifdef CONFIG_APP_USE_TIMER_DATA_KVS
 #define  USE_TIMER_DATA_KVS
 #ifdef __cplusplus
 constexpr bool use_TIMER_DATA_KVS = true;
@@ -499,7 +499,7 @@ constexpr bool use_TIMER_DATA_KVS = false;
 #define use_TIMER_DATA_KVS 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_FREERTOS
+#ifdef CONFIG_APP_USE_FREERTOS
 #define  USE_FREERTOS
 #ifdef __cplusplus
 constexpr bool use_FREERTOS = true;
@@ -514,7 +514,7 @@ constexpr bool use_FREERTOS = false;
 #define use_FREERTOS 0
 #endif
 #endif
-#ifdef CONFIG_TF_USE_MDR_TIME
+#ifdef CONFIG_APP_USE_MDR_TIME
 #define  USE_MDR_TIME
 #ifdef __cplusplus
 constexpr bool use_MDR_TIME = true;

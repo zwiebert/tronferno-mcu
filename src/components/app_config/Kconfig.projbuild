@@ -1,143 +1,143 @@
 menu "Tronferno Project Configuration"
     
-config TF_USE_HTTP
+config APP_USE_HTTP
   bool "Activate HTTP"
   default y
 
-config TF_USE_LAN
+config APP_USE_LAN
   bool "Activate LAN"
   default y
 
-config TF_USE_WLAN
+config APP_USE_WLAN
   bool "Activate WLAN"
   default y
 
-config TF_USE_WLAN_AP
+config APP_USE_WLAN_AP
   bool "Activate WLAN_AP"
   default y
 
-config TF_USE_NTP
+config APP_USE_NTP
   bool "Activate NTP"
   default y
  
-config TF_USE_JSON
+config APP_USE_JSON
   bool "Activate JSON"
   default y
 
-config TF_USE_MQTT
+config APP_USE_MQTT
   bool "Activate MQTT"
   default y
 
-config TF_USE_POSIX_TIME
+config APP_USE_POSIX_TIME
   bool "Activate POSIX_TIME"
   default y
 
-config TF_USE_SERIAL
+config APP_USE_SERIAL
   bool "Activate SERIAL"
   default y
 
-config TF_USE_WDG
+config APP_USE_WDG
   bool "Activate WDG"
   default y
 
-config TF_USE_FS
+config APP_USE_FS
   bool "Activate FS"
   default y
 
-config TF_USE_HTTP_CLIENT
+config APP_USE_HTTP_CLIENT
   bool "Activate HTTP_CLIENT"
   default y
 
-config TF_USE_OTA
+config APP_USE_OTA
   bool "Activate OTA"
   default y
 
-config TF_USE_STM32OTA
+config APP_USE_STM32OTA
   bool "Activate STM32OTA"
   default y
 
-config TF_USE_CUAS
+config APP_USE_CUAS
   bool "Activate CUAS"
   default n
 
-config TF_USE_TCPS
+config APP_USE_TCPS
   bool "Activate TCPS (non task)"
   default n
     
-config TF_USE_TCPS_TASK
+config APP_USE_TCPS_TASK
   bool "Activate TCPS_TASK"
   default y
 
-config TF_USE_EG
+config APP_USE_EG
   bool "Activate EG"
   default y
 
-config TF_USE_SEP
+config APP_USE_SEP
   bool "Activate SEP"
   default y
 
-config TF_USE_WS
+config APP_USE_WS
   bool "Activate WS"
   default y
 
-config TF_USE_CLI_MUTEX
+config APP_USE_CLI_MUTEX
   bool "Activate CLI_MUTEX"
   default y
 
-config TF_USE_CLI_TASK
+config APP_USE_CLI_TASK
   bool "Activate CLI_TASK"
   default y
 
-config TF_USE_TXTIO_MUTEX
+config APP_USE_TXTIO_MUTEX
   bool "Activate TXTIO_MUTEX"
   default y
     
-config TF_USE_NETWORK
+config APP_USE_NETWORK
   bool "Activate NETWORK"
   default y
 
-config TF_USE_AP_FALLBACK
+config APP_USE_AP_FALLBACK
   bool "Activate AP_FALLBACK"
   default y
   
   
-config TF_USE_CONFIG_KVS
+config APP_USE_CONFIG_KVS
   bool "Activate CONFIG_KVS"
   default y
   
-config TF_USE_ESP_GET_TIME
+config APP_USE_ESP_GET_TIME
   bool "Activate ESP_GET_TIME"
   default y
 
-config TF_USE_FER_TRANSMITTER
+config APP_USE_FER_TRANSMITTER
   bool "Activate FER_TRANSMITTER"
   default y
  
-config TF_USE_FER_RECEIVER
+config APP_USE_FER_RECEIVER
   bool "Activate FER_RECEIVER"
   default y
 
-config TF_USE_PAIRINGS
+config APP_USE_PAIRINGS
   bool "Activate USE_PAIRINGS"
   default y 
  
-config TF_USE_GPIO_PINS
+config APP_USE_GPIO_PINS
   bool "Activate USE_GPIO_PINS"
   default y 
  
-config TF_USE_TIMER_DATA_FS
+config APP_USE_TIMER_DATA_FS
   bool "Activate USE_TIMER_DATA_FS"
   default n
   
-config TF_USE_TIMER_DATA_KVS
+config APP_USE_TIMER_DATA_KVS
   bool "Activate USE_TIMER_DATA_KVS"
   default y
  
-config TF_USE_FREERTOS
+config APP_USE_FREERTOS
   bool "Activate USE_FREERTOS"
   default y
 
-config TF_USE_MDR_TIME
+config APP_USE_MDR_TIME
   bool "Activate USE_MDR_TIME"
   default n
   

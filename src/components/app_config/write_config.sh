@@ -10,4 +10,4 @@ cat <<EOF
 EOF
 
 
-sed  <Kconfig.projbuild -nE -e 's/config TF_(.*)$/\1/p' | xargs -n 1 ./write_config_entry.sh TF_
+sed  <Kconfig.projbuild -nE -e 's/config APP_(.*)$/\1/p' | xargs -n 1 ./write_config_entry.sh APP_
