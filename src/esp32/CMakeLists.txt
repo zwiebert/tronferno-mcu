@@ -7,7 +7,7 @@ set(PROJECT_NAME "tronferno-mcu")
 set(EXTRA_COMPONENT_DIRS ../../components-mcu/components ../components)
 
 set(COMPONENTS app misc_time firmware_update #app_config
-    #fernotron http_server_content
+    #fernotron_app http_server_content
 
     #userio_app net net_mqtt_app net_http_server debug gpio key_value_store storage cli_app config  txtio misc misc_time
 
