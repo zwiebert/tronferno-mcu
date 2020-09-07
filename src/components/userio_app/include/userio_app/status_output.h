@@ -101,7 +101,7 @@ typedef struct {
 } so_arg_kmm_t;
 
 void so_broadcast_message(so_msg_t mt, void *arg);
-void so_output_message(so_msg_t mt, void *arg);
+void so_output_message(so_msg_t mt, const void *arg);
 void so_output_message_tgt(so_msg_t mt, void *arg, so_target_bits tgt);
 
 so_msg_t so_parse_config_key(const char *k);

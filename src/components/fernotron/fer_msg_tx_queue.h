@@ -14,9 +14,9 @@
 struct sf {
   fsbT fsb;
   uint32_t s10; // time in tenth of secs
-  uint16_t /*fmsg_type*/ mt : 3;
-  uint16_t repeats : 4;
-  uint16_t sent_ct : 5;
+  fmsg_type mt : 3;
+  int16_t repeats : 4;
+  int16_t sent_ct : 5;
 };
 
 

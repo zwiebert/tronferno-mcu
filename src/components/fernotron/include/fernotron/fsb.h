@@ -4,9 +4,9 @@
 #include "fer_msg_plain.h"
 #include "misc/int_macros.h"
 
-typedef union fsb {
+typedef union fsbT {
   uint8_t data[5];
-  struct fer_cmd sd;
+  struct FerCmd sd;
 } fsbT;
 
 #define FSB_ADDR_IS_CENTRAL(fsb)  (((fsb)->data[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)
@@ -26,9 +26,15 @@ typedef union fsb {
 
 #define FSB_GET_GRP(fsb)          ((fer_grp)(fsb)->sd.grp)
 #define FSB_PUT_GRP(fsb,val)      ((fsb)->sd.grp = (val))
+inline fer_grp ngrp2fer_grp(int g) { return static_cast<fer_grp>(g); }
+#define FSB_PUT_NGRP(fsb,val) FSB_PUT_GRP(fsb, ngrp2fer_grp(val))
 
 #define FSB_GET_MEMB(fsb)         ((fer_memb)(fsb)->sd.memb)
 #define FSB_PUT_MEMB(fsb,val)     ((fsb)->sd.memb = (val))
+
+inline fer_memb nmb2fer_memb(int m) { return static_cast<fer_memb>(m == 0 ? 0 : m + 7); }
+#define FSB_PUT_NMEMB(fsb,val) FSB_PUT_MEMB(fsb, nmb2fer_memb(val))
+
 
 #define FSB_PUT_DATA(fsb,idx,val) ((fsb)->data[(idx)] = (val))
 

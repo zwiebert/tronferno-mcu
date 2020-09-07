@@ -141,7 +141,7 @@ export function http_fetchByMask(mask, synchron) {
     };
 
   if (mask & FETCH_POS)
-    tfmcu.send = {
+    tfmcu.cmd = {
       g: g,
       m: m,
       p: "?",

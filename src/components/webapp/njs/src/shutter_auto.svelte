@@ -10,7 +10,6 @@ import {Autos} from './store/shutters.js';
 let on_destroy = [];
 onMount(() => {
     on_destroy.push(Auto.subscribe(auto => automaticOptions_updHtml(auto)));
-    on_destroy.push(GM.subscribe(() => gmChanged()));
   });
 onDestroy(() => {
     for (const fn of on_destroy) {
@@ -18,11 +17,10 @@ onDestroy(() => {
     }
 });
 
-
-  function gmChanged() {
-       appDebug.dbLog("autos: " + JSON.stringify($Autos));
+$: {
+    $GM;
+    httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME);
   }
-
 
 function hClick_Reload() {
   httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);

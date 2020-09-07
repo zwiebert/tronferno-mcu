@@ -1,84 +1,175 @@
-.PHONY: all tests clean_out init all_tests
+# scans component directories for <component>/test/test_*.(cc|c) files and compiles them into test programs
+# compiles any other portable component source files into build/obj.a
 
 
-TESTS =  test_pos test_config  test_timer_state test_alias test_timer_data test_msg_tx test_prg test_kvs test_gm 
+.PHONY: all clean init tests build_lib sdkconfig
 
-.PHONY: $(TESTS)
+test_blacklist :=  test_config_keys
 
-make = make --no-print-dir
-
-
-ifeq ($(V),)
-Q:=@
+ifeq ("$(V)","1")
+Q :=
+vecho := @true
+else
+Q := @
+vecho := @echo
 endif
 
-grep_results := grep -H -e IGNORE -e FAIL -e Aborted 
-
-all_tests:
-	$(Q) $(make) all C_WARN='-w'
-
-all: clean_out init
-	@echo "\n### Making and running tests: " $(TESTS) "\n"
-	$(Q) $(make) -B tests
-	
-$(TESTS):
-	$(Q) $(make) -B $(addsuffix .log,$(addprefix build/,$@))
-
-clean_out:
-	$(Q) -rm -f build/test_*.out
-	$(Q) -rm -f test_env/*
-init:
-	$(Q) mkdir -p build
-	$(Q) mkdir -p test_env
-
-	
-tests = $(addsuffix .log,$(addprefix build/,$(TESTS)))
-tests: $(tests)
-	$(Q) $(grep_results) build/*.log  || true
+make := make --no-print-dir -s
+grep_results := ! grep -H -e IGNORE -e FAIL -e Aborted
 
 SRC_BASE=../..
+BUILD_BASE=./build
+BUILD_OBJ_PATH=$(BUILD_BASE)/obj
+LOG_BASE=./logs
+TEST_BASE=./build
 COMP_DIR=src/components
 COMPSHARE_DIR=components-mcu/components
-COMPSHARE_PATH := $(SRC_BASE)/$(COMPSHARE_DIR)
-COMP_PATH := $(SRC_BASE)/$(COMP_DIR)
-EXTRA_INCDIR = test_runner #$(COPMSHARE_PATH)/storage/spiffs/src
-C_WARN ?= -Wall -Wno-unused-result
+COMP_DIRS = $(COMP_DIR) $(COMPSHARE_DIR)
+COMP_NAMES = $(notdir $(shell find $(addprefix $(SRC_BASE)/,$(addsuffix /*,$(COMP_DIRS))) -maxdepth 0 -type d))
+COMP_PATHS = $(shell find $(addprefix $(SRC_BASE)/,$(addsuffix /*,$(COMP_DIRS))) -maxdepth 0 -type d)
+COMP_INC_PATHS = $(addsuffix /include,$(COMP_PATHS))
+SRC_DIR_EXCLUDE = esp8266 esp32 nonopb node_modules
+SRC_DIR_EXCLUDE_FIND = 
+SDKCONFIG := $(SRC_BASE)/src/esp32/build/config/sdkconfig.h
+HOST_SDKCONFIG := $(SRC_BASE)/$(COMP_DIR)/app_config/include/app_config/host/sdkconfig.h
 
-COMPSHARE = txtio net debug cli key_value_store misc misc_time config_kvs userio net_mqtt net_http_server storage storage/esp8266/spiffs/src
-COMPONENTS = gpio config cli_app fernotron  fernotron_txtio  fernotron_sep fernotron_cuas fernotron_alias fernotron_pos fernotron_auto userio_app app app_config net_mqtt_app 
+comm=$(addprefix $(BUILD_OBJ_PATH)/,test_runner/setup.o unity/src/unity.o test_runner/test_runner.o)
+TEST_RUNNER_C_SRC = test_runner/setup.c unity/src/unity.c test_runner/test_runner.c test_runner/mock.cc
+TEST_RUNNER_C_OBJ = $(addprefix $(BUILD_OBJ_PATH)/,$(addsuffix .o,$(TEST_RUNNER_C_SRC)))
 
-define GEN_COMPONENTS
-EXTRA_INCDIR += $(SRC_BASE)/$(1)/$(2)/include #$(SRC_BASE)/$(1)/$(2)/include/$(2)
-MODULES += $(1)/$(2)
-ifneq ("$(wildcard $(SRC_BASE)/$(1)/$(2)/esp8266)","")
-MODULES += $(1)/$(2)/esp8266
-endif
-endef
-$(foreach component,$(COMPSHARE),$(eval $(call GEN_COMPONENTS,$(COMPSHARE_DIR),$(component))))
-$(foreach component,$(COMPONENTS),$(eval $(call GEN_COMPONENTS,$(COMP_DIR),$(component))))
+CXX_SRC := $(shell find $(COMP_PATHS) '(' -name '*.cc' -or -name '*.cpp' ')' \
+                   -and -not '(' -wholename '*/esp8266/*' -or  -wholename '*/esp32/*' -or -wholename '*/nanopb/*' \
+                   -or -wholename '*/node_modules/*' ')' )
+C_SRC := $(shell find $(COMP_PATHS) -name '*.c' \
+                   -and -not '(' -wholename '*/esp8266/*' -or  -wholename '*/esp32/*' -or -wholename '*/nanopb/*' \
+                   -or -wholename '*/jsmn/*' -or -wholename '*/node_modules/*' -or -wholename '*/esp8266/spiffs/*' ')')
+TEST_SRC := $(shell find $(COMP_PATHS) -maxdepth 2 -and '(' -name '*.c' -or -name '*.cc' -or -name '*.cpp' ')' -and -wholename '*/test/test_*')
+                   
+C_OBJ         := $(addsuffix .o,$(subst $(SRC_BASE)/,$(BUILD_OBJ_PATH)/,$(C_SRC))) $(TEST_RUNNER_C_OBJ)
+CXX_OBJ       := $(addsuffix .o,$(subst $(SRC_BASE)/,$(BUILD_OBJ_PATH)/,$(CXX_SRC)))
+VALID_OBJ     = $(shell find $(BUILD_OBJ_PATH) -name '*.o' -and -not -wholename '*/test/test_*.o')
+TEST_OBJ         := $(addsuffix .o,$(subst $(SRC_BASE)/,$(BUILD_OBJ_PATH)/,$(TEST_SRC)))
+#TEST_OBJ      = $(shell find $(BUILD_OBJ_PATH) -name '*.o' -and -wholename '*/test/test_*.o')
+TEST_NAMES    = $(filter-out $(test_blacklist),$(basename $(basename $(notdir $(TEST_OBJ)))))
+TEST_PROGS    = $(addprefix $(TEST_BASE)/,$(TEST_NAMES))
+TEST_LOGS     = $(addprefix $(LOG_BASE)/,$(addsuffix .log,$(TEST_NAMES)))
 
+
+EXTRA_INCDIR = test_runner $(COMP_INC_PATHS)
 INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
 
-build/test_%.out:
-	$(Q) gcc  -g3 $(C_WARN) -flto -O1 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm #-H
+C_WARN += -Wall -Wextra -Wno-unused-result -Wno-missing-field-initializers -Wno-clobbered
+TESTING_DEFS :=
+CPPFLAGS :=  -MMD -DHOST_TESTING -DTEST_HOST -DTEST $(TESTING_DEFS) $(INCLUDE)
+CFLAGS := -g3 $(C_WARN) -flto -O2
+CXXFLAGS := -std=gnu++2a -g3 $(C_WARN) -fpermissive -flto -O2 -flto
+LDLIBS += build/obj.a -lc
 
 
-%.log:%.out
-	$(Q) mkdir -p test_env
-	$(Q) cd ./test_env && echo "** Run test: $<\n" && ../$< >../$@ 2>&1 || ($(grep_results) ../$@ && false)
-	$(Q) $(grep_results) $@ || true
+all:
+	$(Q) $(make)  -s -j init C_WARN='-w'
+	$(make)  -s $(TEST_NAMES) grep C_WARN='-w'
+
+tests: init $(TEST_NAMES) grep
+
+.PHONY: $(TEST_NAMES)
+$(TEST_NAMES):
+	$(Q) $(make) $(addsuffix .log,$(addprefix $(LOG_BASE)/,$@))
+
+grep:
+	$(Q) $(grep_results) $(LOG_BASE)/*.log
+
+clean:
+	$(Q) -rm -rf build/
+	$(Q) -rm -rf test_env/*
+	$(Q) -rm -rf logs/*
+
+init: build_lib
 
 
-setup=test_runner/setup.c
+# create log file by running test
+$(LOG_BASE)/%.log:$(TEST_BASE)/%
+	$(Q) mkdir -p $(dir $@) test_env/$(basename $(@F))
+	$(Q) cd ./test_env/$(basename $(@F)) && echo "** Run test: $<\n" && ../../$< >../../$@ 2>&1 || ($(grep_results) ../../$@)
+
+
+# grep log file
+%:$(LOG_BASE)/%.log
+	$(vecho) "grep $@"
+	$(Q) $(grep_results) $@
+	
+# make lib from all non-test objs
+$(BUILD_BASE)/obj.a: $(VALID_OBJ)
+	  $(vecho) "AR $@"
+		$(Q) $(AR) cr $@ $^
+
+# create objs by compiling sources
+$(BUILD_OBJ_PATH)/%.c.o : ./%.c
+	$(vecho) "CC $@"
+	$(Q) mkdir -p $(dir $@)
+	$(Q) $(COMPILE.c) -o $@ $<
+$(BUILD_OBJ_PATH)/%.cc.o : ./%.cc
+	$(vecho) "CXX $@"
+	$(Q) mkdir -p $(dir $@)
+	$(Q) $(COMPILE.cc) -o $@ $<
+$(BUILD_OBJ_PATH)/%.c.o : $(SRC_BASE)/%.c
+	$(vecho) "CC $@"
+	$(Q) mkdir -p $(dir $@)
+	$(Q) $(COMPILE.c) -o $@ $<  || (echo "$@" >> $(BUILD_BASE)/failed_compiles.txt && false)
+$(BUILD_OBJ_PATH)/%.cc.o : $(SRC_BASE)/%.cc
+	$(vecho) "CXX $@"
+	$(Q) mkdir -p $(dir $@)
+	$(Q) $(COMPILE.cc) -o $@  $<  || (echo "$@" >> $(BUILD_BASE)/failed_compiles.txt && false)
+$(BUILD_OBJ_PATH)/%.cpp.o : $(SRC_BASE)/%.cpp
+	$(vecho) "CXX $@"
+	$(Q) mkdir -p $(dir $@)
+	$(Q) $(COMPILE.cc) -o $@  $<  || (echo "$@" >> $(BUILD_BASE)/failed_compiles.txt && false)
+
+print_test_names:
+	$(info $(TEST_NAMES))
+print_test_progs:
+	$(info $(TEST_PROGS))
+print_test_obj:
+	$(info $(TEST_OBJ))
+print_cxx_src:
+	$(info $(CXX_SRC))
+print_test_src:
+	$(info $(TEST_SRC))
+print_cxx_obj:
+	$(info $(CXX_OBJ))
+print_c_src:
+	$(info $(C_SRC))
+print_c_obj:
+	$(info $(C_OBJ))
+print_comp_names:
+	$(info $(COMP_NAMES))
+print_comp_paths:
+	$(info $(COMP_PATHS))
+print_comp_inc_paths:
+	$(info $(COMP_INC_PATHS))
+
+build_lib:
+	-make -j -k $(CXX_OBJ) $(C_OBJ)
+	make build/obj.a
+
+sdkconfig:
+	make -B $(HOST_SDKCONFIG)
+
+#test_runner/sdkconfig.h: $(SDKCONFIG)
+#	grep CONFIG_TF_ $< >$@
+$(HOST_SDKCONFIG): $(SDKCONFIG)
+	grep CONFIG_TF_ $< >$@
+
 ################################
-build/test_pos.out:   $(addprefix $(COMP_PATH)/fernotron_pos/,test/test_positions.c shutter_pct.c shutter_prefs_kvs.c move.c move_buf.c) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c)
-build/test_config.out:   $(addprefix $(COMP_PATH)/config/,test/test_config.c config.c config_kvs.c config_stor.c) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c storage/esp8266/storage.c misc/esp32/itoa.c config_kvs/config_kvs.c)
-build/test_kvs.out:  $(addprefix $(COMPSHARE_PATH)/key_value_store/,test/test_kvs.c esp8266/kvs_posix.c)
-build/test_gm.out:   $(addprefix $(COMP_PATH)/fernotron/,test/test_gm.c gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c)
-build/test_prg.out:  $(addprefix $(COMP_PATH)/fernotron/,test/test_prg.c astro.c fer_rawmsg_build.c) $(COMPSHARE_PATH)/misc/bcd.c $(COMPSHARE_PATH)/misc/sun.c
-build/test_msg_tx.out:  $(addprefix $(COMP_PATH)/fernotron/,test/test_msg_tx.c fer_msg_tx.c fer_msg_tx_queue.c fer_radio_rx.c fer_radio_tx.c fer_msg_basic.c fer_rawmsg_buffer.c fer_rawmsg_build.c astro.c) $(addprefix $(COMPSHARE_PATH)/, misc/bcd.c misc/sun.c)
-build/test_timer_data.out:   $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_data.c timer_data.c timer_data_kvs.c)  $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c)
-build/test_timer_state.out:  $(addprefix $(COMP_PATH)/fernotron_auto/,test/test_timer_state.c timer_minutes.c timer_event.c timer_data.c timer_data_kvs.c) $(COMP_PATH)/fernotron/astro.c $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,storage/esp8266/storage.c misc/bcd.c misc/sun.c key_value_store/esp8266/kvs_posix.c)
-build/test_alias.out:  $(addprefix $(COMP_PATH)/fernotron_alias/,test/test_alias.c pairings_kvs.c) $(addprefix $(COMP_PATH)/fernotron/,gmbitmask_kvs.c) $(addprefix $(COMPSHARE_PATH)/,key_value_store/esp8266/kvs_posix.c misc/esp32/itoa.c)
 
+define build_test
+build/$(basename $(basename $(notdir $(1)))): $(1) $(BUILD_BASE)/obj.a
+	$(vecho) "LINK.cc $(1)"
+	$(Q)  $(LINK.cc) $$^ $(LOADLIBES) $(LDLIBS) -o $$@
+endef
 
+$(foreach test_obj,$(TEST_OBJ),$(eval $(call build_test,$(test_obj))))
+
+##################
+DEPFILES = $(shell find $(BUILD_OBJ_PATH) -name '*.d')
+include $(DEPFILES)

@@ -6,15 +6,15 @@ flash_all() {
 openocd -f ~/esp/ft2232.cfg -f /usr/local/share/openocd/scripts/board/esp-wroom-32.cfg \
         -c "program_esp  bootloader/bootloader.bin 0x1000 verify" \
         -c "program_esp  partition_table/partition-table.bin 0x8000 verify" \
-        -c "program_esp  unit-test-app.bin  0x10000 verify" \
-        -c "program_esp  ota_data_initial.bin 0x300000  verify reset exit"
+        -c "program_esp  unit-test-app.bin 0x100000 verify" \
+        -c "program_esp  ota_data_initial.bin 0x10000  verify reset exit"
 }
 
 
 flash_app() {
 openocd -f ~/esp/ft2232.cfg -f /usr/local/share/openocd/scripts/board/esp-wroom-32.cfg \
-        -c "program_esp   unit-test-app.bin  0x10000" \
-        -c "program_esp  ota_data_initial.bin 0x300000  reset exit"
+        -c "program_esp   unit-test-app.bin  0x100000" \
+        -c "program_esp  ota_data_initial.bin 0x10000  reset exit"
 
 
 }

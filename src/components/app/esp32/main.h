@@ -2,36 +2,7 @@
 
 #include "app_config/proj_app_cfg.h"
 
-#include "app/common.h"
-#include "app/timer.h"
-#include "cli_app/cli_app.h"
-#include "config/config.h"
-#include "driver/gpio.h"
-#include "fernotron/callbacks.h"
-#include "fernotron/fer_msg_rx.h"
-#include "fernotron/fer_msg_tx.h"
-#include "fernotron/fer_radio_trx.h"
-#include "fernotron_alias/pairings.h"
-#include "fernotron_auto/fau_tevent.h"
-#include "fernotron_cuas/cuid_auto_set.h"
-#include "fernotron_sep/set_endpos.h"
-#include "fernotron_txtio/fer_print.h"
-#include "fernotron_pos/shutter_pct.h"
-#include "gpio/pin.h"
-#include "key_value_store/kvs_wrapper.h"
-#include "misc/int_macros.h"
-#include "misc/int_types.h"
-#include "net/ethernet.h"
-#include "net/ipnet.h"
-#include "net/mqtt/app/mqtt.h"
-#include "net/ntp.h"
-#include "net/tcp_cli_server.h"
-#include "net/wifi_ap.h"
-#include "net/wifistation.h"
-#include "nvs_flash.h"
-#include "storage/storage.h"
-#include "string.h"
-#include "txtio/inout.h"
+#include <misc/int_types.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/timers.h"
@@ -107,7 +78,6 @@ extern volatile uint32_t loop_flags;
 extern uint32_t loop_flags_periodic;
 extern i32 boot_counter;
 extern bool wifi_ap_active;
-extern SemaphoreHandle_t uart_mutex;
 
 void lfa_createWifiAp(void);
 void lfa_gotIpAddr(void);
@@ -122,7 +92,7 @@ void tmr_pingLoop_start();
 void loop_eventBits_setup();
 u32 loop_eventBits_wait();
 
-void main_setup_ip_dependent();
+extern "C" void main_setup_ip_dependent();
 void mcu_init();
 
 

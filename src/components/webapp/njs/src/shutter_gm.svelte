@@ -4,20 +4,10 @@
   import { Names } from "./store/shutters.js";
   import { Gmu } from "./store/mcu_config.js";
   import * as httpFetch from "./fetch.js";
-  import { onMount, onDestroy } from "svelte";
 
-  export let gmc_fetch_mask = 0;
   export let hideGroups = false;
 
-  let on_destroy = [];
-  onMount(() => {
-    on_destroy.push(GM.subscribe(() => gmChanged()));
-  });
-  onDestroy(() => {
-    for (const fn of on_destroy) {
-      fn();
-    }
-  });
+
 
   $: gm = $GM;
   $: nameKeys = Object.keys($Names);
@@ -26,9 +16,11 @@
   $: vm = $G ? ($M0 ? $M0 : "A") : "";
   $: vg = $G ? $G : "A";
 
-  function gmChanged() {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_SHUTTER_NAME | gmc_fetch_mask);
+  $: {
+    $GM;
+    httpFetch.http_fetchByMask(httpFetch.FETCH_SHUTTER_NAME);
   }
+
 
   function hClick_G() {
     let g = $G;

@@ -9,19 +9,21 @@
 #include "app_config/proj_app_cfg.h"
 #include <stdbool.h>
 
-//                                 d            i              q                     Q
-typedef enum mcu_pin_mode { PIN_DEFAULT=0, PIN_INPUT,  PIN_INPUT_OUTPUT_OD, PIN_INPUT_OUTPUT,
+//                                             d            i              q                     Q
+typedef enum mcu_pin_mode { PIN_MODE_none = -1, PIN_DEFAULT=0, PIN_INPUT,  PIN_INPUT_OUTPUT_OD, PIN_INPUT_OUTPUT,
                             //  o               O
                             PIN_OUTPUT_OD, PIN_OUTPUT } mcu_pin_mode;
-typedef enum mcu_pin_level { PIN_FLOATING, PIN_LOW, PIN_HIGH, PIN_HIGH_LOW } mcu_pin_level;
 
-typedef enum mcu_pin_state { PIN_READ, PIN_CLEAR, PIN_SET, PIN_TOGGLE } mcu_pin_state;
+typedef enum mcu_pin_level { PIN_LEVEL_none = -1, PIN_FLOATING, PIN_LOW, PIN_HIGH, PIN_HIGH_LOW } mcu_pin_level;
+
+typedef enum mcu_pin_state { PIN_STATE_none = -1, PIN_READ, PIN_CLEAR, PIN_SET, PIN_TOGGLE } mcu_pin_state;
 
 
 
 const char* mcu_access_pin(int gpio_number, mcu_pin_state *result, mcu_pin_state state);
 bool  is_gpio_number_usable(int gpio_number, bool cli);
 void gpio_get_levels(unsigned long long gpio_mask, char *buf, int buf_size);
+
 
 
 struct cfg_gpio {
@@ -49,4 +51,4 @@ bool mcu_get_buttonDownPin(void);
 bool mcu_get_buttonPin(void);
 
 void pin_notify_input_change(void);
-void (*pin_notify_input_change_cb)(int gpio_num, bool level);
+extern void (*pin_notify_input_change_cb)(int gpio_num, bool level);

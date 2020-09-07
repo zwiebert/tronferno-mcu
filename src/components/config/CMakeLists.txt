@@ -1,17 +1,11 @@
-set(srcs config.c config_kvs.c config_comps.c)
+set(srcs config.cc config_kvs.cc config_comps.cc)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 
-if(DEFINED ENV{DISTRO})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
-endif()
-
-if(DEFINED ENV{FLAVOR_LAN})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFLAVOR_LAN")
-endif()
 
 idf_component_register(SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
-    REQUIRES fernotron app txtio net_mqtt config_kvs
+    REQUIRES fernotron_app app txtio net_mqtt config_kvs gpio
     PRIV_REQUIRES key_value_store
     )
+
+component_compile_options(${component_compile_opts})
