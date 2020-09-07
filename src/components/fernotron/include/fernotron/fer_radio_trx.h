@@ -9,12 +9,17 @@
 
 #include <stdint.h>
 #include "stdbool.h"
-#include "app_config/callbacks.h"
+#include "app_config/proj_app_cfg.h"
 #include "fer_msg_attachment.h"
 
 #define WORDS_MSG_PLAIN (2*BYTES_MSG_PLAIN)
 #define WORDS_MSG_RTC (2*BYTES_MSG_RTC)
 #define WORDS_MSG_TIMER  (2*BYTES_MSG_TIMER)
+
+
+extern void (*frx_MSG_RECEIVED_ISR_cb)(void);
+extern void (*ftx_MSG_TRANSMITTED_ISR_cb)(void);
+
 
 extern volatile fmsg_type frx_messageReceived;
 extern volatile bool ftx_messageToSend_isReady;
@@ -44,15 +49,5 @@ void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type);
 void frx_sampleInput(void); // call this from top of timer ISR handler
 void ftx_setOutput(void); // call this from top of timer ISR handler
 
-// event notification callback functions
 
-// called from ISR when frx_messageReceived is set
-#ifndef frx_MSG_RECEIVED_ISR_cb
-#define frx_MSG_RECEIVED_ISR_cb() // do nothing
-#endif
-
-// called from ISR when ftx_messageToSend_isReady is set
-#ifndef ftx_MSG_TRANSMITTED_ISR_cb
-#define ftx_MSG_TRANSMITTED_ISR_cb() // do nothing
-#endif
 

@@ -7,7 +7,10 @@
 #pragma once
 
 #include "fernotron/timer_data.h"
-#include "app_config/callbacks.h"
+#include "app_config/proj_app_cfg.h"
+
+
+extern void (*fau_TIMER_DATA_CHANGE_cb)(void);
 
 // save and read timer data on flash memory
 // group  0...7
@@ -20,9 +23,4 @@ bool read_timer_data(timer_data_t *p, uint8_t *group, uint8_t *member, bool wild
 bool erase_timer_data(u8 g, u8 m);
 
 extern bool timer_data_changed; // set by save_timer_data - cleared by code reading it
-
-
-#ifndef fau_TIMER_DATA_CHANGE_cb
-#define fau_TIMER_DATA_CHANGE_cb()
-#endif
 

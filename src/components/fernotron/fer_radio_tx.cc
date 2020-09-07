@@ -30,6 +30,13 @@ volatile u16 ftx_messageToSend_wordCount;
 volatile bool ftx_messageToSend_isReady;
 static fer_rawMsg *ftx_buf;
 
+void (*ftx_MSG_TRANSMITTED_ISR_cb)(void);
+
+static inline void ftx_msg_transmitted_isr_cb() {
+  if (ftx_MSG_TRANSMITTED_ISR_cb)
+    ftx_MSG_TRANSMITTED_ISR_cb();
+}
+
 void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type) {
   precond(!ftx_isTransmitterBusy());
   ftx_buf = msg ? msg : txmsg;
@@ -156,7 +163,7 @@ static void IRAM_ATTR ftx_dck_send_message() {
     ftx_messageToSend_isReady = false;
     init_counter();
     output_level = false;
-    ftx_MSG_TRANSMITTED_ISR_cb();
+    ftx_msg_transmitted_isr_cb();
   }
 }
 

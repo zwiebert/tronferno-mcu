@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include "fernotron/types.h"
 #include "fernotron/fer_msg_plain.h"
-#include "app_config/callbacks.h"
+#include "app_config/proj_app_cfg.h"
 #include "fernotron/pos/positions_dynamic.h"
 
 #include "move_buf.h"

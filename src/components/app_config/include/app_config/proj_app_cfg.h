@@ -11,8 +11,6 @@
 
 //#define USE_PCT_ARRAY
 
-#include "callbacks.h"
-
 #include "misc/int_types.h"
 
 #ifndef CONFIG_LOG_DEFAULT_LEVEL

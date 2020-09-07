@@ -36,6 +36,17 @@
 #endif
 //////////////////////////////////////////////////////////////////
 
+void (*sep_enable_disable_cb)(bool enable);
+
+static inline void sep_ENABLE_cb() {
+  if (sep_enable_disable_cb)
+    sep_enable_disable_cb(true);
+}
+static inline void sep_DISABLE_cb() {
+  if (sep_enable_disable_cb)
+    sep_enable_disable_cb(false);
+}
+
 static fsbT sep_fsb;
 static bool sep_buttons_enabled;
 static bool up_pressed, down_pressed;

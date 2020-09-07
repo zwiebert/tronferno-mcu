@@ -11,10 +11,12 @@
 #include <stdint.h>
 
 #include "fernotron/fsb.h"
-#include "app_config/callbacks.h"
+#include "app_config/proj_app_cfg.h"
 
 // true while sending in progress
 extern volatile bool ftx_messageToSend_isReady;
+
+extern void (*ftx_READY_TO_TRANSMIT_cb)(uint32_t time_ts);
 
 // send short or long messages (data already in send-buffer)
 bool fer_send_msg(const fsbT *fsb, fmsg_type msgType, int8_t repeats);
@@ -27,8 +29,5 @@ void fer_tx_loop(void);
 
 int ftx_get_msgPendingCount();
 
-#ifndef ftx_READY_TO_TRANSMIT_cb
-#define ftx_READY_TO_TRANSMIT_cb(time_ts)
-#endif
 
 

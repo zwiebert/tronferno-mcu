@@ -9,7 +9,6 @@
 #include "fernotron/fer_rawmsg_buffer.h"
 #include "fernotron/fer_msg_tx.h"
 #include "fernotron/extern.h"
-#include "app/loop.h"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
 
@@ -43,6 +42,14 @@ bool ftrx_testLoopBack_getRxPin();
 #endif
 
 #if defined FER_RECEIVER
+
+void (*frx_MSG_RECEIVED_ISR_cb)(void);
+
+static inline void frx_msg_received_isr_cb() {
+  if (frx_MSG_RECEIVED_ISR_cb)
+    frx_MSG_RECEIVED_ISR_cb();
+}
+
 
 struct frx_counter {
   u16 Words;
@@ -272,7 +279,7 @@ void IRAM_ATTR frx_tick() {
   }
 
   if (frx_messageReceived != MSG_TYPE_NONE) {
-    frx_MSG_RECEIVED_ISR_cb();
+    frx_msg_received_isr_cb();
   }
 }
 

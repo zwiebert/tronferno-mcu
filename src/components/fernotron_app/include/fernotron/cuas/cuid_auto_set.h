@@ -3,7 +3,9 @@
 
 #include <fernotron/fsb.h>
 #include "stdbool.h"
-#include "app_config/callbacks.h"
+#include "app_config/proj_app_cfg.h"
+
+extern void (*cuas_enable_disable_cb)(bool enable);
 
 typedef enum  { CUAS_NONE, CUAS_SCANNING, CUAS_TIME_OUT, CUAS_SUCCESS } cuas_state_T;
 
@@ -13,11 +15,5 @@ bool cu_auto_set_check(const fsbT *fsb);
 
 cuas_state_T cuas_getState();
 
-#ifndef cuas_ENABLE_cb
-#define cuas_ENABLE_cb() // do nothing
-#endif
-#ifndef cuas_DISABLE_cb
-#define cuas_DISABLE_cb() // do nothing
-#endif
 
 

@@ -31,6 +31,7 @@ void lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield);
 #define lfPer_clrBits(v) (loop_flags_periodic &= ~(v))
 #define lfPer_setBit(v)  lfPer_setBits(1<<(v))
 #define lfPer_clrBit(v)  lfPer_clrBits(1<<(v))
+#define lfPer_putBit(v,val)  (val ? lfPer_setBit(v) : lfPer_clrBit(v))
 
 
 enum loop_flagbits {
