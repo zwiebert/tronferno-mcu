@@ -10,7 +10,6 @@
 #include <sys/time.h>
 #endif
 #include "config/config.h"
-#include "app/common.h"
 
 rtc_time_source_t rtc_last_time_source;
 
