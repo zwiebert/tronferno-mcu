@@ -15,7 +15,7 @@
 #include "app/common.h"
 #include "userio_app/status_output.h"
 #include "app/rtc.h"
-#include "app/fernotron.h"
+#include "cli_app/fernotron.h"
 
 #include "fernotron/fer_msg_rx.h"
 #include "fernotron/fer_msg_attachment.h"

@@ -1,4 +1,4 @@
-set(srcs fernotron_app.cc  esp32/main.cc esp32/main_setup.cc esp32/main_loop.cc esp32/unity_setup.cc) 
+set(srcs main_setup.cc esp32/main.cc esp32/main_setup.cc esp32/main_loop.cc esp32/unity_setup.cc) 
 
 idf_component_register(
     SRCS ${srcs}

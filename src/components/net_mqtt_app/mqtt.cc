@@ -18,7 +18,7 @@
 #include "userio/status_json.h"
 #include "userio_app/status_output.h"
 #include "gpio/pin.h"
-#include "config/config.h"
+//#include "config/config.h"
 
 static char *io_mqtt_topic_root;
 

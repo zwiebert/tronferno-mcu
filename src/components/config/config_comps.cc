@@ -51,7 +51,7 @@ int8_t config_read_setbutton_gpio() {
 
 
 #if 1
-#include "app/fernotron.h"
+#include "cli_app/fernotron.h"
 void config_setup_global() {
   kvshT h;
   C = config { .fer_centralUnitID = MY_FER_CENTRAL_UNIT_ID,

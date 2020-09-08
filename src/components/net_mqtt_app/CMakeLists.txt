@@ -4,7 +4,7 @@ idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
     REQUIRES fernotron_app net_mqtt userio_app
-    PRIV_REQUIRES app_misc cli userio misc http_server_content
+    PRIV_REQUIRES app_misc cli userio misc http_server_content gpio
                   mqtt
  )
  

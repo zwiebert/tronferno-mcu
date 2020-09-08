@@ -14,6 +14,7 @@
 #include "fernotron/pos/positions_dynamic.h"
 #include "fernotron/fer_msg_tx.h"
 #include "fernotron/fer_radio_trx.h"
+#include "fernotron/fer_main.h"
 #include "fernotron/auto/fau_tdata_store.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "net/ipnet.h"
@@ -87,7 +88,7 @@ void IRAM_ATTR loop_setBit_rxLoop_fromISR() {
 }
 #endif
 
-void loop_setBit_pinNotifyInputChange_fromISR() {
+void IRAM_ATTR loop_setBit_pinNotifyInputChange_fromISR() {
   lf_setBit_ISR(lf_gpio_input_intr, true);
 }
 
@@ -157,6 +158,10 @@ extern "C" void main_setup_ip_dependent() { //XXX called from library
   fpos_POSITIONS_SAVE_cb  = loop_putPerBit_loopAutoSave;
   ftx_READY_TO_TRANSMIT_cb = loop_setBit_txLoop;
   fau_TIMER_DATA_CHANGE_cb = loop_setBit_fauTimerDataHasChanged;
+#ifdef ACCESS_GPIO
+  gpio_INPUT_PIN_CHANGED_ISR_cb = loop_setBit_pinNotifyInputChange_fromISR;
+#endif
+  mcu_restart_cb = mcu_restart;
 
   #ifdef FER_RECEIVER
   frx_MSG_RECEIVED_ISR_cb = loop_setBit_rxLoop_fromISR;

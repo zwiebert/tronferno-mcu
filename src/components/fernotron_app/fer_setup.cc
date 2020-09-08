@@ -1,26 +1,33 @@
-#include <string.h>
 
-#include "fernotron/sep/set_endpos.h"
-#include "fernotron/pos/shutter_pct.h"
+
 #include "app_config/proj_app_cfg.h"
 
-
-#include "fernotron/auto/fau_tevent.h"
-#include "cli/cli.h"
-#include "config/config.h"
-#include "fernotron/cuas/cuid_auto_set.h"
 #include "debug/dbg.h"
-#include "app/rtc.h"
 #include "fernotron/alias/pairings.h"
-#include "userio_app/status_output.h"
-#include "fernotron/txtio/fer_print.h"
 #include "fernotron/astro.h"
-#include "fernotron/fer_msg_attachment.h"
-#include "fernotron/fer_msg_tx.h"
-#include "fernotron/fer_msg_rx.h"
-#include "fernotron/fer_radio_trx.h"
+#include "fernotron/auto/fau_tevent.h"
 #include "fernotron/callbacks.h"
-#include "app/fernotron.h"
+#include "fernotron/cuas/cuid_auto_set.h"
+#include "fernotron/fer_msg_attachment.h"
+#include "fernotron/fer_msg_rx.h"
+#include "fernotron/fer_msg_tx.h"
+#include "fernotron/fer_radio_trx.h"
+#include "fernotron/pos/shutter_pct.h"
+#include "fernotron/sep/set_endpos.h"
+#include "fernotron/txtio/fer_print.h"
+#include "fernotron/fer_main.h"
+
+#if 0
+
+#include "app/rtc.h"
+#include "cli/cli.h"
+#endif
+
+#include <string.h>
+
+
+struct fer_configT fer_config;
+
 
 static void rawMessageReceived_cb(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *rxmsg) {
   if (msg_type == MSG_TYPE_PLAIN || msg_type == MSG_TYPE_PLAIN_DOUBLE) {
@@ -61,7 +68,7 @@ static void plainMessageReceived_cb(const fsbT *fsb) {
 }
 
 static void beforeFirstSend_cb(const fsbT *fsb) {
-  if (FSB_GET_DEVID(fsb) == C.fer_centralUnitID) {
+  if (FSB_GET_DEVID(fsb) == fer_config.cu) {
     simPos_registerMovingShutter(FSB_GET_DEVID(fsb), FSB_GET_GRP(fsb), FSB_GET_MEMB(fsb) == 0 ? 0 : FSB_GET_MEMB(fsb) - 7, FSB_GET_CMD(fsb));
   }
 }
@@ -76,23 +83,15 @@ static void beforeAnySend_cb(fmsg_type msg_type, const fsbT *fsb, const fer_rawM
 
 
 
-int 
-main_setup() {
+void fer_setup(const fer_configT &ferConfig, const bool reinit) {
+   fer_config = ferConfig;
+   if (reinit)
+     return;
 
   ferCb_beforeFirstSend = beforeFirstSend_cb;
   ferCb_beforeAnySend = beforeAnySend_cb;
   ferCb_rawMessageReceived = rawMessageReceived_cb;
   ferCb_plainMessageReceived = plainMessageReceived_cb;
-
-  rtc_setup();
-  fer_init_sender(&default_sender, cfg_getCuId());
-  config_setup_astro();
-
-  so_output_message(SO_FW_START_MSG_PRINT, 0);
   ferPos_init();
-
-  
-  return 0;
-
 }
 

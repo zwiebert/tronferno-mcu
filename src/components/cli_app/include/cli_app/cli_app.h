@@ -27,3 +27,4 @@ void cli_out_close(void);
 void cli_out_x_reply_entry(const char *key, const char *val, int len);
 void cli_out_timer_reply_entry(const char *key, const char *val, int len);
 
+extern void (*mcu_restart_cb)();
