@@ -63,7 +63,7 @@ TESTING_DEFS :=
 CPPFLAGS :=  -MMD -DHOST_TESTING -DTEST_HOST -DTEST $(TESTING_DEFS) $(INCLUDE)
 CFLAGS := -g3 $(C_WARN) -flto -O2
 CXXFLAGS := -std=gnu++2a -g3 $(C_WARN) -fpermissive -flto -O2 -flto
-LDLIBS += build/obj.a -lc
+LDLIBS += $(BUILD_BASE)/obj.a -lc
 
 
 all:
@@ -150,7 +150,7 @@ print_comp_inc_paths:
 
 build_lib:
 	-make -j -k $(CXX_OBJ) $(C_OBJ)
-	make build/obj.a
+	make $(BUILD_BASE)/obj.a
 
 sdkconfig:
 	make -B $(HOST_SDKCONFIG)

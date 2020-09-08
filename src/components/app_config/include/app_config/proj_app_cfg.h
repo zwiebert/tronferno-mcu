@@ -1,7 +1,7 @@
 // User configuration
 #pragma once
 
-#define APP_VERSION "0.10.9"
+#define APP_VERSION "0.11.0.beta"
 
 
 #define CONFIG_BLOB
