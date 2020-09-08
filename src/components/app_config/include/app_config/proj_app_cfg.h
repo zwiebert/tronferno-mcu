@@ -24,7 +24,7 @@
 #define TD_FS_TO_KVS
 
 // XXX: to show "all" code ifdefs
-#ifndef UNIT_TESTING
+#ifndef HOST_TESTING
 #undef TEST_HOST
 #if !defined MCU_ESP32 && !defined MCU_ESP8266
 #define MCU_ESP32
