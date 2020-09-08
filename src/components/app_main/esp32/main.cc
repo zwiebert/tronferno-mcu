@@ -45,7 +45,7 @@ void lfa_mcuRestart(void) {
 
 int timer_data_transition_fs_to_kvs();
 
-extern "C" void appEsp32_main(void) {
+extern "C" void app_main(void) {
 
   mcu_init();
   tmr_loopPeriodic_start();

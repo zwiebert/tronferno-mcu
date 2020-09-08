@@ -5,8 +5,7 @@ idf_component_register(
     INCLUDE_DIRS "./include" ../.. 
     PRIV_INCLUDE_DIRS "./include/app" "../../esp32" 
     REQUIRES userio main firmware_update misc_time debug
-    PRIV_REQUIRES fernotron_app gpio net misc http_server_content  cli_app config
-                  key_value_store net net_mqtt_app storage config_kvs
+    PRIV_REQUIRES   misc key_value_store net  storage config_kvs
     EMBED_TXTFILES ./ca_cert.pem
 )
 
