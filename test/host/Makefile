@@ -19,9 +19,12 @@ grep_results := ! grep -H -e IGNORE -e FAIL -e Aborted
 
 SRC_BASE=../..
 BUILD_BASE=./build
-BUILD_OBJ_PATH=$(BUILD_BASE)/obj
-LOG_BASE=./logs
-TEST_BASE=./build
+BUILD_PATH=$(BUILD_BASE)/test_host
+BUILD_OBJ_PATH=$(BUILD_PATH)/obj
+BUILD_OBJ_LIB=$(BUILD_PATH)/obj.a
+LOG_BASE=$(realpath $(BUILD_PATH)/logs)
+TEST_BASE=$(realpath $(BUILD_PATH))
+TEST_ENV=$(TEST_BASE)/test_env
 COMP_DIR=src/components
 COMPSHARE_DIR=components-mcu/components
 COMP_DIRS = $(COMP_DIR) $(COMPSHARE_DIR)
@@ -63,7 +66,7 @@ TESTING_DEFS :=
 CPPFLAGS :=  -MMD -DHOST_TESTING -DTEST_HOST -DTEST $(TESTING_DEFS) $(INCLUDE)
 CFLAGS := -g3 $(C_WARN) -flto -O2
 CXXFLAGS := -std=gnu++2a -g3 $(C_WARN) -fpermissive -flto -O2 -flto
-LDLIBS += $(BUILD_BASE)/obj.a -lc
+LDLIBS += $(BUILD_OBJ_LIB) -lc
 
 
 all:
@@ -89,8 +92,8 @@ init: build_lib
 
 # create log file by running test
 $(LOG_BASE)/%.log:$(TEST_BASE)/%
-	$(Q) mkdir -p $(dir $@) test_env/$(basename $(@F))
-	$(Q) cd ./test_env/$(basename $(@F)) && echo "** Run test: $<\n" && ../../$< >../../$@ 2>&1 || ($(grep_results) ../../$@)
+	$(Q) mkdir -p $(dir $@) $(TEST_ENV)/$(basename $(@F))
+	$(Q) cd $(TEST_ENV)/$(basename $(@F)) && echo "** Run test: $<\n" && $< >$@ 2>&1 || ($(grep_results) $@)
 
 
 # grep log file
@@ -99,7 +102,7 @@ $(LOG_BASE)/%.log:$(TEST_BASE)/%
 	$(Q) $(grep_results) $@
 	
 # make lib from all non-test objs
-$(BUILD_BASE)/obj.a: $(VALID_OBJ)
+$(BUILD_OBJ_LIB): $(VALID_OBJ)
 	  $(vecho) "AR $@"
 		$(Q) $(AR) cr $@ $^
 
@@ -115,15 +118,15 @@ $(BUILD_OBJ_PATH)/%.cc.o : ./%.cc
 $(BUILD_OBJ_PATH)/%.c.o : $(SRC_BASE)/%.c
 	$(vecho) "CC $@"
 	$(Q) mkdir -p $(dir $@)
-	$(Q) $(COMPILE.c) -o $@ $<  || (echo "$@" >> $(BUILD_BASE)/failed_compiles.txt && false)
+	$(Q) $(COMPILE.c) -o $@ $<  || (echo "$@" >> $(BUILD_PATH)/failed_compiles.txt && false)
 $(BUILD_OBJ_PATH)/%.cc.o : $(SRC_BASE)/%.cc
 	$(vecho) "CXX $@"
 	$(Q) mkdir -p $(dir $@)
-	$(Q) $(COMPILE.cc) -o $@  $<  || (echo "$@" >> $(BUILD_BASE)/failed_compiles.txt && false)
+	$(Q) $(COMPILE.cc) -o $@  $<  || (echo "$@" >> $(BUILD_PATH)/failed_compiles.txt && false)
 $(BUILD_OBJ_PATH)/%.cpp.o : $(SRC_BASE)/%.cpp
 	$(vecho) "CXX $@"
 	$(Q) mkdir -p $(dir $@)
-	$(Q) $(COMPILE.cc) -o $@  $<  || (echo "$@" >> $(BUILD_BASE)/failed_compiles.txt && false)
+	$(Q) $(COMPILE.cc) -o $@  $<  || (echo "$@" >> $(BUILD_PATH)/failed_compiles.txt && false)
 
 print_test_names:
 	$(info $(TEST_NAMES))
@@ -150,7 +153,7 @@ print_comp_inc_paths:
 
 build_lib:
 	-make -j -k $(CXX_OBJ) $(C_OBJ)
-	make $(BUILD_BASE)/obj.a
+	make $(BUILD_OBJ_LIB)
 
 sdkconfig:
 	make -B $(HOST_SDKCONFIG)
@@ -163,7 +166,7 @@ $(HOST_SDKCONFIG): $(SDKCONFIG)
 ################################
 
 define build_test
-build/$(basename $(basename $(notdir $(1)))): $(1) $(BUILD_BASE)/obj.a
+$(BUILD_PATH)/$(basename $(basename $(notdir $(1)))): $(1) $(BUILD_OBJ_LIB)
 	$(vecho) "LINK.cc $(1)"
 	$(Q)  $(LINK.cc) $$^ $(LOADLIBES) $(LDLIBS) -o $$@
 endef
