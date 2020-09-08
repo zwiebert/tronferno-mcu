@@ -6,14 +6,20 @@
 #include "fernotron/fer_rawmsg_buffer.h"
 #include "fernotron/fer_msg_tx.h"
 #include "debug/dbg.h"
-#include "app/timer.h"
-#include "app/loop.h"
 #include "misc/time/run_time.h"
 
 #include "fer_msg_tx_queue.h"
 
 void (*ferCb_beforeFirstSend)(const fsbT *fsb);
 void (*ferCb_beforeAnySend)(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *fmsg);
+
+
+void (*ftx_READY_TO_TRANSMIT_cb)(uint32_t time_ts);
+
+static inline void ftx_ready_to_transmit_cb(uint32_t time_ts) {
+  if (ftx_READY_TO_TRANSMIT_cb)
+    ftx_READY_TO_TRANSMIT_cb(time_ts);
+}
 
 static void fer_send_checkQuedState() {
   struct sf *msg;
@@ -22,7 +28,7 @@ static void fer_send_checkQuedState() {
     return;
 
   if ((msg = ftx_nextMsg())) {
-    ftx_READY_TO_TRANSMIT_cb(msg->s10);
+    ftx_ready_to_transmit_cb(msg->s10);
   }
 }
 

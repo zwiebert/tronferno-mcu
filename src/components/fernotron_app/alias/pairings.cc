@@ -20,10 +20,20 @@
 #define DL
 #endif
 
+void (*pair_enable_disable_cb)(bool enable);
 
 static bool pras_active;
 static time_t end_time;
 static u8 pras_g, pras_m, pras_c;
+
+static inline void pair_ENABLE_cb() {
+  if (pair_enable_disable_cb)
+    pair_enable_disable_cb(true);
+}
+static inline void pair_DISABLE_cb() {
+  if (pair_enable_disable_cb)
+    pair_enable_disable_cb(false);
+}
 
 bool  pair_auto_set(u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
   if (end_time != 0)

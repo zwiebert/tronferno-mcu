@@ -7,7 +7,8 @@
 
 #include "app_config/proj_app_cfg.h"
 
-#include "app/fernotron.h"
+#include "cli_app/fernotron.h"
+#include "fernotron/fer_main.h"
 #include "config/config.h"
 #include "config_kvs.h"
 #include <config/config.h>
@@ -50,6 +51,7 @@ bool config_item_modified(enum configItem item) {
     case CB_CUID:
       kvsR(u32, item, C.fer_centralUnitID);
       FSB_PUT_DEVID(&default_sender, C.fer_centralUnitID);
+      fer_setup(fer_configT{C.fer_centralUnitID}, true);
       break;
     case CB_BAUD:
       kvsR(i8, item, C.mcu_serialBaud);

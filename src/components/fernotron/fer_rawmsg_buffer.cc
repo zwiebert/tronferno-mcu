@@ -10,6 +10,6 @@
 #include "fernotron/fer_rawmsg_buffer.h"
 #include "fernotron/int_timer.h"
 #include "stdbool.h"
-#include "app/common.h"
+
 
 struct fer_raw_msg rawmsg_buf_rx, rawmsg_buf_tx;

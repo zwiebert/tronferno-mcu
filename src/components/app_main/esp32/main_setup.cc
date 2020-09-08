@@ -8,6 +8,14 @@
 #include "app/timer.h"
 #include "config/config.h"
 #include "fernotron/auto/fau_tevent.h"
+#include "fernotron/alias/pairings.h"
+#include "fernotron/sep/set_endpos.h"
+#include "fernotron/pos/positions_static.h"
+#include "fernotron/pos/positions_dynamic.h"
+#include "fernotron/fer_msg_tx.h"
+#include "fernotron/fer_radio_trx.h"
+#include "fernotron/fer_main.h"
+#include "fernotron/auto/fau_tdata_store.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "net/ipnet.h"
 #include "storage/storage.h"
@@ -80,7 +88,7 @@ void IRAM_ATTR loop_setBit_rxLoop_fromISR() {
 }
 #endif
 
-void loop_setBit_pinNotifyInputChange_fromISR() {
+void IRAM_ATTR loop_setBit_pinNotifyInputChange_fromISR() {
   lf_setBit_ISR(lf_gpio_input_intr, true);
 }
 
@@ -88,46 +96,34 @@ void loop_setBit_fauTimerDataHasChanged(void) {
   lf_setBit(lf_loopFauTimerDataHasChanged);
 }
 
+
+
 #ifdef USE_SEP
-void loop_setPerBit_sepLoop(void) {
-  lfPer_setBit(lf_loopFerSep);
-}
-void loop_clrPerBit_sepLoop(void) {
-  lfPer_clrBit(lf_loopFerSep);
+void loop_putPerBit_sepLoop(bool enable) {
+  lfPer_putBit(lf_loopFerSep, enable);
 }
 #endif
 
 #ifdef USE_PAIRINGS
-void loop_setPerBit_pairLoop(void) {
-  lfPer_setBit(lf_checkPairingTimeout);
-}
-void loop_clrPerBit_pairLoop(void) {
-  lfPer_clrBit(lf_checkPairingTimeout);
+void loop_putPerBit_pairLoop(bool enable) {
+  lfPer_putBit(lf_checkPairingTimeout, enable);
 }
 #endif
 
 #ifdef USE_CUAS
-void loop_setPerBit_cuasLoop(void) {
-  lfPer_setBit(lf_checkCuasTimeout);
-}
-void loop_clrPerBit_cuasLoop(void) {
-  lfPer_clrBit(lf_checkCuasTimeout);
+void loop_putPerBit_cuasLoop(bool enable) {
+    lfPer_putBit(lf_checkCuasTimeout, enable);
 }
 #endif
 
-void loop_setPerBit_loopAutoSave(void) {
-  lfPer_setBit(lf_loopPosAutoSave);
-}
-void loop_clrPerBit_loopAutoSave(void) {
-  lfPer_clrBit(lf_loopPosAutoSave);
+void loop_putPerBit_loopAutoSave(bool enable) {
+  lfPer_putBit(lf_loopPosAutoSave, enable);
 }
 
-void loop_setPerBit_loopCheckMoving(void) {
-  lfPer_setBit(lf_loopPosCheckMoving);
+void loop_putPerBit_loopCheckMoving(bool enable) {
+  lfPer_putBit(lf_loopPosCheckMoving, enable);
 }
-void loop_clrPerBit_loopCheckMoving(void) {
-  lfPer_clrBit(lf_loopPosCheckMoving);
-}
+
 
 
 void ntpApp_sync_time_cb(struct timeval *tv) {
@@ -156,6 +152,32 @@ extern "C" void main_setup_ip_dependent() { //XXX called from library
 #endif
 #ifdef USE_HTTP
   config_setup_httpServer();
+#endif
+
+  fpos_POSITIONS_MOVE_cb = loop_putPerBit_loopCheckMoving;
+  fpos_POSITIONS_SAVE_cb  = loop_putPerBit_loopAutoSave;
+  ftx_READY_TO_TRANSMIT_cb = loop_setBit_txLoop;
+  fau_TIMER_DATA_CHANGE_cb = loop_setBit_fauTimerDataHasChanged;
+#ifdef ACCESS_GPIO
+  gpio_INPUT_PIN_CHANGED_ISR_cb = loop_setBit_pinNotifyInputChange_fromISR;
+#endif
+  mcu_restart_cb = mcu_restart;
+
+  #ifdef FER_RECEIVER
+  frx_MSG_RECEIVED_ISR_cb = loop_setBit_rxLoop_fromISR;
+  #endif
+
+  #ifdef FER_TRANSMITTER
+  ftx_MSG_TRANSMITTED_ISR_cb = loop_setBit_txLoop_fromISR;
+  #endif
+#ifdef USE_SEP
+  sep_enable_disable_cb = loop_putPerBit_sepLoop;
+#endif
+#ifdef USE_PAIRINGS
+  pair_enable_disable_cb = loop_putPerBit_pairLoop;
+#endif
+#ifdef USE_CUAS
+  cuas_enable_disable_cb = loop_putPerBit_cuasLoop;
 #endif
   }
 }

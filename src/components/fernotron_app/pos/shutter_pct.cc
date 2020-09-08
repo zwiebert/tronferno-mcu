@@ -38,6 +38,18 @@
 
 #define cfg_isMemberUnused(g,m) !C.fer_usedMemberMask.getBit(g, m)
 
+
+void (*fpos_POSITIONS_SAVE_cb)(bool has_unsaved);
+static inline void fpos_POSITIONS_UNSAVED_cb() {
+  if (fpos_POSITIONS_SAVE_cb)
+    fpos_POSITIONS_SAVE_cb(true);
+}
+static inline void fpos_POSTIONS_SAVED_cb() {
+  if (fpos_POSITIONS_SAVE_cb)
+    fpos_POSITIONS_SAVE_cb(false);
+}
+
+
 static shutterGroupPositionsT pos_map[8];
 static u8  pos_map_changed;
 

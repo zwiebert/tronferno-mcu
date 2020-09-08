@@ -15,10 +15,22 @@
 #include "app/common.h"
 #include "userio_app/status_output.h"
 #include "app/rtc.h"
-#include "app/fernotron.h"
+#include "cli_app/fernotron.h"
 
 #include "fernotron/fer_msg_rx.h"
 #include "fernotron/fer_msg_attachment.h"
+
+
+void (*cuas_enable_disable_cb)(bool enable);
+
+static inline void cuas_ENABLE_cb() {
+  if (cuas_enable_disable_cb)
+    cuas_enable_disable_cb(true);
+}
+static inline void cuas_DISABLE_cb() {
+  if (cuas_enable_disable_cb)
+    cuas_enable_disable_cb(false);
+}
 
 static cuas_state_T cuas_state;
 

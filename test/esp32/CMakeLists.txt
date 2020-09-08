@@ -2,29 +2,24 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.5)
 
-set(PROJECT_NAME "tronferno-mcu")
+list(APPEND EXTRA_COMPONENT_DIRS $ENV{COMP_DIRS})
 
-set(EXTRA_COMPONENT_DIRS ../../components-mcu/components ../components)
-
-set(COMPONENTS "app_main"
-	  bootloader esptool_py partition_table soc log spi_flash micro-ecc main efuse driver esp_rom  
-
-)
 
 #set environment variables to be used in components CMakeLists.txt files
 set(component_compile_opts "-std=gnu++2a" "-Wno-missing-field-initializers" "-Wno-narrowing")
+set(UNIT_TESTING 1)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DUNIT_TESTING -DMCU_ESP32")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNIT_TESTING -DMCU_ESP32")
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(unit-test-app)
 
 
 add_compile_definitions(MCU_ESP32)
+add_compile_definitions(UNIT_TESTING)
 if(DEFINED ENV{DISTRO})
 add_compile_definitions(DISTRIBUTION)
 endif()
 if(DEFINED ENV{FLAVOR_LAN})
 add_compile_definitions(FLAVOR_LAN)
 endif()
-
-
-project(tronferno-mcu esptool_py)
-

@@ -19,6 +19,17 @@ struct mv moving[mv_SIZE];
 u8 moving_mask;
 
 
+void (*fpos_POSITIONS_MOVE_cb)(bool has_unsaved);
+static inline void fpos_HAS_MOVING_cb() {
+  if (fpos_POSITIONS_MOVE_cb)
+    fpos_POSITIONS_MOVE_cb(true);
+}
+static inline void fpos_HAS_NO_MOVING_cb() {
+  if (fpos_POSITIONS_MOVE_cb)
+    fpos_POSITIONS_MOVE_cb(false);
+}
+
+
 
 struct mv* mv_getNext(struct mv *pred) {
   if (!moving_mask)

@@ -18,7 +18,7 @@
 #include "userio/status_json.h"
 #include "userio_app/status_output.h"
 #include "gpio/pin.h"
-#include "config/config.h"
+//#include "config/config.h"
 
 static char *io_mqtt_topic_root;
 
@@ -82,7 +82,7 @@ void io_mqttApp_publishPinChange(int gpio_num, bool level) {
   io_mqtt_publish(topic, data);
 }
 
-void io_mqtt_connected () {
+static void io_mqtt_connected () {
   char topic[64];
   snprintf(topic, sizeof topic, "%scli", TOPIC_ROOT);
   io_mqtt_subscribe(topic, 0);
@@ -98,7 +98,7 @@ void io_mqtt_connected () {
 }
 
 
-void io_mqtt_received(const char *topic, int topic_len, const char *data, int data_len) {
+static void io_mqtt_received(const char *topic, int topic_len, const char *data, int data_len) {
 
   if (!topic_startsWith(topic, topic_len, TOPIC_ROOT)) {
     return; // all topics start with this
@@ -167,22 +167,6 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
 }
 
 
-void io_mqttApp_enable(bool enable) {
-  if (enable) {
-
-  } else {
-
-  }
-}
-
-void io_mqttApp_disconnected() {
-}
-void io_mqttApp_subscribed(const char *topic, int topic_len) {
-}
-void io_mqttApp_unsubscribed(const char *topic, int topic_len) {
-}
-void io_mqttApp_published(int msg_id) {
-}
 
 void io_mqttApp_setup(const char *topic_root) {
   if (topic_root && *topic_root && (!io_mqtt_topic_root || 0 != strcmp(io_mqtt_topic_root, topic_root))) {
@@ -194,6 +178,8 @@ void io_mqttApp_setup(const char *topic_root) {
     }
   }
   pin_notify_input_change_cb = io_mqttApp_publishPinChange; // TODO: check if MQTT enabled
+  io_mqtt_received_cb = io_mqtt_received;
+  io_mqtt_connected_cb = io_mqtt_connected;
 }
 
 #endif // USE_MQTT

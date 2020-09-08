@@ -8,9 +8,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "gpio/pin.h"
 
-#include "app/loop.h"
 #include "txtio/inout.h"
-#include "app/common.h"
 #include "config/config.h"
 
 #include "freertos/FreeRTOS.h"
@@ -237,6 +235,7 @@ const char *mcu_access_pin(int ngpio_number, mcu_pin_state *result, mcu_pin_stat
 }
 
 void (*pin_notify_input_change_cb)(int gpio_num, bool level);
+void (*gpio_INPUT_PIN_CHANGED_ISR_cb)();
 
 void pin_notify_input_change() {
   int i;
@@ -255,7 +254,8 @@ void pin_notify_input_change() {
 void pin_input_isr_handler(void *args) {
   gpio_num_t gpio_num = static_cast<gpio_num_t>(reinterpret_cast<size_t>(args));
   SET_BIT(pin_int_mask, gpio_num);
-  loop_setBit_pinNotifyInputChange_fromISR();
+  if (gpio_INPUT_PIN_CHANGED_ISR_cb)
+    gpio_INPUT_PIN_CHANGED_ISR_cb();
 
   //TODO: implement me
 }

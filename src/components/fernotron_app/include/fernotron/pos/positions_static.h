@@ -9,9 +9,12 @@
 
 #include "fernotron/types.h"
 #include "fernotron/fer_msg_plain.h"
-#include "app_config/callbacks.h"
+#include "app_config/proj_app_cfg.h"
 #include <stdbool.h>
 
+
+
+extern void (*fpos_POSITIONS_SAVE_cb)(bool has_unsaved);
 
 typedef uint8_t shutterGroupPositionsT[8];
 
@@ -30,16 +33,10 @@ void ferPos_loop(void);
 void ferPos_init(void);
 
 
-// load/store
 
 
 
 
 
-#ifndef fpos_POSITIONS_UNSAVED_cb
-#define  fpos_POSITIONS_UNSAVED_cb()
-#endif
-#ifndef fpos_POSTIONS_SAVED_cb
-#define  fpos_POSTIONS_SAVED_cb()
-#endif
+
 

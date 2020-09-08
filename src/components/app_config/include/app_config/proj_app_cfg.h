@@ -11,8 +11,6 @@
 
 //#define USE_PCT_ARRAY
 
-#include "callbacks.h"
-
 #include "misc/int_types.h"
 
 #ifndef CONFIG_LOG_DEFAULT_LEVEL
@@ -25,6 +23,13 @@
 #define WIFI_AP_PASSWD "tronferno"
 #define TD_FS_TO_KVS
 
+// XXX: to show "all" code ifdefs
+#ifndef HOST_TESTING
+#undef TEST_HOST
+#if !defined MCU_ESP32 && !defined MCU_ESP8266
+#define MCU_ESP32
+#endif
+#endif
 
 #if defined TEST_HOST
 #include "app_config/host/proj_app_cfg.h"

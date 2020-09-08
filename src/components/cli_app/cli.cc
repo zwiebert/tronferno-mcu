@@ -172,6 +172,7 @@ static bool cliApp_checkPassword(clpar p[], int len, so_target_bits tgt) {
 
 void cliApp_setup() {
   cli_hook_checkPassword = cliApp_checkPassword;
+  fer_init_sender(&default_sender, cfg_getCuId());
 }
 
 
