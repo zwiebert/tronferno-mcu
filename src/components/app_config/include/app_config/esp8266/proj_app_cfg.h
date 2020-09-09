@@ -28,7 +28,7 @@ extern const char *const build_time;
 //#undef CONFIG_APP_USE_EG
 //#undef CONFIG_APP_USE_SEP
 #undef CONFIG_APP_USE_WS
-#undef CONFIG_APP_USE_CLI_MUTEX
+#undef CONFIG_APP_USE_MUTEX
 #undef CONFIG_APP_USE_CLI_TASK
 #undef CONFIG_APP_USE_TXTIO_MUTEX
 //#undef CONFIG_APP_USE_NETWORK

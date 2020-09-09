@@ -104,7 +104,7 @@ static void io_mqtt_received(const char *topic, int topic_len, const char *data,
     return; // all topics start with this
   }
 
-  if (auto lock = ThreadLock(cli_mutex)) {
+  { LockGuard lock(cli_mutex); 
     char line[40 + data_len];
     if (topic_endsWith(topic, topic_len, TOPIC_GPO_END)) {
       const char *addr = strstr(topic, TOPIC_GPO_MID);

@@ -12,6 +12,7 @@
 #include <esp_attr.h>
 #include <esp32/rom/ets_sys.h>
 #include <freertos/projdefs.h>
+#include <freertos/task.h>
 #include <cstdio>
 
 
@@ -32,17 +33,6 @@ void lfa_createWifiAp() {
   }
 }
 
-void lfa_gotIpAddr(void) {
-  ipnet_connected();
-}
-void lfa_lostIpAddr(void) {
-  ipnet_disconnected();
-}
-
-void lfa_mcuRestart(void) {
-  mcu_restart();
-}
-
 int timer_data_transition_fs_to_kvs();
 
 extern "C" void app_main(void) {
@@ -60,7 +50,7 @@ extern "C" void app_main(void) {
   }
 }
 
-static void  mcu_delayedRestart(unsigned delay_ms) {
+void  mcu_delayedRestart(unsigned delay_ms) {
   printf("mcu_restart()\n");
   vTaskDelay(pdMS_TO_TICKS(delay_ms));
   esp_restart();
@@ -68,8 +58,8 @@ static void  mcu_delayedRestart(unsigned delay_ms) {
   }
 }
 
-void  mcu_restart(void) {
-  mcu_delayedRestart(1500);
+void mcu_restart() {
+  lf_setBit(lf_mcuRestart);
 }
 
 #ifdef USE_EG

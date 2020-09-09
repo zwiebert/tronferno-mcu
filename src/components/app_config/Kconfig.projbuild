@@ -80,18 +80,14 @@ config APP_USE_WS
   bool "Activate WS"
   default y
 
-config APP_USE_CLI_MUTEX
-  bool "Activate CLI_MUTEX"
+config APP_USE_MUTEX
+  bool "Activate MUTEX"
   default y
 
 config APP_USE_CLI_TASK
   bool "Activate CLI_TASK"
   default y
-
-config APP_USE_TXTIO_MUTEX
-  bool "Activate TXTIO_MUTEX"
-  default y
-    
+  
 config APP_USE_NETWORK
   bool "Activate NETWORK"
   default y

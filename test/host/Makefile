@@ -18,12 +18,15 @@ make := make --no-print-dir -s
 grep_results := ! grep -H -e IGNORE -e FAIL -e Aborted
 
 SRC_BASE=../..
-BUILD_BASE=./build
+BUILD_BASE =? $(realpath .)/build
 BUILD_PATH=$(BUILD_BASE)/test_host
 BUILD_OBJ_PATH=$(BUILD_PATH)/obj
 BUILD_OBJ_LIB=$(BUILD_PATH)/obj.a
-LOG_BASE=$(realpath $(BUILD_PATH)/logs)
-TEST_BASE=$(realpath $(BUILD_PATH))
+#LOG_BASE = $(realpath $(BUILD_PATH)/logs)
+#TEST_BASE =$(realpath $(BUILD_PATH))
+LOG_BASE= $(BUILD_PATH)/logs
+TEST_BASE= $(BUILD_PATH)
+
 TEST_ENV=$(TEST_BASE)/test_env
 COMP_DIR=src/components
 COMPSHARE_DIR=components-mcu/components
@@ -132,6 +135,8 @@ print_test_names:
 	$(info $(TEST_NAMES))
 print_test_progs:
 	$(info $(TEST_PROGS))
+print_test_logs:
+	$(info $(TEST_LOGS))
 print_test_obj:
 	$(info $(TEST_OBJ))
 print_cxx_src:

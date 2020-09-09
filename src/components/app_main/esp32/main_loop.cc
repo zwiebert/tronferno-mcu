@@ -31,10 +31,11 @@ typedef void (*lfa_funT)(void);
 
 static const lfa_funT lfa_table[lf_Len] = {
 #ifdef USE_NETWORK
-    lfa_gotIpAddr, lfa_lostIpAddr,
+    ipnet_connected,
+    ipnet_disconnected,
 #endif
 #ifdef USE_NTP
-    lfa_ntpSync,
+    fam_updateTimerEvent,
 #endif
 #if defined USE_AP_FALLBACK || defined USE_WLAN_AP
     lfa_createWifiAp,
@@ -61,7 +62,7 @@ static const lfa_funT lfa_table[lf_Len] = {
 #endif
     statPos_loopAutoSave, ferPos_loopCheckMoving,
     pin_notify_input_change,
-    lfa_mcuRestart,
+    [] { mcu_delayedRestart(1500); }
 };
 
 #ifndef USE_EG
@@ -100,31 +101,25 @@ void loop_eventBits_check() {
 #endif
 
 #ifdef USE_WLAN_AP
-static void tmr_checkNetwork_cb(TimerHandle_t xTimer) {
-  if (!ipnet_isConnected()) {
-    lf_setBit(lf_createWifiAp);
-  }
-}
-
 void tmr_checkNetwork_start() {
-  TimerHandle_t tmr;
-  int interval = pdMS_TO_TICKS(1000 * CHECK_NETWORK_INTERVAL);
-  tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, (void*) lf_createWifiAp, tmr_checkNetwork_cb);
-  if (xTimerStart(tmr, 10 ) != pdPASS) {
+  const int interval = pdMS_TO_TICKS(1000 * CHECK_NETWORK_INTERVAL);
+  TimerHandle_t tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, nullptr, [](TimerHandle_t xTimer) {
+    if (!ipnet_isConnected()) {
+      lf_setBit(lf_createWifiAp);
+    }
+  });
+  if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("CheckNetworkTimer start error");
   }
 }
 #endif
 
-static void tmr_loopPeriodic_cb(TimerHandle_t xTimer) {
-  lf_setBits(loop_flags_periodic);
-}
-
 void tmr_loopPeriodic_start() {
-  TimerHandle_t tmr;
-  int interval = pdMS_TO_TICKS(LOOP_PERIODIC_INTERVAL_MS);
-  tmr = xTimerCreate("PerLoopTimer", interval, pdTRUE, (void*) 0, tmr_loopPeriodic_cb);
-  if (xTimerStart(tmr, 10 ) != pdPASS) {
+  const int interval = pdMS_TO_TICKS(LOOP_PERIODIC_INTERVAL_MS);
+  TimerHandle_t tmr = xTimerCreate("PerLoopTimer", interval, pdTRUE, nullptr, [](TimerHandle_t xTimer) {
+    lf_setBits(loop_flags_periodic);
+  });
+  if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("PerLoopTimer start error");
   }
 }

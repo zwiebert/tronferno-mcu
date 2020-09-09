@@ -58,7 +58,7 @@ diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/main/CMakeLists.txt ./main
 +++ ./main/CMakeLists.txt	2020-09-05 00:50:01.099770456 +0200
 @@ -1,2 +1,3 @@
  idf_component_register(SRCS "app_main.c"
-+                    PRIV_REQUIRES app unity test_utils
++                    PRIV_REQUIRES app_main unity test_utils
                      INCLUDE_DIRS "")
 \ Kein Zeilenumbruch am Dateiende.
 diff -ruN /home/bertw/esp/esp-idf/tools/unit-test-app/partition_table_unit_test_app.csv ./partition_table_unit_test_app.csv

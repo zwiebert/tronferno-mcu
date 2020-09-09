@@ -33,34 +33,14 @@
 #include "../app_private.h"
 #include "fernotron/types.h"
 
-void loop_setBit_mcuRestart() {
-  lf_setBit(lf_mcuRestart);
-}
-#ifdef USE_NETWORK
-void lfa_gotIpAddr_cb() {
-  lf_setBit(lf_gotIpAddr);
-}
-void lfa_lostIpAddr_cb() {
-  lf_setBit(lf_lostIpAddr);
-}
-#endif
-
-#ifdef USE_NTP
-void lfa_ntpSync(void) {
-  fam_updateTimerEvent();
-}
-#endif
-
 #ifdef FER_TRANSMITTER
-static void tmr_setBit_txLoop_cb(TimerHandle_t xTimer) {
-  lf_setBit(lf_loopFerTx);
-}
 
 void tmr_setBit_txLoop_start(u32 interval_ms) {
-  TimerHandle_t tmr;
-  int interval = pdMS_TO_TICKS(interval_ms);
-  tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, (void*) 0, tmr_setBit_txLoop_cb);
-  if (xTimerStart(tmr, 10 ) != pdPASS) {
+  const int interval = pdMS_TO_TICKS(interval_ms);
+  TimerHandle_t tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, nullptr, [](TimerHandle_t xTimer) {
+    lf_setBit(lf_loopFerTx);
+  });
+  if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("CheckNetworkTimer start error");
   }
 }
@@ -74,65 +54,14 @@ void loop_setBit_txLoop(u32 time_ts) {
   u32 delay_ms = (time_ts - now_ts) * 100;
   tmr_setBit_txLoop_start(delay_ms);
 }
-void IRAM_ATTR loop_setBit_txLoop_fromISR() {
-  lf_setBit_ISR(lf_loopFerTx, true);
-}
 #endif
 
-#ifdef FER_RECEIVER
-void loop_setBit_rxLoop() {
-  lf_setBit(lf_loopFerRx);
-}
-void IRAM_ATTR loop_setBit_rxLoop_fromISR() {
-  lf_setBit_ISR(lf_loopFerRx, true);
-}
-#endif
-
-void IRAM_ATTR loop_setBit_pinNotifyInputChange_fromISR() {
-  lf_setBit_ISR(lf_gpio_input_intr, true);
-}
-
-void loop_setBit_fauTimerDataHasChanged(void) {
-  lf_setBit(lf_loopFauTimerDataHasChanged);
-}
-
-
-
-#ifdef USE_SEP
-void loop_putPerBit_sepLoop(bool enable) {
-  lfPer_putBit(lf_loopFerSep, enable);
-}
-#endif
-
-#ifdef USE_PAIRINGS
-void loop_putPerBit_pairLoop(bool enable) {
-  lfPer_putBit(lf_checkPairingTimeout, enable);
-}
-#endif
-
-#ifdef USE_CUAS
-void loop_putPerBit_cuasLoop(bool enable) {
-    lfPer_putBit(lf_checkCuasTimeout, enable);
-}
-#endif
-
-void loop_putPerBit_loopAutoSave(bool enable) {
-  lfPer_putBit(lf_loopPosAutoSave, enable);
-}
-
-void loop_putPerBit_loopCheckMoving(bool enable) {
-  lfPer_putBit(lf_loopPosCheckMoving, enable);
-}
-
-
-
-void ntpApp_sync_time_cb(struct timeval *tv) {
-  ets_printf("ntp synced: %ld\n", time(0));
-  lf_setBit(lf_ntpSyncTime);
-}
 
 void ntpApp_setup(void) {
-  sntp_set_time_sync_notification_cb(ntpApp_sync_time_cb);
+  sntp_set_time_sync_notification_cb([](struct timeval *tv) {
+    ets_printf("ntp synced: %ld\n", time(0));
+    lf_setBit(lf_ntpSyncTime);
+  });
   config_setup_ntpClient();
 }
 
@@ -154,30 +83,48 @@ extern "C" void main_setup_ip_dependent() { //XXX called from library
   config_setup_httpServer();
 #endif
 
-  fpos_POSITIONS_MOVE_cb = loop_putPerBit_loopCheckMoving;
-  fpos_POSITIONS_SAVE_cb  = loop_putPerBit_loopAutoSave;
+  fpos_POSITIONS_MOVE_cb = [](bool enable) {
+    lfPer_putBit(lf_loopPosCheckMoving, enable);
+  };
+  fpos_POSITIONS_SAVE_cb  = [](bool enable) {
+    lfPer_putBit(lf_loopPosAutoSave, enable);
+  };
   ftx_READY_TO_TRANSMIT_cb = loop_setBit_txLoop;
-  fau_TIMER_DATA_CHANGE_cb = loop_setBit_fauTimerDataHasChanged;
+  fau_TIMER_DATA_CHANGE_cb = [] {
+      lf_setBit(lf_loopFauTimerDataHasChanged);
+    };
 #ifdef ACCESS_GPIO
-  gpio_INPUT_PIN_CHANGED_ISR_cb = loop_setBit_pinNotifyInputChange_fromISR;
+  gpio_INPUT_PIN_CHANGED_ISR_cb = [] () IRAM_ATTR {
+      lf_setBit_ISR(lf_gpio_input_intr, true);
+    };
 #endif
   mcu_restart_cb = mcu_restart;
 
   #ifdef FER_RECEIVER
-  frx_MSG_RECEIVED_ISR_cb = loop_setBit_rxLoop_fromISR;
+  frx_MSG_RECEIVED_ISR_cb = [] () IRAM_ATTR {
+      lf_setBit_ISR(lf_loopFerRx, true);
+    };
   #endif
 
   #ifdef FER_TRANSMITTER
-  ftx_MSG_TRANSMITTED_ISR_cb = loop_setBit_txLoop_fromISR;
+  ftx_MSG_TRANSMITTED_ISR_cb = [] () IRAM_ATTR {
+    lf_setBit_ISR(lf_loopFerTx, true);
+  };
   #endif
 #ifdef USE_SEP
-  sep_enable_disable_cb = loop_putPerBit_sepLoop;
+  sep_enable_disable_cb = [] (bool enable) {
+    lfPer_putBit(lf_loopFerSep, enable);
+  };
 #endif
 #ifdef USE_PAIRINGS
-  pair_enable_disable_cb = loop_putPerBit_pairLoop;
+  pair_enable_disable_cb = [] (bool enable) {
+    lfPer_putBit(lf_checkPairingTimeout, enable);
+  };
 #endif
 #ifdef USE_CUAS
-  cuas_enable_disable_cb = loop_putPerBit_cuasLoop;
+  cuas_enable_disable_cb = [] (bool enable) {
+    lfPer_putBit(lf_checkCuasTimeout, enable);
+};
 #endif
   }
 }
@@ -219,8 +166,13 @@ void mcu_init() {
     esp_netif_init();
 #endif
 
-  ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
-  ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
+  ipnet_gotIpAddr_cb = [] {
+    lf_setBit(lf_gotIpAddr);
+  };
+  ipnet_lostIpAddr_cb = [] {
+    lf_setBit(lf_lostIpAddr);
+  };
+
   switch (network) {
 #ifdef USE_WLAN
   case nwWlanSta:

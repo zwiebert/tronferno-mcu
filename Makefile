@@ -36,7 +36,8 @@ $(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
 ####### ESP32 build command ############
-PORT ?= /dev/ttyUSB0
+PORT ?= /dev/ttyUSB1
+port ?= /dev/ttyUSB1
 esp32_build_opts := -G Ninja -C src/esp32 -p $(PORT)
 ifdef V
 esp32_build_opts += -v
@@ -89,7 +90,7 @@ esp32_test_tgts_auto := build clean flash run all all-ocd flash-ocd flash-app-oc
 define GEN_RULE
 .PHONY: esp32-$(1)
 esp32-test-$(1):
-	make -C test/esp32 $(1)
+	make -C test/esp32 $(1)  port=$(PORT)
 endef
 $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 

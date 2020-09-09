@@ -71,7 +71,7 @@ u8 ferPos_mGetSunPct(u8 g, u8 m) {
 
 
 static void ferPos_printMovingPct(u8 g, u8 m, u8 pct) {
-  if (auto lock = ThreadLock(cli_mutex)) {
+  { LockGuard lock(cli_mutex); 
     so_arg_gmp_t gmp = { g, m, pct };
     if (sj_open_root_object("tfmcu")) {
       so_broadcast_message(SO_POS_PRINT_GMP, &gmp);

@@ -81,10 +81,6 @@ extern i32 boot_counter;
 extern bool wifi_ap_active;
 
 void lfa_createWifiAp(void);
-void lfa_gotIpAddr(void);
-void lfa_lostIpAddr(void);
-void lfa_ntpSync(void);
-void lfa_mcuRestart(void);
 
 void loop(void);
 void tmr_checkNetwork_start();
@@ -92,6 +88,8 @@ void tmr_loopPeriodic_start();
 void tmr_pingLoop_start();
 void loop_eventBits_setup();
 u32 loop_eventBits_wait();
+
+void  mcu_delayedRestart(unsigned delay_ms);
 
 extern "C" void main_setup_ip_dependent();
 void mcu_init();

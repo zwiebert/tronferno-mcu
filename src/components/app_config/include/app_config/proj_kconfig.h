@@ -304,19 +304,19 @@ constexpr bool use_WS = false;
 #define use_WS 0
 #endif
 #endif
-#ifdef CONFIG_APP_USE_CLI_MUTEX
-#define  USE_CLI_MUTEX
+#ifdef CONFIG_APP_USE_MUTEX
+#define  USE_MUTEX
 #ifdef __cplusplus
-constexpr bool use_CLI_MUTEX = true;
+constexpr bool use_MUTEX = true;
 #else
-#define use_CLI_MUTEX 1
+#define use_MUTEX 1
 #endif
 #else
-#define NO_USE_CLI_MUTEX
+#define NO_USE_MUTEX
 #ifdef __cplusplus
-constexpr bool use_CLI_MUTEX = false;
+constexpr bool use_MUTEX = false;
 #else
-#define use_CLI_MUTEX 0
+#define use_MUTEX 0
 #endif
 #endif
 #ifdef CONFIG_APP_USE_CLI_TASK
@@ -332,21 +332,6 @@ constexpr bool use_CLI_TASK = true;
 constexpr bool use_CLI_TASK = false;
 #else
 #define use_CLI_TASK 0
-#endif
-#endif
-#ifdef CONFIG_APP_USE_TXTIO_MUTEX
-#define  USE_TXTIO_MUTEX
-#ifdef __cplusplus
-constexpr bool use_TXTIO_MUTEX = true;
-#else
-#define use_TXTIO_MUTEX 1
-#endif
-#else
-#define NO_USE_TXTIO_MUTEX
-#ifdef __cplusplus
-constexpr bool use_TXTIO_MUTEX = false;
-#else
-#define use_TXTIO_MUTEX 0
 #endif
 #endif
 #ifdef CONFIG_APP_USE_NETWORK
