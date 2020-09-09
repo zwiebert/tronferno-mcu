@@ -12,10 +12,10 @@
 #include "fer_msg_attachment.h"
 #include "timer_data.h"
 
-extern void (*ferCb_beforeFirstSend)(const fsbT *fsb);
-extern void (*ferCb_beforeAnySend)(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *fmsg);
-extern void (*ferCb_rawMessageReceived)(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *fmsg);
-extern void (*ferCb_plainMessageReceived)(const fsbT *fsb);
-extern void (*ferCb_rtcMessageReceived)(fer_rawMsg *fmsg);
-extern void (*ferCb_timerMessageReceived)(fer_rawMsg *fmsg);
+extern void (*fer_beforeFirstSend_cb)(const fsbT *fsb);
+extern void (*fer_beforeAnySend_cb)(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *fmsg);
+extern void (*fer_rawMessageReceived_cb)(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *fmsg);
+extern void (*fer_plainMessageReceived_cb)(const fsbT *fsb);
+extern void (*fer_rtcMessageReceived_cb)(fer_rawMsg *fmsg);
+extern void (*fer_timerMessageReceived_cb)(fer_rawMsg *fmsg);
 

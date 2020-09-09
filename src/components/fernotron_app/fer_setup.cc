@@ -88,10 +88,10 @@ void fer_setup(const fer_configT &ferConfig, const bool reinit) {
    if (reinit)
      return;
 
-  ferCb_beforeFirstSend = beforeFirstSend_cb;
-  ferCb_beforeAnySend = beforeAnySend_cb;
-  ferCb_rawMessageReceived = rawMessageReceived_cb;
-  ferCb_plainMessageReceived = plainMessageReceived_cb;
+  fer_beforeFirstSend_cb = beforeFirstSend_cb;
+  fer_beforeAnySend_cb = beforeAnySend_cb;
+  fer_rawMessageReceived_cb = rawMessageReceived_cb;
+  fer_plainMessageReceived_cb = plainMessageReceived_cb;
   ferPos_init();
 }
 

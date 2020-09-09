@@ -10,8 +10,8 @@
 
 #include "fer_msg_tx_queue.h"
 
-void (*ferCb_beforeFirstSend)(const fsbT *fsb);
-void (*ferCb_beforeAnySend)(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *fmsg);
+void (*fer_beforeFirstSend_cb)(const fsbT *fsb);
+void (*fer_beforeAnySend_cb)(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *fmsg);
 
 
 void (*ftx_READY_TO_TRANSMIT_cb)(uint32_t time_ts);
@@ -70,16 +70,16 @@ static bool fer_send_queued_msg(struct sf *msg) {
     sf_toggle = fer_tglNibble_ctUp(sf_toggle, 1);
     FSB_PUT_TGL(&msg->fsb, sf_toggle);
     if (msg->mt == MSG_TYPE_PLAIN) {
-      if (ferCb_beforeFirstSend)
-        ferCb_beforeFirstSend(&msg->fsb);
+      if (fer_beforeFirstSend_cb)
+        fer_beforeFirstSend_cb(&msg->fsb);
     }
   }
 
   memcpy(txmsg->cmd.bd, msg->fsb.data, 5);
   fmsg_raw_checksumsCreate(txmsg, msg->mt);
 
-  if (ferCb_beforeAnySend)
-    ferCb_beforeAnySend(msg->mt, &msg->fsb, txmsg);
+  if (fer_beforeAnySend_cb)
+    fer_beforeAnySend_cb(msg->mt, &msg->fsb, txmsg);
 
   ftx_transmitFerMsg(0, msg->mt);
 

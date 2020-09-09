@@ -13,33 +13,33 @@
 #include <string.h>
 
 
-void (*ferCb_rawMessageReceived)(fmsg_type msg_type, fsbT *fsb, fer_rawMsg *fmsg);
+void (*fer_rawMessageReceived_cb)(fmsg_type msg_type, fsbT *fsb, fer_rawMsg *fmsg);
 
-void (*ferCb_plainMessageReceived)(const fsbT *fsb);
-void (*ferCb_rtcMessageReceived)(fer_rawMsg *fmsg);
-void (*ferCb_timerMessageReceived)(fer_rawMsg *fmsg);
+void (*fer_plainMessageReceived_cb)(const fsbT *fsb);
+void (*fer_rtcMessageReceived_cb)(fer_rawMsg *fmsg);
+void (*fer_timerMessageReceived_cb)(fer_rawMsg *fmsg);
 
 fsbT last_received_sender;
 
 static void notify_rawMessageReceived(fmsg_type msg_type) {
-  if (ferCb_rawMessageReceived)
-    ferCb_rawMessageReceived(msg_type, &last_received_sender, rxmsg);
+  if (fer_rawMessageReceived_cb)
+    fer_rawMessageReceived_cb(msg_type, &last_received_sender, rxmsg);
 }
 
 static void notify_plainMessageReceived() {
-  if (ferCb_plainMessageReceived)
-    ferCb_plainMessageReceived(&last_received_sender);
+  if (fer_plainMessageReceived_cb)
+    fer_plainMessageReceived_cb(&last_received_sender);
 
 }
 
 static void notify_rtcMessageReceived() {
-  if (ferCb_rtcMessageReceived)
-    ferCb_rtcMessageReceived(rxmsg);
+  if (fer_rtcMessageReceived_cb)
+    fer_rtcMessageReceived_cb(rxmsg);
 }
 
 static void notify_timerMessageReceived() {
-  if (ferCb_timerMessageReceived)
-    ferCb_timerMessageReceived(rxmsg);
+  if (fer_timerMessageReceived_cb)
+    fer_timerMessageReceived_cb(rxmsg);
 }
 
 static void notify_messageReceived(fmsg_type msg_type) {
