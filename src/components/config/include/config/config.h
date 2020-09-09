@@ -87,6 +87,45 @@ CB_TIZO,
   CBA_size
 };
 
+enum { CBT_none, CBT_i8, CBT_u8, CBT_i16, CBT_u16, CBT_i32,
+  CBT_u32, CBT_i64, CBT_u64, CBT_str, CBT_f, CBT_blob, CBT_end};
+
+constexpr uint8_t cb_types[CBA_size] = {
+    CBT_i8 /* CB_VERBOSE */,
+   #ifdef USE_WLAN
+    CBT_str/* CB_WIFI_SSID */, CBT_str/* CB_WIFI_PASSWD */,
+   #endif
+   #ifdef USE_MQTT
+    CBT_str/* CB_MQTT_URL */, CBT_str/* CB_MQTT_USER */, CBT_str/* CB_MQTT_PASSWD */, CBT_str/* CB_MQTT_CLIENT_ID */, CBT_i8/* CB_MQTT_ENABLE */,
+   #endif
+   #ifdef USE_HTTP
+    CBT_str/* CB_HTTP_USER */, CBT_str/* CB_HTTP_PASSWD */, CBT_i8/* CB_HTTP_ENABLE */,
+   #endif
+   #ifdef USE_NTP
+    CBT_str/* CB_NTP_SERVER */,
+   #endif
+   #ifdef USE_LAN
+    CBT_i8/* CB_LAN_PHY */, CBT_i8/* CB_LAN_PWR_GPIO */,
+   #endif
+   //-----------
+    CBT_i8/* CB_RECV */, CBT_i8/* CB_TRANSM */, CBT_u32/* CB_CUID */, CBT_u32/* CB_USED_MEMBERS */, CBT_u32/* CB_BAUD */, CBT_str/* CB_GPIO */,
+     CBT_str/* CB_CFG_PASSWD */, CBT_f/* CB_LONGITUDE */, CBT_f/* CB_LATITUDE */,
+     #ifndef POSIX_TIME
+     /* CB_TIZO */,
+     #else
+     CBT_str/* CB_TZ */,
+     #endif
+     #ifdef MDR_TIME
+       /* CB_DST */,
+     #endif
+       CBT_i8/* CB_ASTRO_CORRECTION */,
+     #ifdef USE_NETWORK
+       CBT_i8/* CB_NETWORK_CONNECTION */,
+     #endif
+       CBT_i8/* CB_RFOUT_GPIO */, CBT_i8/* CB_RFIN_GPIO */, CBT_i8/* CB_SETBUTTON_GPIO */,
+};
+
+
 bool config_gpio_setPinMode(unsigned gpio_number, mcu_pin_mode ps, mcu_pin_level pl);
 
 bool config_item_modified(enum configItem item);
