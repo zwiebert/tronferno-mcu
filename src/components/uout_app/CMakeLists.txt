@@ -1,4 +1,4 @@
-set(srcs status_output.cc status_output_switch.cc so_out.cc so_print.cc) 
+set(srcs status_output.cc status_output_switch.cc so_out.cc so_print.cc callbacks.cc) 
 
 idf_component_register(
     SRCS ${srcs} 
