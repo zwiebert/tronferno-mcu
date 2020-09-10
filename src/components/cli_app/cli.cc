@@ -11,10 +11,10 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "cli_app/cli_app.h"
-#include "userio/status_json.h"
+#include "uout/status_json.h"
 #include "fernotron/fsb.h"
 #include "cli/cli.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "config/config.h"
 
 #define CI(cb) static_cast<configItem>(cb)

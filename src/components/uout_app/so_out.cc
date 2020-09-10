@@ -13,7 +13,7 @@
 #include "cli_app/opt_map.hh"
 #endif
 #include "txtio/inout.h"
-#include "userio/status_json.h"
+#include "uout/status_json.h"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include "misc/ftoa.h"

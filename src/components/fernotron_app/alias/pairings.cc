@@ -6,7 +6,7 @@
 #include "misc/bcd.h"
 #include "fernotron/alias/pairings.h"
 #include "app/rtc.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "debug/dbg.h"
 #include "misc/int_types.h"
 

@@ -11,8 +11,8 @@ set(srcs cli.cc  cli_out.cc opt_map.cc
 idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
-    REQUIRES cli userio_app fernotron
-    PRIV_REQUIRES net net_mqtt_app app_misc misc userio userio_app txtio fernotron_app  debug http_server_content config key_value_store firmware_update
+    REQUIRES cli uout_app fernotron
+    PRIV_REQUIRES net net_mqtt_app app_misc misc uout uout_app txtio fernotron_app  debug http_server_content config key_value_store firmware_update
 )
 
 component_compile_options(${comp_compile_opts})

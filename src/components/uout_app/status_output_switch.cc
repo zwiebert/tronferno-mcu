@@ -6,8 +6,8 @@
 #include "net/ipnet.h"
 #include "net/mqtt/mqtt.h"
 #include "txtio/inout.h"
-#include "userio/status_json.h"
-#include "userio_app/status_output.h"
+#include "uout/status_json.h"
+#include "uout_app/status_output.h"
 
 #include <string.h>
 #include <stdio.h>

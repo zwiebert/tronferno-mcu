@@ -14,7 +14,7 @@
 #include <gpio.h>
 #include "gpio/pin.h"
 
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "txtio/inout.h"
 #include "driver/uart.h"
 #include "fernotron/callbacks.h"

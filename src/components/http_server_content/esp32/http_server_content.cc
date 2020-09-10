@@ -5,7 +5,7 @@
 #include <sys/param.h>
 #include <mbedtls/base64.h>
 #include "net/http/server/http_server.h"
-#include "userio/status_json.h"
+#include "uout/status_json.h"
 #include "config/config.h"
 #include "cli_app/cli_app.h"
 #include "misc/int_types.h"

@@ -4,7 +4,7 @@
 #include "fernotron/fer_msg_rx.h"
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/shutter_pct.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "app_config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
 #include "app/rtc.h"

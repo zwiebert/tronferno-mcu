@@ -1,6 +1,6 @@
 #include "app/rtc.h"
 #include "fernotron/fer_main.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "config/config.h"
 
 void main_setup() {

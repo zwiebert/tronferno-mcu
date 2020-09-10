@@ -12,7 +12,7 @@
 #include "fernotron/fer_msg_attachment.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "config/config.h"
 #include "cli_app/cli_fer.h"
 #include "cli_app/opt_map.hh"

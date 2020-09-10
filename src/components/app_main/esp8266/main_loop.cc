@@ -12,7 +12,7 @@
 #include "debug/dbg.h"
 #include "app/rtc.h"
 #include "fernotron/alias/pairings.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "fernotron/txtio/fer_print.h"
 #include "fernotron/astro.h"
 #include "fernotron/fer_msg_attachment.h"

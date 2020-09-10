@@ -13,7 +13,7 @@
 #include "cli/cli.h"
 #include "config/config.h"
 #include "app/common.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "app/rtc.h"
 #include "cli_app/fernotron.h"
 

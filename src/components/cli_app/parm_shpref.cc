@@ -3,7 +3,7 @@
 #include "fernotron/pos/shutter_prefs.h"
 #include "cli_imp.h"
 #include "cli_app/opt_map.hh"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "misc/int_types.h"
 #include "debug/dbg.h"
 #include <string.h>

@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "fernotron/sep/set_endpos.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "app_config/proj_app_cfg.h"
 #include "config/config.h"

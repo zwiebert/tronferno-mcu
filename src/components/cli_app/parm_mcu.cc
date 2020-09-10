@@ -7,7 +7,7 @@
 #include "fernotron/pos/shutter_pct.h"
 #include "txtio/inout.h"
 #include "gpio/pin.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "fernotron/auto/fau_tevent.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/bcd.h"

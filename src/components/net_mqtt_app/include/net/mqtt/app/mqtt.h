@@ -8,7 +8,7 @@
 #pragma once
 
 #include "app_config/proj_app_cfg.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "net/mqtt/mqtt.h"
 
 void io_mqtt_enable(bool enable);

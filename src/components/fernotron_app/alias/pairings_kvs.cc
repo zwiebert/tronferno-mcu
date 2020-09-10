@@ -3,7 +3,7 @@
 #include "fernotron/alias/pairings.h"
 #include <stdio.h>
 #include <string.h>
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
 #include "misc/itoa.h"

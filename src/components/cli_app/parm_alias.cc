@@ -8,7 +8,7 @@
 #include "cli_app/cli_fer.h"
 #include "app/common.h"
 #include "fernotron/alias/pairings.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "cli_app/opt_map.hh"
 
 #if defined DISTRIBUTION || 0

@@ -2,7 +2,7 @@
 
 #include <misc/int_types.h>
 #include <misc/allocator_malloc.hh>
-#include <userio_app/status_output.h>
+#include <uout_app/status_output.h>
 #include <map>
 #include <utility>
 #include <cstring>

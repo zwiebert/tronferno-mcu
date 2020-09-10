@@ -29,7 +29,7 @@
 #include <freertos/timers.h>
 #include <ctime>
 #include "config_kvs/config.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "../app_private.h"
 #include "fernotron/types.h"
 

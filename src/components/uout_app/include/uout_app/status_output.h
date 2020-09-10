@@ -9,7 +9,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "userio/status_output.h"
+#include "uout/status_output.h"
 #include "fernotron/types.h"
 
 

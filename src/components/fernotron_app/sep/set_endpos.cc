@@ -10,7 +10,7 @@
 
 #include "app/rtc.h"
 #include "txtio/inout.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 
 
 //////////////////////////////////////////////////////////////////

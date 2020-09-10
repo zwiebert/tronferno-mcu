@@ -1,4 +1,4 @@
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 
 #ifndef SO_MSG_T
 #define SO_MSG_T so_msg_t
