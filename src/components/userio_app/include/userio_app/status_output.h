@@ -106,4 +106,19 @@ void so_output_message_tgt(so_msg_t mt, void *arg, so_target_bits tgt);
 
 so_msg_t so_parse_config_key(const char *k);
 
+#ifdef __cplusplus
+
+class so_object {
+public:
+  so_object(so_msg_t begin, void *args, so_msg_t end) : mEnd(end) {
+    so_output_message(begin, args);
+  }
+  ~so_object() {
+    so_output_message(mEnd, nullptr);
+  }
+private:
+  so_msg_t mEnd;
+};
+
+#endif
 

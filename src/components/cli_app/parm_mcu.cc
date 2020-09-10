@@ -58,7 +58,7 @@ static void kvs_print_keys(const char *name_space);
 int process_parmMcu(clpar p[], int len) {
   int arg_idx;
 
-  so_output_message(SO_MCU_begin, NULL);
+  so_object soObj(SO_MCU_begin, nullptr, SO_MCU_end);
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -223,7 +223,6 @@ int process_parmMcu(clpar p[], int len) {
   }
 
   //so_output_message(error_count ? SO_STATUS_ERROR : SO_STATUS_OK, 0);
-  so_output_message(SO_MCU_end, NULL);
 
   return 0;
 }

@@ -37,10 +37,6 @@ static const char *const opts_kvd[] = {"mvut", "mvdt", "mvspdt"};
 #define OPTS_KVD_SIZE (sizeof opts_kvd / sizeof opts_kvd[0])
 #define OPTS_CLEAR_KEY() (*p[arg_idx].key = '\0')
 
-static void output_message_begin(u8 g, u8 m) {
-  so_arg_gm_t gm = { .g = g, .m = m };
-  so_output_message(SO_SHPREF_OBJ_GM_begin, &gm);
-}
 static void output_message_kvs(const char *tag, const char *val) {
   char *key = strcat(strcpy((char*)alloca(strlen(tag) + sizeof PARM_OPT_TAG_PREFIX), PARM_OPT_TAG_PREFIX), tag);
   so_arg_kvs_t arg = { .key = key, .val = val };
@@ -81,8 +77,10 @@ int process_parmShpref(clpar p[], int len) {
     }
   }
 
-  so_output_message(SO_SHPREF_OBJ_begin, 0);
-  output_message_begin(g, m);
+  so_object shprefObj(SO_SHPREF_OBJ_begin, nullptr, SO_SHPREF_OBJ_end);
+  so_arg_gm_t shprefObjGmArgs = { .g = g, .m = m };
+  so_object shprefObjGm(SO_SHPREF_OBJ_GM_begin, &shprefObjGmArgs, SO_SHPREF_OBJ_GM_end);
+
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -132,9 +130,6 @@ int process_parmShpref(clpar p[], int len) {
     NEXT_ARG: continue;
     NEXT_ARG_ERROR: ++err_ct; continue;
   }
-
-  so_output_message(SO_SHPREF_OBJ_GM_end, NULL);
-  so_output_message(SO_SHPREF_OBJ_end, NULL);
 
   if (haveStStore) {
     if (!ferPos_prefByM_store(&st.sts, g, m))

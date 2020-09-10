@@ -38,7 +38,7 @@ process_parmPair(clpar p[], int len) {
   int arg_idx;
   int i;
 
-  so_output_message(SO_PAIR_begin, NULL);
+  so_object cfgObj(SO_PAIR_begin, nullptr, SO_PAIR_end);
 
   u32 addr = 0;
   const char *addr_as_string = "";
@@ -137,8 +137,6 @@ process_parmPair(clpar p[], int len) {
     }
 
   }
-
-  so_output_message(SO_PAIR_end, NULL);
 
   return 0;
 }

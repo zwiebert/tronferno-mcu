@@ -135,8 +135,7 @@ process_parmConfig(clpar p[], int len) {
 
   bool hasChanged_geo = false, hasChanged_gpio = false;
 
-
-  so_output_message(SO_CFG_begin, NULL);
+  so_object cfgObj(SO_CFG_begin, nullptr, SO_CFG_end);
 
   bool pw_ok = strlen(C.app_configPassword) == 0;
 
@@ -390,7 +389,6 @@ process_parmConfig(clpar p[], int len) {
   if (hasChanged_txtio) {
     config_setup_txtio();
   }
-  so_output_message(SO_CFG_end, NULL);
   cli_replyResult(errors==0);
   return 0;
 }
