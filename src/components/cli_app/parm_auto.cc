@@ -12,6 +12,7 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "cli_app/cli_fer.h"
+#include "cli_app/opt_map.hh"
 #include "fernotron/auto/fau_tdata_store.h"
 #include "config/config.h"
 
@@ -48,6 +49,7 @@ const char cli_help_parmTimer[] = "daily=T        set daily timer\n"
     "  s|S sun automatic\n"
     "  r|R random timer\n";
 
+#define is_kt(k) (kt == otok:: k)
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
@@ -73,9 +75,12 @@ int process_parmTimer(clpar p[], int len) {
   for (i = 1; i < len; ++i) {
     const char *key = p[i].key, *val = p[i].val;
 
-    if (key == NULL) {
-      return -1;
-    } else if (is_key(timer_keys[TIMER_KEY_WEEKLY])) {
+    if (!key)
+    return -1;
+
+    otok kt = optMap_findToken(key);
+
+    if (is_key(timer_keys[TIMER_KEY_WEEKLY])) {
       NODEFAULT();
       strncpy(tda.weekly, val, sizeof(tda.weekly) - 1);
     } else if (is_key(timer_keys[TIMER_KEY_DAILY])) {
@@ -98,28 +103,28 @@ int process_parmTimer(clpar p[], int len) {
 
     } else if (is_key(timer_keys[TIMER_KEY_RTC_ONLY])) {
       flag_rtc_only = asc2bool(val);
-    } else if (is_key("a")) {
+    } else if (is_kt(a)) {
       u32 tmp = val ? strtol(val, NULL, 16) : 0;
       if (tmp) addr = tmp;
-    } else if (is_key("g")) {
+    } else if (is_kt(g)) {
       if (!asc2group(val, &group))
       return cli_replyFailure();
-    } else if (is_key("m")) {
+    } else if (is_kt(m)) {
       if (!asc2memb(val, &memb))
       return cli_replyFailure();
 
       mn = memb ? (memb - 7) : 0;
-    } else if (is_key("rtc")) {
+    } else if (is_kt(rtc)) {
       time_t t = time_iso2time(val);
       if (t >= 0) {
         timer = t;
       }
-    } else if (is_key("rs")) { // obsolete
+    } else if (is_kt(rs)) { // obsolete
         NODEFAULT();
         rs = atoi(val);
         f_no_send = true;
         f_modify = true;
-      } else if (is_key("f")) {
+      } else if (is_kt(f)) {
         const char *p = val;
         NODEFAULT();
         while (*p) {
@@ -141,7 +146,7 @@ int process_parmTimer(clpar p[], int len) {
           }
         }
       } else {
-        if (is_key("rs")) {
+        if (is_kt(rs)) {
           cli_replyFailure();
           return -1;
         }

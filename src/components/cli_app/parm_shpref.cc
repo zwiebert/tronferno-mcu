@@ -2,6 +2,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "fernotron/pos/shutter_prefs.h"
 #include "cli_imp.h"
+#include "cli_app/opt_map.hh"
 #include "userio_app/status_output.h"
 #include "misc/int_types.h"
 #include "debug/dbg.h"
@@ -47,6 +48,7 @@ static void output_message_kvd(const char *key, int val) {
   so_output_message(SO_PRINT_KVD, &arg);
 }
 
+#define is_kt(k) (kt == otok:: k)
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
@@ -65,12 +67,14 @@ int process_parmShpref(clpar p[], int len) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
     assert(key);
 
-    if (is_key("g")) {
+    otok kt = optMap_findToken(key);
+
+    if (is_kt(g)) {
       if (!asc2u8(val, &g, FER_G_MAX))
         return cli_replyFailure();
       OPTS_CLEAR_KEY();
 
-    } else if (is_key("m")) {
+    } else if (is_kt(m)) {
       if (!asc2u8(val, &m, FER_M_MAX))
         return cli_replyFailure();
       OPTS_CLEAR_KEY();
@@ -85,6 +89,7 @@ int process_parmShpref(clpar p[], int len) {
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
     int k;
+
     if (!*key)
       continue;
     for (k = 0; k < OPTS_KVD_SIZE; ++k) {

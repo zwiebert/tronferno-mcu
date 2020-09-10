@@ -9,6 +9,7 @@
 #include "app/common.h"
 #include "fernotron/alias/pairings.h"
 #include "userio_app/status_output.h"
+#include "cli_app/opt_map.hh"
 
 #if defined DISTRIBUTION || 0
 #define D(x) x
@@ -30,8 +31,9 @@ const char cli_help_parmPair[] = ""
     "gpinN=(up|down|stop|rain|toggle)\n"
     "c=(pair|unpair|read)\n";
 
-#define is_key(k) (strcmp(key, k) == 0)
-#define is_val(k) (strcmp(val, k) == 0)
+#define is_kt(k) (kt == otok:: k)
+#define is_key(k) (strcmp(key, #k) == 0)
+#define is_val(k) (strcmp(val, #k) == 0)
 
 int 
 process_parmPair(clpar p[], int len) {
@@ -50,58 +52,86 @@ process_parmPair(clpar p[], int len) {
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
-    if (key == NULL) {
+    if (key == NULL)
       return -1;
-    } else if (is_key("a")) {
-      if (is_val("?"))
-        scan = true;
-      else {
-        addr = val ? strtol(val, NULL, 16) : 0;
-        if (val)
-          addr_as_string = val;
-      }
-    } else if (is_key("g")) {
-      fer_grp group;
-      if (!asc2group(val, &group) || group == 0)
-        return cli_replyFailure();
-      g = group;
-    } else if (is_key("m")) {
-      fer_memb memb;
-      if (!asc2memb(val, &memb) || memb == 0)
-        return cli_replyFailure();
-      m = memb - 7;
-    } else if (is_key("mm")) {
-      uint64_t n = strtoll(val, 0, 16);
-      for (i=0;n; ++i, (n >>= 8)) {
-        mm[i] = n & 0xff;
-      }
-       has_mm = true;
-    } else if (is_key("c")) {
-      if (is_val("unpair")) {
-        unpair = true;
-        c = PC_unpair;
-      } else if (is_val("pair")) {
-        pair = true;
-        c = PC_pair;
-      } else if (is_val("read")) {
-        read = true;
-        c = PC_read;
-      } else if (is_val("read_all")) {
-        read_all = true;
-        c = PC_read;
-      } else if (is_val("store")) {
-        store = true;
 
+    otok kt = optMap_findToken(key);
+
+    if (kt != otok::NONE) {
+      switch (kt) {
+
+      case otok::a: {
+        if (is_val(?))
+          scan = true;
+        else {
+          addr = val ? strtol(val, NULL, 16) : 0;
+          if (val)
+            addr_as_string = val;
+        }
+      }
+        break;
+
+      case otok::g: {
+        fer_grp group;
+        if (!asc2group(val, &group) || group == 0)
+          return cli_replyFailure();
+        g = group;
+      }
+        break;
+
+      case otok::m: {
+        fer_memb memb;
+        if (!asc2memb(val, &memb) || memb == 0)
+          return cli_replyFailure();
+        m = memb - 7;
+      }
+        break;
+
+      case otok::mm: {
+        uint64_t n = strtoll(val, 0, 16);
+        for (i = 0; n; ++i, (n >>= 8)) {
+          mm[i] = n & 0xff;
+        }
+        has_mm = true;
+      }
+        break;
+
+      case otok::c: {
+        if (is_val(unpair)) {
+          unpair = true;
+          c = PC_unpair;
+        } else if (is_val(pair)) {
+          pair = true;
+          c = PC_pair;
+        } else if (is_val(read)) {
+          read = true;
+          c = PC_read;
+        } else if (is_val(read_all)) {
+          read_all = true;
+          c = PC_read;
+        } else if (is_val(store)) {
+          store = true;
+        }
+      }
+        break;
+
+
+
+      default:
+        break;
+      }
+    } else {
 #if 0
-      } else if (strncmp(key, "gpin", 4) == 0) {
+      if (strncmp(key, "gpin", 4) == 0) {
         int gpio_number = atoi(key + 4);
       } else if (strncmp(key, "gpout", 5) == 0) {
         int gpio_number = atoi(key + 5);
-#endif
+      } else {
+        cli_replyFailure();
       }
-
-    } else {
+#else
       cli_replyFailure();
+#endif
     }
   }
 

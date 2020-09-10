@@ -13,6 +13,7 @@
 #include "misc/bcd.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
+#include "cli_app/opt_map.hh"
 
 #include "debug/dbg.h"
 #ifdef USE_HTTP
@@ -51,6 +52,7 @@ const char pin_state_args[] = "?01t";
 
 static void kvs_print_keys(const char *name_space);
 
+#define is_kt(k) (kt == otok:: k)
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
@@ -63,15 +65,18 @@ int process_parmMcu(clpar p[], int len) {
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
-    if (key == NULL || val == NULL) {
+    if (key == NULL || val == NULL)
       return -1;
-    } else if (is_key("boot-count")) {
+
+    otok kt = optMap_findToken(key);
+
+    if (is_kt(boot_count)) {
       if (is_val("?")) {
         so_output_message(SO_MCU_BOOT_COUNT, 0);
       } else if (strcmp("0", val) == 0) {
         // TODO: reset boot counter
       }
-    } else if (is_key("print")) {
+    } else if (is_kt(print)) {
 #ifdef MCU_ESP8266
       if (is_val("reset-info")) {
         print_reset_info();
@@ -83,7 +88,7 @@ int process_parmMcu(clpar p[], int len) {
       }
 #endif
 #ifndef NO_SPIFFS
-    } else if (is_key("spiffs")) {
+    } else if (is_kt(spiffs)) {
 
       if (is_val("format")) {
         spiffs_format_fs(fs_A);
@@ -91,11 +96,11 @@ int process_parmMcu(clpar p[], int len) {
         spiffs_test();
       }
 #endif
-    } else if (is_key("kvs-pk")) {
+    } else if (is_kt(kvs_pk)) {
 
       kvs_print_keys(val);
 
-    } else if (is_key("tm")) {
+    } else if (is_kt(tm)) {
 
       if (strlen(val) == 2) {
         so_arg_gm_t gm;
@@ -103,7 +108,7 @@ int process_parmMcu(clpar p[], int len) {
         gm.m = val[1] - '0';
         so_output_message(SO_TIMER_EVENT_PRINT, &gm);
       }
-    } else if (is_key("am")) {
+    } else if (is_kt(am)) {
       if (strlen(val) == 2) {
         so_arg_gm_t gm;
         gm.g = val[0] - '0';
@@ -111,11 +116,11 @@ int process_parmMcu(clpar p[], int len) {
         so_output_message(SO_ASTRO_MINUTES_PRINT, &gm);
       }
 #ifdef USE_FREERTOS
-    } else if (is_key("stack")) {
+    } else if (is_kt(stack)) {
       int words = uxTaskGetStackHighWaterMark(NULL);
       ets_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
 #endif
-    } else if (is_key("te")) {
+    } else if (is_kt(te)) {
       int i,k;
 
       timer_event_t tevt;
@@ -129,11 +134,11 @@ int process_parmMcu(clpar p[], int len) {
         io_putlf();
       }
 #ifdef USE_PAIRINGS
-    } else if (is_key("dbp")) {
+    } else if (is_kt(dbp)) {
       bool pair_so_output_all_pairings(void);
       pair_so_output_all_pairings();
 #endif
-    } else if (is_key("cs")) {
+    } else if (is_kt(cs)) {
       statPos_printAllPcts();
 #ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {
@@ -180,17 +185,17 @@ int process_parmMcu(clpar p[], int len) {
       }
 #endif
 
-    } else if (is_key("up-time")) {
+    } else if (is_kt(up_time)) {
       if (is_val("?")) {
         so_output_message(SO_MCU_RUN_TIME, NULL);
       } else {
         reply_message("error:mcu:up-time", "option is read-only");
       }
 
-    } else if (is_key("version")) {
+    } else if (is_kt(version)) {
       so_output_message(SO_MCU_VERSION, NULL);
 #ifdef USE_OTA
-    } else if (is_key("ota")) {
+    } else if (is_kt(ota)) {
       if (is_val("?")) {
         so_output_message(SO_MCU_OTA_STATE, 0);
       } else if (is_val("github-master")) {

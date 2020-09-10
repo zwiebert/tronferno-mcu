@@ -4,4 +4,5 @@ idf_component_register(SRC_DIRS "."
                        PRIV_REQUIRES config debug
                        REQUIRES app_misc unity txtio)
                        
-component_compile_options(${component_compile_opts})
+component_compile_options(${comp_compile_opts})
+component_compile_features(${comp_compile_feats})

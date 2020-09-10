@@ -8,4 +8,5 @@ idf_component_register(
     EMBED_TXTFILES ./ca_cert.pem
 )
 
-component_compile_options(${component_compile_opts})
+component_compile_options(${comp_compile_opts})
+component_compile_features(${comp_compile_feats})
