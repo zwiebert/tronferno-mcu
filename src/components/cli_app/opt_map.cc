@@ -12,9 +12,9 @@ using keyMapT = std::map<const char*, otokBaseT, std::less<const char *>, Alloca
 
 class OptMap {
 public:
-  OptMap(const char *const key_names[], int len) {
-    for (otokBaseT i=0; i < len; ++i) {
-      mKeyMap.emplace(std::make_pair(key_names[i], i));
+  OptMap() {
+    for (otokBaseT i=0; i < static_cast<otokBaseT>(otok::SIZE); ++i) {
+      mKeyMap.emplace(std::make_pair(otok_strings[i], i));
     }
   }
   otok get(const char *const key) const {
@@ -29,7 +29,7 @@ private:
   keyMapT mKeyMap;
 };
 
-static const OptMap opt_map(parmPair_keys, static_cast<otokBaseT>(otok::SIZE));
+const OptMap opt_map;
 
 otok optMap_findToken(const char *key) {
   return opt_map.get(key);

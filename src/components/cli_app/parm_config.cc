@@ -1,6 +1,7 @@
 #include "app_config/proj_app_cfg.h"
 
 #include "cli_app/cli_config.h"
+#include "cli_app/opt_map.hh"
 #include <string.h>
 
 #include "fernotron/sep/set_endpos.h"
@@ -113,6 +114,7 @@ const char *const *cfg_args[SO_CFG_size] = {
 
 #define has_changed() SET_BIT(*changed_mask, so_key)
 
+#define is_kt(k) (kt == otok:: k)
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
@@ -142,15 +144,17 @@ process_parmConfig(clpar p[], int len) {
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
+    otok kt = optMap_findToken(key);
+
     if (key == NULL || val == NULL) {  // don't allow any default values in config
       return cli_replyFailure();
 #if ENABLE_RESTART
-    } else if (is_key("restart")) {
+    } else if (is_kt(restart)) {
       if (mcu_restart_cb)
         mcu_restart_cb();
 #endif
 
-    } else if (is_key("all")) {
+    } else if (is_kt(all)) {
       if (is_val("?")) {
         so_output_message(SO_CFG_all, "cj");
       }
@@ -302,7 +306,7 @@ process_parmConfig(clpar p[], int len) {
         break;
       }
 
-    } else if (is_key("cuas")) {
+    } else if (is_kt(cuas)) {
       if (is_val("?")) {
         so_output_message(SO_CUAS_STATE, 0);
       }
@@ -311,7 +315,7 @@ process_parmConfig(clpar p[], int len) {
 
 
 #ifdef ACCESS_GPIO
-    } else if (is_key("gpio")) {
+    } else if (is_kt(gpio)) {
       if (is_val("?")) {
         so_output_message(SO_CFG_GPIO_MODES, 0);
       } else if (*val == '$') {
@@ -345,16 +349,16 @@ process_parmConfig(clpar p[], int len) {
       }
 #endif
 
-    } else if (is_key("set-pw")) {
+    } else if (is_kt(set_pw)) {
       if (set_optStr_ifValid(val, CB_CFG_PASSWD)){}
 
       if (!flag_isValid)
         cli_replyFailure();
 
-    } else if (is_key("receiver")) {
+    } else if (is_kt(receiver)) {
       cli_replyResult(config_receiver(val));
 
-    } else if (is_key("transmitter")) {
+    } else if (is_kt(transmitter)) {
       cli_replyResult(config_transmitter(val));
 
     } else {

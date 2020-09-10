@@ -2,7 +2,7 @@
 
 #include "app_config/proj_app_cfg.h"
 #include "userio_app/status_output.h"
-
+#if 0
 //key strings used for parsing and printing config commands by CLI/HTTP/MQTT
 //keys must be in same order as their SO_CFG_xxx counterparts in so_msg_t
 using cfg_keysT = const char *[SO_CFG_size];
@@ -16,7 +16,7 @@ constexpr cfg_keysT cfg_keys = {
     "astro-correction",
     "rf-tx-pin", "rf-rx-pin", "set-button-pin", "gpio",
 };
-
+#endif
 #ifdef USE_NETWORK
 #include <config/config.h>
 using cfg_args_networkT = const char *[nwLEN];

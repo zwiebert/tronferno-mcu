@@ -9,6 +9,7 @@
 
 #include "cli_app/cli_app.h" // FIXME?
 #include "cli_app/cli_config.h"
+#include "cli_app/opt_map.hh"
 #include "txtio/inout.h"
 #include "userio/status_json.h"
 #include "debug/dbg.h"
@@ -25,18 +26,13 @@ u8 so_target;
 // get the SO_MSG_T for a config key string (or SO_NONE)
 SO_MSG_T
 so_parse_config_key(const char *k) {
-  const int cfg_len = (SO_CFG_end - SO_CFG_begin - 1);
-  const int keys_len = sizeof cfg_keys / sizeof cfg_keys[0];
-  precond((cfg_len == keys_len));
-
-  SO_MSG_T result = SO_NONE;
-  int i;
-  for (i = 0; i < keys_len; ++i) {
-    if (0 == strcmp(k, cfg_keys[i])) {
-      result = static_cast<SO_MSG_T>(SO_CFG_begin + 1 + i);
-      break;
-    }
+  otok kt = optMap_findToken(k);
+  if (kt == otok::NONE) {
+    return SO_NONE;
   }
+
+  SO_MSG_T result = static_cast<SO_MSG_T>(SO_CFG_begin + 1 + static_cast<otokBaseT>(kt));
+
   return result;
 }
 
@@ -44,8 +40,8 @@ so_parse_config_key(const char *k) {
 static const char *
 gk(SO_MSG_T so_key) {
   if (SO_CFG_begin < so_key && so_key < SO_CFG_end)
-    return cfg_keys[so_key - (SO_CFG_begin + 1)];
-  return NULL;
+    return otok_strings[so_key - (SO_CFG_begin + 1)];
+  return nullptr;
 }
 
 void so_out_x_open(const char *name) {
