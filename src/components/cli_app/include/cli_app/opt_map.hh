@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-
+#include <userio_app/status_output.h>
 typedef int8_t otokBaseT;
 
 enum class otok : otokBaseT  {
@@ -18,8 +18,10 @@ enum class otok : otokBaseT  {
       /// end of config keys ///
 
   a, g, m, mm, c, //
-  restart, all, cuas, set_pw, receiver, transmitter, //
-
+  restart, all, cuas, set_pw, receiver, transmitter, // config
+  rs, f, // auto
+  r, p, SEP, // cmd
+  boot_count, print, kvs_pk, tm, am, stack, te, dbp, cs, up_time, version, ota, // mcu
 
 
 
@@ -40,7 +42,12 @@ constexpr const_cstringT otok_strings[static_cast<otokBaseT>(otok::SIZE)] = {
   "rf-tx-pin", "rf-rx-pin", "set-button-pin", "gpio",
   /// end of config keys ///
   "a", "g", "m", "mm", "c",//
-  "restart", "all", "cuas", "set-pw", "receiver", "transmitter", //
+  "restart", "all", "cuas", "set-pw", "receiver", "transmitter", // config
+  "rs", "f", // auto
+  "r", "p", "SEP", // cmd
+  "boot-count", "print", "kvs-pk", "tm", "am", "stack", "te", "dbp", "cs", "up-time", "version", "ota", // mcu
+
 };
 
 otok optMap_findToken(const char *key);
+so_msg_t so_soMsg_from_otok(otok kt);

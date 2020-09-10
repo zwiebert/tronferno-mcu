@@ -7,9 +7,11 @@
 #include "app_config/proj_app_cfg.h"
 #include "so_out.h"
 
+#if 1
 #include "cli_app/cli_app.h" // FIXME?
 #include "cli_app/cli_config.h"
 #include "cli_app/opt_map.hh"
+#endif
 #include "txtio/inout.h"
 #include "userio/status_json.h"
 #include "debug/dbg.h"
@@ -24,8 +26,7 @@
 u8 so_target;
 
 // get the SO_MSG_T for a config key string (or SO_NONE)
-SO_MSG_T
-so_parse_config_key(const char *k) {
+SO_MSG_T so_parse_config_key(const char *k) {
   otok kt = optMap_findToken(k);
   if (kt == otok::NONE) {
     return SO_NONE;

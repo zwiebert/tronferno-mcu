@@ -158,8 +158,8 @@ process_parmConfig(clpar p[], int len) {
       if (is_val("?")) {
         so_output_message(SO_CFG_all, "cj");
       }
-    } else if (SO_NONE != (so_key = so_parse_config_key(key))) {
-      if (0 == strcmp("?", val)) {
+    } else if (SO_NONE != (so_key = so_soMsg_from_otok(kt))) {
+      if (is_val("?")) {
         so_output_message(so_key, NULL);
       } else if (process_parmKvsConfig(so_key, val, &changed_mask)) {
 

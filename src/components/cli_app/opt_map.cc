@@ -2,13 +2,28 @@
 
 #include <misc/int_types.h>
 #include <misc/allocator_malloc.hh>
+#include <userio_app/status_output.h>
 #include <map>
 #include <utility>
+#include <cstring>
 
 
 
+so_msg_t so_soMsg_from_otok(otok kt) {
+  so_msg_t result = static_cast<so_msg_t>(SO_CFG_begin + 1 + static_cast<otokBaseT>(kt));
+  return result;
+}
 
-using keyMapT = std::map<const char*, otokBaseT, std::less<const char *>, AllocatorMalloc<std::pair<const char *const, otokBaseT>>>;
+struct cmp_str
+{
+   bool operator()(char const *a, char const *b) const
+   {
+      return std::strcmp(a, b) < 0;
+   }
+};
+
+
+using keyMapT = std::map<const char*, otokBaseT, cmp_str, AllocatorMalloc<std::pair<const char *const, otokBaseT>>>;
 
 class OptMap {
 public:

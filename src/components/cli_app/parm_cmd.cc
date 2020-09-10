@@ -15,6 +15,7 @@
 #include "userio_app/status_output.h"
 #include "config/config.h"
 #include "cli_app/cli_fer.h"
+#include "cli_app/opt_map.hh"
 #include <stdlib.h>
 
 
@@ -31,6 +32,7 @@ const char cli_help_parmSend[]  =
 // "TROT        Toggle rotation direction"
 ;
 
+#define is_kt(k) (kt == otok:: k)
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
@@ -53,51 +55,82 @@ process_parmSend(clpar p[], int len) {
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
-    if (key == NULL) {
+    if (!key)
       return -1;
-    } else if (is_key("a")) {
-      u32 tmp = val ? strtol(val, NULL, 16) : 0;
-      if (tmp) addr = tmp;
-    } else if (is_key("g")) {
-      int arg = atoi(val);
-      if (0 <= arg && arg <= 7) {
-         g = arg;
-      } else {
-        return cli_replyFailure();
+
+    otok kt = optMap_findToken(key);
+
+    if (kt != otok::NONE) {
+      switch (kt) {
+      case otok::a: {
+        u32 tmp = val ? strtol(val, NULL, 16) : 0;
+        if (tmp)
+          addr = tmp;
       }
-    } else if (is_key("m")) {
-      int arg = atoi(val);
-      if (0 <= arg && arg <= 7) {
-         m = arg;
-      } else {
-        return cli_replyFailure();
-      }
-    } else if (is_key("r")) {
-      NODEFAULT();
-      repeats = atoi(val);
-      if (!(repeats <= 10)) {
-        return cli_replyFailure();
-      }
-    } else if (is_key("p")) {
-      NODEFAULT();
-      if (is_val("?")) {
-        has_requested_position = true;
-      } else {
-        pct = atoi(val);
-        if (!(0 <= pct && pct <= 100))
+        break;
+
+      case otok::g: {
+        int arg = atoi(val);
+        if (0 <= arg && arg <= 7) {
+          g = arg;
+        } else {
           return cli_replyFailure();
+        }
       }
-    } else if (is_key("c")) {
-      NODEFAULT();
-      if (is_val("?")) {
-        has_requested_position = true;
-      } else if (!cli_parm_to_ferCMD(val, &cmd)) {
-        return cli_replyFailure();
+        break;
+
+      case otok::m: {
+        int arg = atoi(val);
+        if (0 <= arg && arg <= 7) {
+          m = arg;
+        } else {
+          return cli_replyFailure();
+        }
       }
-    } else if (is_key("SEP")) {
-      set_end_pos = asc2bool(val);
-      if (set_end_pos != 1)
-      set_end_pos = 0;  // force disable
+        break;
+
+      case otok::r: {
+        NODEFAULT();
+        repeats = atoi(val);
+        if (!(repeats <= 10)) {
+          return cli_replyFailure();
+        }
+      }
+        break;
+
+      case otok::p: {
+        NODEFAULT();
+        if (is_val("?")) {
+          has_requested_position = true;
+        } else {
+          pct = atoi(val);
+          if (!(0 <= pct && pct <= 100))
+            return cli_replyFailure();
+        }
+      }
+        break;
+
+      case otok::c: {
+        NODEFAULT();
+        if (is_val("?")) {
+          has_requested_position = true;
+        } else if (!cli_parm_to_ferCMD(val, &cmd)) {
+          return cli_replyFailure();
+        }
+      }
+        break;
+
+      case otok::SEP: {
+        set_end_pos = asc2bool(val);
+        if (set_end_pos != 1)
+          set_end_pos = 0;  // force disable
+      }
+        break;
+
+      default:
+        cli_warning_optionUnknown(key);
+        break;
+      }
     } else {
       cli_warning_optionUnknown(key);
     }

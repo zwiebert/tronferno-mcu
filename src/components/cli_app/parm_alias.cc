@@ -31,6 +31,7 @@ const char cli_help_parmPair[] = ""
     "gpinN=(up|down|stop|rain|toggle)\n"
     "c=(pair|unpair|read)\n";
 
+#define is_kt(k) (kt == otok:: k)
 #define is_key(k) (strcmp(key, #k) == 0)
 #define is_val(k) (strcmp(val, #k) == 0)
 
