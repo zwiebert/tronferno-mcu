@@ -51,6 +51,9 @@ const char pin_state_args[] = "?01t";
 
 static void kvs_print_keys(const char *name_space);
 
+#define is_key(k) (strcmp(key, k) == 0)
+#define is_val(k) (strcmp(val, k) == 0)
+
 //TODO: add IP address query option
 int process_parmMcu(clpar p[], int len) {
   int arg_idx;
@@ -62,17 +65,17 @@ int process_parmMcu(clpar p[], int len) {
 
     if (key == NULL || val == NULL) {
       return -1;
-    } else if (strcmp(key, "boot-count") == 0) {
-      if (*val == '?') {
+    } else if (is_key("boot-count")) {
+      if (is_val("?")) {
         so_output_message(SO_MCU_BOOT_COUNT, 0);
       } else if (strcmp("0", val) == 0) {
         // TODO: reset boot counter
       }
-    } else if (strcmp(key, "print") == 0) {
+    } else if (is_key("print")) {
 #ifdef MCU_ESP8266
-      if (strcmp(val, "reset-info") == 0) {
+      if (is_val("reset-info")) {
         print_reset_info();
-      } else  if (strcmp(val, "mem-info") == 0) {
+      } else  if (is_val("mem-info")) {
         void es_io_putc(char c);
         os_install_putc1(es_io_putc);
         system_set_os_print(1);
@@ -80,19 +83,19 @@ int process_parmMcu(clpar p[], int len) {
       }
 #endif
 #ifndef NO_SPIFFS
-    } else if (strcmp(key, "spiffs") == 0) {
+    } else if (is_key("spiffs")) {
 
-      if (strcmp(val, "format") == 0) {
+      if (is_val("format")) {
         spiffs_format_fs(fs_A);
-      } else if (strcmp(val, "test") == 0) {
+      } else if (is_val("test")) {
         spiffs_test();
       }
 #endif
-    } else if (strcmp(key, "kvs-pk") == 0) {
+    } else if (is_key("kvs-pk")) {
 
       kvs_print_keys(val);
 
-    } else if (strcmp(key, "tm") == 0) {
+    } else if (is_key("tm")) {
 
       if (strlen(val) == 2) {
         so_arg_gm_t gm;
@@ -100,7 +103,7 @@ int process_parmMcu(clpar p[], int len) {
         gm.m = val[1] - '0';
         so_output_message(SO_TIMER_EVENT_PRINT, &gm);
       }
-    } else if (strcmp(key, "am") == 0) {
+    } else if (is_key("am")) {
       if (strlen(val) == 2) {
         so_arg_gm_t gm;
         gm.g = val[0] - '0';
@@ -108,11 +111,11 @@ int process_parmMcu(clpar p[], int len) {
         so_output_message(SO_ASTRO_MINUTES_PRINT, &gm);
       }
 #ifdef USE_FREERTOS
-    } else if (strcmp(key, "stack") == 0) {
+    } else if (is_key("stack")) {
       int words = uxTaskGetStackHighWaterMark(NULL);
       ets_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
 #endif
-    } else if (strcmp(key, "te") == 0) {
+    } else if (is_key("te")) {
       int i,k;
 
       timer_event_t tevt;
@@ -126,11 +129,11 @@ int process_parmMcu(clpar p[], int len) {
         io_putlf();
       }
 #ifdef USE_PAIRINGS
-    } else if (strcmp(key, "dbp") == 0) {
+    } else if (is_key("dbp")) {
       bool pair_so_output_all_pairings(void);
       pair_so_output_all_pairings();
 #endif
-    } else if (strcmp(key, "cs") == 0) {
+    } else if (is_key("cs")) {
       statPos_printAllPcts();
 #ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {
@@ -177,23 +180,23 @@ int process_parmMcu(clpar p[], int len) {
       }
 #endif
 
-    } else if (strcmp(key, "up-time") == 0) {
-      if (*val == '?') {
+    } else if (is_key("up-time")) {
+      if (is_val("?")) {
         so_output_message(SO_MCU_RUN_TIME, NULL);
       } else {
         reply_message("error:mcu:up-time", "option is read-only");
       }
 
-    } else if (strcmp(key, "version") == 0) {
+    } else if (is_key("version")) {
       so_output_message(SO_MCU_VERSION, NULL);
 #ifdef USE_OTA
-    } else if (strcmp(key, "ota") == 0) {
-      if (*val == '?') {
+    } else if (is_key("ota")) {
+      if (is_val("?")) {
         so_output_message(SO_MCU_OTA_STATE, 0);
-      } else if (strcmp(val, "github-master") == 0) {
+      } else if (is_val("github-master")) {
         so_output_message(SO_MCU_OTA, OTA_FWURL_MASTER);
         ota_doUpdate(OTA_FWURL_MASTER, ca_cert_pem);
-      } else if (strcmp(val, "github-beta") == 0) {
+      } else if (is_val("github-beta")) {
         so_output_message(SO_MCU_OTA, OTA_FWURL_BETA);
         ota_doUpdate(OTA_FWURL_BETA, ca_cert_pem);
       } else if (0 == strncmp(val, OTA_FWURL_TAG_COOKIE, strlen(OTA_FWURL_TAG_COOKIE))) {

@@ -113,6 +113,9 @@ const char *const *cfg_args[SO_CFG_size] = {
 
 #define has_changed() SET_BIT(*changed_mask, so_key)
 
+#define is_key(k) (strcmp(key, k) == 0)
+#define is_val(k) (strcmp(val, k) == 0)
+
 bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask);
 
 int 
@@ -143,13 +146,13 @@ process_parmConfig(clpar p[], int len) {
     if (key == NULL || val == NULL) {  // don't allow any default values in config
       return cli_replyFailure();
 #if ENABLE_RESTART
-    } else if (strcmp(key, "restart") == 0) {
+    } else if (is_key("restart")) {
       if (mcu_restart_cb)
         mcu_restart_cb();
 #endif
 
-    } else if (strcmp(key, "all") == 0) {
-      if (*val == '?') {
+    } else if (is_key("all")) {
+      if (is_val("?")) {
         so_output_message(SO_CFG_all, "cj");
       }
     } else if (SO_NONE != (so_key = so_parse_config_key(key))) {
@@ -164,11 +167,11 @@ process_parmConfig(clpar p[], int len) {
           break;
 
         case SO_CFG_CU: {
-          if (strcmp(val, "auto") == 0) {
+          if (is_val("auto")) {
             cu_auto_set(cli_msgid, 60);
             cli_replySuccess();
           } else {
-            u32 cu = (strcmp(val, "auto-old") == 0) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
+            u32 cu = (is_val("auto-old")) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
 
             if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
               return cli_replyFailure();
@@ -199,7 +202,7 @@ process_parmConfig(clpar p[], int len) {
               continue;
             }
 #endif
-            if (strcmp(val, cfg_args_network[i]) == 0) {
+            if (is_val(cfg_args_network[i])) {
               (void)(set_optN(i8, i, CB_NETWORK_CONNECTION));
               success = true;
               break;
@@ -249,11 +252,11 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_DST: {
 #ifdef MDR_TIME
           i8 v = 0;
-          if (strcmp(val, "eu") == 0) {
+          if (is_val("eu")) {
            v= dstEU;
-          } else if (strcmp(val, "0") == 0) {
+          } else if (is_val("0")) {
             v = dstNone;
-          } else if (strcmp(val, "1") == 0) {
+          } else if (is_val("1")) {
             v = dstAlways;
           } else {
             cli_warning_optionUnknown(key);
@@ -300,8 +303,8 @@ process_parmConfig(clpar p[], int len) {
         break;
       }
 
-    } else if (strcmp(key, "cuas") == 0) {
-      if (*val == '?') {
+    } else if (is_key("cuas")) {
+      if (is_val("?")) {
         so_output_message(SO_CUAS_STATE, 0);
       }
 
@@ -309,8 +312,8 @@ process_parmConfig(clpar p[], int len) {
 
 
 #ifdef ACCESS_GPIO
-    } else if (strcmp(key, "gpio") == 0) {
-      if (*val == '?') {
+    } else if (is_key("gpio")) {
+      if (is_val("?")) {
         so_output_message(SO_CFG_GPIO_MODES, 0);
       } else if (*val == '$') {
         so_output_message(SO_CFG_GPIO_MODES_AS_STRING, 0);
@@ -318,7 +321,7 @@ process_parmConfig(clpar p[], int len) {
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
 
-      if (*val == '?') {
+      if (is_val("?")) {
         so_output_message(SO_CFG_GPIO_PIN, &gpio_number);
       } else if (!is_gpio_number_usable(gpio_number, true)) {
         reply_message("gpio:error", "gpio number cannot be used");
@@ -343,16 +346,16 @@ process_parmConfig(clpar p[], int len) {
       }
 #endif
 
-    } else if (strcmp(key, "set-pw") == 0) {
+    } else if (is_key("set-pw")) {
       if (set_optStr_ifValid(val, CB_CFG_PASSWD)){}
 
       if (!flag_isValid)
         cli_replyFailure();
 
-    } else if (strcmp(key, "receiver") == 0) {
+    } else if (is_key("receiver")) {
       cli_replyResult(config_receiver(val));
 
-    } else if (strcmp(key, "transmitter") == 0) {
+    } else if (is_key("transmitter")) {
       cli_replyResult(config_transmitter(val));
 
     } else {

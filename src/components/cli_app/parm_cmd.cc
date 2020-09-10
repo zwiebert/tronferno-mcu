@@ -31,6 +31,9 @@ const char cli_help_parmSend[]  =
 // "TROT        Toggle rotation direction"
 ;
 
+#define is_key(k) (strcmp(key, k) == 0)
+#define is_val(k) (strcmp(val, k) == 0)
+
 int 
 process_parmSend(clpar p[], int len) {
   int arg_idx;
@@ -52,46 +55,46 @@ process_parmSend(clpar p[], int len) {
 
     if (key == NULL) {
       return -1;
-    } else if (strcmp(key, "a") == 0) {
+    } else if (is_key("a")) {
       u32 tmp = val ? strtol(val, NULL, 16) : 0;
       if (tmp) addr = tmp;
-    } else if (strcmp(key, "g") == 0) {
+    } else if (is_key("g")) {
       int arg = atoi(val);
       if (0 <= arg && arg <= 7) {
          g = arg;
       } else {
         return cli_replyFailure();
       }
-    } else if (strcmp(key, "m") == 0) {
+    } else if (is_key("m")) {
       int arg = atoi(val);
       if (0 <= arg && arg <= 7) {
          m = arg;
       } else {
         return cli_replyFailure();
       }
-    } else if (strcmp(key, "r") == 0) {
+    } else if (is_key("r")) {
       NODEFAULT();
       repeats = atoi(val);
       if (!(repeats <= 10)) {
         return cli_replyFailure();
       }
-    } else if (strcmp(key, "p") == 0) {
+    } else if (is_key("p")) {
       NODEFAULT();
-      if (*val == '?') {
+      if (is_val("?")) {
         has_requested_position = true;
       } else {
         pct = atoi(val);
         if (!(0 <= pct && pct <= 100))
           return cli_replyFailure();
       }
-    } else if (strcmp(key, "c") == 0) {
+    } else if (is_key("c")) {
       NODEFAULT();
-      if (*val == '?') {
+      if (is_val("?")) {
         has_requested_position = true;
       } else if (!cli_parm_to_ferCMD(val, &cmd)) {
         return cli_replyFailure();
       }
-    } else if (strcmp(key, "SEP") == 0) {
+    } else if (is_key("SEP")) {
       set_end_pos = asc2bool(val);
       if (set_end_pos != 1)
       set_end_pos = 0;  // force disable

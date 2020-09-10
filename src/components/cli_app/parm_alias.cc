@@ -30,6 +30,9 @@ const char cli_help_parmPair[] = ""
     "gpinN=(up|down|stop|rain|toggle)\n"
     "c=(pair|unpair|read)\n";
 
+#define is_key(k) (strcmp(key, k) == 0)
+#define is_val(k) (strcmp(val, k) == 0)
+
 int 
 process_parmPair(clpar p[], int len) {
   int arg_idx;
@@ -49,44 +52,44 @@ process_parmPair(clpar p[], int len) {
 
     if (key == NULL) {
       return -1;
-    } else if (strcmp(key, "a") == 0) {
-      if (*val == '?')
+    } else if (is_key("a")) {
+      if (is_val("?"))
         scan = true;
       else {
         addr = val ? strtol(val, NULL, 16) : 0;
         if (val)
           addr_as_string = val;
       }
-    } else if (strcmp(key, "g") == 0) {
+    } else if (is_key("g")) {
       fer_grp group;
       if (!asc2group(val, &group) || group == 0)
         return cli_replyFailure();
       g = group;
-    } else if (strcmp(key, "m") == 0) {
+    } else if (is_key("m")) {
       fer_memb memb;
       if (!asc2memb(val, &memb) || memb == 0)
         return cli_replyFailure();
       m = memb - 7;
-    } else if (strcmp(key, "mm") == 0) {
+    } else if (is_key("mm")) {
       uint64_t n = strtoll(val, 0, 16);
       for (i=0;n; ++i, (n >>= 8)) {
         mm[i] = n & 0xff;
       }
        has_mm = true;
-    } else if (strcmp(key, "c") == 0) {
-      if (strcmp(val, "unpair") == 0) {
+    } else if (is_key("c")) {
+      if (is_val("unpair")) {
         unpair = true;
         c = PC_unpair;
-      } else if (strcmp(val, "pair") == 0) {
+      } else if (is_val("pair")) {
         pair = true;
         c = PC_pair;
-      } else if (strcmp(val, "read") == 0) {
+      } else if (is_val("read")) {
         read = true;
         c = PC_read;
-      } else if (strcmp(val, "read_all") == 0) {
+      } else if (is_val("read_all")) {
         read_all = true;
         c = PC_read;
-      } else if (strcmp(val, "store") == 0) {
+      } else if (is_val("store")) {
         store = true;
 
 #if 0

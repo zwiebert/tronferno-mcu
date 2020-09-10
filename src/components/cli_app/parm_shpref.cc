@@ -51,6 +51,9 @@ static void output_message_kvd(const char *key, int val) {
   so_output_message(SO_PRINT_KVD, &arg);
 }
 
+#define is_key(k) (strcmp(key, k) == 0)
+#define is_val(k) (strcmp(val, k) == 0)
+
 int process_parmShpref(clpar p[], int len) {
   int arg_idx;
   int err_ct = 0;
@@ -66,12 +69,12 @@ int process_parmShpref(clpar p[], int len) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
     assert(key);
 
-    if (strcmp(key, "g") == 0) {
+    if (is_key("g")) {
       if (!asc2u8(val, &g, FER_G_MAX))
         return cli_replyFailure();
       OPTS_CLEAR_KEY();
 
-    } else if (strcmp(key, "m") == 0) {
+    } else if (is_key("m")) {
       if (!asc2u8(val, &m, FER_M_MAX))
         return cli_replyFailure();
       OPTS_CLEAR_KEY();
@@ -93,7 +96,7 @@ int process_parmShpref(clpar p[], int len) {
         ferPos_prefByM_load(&st.sts, g, m);
         haveStLoad = true;
       }
-      if (*val != '?') {
+      if (!is_val("?")) {
         st.sta[k] = atoi(val);
         haveStStore = true;
       }
@@ -101,8 +104,8 @@ int process_parmShpref(clpar p[], int len) {
       goto NEXT_ARG;
     }
 
-    if (strcmp(key, PARM_OPT_TAG) == 0) {
-      if (strcmp(val, "?") != 0) {
+    if (is_key(PARM_OPT_TAG)) {
+      if (!is_val("?")) {
         goto NEXT_ARG_ERROR;
       }
       ferSp_strByM_forEach("", g, m, output_message_kvs);
@@ -114,7 +117,7 @@ int process_parmShpref(clpar p[], int len) {
         tag[strlen(tag) - 1] = '\0';
         wildcard = true;
       }
-      if (strcmp(val, "?") != 0) {
+      if (!is_val("?")) {
         if (wildcard || !ferSp_strByM_store(val, tag, g, m))
           goto NEXT_ARG_ERROR;
       }

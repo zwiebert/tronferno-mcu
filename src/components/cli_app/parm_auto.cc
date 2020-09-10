@@ -48,6 +48,9 @@ const char cli_help_parmTimer[] = "daily=T        set daily timer\n"
     "  s|S sun automatic\n"
     "  r|R random timer\n";
 
+#define is_key(k) (strcmp(key, k) == 0)
+#define is_val(k) (strcmp(val, k) == 0)
+
 int process_parmTimer(clpar p[], int len) {
   int i;
   bool f_disableWeekly = false, f_disableDaily = false, f_disableAstro = false, f_disableManu = false;
@@ -72,51 +75,51 @@ int process_parmTimer(clpar p[], int len) {
 
     if (key == NULL) {
       return -1;
-    } else if (strcmp(key, timer_keys[TIMER_KEY_WEEKLY]) == 0) {
+    } else if (is_key(timer_keys[TIMER_KEY_WEEKLY])) {
       NODEFAULT();
       strncpy(tda.weekly, val, sizeof(tda.weekly) - 1);
-    } else if (strcmp(key, timer_keys[TIMER_KEY_DAILY]) == 0) {
+    } else if (is_key(timer_keys[TIMER_KEY_DAILY])) {
       NODEFAULT();
       strncpy(tda.daily, val, sizeof(tda.daily) - 1);
-    } else if (strcmp(key, timer_keys[TIMER_KEY_ASTRO]) == 0) {
+    } else if (is_key(timer_keys[TIMER_KEY_ASTRO])) {
       tda.astro = val ? atoi(val) : 0;
-    } else if (strcmp(key, timer_keys[TIMER_KEY_FLAG_RANDOM]) == 0) {
+    } else if (is_key(timer_keys[TIMER_KEY_FLAG_RANDOM])) {
       int flag = asc2bool(val);
       td_put_random(&tda, flag >= 0);
       if (flag >= 0) {
         SET_BIT(fpr0_mask, flag_Random);
       }
-    } else if (strcmp(key, timer_keys[TIMER_KEY_FLAG_SUN_AUTO]) == 0) {
+    } else if (is_key(timer_keys[TIMER_KEY_FLAG_SUN_AUTO])) {
       int flag = asc2bool(val);
       td_put_sun_auto(&tda, flag >= 0);
       if (flag >= 0) {
         SET_BIT(fpr0_mask, flag_SunAuto);
       }
 
-    } else if (strcmp(key, timer_keys[TIMER_KEY_RTC_ONLY]) == 0) {
+    } else if (is_key(timer_keys[TIMER_KEY_RTC_ONLY])) {
       flag_rtc_only = asc2bool(val);
-    } else if (strcmp(key, "a") == 0) {
+    } else if (is_key("a")) {
       u32 tmp = val ? strtol(val, NULL, 16) : 0;
       if (tmp) addr = tmp;
-    } else if (strcmp(key, "g") == 0) {
+    } else if (is_key("g")) {
       if (!asc2group(val, &group))
       return cli_replyFailure();
-    } else if (strcmp(key, "m") == 0) {
+    } else if (is_key("m")) {
       if (!asc2memb(val, &memb))
       return cli_replyFailure();
 
       mn = memb ? (memb - 7) : 0;
-    } else if (strcmp(key, "rtc") == 0) {
+    } else if (is_key("rtc")) {
       time_t t = time_iso2time(val);
       if (t >= 0) {
         timer = t;
       }
-    } else if (strcmp(key, "rs") == 0) { // obsolete
+    } else if (is_key("rs")) { // obsolete
         NODEFAULT();
         rs = atoi(val);
         f_no_send = true;
         f_modify = true;
-      } else if (strcmp(key, "f") == 0) {
+      } else if (is_key("f")) {
         const char *p = val;
         NODEFAULT();
         while (*p) {
@@ -138,7 +141,7 @@ int process_parmTimer(clpar p[], int len) {
           }
         }
       } else {
-        if (strcmp(key, "rs") == 0) {
+        if (is_key("rs")) {
           cli_replyFailure();
           return -1;
         }
