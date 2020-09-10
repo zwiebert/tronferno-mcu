@@ -8,4 +8,5 @@ idf_component_register(SRCS ${srcs}
     PRIV_REQUIRES key_value_store net_mqtt_app cli_app
     )
 
-component_compile_options(${component_compile_opts})
+component_compile_options(${comp_compile_opts})
+component_compile_features(${comp_compile_feats})

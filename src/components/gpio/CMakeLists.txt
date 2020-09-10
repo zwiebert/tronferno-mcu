@@ -5,4 +5,5 @@ idf_component_register(SRCS ${srcs}
     PRIV_REQUIRES txtio config app_config app_misc debug
 )
 
-component_compile_options(${component_compile_opts})
+component_compile_options(${comp_compile_opts})
+component_compile_features(${comp_compile_feats})
