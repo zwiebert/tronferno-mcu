@@ -75,9 +75,9 @@ void io_mqttApp_publishPinChange(int gpio_num, bool level) {
 }
 
 
-static void io_mqttApp_pin_change_cb(const uoApp_cbMsgT *msg) {
-    if (msg->is_pch())
-      io_mqttApp_publishPinChange(msg->pch->gpio_num, msg->pch->level);
+static void io_mqttApp_pin_change_cb(const uoCb_msgT *msg) {
+  if (auto pch = uoCb_pchFromMsg(msg))
+      io_mqttApp_publishPinChange(pch->gpio_num, pch->level);
 }
 
 static void io_mqtt_connected () {
@@ -94,11 +94,11 @@ static void io_mqtt_connected () {
   snprintf(topic, sizeof topic, "%s%s+%s", TOPIC_ROOT, TOPIC_GPO_MID, TOPIC_GPO_END);
   io_mqtt_subscribe(topic, 0);
 
-  uoApp_register_callback(io_mqttApp_pin_change_cb, BIT(uoApp_cbMsgT::pchBit));
+  uoCb_register_callback(io_mqttApp_pin_change_cb, BIT(UOACB_MFB(pch)));
 }
 
 static void io_mqtt_disconnected () {
-  uoApp_unregister_callback(io_mqttApp_pin_change_cb);
+  uoCb_unregister_callback(io_mqttApp_pin_change_cb);
 }
 
 static void io_mqtt_received(const char *topic, int topic_len, const char *data, int data_len) {
