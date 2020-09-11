@@ -59,13 +59,6 @@ void io_mqtt_publish_topic_end_get_json(const char *topic_end) {
   io_mqtt_publish_topic_end(topic_end, json);
 }
 
-void io_mqtt_publish_config(const char *json) {
-  char topic[64];
-  snprintf(topic, sizeof topic, "%s%s", TOPIC_ROOT, TOPIC_CLI_OUT_END);
-
-  io_mqtt_publish(topic, json);
-}
-
 void io_mqtt_publish_gmp(const so_arg_gmp_t *gmp) {
   char topic[64], data[16];
 

@@ -13,8 +13,6 @@
 
 void io_mqtt_enable(bool enable);
 
-void io_mqtt_publish_config(const char *json);
-
 #ifdef USE_MQTT
 void io_mqtt_publish_gmp(const so_arg_gmp_t *gmp);
 #else

@@ -6,6 +6,7 @@
 #include <mbedtls/base64.h>
 #include "net/http/server/http_server.h"
 #include "uout/status_json.h"
+#include "uout_app/callbacks.h"
 #include "config/config.h"
 #include "cli_app/cli_app.h"
 #include "misc/int_types.h"
@@ -260,12 +261,15 @@ void hts_register_uri_handlers(httpd_handle_t server) {
 
 }
 
-
+static void ws_send_json_cb(const char *msg, void *args) {
+  ws_send_json(msg);
+}
 
 void hts_setup_content() {
   hts_register_uri_handlers_cb = hts_register_uri_handlers;
 #ifdef USE_WS
   ws_print_json_cb = ws_send_json;
+  register_callback(ws_send_json_cb, 0);
 #endif
 }
 
