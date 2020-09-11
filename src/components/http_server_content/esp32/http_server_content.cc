@@ -261,15 +261,16 @@ void hts_register_uri_handlers(httpd_handle_t server) {
 
 }
 
-static void ws_send_json_cb(const char *msg, void *args) {
-  ws_send_json(msg);
+static void ws_send_json_cb(const uoApp_cbMsgT *msg) {
+  if (msg->is_json())
+    ws_send_json(msg->json);
 }
 
 void hts_setup_content() {
   hts_register_uri_handlers_cb = hts_register_uri_handlers;
 #ifdef USE_WS
   ws_print_json_cb = ws_send_json;
-  register_callback(ws_send_json_cb, 0);
+  uoApp_register_callback(ws_send_json_cb, BIT(uoApp_cbMsgT::wsBit));
 #endif
 }
 

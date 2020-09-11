@@ -51,5 +51,4 @@ bool mcu_get_buttonDownPin(void);
 bool mcu_get_buttonPin(void);
 
 void pin_notify_input_change(void);
-extern void (*pin_notify_input_change_cb)(int gpio_num, bool level);
 extern void (*gpio_INPUT_PIN_CHANGED_ISR_cb)();

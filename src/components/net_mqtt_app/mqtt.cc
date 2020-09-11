@@ -17,8 +17,7 @@
 #include "cli/mutex.hh"
 #include "uout/status_json.h"
 #include "uout_app/status_output.h"
-#include "gpio/pin.h"
-//#include "config/config.h"
+#include <uout_app/callbacks.h>
 
 static char *io_mqtt_topic_root;
 
@@ -75,6 +74,12 @@ void io_mqttApp_publishPinChange(int gpio_num, bool level) {
   io_mqtt_publish(topic, data);
 }
 
+
+static void io_mqttApp_pin_change_cb(const uoApp_cbMsgT *msg) {
+    if (msg->is_pch())
+      io_mqttApp_publishPinChange(msg->pch->gpio_num, msg->pch->level);
+}
+
 static void io_mqtt_connected () {
   char topic[64];
   snprintf(topic, sizeof topic, "%scli", TOPIC_ROOT);
@@ -88,8 +93,13 @@ static void io_mqtt_connected () {
 
   snprintf(topic, sizeof topic, "%s%s+%s", TOPIC_ROOT, TOPIC_GPO_MID, TOPIC_GPO_END);
   io_mqtt_subscribe(topic, 0);
+
+  uoApp_register_callback(io_mqttApp_pin_change_cb, BIT(uoApp_cbMsgT::pchBit));
 }
 
+static void io_mqtt_disconnected () {
+  uoApp_unregister_callback(io_mqttApp_pin_change_cb);
+}
 
 static void io_mqtt_received(const char *topic, int topic_len, const char *data, int data_len) {
 
@@ -159,8 +169,6 @@ static void io_mqtt_received(const char *topic, int topic_len, const char *data,
   }
 }
 
-
-
 void io_mqttApp_setup(const char *topic_root) {
   if (topic_root && *topic_root && (!io_mqtt_topic_root || 0 != strcmp(io_mqtt_topic_root, topic_root))) {
     char *tr = (char*)malloc(strlen(topic_root)+1);
@@ -170,9 +178,10 @@ void io_mqttApp_setup(const char *topic_root) {
       io_mqtt_topic_root = tr;
     }
   }
-  pin_notify_input_change_cb = io_mqttApp_publishPinChange; // TODO: check if MQTT enabled
+
   io_mqtt_received_cb = io_mqtt_received;
   io_mqtt_connected_cb = io_mqtt_connected;
+  io_mqtt_disconnected_cb = io_mqtt_disconnected;
 }
 
 #endif // USE_MQTT

@@ -10,6 +10,7 @@
 
 #include "txtio/inout.h"
 #include "config/config.h"
+#include "uout_app/status_output.h"
 
 #include "freertos/FreeRTOS.h"
 #include <esp_intr_alloc.h>
@@ -234,7 +235,6 @@ const char *mcu_access_pin(int ngpio_number, mcu_pin_state *result, mcu_pin_stat
     return mcu_access_pin2(gpio_number, result, state);
 }
 
-void (*pin_notify_input_change_cb)(int gpio_num, bool level);
 void (*gpio_INPUT_PIN_CHANGED_ISR_cb)();
 
 void pin_notify_input_change() {
@@ -245,8 +245,8 @@ void pin_notify_input_change() {
     if (!(mask & 1))
       continue;
     bool level = gpio_get_level(static_cast<gpio_num_t>(i));
-    if (pin_notify_input_change_cb)
-      (*pin_notify_input_change_cb)(i, level);
+    so_arg_pch_t a { i, level };
+    so_output_message(SO_GPIO_PIN_CHANGED, &a);
   }
 }
 

@@ -7,7 +7,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "so_out.h"
 #include "so_print.h"
-
+#include "uout_app/callbacks.h"
 #include "app/common.h"
 #include "app/firmware.h"
 #include "app/rtc.h"
@@ -552,6 +552,12 @@ break;
   }
   break;
 #endif
+  case SO_GPIO_PIN_CHANGED: {
+    auto a = static_cast<const so_arg_pch_t*>(arg);
+    uoApp_event_pinChange(a);
+  }
+    break;
+
   default:
 #ifndef DISTRIBUTION
     io_puts("internal_error:so_output_message() unhandled message: "), io_putd(mt), io_putlf();

@@ -58,6 +58,8 @@ typedef enum {
 
   SO_OTA_RUN, SO_OTA_FAIL, SO_OTA_DONE,
 
+  SO_GPIO_PIN_CHANGED,
+
 
 } so_msg_t;
 
@@ -98,6 +100,11 @@ typedef struct {
   const char *key;
   gm_bitmask_t *mm;
 } so_arg_kmm_t;
+
+typedef struct {
+  i8 gpio_num;
+  bool level;
+} so_arg_pch_t;
 
 void so_broadcast_message(so_msg_t mt, void *arg);
 void so_output_message(so_msg_t mt, const void *arg);

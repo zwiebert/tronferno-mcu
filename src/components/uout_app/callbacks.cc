@@ -1,32 +1,46 @@
 #include <uout_app/callbacks.h>
+#include <misc/int_macros.h>
 
 constexpr int cbs_size = 6;
 
 
-static uout_callbackT uo_msg_cbs[cbs_size] = {
 
-};
+struct {
+  uout_callbackT cb;
+  uint32_t flags;
+} uo_msg_cbs[cbs_size];
 
 static uint8_t uo_msg_flags[cbs_size];
 
-bool register_callback(uout_callbackT msg_cb, uint8_t flags) {
-  for (int i=0; i < cbs_size; ++i) {
-    if (!uo_msg_cbs[i])
+bool uoApp_register_callback(uout_callbackT msg_cb, uint8_t flags) {
+  for (auto it : uo_msg_cbs) {
+    if (!it.cb)
       continue;
-    uo_msg_cbs[i] = msg_cb;
-    uo_msg_flags[i] = flags;
+    it.cb = msg_cb;
+    it.flags = flags;
     return true;
   }
   return false;
 }
 
-bool unregister_callback(uout_callbackT msg_cb) {
-  for (int i=0; i < cbs_size; ++i) {
-    if (uo_msg_cbs[i] != msg_cb)
+bool uoApp_unregister_callback(uout_callbackT msg_cb) {
+  for (auto it : uo_msg_cbs) {
+    if (it.cb != msg_cb)
       continue;
-    uo_msg_cbs[i] = nullptr;
-    uo_msg_flags[i] = 0;
+    it.cb = nullptr;
+    it.flags = 0;
     return true;
   }
   return false;
+}
+
+void uoApp_event_pinChange(const so_arg_pch_t *args) {
+  for (auto it : uo_msg_cbs) {
+    if (it.cb && (it.flags & BIT(uoApp_cbMsgT::pchBit))) {
+      uoApp_cbMsgT msg { .msg_type = uoApp_cbMsgT::pchT, .pch = args };
+      it.cb(&msg);
+    }
+
+  }
+  // TODO: Implement me
 }
