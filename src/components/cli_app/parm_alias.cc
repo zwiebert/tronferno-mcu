@@ -40,7 +40,7 @@ process_parmPair(clpar p[], int len) {
   int arg_idx;
   int i;
 
-  so_object cfgObj(SO_PAIR_begin, nullptr, SO_PAIR_end);
+  so_object<void> cfgObj(&soMsg_pair_begin, &soMsg_pair_end);
 
   u32 addr = 0;
   const char *addr_as_string = "";
@@ -138,7 +138,7 @@ process_parmPair(clpar p[], int len) {
   if (store && has_mm) {
     if (pair_setControllerPairings(addr, &mm)) {
       so_arg_kmm_t kmm = {addr_as_string, &mm };
-      so_output_message(SO_PAIR_PRINT_KMM_SINGLE, &kmm);
+      soMsg_pair_print_kmm_single(kmm);
     } else {
       read = true;
     }
@@ -162,7 +162,7 @@ process_parmPair(clpar p[], int len) {
       gm_bitmask_t gm;
       if (pair_getControllerPairings(addr, &gm)) {
         so_arg_amm_t amm = {addr, &gm };
-        so_output_message(SO_PAIR_PRINT_AMM, &amm);
+        soMsg_pair_print_amm(amm);
       }
     }
 

@@ -170,17 +170,17 @@ kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     read_controller(&gm, key);
 
     D(printf("key '%s', type '%d' a=%x \n", info.key, info.type, arg.a));
-    so_output_message(SO_PAIR_PRINT_KMM, &arg);
+    soMsg_pair_print_kmm(arg);
     return kvsCb_match;
 }
 
 bool pair_so_output_all_pairings(void) {
 
-  so_output_message(SO_PAIR_ALL_begin, NULL);
+  soMsg_pair_all_begin();
 
   kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, KEY_PREFIX, kvs_foreach_cb, 0);
 
-  so_output_message(SO_PAIR_ALL_end, NULL);
+  soMsg_pair_all_end();
   return true;
 }
 

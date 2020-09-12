@@ -143,7 +143,7 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
       { LockGuard lock(cli_mutex); 
         if (sj_open_root_object("tfmcu")) {
           so_arg_gmp_t gmp[3] = { { g, m, pct }, { g, 0, (u8) pm_getPct(g, 0) }, { 0xff, 0xff, 0xff } };
-          so_broadcast_message(SO_POS_PRINT_GMPA, gmp);
+          soMsg_pos_print_gmpa(gmp, true);
           sj_close_root_object();
           cli_print_json(sj_get_json());
 #ifdef USE_WS
@@ -173,7 +173,7 @@ int
 statPos_printAllPcts() {
   gm_bitmask_t msk = {0,};
 
-  so_output_message(SO_POS_begin, 0);
+  soMsg_pos_begin();
   for (gT g=1; g < 8; ++g) {
     if (pm_isGroupUnused(g))
       continue;
@@ -200,10 +200,10 @@ statPos_printAllPcts() {
         }
       }
       so_arg_mmp_t mmp = { &pos_msk, pct };
-      so_output_message(SO_POS_PRINT_MMP, &mmp);
+      soMsg_pos_print_mmp(mmp);
     }
   }
-  so_output_message(SO_POS_end, 0);
+  soMsg_pos_end();
   return 0;
 }
 

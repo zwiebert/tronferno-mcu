@@ -67,7 +67,7 @@ void ntpApp_setup(void) {
 
 extern "C" void main_setup_ip_dependent() { //XXX called from library
   static int once;
-  so_output_message(SO_INET_PRINT_ADDRESS, 0);
+  soMsg_inet_print_address();
   if (!once) {
     once = 1;
 #ifdef USE_NTP

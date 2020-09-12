@@ -141,7 +141,7 @@ process_parmSend(clpar p[], int len) {
       int pos = simPos_getPct_whileMoving(addr, g, m);
       if (pos >= 0) {
         so_arg_gmp_t gmp = {g, m, pos};
-        so_output_message(SO_POS_PRINT_GMP, &gmp);
+        soMsg_pos_print_gmp(gmp);
       }
     } else {
       statPos_printAllPcts();

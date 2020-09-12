@@ -46,7 +46,7 @@ bool  pair_auto_set(u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
     end_time = run_time_s() + timeout_secs;
     last_received_sender.data[0] = 0;
     pras_active = true;
-    so_output_message(SO_PRAS_START_LISTENING, &id);
+    soMsg_pras_start_listening(id);
     pair_ENABLE_cb();
   }
   return false;
@@ -58,8 +58,8 @@ void pair_auto_set_check_timeout(void) {
 
   if (end_time < run_time_s()) {
     end_time = 0;
-    so_output_message(SO_PRAS_STOP_LISTENING, NULL);
-    so_output_message(SO_PRAS_TIMEOUT, NULL);
+    soMsg_pras_stop_listening();
+    soMsg_pras_timeout();
     pras_active = false;
     pair_DISABLE_cb();
   }
@@ -83,7 +83,7 @@ bool  pair_auto_set_check(const fsbT *fsb) {
 
     int result = success ? pras_c : -pras_c;
 
-    so_output_message(SO_PRAS_DONE, &result);
+    soMsg_pras_done(result);
     end_time = 0;
 
     pras_active = false;

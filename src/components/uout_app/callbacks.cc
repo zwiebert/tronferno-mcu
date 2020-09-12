@@ -5,7 +5,7 @@
 #include <uout/callbacks.h>
 #include <uout_app/callbacks.h>
 
-void uoApp_publish_pinChange(const so_arg_pch_t *args) {
+void uoApp_publish_pinChange(const so_arg_pch_t args) {
   for (auto it : uoCb_cbs) {
     if (!it.cb)
       continue;
@@ -14,7 +14,7 @@ void uoApp_publish_pinChange(const so_arg_pch_t *args) {
     if (!it.flags.fmt.obj)
       continue;
 
-    uoCb_msgT  msg { .cv_ptr = args, .flags = { } };
+    uoCb_msgT  msg { .cv_ptr = &args, .flags = { } };
     msg.flags.fmt.obj = true;
     msg.flags.evt.pin_change = true;
 

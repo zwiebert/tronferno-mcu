@@ -60,7 +60,7 @@ static void kvs_print_keys(const char *name_space);
 int process_parmMcu(clpar p[], int len) {
   int arg_idx;
 
-  so_object soObj(SO_MCU_begin, nullptr, SO_MCU_end);
+  so_object<void> soObj(soMsg_mcu_begin, soMsg_mcu_end);
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -72,7 +72,7 @@ int process_parmMcu(clpar p[], int len) {
 
     if (is_kt(boot_count)) {
       if (is_val("?")) {
-        so_output_message(SO_MCU_BOOT_COUNT, 0);
+        soMsg_mcu_boot_count();
       } else if (strcmp("0", val) == 0) {
         // TODO: reset boot counter
       }
@@ -106,14 +106,14 @@ int process_parmMcu(clpar p[], int len) {
         so_arg_gm_t gm;
         gm.g = val[0] - '0';
         gm.m = val[1] - '0';
-        so_output_message(SO_TIMER_EVENT_PRINT, &gm);
+        soMsg_timer_event_print(gm);
       }
     } else if (is_kt(am)) {
       if (strlen(val) == 2) {
         so_arg_gm_t gm;
         gm.g = val[0] - '0';
         gm.m = val[1] - '0';
-        so_output_message(SO_ASTRO_MINUTES_PRINT, &gm);
+        soMsg_astro_minutes_print(gm);
       }
 #ifdef USE_FREERTOS
     } else if (is_kt(stack)) {
@@ -187,22 +187,22 @@ int process_parmMcu(clpar p[], int len) {
 
     } else if (is_kt(up_time)) {
       if (is_val("?")) {
-        so_output_message(SO_MCU_RUN_TIME, NULL);
+        soMsg_mcu_run_time();
       } else {
         reply_message("error:mcu:up-time", "option is read-only");
       }
 
     } else if (is_kt(version)) {
-      so_output_message(SO_MCU_VERSION, NULL);
+      soMsg_mcu_version();
 #ifdef USE_OTA
     } else if (is_kt(ota)) {
       if (is_val("?")) {
-        so_output_message(SO_MCU_OTA_STATE, 0);
+        soMsg_mcu_ota_state();
       } else if (is_val("github-master")) {
-        so_output_message(SO_MCU_OTA, OTA_FWURL_MASTER);
+        soMsg_mcu_ota(OTA_FWURL_MASTER);
         ota_doUpdate(OTA_FWURL_MASTER, ca_cert_pem);
       } else if (is_val("github-beta")) {
-        so_output_message(SO_MCU_OTA, OTA_FWURL_BETA);
+        soMsg_mcu_ota(OTA_FWURL_BETA);
         ota_doUpdate(OTA_FWURL_BETA, ca_cert_pem);
       } else if (0 == strncmp(val, OTA_FWURL_TAG_COOKIE, strlen(OTA_FWURL_TAG_COOKIE))) {
         const char *tag = val + strlen(OTA_FWURL_TAG_COOKIE);

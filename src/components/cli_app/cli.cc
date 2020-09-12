@@ -157,13 +157,13 @@ static bool cliApp_checkPassword(clpar p[], int len, so_target_bits tgt) {
     return true;
   if (strcmp(p[1].key, "pw") == 0) {
     if (strcmp(p[1].val, C.app_configPassword) == 0) {
-      so_output_message(SO_CFGPASSWD_OK, NULL);
+      soMsg_cfgpasswd_ok();
       return true;
     } else {
-      so_output_message(SO_CFGPASSWD_WRONG, NULL);
+      soMsg_cfgpasswd_wrong();
     }
   } else {
-    so_output_message(SO_CFGPASSWD_MISSING, NULL);
+    soMsg_cfgpasswd_missing();
   }
 
   return false;

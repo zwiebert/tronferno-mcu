@@ -41,11 +41,11 @@ static const char *const opts_kvd[] = {"mvut", "mvdt", "mvspdt"};
 static void output_message_kvs(const char *tag, const char *val) {
   char *key = strcat(strcpy((char*)alloca(strlen(tag) + sizeof PARM_OPT_TAG_PREFIX), PARM_OPT_TAG_PREFIX), tag);
   so_arg_kvs_t arg = { .key = key, .val = val };
-  so_output_message(SO_PRINT_KVS, &arg);
+  soMsg_print_kvs(arg);
 }
 static void output_message_kvd(const char *key, int val) {
   so_arg_kvd_t arg = { .key = key, .val = val };
-  so_output_message(SO_PRINT_KVD, &arg);
+  soMsg_print_kvd(arg);
 }
 
 #define is_kt(k) (kt == otok:: k)
@@ -81,9 +81,9 @@ int process_parmShpref(clpar p[], int len) {
     }
   }
 
-  so_object shprefObj(SO_SHPREF_OBJ_begin, nullptr, SO_SHPREF_OBJ_end);
+  so_object<void> shprefObj(soMsg_shpref_obj_begin,soMsg_shpref_obj_end);
   so_arg_gm_t shprefObjGmArgs = { .g = g, .m = m };
-  so_object shprefObjGm(SO_SHPREF_OBJ_GM_begin, &shprefObjGmArgs, SO_SHPREF_OBJ_GM_end);
+  so_object shprefObjGm(soMsg_shpref_obj_gm_begin, shprefObjGmArgs,soMsg_shpref_obj_gm_end);
 
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {

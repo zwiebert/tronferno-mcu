@@ -106,7 +106,7 @@ sep_disable(void) {
   if (sep_buttons_enabled) {
     sep_DISABLE_cb();
     sep_send_stop();  // don't remove this line
-    so_output_message(SO_SEP_DISABLE, 0);
+    soMsg_sep_disable();
     up_pressed = down_pressed = false;
     sep_buttons_enabled = false;
   }
@@ -118,7 +118,7 @@ sep_enable(fsbT *fsb) {
     sep_disable();
     return false;
   } else if (IS_BUTTON_PRESSED()) {
-    so_output_message(SO_SEP_BUTTON_PRESSED_ERROR, 0);
+    soMsg_sep_button_pressed_error();
     return false;
   } else {
 
@@ -136,7 +136,7 @@ sep_enable(fsbT *fsb) {
     } else {
       return false;
     }
-    so_output_message(SO_SEP_ENABLE, 0);
+    soMsg_sep_enable();
     sep_fsb = *fsb;
     sep_buttons_enabled = true;
     TIMEOUT_SET();

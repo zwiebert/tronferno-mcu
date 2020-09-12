@@ -7,7 +7,7 @@ void main_setup() {
   rtc_setup();
 
   config_setup_astro();
-  so_output_message(SO_FW_START_MSG_PRINT, 0);
+  soMsg_fw_start_msg_print();
 
   fer_setup(fer_configT {C.fer_centralUnitID});
 }

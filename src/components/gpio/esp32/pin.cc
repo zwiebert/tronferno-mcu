@@ -246,7 +246,7 @@ void pin_notify_input_change() {
       continue;
     bool level = gpio_get_level(static_cast<gpio_num_t>(i));
     so_arg_pch_t a { i, level };
-    so_output_message(SO_GPIO_PIN_CHANGED, &a);
+    soMsg_gpio_pin_changed(a);
   }
 }
 

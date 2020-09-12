@@ -37,7 +37,7 @@
 static os_event_t user_procTaskQueue[user_procTaskQueueLen];
 
 void main_setup_ip_dependent() {
-  so_output_message(SO_INET_PRINT_ADDRESS, 0);
+  soMsg_INET_PRINT_ADDRESS();
 #ifdef USE_NTP
   config_setup_ntpClient();
 #endif

@@ -137,7 +137,7 @@ process_parmConfig(clpar p[], int len) {
 
   bool hasChanged_geo = false, hasChanged_gpio = false;
 
-  so_object cfgObj(SO_CFG_begin, nullptr, SO_CFG_end);
+  so_object<void> cfgObj(soCfg_begin, soCfg_end);
 
   bool pw_ok = strlen(C.app_configPassword) == 0;
 
@@ -308,7 +308,7 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (is_kt(cuas)) {
       if (is_val("?")) {
-        so_output_message(SO_CUAS_STATE, 0);
+        soMsg_cuas_state();
       }
 
 
@@ -317,15 +317,15 @@ process_parmConfig(clpar p[], int len) {
 #ifdef ACCESS_GPIO
     } else if (is_kt(gpio)) {
       if (is_val("?")) {
-        so_output_message(SO_CFG_GPIO_MODES, 0);
+        soCfg_GPIO_MODES();
       } else if (*val == '$') {
-        so_output_message(SO_CFG_GPIO_MODES_AS_STRING, 0);
+        soCfg_GPIO_MODES_AS_STRING();
       }
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
 
       if (is_val("?")) {
-        so_output_message(SO_CFG_GPIO_PIN, &gpio_number);
+        soCfg_GPIO_PIN(gpio_number);
       } else if (!is_gpio_number_usable(gpio_number, true)) {
         reply_message("gpio:error", "gpio number cannot be used");
         ++errors;

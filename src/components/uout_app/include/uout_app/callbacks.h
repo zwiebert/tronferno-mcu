@@ -4,7 +4,7 @@
 #include <uout/callbacks.h>
 #include <type_traits>
 
-void uoApp_publish_pinChange(const so_arg_pch_t *args);
+void uoApp_publish_pinChange(const so_arg_pch_t args);
 
 inline const so_arg_pch_t *uoCb_pchFromMsg(const uoCb_msgT msg) {
   if (msg.flags.evt.pin_change && msg.flags.fmt.obj)
