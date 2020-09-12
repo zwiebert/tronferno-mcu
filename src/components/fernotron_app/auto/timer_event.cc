@@ -116,7 +116,7 @@ static int set_earliest(u8 g, u8 m, minutes_t *earliest, const struct tm *tm_now
 
 
 static bool fam_get_next_timer_event_earliest(gm_bitmask_t *mask_result, minutes_t *earliest_result, const struct tm *tm_now, minutes_t minutes_now) {
-  u8 g, m;
+  u8 g;
   minutes_t earliest = MINUTES_DISABLED;
   bool result = false;
 
@@ -157,7 +157,7 @@ static bool fam_get_next_timer_event_earliest(gm_bitmask_t *mask_result, minutes
 
 bool fam_get_next_timer_event(timer_event_t *evt, const time_t *now_time) {
   precond(evt);
-  u8 g, m;
+
   minutes_t earliest = MINUTES_DISABLED;
   gm_bitmask_t existing_members = { 0, };
 

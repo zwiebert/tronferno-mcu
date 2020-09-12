@@ -15,10 +15,10 @@
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "fernotron/pos/shutter_prefs.h"
 #include "net/ipnet.h"
-#include "net/mqtt/app/mqtt.h"
 #include "txtio/inout.h"
 #include "uout/status_json.h"
 #include "uout_app/status_output.h"
+#include <uout_app/callbacks.h>
 
 #include "misc/int_macros.h"
 #include "misc/ftoa.h"
@@ -155,10 +155,8 @@ void  so_print_timer(u8 g, u8 m) {
     so_timer_to_json(g, m, true);
     const char *json = sj_get_json();
 
-#ifdef USE_MQTT
-    if (so_tgt_test(SO_TGT_MQTT))
-      io_mqtt_publish("tfmcu/timer_out", json);
-#endif
+    uoApp_publish_timerJson(json);
+
     cli_print_json(json);
   }
 #endif

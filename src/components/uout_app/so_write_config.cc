@@ -22,7 +22,6 @@
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "fernotron/pos/shutter_prefs.h"
 #include "net/ipnet.h"
-#include "net/mqtt/app/mqtt.h"
 #include "txtio/inout.h"
 #include "uout/status_json.h"
 #include "uout_app/status_output.h"

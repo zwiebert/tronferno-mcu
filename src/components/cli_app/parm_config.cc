@@ -139,8 +139,6 @@ process_parmConfig(clpar p[], int len) {
 
   so_object<void> cfgObj(soCfg_begin, soCfg_end);
 
-  bool pw_ok = strlen(C.app_configPassword) == 0;
-
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 

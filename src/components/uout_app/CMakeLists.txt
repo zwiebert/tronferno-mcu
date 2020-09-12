@@ -7,7 +7,7 @@ idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
     REQUIRES uout
-    PRIV_REQUIRES fernotron_app app_misc net_mqtt_app misc cli_app config firmware_update debug
+    PRIV_REQUIRES fernotron_app app_misc misc cli_app config firmware_update debug
     )
     
 component_compile_options(${comp_compile_opts})

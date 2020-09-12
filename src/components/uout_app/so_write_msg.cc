@@ -22,7 +22,6 @@
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "fernotron/pos/shutter_prefs.h"
 #include "net/ipnet.h"
-#include "net/mqtt/app/mqtt.h"
 #include "txtio/inout.h"
 #include "uout/status_json.h"
 #include "uout_app/status_output.h"
@@ -285,13 +284,10 @@ void soMsg_pos_print_gmpa(const so_arg_gmp_t *a, bool broadcast) {
       uoApp_publish_gmpJson(sj_get_json());
   }
 
-#ifdef USE_MQTT
   if (so_mqt || broadcast) // XXX
     for (int i = 0; a[i].g <= 7; ++i) {
       uoApp_publish_gmpObj(a[i]);
     }
-#endif
-
 }
 
 void soMsg_pos_print_mmp(const so_arg_mmp_t a) {

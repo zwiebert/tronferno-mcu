@@ -77,9 +77,13 @@ void io_mqttApp_publishPinChange(int gpio_num, bool level) {
 
 static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
   if (auto pch = uoCb_pchFromMsg(msg))
-      io_mqttApp_publishPinChange(pch->gpio_num, pch->level);
+    io_mqttApp_publishPinChange(pch->gpio_num, pch->level);
   if (auto gmp = uoCb_gmpFromMsg(msg))
     io_mqtt_publish_gmp(gmp);
+  if (auto json = uoCb_jsonFromMsg(msg)) {
+    if (msg.flags.evt.timer_change)
+      io_mqtt_publish("tfmcu/timer_out", json);
+  }
 }
 
 static void io_mqtt_connected () {
@@ -100,7 +104,9 @@ static void io_mqtt_connected () {
   flags.tgt.mqtt = true;
   flags.evt.pin_change = true;
   flags.evt.pct_change = true;
+  flags.evt.timer_change = true;
   flags.fmt.obj = true;
+  flags.fmt.json = true;
   uoCb_subscribe(io_mqttApp_uoutPublish_cb, flags);
 }
 

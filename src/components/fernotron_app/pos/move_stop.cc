@@ -53,7 +53,6 @@ void ferPos_stop_mm(gm_bitmask_t *mm, u32 now_ts) {
 
 
 void ferPos_stop_mvi_mm(struct mv *mv, gm_bitmask_t *mm, u32 now_ts) {
-  u8 m, g;
 
   for (auto it = mm->begin(1); it; ++it) {
     u8 g = it.getG(), m = it.getM();

@@ -6,7 +6,7 @@
 #include <uout_app/callbacks.h>
 
 void uoApp_publish_pinChange(const so_arg_pch_t args) {
-  for (auto it : uoCb_cbs) {
+  for (auto const &it : uoCb_cbs) {
     if (!it.cb)
       continue;
     if (!it.flags.evt.pin_change)
@@ -28,7 +28,7 @@ static void publish(uoCb_cbT cb, const void *ptr, uo_flagsT flags) {
 }
 
 void uoApp_publish_gmpJson(const char *json) {
-  for (auto it : uoCb_cbs) {
+  for (auto const &it : uoCb_cbs) {
     if (!it.cb)
       continue;
     if (!it.flags.evt.pct_change)
@@ -46,7 +46,7 @@ void uoApp_publish_gmpJson(const char *json) {
 
 void uoApp_publish_gmpObj(const so_arg_gmp_t a) {
 
-  for (auto it : uoCb_cbs) {
+  for (auto const &it : uoCb_cbs) {
     if (!it.cb)
       continue;
     if (!it.flags.evt.pct_change)
@@ -62,3 +62,19 @@ void uoApp_publish_gmpObj(const so_arg_gmp_t a) {
   }
 }
 
+void uoApp_publish_timerJson(const char *json) {
+  for (auto const &it : uoCb_cbs) {
+    if (!it.cb)
+      continue;
+    if (!it.flags.evt.timer_change)
+      continue;
+    if (!it.flags.fmt.json)
+      continue;
+
+    uo_flagsT flags;
+    flags.fmt.json = true;
+    flags.evt.timer_change = true;
+
+    publish(it.cb, json, flags);
+  }
+}
