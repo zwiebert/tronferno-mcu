@@ -554,7 +554,7 @@ break;
 #endif
   case SO_GPIO_PIN_CHANGED: {
     auto a = static_cast<const so_arg_pch_t*>(arg);
-    uoApp_event_pinChange(a);
+    uoApp_publish_pinChange(a);
   }
     break;
 
