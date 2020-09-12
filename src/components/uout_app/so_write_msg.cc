@@ -246,20 +246,20 @@ void soMsg_pos_print_gmp(const so_arg_gmp_t a, bool broadcast) {
     io_puts(" p="), io_putd(a.p), io_puts(";\n");
   }
 
-  if (so_jco) {
+  if (so_jco || broadcast) {
     sj_add_object("pct");
     char buf[] = "00";
     buf[0] += a.g;
     buf[1] += a.m;
     sj_add_key_value_pair_d(buf, a.p);
     sj_close_object();
+
+    if (broadcast)
+      uoApp_publish_gmpJson(sj_get_json());
   }
 
-#ifdef USE_MQTT
-  if (so_mqt || broadcast) // XXX
-    io_mqtt_publish_gmp(&a);
-#endif
-
+  if (so_mqt || broadcast)
+    uoApp_publish_gmpObj(a);
 }
 
 void soMsg_pos_print_gmpa(const so_arg_gmp_t *a, bool broadcast) {
@@ -271,7 +271,7 @@ void soMsg_pos_print_gmpa(const so_arg_gmp_t *a, bool broadcast) {
       io_puts(" p="), io_putd(a[i].p), io_puts(";\n");
     }
 
-  if (so_jco) {
+  if (so_jco || broadcast) {
     sj_add_object("pct");
     for (int i = 0; a[i].g <= 7; ++i) {
       char buf[] = "00";
@@ -280,12 +280,15 @@ void soMsg_pos_print_gmpa(const so_arg_gmp_t *a, bool broadcast) {
       sj_add_key_value_pair_d(buf, a[i].p);
     }
     sj_close_object();
+
+    if (broadcast)
+      uoApp_publish_gmpJson(sj_get_json());
   }
 
 #ifdef USE_MQTT
   if (so_mqt || broadcast) // XXX
     for (int i = 0; a[i].g <= 7; ++i) {
-      io_mqtt_publish_gmp(&a[i]);
+      uoApp_publish_gmpObj(a[i]);
     }
 #endif
 
