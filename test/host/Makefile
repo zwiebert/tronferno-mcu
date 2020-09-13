@@ -18,7 +18,7 @@ make := make --no-print-dir -s
 grep_results := ! grep -H -e IGNORE -e FAIL -e Aborted
 
 SRC_BASE=../..
-BUILD_BASE =? $(realpath .)/build
+BUILD_BASE ?= $(realpath .)/build
 BUILD_PATH=$(BUILD_BASE)/test_host
 BUILD_OBJ_PATH=$(BUILD_PATH)/obj
 BUILD_OBJ_LIB=$(BUILD_PATH)/obj.a
