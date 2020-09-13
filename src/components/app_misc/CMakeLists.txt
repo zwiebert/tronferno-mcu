@@ -3,7 +3,7 @@ set(srcs esp32/timer.cc rtc.cc  opt_map.cc)
 idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS "./include" ../.. 
-    REQUIRES app_config misc_time
+    REQUIRES app_config misc_time firmware_update
     PRIV_REQUIRES   config
     EMBED_TXTFILES ./ca_cert.pem
 )

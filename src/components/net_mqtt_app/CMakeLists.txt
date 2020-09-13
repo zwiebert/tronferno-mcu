@@ -3,8 +3,8 @@ set(srcs  mqtt.cc)
 idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
-    REQUIRES fernotron_app net_mqtt uout_app
-    PRIV_REQUIRES app_misc cli uout misc http_server_content mqtt
+    REQUIRES fernotron_app net_mqtt 
+    PRIV_REQUIRES app_misc cli misc http_server_content uout_app
  )
  
  component_compile_options(${comp_compile_opts})

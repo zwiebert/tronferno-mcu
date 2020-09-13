@@ -1,5 +1,4 @@
 #pragma once
-#include <fernotron/types.h>
 #include <stdint.h>
 
 typedef enum {
@@ -72,7 +71,7 @@ typedef struct {
 } so_arg_gm_t;
 
 typedef struct {
-  gm_bitmask_t *mm;
+  struct GmBitMask *mm;
   uint8_t p;
 } so_arg_mmp_t;
 
@@ -82,12 +81,12 @@ typedef struct {
 
 typedef struct {
   uint32_t a;
-  gm_bitmask_t *mm;
+  struct GmBitMask *mm;
 } so_arg_amm_t;
 
 typedef struct {
   const char *key;
-  gm_bitmask_t *mm;
+  struct GmBitMask *mm;
 } so_arg_kmm_t;
 
 typedef struct {

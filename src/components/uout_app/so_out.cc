@@ -7,11 +7,6 @@
 #include "app_config/proj_app_cfg.h"
 #include "so_out.h"
 #include <app_config/options.hh>
-#if 0
-#include "cli_app/cli_app.h" // FIXME?
-#include "cli_app/cli_config.h"
-#include "app/opt_map.hh"
-#endif
 #include "txtio/inout.h"
 #include "uout/status_json.h"
 #include "debug/dbg.h"

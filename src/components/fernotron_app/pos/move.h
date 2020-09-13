@@ -40,13 +40,13 @@ u16 simPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct);
 // start moving
 bool ferPos_shouldMove_sunDown(uint8_t g, uint8_t m);
 int simPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_cmd cmd);
-int simPos_registerMovingShutters(gm_bitmask_t *mm, fer_cmd cmd);
+int simPos_registerMovingShutters(GmBitMask *mm, fer_cmd cmd);
 
 // stop moving
 void ferPos_stop_mv(struct mv *mv, u8 g, u8 m, u8 pct);
 void ferPos_stop_mvi(struct mv *mv, u8 g, u8 m, u32 now_ts);
-void ferPos_stop_mm(gm_bitmask_t *mm, u32 now_ts);
-void ferPos_stop_mvi_mm(struct mv *mv, gm_bitmask_t *mm, u32 now_ts);
+void ferPos_stop_mm(GmBitMask *mm, u32 now_ts);
+void ferPos_stop_mvi_mm(struct mv *mv, GmBitMask *mm, u32 now_ts);
 
 
 

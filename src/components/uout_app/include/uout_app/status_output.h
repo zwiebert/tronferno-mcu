@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "uout/status_output.h"
-#include "fernotron/types.h"
 #include <uout_app/so_types.h>
 #include <uout_app/so_msg.h>
 #include <uout_app/so_config.h>

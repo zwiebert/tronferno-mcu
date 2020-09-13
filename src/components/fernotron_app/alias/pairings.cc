@@ -81,9 +81,7 @@ bool  pair_auto_set_check(const fsbT *fsb) {
       }
     }
 
-    int result = success ? pras_c : -pras_c;
-
-    soMsg_pras_done(result);
+    soMsg_pras_done(success, pras_c == PC_unpair);
     end_time = 0;
 
     pras_active = false;

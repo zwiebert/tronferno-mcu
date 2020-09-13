@@ -4,7 +4,7 @@
 #include <time.h>
 
 typedef struct {
-  gm_bitmask_t member_mask[2];
+  GmBitMask member_mask[2];
   minutes_t next_event;
 } timer_event_t;
 #define te_getMaskUp(te) (&(te)->member_mask[0])

@@ -117,7 +117,7 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, pct=%d\n", __func__, a, (int)g, (int)m, (int)pct));
 #ifdef USE_PAIRINGS
   if (!(a == 0 || a == cfg_getCuId())) {
-    gm_bitmask_t gm;
+    GmBitMask gm;
     if (pair_getControllerPairings(a, &gm))
       for (gm_iterator it(1,1,true); it; ++it) {
         const gT g = it.getG();
@@ -157,7 +157,7 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   return result;
 }
 
-int statPos_setPcts(gm_bitmask_t *mm, u8 p) {
+int statPos_setPcts(GmBitMask *mm, u8 p) {
   for (gm_iterator it(1, 1, true); it; ++it) {
     const gT g = it.getG();
     const mT m = it.getM();
@@ -170,7 +170,7 @@ int statPos_setPcts(gm_bitmask_t *mm, u8 p) {
 
 int 
 statPos_printAllPcts() {
-  gm_bitmask_t msk;
+  GmBitMask msk;
 
   soMsg_pos_begin();
   for (gT g=1; g < 8; ++g) {
@@ -186,7 +186,7 @@ statPos_printAllPcts() {
         continue; // was already processed by a previous pass
 
       u8 pct = pm_getPct(g,m);
-      gm_bitmask_t pos_msk;
+      GmBitMask pos_msk;
       for (gm_iterator it(g); it; ++it) {
         const gT g2 = it.getG();
         const mT m2 = it.getM();

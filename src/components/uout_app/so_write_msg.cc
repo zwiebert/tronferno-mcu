@@ -11,16 +11,7 @@
 #include "app/common.h"
 #include "app/firmware.h"
 #include "app/rtc.h"
-//#include "cli_app/cli_config.h"
-//#include "cli_app/cli_fer.h"
-//#include "cli_app/cli_app.h" // FIXME?
 #include "config/config.h"
-#include "fernotron/astro.h"
-#include "fernotron/alias/pairings.h"
-#include "fernotron/auto/fau_tdata_store.h"
-#include "fernotron/auto/fau_tminutes.h"
-#include "fernotron/cuas/cuid_auto_set.h"
-#include "fernotron/pos/shutter_prefs.h"
 #include "net/ipnet.h"
 #include "txtio/inout.h"
 #include "uout/status_json.h"
@@ -132,8 +123,7 @@ void soMsg_cuas_done() {
   reply_message("cuas=ok", 0);
 }
 
-void soMsg_cuas_state() {
-  cuas_state_T state = cuas_getState();
+void soMsg_cuas_state(int state) {
   so_out_x_reply_entry_sd("cuas", state);
 
 }
@@ -158,54 +148,42 @@ void soMsg_pras_timeout() {
   reply_id_message(pras_msgid, "pras=time-out", 0);
 }
 
-void soMsg_pras_done(const /*enum pair_cmds*/ int cmd) {
-  switch (cmd) {
-  case PC_unpair:
-    io_puts("U:pras: success: controller was unpaired\n");
-    break;
-  case PC_pair:
-    io_puts("U:pras: success: controller was paired\n");
-    break;
-  case -PC_unpair:
-    io_puts("U:pras: failure: controller was NOT unpaired\n");
-    break;
-  case -PC_pair:
-    io_puts("U:pras: failure: controller was NOT paired\n");
-    break;
-  default:
-    break;
-  }
-  {
-    bool success = 0 < cmd;
-    reply_id_message(pras_msgid, success ? "pras=ok" : "pras:error", 0);
-  }
+void soMsg_pras_done(bool success, bool unpair) {
+  char buf[64];
+  snprintf(buf, sizeof buf, "U:pras: %s: controller was%s %spaired\n", success ? "success" : "failure", success ? "" : " NOT", unpair ? "un" : "");
+  reply_id_message(pras_msgid, success ? "pras=ok" : "pras:error", 0);
 
 }
-
 /////////////////////////////////////////////////////////////////////////////////
 void soMsg_timer_event_print(const so_arg_gm_t a) {
   so_print_timer_event_minutes(a.g, a.m);
 }
 
-void soMsg_timer_print_begin() {
-  // if (so_jco) sj_add_object("auto"); // XXX-2020-05-13: disabled for now because would crash FHEM server with previous 00_TronfernoMCU.pm version
+int soMsg_timer_print_begin() {
+  if (so_jco)
+    return sj_add_object("auto");
+  return -1;
 }
 
 void soMsg_timer_print_end() {
-  // if (so_jco) sj_close_object(); // XXX: disabled
+  if (so_jco)
+     sj_close_object(); // XXX: disabled
 }
 
-void soMsg_timer_print(const so_arg_gm_t a) {
-  so_print_timer(a.g, a.m);
+int soMsg_timer_begin(const so_arg_gm_t a) {
+  char dict[] = "autoGM";
+  dict[4] = '0' + a.g;
+  dict[5] = '0' + a.m;
+  return sj_add_object(dict);
 }
 
-void soMsg_astro_minutes_print(const so_arg_gm_t a) {
-  u8 g = a.g, m = a.m;
-  timer_minutes_t tmi;
-  if (fau_get_timer_minutes_now(&tmi, &g, &m, true)) {
-    so_out_x_reply_entry_sl("astro-minute", tmi.minutes[ASTRO_MINTS]);
-  }
+void soMsg_timer_end() {
+  if (so_jco)
+    sj_close_object();
+}
 
+void soMsg_astro_minutes_print(const int am) {
+    so_out_x_reply_entry_sl("astro-minute", am);
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -237,6 +215,18 @@ void soMsg_print_kvd(const so_arg_kvd_t a) {
 void soMsg_print_kvs(so_arg_kvs_t a) {
   so_out_x_reply_entry_ss(a.key, a.val);
 }
+
+void soMsg_kv(const char *key, const char *val) {
+  so_out_x_reply_entry_ss(key, val);
+}
+
+void soMsg_kv(const char *key, int val) {
+  so_out_x_reply_entry_sd(key, val);
+}
+
+void soMsg_kv(const char *key, bool val);
+
+
 
 void soMsg_pos_print_gmp(const so_arg_gmp_t a, bool broadcast) {
   if (so_cco) {

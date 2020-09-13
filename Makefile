@@ -49,14 +49,16 @@ esp32_build_opts += -B $(BUILD_BASE)
 esp32_build_dir := $(BUILD_BASE)
 endif
 esp32_build_cmd := idf.py $(esp32_build_opts)
-
+esp32_src_dir := src/esp32
+esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) 
 
 ######### ESP32 Targets ##################
 esp32_tgts_auto := menuconfig clean fullclean app flash monitor
 
 .PHONY: esp32-all-force esp32-rebuild
 .PHONY: esp32-all esp32-lan esp32-flash esp32-flash-ocd
-
+.PHONY: esp32-dot
+.PHONY: FORCE
 
 
 define GEN_RULE
@@ -71,7 +73,17 @@ esp32-all:
 	$(esp32_build_cmd) reconfigure all
 esp32-lan:
 	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
+	
+esp32-dot: $(esp32_build_dir)/tfmcu.dot
 
+$(esp32_build_dir)/tfmcu.dot: FORCE
+	$(esp32_cmake_cmd) --graphviz=$(esp32_build_dir)/tfmcu.dot
+	
+	
+%.png:%.dot
+	dot -Tpng -o $@ $<
+
+FORCE:
 ########### OpenOCD ###################
 esp32_ocd_sh :=  sh $(realpath ./src/esp32/esp32_ocd.sh)
 

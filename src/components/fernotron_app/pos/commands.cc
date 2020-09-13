@@ -36,7 +36,7 @@ bool commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     return false;
 
   if (is_cu && m == 0) {
-    gm_bitmask_t gm;
+    GmBitMask gm;
     gm[g] = 0xfe;
     return commands_moveShuttersToPct(a, &gm, pct, repeats);
   }
@@ -96,7 +96,7 @@ bool commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   return true;
 }
 
-bool   commands_moveShuttersToPct(u32 a, gm_bitmask_t *gm, u8 pct, u8 repeats) {
+bool   commands_moveShuttersToPct(u32 a, GmBitMask *gm, u8 pct, u8 repeats) {
   u8 g, m;
 
   for (g=1; g <= GRP_MAX; ++g) {

@@ -16,7 +16,7 @@ extern void (*fpos_POSITIONS_MOVE_cb)(bool has_moving);
 
 // keep track of movement by simulation
 int simPos_registerMovingShutter(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd);
-int simPos_registerMovingShutters(gm_bitmask_t *mm, fer_cmd cmd);
+int simPos_registerMovingShutters(GmBitMask *mm, fer_cmd cmd);
 
 int simPos_getPct_whileMoving(uint32_t a, uint8_t g, uint8_t m);
 uint16_t simPos_calcMoveDuration_fromPctDiff_m(uint8_t g, uint8_t m, uint8_t curr_pct, uint8_t pct);

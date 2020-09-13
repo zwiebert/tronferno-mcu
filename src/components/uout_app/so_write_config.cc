@@ -12,18 +12,7 @@
 #include "app/common.h"
 #include "app/firmware.h"
 #include "app/rtc.h"
-#if 0
-#include "cli_app/cli_config.h"
-#include "cli_app/cli_fer.h"
-#include "cli_app/cli_app.h" // FIXME?
-#endif
 #include "config/config.h"
-#include "fernotron/astro.h"
-#include "fernotron/alias/pairings.h"
-#include "fernotron/auto/fau_tdata_store.h"
-#include "fernotron/auto/fau_tminutes.h"
-#include "fernotron/cuas/cuid_auto_set.h"
-#include "fernotron/pos/shutter_prefs.h"
 #include "net/ipnet.h"
 #include "txtio/inout.h"
 #include "uout/status_json.h"

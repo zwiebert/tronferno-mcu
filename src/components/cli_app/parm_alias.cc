@@ -45,7 +45,7 @@ process_parmPair(clpar p[], int len) {
   u32 addr = 0;
   const char *addr_as_string = "";
   u8 g = 0, m = 0, c = 0;
-  gm_bitmask_t mm ;
+  GmBitMask mm ;
   bool has_mm = false;
   bool pair = false, unpair = false, read = false, read_all = false,  scan = false, store = false;
 
@@ -159,7 +159,7 @@ process_parmPair(clpar p[], int len) {
     }
 
     if (read) {
-      gm_bitmask_t gm;
+      GmBitMask gm;
       if (pair_getControllerPairings(addr, &gm)) {
         so_arg_amm_t amm = {addr, &gm };
         soMsg_pair_print_amm(amm);

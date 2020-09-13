@@ -11,6 +11,8 @@
 #include "net/mqtt/app/mqtt.h"
 #include "net/mqtt/mqtt_imp.h"
 
+#include "mqtt_private.h"
+
 #include <string.h>
 #include <stdio.h>
 #include "cli/cli.h"

@@ -15,8 +15,8 @@ bool pair_controller(uint32_t controller, uint8_t g, uint8_t m, bool unpair);
 
 
 
-bool pair_setControllerPairings(uint32_t controller, gm_bitmask_t *gm);
-bool pair_getControllerPairings(uint32_t controller, gm_bitmask_t *gm);
+bool pair_setControllerPairings(uint32_t controller, GmBitMask *gm);
+bool pair_getControllerPairings(uint32_t controller, GmBitMask *gm);
 bool pair_rmController(uint32_t controller);
 
 bool pair_so_output_all_pairings(void);

@@ -111,10 +111,12 @@ int process_parmMcu(clpar p[], int len) {
       }
     } else if (is_kt(am)) {
       if (strlen(val) == 2) {
-        so_arg_gm_t gm;
-        gm.g = val[0] - '0';
-        gm.m = val[1] - '0';
-        soMsg_astro_minutes_print(gm);
+        u8 g = val[0] - '0';
+        u8 m = val[1] - '0';
+        timer_minutes_t tmi;
+        if (fau_get_timer_minutes_now(&tmi, &g, &m, true)) {
+          soMsg_astro_minutes_print(tmi.minutes[ASTRO_MINTS]);
+        }
       }
 #ifdef USE_FREERTOS
     } else if (is_kt(stack)) {

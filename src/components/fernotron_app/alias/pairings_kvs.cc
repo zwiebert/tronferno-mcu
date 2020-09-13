@@ -27,7 +27,7 @@
 
 
   
-static void  fixController(const char *key, gm_bitmask_t *gm) {
+static void  fixController(const char *key, GmBitMask *gm) {
   // there seems to be existing keys which cannot be found by iteration.
   // to fix this: erase and create them new here.
   if (!kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, key, 0, 0)) {
@@ -42,7 +42,7 @@ static void  fixController(const char *key, gm_bitmask_t *gm) {
 }
 
 
-static bool read_controller(gm_bitmask_t *gm, const char *key) {
+static bool read_controller(GmBitMask *gm, const char *key) {
   bool success = false;
   kvshT handle = kvs_open(CFG_NAMESPACE, kvs_READ);
   if (handle) {
@@ -63,7 +63,7 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
 
   handle = kvs_open(CFG_NAMESPACE, kvs_READ_WRITE);
   if (handle) {
-    gm_bitmask_t gm;
+    GmBitMask gm;
     if (!kvs_rw_blob(handle, key, &gm, sizeof gm, false)) {
       gm.clear();
     }
@@ -100,7 +100,7 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
 
 
 
-bool pair_setControllerPairings(uint32_t controller, gm_bitmask_t *mm) {
+bool pair_setControllerPairings(uint32_t controller, GmBitMask *mm) {
   bool success = false;
   a2key(controller);
 
@@ -146,7 +146,7 @@ pair_controller(u32 controller, u8 g, u8 m, bool unpair) {
 }
 
 
-bool pair_getControllerPairings(u32 a, gm_bitmask_t *gm) {
+bool pair_getControllerPairings(u32 a, GmBitMask *gm) {
   precond(gm && (a & 0xff000000) == 0);
 
   a2key(a);
@@ -163,7 +163,7 @@ bool pair_getControllerPairings(u32 a, gm_bitmask_t *gm) {
 
 kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     so_arg_kmm_t arg;
-    gm_bitmask_t gm;
+    GmBitMask gm;
     arg.mm = &gm;
 
     arg.key = &key[sizeof(KEY_PREFIX) - 1];

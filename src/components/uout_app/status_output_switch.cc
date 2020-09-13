@@ -2,7 +2,6 @@
 #include "so_out.h"
 #include "so_print.h"
 #include "config/config.h"
-//#include "cli_app/cli_config.h"
 #include "net/ipnet.h"
 #include "net/mqtt/mqtt.h"
 #include "txtio/inout.h"

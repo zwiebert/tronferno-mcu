@@ -37,7 +37,7 @@ struct filter {
   enum direction dir;
 };
 
-static int ferPos_filter_mm(gm_bitmask_t *mm, struct filter *filter) {
+static int ferPos_filter_mm(GmBitMask *mm, struct filter *filter) {
 
   int remaining = 0;
 
@@ -86,7 +86,7 @@ static int ferPos_filter_mm(gm_bitmask_t *mm, struct filter *filter) {
 }
 
 
-static void ferPos_createMovement_mm(struct mv *mv, gm_bitmask_t *mm, u32 now_ts, enum direction dir) {
+static void ferPos_createMovement_mm(struct mv *mv, GmBitMask *mm, u32 now_ts, enum direction dir) {
   u8 g;
 
   for (g = 1; g <= GRP_MAX; ++g) {
@@ -97,7 +97,7 @@ static void ferPos_createMovement_mm(struct mv *mv, gm_bitmask_t *mm, u32 now_ts
   mv->dir = dir;
 }
 
-struct mv *ferPos_addToMovement_mm(gm_bitmask_t *mm, u32 now_ts, enum direction dir) {
+struct mv *ferPos_addToMovement_mm(GmBitMask *mm, u32 now_ts, enum direction dir) {
   u8 g;
   struct mv *mv;
 
@@ -113,7 +113,7 @@ struct mv *ferPos_addToMovement_mm(gm_bitmask_t *mm, u32 now_ts, enum direction 
   return 0;
 }
 
-static struct mv* add_to_new_movement_mm(gm_bitmask_t *mm, u32 now_ts, enum direction dir) {
+static struct mv* add_to_new_movement_mm(GmBitMask *mm, u32 now_ts, enum direction dir) {
   struct mv *mv = mv_calloc();
 
   if (mv) {
@@ -123,7 +123,7 @@ static struct mv* add_to_new_movement_mm(gm_bitmask_t *mm, u32 now_ts, enum dire
 }
 
 // register moving related commands sent to a shutter to keep track of its changing position
-int simPos_registerMovingShutters(gm_bitmask_t *mm, fer_cmd cmd) {
+int simPos_registerMovingShutters(GmBitMask *mm, fer_cmd cmd) {
   u32 now_ts = get_now_time_ts();
 
   enum direction dir = DIRECTION_NONE;
@@ -184,14 +184,14 @@ int simPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_cmd cmd) {
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, cmd=%d\n", __func__, a, (int)g, (int)m, (int)cmd));
 #ifdef USE_PAIRINGS
   if (!(a == 0 || a == cfg_getCuId())) {
-    gm_bitmask_t gm;
+    GmBitMask gm;
     if (pair_getControllerPairings(a, &gm))
       return simPos_registerMovingShutters(&gm, cmd);
     return 0;
   }
 #endif
 
-  gm_bitmask_t mm ;
+  GmBitMask mm ;
   if (g == 0) {
     for (g = 1; g <= GRP_MAX; ++g) {
       mm[g] = 0xfe;

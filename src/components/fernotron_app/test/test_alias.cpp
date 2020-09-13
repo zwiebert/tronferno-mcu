@@ -11,10 +11,10 @@
 #include <string.h>
 
 #define A 0x101234
-static gm_bitmask_t gm, gme;
-const gm_bitmask_t gmz;
+static GmBitMask gm, gme;
+const GmBitMask gmz;
 static bool succ;
-#define SIZE_GM sizeof (gm_bitmask_t)
+#define SIZE_GM sizeof (GmBitMask)
 
 
 static int pair_and_read_back(unsigned a, uint8_t g, uint8_t m, bool unpair) {

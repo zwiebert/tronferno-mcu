@@ -9,9 +9,6 @@
 
 #ifdef __cplusplus
 #include "fernotron/gm_bitmask.hh"
-using gm_bitmask_t = GmBitMask;
-#else
-typedef uint8_t gmBitMaskT[8];
 #endif
 
 
@@ -21,7 +18,7 @@ typedef uint8_t gmBitMaskT[8];
 
 
 
-// read/save one or more elements of type gm_bitmask_t
+// read/save one or more elements of type GmBitMask
 bool fer_gmByName_load(const char *name, const gmBitMaskT *gm, int count);
 bool fer_gmByName_store(const char *name, gmBitMaskT *gm, int count);
 

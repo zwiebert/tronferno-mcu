@@ -20,22 +20,22 @@ void soMsg_cfgpasswd_missing();
 void soMsg_cuas_start(uint16_t id);
 void soMsg_cuas_timeout();
 void soMsg_cuas_done();
-void soMsg_cuas_state();
+void soMsg_cuas_state(int state);
 void soMsg_pras_start_listening(uint16_t id);
 void soMsg_pras_stop_listening();
 void soMsg_pras_timeout();
-void soMsg_pras_done(/* enum pair_cmds */ int cmd);
+void soMsg_pras_done(bool success, bool unpair);
 void soMsg_timer_event_print(const so_arg_gm_t a);
-void soMsg_timer_print_begin();
+int soMsg_timer_print_begin();
 void soMsg_timer_print_end();
-void soMsg_timer_print(const so_arg_gm_t a);
-void soMsg_astro_minutes_print(const so_arg_gm_t a);
+int soMsg_timer_begin(const so_arg_gm_t a);
+void soMsg_timer_end();
+void soMsg_astro_minutes_print(int am);
 void soMsg_shpref_obj_begin();
 void soMsg_shpref_obj_end();
 void soMsg_shpref_obj_gm_begin(const so_arg_gm_t a);
 void soMsg_shpref_obj_gm_end();
-void soMsg_print_kvd(const so_arg_kvd_t a);
-void soMsg_print_kvs(so_arg_kvs_t a);
+
 void soMsg_pos_print_gmp(const so_arg_gmp_t a, bool broadcast = false);
 void soMsg_pos_print_gmpa(const so_arg_gmp_t *a, bool broadcast = false);
 void soMsg_pos_print_mmp(const so_arg_mmp_t a);
@@ -50,4 +50,14 @@ void soMsg_pair_print_kmm(const so_arg_kmm_t a);
 void soMsg_pair_print_kmm_single(const so_arg_kmm_t a);
 void soMsg_inet_print_address();
 void soMsg_gpio_pin(const so_arg_pch_t a, bool broadcast = false);
+
+
+void soMsg_print_kvd(const so_arg_kvd_t a);
+void soMsg_print_kvs(so_arg_kvs_t a);
+
+void soMsg_kv(const char *key, const char *val);
+void soMsg_kv(const char *key, int val);
+void soMsg_kv(const char *key, bool val);
+
+
 

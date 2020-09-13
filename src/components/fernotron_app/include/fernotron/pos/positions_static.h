@@ -20,7 +20,7 @@ typedef uint8_t shutterGroupPositionsT[8];
 
 // keep track of static positions
 int statPos_setPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct);
-int statPos_setPcts(gm_bitmask_t *mm, uint8_t pct);
+int statPos_setPcts(GmBitMask *mm, uint8_t pct);
 int statPos_getPct(uint32_t a, uint8_t g, uint8_t m);
 
 int statPos_printAllPcts(void);

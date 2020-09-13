@@ -5,6 +5,9 @@
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "uout_app/status_output.h"
+#include "uout_app/so_msg.h"
+#include "uout_app/callbacks.h"
+#include "uout/status_json.h"
 #include "app_config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
 #include "app/rtc.h"
@@ -18,6 +21,9 @@
 #include <fernotron/fer_main.h>
 
 #include <stdlib.h>
+
+
+static void print_timer(u8 g, u8 m, bool wildcard); //XXX
 
 enum {
   TIMER_KEY_WEEKLY, TIMER_KEY_DAILY, TIMER_KEY_ASTRO, TIMER_KEY_RTC_ONLY, TIMER_KEY_FLAG_RANDOM, TIMER_KEY_FLAG_SUN_AUTO
@@ -227,12 +233,59 @@ int process_parmTimer(clpar p[], int len) {
   }
 
   if (rs) {
-    so_arg_gm_t gm = { group, mn };
-    soMsg_timer_print_begin();
-    soMsg_timer_print(gm);
-    soMsg_timer_print_end();
+    if (int start = soMsg_timer_print_begin(); start >= 0) {
+      print_timer(group, mn, true);
+      soMsg_timer_print_end();
+
+      if (f_modify) {
+        const char *json = sj_get_json() + start;
+        uoApp_publish_timerJson(json);
+      }
+    }
   }
 
   return 0;
+}
+
+
+static void print_timer(u8 g, u8 m, bool wildcard) {
+  timer_data_t tdr;
+
+  u8 g_res = g, m_res = m;
+
+  if (read_timer_data(&tdr, &g_res, &m_res, wildcard)) {
+    soMsg_timer_begin(so_arg_gm_t { g, m });
+
+    {
+      bool f_manual = manual_bits.getBit(g, m);
+      char flags[10], *p = flags;
+      *p++ = f_manual ? 'M' : 'm';
+      *p++ = td_is_random(&tdr) ? 'R' : 'r';
+      *p++ = td_is_sun_auto(&tdr) ? 'S' : 's';
+      *p++ = td_is_astro(&tdr) ? 'A' : 'a';
+      *p++ = td_is_daily(&tdr) ? 'D' : 'd';
+      *p++ = td_is_weekly(&tdr) ? 'W' : 'w';
+      *p++ = '\0';
+      soMsg_kv("f", flags);
+    }
+
+    if (td_is_daily(&tdr)) {
+      soMsg_kv("daily", tdr.daily);
+    }
+
+    if (td_is_weekly(&tdr)) {
+      soMsg_kv("weekly", tdr.weekly);
+    }
+
+    if (td_is_astro(&tdr)) {
+      soMsg_kv("astro", tdr.astro);
+
+      timer_minutes_t tmi;
+      fau_get_timer_minutes_now(&tmi, &g_res, &m_res, false);
+      soMsg_kv("asmin", tmi.minutes[ASTRO_MINTS]);
+    }
+
+    soMsg_timer_end();
+  }
 }
 

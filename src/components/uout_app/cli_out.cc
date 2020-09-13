@@ -2,8 +2,6 @@
 #include <string.h>
 #include "config/config.h"
 #include "misc/bcd.h"
-//#include "cli_imp.h"
-//#include "cli_app/cli_app.h"
 #include <uout/status_output.h>
 #include "uout/cli_out.h"
 #include "misc/int_types.h"

@@ -94,7 +94,7 @@ void fam_loop_old(void) {
 }
 
 
-static int set_earliest(u8 g, u8 m, minutes_t *earliest, const struct tm *tm_now, minutes_t minutes_now, gm_bitmask_t *gm) {
+static int set_earliest(u8 g, u8 m, minutes_t *earliest, const struct tm *tm_now, minutes_t minutes_now, GmBitMask *gm) {
   int result = 0;
 
   timer_minutes_t timi;
@@ -115,7 +115,7 @@ static int set_earliest(u8 g, u8 m, minutes_t *earliest, const struct tm *tm_now
 }
 
 
-static bool fam_get_next_timer_event_earliest(gm_bitmask_t *mask_result, minutes_t *earliest_result, const struct tm *tm_now, minutes_t minutes_now) {
+static bool fam_get_next_timer_event_earliest(GmBitMask *mask_result, minutes_t *earliest_result, const struct tm *tm_now, minutes_t minutes_now) {
   u8 g;
   minutes_t earliest = MINUTES_DISABLED;
   bool result = false;
@@ -159,7 +159,7 @@ bool fam_get_next_timer_event(timer_event_t *evt, const time_t *now_time) {
   precond(evt);
 
   minutes_t earliest = MINUTES_DISABLED;
-  gm_bitmask_t existing_members ;
+  GmBitMask existing_members ;
 
   *evt = (timer_event_t ) { .next_event = MINUTES_DISABLED, };
   struct tm tm_now;

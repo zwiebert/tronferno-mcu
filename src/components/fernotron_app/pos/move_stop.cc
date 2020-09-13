@@ -36,7 +36,7 @@ void ferPos_stop_mvi(struct mv *mv, u8 g, u8 m, u32 now_ts) {
 }
 
 
-void ferPos_stop_mm(gm_bitmask_t *mm, u32 now_ts) {
+void ferPos_stop_mm(GmBitMask *mm, u32 now_ts) {
 
   struct mv *mv;
   for (mv = mv_getFirst(); mv; mv = mv_getNext(mv)) {
@@ -50,7 +50,7 @@ void ferPos_stop_mm(gm_bitmask_t *mm, u32 now_ts) {
 }
 
 
-void ferPos_stop_mvi_mm(struct mv *mv, gm_bitmask_t *mm, u32 now_ts) {
+void ferPos_stop_mvi_mm(struct mv *mv, GmBitMask *mm, u32 now_ts) {
 
   for (auto it = mm->begin(1); it; ++it) {
     u8 g = it.getG(), m = it.getM();

@@ -306,7 +306,7 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (is_kt(cuas)) {
       if (is_val("?")) {
-        soMsg_cuas_state();
+        soMsg_cuas_state(cuas_getState());
       }
 
 
