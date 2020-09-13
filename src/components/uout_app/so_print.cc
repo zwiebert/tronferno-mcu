@@ -5,9 +5,11 @@
 #include "app/common.h"
 #include "app/firmware.h"
 #include "app/rtc.h"
+#if 0
 #include "cli_app/cli_config.h"
 #include "cli_app/cli_fer.h"
 #include "cli_app/cli_app.h" // FIXME?
+#endif
 #include "config/config.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
@@ -17,6 +19,7 @@
 #include "net/ipnet.h"
 #include "txtio/inout.h"
 #include "uout/status_json.h"
+#include "uout/cli_out.h"
 #include "uout_app/status_output.h"
 #include <uout_app/callbacks.h>
 
@@ -53,6 +56,9 @@ void  so_print_timer_as_text(u8 g, u8 m, bool wildcard) {
   timer_data_t tdr;
   char buf[10];
   u8 g_res = g, m_res = m;
+
+  gm_bitmask_t manual_bits;
+  fer_gmByName_load("MANU", manual_bits, 1);
   bool f_manual = GET_BIT(manual_bits[g], m);
 
   if (so_cco) cli_out_timer_reply_entry(NULL, NULL, 1);
@@ -110,6 +116,8 @@ void  so_timer_to_json(u8 g, u8 m, bool wildcard) {
     }
 
     {
+      gm_bitmask_t manual_bits;
+      fer_gmByName_load("MANU", manual_bits, 1);
       bool f_manual = GET_BIT(manual_bits[g], m);
       char flags[10], *p = flags;
       *p++ = f_manual ? 'M' : 'm';

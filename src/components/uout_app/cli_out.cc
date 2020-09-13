@@ -2,9 +2,12 @@
 #include <string.h>
 #include "config/config.h"
 #include "misc/bcd.h"
-#include "cli_imp.h"
-#include "cli_app/cli_app.h"
+//#include "cli_imp.h"
+//#include "cli_app/cli_app.h"
+#include <uout/status_output.h>
+#include "uout/cli_out.h"
 #include "misc/int_types.h"
+#include "so_out.h"
 
 char Obj_tag[16] = "";
 #define SET_OBJ_TAG(tag) strncpy(Obj_tag, (tag), sizeof Obj_tag)
@@ -14,6 +17,7 @@ char Obj_tag[16] = "";
 #define OBJ_TAG_MCU "mcu"
 #define OBJ_TAG_SEND "send"
 
+extern u16 cli_msgid;
 
 static void  cli_out_top_tag(void) {
     io_puts("tf: ");

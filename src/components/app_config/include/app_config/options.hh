@@ -1,8 +1,27 @@
 #pragma once
+#include "proj_app_cfg.h"
 #include <stdint.h>
-#include <uout_app/status_output.h>
-typedef int8_t otokBaseT;
 
+typedef const char *const_cstringT;
+
+#ifdef ACCESS_GPIO
+constexpr const_cstringT pin_mode_args = "diqQoO";
+constexpr const_cstringT pin_level_args = "lh";
+constexpr const_cstringT pin_state_args = "?01t";
+#endif
+
+#ifdef USE_NETWORK
+using cfg_args_networkT = const char *[4];
+constexpr cfg_args_networkT cfg_args_network = { "none", "wlan", "ap", "lan" };
+#endif
+
+#ifdef USE_LAN
+using cfg_args_lanPhyT = const char *[4];
+constexpr cfg_args_lanPhyT cfg_args_lanPhy = { "none", "lan8270", "rtl8201", "ip101", };
+#endif
+
+
+typedef int8_t otokBaseT;
 enum class otok : otokBaseT  {
   NONE = -1,  // not existing
 
@@ -28,7 +47,7 @@ enum class otok : otokBaseT  {
   SIZE // key array size
 };
 
-typedef const char *const_cstringT;
+
 
 constexpr const_cstringT otok_strings[static_cast<otokBaseT>(otok::SIZE)] = {
   //// config keys ///
@@ -48,6 +67,3 @@ constexpr const_cstringT otok_strings[static_cast<otokBaseT>(otok::SIZE)] = {
   "boot-count", "print", "kvs-pk", "tm", "am", "stack", "te", "dbp", "cs", "up-time", "version", "ota", // mcu
 
 };
-
-otok optMap_findToken(const char *key);
-so_msg_t so_soMsg_from_otok(otok kt);

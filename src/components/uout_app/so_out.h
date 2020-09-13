@@ -32,3 +32,11 @@ void so_out_x_close();
 void so_out_x_open(const char *name);
 SO_MSG_T so_parse_config_key(const char *k);
 
+
+void cli_out_set_x(const char *obj_tag);
+void cli_out_close(void);
+void cli_out_x_reply_entry(const char *key, const char *val, int len);
+void cli_out_timer_reply_entry(const char *key, const char *val, int len);
+void cli_out_config_reply_entry(const char *key, const char *val, int len);
+void cli_out_mcu_reply_entry(const char *key, const char *val, int len);
+

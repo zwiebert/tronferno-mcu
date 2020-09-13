@@ -10,6 +10,7 @@
 #include "misc/int_macros.h"
 #include "uout_app/status_output.h"
 #include "uout/status_json.h"
+#include "uout/cli_out.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
 #include "cli_app/cli_app.h"

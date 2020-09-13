@@ -15,6 +15,7 @@
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include "uout_app/status_output.h"
+#include "uout/cli_out.h"
 #include "uout/status_json.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"

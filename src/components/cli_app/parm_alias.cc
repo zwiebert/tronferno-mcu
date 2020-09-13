@@ -9,7 +9,7 @@
 #include "app/common.h"
 #include "fernotron/alias/pairings.h"
 #include "uout_app/status_output.h"
-#include "cli_app/opt_map.hh"
+#include "app/opt_map.hh"
 
 #if defined DISTRIBUTION || 0
 #define D(x) x

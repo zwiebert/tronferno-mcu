@@ -15,7 +15,7 @@
 #include "uout_app/status_output.h"
 #include "config/config.h"
 #include "cli_app/cli_fer.h"
-#include "cli_app/opt_map.hh"
+#include "app/opt_map.hh"
 #include <stdlib.h>
 
 

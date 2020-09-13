@@ -12,7 +12,7 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "cli_app/cli_fer.h"
-#include "cli_app/opt_map.hh"
+#include "app/opt_map.hh"
 #include "fernotron/auto/fau_tdata_store.h"
 #include "config/config.h"
 

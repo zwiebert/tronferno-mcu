@@ -1,16 +1,13 @@
 #pragma once
 #include "cli/cli.h"
 #include "cli_app/cli_app.h"
-
+#include <uout/cli_out.h>
 
 
 
 
 #define NODEFAULT() if (val==0) return cli_replyFailure()
 
-
-void cli_out_config_reply_entry(const char *key, const char *val, int len);
-void cli_out_mcu_reply_entry(const char *key, const char *val, int len);
 
 
 bool config_receiver(const char *val);

@@ -1,7 +1,7 @@
 #include "app_config/proj_app_cfg.h"
 
 #include "cli_app/cli_config.h"
-#include "cli_app/opt_map.hh"
+#include "app/opt_map.hh"
 #include <string.h>
 
 #include "fernotron/sep/set_endpos.h"
@@ -33,12 +33,6 @@
 #include <stdlib.h>
 
 #define ENABLE_RESTART 1 // allow software reset
-
-
-#ifdef ACCESS_GPIO
-const char pin_mode_args[] = "diqQoO";
-const char pin_level_args[] = "lh";
-#endif
 
 const char cli_help_parmConfig[]  =
     "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
@@ -119,6 +113,12 @@ const char *const *cfg_args[SO_CFG_size] = {
 #define is_val(k) (strcmp(val, k) == 0)
 
 bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask);
+
+
+static so_msg_t so_soMsg_from_otok(otok kt) {
+  so_msg_t result = static_cast<so_msg_t>(SO_CFG_begin + 1 + static_cast<otokBaseT>(kt));
+  return result;
+}
 
 int 
 process_parmConfig(clpar p[], int len) {

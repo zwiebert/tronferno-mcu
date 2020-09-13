@@ -6,11 +6,11 @@
  */
 #include "app_config/proj_app_cfg.h"
 #include "so_out.h"
-
-#if 1
+#include <app_config/options.hh>
+#if 0
 #include "cli_app/cli_app.h" // FIXME?
 #include "cli_app/cli_config.h"
-#include "cli_app/opt_map.hh"
+#include "app/opt_map.hh"
 #endif
 #include "txtio/inout.h"
 #include "uout/status_json.h"
@@ -18,6 +18,7 @@
 #include "misc/int_macros.h"
 #include "misc/ftoa.h"
 #include "misc/itoa.h"
+#include <app/opt_map.hh>
 #include <string.h>
 #include <stdio.h>
 

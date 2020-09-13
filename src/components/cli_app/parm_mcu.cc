@@ -8,12 +8,13 @@
 #include "txtio/inout.h"
 #include "gpio/pin.h"
 #include "uout_app/status_output.h"
+#include <uout_app/so_msg.h>
 #include "fernotron/auto/fau_tevent.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/bcd.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
-#include "cli_app/opt_map.hh"
+#include "app/opt_map.hh"
 
 #include "debug/dbg.h"
 #ifdef USE_HTTP
@@ -48,7 +49,7 @@ const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
         "up-time=?\n"
         "version=full\n";
 
-const char pin_state_args[] = "?01t";
+
 
 static void kvs_print_keys(const char *name_space);
 
@@ -169,7 +170,7 @@ int process_parmMcu(clpar p[], int len) {
           case PIN_READ:
           error = mcu_access_pin(gpio_number, &ps_result, ps);
           if (!error) {
-            cli_out_mcu_reply_entry(key, (ps_result == PIN_SET ? "1" : "0"), 0);
+            soMsg_gpio_pin(so_arg_pch_t {gpio_number, ps_result});
           }
           break;
 

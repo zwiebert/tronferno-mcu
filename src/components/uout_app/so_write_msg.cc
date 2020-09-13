@@ -11,9 +11,9 @@
 #include "app/common.h"
 #include "app/firmware.h"
 #include "app/rtc.h"
-#include "cli_app/cli_config.h"
-#include "cli_app/cli_fer.h"
-#include "cli_app/cli_app.h" // FIXME?
+//#include "cli_app/cli_config.h"
+//#include "cli_app/cli_fer.h"
+//#include "cli_app/cli_app.h" // FIXME?
 #include "config/config.h"
 #include "fernotron/astro.h"
 #include "fernotron/alias/pairings.h"
@@ -24,6 +24,7 @@
 #include "net/ipnet.h"
 #include "txtio/inout.h"
 #include "uout/status_json.h"
+#include "uout/cli_out.h"
 #include "uout_app/status_output.h"
 
 //#include "misc/int_macros.h"
@@ -379,7 +380,20 @@ void soMsg_inet_print_address() {
 }
 
 #endif
-void soMsg_gpio_pin_changed(const so_arg_pch_t a) {
-  uoApp_publish_pinChange(a);
+void soMsg_gpio_pin(const so_arg_pch_t a, bool broadcast) {
+
+  if (so_cco) {
+    io_printf("tf:reply: mcu gpio%d=%d;\n", (int)a.gpio_num, (int)a.level);
+  }
+
+  if (so_jco) {
+    char buf[64];
+    snprintf(buf, sizeof buf, "gpio%d", (int)a.gpio_num);
+    sj_add_key_value_pair_d(buf, (int)a.level);
+  }
+
+  if (broadcast)
+    uoApp_publish_pinChange(a);
 }
+
 

@@ -49,5 +49,5 @@ void soMsg_pair_print_amm(const so_arg_amm_t a);
 void soMsg_pair_print_kmm(const so_arg_kmm_t a);
 void soMsg_pair_print_kmm_single(const so_arg_kmm_t a);
 void soMsg_inet_print_address();
-void soMsg_gpio_pin_changed(const so_arg_pch_t a);
+void soMsg_gpio_pin(const so_arg_pch_t a, bool broadcast = false);
 
