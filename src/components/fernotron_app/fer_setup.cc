@@ -17,16 +17,21 @@
 #include "fernotron/txtio/fer_print.h"
 #include "fernotron/fer_main.h"
 
-#if 0
-
-#include "app/rtc.h"
-#include "cli/cli.h"
-#endif
-
 #include <string.h>
 
 
 struct fer_configT fer_config;
+fsbT default_sender;
+GmBitMask manual_bits;
+
+fsbT *get_sender_by_addr(long addr) {
+  if (addr == 0) {
+    return &default_sender;
+  } else if (addr > 0 && 10 > addr) {
+    //return &senders[addr];
+  }
+  return NULL ;
+}
 
 
 static void rawMessageReceived_cb(fmsg_type msg_type, const fsbT *fsb, const fer_rawMsg *rxmsg) {
@@ -85,6 +90,8 @@ static void beforeAnySend_cb(fmsg_type msg_type, const fsbT *fsb, const fer_rawM
 
 void fer_setup(const fer_configT &ferConfig, const bool reinit) {
    fer_config = ferConfig;
+   fer_init_sender(&default_sender, fer_config.cu);
+   manual_bits = GmBitMask("MANU");
    if (reinit)
      return;
 
@@ -93,5 +100,6 @@ void fer_setup(const fer_configT &ferConfig, const bool reinit) {
   fer_rawMessageReceived_cb = rawMessageReceived_cb;
   fer_plainMessageReceived_cb = plainMessageReceived_cb;
   ferPos_init();
+
 }
 

@@ -6,14 +6,12 @@
  */
 
 #include "fernotron/fsb.h"
+#include "fernotron/fer_main.h"
 #include "fernotron/fer_msg_plain.h"
 #include "fernotron/fer_msg_rx.h"
 #include "fernotron/pos/commands.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "app_config/proj_app_cfg.h"
-
-#include "cli_app/cli_app.h"
-#include "cli_app/cli_fer.h"
 #include "config/config.h"
 #include "debug/dbg.h"
 
@@ -38,7 +36,7 @@ bool commands_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     return false;
 
   if (is_cu && m == 0) {
-    gm_bitmask_t gm = { 0, };
+    gm_bitmask_t gm;
     gm[g] = 0xfe;
     return commands_moveShuttersToPct(a, &gm, pct, repeats);
   }

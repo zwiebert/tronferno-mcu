@@ -15,10 +15,9 @@
 #include "app/opt_map.hh"
 #include "fernotron/auto/fau_tdata_store.h"
 #include "config/config.h"
+#include <fernotron/fer_main.h>
 
 #include <stdlib.h>
-
-gm_bitmask_t manual_bits;
 
 enum {
   TIMER_KEY_WEEKLY, TIMER_KEY_DAILY, TIMER_KEY_ASTRO, TIMER_KEY_RTC_ONLY, TIMER_KEY_FLAG_RANDOM, TIMER_KEY_FLAG_SUN_AUTO
@@ -160,12 +159,11 @@ int process_parmTimer(clpar p[], int len) {
     bool f_manual = false;
 
     if (is_timer_frame) {
-      fer_gmByName_load("MANU", manual_bits, 1);
       if (f_disableManu || f_enableManu) {
-        PUT_BIT(manual_bits[group], mn, f_enableManu);
+        manual_bits.putBit(group, mn, f_enableManu);
         fer_gmByName_store("MANU", manual_bits, 1);
       }
-      f_manual = GET_BIT(manual_bits[group], mn);
+      f_manual = manual_bits.getBit(group, mn);
     }
 
     bool need_reload_td,

@@ -13,8 +13,6 @@
 #include "uout/status_json.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
-#include "cli_app/cli_app.h"
-#include "cli_app/cli_fer.h"
 #include "cli/mutex.hh"
 
 #include "move.h"
@@ -193,7 +191,7 @@ int simPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_cmd cmd) {
   }
 #endif
 
-  gm_bitmask_t mm = { 0, };
+  gm_bitmask_t mm ;
   if (g == 0) {
     for (g = 1; g <= GRP_MAX; ++g) {
       mm[g] = 0xfe;

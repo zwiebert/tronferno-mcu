@@ -13,8 +13,6 @@
 #include "uout/cli_out.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
-#include "cli_app/cli_app.h"
-#include "cli_app/cli_fer.h"
 #include "cli/mutex.hh"
 #include "misc/time/run_time.h"
 #include "misc/time/periodic.h"
@@ -172,7 +170,7 @@ int statPos_setPcts(gm_bitmask_t *mm, u8 p) {
 
 int 
 statPos_printAllPcts() {
-  gm_bitmask_t msk = {0,};
+  gm_bitmask_t msk;
 
   soMsg_pos_begin();
   for (gT g=1; g < 8; ++g) {
@@ -188,7 +186,7 @@ statPos_printAllPcts() {
         continue; // was already processed by a previous pass
 
       u8 pct = pm_getPct(g,m);
-      gm_bitmask_t pos_msk = {0,};
+      gm_bitmask_t pos_msk;
       for (gm_iterator it(g); it; ++it) {
         const gT g2 = it.getG();
         const mT m2 = it.getM();

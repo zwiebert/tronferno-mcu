@@ -19,8 +19,7 @@
 #include "uout/status_json.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
-#include "cli_app/cli_app.h"
-#include "cli_app/cli_fer.h"
+#include <fernotron/fer_main.h>
 #include "cli/mutex.hh"
 #include "misc/time/periodic.h"
 #include "misc/time/run_time.h"

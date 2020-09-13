@@ -19,7 +19,7 @@
 
 #define CI(cb) static_cast<configItem>(cb)
 
-fsbT default_sender;
+
 
 struct c_map {
   const char *fs;
@@ -71,15 +71,6 @@ config_transmitter(const char *val) {
   return true;
 }
 
-fsbT * 
-get_sender_by_addr(long addr) {
-  if (addr == 0) {
-    return &default_sender;
-  } else if (addr > 0 && 10 > addr) {
-    //return &senders[addr];
-  }
-  return NULL ;
-}
 
 
 
@@ -172,7 +163,6 @@ static bool cliApp_checkPassword(clpar p[], int len, so_target_bits tgt) {
 
 void cliApp_setup() {
   cli_hook_checkPassword = cliApp_checkPassword;
-  fer_init_sender(&default_sender, cfg_getCuId());
 }
 
 

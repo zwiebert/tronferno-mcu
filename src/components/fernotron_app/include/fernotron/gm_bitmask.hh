@@ -1,11 +1,16 @@
+#pragma once
+
 #include <misc/int_macros.h>
 #include <utility>
 #include <stdint.h>
 #include <string.h>
 #include <misc/int_types.h>
 
+
 typedef uint8_t gmBitMaskT[8];
 typedef uint8_t gT, mT;
+
+bool fer_gmByName_load(const char *name, const gmBitMaskT *gm, int count);
 
 using gm_pairT = std::pair<gT, mT>;
 
@@ -52,7 +57,7 @@ public:
 class GmBitMask {
 
 private:
-  gmBitMaskT mBm;
+  gmBitMaskT mBm = {};
 
 public:
   void clear() {
@@ -96,10 +101,14 @@ public:
     }
   }
 
-  GmBitMask(): mBm{} {}
-  GmBitMask(gmBitMaskT bm) :mBm{} { //XXX
+  GmBitMask() = default;
+  explicit GmBitMask(gmBitMaskT bm) {
     if (bm)
       memcpy(mBm, bm, sizeof(mBm));
+  }
+
+  explicit GmBitMask(const char *name) {
+    fer_gmByName_load("MANU", &mBm, 1);
   }
 
   class iterator: public gm_iterator {

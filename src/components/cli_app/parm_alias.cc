@@ -45,7 +45,7 @@ process_parmPair(clpar p[], int len) {
   u32 addr = 0;
   const char *addr_as_string = "";
   u8 g = 0, m = 0, c = 0;
-  gm_bitmask_t mm = {0,};
+  gm_bitmask_t mm ;
   bool has_mm = false;
   bool pair = false, unpair = false, read = false, read_all = false,  scan = false, store = false;
 

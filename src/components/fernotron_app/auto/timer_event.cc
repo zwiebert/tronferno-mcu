@@ -9,7 +9,7 @@
 #include "misc/int_macros.h"
 #include "time.h"
 #include "fernotron/pos/shutter_pct.h"
-#include "cli_app/cli_fer.h"
+#include <fernotron/fer_main.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -159,7 +159,7 @@ bool fam_get_next_timer_event(timer_event_t *evt, const time_t *now_time) {
   precond(evt);
 
   minutes_t earliest = MINUTES_DISABLED;
-  gm_bitmask_t existing_members = { 0, };
+  gm_bitmask_t existing_members ;
 
   *evt = (timer_event_t ) { .next_event = MINUTES_DISABLED, };
   struct tm tm_now;
