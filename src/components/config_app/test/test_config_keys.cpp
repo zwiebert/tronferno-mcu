@@ -1,7 +1,7 @@
 #include "unity.h"
 
 #include "app_config/proj_app_cfg.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "misc/int_types.h"
 #include "misc/itoa.h"
 #include <stdlib.h>

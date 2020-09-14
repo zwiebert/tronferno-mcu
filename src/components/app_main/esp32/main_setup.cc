@@ -6,7 +6,7 @@
 #include "net/http/server/content/setup.h"
 #include "app/common.h"
 #include "app/timer.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/sep/set_endpos.h"

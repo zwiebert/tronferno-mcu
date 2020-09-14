@@ -4,7 +4,7 @@ idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS . "./include"
     REQUIRES ""
-    PRIV_REQUIRES net net_http_server config cli_app uout_app misc webapp
+    PRIV_REQUIRES net net_http_server config_app cli_app uout_app misc webapp
                   mbedtls  #PRIV_ESP_IDF
    )
 component_compile_options(${comp_compile_opts})

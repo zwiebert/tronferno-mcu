@@ -22,7 +22,7 @@
 
 
 #include "app/common.h"
-#include "config/config.h"
+#include "config/app/config.h"
 
 #include "main.h"
 

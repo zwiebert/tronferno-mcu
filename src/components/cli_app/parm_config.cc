@@ -8,7 +8,7 @@
 #include "uout_app/status_output.h"
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "app_config/proj_app_cfg.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "app/rtc.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"

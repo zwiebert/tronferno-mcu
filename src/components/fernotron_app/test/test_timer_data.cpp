@@ -48,7 +48,7 @@ TEST_CASE("save and restore timer data", "[fernotron/auto]") {
 }
 
 #ifdef TEST_HOST
-#include "config/config.h"
+#include "config/app/config.h"
 config C;
 #endif
 

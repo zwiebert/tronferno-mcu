@@ -53,7 +53,7 @@ const u8 testdat_wtimer[] =
 const u8 testdat_dtimer[] = { };
 extern const u8 astro_data[12][8];
 
-#include "config/config.h"
+#include "config/app/config.h"
 
 static void test_ferMsg_size() {
   TEST_ASSERT_EQUAL(FER_CMD_BYTE_CT - 1, sizeof test_msg.cmd.sd.cmd);

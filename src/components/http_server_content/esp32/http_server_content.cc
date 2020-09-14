@@ -7,7 +7,7 @@
 #include "net/http/server/http_server.h"
 #include "uout/status_json.h"
 #include "uout_app/callbacks.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "cli_app/cli_app.h"
 #include "misc/int_types.h"
 #include "cli/mutex.hh"

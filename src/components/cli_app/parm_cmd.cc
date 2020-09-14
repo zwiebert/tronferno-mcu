@@ -13,7 +13,7 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "uout_app/status_output.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "cli_app/cli_fer.h"
 #include "app/opt_map.hh"
 #include <stdlib.h>

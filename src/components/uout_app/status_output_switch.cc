@@ -1,7 +1,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "so_out.h"
 #include "so_print.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "net/ipnet.h"
 #include "net/mqtt/mqtt.h"
 #include "txtio/inout.h"

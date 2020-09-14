@@ -11,7 +11,7 @@
 #include "app/common.h"
 #include "app/firmware.h"
 #include "app/rtc.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "net/ipnet.h"
 #include "txtio/inout.h"
 #include "uout/status_json.h"

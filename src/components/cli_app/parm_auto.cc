@@ -17,7 +17,7 @@
 #include "cli_app/cli_fer.h"
 #include "app/opt_map.hh"
 #include "fernotron/auto/fau_tdata_store.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include <fernotron/fer_main.h>
 
 #include <stdlib.h>

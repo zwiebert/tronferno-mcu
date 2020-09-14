@@ -4,7 +4,7 @@ idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS "./include" ../.. 
     REQUIRES app_config misc_time firmware_update
-    PRIV_REQUIRES   config
+    PRIV_REQUIRES   config_app
     EMBED_TXTFILES ./ca_cert.pem
 )
 

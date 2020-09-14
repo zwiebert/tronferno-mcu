@@ -9,10 +9,10 @@
 
 #include "cli_app/fernotron.h"
 #include "fernotron/fer_main.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "config_kvs.h"
-#include <config/config.h>
-#include "config/config_defaults.h"
+#include <config/app/config.h>
+#include "config/app/config_defaults.h"
 
 #include "misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"

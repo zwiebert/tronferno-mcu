@@ -7,7 +7,7 @@
 
 #include "fernotron/auto/fau_tevent.h"
 #include "cli/cli.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "debug/dbg.h"
 #include "app/rtc.h"

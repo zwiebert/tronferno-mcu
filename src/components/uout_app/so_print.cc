@@ -6,7 +6,7 @@
 #include "app/firmware.h"
 #include "app/rtc.h"
 
-#include "config/config.h"
+#include "config/app/config.h"
 
 #include "fernotron/auto/fau_tminutes.h"
 #include <fernotron/types.h>

@@ -5,7 +5,7 @@
 #include "fernotron/pos/shutter_pct.h"
 #include "fernotron/pos/shutter_prefs.h"
 
-#include "config/config.h"
+#include "config/app/config.h"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include "uout_app/status_output.h"

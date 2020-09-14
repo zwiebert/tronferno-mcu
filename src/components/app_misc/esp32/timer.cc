@@ -9,7 +9,7 @@
 
 #include "app/rtc.h"
 #include "app/timer.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "fernotron/fer_radio_timings.h"
 #include "fernotron/fer_radio_trx.h"
 #include "fernotron/int_timer.h"

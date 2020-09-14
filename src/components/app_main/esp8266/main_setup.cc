@@ -12,11 +12,11 @@
 #include "driver/uart.h"
 #include "fernotron/callbacks.h"
 #include "app/common.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "net/wifistation.h"
 #include "net/ntp.h"
 #include "net/tcp_cli_server.h"
-#include "config/config.h"
+#include "config/app/config.h"
 
 #include "main.h"
 

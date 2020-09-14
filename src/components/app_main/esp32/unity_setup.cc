@@ -8,7 +8,7 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "storage/storage.h"
 #include "txtio/inout.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "fernotron/astro.h"
 #include "cli/mutex.hh"

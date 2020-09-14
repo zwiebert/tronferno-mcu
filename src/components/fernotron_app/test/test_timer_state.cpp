@@ -11,7 +11,7 @@
 #include <time.h>
 #include <fernotron/types.h>
 #include "debug/dbg.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include <misc/int_types.h>
 
 bool succ;
@@ -349,7 +349,7 @@ TEST_CASE("timer next event", "[fernotron/auto]") {
 }
 
 #ifdef TEST_HOST
-#include "config/config.h"
+#include "config/app/config.h"
 //GmBitMask manual_bits;
 //config C;
 

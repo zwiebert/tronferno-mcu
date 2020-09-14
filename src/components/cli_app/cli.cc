@@ -7,7 +7,7 @@
 
 #include "app_config/proj_app_cfg.h"
 #include <string.h>
-#include "config/config.h"
+#include "config/app/config.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "cli_app/cli_app.h"
@@ -15,7 +15,7 @@
 #include "fernotron/fsb.h"
 #include "cli/cli.h"
 #include "uout_app/status_output.h"
-#include "config/config.h"
+#include "config/app/config.h"
 
 #define CI(cb) static_cast<configItem>(cb)
 
