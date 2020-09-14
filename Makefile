@@ -45,11 +45,10 @@ endif
 
 BUILD_BASE ?= $(realpath .)/build/esp32
 
-esp32_build_opts += -B $(BUILD_BASE)
 esp32_build_dir = $(BUILD_BASE)
 esp32_src_dir := src/esp32
 
-esp32_build_cmd := idf.py -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)
+esp32_build_cmd := idf.py -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
 esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
 
 ######### ESP32 Targets ##################

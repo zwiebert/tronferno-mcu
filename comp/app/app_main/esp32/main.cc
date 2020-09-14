@@ -35,6 +35,7 @@ void lfa_createWifiAp() {
 
 int timer_data_transition_fs_to_kvs();
 
+
 extern "C" void app_main(void) {
 
   mcu_init();

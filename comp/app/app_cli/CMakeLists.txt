@@ -13,6 +13,7 @@ idf_component_register(
     INCLUDE_DIRS . "./include" 
     REQUIRES cli fernotron
     PRIV_REQUIRES net app_mqtt app_misc misc app_uout txtio fernotron_app  debug app_http_server app_settings key_value_store firmware_update
+    EMBED_TXTFILES ./ca_cert.pem
 )
 
 component_compile_options(${comp_compile_opts})

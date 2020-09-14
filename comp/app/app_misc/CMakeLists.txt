@@ -5,7 +5,7 @@ idf_component_register(
     INCLUDE_DIRS "./include" ../.. 
     REQUIRES app_config misc_time firmware_update
     PRIV_REQUIRES   app_settings
-    EMBED_TXTFILES ./ca_cert.pem
+    #EMBED_TXTFILES ./ca_cert.pem
 )
 
 component_compile_options(${comp_compile_opts})

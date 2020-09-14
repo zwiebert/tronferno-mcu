@@ -129,8 +129,6 @@ extern "C" void main_setup_ip_dependent() { //XXX called from library
   }
 }
 
-
-
 void mcu_init() {
 #ifdef USE_EG
   loop_eventBits_setup();
