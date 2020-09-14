@@ -1,4 +1,4 @@
-set(srcs esp32/http_server_content.cc)
+set(srcs esp32/uri_handlers.cc)
 
 idf_component_register(
     SRCS ${srcs}
