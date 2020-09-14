@@ -26,19 +26,20 @@ BUILD_OBJ_LIB=$(BUILD_PATH)/obj.a
 #TEST_BASE =$(realpath $(BUILD_PATH))
 LOG_BASE= $(BUILD_PATH)/logs
 TEST_BASE= $(BUILD_PATH)
-
 TEST_ENV=$(TEST_BASE)/test_env
-COMP_DIR=src/components
-APP_DIR=src/app
-COMPSHARE_DIR=components-mcu/components
-COMP_DIRS = $(COMP_DIR) $(APP_DIR) $(COMPSHARE_DIR)
+
+COMP_LIB_DIR=comp/library
+COMP_APP_DIR=comp/app
+COMP_EXT_COMPMCU_DIR=comp/external/components-mcu/components
+COMP_DIRS = $(COMP_LIB_DIR) $(COMP_APP_DIR) $(COMP_EXT_COMPMCU_DIR)
+
 COMP_NAMES = $(notdir $(shell find $(addprefix $(SRC_BASE)/,$(addsuffix /*,$(COMP_DIRS))) -maxdepth 0 -type d))
 COMP_PATHS = $(shell find $(addprefix $(SRC_BASE)/,$(addsuffix /*,$(COMP_DIRS))) -maxdepth 0 -type d)
 COMP_INC_PATHS = $(addsuffix /include,$(COMP_PATHS))
 SRC_DIR_EXCLUDE = esp8266 esp32 nonopb node_modules
 SRC_DIR_EXCLUDE_FIND = 
 SDKCONFIG := $(SRC_BASE)/src/esp32/build/config/sdkconfig.h
-HOST_SDKCONFIG := $(SRC_BASE)/$(APP_DIR)/app_config/include/app_config/host/sdkconfig.h
+HOST_SDKCONFIG := $(SRC_BASE)/$(COMP_APP_DIR)/app_config/include/app_config/host/sdkconfig.h
 
 comm=$(addprefix $(BUILD_OBJ_PATH)/,test_runner/setup.o unity/src/unity.o test_runner/test_runner.o)
 TEST_RUNNER_C_SRC = test_runner/setup.c unity/src/unity.c test_runner/test_runner.c test_runner/mock.cc
