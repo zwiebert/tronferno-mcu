@@ -6,7 +6,7 @@
  */
 #include "app_config/proj_app_cfg.h"
 #include "timer_data_fs.h"
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "storage/storage.h"
 #include "misc/int_types.h"
 #include "debug/dbg.h"

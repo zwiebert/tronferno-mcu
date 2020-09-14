@@ -10,9 +10,9 @@
 
 #include "fernotron/cuas/cuid_auto_set.h"
 
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "app/common.h"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 #include "app/rtc.h"
 #include "fernotron/fer_msg_rx.h"
 #include "fernotron/fer_msg_attachment.h"

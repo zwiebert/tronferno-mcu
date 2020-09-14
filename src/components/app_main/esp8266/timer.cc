@@ -15,7 +15,7 @@
 #include "txtio/inout.h"
 #include "driver/uart.h"
 
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "app/rtc.h"
 #include "fernotron/fer_radio_timings.h"
 #include "fernotron/int_timer.h"

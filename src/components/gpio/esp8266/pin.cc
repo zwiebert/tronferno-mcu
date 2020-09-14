@@ -14,7 +14,7 @@
 
 #include "txtio/inout.h"
 
-#include "config/app/config.h"
+#include "app/settings/config.h"
 
 #include <stdlib.h>
 #include <string.h>

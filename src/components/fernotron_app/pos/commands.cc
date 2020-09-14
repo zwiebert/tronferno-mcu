@@ -12,7 +12,7 @@
 #include "fernotron/pos/commands.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "app_config/proj_app_cfg.h"
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "debug/dbg.h"
 
 #define GRP_COUNT 7

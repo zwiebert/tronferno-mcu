@@ -4,7 +4,7 @@
 #include "fernotron/auto/fau_tdata_store.h"
 #include "app/rtc.h"
 #include "fernotron/astro.h"
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include "time.h"

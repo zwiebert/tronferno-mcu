@@ -18,8 +18,8 @@
 #include "cli/cli.h"
 #include "cli/mutex.hh"
 #include "uout/status_json.h"
-#include "uout_app/status_output.h"
-#include <uout_app/callbacks.h>
+#include "app/uout/status_output.h"
+#include <app/uout/callbacks.h>
 
 static char *io_mqtt_topic_root;
 

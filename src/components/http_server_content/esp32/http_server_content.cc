@@ -6,9 +6,9 @@
 #include <mbedtls/base64.h>
 #include "net/http/server/http_server.h"
 #include "uout/status_json.h"
-#include "uout_app/callbacks.h"
-#include "config/app/config.h"
-#include "cli_app/cli_app.h"
+#include "app/uout/callbacks.h"
+#include "app/settings/config.h"
+#include "app/cli/cli_app.h"
 #include "misc/int_types.h"
 #include "cli/mutex.hh"
 #include "net/http/server/esp32/register_uris.h"

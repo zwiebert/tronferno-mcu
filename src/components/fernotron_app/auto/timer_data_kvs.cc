@@ -6,7 +6,7 @@
  */
 #include "app_config/proj_app_cfg.h"
 #include "timer_data_kvs.h"
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
 #include "debug/dbg.h"

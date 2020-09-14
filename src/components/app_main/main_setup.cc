@@ -1,7 +1,7 @@
 #include "app/rtc.h"
 #include "fernotron/fer_main.h"
-#include "uout_app/status_output.h"
-#include "config/app/config.h"
+#include "app/uout/status_output.h"
+#include "app/settings/config.h"
 
 void main_setup() {
   rtc_setup();

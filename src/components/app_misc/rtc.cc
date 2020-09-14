@@ -9,7 +9,7 @@
 #ifdef POSIX_TIME
 #include <sys/time.h>
 #endif
-#include "config/app/config.h"
+#include "app/settings/config.h"
 
 rtc_time_source_t rtc_last_time_source;
 

@@ -9,7 +9,7 @@
 #include "gpio/pin.h"
 
 #include "txtio/inout.h"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 #include <misc/int_macros.h>
 #include "freertos/FreeRTOS.h"
 #include <esp_intr_alloc.h>

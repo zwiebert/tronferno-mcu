@@ -1,12 +1,12 @@
 #include "app_config/proj_app_cfg.h"
 #include "main.h"
-#include "cli_app/cli_app.h"
+#include "app/cli/cli_app.h"
 #include "misc/time/run_time.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "net/http/server/content/setup.h"
 #include "app/common.h"
 #include "app/timer.h"
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/sep/set_endpos.h"
@@ -29,7 +29,7 @@
 #include <freertos/timers.h>
 #include <ctime>
 #include "config_kvs/config.h"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 #include "../app_private.h"
 #include "fernotron/types.h"
 

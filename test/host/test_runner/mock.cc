@@ -1,4 +1,4 @@
-#include <uout_app/status_output.h>
+#include <app/uout/status_output.h>
 #include <misc/int_types.h>
 #include <config_kvs/config.h>
 

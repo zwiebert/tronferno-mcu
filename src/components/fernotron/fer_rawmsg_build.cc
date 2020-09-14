@@ -14,7 +14,7 @@
 #include "fernotron/fer_rawmsg_buffer.h"
 //#include "app/rtc.h"
 //#include "fernotron/auto/astro.h"
-//#include "config/app/config.h"
+//#include "app/settings/config.h"
 #include "misc/bcd.h"
 
 /* verify all checksums of message in place. */

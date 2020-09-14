@@ -11,11 +11,11 @@
 
 #include "app_config/proj_app_cfg.h"
 
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
-#include "uout_app/status_output.h"
-#include "uout_app/callbacks.h"
+#include "app/uout/status_output.h"
+#include "app/uout/callbacks.h"
 #include "uout/cli_out.h"
 #include "uout/status_json.h"
 #include "fernotron/alias/pairings.h"
