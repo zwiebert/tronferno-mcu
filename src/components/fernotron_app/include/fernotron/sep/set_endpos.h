@@ -7,7 +7,7 @@
 
 #include "fernotron/fsb.h"
 #include "stdbool.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 #ifndef USER_MAIN_SET_ENDPOS_H_
 #define USER_MAIN_SET_ENDPOS_H_

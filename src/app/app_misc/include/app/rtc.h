@@ -1,6 +1,6 @@
 #pragma once
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include <time.h>
 #include "misc/time/run_time.h"
 

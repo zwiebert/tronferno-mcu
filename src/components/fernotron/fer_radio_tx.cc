@@ -4,7 +4,7 @@
  *  Created on: 16.04.2020
  *      Author: bertw
  */
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 #include "fer_radio_parity.h"
 

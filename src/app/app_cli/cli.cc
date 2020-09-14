@@ -5,7 +5,7 @@
  *  Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include <string.h>
 #include "app/settings/config.h"
 #include "misc/bcd.h"

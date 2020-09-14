@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 #include "app/cli/cli_config.h"
 #include "app/opt_map.hh"
@@ -7,7 +7,7 @@
 #include "fernotron/sep/set_endpos.h"
 #include "app/uout/status_output.h"
 #include "fernotron/cuas/cuid_auto_set.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "app/settings/config.h"
 #include "app/rtc.h"
 #include "misc/bcd.h"

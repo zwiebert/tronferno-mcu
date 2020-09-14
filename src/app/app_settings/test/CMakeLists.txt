@@ -1,6 +1,6 @@
 idf_component_register(SRC_DIRS "."
                        INCLUDE_DIRS "." ../include 
-                       PRIV_INCLUDE_DIRS ../ ../include/app_settings
+                       PRIV_INCLUDE_DIRS ../ ../include/app/settings
                        REQUIRES fernotron_app app_misc txtio
                        PRIV_REQUIRES key_value_store unity app_settings
 )

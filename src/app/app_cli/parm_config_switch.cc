@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "config_kvs/config.h"
 #include "cli_imp.h"
 #include "app/cli/cli_config.h"

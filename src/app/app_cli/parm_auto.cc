@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 #include <string.h>
 #include "fernotron/fer_msg_rx.h"
@@ -8,7 +8,7 @@
 #include "app/uout/so_msg.h"
 #include "app/uout/callbacks.h"
 #include "uout/status_json.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
 #include "app/rtc.h"
 #include "fernotron/fer_msg_attachment.h"

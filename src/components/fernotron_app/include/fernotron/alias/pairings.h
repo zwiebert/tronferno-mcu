@@ -2,7 +2,7 @@
 
 #include "fernotron/fsb.h"
 #include "fernotron/types.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 #include <stdlib.h>
 #include "stdbool.h"

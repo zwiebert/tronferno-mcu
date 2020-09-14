@@ -3,7 +3,7 @@
 
 #include <fernotron/fsb.h>
 #include "stdbool.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 extern void (*cuas_enable_disable_cb)(bool enable);
 

@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 #include "fer_radio_parity.h"
 #include <fernotron/fer_msg_plain.h>

@@ -2,7 +2,7 @@
 
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/shutter_pct.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 
 #include "fernotron/auto/fau_tevent.h"

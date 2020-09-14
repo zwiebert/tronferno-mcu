@@ -1,13 +1,13 @@
 #include <string.h>
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "driver/gpio.h"
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "gpio/gpinput.h"
 #include "misc/int_types.h"
 #include "debug/dbg.h"

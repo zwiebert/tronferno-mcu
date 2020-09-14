@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 #include <string.h>
 #include <fernotron/fer_msg_rx.h>
@@ -6,7 +6,7 @@
 #include "fernotron/pos/commands.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "txtio/inout.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
 #include "fernotron/fer_msg_tx.h"
 #include "fernotron/fer_msg_attachment.h"

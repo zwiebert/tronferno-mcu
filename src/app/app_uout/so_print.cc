@@ -1,5 +1,5 @@
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "so_out.h"
 
 #include "app/common.h"

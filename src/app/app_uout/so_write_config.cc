@@ -4,8 +4,8 @@
  *  Created on: 13.03.2019
  *      Author: bertw
  */
-#include "app_config/proj_app_cfg.h"
-#include "app_config/options.hh"
+#include "app/config/proj_app_cfg.h"
+#include "app/config/options.hh"
 #include "so_out.h"
 #include "so_print.h"
 #include "app/uout/callbacks.h"

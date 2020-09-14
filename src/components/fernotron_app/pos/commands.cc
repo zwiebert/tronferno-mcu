@@ -11,7 +11,7 @@
 #include "fernotron/fer_msg_rx.h"
 #include "fernotron/pos/commands.h"
 #include "fernotron/pos/shutter_pct.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "app/settings/config.h"
 #include "debug/dbg.h"
 

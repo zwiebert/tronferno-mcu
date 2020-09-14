@@ -23,22 +23,14 @@
 #define WIFI_AP_PASSWD "tronferno"
 #define TD_FS_TO_KVS
 
-// XXX: to show "all" code ifdefs
-#ifndef HOST_TESTING
-#undef TEST_HOST
-#if !defined MCU_ESP32 && !defined MCU_ESP8266
-#define MCU_ESP32
-#endif
-#endif
-
 #if defined TEST_HOST
-#include "app_config/host/proj_app_cfg.h"
+#include "app/config/host/proj_app_cfg.h"
 
 #elif defined MCU_ESP8266
-#include "app_config/esp8266/proj_app_cfg.h"
+#include "app/config/esp8266/proj_app_cfg.h"
 
-#elif defined MCU_ESP32 || defined ESP_PLATFORM
-#include "app_config/esp32/proj_app_cfg.h"
+#elif defined MCU_ESP32
+#include "app/config/esp32/proj_app_cfg.h"
 
 #else
 #error "no supported MCU"

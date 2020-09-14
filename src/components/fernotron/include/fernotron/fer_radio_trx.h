@@ -9,7 +9,7 @@
 
 #include <stdint.h>
 #include "stdbool.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "fer_msg_attachment.h"
 
 #define WORDS_MSG_PLAIN (2*BYTES_MSG_PLAIN)

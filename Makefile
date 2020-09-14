@@ -38,18 +38,20 @@ $(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 ####### ESP32 build command ############
 PORT ?= /dev/ttyUSB1
 port ?= /dev/ttyUSB1
-esp32_build_opts := -G Ninja -C src/esp32 -p $(PORT)
+
 ifdef V
 esp32_build_opts += -v
 endif
 ifndef BUILD_BASE
-esp32_build_dir := src/esp32/build
+esp32_build_dir = build/esp32
 else
 esp32_build_opts += -B $(BUILD_BASE)
-esp32_build_dir := $(BUILD_BASE)
+esp32_build_dir = $(BUILD_BASE)
 endif
-esp32_build_cmd := idf.py $(esp32_build_opts)
 esp32_src_dir := src/esp32
+
+
+esp32_build_cmd := idf.py -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)
 esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
 
 ######### ESP32 Targets ##################
@@ -74,6 +76,7 @@ esp32-all:
 esp32-lan:
 	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
 	
+esp32-png: $(esp32_build_dir)/tfmcu.png
 esp32-dot: $(esp32_build_dir)/tfmcu.dot
 
 $(esp32_build_dir)/tfmcu.dot: FORCE

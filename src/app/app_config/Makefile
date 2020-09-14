@@ -1,2 +1,2 @@
 all:
-	./write_config.sh > ./include/app_config/proj_kconfig.h
+	./write_config.sh > ./include/app/config/proj_kconfig.h

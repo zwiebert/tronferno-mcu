@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 
 set(PROJECT_NAME "tronferno-mcu")
 
-set(EXTRA_COMPONENT_DIRS ../../components-mcu/components ../components)
+set(EXTRA_COMPONENT_DIRS ../../components-mcu/components ../components ../app)
 
 set(COMPONENTS app_main 
                bootloader

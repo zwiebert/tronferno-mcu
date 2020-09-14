@@ -8,7 +8,7 @@ endif
 
 
 unity_dir = $(build_dir)/unity
-COMP_DIRS := $(realpath ../../src/components ../../components-mcu/components)
+COMP_DIRS := $(realpath ../../src/components ../../src/app ../../components-mcu/components)
 COMPS := $(foreach dir,$(COMP_DIRS),$(shell cd $(dir) && ls))
 
 

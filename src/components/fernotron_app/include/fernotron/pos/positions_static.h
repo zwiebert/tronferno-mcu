@@ -9,7 +9,7 @@
 
 #include "fernotron/types.h"
 #include "fernotron/fer_msg_plain.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include <stdbool.h>
 
 

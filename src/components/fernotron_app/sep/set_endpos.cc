@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "fernotron/sep/set_endpos.h"
 
 #include <fernotron/fer_msg_plain.h>

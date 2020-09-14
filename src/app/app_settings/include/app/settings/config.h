@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "config_kvs/config.h"
 #include "txtio/inout.h"
 #include "fernotron/types.h"
