@@ -1,6 +1,7 @@
 
 #include <misc/int_macros.h>
 #include <stdio.h>
+#include <string.h>
 
 #define UOUT_PROTECTED
 #include <uout/callbacks.h>
@@ -89,6 +90,31 @@ void uoApp_publish_timerJson(const char *json) {
     flags.fmt.json = true;
     flags.evt.timer_change = true;
 
+    size_t json_len = strlen(json);
+
+    char buf[json_len + 4] = "{";
+    strcat(buf, json);
+    buf[json_len] = '}'; // overwrite trailing comma
+    buf[json_len+1] = '\0';
+
+    publish(it.cb, buf, flags);
+  }
+}
+
+void uoApp_publish_pctChangeJson(const char *json) {
+  for (auto const &it : uoCb_cbs) {
+    if (!it.cb)
+      continue;
+    if (!it.flags.evt.pct_change)
+      continue;
+    if (!it.flags.fmt.json)
+      continue;
+
+    uo_flagsT flags;
+    flags.fmt.json = true;
+    flags.evt.pct_change = true;
+
     publish(it.cb, json, flags);
   }
 }
+

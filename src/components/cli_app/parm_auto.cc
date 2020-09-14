@@ -237,7 +237,7 @@ int process_parmTimer(clpar p[], int len) {
       print_timer(group, mn, true);
       soMsg_timer_print_end();
 
-      if (f_modify) {
+      if (need_save_td) {
         const char *json = sj_get_json() + start;
         uoApp_publish_timerJson(json);
       }

@@ -8,6 +8,7 @@ idf_component_register(
     REQUIRES uout
     PRIV_REQUIRES  app_misc misc config  debug fernotron_app
     )
-    
+
+
 component_compile_options(${comp_compile_opts})
 component_compile_features(${comp_compile_feats})

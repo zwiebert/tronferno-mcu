@@ -98,12 +98,15 @@ export function http_handleResponses(obj) {
       handleOtaState(ota_state);
     }
   }
+
+  if ("auto" in obj)
   {
     let autos = {};
     let autos_count = 0;
-    for (const key in obj) {
+  
+    for (const key in obj.auto) {
       if (key.startsWith("auto")) {
-        autos[key] = obj[key];
+        autos[key] = obj.auto[key];
         ++autos_count;
       }
     }

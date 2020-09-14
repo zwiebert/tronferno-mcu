@@ -50,7 +50,7 @@ esp32_build_dir := $(BUILD_BASE)
 endif
 esp32_build_cmd := idf.py $(esp32_build_opts)
 esp32_src_dir := src/esp32
-esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) 
+esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
 
 ######### ESP32 Targets ##################
 esp32_tgts_auto := menuconfig clean fullclean app flash monitor

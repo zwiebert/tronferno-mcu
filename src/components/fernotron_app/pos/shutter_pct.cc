@@ -9,6 +9,7 @@
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include "uout_app/status_output.h"
+#include "uout_app/callbacks.h"
 #include "uout/status_json.h"
 #include "uout/cli_out.h"
 #include "fernotron/alias/pairings.h"
@@ -139,15 +140,13 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   if (pct <= 100) {
     if (a == 0 || a == cfg_getCuId()) {
 
-      { LockGuard lock(cli_mutex); 
+      { LockGuard lock(cli_mutex);
         if (sj_open_root_object("tfmcu")) {
           so_arg_gmp_t gmp[3] = { { g, m, pct }, { g, 0, (u8) pm_getPct(g, 0) }, { 0xff, 0xff, 0xff } };
           soMsg_pos_print_gmpa(gmp, true);
           sj_close_root_object();
-          cli_print_json(sj_get_json());
-#ifdef USE_WS
-          ws_send_json(sj_get_json());
-#endif
+
+          uoApp_publish_pctChangeJson(sj_get_json());
         }
       }
     }

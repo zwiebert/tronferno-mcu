@@ -15,6 +15,7 @@
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include "uout_app/status_output.h"
+#include "uout_app/callbacks.h"
 #include "uout/cli_out.h"
 #include "uout/status_json.h"
 #include "fernotron/alias/pairings.h"
@@ -71,18 +72,18 @@ u8 ferPos_mGetSunPct(u8 g, u8 m) {
 
 
 static void ferPos_printMovingPct(u8 g, u8 m, u8 pct) {
-  { LockGuard lock(cli_mutex); 
+  {
+    LockGuard lock(cli_mutex);
     so_arg_gmp_t gmp = { g, m, pct };
     if (sj_open_root_object("tfmcu")) {
       soMsg_pos_print_gmp(gmp, true);
       sj_close_root_object();
-      cli_print_json(sj_get_json());
-#ifdef USE_WS
-      ws_send_json(sj_get_json());
-#endif
+      uoApp_publish_pctChangeJson(sj_get_json());
     }
+
   }
 }
+
 
 // check if a moving shutter has reached its end position
 int ferPos_mvCheck_mv(struct mv *mv, unsigned now_ts) {
