@@ -239,7 +239,7 @@ int process_parmTimer(clpar p[], int len) {
 
       if (need_save_td) {
         const char *json = sj_get_json() + start;
-        uoApp_publish_timerJson(json);
+        uoApp_publish_timer_json(json);
       }
     }
   }

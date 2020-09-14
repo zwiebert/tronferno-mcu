@@ -146,7 +146,7 @@ statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
           soMsg_pos_print_gmpa(gmp, true);
           sj_close_root_object();
 
-          uoApp_publish_pctChangeJson(sj_get_json());
+          uoApp_publish_pctChange_json(sj_get_json(), false);
         }
       }
     }

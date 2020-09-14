@@ -237,7 +237,7 @@ void soMsg_pos_print_gmp(const so_arg_gmp_t a, bool broadcast) {
   }
 
   if (so_jco || broadcast) {
-    sj_add_object("pct");
+    int start = sj_add_object("pct");
     char buf[] = "00";
     buf[0] += a.g;
     buf[1] += a.m;
@@ -245,11 +245,11 @@ void soMsg_pos_print_gmp(const so_arg_gmp_t a, bool broadcast) {
     sj_close_object();
 
     if (broadcast)
-      uoApp_publish_gmpJson(sj_get_json());
+      uoApp_publish_pctChange_json(sj_get_json() + start);
   }
 
   if (so_mqt || broadcast)
-    uoApp_publish_gmpObj(a);
+    uoApp_publish_pctChange_gmp(a);
 }
 
 void soMsg_pos_print_gmpa(const so_arg_gmp_t *a, bool broadcast) {
@@ -262,7 +262,7 @@ void soMsg_pos_print_gmpa(const so_arg_gmp_t *a, bool broadcast) {
     }
 
   if (so_jco || broadcast) {
-    sj_add_object("pct");
+    int start = sj_add_object("pct");
     for (int i = 0; a[i].g <= 7; ++i) {
       char buf[] = "00";
       buf[0] += a[i].g;
@@ -272,12 +272,12 @@ void soMsg_pos_print_gmpa(const so_arg_gmp_t *a, bool broadcast) {
     sj_close_object();
 
     if (broadcast)
-      uoApp_publish_gmpJson(sj_get_json());
+      uoApp_publish_pctChange_json(sj_get_json() + start);
   }
 
   if (so_mqt || broadcast) // XXX
     for (int i = 0; a[i].g <= 7; ++i) {
-      uoApp_publish_gmpObj(a[i]);
+      uoApp_publish_pctChange_gmp(a[i]);
     }
 }
 

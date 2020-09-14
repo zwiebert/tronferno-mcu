@@ -2,6 +2,7 @@
 #include <misc/int_macros.h>
 #include <stdio.h>
 #include <string.h>
+#include <debug/dbg.h>
 
 #define UOUT_PROTECTED
 #include <uout/callbacks.h>
@@ -12,7 +13,14 @@ static void publish(uoCb_cbT cb, const void *ptr, uo_flagsT flags) {
   uoCb_msgT  msg { .cv_ptr = ptr, .flags = flags };
   cb(msg);
 }
-
+static void publish_fragJson(uoCb_cbT cb, const char *json, uo_flagsT flags) {
+  size_t json_len = strlen(json);
+  char buf[json_len + 4] = "{";
+  strcat(buf, json);
+  buf[json_len] = '}'; // overwrite trailing comma
+  buf[json_len + 1] = '\0';
+  publish(cb, buf, flags);
+}
 
 void uoApp_publish_pinChange(const so_arg_pch_t args) {
   for (auto const &it : uoCb_cbs) {
@@ -42,24 +50,8 @@ void uoApp_publish_pinChange(const so_arg_pch_t args) {
   }
 }
 
-void uoApp_publish_gmpJson(const char *json) {
-  for (auto const &it : uoCb_cbs) {
-    if (!it.cb)
-      continue;
-    if (!it.flags.evt.pct_change)
-      continue;
-    if (!it.flags.fmt.json)
-      continue;
 
-    uo_flagsT flags;
-    flags.fmt.json = true;
-    flags.evt.pct_change = true;
-
-    publish(it.cb, json, flags);
-  }
-}
-
-void uoApp_publish_gmpObj(const so_arg_gmp_t a) {
+void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a) {
 
   for (auto const &it : uoCb_cbs) {
     if (!it.cb)
@@ -77,7 +69,7 @@ void uoApp_publish_gmpObj(const so_arg_gmp_t a) {
   }
 }
 
-void uoApp_publish_timerJson(const char *json) {
+void uoApp_publish_timer_json(const char *json, bool fragment) {
   for (auto const &it : uoCb_cbs) {
     if (!it.cb)
       continue;
@@ -90,18 +82,16 @@ void uoApp_publish_timerJson(const char *json) {
     flags.fmt.json = true;
     flags.evt.timer_change = true;
 
-    size_t json_len = strlen(json);
-
-    char buf[json_len + 4] = "{";
-    strcat(buf, json);
-    buf[json_len] = '}'; // overwrite trailing comma
-    buf[json_len+1] = '\0';
-
-    publish(it.cb, buf, flags);
+    if (fragment) {
+      publish_fragJson(it.cb, json, flags);
+    } else {
+      publish(it.cb, json, flags);
+    }
   }
 }
 
-void uoApp_publish_pctChangeJson(const char *json) {
+void uoApp_publish_pctChange_json(const char *json, bool fragment) {
+
   for (auto const &it : uoCb_cbs) {
     if (!it.cb)
       continue;
@@ -114,7 +104,10 @@ void uoApp_publish_pctChangeJson(const char *json) {
     flags.fmt.json = true;
     flags.evt.pct_change = true;
 
-    publish(it.cb, json, flags);
+    if (fragment) {
+      publish_fragJson(it.cb, json, flags);
+    } else {
+      publish(it.cb, json, flags);
+    }
   }
 }
-

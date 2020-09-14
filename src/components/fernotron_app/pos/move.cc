@@ -78,7 +78,7 @@ static void ferPos_printMovingPct(u8 g, u8 m, u8 pct) {
     if (sj_open_root_object("tfmcu")) {
       soMsg_pos_print_gmp(gmp, true);
       sj_close_root_object();
-      uoApp_publish_pctChangeJson(sj_get_json());
+      uoApp_publish_pctChange_json(sj_get_json(), false);
     }
 
   }
