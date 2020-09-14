@@ -7,7 +7,7 @@
 
 #include "app/config/proj_app_cfg.h"
 #include "fernotron/pos/shutter_pct.h"
-#include "../move.h"
+#include "../pos/move.h"
 
 #include "unity.h"
 
