@@ -1,5 +1,7 @@
-# scans component directories for <component>/test/test_*.(cc|c) files and compiles them into test programs
+# scans component directories for <component>/test/test_*.(c|cc|cpp) files and compiles them into test programs
 # compiles any other portable component source files into build/obj.a
+#
+# note: esp-idf's on-chip-testing (unity-app) ignores .cc test files (it will work with .cpp)
 
 
 .PHONY: all clean init tests build_lib sdkconfig
@@ -17,8 +19,9 @@ endif
 make := make --no-print-dir -s
 grep_results := ! grep -H -e IGNORE -e FAIL -e Aborted
 
-SRC_BASE=../..
-BUILD_BASE ?= $(realpath .)/build
+THIS_ROOT := $(realpath .)
+SRC_BASE :=$(THIS_ROOT)/../..
+BUILD_BASE ?= $(THIS_ROOT)/build
 BUILD_PATH=$(BUILD_BASE)/test_host
 BUILD_OBJ_PATH=$(BUILD_PATH)/obj
 BUILD_OBJ_LIB=$(BUILD_PATH)/obj.a
@@ -36,7 +39,7 @@ COMP_DIRS = $(COMP_LIB_DIR) $(COMP_APP_DIR) $(COMP_EXT_COMPMCU_DIR)
 COMP_NAMES = $(notdir $(shell find $(addprefix $(SRC_BASE)/,$(addsuffix /*,$(COMP_DIRS))) -maxdepth 0 -type d))
 COMP_PATHS = $(shell find $(addprefix $(SRC_BASE)/,$(addsuffix /*,$(COMP_DIRS))) -maxdepth 0 -type d)
 COMP_INC_PATHS = $(addsuffix /include,$(COMP_PATHS))
-SRC_DIR_EXCLUDE = esp8266 esp32 nonopb node_modules
+SRC_DIR_EXCLUDE = esp8266 esp32 nanopb node_modules
 SRC_DIR_EXCLUDE_FIND = 
 SDKCONFIG := $(SRC_BASE)/src/esp32/build/config/sdkconfig.h
 HOST_SDKCONFIG := $(SRC_BASE)/$(COMP_APP_DIR)/app_config/include/app_config/host/sdkconfig.h
