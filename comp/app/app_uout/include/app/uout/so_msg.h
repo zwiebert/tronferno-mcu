@@ -36,8 +36,8 @@ void soMsg_shpref_obj_end();
 void soMsg_shpref_obj_gm_begin(const so_arg_gm_t a);
 void soMsg_shpref_obj_gm_end();
 
-void soMsg_pos_print_gmp(const so_arg_gmp_t a, bool broadcast = false);
-void soMsg_pos_print_gmpa(const so_arg_gmp_t *a, bool broadcast = false);
+void soMsg_pos_print_gmp(const so_arg_gmp_t a);
+void soMsg_pos_print_gmpa(const so_arg_gmp_t *a);
 void soMsg_pos_print_mmp(const so_arg_mmp_t a);
 void soMsg_pos_begin();
 void soMsg_pos_end();

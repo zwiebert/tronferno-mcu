@@ -228,7 +228,7 @@ void soMsg_kv(const char *key, bool val);
 
 
 
-void soMsg_pos_print_gmp(const so_arg_gmp_t a, bool broadcast) {
+void soMsg_pos_print_gmp(const so_arg_gmp_t a) {
   if (so_cco) {
     io_puts("A:position:");
     io_puts(" g="), io_putd(a.g);
@@ -236,23 +236,17 @@ void soMsg_pos_print_gmp(const so_arg_gmp_t a, bool broadcast) {
     io_puts(" p="), io_putd(a.p), io_puts(";\n");
   }
 
-  if (so_jco || broadcast) {
+  if (so_jco) {
     int start = sj_add_object("pct");
     char buf[] = "00";
     buf[0] += a.g;
     buf[1] += a.m;
     sj_add_key_value_pair_d(buf, a.p);
     sj_close_object();
-
-    if (broadcast)
-      uoApp_publish_pctChange_json(sj_get_json() + start);
   }
-
-  if (so_mqt || broadcast)
-    uoApp_publish_pctChange_gmp(a);
 }
 
-void soMsg_pos_print_gmpa(const so_arg_gmp_t *a, bool broadcast) {
+void soMsg_pos_print_gmpa(const so_arg_gmp_t *a) {
   if (so_cco)
     for (int i = 0; a[i].g <= 7; ++i) {
       io_puts("A:position:");
@@ -261,7 +255,7 @@ void soMsg_pos_print_gmpa(const so_arg_gmp_t *a, bool broadcast) {
       io_puts(" p="), io_putd(a[i].p), io_puts(";\n");
     }
 
-  if (so_jco || broadcast) {
+  if (so_jco) {
     int start = sj_add_object("pct");
     for (int i = 0; a[i].g <= 7; ++i) {
       char buf[] = "00";
@@ -270,15 +264,7 @@ void soMsg_pos_print_gmpa(const so_arg_gmp_t *a, bool broadcast) {
       sj_add_key_value_pair_d(buf, a[i].p);
     }
     sj_close_object();
-
-    if (broadcast)
-      uoApp_publish_pctChange_json(sj_get_json() + start);
   }
-
-  if (so_mqt || broadcast) // XXX
-    for (int i = 0; a[i].g <= 7; ++i) {
-      uoApp_publish_pctChange_gmp(a[i]);
-    }
 }
 
 void soMsg_pos_print_mmp(const so_arg_mmp_t a) {

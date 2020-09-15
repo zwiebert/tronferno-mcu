@@ -55,27 +55,57 @@ void uoApp_publish_pinChange(const so_arg_pch_t args) {
 }
 
 
-static void publish_pctChange_gmp_asJson(const so_arg_gmp_t gmp) {
+static void publish_pctChange_gmp_asJson(uoCb_cbT cb, const so_arg_gmp_t a) {
   LockGuard lock(cli_mutex);
 
   if (sj_open_root_object("tfmcu")) {
-    soMsg_pos_print_gmp(gmp, true);
+    sj_add_object("pct");
+    char buf[] = "00";
+    buf[0] += a.g;
+    buf[1] += a.m;
+    sj_add_key_value_pair_d(buf, a.p);
+    sj_close_object();
     sj_close_root_object();
-    uoApp_publish_pctChange_json(sj_get_json(), false);
+
+    uo_flagsT flags;
+    flags.fmt.json = true;
+    flags.evt.pct_change = true;
+    publish(cb, sj_get_json(), flags);
   }
 }
 
-void publish_pctChange_gmp_asJson(const so_arg_gmp_t *gmp, size_t len) {
+void publish_pctChange_gmp_asJson(uoCb_cbT cb, const so_arg_gmp_t *a, size_t len) {
   LockGuard lock(cli_mutex);
 
   if (sj_open_root_object("tfmcu")) {
-    soMsg_pos_print_gmpa(gmp, true);
+    int start = sj_add_object("pct");
+    for (int i = 0; a[i].g <= 7; ++i) {
+      char buf[] = "00";
+      buf[0] += a[i].g;
+      buf[1] += a[i].m;
+      sj_add_key_value_pair_d(buf, a[i].p);
+    }
+    sj_close_object();
     sj_close_root_object();
-    uoApp_publish_pctChange_json(sj_get_json(), false);
+
+    uo_flagsT flags;
+    flags.fmt.json = true;
+    flags.evt.pct_change = true;
+    publish(cb, sj_get_json(), flags);
   }
 }
 
-void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len) {
+static void publish_pctChange_gmp_asTxt(uoCb_cbT cb, const so_arg_gmp_t a) {
+  char buf[64];
+  snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d\n", a.g, a.m, a.p);
+  uo_flagsT flags;
+  flags.fmt.txt = true;
+  flags.evt.pct_change = true;
+  publish(cb, buf, flags);
+
+}
+
+void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT tgtFlags) {
   for (auto const &it : uoCb_cbs) {
     if (!it.cb)
       continue;
@@ -83,8 +113,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len) {
       continue;
 
     if (it.flags.fmt.json) {
-      publish_pctChange_gmp_asJson(a, len);
-      return;
+      publish_pctChange_gmp_asJson(it.cb, a, len);
     }
 
     if (it.flags.fmt.obj) {
@@ -95,11 +124,16 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len) {
         publish(it.cb, &a[i], flags);
       }
     }
+
+    if (it.flags.fmt.txt) {
+      for (int i = 0; i < len; ++i) {
+        publish_pctChange_gmp_asTxt(it.cb, a[i]);
+      }
+    }
   }
 }
 
-
-void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a) {
+void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
 
   for (auto const &it : uoCb_cbs) {
     if (!it.cb)
@@ -108,8 +142,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a) {
       continue;
 
     if (it.flags.fmt.json) {
-      publish_pctChange_gmp_asJson(a);
-      return;
+      publish_pctChange_gmp_asJson(it.cb, a);
     }
 
     if (it.flags.fmt.obj) {
@@ -117,6 +150,10 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a) {
       flags.fmt.obj = true;
       flags.evt.pct_change = true;
       publish(it.cb, &a, flags);
+    }
+
+    if (it.flags.fmt.txt) {
+      publish_pctChange_gmp_asTxt(it.cb, a);
     }
   }
 }
@@ -142,7 +179,7 @@ void uoApp_publish_timer_json(const char *json, bool fragment) {
   }
 }
 
-void uoApp_publish_pctChange_json(const char *json, bool fragment) {
+void uoApp_publish_pctChange_jsonXXX(const char *json, bool fragment) {
 
   for (auto const &it : uoCb_cbs) {
     if (!it.cb)
