@@ -270,7 +270,7 @@ void hts_setup_content() {
   hts_register_uri_handlers_cb = hts_register_uri_handlers;
 #ifdef USE_WS
   ws_print_json_cb = ws_send_json;
-  uo_flagsT flags {};
+  uo_flagsT flags;
   flags.tgt.websocket = true;
   flags.evt.pin_change = true;
   flags.evt.pct_change = true;

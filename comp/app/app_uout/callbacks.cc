@@ -1,6 +1,7 @@
 
 #include <misc/int_macros.h>
 #include <cli/mutex.hh>
+#include <txtio/txtio_mutex.hh>
 #include <app/uout/so_msg.h>
 #include <app/uout/so_types.h>
 #include <uout/status_json.h>
@@ -14,6 +15,7 @@
 
 
 static void publish(uoCb_cbT cb, const void *ptr, uo_flagsT flags) {
+  std::scoped_lock lock { cli_mutex, txtio_mutex };
   uoCb_msgT  msg { .cv_ptr = ptr, .flags = flags };
   cb(msg);
 }
@@ -179,24 +181,3 @@ void uoApp_publish_timer_json(const char *json, bool fragment) {
   }
 }
 
-void uoApp_publish_pctChange_jsonXXX(const char *json, bool fragment) {
-
-  for (auto const &it : uoCb_cbs) {
-    if (!it.cb)
-      continue;
-    if (!it.flags.evt.pct_change)
-      continue;
-    if (!it.flags.fmt.json)
-      continue;
-
-    uo_flagsT flags;
-    flags.fmt.json = true;
-    flags.evt.pct_change = true;
-
-    if (fragment) {
-      publish_fragJson(it.cb, json, flags);
-    } else {
-      publish(it.cb, json, flags);
-    }
-  }
-}
