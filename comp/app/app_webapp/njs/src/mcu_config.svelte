@@ -263,6 +263,7 @@
 </button>
 
 {#if $ReloadProgress > 0}
+  <br>
   <strong>{$_('app.msg_waitForMcuRestart')}</strong>
   <br />
   <progress id="reload_progress_bar" value={$ReloadProgress} max="100" />
