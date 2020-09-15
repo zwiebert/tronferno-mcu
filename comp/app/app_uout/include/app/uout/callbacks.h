@@ -19,6 +19,7 @@ inline const so_arg_gmp_t *uoCb_gmpFromMsg(const uoCb_msgT msg) {
 
 void uoApp_publish_pctChange_json(const char *json, bool fragment = true);
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a);
+void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len);
 
 void uoApp_publish_timer_json(const char *json, bool fragment = true);
 void uoApp_publish_pinChange(const so_arg_pch_t args);

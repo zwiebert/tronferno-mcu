@@ -13,7 +13,7 @@ idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS "./include" 
     REQUIRES misc fernotron
-    PRIV_REQUIRES app_config debug key_value_store misc_time app_settings app_uout cli storage
+    PRIV_REQUIRES app_config debug key_value_store misc_time app_settings app_uout storage
      )
 
 component_compile_options(${comp_compile_opts})

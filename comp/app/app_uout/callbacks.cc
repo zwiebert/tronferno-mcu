@@ -1,5 +1,9 @@
 
 #include <misc/int_macros.h>
+#include <cli/mutex.hh>
+#include <app/uout/so_msg.h>
+#include <app/uout/so_types.h>
+#include <uout/status_json.h>
 #include <stdio.h>
 #include <string.h>
 #include <debug/dbg.h>
@@ -51,6 +55,50 @@ void uoApp_publish_pinChange(const so_arg_pch_t args) {
 }
 
 
+static void publish_pctChange_gmp_asJson(const so_arg_gmp_t gmp) {
+  LockGuard lock(cli_mutex);
+
+  if (sj_open_root_object("tfmcu")) {
+    soMsg_pos_print_gmp(gmp, true);
+    sj_close_root_object();
+    uoApp_publish_pctChange_json(sj_get_json(), false);
+  }
+}
+
+void publish_pctChange_gmp_asJson(const so_arg_gmp_t *gmp, size_t len) {
+  LockGuard lock(cli_mutex);
+
+  if (sj_open_root_object("tfmcu")) {
+    soMsg_pos_print_gmpa(gmp, true);
+    sj_close_root_object();
+    uoApp_publish_pctChange_json(sj_get_json(), false);
+  }
+}
+
+void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len) {
+  for (auto const &it : uoCb_cbs) {
+    if (!it.cb)
+      continue;
+    if (!it.flags.evt.pct_change)
+      continue;
+
+    if (it.flags.fmt.json) {
+      publish_pctChange_gmp_asJson(a, len);
+      return;
+    }
+
+    if (it.flags.fmt.obj) {
+      uo_flagsT flags;
+      flags.fmt.obj = true;
+      flags.evt.pct_change = true;
+      for (int i = 0; i < len; ++i) {
+        publish(it.cb, &a[i], flags);
+      }
+    }
+  }
+}
+
+
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a) {
 
   for (auto const &it : uoCb_cbs) {
@@ -58,14 +106,18 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a) {
       continue;
     if (!it.flags.evt.pct_change)
       continue;
-    if (!it.flags.fmt.obj)
-      continue;
 
-    uo_flagsT flags;
-    flags.fmt.obj = true;
-    flags.evt.pct_change = true;
+    if (it.flags.fmt.json) {
+      publish_pctChange_gmp_asJson(a);
+      return;
+    }
 
-    publish(it.cb, &a, flags);
+    if (it.flags.fmt.obj) {
+      uo_flagsT flags;
+      flags.fmt.obj = true;
+      flags.evt.pct_change = true;
+      publish(it.cb, &a, flags);
+    }
   }
 }
 

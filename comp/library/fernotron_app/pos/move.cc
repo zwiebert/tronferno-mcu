@@ -21,7 +21,6 @@
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
 #include <fernotron/fer_main.h>
-#include "cli/mutex.hh"
 #include "misc/time/periodic.h"
 #include "misc/time/run_time.h"
 
@@ -70,21 +69,6 @@ u8 ferPos_mGetSunPct(u8 g, u8 m) {
   return pct;
 }
 
-
-static void ferPos_printMovingPct(u8 g, u8 m, u8 pct) {
-  {
-    LockGuard lock(cli_mutex);
-    so_arg_gmp_t gmp = { g, m, pct };
-    if (sj_open_root_object("tfmcu")) {
-      soMsg_pos_print_gmp(gmp, true);
-      sj_close_root_object();
-      uoApp_publish_pctChange_json(sj_get_json(), false);
-    }
-
-  }
-}
-
-
 // check if a moving shutter has reached its end position
 int ferPos_mvCheck_mv(struct mv *mv, unsigned now_ts) {
   u8 pct;
@@ -112,7 +96,7 @@ int ferPos_mvCheck_mv(struct mv *mv, unsigned now_ts) {
       continue;
     }
 
-    ferPos_printMovingPct(g, m, pct);
+    uoApp_publish_pctChange_gmp(so_arg_gmp_t{g, m, pct});
   }
 
   return stopped_count;
