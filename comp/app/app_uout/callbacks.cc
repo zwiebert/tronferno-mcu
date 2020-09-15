@@ -99,7 +99,7 @@ void publish_pctChange_gmp_asJson(uoCb_cbT cb, const so_arg_gmp_t *a, size_t len
 
 static void publish_pctChange_gmp_asTxt(uoCb_cbT cb, const so_arg_gmp_t a) {
   char buf[64];
-  snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d\n", a.g, a.m, a.p);
+  snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;\n", a.g, a.m, a.p);
   uo_flagsT flags;
   flags.fmt.txt = true;
   flags.evt.pct_change = true;
