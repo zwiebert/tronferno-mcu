@@ -14,7 +14,7 @@
 
 extern void (*sep_enable_disable_cb)(bool enable);
 
-bool sep_enable(const struct TargetDesc &td, fsbT *fsb);
+bool sep_enable(const struct TargetDesc &td, fer_sbT *fsb);
 void sep_disable(void);
 void sep_loop(void);
 bool sep_is_enabled(void);

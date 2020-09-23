@@ -87,7 +87,7 @@ bool  asc2group(const char *s, fer_grp *grp) {
   if (s) {
     int g = atoi(s);
     if (0 <= g && g <= 7) {
-      *grp = ngrp2fer_grp(g);
+      *grp = fer_ngrp2fer_grp(g);
       return true;
     }
   }
@@ -99,7 +99,7 @@ bool  asc2memb(const char *s, fer_memb *memb) {
 
     int m = atoi(s);
     if (0 <= m && m <= 7) {
-      *memb = nmb2fer_memb(m);
+      *memb = fer_nmb2fer_memb(m);
       return true;
     }
   }

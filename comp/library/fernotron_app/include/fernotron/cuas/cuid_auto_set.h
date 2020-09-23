@@ -11,7 +11,7 @@ typedef enum  { CUAS_NONE, CUAS_SCANNING, CUAS_TIME_OUT, CUAS_SUCCESS } cuas_sta
 
 bool cu_auto_set(const struct TargetDesc &td, uint16_t id, unsigned timeout_secs);
 void cu_auto_set_check_timeout(void);
-bool cu_auto_set_check(const fsbT *fsb);
+bool cu_auto_set_check(const fer_sbT *fsb);
 
 cuas_state_T cuas_getState();
 

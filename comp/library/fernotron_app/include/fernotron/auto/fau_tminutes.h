@@ -27,7 +27,7 @@ minutes_t get_min(const time_t *timer);
 // return minute offsets of todays timer events in parameter *result
 // offsets are minutes after 00:00 hour.
 // offset == MINUTES_DISABLED means: no timer event exists for today
-bool fau_get_timer_minutes_from_timer_data_tm(timer_minutes_t *timi, const timer_data_t *tdp, const struct tm *tm);
+bool fau_get_timer_minutes_from_timer_data_tm(timer_minutes_t *timi, const Fer_TimerData *tdp, const struct tm *tm);
 bool fau_get_timer_minutes_now(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard);
 bool fau_get_timer_minutes_tim(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard, const time_t *now_time);
 bool fau_get_timer_minutes_tm(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard, const struct tm *tm);

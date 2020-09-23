@@ -49,7 +49,7 @@ static inline void sep_DISABLE_cb() {
     sep_enable_disable_cb(false);
 }
 
-static fsbT sep_fsb;
+static fer_sbT sep_fsb;
 static bool sep_buttons_enabled;
 static bool up_pressed, down_pressed;
 static fer_cmd sep_cmd;
@@ -78,8 +78,8 @@ bool  sep_is_enabled(void) {
 
 static bool 
 sep_send_stop(void) {
-  fsbT * const fsb = &sep_fsb;
-  FSB_PUT_CMD(fsb, fer_cmd_STOP);
+  fer_sbT * const fsb = &sep_fsb;
+  FER_SB_PUT_CMD(fsb, fer_cmd_STOP);
   fer_update_tglNibble(fsb);
   while (fer_send_msg(fsb, MSG_TYPE_PLAIN, 2)) {
     fer_update_tglNibble(fsb);
@@ -89,16 +89,16 @@ sep_send_stop(void) {
 
 static bool 
 sep_send_down(void) {
-  fsbT * const fsb = &sep_fsb;
-  FSB_PUT_CMD(fsb, SEP_DOWN);
+  fer_sbT * const fsb = &sep_fsb;
+  FER_SB_PUT_CMD(fsb, SEP_DOWN);
   fer_update_tglNibble(fsb);
   return fer_send_msg(fsb, MSG_TYPE_PLAIN, 0);
 }
 
 static bool 
 sep_send_up(void) {
-  fsbT * const fsb = &sep_fsb;
-  FSB_PUT_CMD(fsb, SEP_UP);
+  fer_sbT * const fsb = &sep_fsb;
+  FER_SB_PUT_CMD(fsb, SEP_UP);
   fer_update_tglNibble(fsb);
   return fer_send_msg(fsb, MSG_TYPE_PLAIN, 0);
 }
@@ -115,7 +115,7 @@ sep_disable(void) {
 }
 
 bool 
-sep_enable(const struct TargetDesc &td, fsbT *fsb) {
+sep_enable(const struct TargetDesc &td, fer_sbT *fsb) {
   my_td = &td;
   if (sep_buttons_enabled) { // already activated
     sep_disable();
@@ -126,15 +126,15 @@ sep_enable(const struct TargetDesc &td, fsbT *fsb) {
   } else {
 
     // check for possible broadcast
-    if (FSB_ADDR_IS_CENTRAL(fsb)
-        && !((fer_memb_M1 <= FSB_GET_MEMB(fsb) && FSB_GET_MEMB(fsb) <= fer_memb_M7) && (fer_grp_G1 <= FSB_GET_GRP(fsb) && FSB_GET_GRP(fsb) <= fer_grp_G7))) {
+    if (FER_SB_ADDR_IS_CENTRAL(fsb)
+        && !((fer_memb_M1 <= FER_SB_GET_MEMB(fsb) && FER_SB_GET_MEMB(fsb) <= fer_memb_M7) && (fer_grp_G1 <= FER_SB_GET_GRP(fsb) && FER_SB_GET_GRP(fsb) <= fer_grp_G7))) {
       return false; // no broadcast allowed
     }
 
     // set our endpos-up/down command according to normal up/down command in fsb
-    if (FSB_GET_CMD(fsb) == fer_cmd_UP) {
+    if (FER_SB_GET_CMD(fsb) == fer_cmd_UP) {
       sep_cmd = SEP_UP;
-    } else if (FSB_GET_CMD(fsb) == fer_cmd_DOWN) {
+    } else if (FER_SB_GET_CMD(fsb) == fer_cmd_DOWN) {
       sep_cmd = SEP_DOWN;
     } else {
       return false;

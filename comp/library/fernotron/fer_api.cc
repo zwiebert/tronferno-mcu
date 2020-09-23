@@ -23,12 +23,12 @@ timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
       ++src;
       break;
     case '+': // copy previous day on+off timer
-      if (i < FPR_TIMER_STAMP_WIDTH || i + FPR_TIMER_STAMP_WIDTH > size_dst)
+      if (i < FER_FPR_TIMER_STAMP_WIDTH || i + FER_FPR_TIMER_STAMP_WIDTH > size_dst)
         return false;
-      dst[i] = dst[i - FPR_TIMER_STAMP_WIDTH], ++i;
-      dst[i] = dst[i - FPR_TIMER_STAMP_WIDTH], ++i;
-      dst[i] = dst[i - FPR_TIMER_STAMP_WIDTH], ++i;
-      dst[i] = dst[i - FPR_TIMER_STAMP_WIDTH];
+      dst[i] = dst[i - FER_FPR_TIMER_STAMP_WIDTH], ++i;
+      dst[i] = dst[i - FER_FPR_TIMER_STAMP_WIDTH], ++i;
+      dst[i] = dst[i - FER_FPR_TIMER_STAMP_WIDTH], ++i;
+      dst[i] = dst[i - FER_FPR_TIMER_STAMP_WIDTH];
       ++src;
       break;
 
@@ -50,63 +50,63 @@ timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
   return i == size_dst;
 }
 
-bool fill_rtc_buf(fsbT *fsb, time_t rtc) {
+bool fill_rtc_buf(fer_sbT *fsb, time_t rtc) {
   (void)fsb;
-  fmsg_raw_init(txmsg);
-  fmsg_raw_from_rtc(txmsg, rtc, true);
+  fer_msg_raw_init(fer_tx_msg);
+  fer_msg_raw_from_rtc(fer_tx_msg, rtc, true);
   return true;
 }
 
-bool fill_timer_buf(fsbT *fsb, time_t rtc, timer_data_t *tdr) {
+bool fill_timer_buf(fer_sbT *fsb, time_t rtc, Fer_TimerData *tdr) {
 
-  fmsg_raw_init(txmsg);
+  fer_msg_raw_init(fer_tx_msg);
 
-  fmsg_raw_from_rtc(txmsg, rtc, false);
+  fer_msg_raw_from_rtc(fer_tx_msg, rtc, false);
 
 
-  if (td_is_weekly(tdr)) {
-    u8 weekly_data[FPR_TIMER_STAMP_WIDTH * 7];
+  if (fer_td_is_weekly(tdr)) {
+    u8 weekly_data[FER_FPR_TIMER_STAMP_WIDTH * 7];
     if (!timerString2bcd(tdr->weekly, weekly_data, sizeof weekly_data))
       return false;
-    fmsg_raw_from_weeklyTimer(txmsg, weekly_data);
+    fer_msg_raw_from_weeklyTimer(fer_tx_msg, weekly_data);
   }
 
-  if (td_is_daily(tdr)) {
-    u8 daily_data[FPR_TIMER_STAMP_WIDTH];
+  if (fer_td_is_daily(tdr)) {
+    u8 daily_data[FER_FPR_TIMER_STAMP_WIDTH];
     if (!timerString2bcd(tdr->daily, daily_data, sizeof daily_data))
       return false;
-    fmsg_raw_from_dailyTimer(txmsg, daily_data);
+    fer_msg_raw_from_dailyTimer(fer_tx_msg, daily_data);
   }
 
-  if (td_is_astro(tdr)) {
-    fmsg_raw_from_astro(txmsg, tdr->astro);
+  if (fer_td_is_astro(tdr)) {
+    fer_msg_raw_from_astro(fer_tx_msg, tdr->astro);
   }
 
-  if (td_is_random(tdr)) {
-    fmsg_raw_from_flags(txmsg, BIT(flag_Random), BIT(flag_Random));
+  if (fer_td_is_random(tdr)) {
+    fer_msg_raw_from_flags(fer_tx_msg, BIT(flag_Random), BIT(flag_Random));
   }
 
-  if (td_is_sun_auto(tdr)) {
-    fmsg_raw_from_flags(txmsg, BIT(flag_SunAuto), BIT(flag_SunAuto));
+  if (fer_td_is_sun_auto(tdr)) {
+    fer_msg_raw_from_flags(fer_tx_msg, BIT(flag_SunAuto), BIT(flag_SunAuto));
   }
 
-  fmsg_raw_footerCreate(txmsg, fsb);
+  fer_msg_raw_footerCreate(fer_tx_msg, fsb);
 
   return true;
 }
 
-bool send_rtc_message(fsbT *fsb, time_t rtc) {
+bool fer_send_rtc_message(fer_sbT *fsb, time_t rtc) {
   bool success = fill_rtc_buf(fsb, rtc) && fer_send_msg(fsb, MSG_TYPE_RTC, 0);
   return success;
 }
 
-bool send_timer_message(fsbT *fsb, time_t rtc, timer_data_t *td) {
+bool fer_send_timer_message(fer_sbT *fsb, time_t rtc, Fer_TimerData *td) {
   bool success = fill_timer_buf(fsb, rtc, td) && fer_send_msg(fsb, MSG_TYPE_TIMER, 0);
   return success;
 }
 
-bool send_empty_timer_message(fsbT *fsb, time_t rtc) {
-  timer_data_t tde = td_initializer;
+bool fer_send_empty_timer_message(fer_sbT *fsb, time_t rtc) {
+  Fer_TimerData tde = fer_td_initializer;
   bool success = fill_timer_buf(fsb, rtc, &tde) && fer_send_msg(fsb, MSG_TYPE_TIMER, 0); // XXX: wasteful
   return success;
 }

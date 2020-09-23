@@ -1,11 +1,3 @@
-/*
- * astro.h
- *
- * Created: 24.08.2017 22:03:12
- *  Author: bertw
- */ 
-
-
 #pragma once
 
 #include "fernotron/fer_msg_attachment.h"
@@ -21,12 +13,11 @@ struct cfg_astro {
   float geo_timezone;
 };
 
-
 // calculate and fill in astro data
-void astro_write_data(astro_byte_data d, int mint_offset);
+void fer_astro_write_data(fer_astro_byte_data d, int mint_offset);
 
 // calculate astro time like the motor does
-uint16_t astro_calc_minutes(const struct tm *tm);
+uint16_t fer_astro_calc_minutes(const struct tm *tm);
 
-void astro_init_and_reinit(const struct cfg_astro *cfg_astro);
+void fer_astro_init_and_reinit(const struct cfg_astro *cfg_astro);
 

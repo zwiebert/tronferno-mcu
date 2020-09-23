@@ -148,9 +148,9 @@ bool ferPos_shouldMove_sunDown(u8 g, u8 m) {
   if (manual_bits.getBit(g, m))
     return false;
 
-  timer_data_t td = { };
+  Fer_TimerData td = { };
   if (read_timer_data(&td, &g, &m, true)) {
-    if (!td_is_sun_auto(&td))
+    if (!fer_td_is_sun_auto(&td))
       return false;
   }
 

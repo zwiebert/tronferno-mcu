@@ -12,7 +12,7 @@
 #include "fernotron/timer_data.h"
 
 
-bool save_timer_data_kvs(timer_data_t *p, uint8_t group, uint8_t member);
-bool read_timer_data_kvs(timer_data_t *p, uint8_t *group, uint8_t *member, bool wildcard);
+bool save_timer_data_kvs(Fer_TimerData *p, uint8_t group, uint8_t member);
+bool read_timer_data_kvs(Fer_TimerData *p, uint8_t *group, uint8_t *member, bool wildcard);
 bool erase_timer_data_kvs(u8 g, u8 m);
 

@@ -176,7 +176,7 @@ process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
             cu_auto_set(td, cli_msgid, 60);
             cli_replySuccess(td);
           } else {
-            u32 cu = (is_val("auto-old")) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
+            u32 cu = (is_val("auto-old")) ? FER_SB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
 
             if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
               return cli_replyFailure(td);

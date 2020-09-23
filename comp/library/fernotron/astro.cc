@@ -72,12 +72,12 @@ static int astroTableIndex_from_tm(const struct tm *tm) {
 void astro_populate_astroMinutes_from_astroBcd() {
   u8 row, col, midx=0;
 
-  astro_byte_data bcds;
+  fer_astro_byte_data bcds;
 
-  astro_write_data(bcds, 0);
+  fer_astro_write_data(bcds, 0);
 
-  for (row = 0; row < FPR_ASTRO_HEIGHT; ++row) {
-    for (col = 0; (col+1) < FPR_ASTRO_WIDTH; col += 2) {
+  for (row = 0; row < FER_FPR_ASTRO_HEIGHT; ++row) {
+    for (col = 0; (col+1) < FER_FPR_ASTRO_WIDTH; col += 2) {
       u8 min = bcd2dec(bcds[row][col]);
       u8 hour = bcd2dec(bcds[row][col+1]);
      astro_minutes[midx++] = hour * 60 + min;
@@ -85,7 +85,7 @@ void astro_populate_astroMinutes_from_astroBcd() {
   }
 }
 
-u16 astro_calc_minutes(const struct tm *tm) {
+u16 fer_astro_calc_minutes(const struct tm *tm) {
   int idx = astroTableIndex_from_tm(tm);
   assert(0 <= idx && idx <= 47);
   return astro_minutes[idx] + (tm->tm_isdst ? 60 : 0);
@@ -111,14 +111,14 @@ u16 astro_calc_minutes(const struct tm *tm) {
  *
  */
 static void 
-math_write_astro(astro_byte_data dst, int mint_offset) {
+math_write_astro(fer_astro_byte_data dst, int mint_offset) {
   int i, j;
   double dusk = 0, duskf = 0, duskr = 0, last_dusk = -1;
   int dayf, dayr;
 
   dayf = dayr = 354;
 
-  for (i = 0; i < FPR_ASTRO_HEIGHT; ++i) {
+  for (i = 0; i < FER_FPR_ASTRO_HEIGHT; ++i) {
     for (j = 0; j < 4; ++j) {
       sun_calculateDuskDawn(NULL, &duskf, astro_cfg->geo_timezone + (mint_offset / 60.0f), dayf, astro_cfg->geo_longitude, astro_cfg->geo_latitude, CIVIL_TWILIGHT_RAD);
       sun_calculateDuskDawn(NULL, &duskr, astro_cfg->geo_timezone + (mint_offset / 60.0f), dayr, astro_cfg->geo_longitude, astro_cfg->geo_latitude, CIVIL_TWILIGHT_RAD);
@@ -153,7 +153,7 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
 
 
 #if 0
-u16 astro_calc_minutes(const struct tm *tm) {
+u16 fer_astro_calc_minutes(const struct tm *tm) {
   double dusk;
   i16 old_yd, yd = old_yd = (tm->tm_mon * 30 + tm->tm_mday);
   i16 idx;
@@ -180,10 +180,10 @@ u16 astro_calc_minutes(const struct tm *tm) {
 #endif
 
 static void 
-math_write_astro(astro_byte_data dst, int mint_offset) {
+math_write_astro(fer_astro_byte_data dst, int mint_offset) {
   int i, j, yd;
 
-  for (i = 0, yd=88; i < FPR_ASTRO_HEIGHT; ++i) { // 4*88=352
+  for (i = 0, yd=88; i < FER_FPR_ASTRO_HEIGHT; ++i) { // 4*88=352
     for (j = 0; j < 4; ++j) {
     double dusk;
     double dayofy = (4 * yd--) * 1.0139; // 360 => 365 days per year
@@ -208,14 +208,14 @@ static int get_yday(int mon, int day)
 
 
 static void 
-math_write_astro(astro_byte_data dst, int mint_offset) {
+math_write_astro(fer_astro_byte_data dst, int mint_offset) {
   int i, j, month, mday;
   double sunset = 17.0;
 
   month = 12;
   mday = 20;
 
-  for (i = 0; i < FPR_ASTRO_HEIGHT; ++i) {
+  for (i = 0; i < FER_FPR_ASTRO_HEIGHT; ++i) {
     for (j = 0; j < 4; ++j) {
       sun_calculateDuskDawn(NULL, &sunset, astro_cfg->geo_timezone + (mint_offset / 60.0f), get_yday(month, mday), astro_cfg->geo_longitude, astro_cfg->geo_latitude, CIVIL_TWILIGHT_RAD);
 
@@ -234,11 +234,11 @@ math_write_astro(astro_byte_data dst, int mint_offset) {
 /////////////////////////////////////////////////////////////////////////////////////
 
 
-void  astro_write_data(u8 d[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
+void  fer_astro_write_data(u8 d[FER_FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
   math_write_astro(d, mint_offset);
 }
 
-void astro_init_and_reinit(const struct cfg_astro *cfg_astro) {
+void fer_astro_init_and_reinit(const struct cfg_astro *cfg_astro) {
   if (cfg_astro) {
     memcpy(&astro_config, cfg_astro, sizeof astro_config);
   }

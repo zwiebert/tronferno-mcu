@@ -67,12 +67,12 @@ void pair_auto_set_check_timeout(void) {
   }
 }
 
-bool  pair_auto_set_check(const fsbT *fsb) {
+bool  pair_auto_set_check(const fer_sbT *fsb) {
   if (end_time == 0)
     return false;
 
-  if (!FSB_ADDR_IS_CENTRAL(fsb)) {
-    u32 a = FSB_GET_DEVID(fsb);
+  if (!FER_SB_ADDR_IS_CENTRAL(fsb)) {
+    u32 a = FER_SB_GET_DEVID(fsb);
     bool success = false;
 
     if (pras_c == PC_pair || pras_c == PC_unpair) {

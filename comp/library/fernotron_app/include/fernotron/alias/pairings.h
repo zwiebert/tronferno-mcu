@@ -25,5 +25,5 @@ bool pair_so_output_all_pairings(const struct TargetDesc &td);
 bool pair_auto_set(const struct TargetDesc &td, uint8_t g, uint8_t m, uint8_t c, uint16_t id, unsigned timeout_secs);
 // check for result (called from main loop)
 void pair_auto_set_check_timeout(void);
-bool pair_auto_set_check(const fsbT *fsb);
+bool pair_auto_set_check(const fer_sbT *fsb);
 

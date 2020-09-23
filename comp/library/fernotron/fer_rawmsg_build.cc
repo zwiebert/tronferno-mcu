@@ -18,7 +18,7 @@
 #include "misc/bcd.h"
 
 /* verify all checksums of message in place. */
-bool  fmsg_raw_checksumsVerify(const struct fer_raw_msg *m, fmsg_type t) {
+bool  fer_msg_raw_checksumsVerify(const struct fer_raw_msg *m, fer_msg_type t) {
 	int line, column;
 	u8 checksum = 0;
 
@@ -47,7 +47,7 @@ bool  fmsg_raw_checksumsVerify(const struct fer_raw_msg *m, fmsg_type t) {
 	if (MSG_TYPE_RTC == t)
 		return true;
 
-	for (line = 0; line < FPR_TIMER_HEIGHT; ++line) {
+	for (line = 0; line < FER_FPR_TIMER_HEIGHT; ++line) {
 		for (column = 0; column < FER_PRG_BYTE_CT; ++column) {
 
 			if (column == FER_PRG_BYTE_CT - 1)
@@ -58,7 +58,7 @@ bool  fmsg_raw_checksumsVerify(const struct fer_raw_msg *m, fmsg_type t) {
 		}
 	}
 
-	for (line = 0; line < FPR_ASTRO_HEIGHT; ++line) {
+	for (line = 0; line < FER_FPR_ASTRO_HEIGHT; ++line) {
 		for (column = 0; column < FER_PRG_BYTE_CT; ++column) {
 
 			if (column == FER_PRG_BYTE_CT - 1)
@@ -73,7 +73,7 @@ bool  fmsg_raw_checksumsVerify(const struct fer_raw_msg *m, fmsg_type t) {
 
 
 /* create all checksums of message in place. */
-void  fmsg_raw_checksumsCreate(struct fer_raw_msg *m, fmsg_type t) {
+void  fer_msg_raw_checksumsCreate(struct fer_raw_msg *m, fer_msg_type t) {
 	int line, column;
 	u8 checksum = 0;
 
@@ -99,7 +99,7 @@ void  fmsg_raw_checksumsCreate(struct fer_raw_msg *m, fmsg_type t) {
 	if (MSG_TYPE_RTC == t)
 		return;
 
-	for (line = 0; line < FPR_TIMER_HEIGHT; ++line) {
+	for (line = 0; line < FER_FPR_TIMER_HEIGHT; ++line) {
 		for (column = 0; column < FER_PRG_BYTE_CT; ++column) {
 
 			if (column == FER_PRG_BYTE_CT - 1)
@@ -109,7 +109,7 @@ void  fmsg_raw_checksumsCreate(struct fer_raw_msg *m, fmsg_type t) {
 		}
 	}
 
-	for (line = 0; line < FPR_ASTRO_HEIGHT; ++line) {
+	for (line = 0; line < FER_FPR_ASTRO_HEIGHT; ++line) {
 		for (column = 0; column < FER_PRG_BYTE_CT; ++column) {
 
 			if (column == FER_PRG_BYTE_CT - 1)
@@ -124,7 +124,7 @@ void  fmsg_raw_checksumsCreate(struct fer_raw_msg *m, fmsg_type t) {
 static void  disable_timer(u8 d[][FER_PRG_BYTE_CT], u8 lines) {
   int line, col;
   for (line = 0; line < lines; ++line) {
-    for (col = 0; col < FPR_TIMER_WIDTH; ++col) {
+    for (col = 0; col < FER_FPR_TIMER_WIDTH; ++col) {
       d[line][col] = 0xff;
       ++col;
       d[line][col] = 0x0f;
@@ -134,22 +134,22 @@ static void  disable_timer(u8 d[][FER_PRG_BYTE_CT], u8 lines) {
 
 static void  write_wtimer(u8 d[][FER_PRG_BYTE_CT], const u8 *wtimer_data) {
   #ifdef WEEK_STARTS_AT_SUNDAY
-  memcpy(d[0], wtimer_data, FPR_TIMER_WIDTH);
-  memcpy(d[1],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_WIDTH);
-  memcpy(d[2],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_WIDTH);
-  memcpy(d[3],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_WIDTH - FPR_TIMER_STAMP_WIDTH);
+  memcpy(d[0], wtimer_data, FER_FPR_TIMER_WIDTH);
+  memcpy(d[1],  (wtimer_data += FER_FPR_TIMER_WIDTH), FER_FPR_TIMER_WIDTH);
+  memcpy(d[2],  (wtimer_data += FER_FPR_TIMER_WIDTH), FER_FPR_TIMER_WIDTH);
+  memcpy(d[3],  (wtimer_data += FER_FPR_TIMER_WIDTH), FER_FPR_TIMER_WIDTH - FER_FPR_TIMER_STAMP_WIDTH);
   #else
   //reorder. input week starts with monday. output with sunday
-  memcpy(d[0] + FPR_TIMER_STAMP_WIDTH, wtimer_data, FPR_TIMER_STAMP_WIDTH);
-  memcpy(d[1],  (wtimer_data += FPR_TIMER_STAMP_WIDTH), FPR_TIMER_WIDTH);
-  memcpy(d[2],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_WIDTH);
-  memcpy(d[3],  (wtimer_data += FPR_TIMER_WIDTH), FPR_TIMER_STAMP_WIDTH);
-  memcpy(d[0], (wtimer_data += FPR_TIMER_STAMP_WIDTH), FPR_TIMER_STAMP_WIDTH);
+  memcpy(d[0] + FER_FPR_TIMER_STAMP_WIDTH, wtimer_data, FER_FPR_TIMER_STAMP_WIDTH);
+  memcpy(d[1],  (wtimer_data += FER_FPR_TIMER_STAMP_WIDTH), FER_FPR_TIMER_WIDTH);
+  memcpy(d[2],  (wtimer_data += FER_FPR_TIMER_WIDTH), FER_FPR_TIMER_WIDTH);
+  memcpy(d[3],  (wtimer_data += FER_FPR_TIMER_WIDTH), FER_FPR_TIMER_STAMP_WIDTH);
+  memcpy(d[0], (wtimer_data += FER_FPR_TIMER_STAMP_WIDTH), FER_FPR_TIMER_STAMP_WIDTH);
   #endif
 }
 
-static void  write_dtimer(u8 d[FPR_TIMER_STAMP_WIDTH], const u8 *dtimer_data) {
-    memcpy(d, dtimer_data, FPR_TIMER_STAMP_WIDTH);
+static void  write_dtimer(u8 d[FER_FPR_TIMER_STAMP_WIDTH], const u8 *dtimer_data) {
+    memcpy(d, dtimer_data, FER_FPR_TIMER_STAMP_WIDTH);
 }
 
 
@@ -175,7 +175,7 @@ static void  write_flags(u8 *dst, u8 flags, u8 mask) {
 
 
 
-static void  write_lastline(const fsbT *fsb, u8 d[FER_PRG_BYTE_CT]) {
+static void  write_lastline(const fer_sbT *fsb, u8 d[FER_PRG_BYTE_CT]) {
 	d[0] = 0x00;
 	d[1] = fsb->data[fer_dat_ADDR_2];
 	d[2] = fsb->data[fer_dat_ADDR_1];
@@ -189,25 +189,25 @@ static void  write_lastline(const fsbT *fsb, u8 d[FER_PRG_BYTE_CT]) {
 
 
 
-void  fmsg_raw_init(struct fer_raw_msg *m) {
+void  fer_msg_raw_init(struct fer_raw_msg *m) {
 	memset(&m->rtc, 0, sizeof (m->rtc));
-	disable_timer(m->wdtimer.bd, FPR_TIMER_HEIGHT + FPR_ASTRO_HEIGHT);
+	disable_timer(m->wdtimer.bd, FER_FPR_TIMER_HEIGHT + FER_FPR_ASTRO_HEIGHT);
 }
-void  fmsg_raw_from_rtc(fer_rawMsg *msg, time_t rtc, bool rtc_only) {
+void  fer_msg_raw_from_rtc(fer_rawMsg *msg, time_t rtc, bool rtc_only) {
    write_rtc(&msg->rtc, rtc, rtc_only);
 }
-void  fmsg_raw_from_flags(fer_rawMsg *msg, u8 flags, u8 mask) {
+void  fer_msg_raw_from_flags(fer_rawMsg *msg, u8 flags, u8 mask) {
   write_flags(&msg->rtc.sd.flags.bd, flags, mask);
 }
-void  fmsg_raw_from_weeklyTimer(fer_rawMsg *msg, const u8 *wtimer_data) {
+void  fer_msg_raw_from_weeklyTimer(fer_rawMsg *msg, const u8 *wtimer_data) {
   write_wtimer(msg->wdtimer.bd, wtimer_data);
 }
-void  fmsg_raw_from_dailyTimer(fer_rawMsg *msg, const u8 *dtimer_data) {
-  write_dtimer(&msg->wdtimer.bd[3][FPR_DAILY_START_COL], dtimer_data);
+void  fer_msg_raw_from_dailyTimer(fer_rawMsg *msg, const u8 *dtimer_data) {
+  write_dtimer(&msg->wdtimer.bd[3][FER_FPR_DAILY_START_COL], dtimer_data);
 }
-void  fmsg_raw_from_astro(fer_rawMsg *msg, int mint_offset) {
-  astro_write_data(msg->astro, mint_offset);
+void  fer_msg_raw_from_astro(fer_rawMsg *msg, int mint_offset) {
+  fer_astro_write_data(msg->astro, mint_offset);
 }
-void  fmsg_raw_footerCreate(fer_rawMsg *msg, const fsbT *fsb) {
+void  fer_msg_raw_footerCreate(fer_rawMsg *msg, const fer_sbT *fsb) {
 	write_lastline(fsb, msg->last);
 }    

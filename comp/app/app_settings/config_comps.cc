@@ -76,7 +76,7 @@ void config_setup_global() {
     kvs_close(h);
   }
   C.fer_usedMemberMask.fromNibbleCounters(C.fer_usedMembers);
-  FSB_PUT_DEVID(&default_sender, C.fer_centralUnitID);
+  FER_SB_PUT_DEVID(&default_sender, C.fer_centralUnitID);
 }
 uint32_t config_read_used_members() {
   return  config_read_item_u32(CI(CB_USED_MEMBERS), MY_FER_GM_USE);
@@ -115,7 +115,7 @@ void config_setup_astro() {
 #endif
       };
   config_read_astro(&c);
-  astro_init_and_reinit(&c);
+  fer_astro_init_and_reinit(&c);
 }
 float config_read_longitude() {
   return config_read_item_f(CI(CB_LONGITUDE), MY_GEO_LONGITUDE);

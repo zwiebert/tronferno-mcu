@@ -50,16 +50,16 @@ static bool sf_append(const T *msg) {
 }
 
 
-int ftx_get_msgPendingCount() { return (sf_tail_ + sf_SIZE - sf_head_) & (sf_SIZE - 1); }
+int fer_tx_get_msgPendingCount() { return (sf_tail_ + sf_SIZE - sf_head_) & (sf_SIZE - 1); }
 
-struct sf *ftx_nextMsg() {
+struct sf *fer_tx_nextMsg() {
   return (sf_isEmpty() ? 0 : &sf[sf_head]);
 }
-void ftx_popMsg() {
+void fer_tx_popMsg() {
   if (sf_isEmpty())
     return;
   sf_incrHead();
 }
-bool ftx_pushMsg(const struct sf *msg) {
+bool fer_tx_pushMsg(const struct sf *msg) {
   return sf_append(msg);
 }

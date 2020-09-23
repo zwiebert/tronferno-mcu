@@ -19,7 +19,7 @@
 #include <stdlib.h>
 
 
-#define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
+#define FER_SB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
 const char cli_help_parmSend[]  =
     "a=(0|ID)  0  hex ID of sender or receiver.\n"
@@ -44,7 +44,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
   u8 g = 0, m = 0;
   fer_cmd cmd = fer_cmd_None;
   int set_end_pos = -1;
-  u8 repeats = FSB_PLAIN_REPEATS;
+  u8 repeats = FER_SB_PLAIN_REPEATS;
   bool has_requested_position = false;
   i8 pct = -1;
 #define has_pct (pct >= 0)
@@ -149,7 +149,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
   } else {
     if (has_sep) { // enable hardware buttons to set end position
       if (set_end_pos)
-        sep_enable(td, get_fsb(addr,g,m,cmd));
+        sep_enable(td, fer_get_fsb(addr,g,m,cmd));
       else
         sep_disable();
     } else if (has_pct) {

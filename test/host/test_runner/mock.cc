@@ -19,4 +19,4 @@ void setup_pin(const struct cfg_gpio *c) {}
 void   txtio_mcu_setup() {}
 
 void mcu_put_txPin(unsigned char) {}
-int frx_getQuality(struct frx_quality*) {}
+int fer_rx_getQuality(struct fer_rx_quality*) {}

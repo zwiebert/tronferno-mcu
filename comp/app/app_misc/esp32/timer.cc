@@ -57,10 +57,10 @@ static void IRAM_ATTR intTimer_isr(void *args) {
   int timer_idx = (int) args;
 
 #ifdef FER_TRANSMITTER
-  ftx_setOutput();
+  fer_tx_setOutput();
 #endif
 #ifdef FER_RECEIVER
-  frx_sampleInput();
+  fer_rx_sampleInput();
 #endif
 
   /* Retrieve the interrupt status and the counter value
@@ -77,13 +77,13 @@ static void IRAM_ATTR intTimer_isr(void *args) {
   {
     static uint_fast8_t tick_count;
     if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
-      ftx_dck();
+      fer_tx_dck();
     }
   }
 #endif
 
 #ifdef FER_RECEIVER
-  frx_tick();
+  fer_rx_tick();
 #endif
 
 #ifndef USE_ESP_GET_TIME

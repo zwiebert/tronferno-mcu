@@ -12,4 +12,4 @@
 #include "stdbool.h"
 
 
-struct fer_raw_msg rawmsg_buf_rx, rawmsg_buf_tx;
+struct fer_raw_msg fer_rawMsg_buf_rx, fer_rawMsg_buf_tx;

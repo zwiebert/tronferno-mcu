@@ -12,16 +12,16 @@
 #include <stdbool.h>
 
 struct sf {
-  fsbT fsb;
+  fer_sbT fsb;
   uint32_t s10; // time in tenth of secs
-  fmsg_type mt : 3;
+  fer_msg_type mt : 3;
   int16_t repeats : 4;
   int16_t sent_ct : 5;
 };
 
 
-struct sf *ftx_nextMsg();
-void ftx_popMsg();
-bool ftx_pushMsg(const struct sf *msg);
-int ftx_get_msgPendingCount();
+struct sf *fer_tx_nextMsg();
+void fer_tx_popMsg();
+bool fer_tx_pushMsg(const struct sf *msg);
+int fer_tx_get_msgPendingCount();
 

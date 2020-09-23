@@ -59,68 +59,68 @@ static void test_ferMsg_size() {
   TEST_ASSERT_EQUAL(FER_CMD_BYTE_CT - 1, sizeof test_msg.cmd.sd.cmd);
   TEST_ASSERT_EQUAL(FER_CMD_BYTE_CT, sizeof test_msg.cmd);
   TEST_ASSERT_EQUAL(FER_PRG_BYTE_CT, sizeof test_msg.rtc);
-  TEST_ASSERT_EQUAL(FPR_TIMER_HEIGHT * FER_PRG_BYTE_CT,sizeof test_msg.wdtimer);
-  TEST_ASSERT_EQUAL(FPR_ASTRO_HEIGHT * FER_PRG_BYTE_CT,sizeof test_msg.astro);
-  TEST_ASSERT_EQUAL(FER_CMD_BYTE_CT + FPR_DATA_HEIGHT * FER_PRG_BYTE_CT,sizeof test_msg);
+  TEST_ASSERT_EQUAL(FER_FPR_TIMER_HEIGHT * FER_PRG_BYTE_CT,sizeof test_msg.wdtimer);
+  TEST_ASSERT_EQUAL(FER_FPR_ASTRO_HEIGHT * FER_PRG_BYTE_CT,sizeof test_msg.astro);
+  TEST_ASSERT_EQUAL(FER_CMD_BYTE_CT + FER_FPR_DATA_HEIGHT * FER_PRG_BYTE_CT,sizeof test_msg);
 }
 
 static void test_ferMsg_verifyChecksums() {
   bool result;
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
   TEST_ASSERT_TRUE(result);
 }
 
 static void test_ferMsg_writeChecksums() {
-  fmsg_raw_checksumsCreate(&test_msg, MSG_TYPE_TIMER);
+  fer_msg_raw_checksumsCreate(&test_msg, MSG_TYPE_TIMER);
 }
 
 static void test_ferMsg_writeData() {
-  fmsg_raw_from_rtc(&test_msg, time(NULL), false);
-  fmsg_raw_from_weeklyTimer(&test_msg, testdat_wtimer);
-  fmsg_raw_from_dailyTimer(&test_msg, testdat_wtimer);
-  astro_write_data(test_msg.astro, 0);
+  fer_msg_raw_from_rtc(&test_msg, time(NULL), false);
+  fer_msg_raw_from_weeklyTimer(&test_msg, testdat_wtimer);
+  fer_msg_raw_from_dailyTimer(&test_msg, testdat_wtimer);
+  fer_astro_write_data(test_msg.astro, 0);
 }
 
 static void test_ferMsg_modData_andVerifyCS() {
   bool result;
 
   ++test_msg.astro[1][8];
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
   TEST_ASSERT_FALSE(result);
   --test_msg.astro[1][8];
 
   ++test_msg.wdtimer.bd[1][8];
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
   TEST_ASSERT_FALSE(result);
   --test_msg.wdtimer.bd[1][8];
 
   ++test_msg.rtc.bd[3];
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
   TEST_ASSERT_TRUE(result);
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
   TEST_ASSERT_FALSE(result);
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
   TEST_ASSERT_FALSE(result);
   --test_msg.rtc.bd[3];
 
   ++test_msg.cmd.bd[3];
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
   TEST_ASSERT_FALSE(result);
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
   TEST_ASSERT_FALSE(result);
-  result = fmsg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
+  result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
   TEST_ASSERT_FALSE(result);
   --test_msg.cmd.bd[3];
 }

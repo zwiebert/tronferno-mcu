@@ -96,7 +96,7 @@ extern "C++" void main_setup_ip_dependent() { //XXX called from library
   fpos_POSITIONS_SAVE_cb  = [](bool enable) {
     lfPer_putBit(lf_loopPosAutoSave, enable);
   };
-  ftx_READY_TO_TRANSMIT_cb = loop_setBit_txLoop;
+  fer_tx_READY_TO_TRANSMIT_cb = loop_setBit_txLoop;
   fau_TIMER_DATA_CHANGE_cb = [] {
       lf_setBit(lf_loopFauTimerDataHasChanged);
     };
@@ -114,7 +114,7 @@ extern "C++" void main_setup_ip_dependent() { //XXX called from library
     struct msg_received_cb { static void IRAM_ATTR cb() {
       lf_setBit_ISR(lf_loopFerRx, true);}
     };
-  frx_MSG_RECEIVED_ISR_cb = msg_received_cb::cb;
+  fer_rx_MSG_RECEIVED_ISR_cb = msg_received_cb::cb;
   #endif
 
   #ifdef FER_TRANSMITTER
@@ -122,7 +122,7 @@ extern "C++" void main_setup_ip_dependent() { //XXX called from library
   struct msg_transmitted_cb { static void IRAM_ATTR cb() {
     lf_setBit_ISR(lf_loopFerTx, true);}
   };
-  ftx_MSG_TRANSMITTED_ISR_cb = msg_transmitted_cb::cb;
+  fer_tx_MSG_TRANSMITTED_ISR_cb = msg_transmitted_cb::cb;
   #endif
 #ifdef USE_SEP
   sep_enable_disable_cb = [] (bool enable) {

@@ -22,9 +22,9 @@ static int t2m(int hour, int minute) {
 
 static void test_timer_event4() {
   erase_timer_data(0,0);
-  timer_data_t t1 = {15, 0, "03452123", "" };
+  Fer_TimerData t1 = {15, 0, "03452123", "" };
   save_timer_data(&t1, 1, 0);
-  timer_data_t t2 = {0, 0, "", "06542109+++0822-07082211+" };
+  Fer_TimerData t2 = {0, 0, "", "06542109+++0822-07082211+" };
   save_timer_data(&t2, 1, 1);
 
   struct tm now_tm = {
@@ -52,9 +52,9 @@ static void test_timer_event4() {
 
 static void test_timer_event3() {
   erase_timer_data(0,0);
-  timer_data_t t1 = {20000, 0, "03452123", "" };
+  Fer_TimerData t1 = {20000, 0, "03452123", "" };
   save_timer_data(&t1, 1, 0);
-  timer_data_t t2 = {20000, 0, "", "06542109+++0822-07082211+" };
+  Fer_TimerData t2 = {20000, 0, "", "06542109+++0822-07082211+" };
   save_timer_data(&t2, 1, 1);
 
   struct tm now_tm = {
@@ -82,9 +82,9 @@ static void test_timer_event3() {
 
 static void test_timer_event2() {
   erase_timer_data(0,0);
-  timer_data_t t1 = {20000, 0, "03452123", "" };
+  Fer_TimerData t1 = {20000, 0, "03452123", "" };
   save_timer_data(&t1, 1, 0);
-  timer_data_t t2 = {20000, 0, "04562345", "" };
+  Fer_TimerData t2 = {20000, 0, "04562345", "" };
   save_timer_data(&t2, 1, 1);
 
   struct tm now_tm = {
@@ -130,9 +130,9 @@ struct tm test_tm, *test_tmp;
 static void test_timer_event() {
   erase_timer_data(0,0);
 
-  timer_data_t t1 = {20000, 0, "04562345", "" };
+  Fer_TimerData t1 = {20000, 0, "04562345", "" };
   save_timer_data(&t1, 1, 0);
-  timer_data_t t2 = {20000, 0, "03452123", "" };
+  Fer_TimerData t2 = {20000, 0, "03452123", "" };
   save_timer_data(&t2, 1, 1);
 
   struct tm now_tm = {
@@ -206,8 +206,8 @@ static void test_timer_event() {
 
 
 static void test_timer_minutes() {
-  timer_data_t t1 = {20000,  0, "04562345", "" };
-  timer_data_t t2 = {20000,  0, "", "06542109+++0822-07082211+" };
+  Fer_TimerData t1 = {20000,  0, "04562345", "" };
+  Fer_TimerData t2 = {20000,  0, "", "06542109+++0822-07082211+" };
 
   struct tm tm = {
      .tm_sec = 0,

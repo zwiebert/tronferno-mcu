@@ -26,7 +26,7 @@ static inline void fau_timer_data_change_cb() {
 #endif
 
 
-bool save_timer_data(timer_data_t *p, u8 g, u8 m) {
+bool save_timer_data(Fer_TimerData *p, u8 g, u8 m) {
   bool result = save_timer_data_fs(p, g, m);
   timer_data_changed = true;
   fau_timer_data_change_cb();
@@ -42,7 +42,7 @@ bool erase_timer_data(u8 g, u8 m) {
   return false;
 }
 
-bool read_timer_data(timer_data_t *p, u8 *g, u8 *m, bool wildcard) {
+bool read_timer_data(Fer_TimerData *p, u8 *g, u8 *m, bool wildcard) {
   bool result = read_timer_data_fs(p, g, m, wildcard);
   return result;
 }

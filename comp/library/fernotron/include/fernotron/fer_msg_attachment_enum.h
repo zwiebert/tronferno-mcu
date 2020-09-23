@@ -11,7 +11,7 @@
 //18 rows each 9 columns
 
 /// entire frame
-enum fpr0 {
+enum fer_fpr0 {
   fpr0_RTC_secs, fpr0_RTC_mint, fpr0_RTC_hour,  // RTC time
   fpr0_RTC_wdayMask, // Sun...Sat = 0x01 ... 0x40 (each bit represents a weekday)
   fpr0_RTC_days,  // day of month 1..31
@@ -22,18 +22,18 @@ enum fpr0 {
 };
 
 // values of fpr0_RTC_wdayMask
-enum rtc_wdayMaskBits {
+enum fer_rtc_wdayMaskBits {
   wd_SUN, wd_MON, wd_TUE, wd_WED, wd_THU, wd_FRI, wd_SAT
 };
 
 // weekday by bitmask in prg[0][fpr0_RTC_wdayMask]
 // values of low nibble of fpr0_RTC_wday
-enum rtc_wday {
+enum fer_rtc_wday {
   wd2_MON = 1, wd2_TUE, wd2_WED, wd2_THU, wd2_FRI, wd2_SAT, wd2_SUN,
 };
 
 // values of fpr0_FlagBits.
-enum fpr0_FlagBitsValues {
+enum fer_fpr0_FlagBitsValues {
   flag_Random, // shutter opens/closes at random times (theft protection during longer absence). (FIXME: ignored ???)
   flag_1,  // ???
   flag_DST,  // daylight saving time. if set, the shutter will add 1 hour to its saved astro time table. (never ignored)
@@ -45,7 +45,7 @@ enum fpr0_FlagBitsValues {
 };
 
 // frame rows 1 - 4: timer
-enum fpr1 {
+enum fer_fpr1 {
   fpr1_T_sun_up_mint,
   fpr1_T_sun_up_hour,
   fpr1_T_sun_down_mint,
@@ -57,7 +57,7 @@ enum fpr1 {
   fpr1_checksum
 };
 
-enum fpr2 {
+enum fer_fpr2 {
   fpr2_T_tue_up_mint,
   fpr2_T_tue_up_hour,
   fpr2_T_tue_down_mint,
@@ -69,7 +69,7 @@ enum fpr2 {
   fpr2_checksum
 };
 
-enum fpr3 {
+enum fer_fpr3 {
   fpr3_T_thu_up_mint,
   fpr3_T_thu_up_hour,
   fpr3_T_thu_down_mint,
@@ -81,7 +81,7 @@ enum fpr3 {
   fpr3_checksum
 };
 
-enum fpr4 {
+enum fer_fpr4 {
   fpr4_T_sat_up_mint,
   fpr4_T_sat_up_hour,
   fpr4_T_sat_down_mint,
@@ -103,7 +103,7 @@ enum fpr4 {
 
 // frame row 17
 
-enum fpr17 {
+enum fer_fpr17 {
   fpr17_0,
   fpr17_Addr_2,
   fpr17_Addr_1,
@@ -120,7 +120,7 @@ enum fpr17 {
 // sub frames
 
 // timer sub frame. There are 8 timer stamps (Up/Down).  7 are for weekly timer (one timer for each weekday) and 1 is for daily timer (for every day).
-enum fpr_tim {
+enum fer_fpr_tim {
   fpr_tim_sun,
   fpr_tim_mon,
   fpr_tim_tue,
