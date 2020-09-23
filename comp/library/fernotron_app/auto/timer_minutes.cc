@@ -44,7 +44,7 @@ timer_to_minutes(minutes_t *result, const char *ts) {
   return true;
 }
 
-bool fau_get_timer_minutes_from_timer_data_tm(timer_minutes_t *timi, const Fer_TimerData *tdp, const struct tm *tm) {
+bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const Fer_TimerData *tdp, const struct tm *tm) {
 
   precond(timi && tdp);
 
@@ -107,32 +107,32 @@ bool fau_get_timer_minutes_from_timer_data_tm(timer_minutes_t *timi, const Fer_T
   return true;
 }
 
-bool fau_get_timer_minutes_tm(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, const struct tm *tm) {
+bool fer_au_get_timer_minutes_tm(Fer_TimerMinutes *timi, u8 *group, u8 *member, bool wildcard, const struct tm *tm) {
 
   precond(timi && group && member);
 
   Fer_TimerData td;
   if (read_timer_data(&td, group, member, wildcard)) {
-    return fau_get_timer_minutes_from_timer_data_tm(timi, &td, tm);
+    return fer_au_get_timer_minutes_from_timer_data_tm(timi, &td, tm);
   }
 
   return false;
 }
 
 bool 
-fau_get_timer_minutes_tim(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard, const time_t *now_time) {
+fer_au_get_timer_minutes_tim(Fer_TimerMinutes *timi, u8 *group, u8 *member, bool wildcard, const time_t *now_time) {
   struct tm *tm = localtime(now_time);
-  return fau_get_timer_minutes_tm(timi, group, member, wildcard, tm);
+  return fer_au_get_timer_minutes_tm(timi, group, member, wildcard, tm);
 }
 
 bool
-fau_get_timer_minutes_now(timer_minutes_t *timi, u8 *group, u8 *member, bool wildcard) {
+fer_au_get_timer_minutes_now(Fer_TimerMinutes *timi, u8 *group, u8 *member, bool wildcard) {
   time_t now_time = time(NULL);
-  return fau_get_timer_minutes_tim(timi, group, member, wildcard, &now_time);
+  return fer_au_get_timer_minutes_tim(timi, group, member, wildcard, &now_time);
 }
 
 minutes_t
-fau_get_earliest_from_timer_minutes(timer_minutes_t *timi, minutes_t now) {
+fer_au_get_earliest_from_timer_minutes(Fer_TimerMinutes *timi, minutes_t now) {
   u8 i;
   minutes_t last = MINUTES_DISABLED;
   for (i=0; i < SIZE_MINTS; ++i) {

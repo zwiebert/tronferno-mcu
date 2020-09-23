@@ -90,14 +90,14 @@ extern "C++" void main_setup_ip_dependent() { //XXX called from library
   config_setup_httpServer();
 #endif
 
-  fpos_POSITIONS_MOVE_cb = [](bool enable) {
+  fer_pos_POSITIONS_MOVE_cb = [](bool enable) {
     lfPer_putBit(lf_loopPosCheckMoving, enable);
   };
-  fpos_POSITIONS_SAVE_cb  = [](bool enable) {
+  fer_pos_POSITIONS_SAVE_cb  = [](bool enable) {
     lfPer_putBit(lf_loopPosAutoSave, enable);
   };
   fer_tx_READY_TO_TRANSMIT_cb = loop_setBit_txLoop;
-  fau_TIMER_DATA_CHANGE_cb = [] {
+  fer_au_TIMER_DATA_CHANGE_cb = [] {
       lf_setBit(lf_loopFauTimerDataHasChanged);
     };
 #ifdef ACCESS_GPIO
@@ -125,17 +125,17 @@ extern "C++" void main_setup_ip_dependent() { //XXX called from library
   fer_tx_MSG_TRANSMITTED_ISR_cb = msg_transmitted_cb::cb;
   #endif
 #ifdef USE_SEP
-  sep_enable_disable_cb = [] (bool enable) {
+  fer_sep_enable_disable_cb = [] (bool enable) {
     lfPer_putBit(lf_loopFerSep, enable);
   };
 #endif
 #ifdef USE_PAIRINGS
-  pair_enable_disable_cb = [] (bool enable) {
+  fer_alias_enable_disable_cb = [] (bool enable) {
     lfPer_putBit(lf_checkPairingTimeout, enable);
   };
 #endif
 #ifdef USE_CUAS
-  cuas_enable_disable_cb = [] (bool enable) {
+  fer_cuas_enable_disable_cb = [] (bool enable) {
     lfPer_putBit(lf_checkCuasTimeout, enable);
 };
 #endif
@@ -165,7 +165,7 @@ void mcu_init() {
 #endif
 #ifdef USE_TCPS_TASK
 #endif
-  fam_updateTimerEvent();
+  fer_am_updateTimerEvent();
   lfPer_setBit(lf_loopFerTimerState);
 
 

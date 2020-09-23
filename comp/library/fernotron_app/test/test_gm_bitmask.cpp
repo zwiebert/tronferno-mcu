@@ -19,7 +19,7 @@
 static void test_gm_bitmask_iterator() {
 
   {
-    GmBitMask gmm;
+    Fer_GmBitMask gmm;
     gmm.setBit(0, 0);
     gmm.setBit(1, 4);
     gmm.setBit(2, 6);
@@ -49,7 +49,7 @@ static void test_gm_bitmask_iterator() {
   }
 
   {
-    GmBitMask gmm;
+    Fer_GmBitMask gmm;
     gmm.setBit(1, 4);
     gmm.setBit(2, 6);
 
@@ -67,7 +67,7 @@ static void test_gm_bitmask_iterator() {
   }
 
   {
-    GmBitMask gmm;
+    Fer_GmBitMask gmm;
     for (auto it = gmm.begin(); it; ++it) {
       printf("g=%d, m=%d\n", it.getG(), it.getM());
       TEST_ASSERT_LESS_THAN(8, it.getG());

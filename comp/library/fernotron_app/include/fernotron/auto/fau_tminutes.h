@@ -18,7 +18,7 @@ enum {
 
 typedef struct {
   minutes_t minutes[SIZE_MINTS];
-} timer_minutes_t;
+} Fer_TimerMinutes;
 
 #define tm_DMin(tm) (tm->tm_hour * 60 + tm->tm_min)
 minutes_t get_now_min();
@@ -27,11 +27,11 @@ minutes_t get_min(const time_t *timer);
 // return minute offsets of todays timer events in parameter *result
 // offsets are minutes after 00:00 hour.
 // offset == MINUTES_DISABLED means: no timer event exists for today
-bool fau_get_timer_minutes_from_timer_data_tm(timer_minutes_t *timi, const Fer_TimerData *tdp, const struct tm *tm);
-bool fau_get_timer_minutes_now(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard);
-bool fau_get_timer_minutes_tim(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard, const time_t *now_time);
-bool fau_get_timer_minutes_tm(timer_minutes_t *result, uint8_t *group, uint8_t *member, bool wildcard, const struct tm *tm);
+bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const Fer_TimerData *tdp, const struct tm *tm);
+bool fer_au_get_timer_minutes_now(Fer_TimerMinutes *result, uint8_t *group, uint8_t *member, bool wildcard);
+bool fer_au_get_timer_minutes_tim(Fer_TimerMinutes *result, uint8_t *group, uint8_t *member, bool wildcard, const time_t *now_time);
+bool fer_au_get_timer_minutes_tm(Fer_TimerMinutes *result, uint8_t *group, uint8_t *member, bool wildcard, const struct tm *tm);
 
-// find earliest event in timer_minutes_t
-minutes_t fau_get_earliest_from_timer_minutes(timer_minutes_t *timi, minutes_t now);
+// find earliest event in Fer_TimerMinutes
+minutes_t fer_au_get_earliest_from_timer_minutes(Fer_TimerMinutes *timi, minutes_t now);
 

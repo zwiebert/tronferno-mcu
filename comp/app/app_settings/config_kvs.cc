@@ -51,7 +51,7 @@ bool config_item_modified(enum configItem item) {
     case CB_CUID:
       kvsR(u32, item, C.fer_centralUnitID);
       FER_SB_PUT_DEVID(&default_sender, C.fer_centralUnitID);
-      fer_setup(fer_configT{C.fer_centralUnitID}, true);
+      fer_main_setup(fer_configT{C.fer_centralUnitID}, true);
       break;
     case CB_BAUD:
       kvsR(i8, item, C.mcu_serialBaud);

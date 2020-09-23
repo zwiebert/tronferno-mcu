@@ -173,7 +173,7 @@ process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
 
         case SO_CFG_CU: {
           if (is_val("auto")) {
-            cu_auto_set(td, cli_msgid, 60);
+            fer_cuas_set(td, cli_msgid, 60);
             cli_replySuccess(td);
           } else {
             u32 cu = (is_val("auto-old")) ? FER_SB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
@@ -310,7 +310,7 @@ process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
 
     } else if (is_kt(cuas)) {
       if (is_val("?")) {
-        soMsg_cuas_state(td, cuas_getState());
+        soMsg_cuas_state(td, fer_cuas_getState());
       }
 
 

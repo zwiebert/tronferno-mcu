@@ -14,23 +14,23 @@
 
 
 
-extern void (*fpos_POSITIONS_SAVE_cb)(bool has_unsaved);
+extern void (*fer_pos_POSITIONS_SAVE_cb)(bool has_unsaved);
 
-typedef uint8_t shutterGroupPositionsT[8];
+typedef uint8_t fer_shutterGroupPositionsT[8];
 
 // keep track of static positions
-int statPos_setPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct);
-int statPos_setPcts(GmBitMask *mm, uint8_t pct);
-int statPos_getPct(uint32_t a, uint8_t g, uint8_t m);
+int fer_statPos_setPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct);
+int fer_statPos_setPcts(Fer_GmBitMask *mm, uint8_t pct);
+int fer_statPos_getPct(uint32_t a, uint8_t g, uint8_t m);
 
-int statPos_printAllPcts(const struct TargetDesc &td);
+int fer_statPos_printAllPcts(const struct TargetDesc &td);
 
-bool statPos_pctsByGroup_store(uint8_t g, shutterGroupPositionsT positions);
-bool statPos_pctsByGroup_load(uint8_t g, const shutterGroupPositionsT positions);
-void statPos_loopAutoSave();
+bool fer_statPos_pctsByGroup_store(uint8_t g, fer_shutterGroupPositionsT positions);
+bool fer_statPos_pctsByGroup_load(uint8_t g, const fer_shutterGroupPositionsT positions);
+void fer_statPos_loopAutoSave();
 
-void ferPos_loop(void);
-void ferPos_init(void);
+void fer_pos_loop(void);
+void fer_pos_init(void);
 
 
 

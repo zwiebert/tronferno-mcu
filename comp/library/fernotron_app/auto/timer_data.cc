@@ -12,11 +12,11 @@
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 bool timer_data_changed;
-void (*fau_TIMER_DATA_CHANGE_cb)(void);
+void (*fer_au_TIMER_DATA_CHANGE_cb)(void);
 
-static inline void fau_timer_data_change_cb() {
-  if (fau_TIMER_DATA_CHANGE_cb)
-    fau_TIMER_DATA_CHANGE_cb();
+static inline void fer_au_timer_data_change_cb() {
+  if (fer_au_TIMER_DATA_CHANGE_cb)
+    fer_au_TIMER_DATA_CHANGE_cb();
 }
 
 #ifdef USE_TIMER_DATA_KVS
@@ -29,14 +29,14 @@ static inline void fau_timer_data_change_cb() {
 bool save_timer_data(Fer_TimerData *p, u8 g, u8 m) {
   bool result = save_timer_data_fs(p, g, m);
   timer_data_changed = true;
-  fau_timer_data_change_cb();
+  fer_au_timer_data_change_cb();
   return result;
 }
 
 bool erase_timer_data(u8 g, u8 m) {
   if (erase_timer_data_fs(g, m)) {
     timer_data_changed = true;
-    fau_timer_data_change_cb();
+    fer_au_timer_data_change_cb();
     return true;
   }
   return false;

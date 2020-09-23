@@ -38,21 +38,21 @@
 
 static const struct TargetDesc *my_td;
 
-void (*sep_enable_disable_cb)(bool enable);
+void (*fer_sep_enable_disable_cb)(bool enable);
 
-static inline void sep_ENABLE_cb() {
-  if (sep_enable_disable_cb)
-    sep_enable_disable_cb(true);
+static inline void fer_sep_ENABLE_cb() {
+  if (fer_sep_enable_disable_cb)
+    fer_sep_enable_disable_cb(true);
 }
-static inline void sep_DISABLE_cb() {
-  if (sep_enable_disable_cb)
-    sep_enable_disable_cb(false);
+static inline void fer_sep_DISABLE_cb() {
+  if (fer_sep_enable_disable_cb)
+    fer_sep_enable_disable_cb(false);
 }
 
-static fer_sbT sep_fsb;
-static bool sep_buttons_enabled;
+static fer_sbT fer_sep_fsb;
+static bool fer_sep_buttons_enabled;
 static bool up_pressed, down_pressed;
-static fer_cmd sep_cmd;
+static fer_cmd fer_sep_cmd;
 
 static time_t end_time;
 
@@ -66,19 +66,19 @@ static time_t end_time;
 #define BUTT_DOWN (mcu_get_buttonDownPin())
 #define BUTT_UP (mcu_get_buttonUpPin())
 #else
-#define BUTT_DOWN (mcu_get_buttonPin() && SEP_DOWN == sep_cmd)
-#define BUTT_UP (mcu_get_buttonPin() && SEP_UP == sep_cmd)
+#define BUTT_DOWN (mcu_get_buttonPin() && SEP_DOWN == fer_sep_cmd)
+#define BUTT_UP (mcu_get_buttonPin() && SEP_UP == fer_sep_cmd)
 #endif
 
 #define IS_BUTTON_PRESSED()  (mcu_get_buttonPin())
 
-bool  sep_is_enabled(void) {
-  return sep_buttons_enabled;
+bool  fer_sep_is_enabled(void) {
+  return fer_sep_buttons_enabled;
 }
 
 static bool 
-sep_send_stop(void) {
-  fer_sbT * const fsb = &sep_fsb;
+fer_sep_send_stop(void) {
+  fer_sbT * const fsb = &fer_sep_fsb;
   FER_SB_PUT_CMD(fsb, fer_cmd_STOP);
   fer_update_tglNibble(fsb);
   while (fer_send_msg(fsb, MSG_TYPE_PLAIN, 2)) {
@@ -88,37 +88,37 @@ sep_send_stop(void) {
 }
 
 static bool 
-sep_send_down(void) {
-  fer_sbT * const fsb = &sep_fsb;
+fer_sep_send_down(void) {
+  fer_sbT * const fsb = &fer_sep_fsb;
   FER_SB_PUT_CMD(fsb, SEP_DOWN);
   fer_update_tglNibble(fsb);
   return fer_send_msg(fsb, MSG_TYPE_PLAIN, 0);
 }
 
 static bool 
-sep_send_up(void) {
-  fer_sbT * const fsb = &sep_fsb;
+fer_sep_send_up(void) {
+  fer_sbT * const fsb = &fer_sep_fsb;
   FER_SB_PUT_CMD(fsb, SEP_UP);
   fer_update_tglNibble(fsb);
   return fer_send_msg(fsb, MSG_TYPE_PLAIN, 0);
 }
 
 void 
-sep_disable(void) {
-  if (sep_buttons_enabled) {
-    sep_DISABLE_cb();
-    sep_send_stop();  // don't remove this line
+fer_sep_disable(void) {
+  if (fer_sep_buttons_enabled) {
+    fer_sep_DISABLE_cb();
+    fer_sep_send_stop();  // don't remove this line
     soMsg_sep_disable(*my_td);
     up_pressed = down_pressed = false;
-    sep_buttons_enabled = false;
+    fer_sep_buttons_enabled = false;
   }
 }
 
 bool 
-sep_enable(const struct TargetDesc &td, fer_sbT *fsb) {
+fer_sep_enable(const struct TargetDesc &td, fer_sbT *fsb) {
   my_td = &td;
-  if (sep_buttons_enabled) { // already activated
-    sep_disable();
+  if (fer_sep_buttons_enabled) { // already activated
+    fer_sep_disable();
     return false;
   } else if (IS_BUTTON_PRESSED()) {
     soMsg_sep_button_pressed_error(*my_td);
@@ -133,50 +133,50 @@ sep_enable(const struct TargetDesc &td, fer_sbT *fsb) {
 
     // set our endpos-up/down command according to normal up/down command in fsb
     if (FER_SB_GET_CMD(fsb) == fer_cmd_UP) {
-      sep_cmd = SEP_UP;
+      fer_sep_cmd = SEP_UP;
     } else if (FER_SB_GET_CMD(fsb) == fer_cmd_DOWN) {
-      sep_cmd = SEP_DOWN;
+      fer_sep_cmd = SEP_DOWN;
     } else {
       return false;
     }
     soMsg_sep_enable(*my_td);
-    sep_fsb = *fsb;
-    sep_buttons_enabled = true;
+    fer_sep_fsb = *fsb;
+    fer_sep_buttons_enabled = true;
     TIMEOUT_SET();
-    sep_ENABLE_cb();
+    fer_sep_ENABLE_cb();
     return true;
   }
   return false;
 }
 
 void
-sep_loop(void) {
-  if (sep_buttons_enabled) {
+fer_sep_loop(void) {
+  if (fer_sep_buttons_enabled) {
     const bool up_pin = BUTT_UP;
     const bool down_pin = BUTT_DOWN;
 
     if (up_pin && down_pin) {  // emergency stop
-      sep_disable();
+      fer_sep_disable();
       return;
     }
 
     if (!up_pressed && !down_pressed) {
       if ((up_pressed = up_pin)) {
-        sep_send_up();
+        fer_sep_send_up();
         TIMEOUT_SET();
       } else if ((down_pressed = down_pin)) {
-        sep_send_down();
+        fer_sep_send_down();
         TIMEOUT_SET();
       } else if (IS_TIMEOUT_REACHED()) {
-        sep_disable();
+        fer_sep_disable();
         return;
       }
     } else {
       if (up_pressed && !(up_pressed = up_pin)) {
-        sep_send_stop();
+        fer_sep_send_stop();
       }
       if (down_pressed && !(down_pressed = down_pin)) {
-        sep_send_stop();
+        fer_sep_send_stop();
       }
     }
   }

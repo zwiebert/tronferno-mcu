@@ -46,7 +46,7 @@ static int delete_shadowded_kv(u8 group, u8 memb) {
 
   kvshT handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE);
   if (handle) {
-    for (gm_iterator it; it; ++it) {
+    for (Fer_GmIterator it; it; ++it) {
       const gT g = it.getG();
       const mT m = it.getM();
       if ((group == 0 || group == g) && (memb == 0 || (memb == m && C.fer_usedMemberMask.getBit(g, m)))) {
@@ -119,7 +119,7 @@ int timer_data_transition_fs_to_kvs() {
   bool error = false;
 
   kvshT handle = 0;
-  for (gm_iterator it; it; ++it) {
+  for (Fer_GmIterator it; it; ++it) {
     gT g = it.getG();
     mT m = it.getM();
     Fer_TimerData td;

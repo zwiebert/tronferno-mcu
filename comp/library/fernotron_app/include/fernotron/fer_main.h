@@ -9,7 +9,7 @@ struct fer_configT {
 };
 
 extern fer_sbT default_sender;
-extern  GmBitMask manual_bits;
+extern  Fer_GmBitMask manual_bits;
 
-void fer_setup(const fer_configT &ferConfig, bool reinit = false);
-fer_sbT *get_sender_by_addr(long addr);
+void fer_main_setup(const fer_configT &ferConfig, bool reinit = false);
+fer_sbT *fer_main_getSenderByAddress(long addr);

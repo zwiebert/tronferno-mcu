@@ -114,8 +114,8 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       if (strlen(val) == 2) {
         u8 g = val[0] - '0';
         u8 m = val[1] - '0';
-        timer_minutes_t tmi;
-        if (fau_get_timer_minutes_now(&tmi, &g, &m, true)) {
+        Fer_TimerMinutes tmi;
+        if (fer_au_get_timer_minutes_now(&tmi, &g, &m, true)) {
           soMsg_astro_minutes_print(td, tmi.minutes[ASTRO_MINTS]);
         }
       }
@@ -127,9 +127,9 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
     } else if (is_kt(te)) {
       int i,k;
 
-      timer_event_t tevt;
+      Fer_TimerEvent tevt;
       time_t now_time = time(NULL);
-      fam_get_next_timer_event(&tevt, &now_time);
+      fer_am_get_next_timer_event(&tevt, &now_time);
       io_putd(tevt.next_event), io_putlf();
       for (k = 0; k < 2; ++k) {
         for (i = 0; i < 8; ++i) {
@@ -139,10 +139,10 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       }
 #ifdef USE_PAIRINGS
     } else if (is_kt(dbp)) {
-      pair_so_output_all_pairings(td);
+      fer_alias_so_output_all_pairings(td);
 #endif
     } else if (is_kt(cs)) {
-      statPos_printAllPcts(td);
+      fer_statPos_printAllPcts(td);
 #ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);

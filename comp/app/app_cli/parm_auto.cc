@@ -280,8 +280,8 @@ static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard) 
     if (fer_td_is_astro(&tdr)) {
       soMsg_kv(td, "astro", tdr.astro);
 
-      timer_minutes_t tmi;
-      fau_get_timer_minutes_now(&tmi, &g_res, &m_res, false);
+      Fer_TimerMinutes tmi;
+      fer_au_get_timer_minutes_now(&tmi, &g_res, &m_res, false);
       soMsg_kv(td, "asmin", tmi.minutes[ASTRO_MINTS]);
     }
 

@@ -10,7 +10,7 @@
 #include "app/config/proj_app_cfg.h"
 
 
-extern void (*fau_TIMER_DATA_CHANGE_cb)(void);
+extern void (*fer_au_TIMER_DATA_CHANGE_cb)(void);
 
 // save and read timer data on flash memory
 // group  0...7

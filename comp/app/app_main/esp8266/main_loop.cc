@@ -30,16 +30,16 @@ void loop(void) {
   fer_tx_loop();
 
 #ifdef USE_SEP
-  sep_loop();
+  fer_sep_loop();
 #endif
 
   cli_loop();
-  ferPos_loop();
+  fer_pos_loop();
 
-  fam_loop_old();
-  cu_auto_set_check_timeout();
+  fer_am_loop_old();
+  fer_cuas_set_check_timeout();
 #ifdef USE_PAIRINGS
-  pair_auto_set_check_timeout();
+  fer_alias_auto_set_check_timeout();
 #endif
 
   fer_rx_loop();

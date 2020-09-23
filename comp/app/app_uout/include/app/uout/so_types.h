@@ -73,7 +73,7 @@ typedef struct {
 } so_arg_gm_t;
 
 typedef struct {
-  struct GmBitMask *mm;
+  struct Fer_GmBitMask *mm;
   uint8_t p;
 } so_arg_mmp_t;
 
@@ -83,11 +83,11 @@ typedef struct {
 
 typedef struct {
   uint32_t a;
-  struct GmBitMask *mm;
+  struct Fer_GmBitMask *mm;
 } so_arg_amm_t;
 
 typedef struct {
   const char *key;
-  struct GmBitMask *mm;
+  struct Fer_GmBitMask *mm;
 } so_arg_kmm_t;
 

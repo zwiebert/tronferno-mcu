@@ -20,14 +20,14 @@ using gm_pairT = std::pair<gT, mT>;
 #pragma GCC optimize ("O0")
 #endif
 
-class gm_iterator {
+class Fer_GmIterator {
   uint8_t mGm;
   const bool mSkipGroups: 1;
 public:
-  gm_iterator(gT g = 0, mT m = 0, bool skip_groups = false) :
+  Fer_GmIterator(gT g = 0, mT m = 0, bool skip_groups = false) :
       mGm(0x3f & ((g << 3) | m)), mSkipGroups(skip_groups) {
   }
-  gm_iterator& operator++() {
+  Fer_GmIterator& operator++() {
     if ((mGm & ~0x3f) == 0) {
       ++mGm;
     }
@@ -43,10 +43,10 @@ public:
   gT getG() const {
     return mGm >> 3;
   }
-  bool operator==(const gm_iterator &rhs) const {
+  bool operator==(const Fer_GmIterator &rhs) const {
     return mGm == rhs.mGm;
   }
-  bool operator!=(const gm_iterator &rhs) const {
+  bool operator!=(const Fer_GmIterator &rhs) const {
     return mGm != rhs.mGm;
   }
   operator bool() const {
@@ -54,7 +54,7 @@ public:
   }
 };
 
-class GmBitMask {
+class Fer_GmBitMask {
 
 private:
   gmBitMaskT mBm = {};
@@ -101,31 +101,31 @@ public:
     }
   }
 
-  GmBitMask() = default;
-  explicit GmBitMask(gmBitMaskT bm) {
+  Fer_GmBitMask() = default;
+  explicit Fer_GmBitMask(gmBitMaskT bm) {
     if (bm)
       memcpy(mBm, bm, sizeof(mBm));
   }
 
-  explicit GmBitMask(const char *name) {
+  explicit Fer_GmBitMask(const char *name) {
     fer_gmByName_load("MANU", &mBm, 1);
   }
 
-  class iterator: public gm_iterator {
-    GmBitMask *mPtr;
+  class iterator: public Fer_GmIterator {
+    Fer_GmBitMask *mPtr;
   public:
-    iterator(GmBitMask *bm, gT g=0, mT m=0) :
-        gm_iterator(g, m), mPtr(bm) {
+    iterator(Fer_GmBitMask *bm, gT g=0, mT m=0) :
+        Fer_GmIterator(g, m), mPtr(bm) {
     }
     iterator& operator++() {
-      while (gm_iterator::operator++()) {
+      while (Fer_GmIterator::operator++()) {
         if (mPtr->getBit(getG(), getM())) {
           break;
         }
       }
       return *this;
     }
-    GmBitMask* operator->() const {
+    Fer_GmBitMask* operator->() const {
       return mPtr;
     }
   };

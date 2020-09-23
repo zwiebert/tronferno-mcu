@@ -22,43 +22,43 @@
 
 #include "move.h"
 
-void ferPos_stop_mv(struct mv *mv, u8 g, u8 m, u8 pct) {
-  statPos_setPct(0, g, m, pct);
-  mv->mask.clearBit(g, m);
-  if (mv->mask.isAllClear())
-    mv_free(mv);
+void fer_pos_stop_mv(struct Fer_Move *Fer_Move, u8 g, u8 m, u8 pct) {
+  fer_statPos_setPct(0, g, m, pct);
+  Fer_Move->mask.clearBit(g, m);
+  if (Fer_Move->mask.isAllClear())
+    fer_mv_free(Fer_Move);
 }
 
-void ferPos_stop_mvi(struct mv *mv, u8 g, u8 m, u32 now_ts) {
-  u8 pct = simPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), now_ts - mv->start_time);
-  ferPos_stop_mv(mv, g, m, pct);
+void fer_pos_stop_mvi(struct Fer_Move *Fer_Move, u8 g, u8 m, u32 now_ts) {
+  u8 pct = fer_simPos_getPct_afterDuration(g, m, direction_isUp(Fer_Move->dir), now_ts - Fer_Move->start_time);
+  fer_pos_stop_mv(Fer_Move, g, m, pct);
 }
 
 
-void ferPos_stop_mm(GmBitMask *mm, u32 now_ts) {
+void fer_pos_stop_mm(Fer_GmBitMask *mm, u32 now_ts) {
 
-  struct mv *mv;
-  for (mv = mv_getFirst(); mv; mv = mv_getNext(mv)) {
+  struct Fer_Move *Fer_Move;
+  for (Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {
 
     for (auto it = mm->begin(); it; ++it) {
       gT g = it.getG(); mT m = it.getM();
-      if (mv->mask.getBit(g, m))
-        ferPos_stop_mvi(mv, g, m, now_ts);
+      if (Fer_Move->mask.getBit(g, m))
+        fer_pos_stop_mvi(Fer_Move, g, m, now_ts);
     }
   }
 }
 
 
-void ferPos_stop_mvi_mm(struct mv *mv, GmBitMask *mm, u32 now_ts) {
+void fer_pos_stop_mvi_mm(struct Fer_Move *Fer_Move, Fer_GmBitMask *mm, u32 now_ts) {
 
   for (auto it = mm->begin(1); it; ++it) {
     u8 g = it.getG(), m = it.getM();
-    mv->mask.clearBit(g, m);
-    statPos_setPct(0, g, m, simPos_getPct_afterDuration(g, m, direction_isUp(mv->dir), now_ts - mv->start_time));  // update pct table now
+    Fer_Move->mask.clearBit(g, m);
+    fer_statPos_setPct(0, g, m, fer_simPos_getPct_afterDuration(g, m, direction_isUp(Fer_Move->dir), now_ts - Fer_Move->start_time));  // update pct table now
   }
 
-  if (mv->mask.isAllClear()) {
-    mv_free(mv);
+  if (Fer_Move->mask.isAllClear()) {
+    fer_mv_free(Fer_Move);
   }
 }
 

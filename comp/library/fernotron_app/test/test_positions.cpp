@@ -15,14 +15,14 @@
 
 void   test_set_get_pct() {
   int pct;
-  statPos_setPct(0, 2, 3, 42);
-  pct = statPos_getPct(0, 2, 3);
+  fer_statPos_setPct(0, 2, 3, 42);
+  pct = fer_statPos_getPct(0, 2, 3);
   TEST_ASSERT_EQUAL(42,pct);
-  pct = simPos_getPct_afterDuration(2, 3, false, 0);
+  pct = fer_simPos_getPct_afterDuration(2, 3, false, 0);
   TEST_ASSERT_EQUAL(42,pct);
-  pct = simPos_getPct_afterDuration(2, 3, false, 1000);
+  pct = fer_simPos_getPct_afterDuration(2, 3, false, 1000);
   TEST_ASSERT_EQUAL(0,pct);
-  pct = simPos_getPct_afterDuration(2, 3, true, 1000);
+  pct = fer_simPos_getPct_afterDuration(2, 3, true, 1000);
   TEST_ASSERT_EQUAL(100,pct);
 }
 

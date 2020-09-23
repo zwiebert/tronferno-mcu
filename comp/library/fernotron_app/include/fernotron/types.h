@@ -18,7 +18,7 @@
 
 
 
-// read/save one or more elements of type GmBitMask
+// read/save one or more elements of type Fer_GmBitMask
 bool fer_gmByName_load(const char *name, const gmBitMaskT *gm, int count);
 bool fer_gmByName_store(const char *name, gmBitMaskT *gm, int count);
 

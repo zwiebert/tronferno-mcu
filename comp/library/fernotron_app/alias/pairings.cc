@@ -20,23 +20,23 @@
 #define DL
 #endif
 
-void (*pair_enable_disable_cb)(bool enable);
+void (*fer_alias_enable_disable_cb)(bool enable);
 
 static bool pras_active;
 static time_t end_time;
 static u8 pras_g, pras_m, pras_c;
 static const struct TargetDesc *my_td;
 
-static inline void pair_ENABLE_cb() {
-  if (pair_enable_disable_cb)
-    pair_enable_disable_cb(true);
+static inline void fer_alias_ENABLE_cb() {
+  if (fer_alias_enable_disable_cb)
+    fer_alias_enable_disable_cb(true);
 }
-static inline void pair_DISABLE_cb() {
-  if (pair_enable_disable_cb)
-    pair_enable_disable_cb(false);
+static inline void fer_alias_DISABLE_cb() {
+  if (fer_alias_enable_disable_cb)
+    fer_alias_enable_disable_cb(false);
 }
 
-bool  pair_auto_set(const struct TargetDesc &td, u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
+bool  fer_alias_auto_set(const struct TargetDesc &td, u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
   my_td = &td;
@@ -49,12 +49,12 @@ bool  pair_auto_set(const struct TargetDesc &td, u8 g, u8 m, u8 c, u16 id, unsig
     last_received_sender.data[0] = 0;
     pras_active = true;
     soMsg_pras_start_listening(*my_td, id);
-    pair_ENABLE_cb();
+    fer_alias_ENABLE_cb();
   }
   return false;
 }
 
-void pair_auto_set_check_timeout(void) {
+void fer_alias_auto_set_check_timeout(void) {
   if (end_time == 0)
     return;
 
@@ -63,11 +63,11 @@ void pair_auto_set_check_timeout(void) {
     soMsg_pras_stop_listening(*my_td);
     soMsg_pras_timeout(*my_td);
     pras_active = false;
-    pair_DISABLE_cb();
+    fer_alias_DISABLE_cb();
   }
 }
 
-bool  pair_auto_set_check(const fer_sbT *fsb) {
+bool  fer_alias_auto_set_check(const fer_sbT *fsb) {
   if (end_time == 0)
     return false;
 
@@ -77,7 +77,7 @@ bool  pair_auto_set_check(const fer_sbT *fsb) {
 
     if (pras_c == PC_pair || pras_c == PC_unpair) {
       DL;
-      if (pair_controller(a, pras_g, pras_m, pras_c == PC_unpair)) {
+      if (fer_alias_controller(a, pras_g, pras_m, pras_c == PC_unpair)) {
         DL;
         success = true;
       }
@@ -87,7 +87,7 @@ bool  pair_auto_set_check(const fer_sbT *fsb) {
     end_time = 0;
 
     pras_active = false;
-    pair_DISABLE_cb();
+    fer_alias_DISABLE_cb();
     return true;
   }
   return false;

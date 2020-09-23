@@ -12,12 +12,12 @@
 #ifndef USER_MAIN_SET_ENDPOS_H_
 #define USER_MAIN_SET_ENDPOS_H_
 
-extern void (*sep_enable_disable_cb)(bool enable);
+extern void (*fer_sep_enable_disable_cb)(bool enable);
 
-bool sep_enable(const struct TargetDesc &td, fer_sbT *fsb);
-void sep_disable(void);
-void sep_loop(void);
-bool sep_is_enabled(void);
+bool fer_sep_enable(const struct TargetDesc &td, fer_sbT *fsb);
+void fer_sep_disable(void);
+void fer_sep_loop(void);
+bool fer_sep_is_enabled(void);
 
 
 #endif

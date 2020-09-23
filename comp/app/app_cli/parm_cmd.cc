@@ -138,24 +138,24 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
 
   if (has_requested_position) {
     if (g != 0) {
-      int pos = simPos_getPct_whileMoving(addr, g, m);
+      int pos = fer_simPos_getPct_whileMoving(addr, g, m);
       if (pos >= 0) {
         so_arg_gmp_t gmp = {g, m, pos};
         soMsg_pos_print_gmp(td, gmp);
       }
     } else {
-      statPos_printAllPcts(td);
+      fer_statPos_printAllPcts(td);
     }
   } else {
     if (has_sep) { // enable hardware buttons to set end position
       if (set_end_pos)
-        sep_enable(td, fer_get_fsb(addr,g,m,cmd));
+        fer_sep_enable(td, fer_get_fsb(addr,g,m,cmd));
       else
-        sep_disable();
+        fer_sep_disable();
     } else if (has_pct) {
-      cli_replyResult(td, commands_moveShutterToPct(addr, g, m, pct, repeats));
+      cli_replyResult(td, fer_cmd_moveShutterToPct(addr, g, m, pct, repeats));
     } else if (has_cmd) {
-      cli_replyResult(td, commands_sendShutterCommand(addr, g, m, cmd, repeats));
+      cli_replyResult(td, fer_cmd_sendShutterCommand(addr, g, m, cmd, repeats));
     } else {
       cli_replyFailure(td);
     }

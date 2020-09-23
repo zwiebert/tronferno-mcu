@@ -22,9 +22,9 @@
 
 struct fer_configT fer_config;
 fer_sbT default_sender;
-GmBitMask manual_bits;
+Fer_GmBitMask manual_bits;
 
-fer_sbT *get_sender_by_addr(long addr) {
+fer_sbT *fer_main_getSenderByAddress(long addr) {
   if (addr == 0) {
     return &default_sender;
   } else if (addr > 0 && 10 > addr) {
@@ -55,9 +55,9 @@ static void rawMessageReceived_cb(fer_msg_type msg_type, const fer_sbT *fsb, con
 }
 
 static void plainMessageReceived_cb(const fer_sbT *fsb) {
-  cu_auto_set_check(fsb);
+  fer_cuas_set_check(fsb);
 #ifdef USE_PAIRINGS
-  pair_auto_set_check(fsb);
+  fer_alias_auto_set_check(fsb);
 #endif
   {
     u8 g = 0, m = 0;
@@ -68,13 +68,13 @@ static void plainMessageReceived_cb(const fer_sbT *fsb) {
       if (m)
         m -= 7;
     }
-    simPos_registerMovingShutter(FER_SB_GET_DEVID(fsb), g, m, FER_SB_GET_CMD(fsb));
+    fer_simPos_registerMovingShutter(FER_SB_GET_DEVID(fsb), g, m, FER_SB_GET_CMD(fsb));
   }
 }
 
 static void beforeFirstSend_cb(const fer_sbT *fsb) {
   if (FER_SB_GET_DEVID(fsb) == fer_config.cu) {
-    simPos_registerMovingShutter(FER_SB_GET_DEVID(fsb), FER_SB_GET_GRP(fsb), FER_SB_GET_MEMB(fsb) == 0 ? 0 : FER_SB_GET_MEMB(fsb) - 7, FER_SB_GET_CMD(fsb));
+    fer_simPos_registerMovingShutter(FER_SB_GET_DEVID(fsb), FER_SB_GET_GRP(fsb), FER_SB_GET_MEMB(fsb) == 0 ? 0 : FER_SB_GET_MEMB(fsb) - 7, FER_SB_GET_CMD(fsb));
   }
 }
 
@@ -88,10 +88,10 @@ static void beforeAnySend_cb(fer_msg_type msg_type, const fer_sbT *fsb, const fe
 
 
 
-void fer_setup(const fer_configT &ferConfig, const bool reinit) {
+void fer_main_setup(const fer_configT &ferConfig, const bool reinit) {
    fer_config = ferConfig;
    fer_init_sender(&default_sender, fer_config.cu);
-   manual_bits = GmBitMask("MANU");
+   manual_bits = Fer_GmBitMask("MANU");
    if (reinit)
      return;
 
@@ -99,7 +99,7 @@ void fer_setup(const fer_configT &ferConfig, const bool reinit) {
   fer_beforeAnySend_cb = beforeAnySend_cb;
   fer_rawMessageReceived_cb = rawMessageReceived_cb;
   fer_plainMessageReceived_cb = plainMessageReceived_cb;
-  ferPos_init();
+  fer_pos_init();
 
 }
 
