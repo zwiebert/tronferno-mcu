@@ -7,6 +7,7 @@ idf_component_register(
     INCLUDE_DIRS . "./include" 
     REQUIRES uout
     PRIV_REQUIRES  app_misc misc app_settings  debug fernotron_app cli
+                   app_update
     )
 
 

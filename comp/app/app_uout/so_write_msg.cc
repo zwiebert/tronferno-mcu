@@ -51,12 +51,53 @@ void soMsg_mcu_run_time(const struct TargetDesc &td) {
   td.so().print("run-time", run_time_s());
 
 }
+#ifdef MCU_ESP32
+#include "esp_ota_ops.h"
+void soMsg_mcu_version(const struct TargetDesc &td) {
+  char buf[64];
+  const esp_app_desc_t *ad = esp_ota_get_app_description();
 
+  td.so().print("chip", MCU_TYPE);
+  td.so().print("firmware", (csu_copy_cat(buf, ad->project_name, "-", ad->version), buf));
+
+  csu_copy_cat(buf, ad->date, "T", ad->time);
+  char *p = buf;
+  do
+    if (*p == ' ')
+      *p = '-';
+  while (*++p);
+  td.so().print("build-time", buf);
+}
+
+#if 0
+     ESP_EARLY_LOGI(TAG, "Application information:");
+#ifndef CONFIG_APP_EXCLUDE_PROJECT_NAME_VAR
+     ESP_EARLY_LOGI(TAG, "Project name:     %s", app_desc->project_name);
+#endif
+#ifndef CONFIG_APP_EXCLUDE_PROJECT_VER_VAR
+     ESP_EARLY_LOGI(TAG, "App version:      %s", app_desc->version);
+#endif
+#ifdef CONFIG_BOOTLOADER_APP_SECURE_VERSION
+     ESP_EARLY_LOGI(TAG, "Secure version:   %d", app_desc->secure_version);
+#endif
+#ifdef CONFIG_APP_COMPILE_TIME_DATE
+     ESP_EARLY_LOGI(TAG, "Compile time:     %s %s", app_desc->date, app_desc->time);
+#endif
+     char buf[17];
+     esp_ota_get_app_elf_sha256(buf, sizeof(buf));
+     ESP_EARLY_LOGI(TAG, "ELF file SHA256:  %s...", buf);
+     ESP_EARLY_LOGI(TAG, "ESP-IDF:          %s", app_desc->idf_ver);
+ }
+#endif
+
+
+
+#else
 void soMsg_mcu_version(const struct TargetDesc &td) {
   char buf[64];
 
   td.so().print("chip", MCU_TYPE);
-  td.so().print("firmware", (csu_copy_cat(buf, "tronferno-mcu-", APP_VERSION)));
+  td.so().print("firmware", (csu_copy_cat(buf, "tronferno-mcu-", APP_VERSION), buf));
 
   char *p = STRCPY(buf, ISO_BUILD_TIME);
   do
@@ -65,6 +106,7 @@ void soMsg_mcu_version(const struct TargetDesc &td) {
   while (*++p);
   td.so().print("build-time", buf);
 }
+#endif
 
 void soMsg_mcu_ota(const struct TargetDesc &td, const char *url) {
 #ifdef USE_OTA
