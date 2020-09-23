@@ -36,6 +36,8 @@
 #endif
 //////////////////////////////////////////////////////////////////
 
+static const struct TargetDesc *my_td;
+
 void (*sep_enable_disable_cb)(bool enable);
 
 static inline void sep_ENABLE_cb() {
@@ -106,19 +108,20 @@ sep_disable(void) {
   if (sep_buttons_enabled) {
     sep_DISABLE_cb();
     sep_send_stop();  // don't remove this line
-    soMsg_sep_disable();
+    soMsg_sep_disable(*my_td);
     up_pressed = down_pressed = false;
     sep_buttons_enabled = false;
   }
 }
 
 bool 
-sep_enable(fsbT *fsb) {
+sep_enable(const struct TargetDesc &td, fsbT *fsb) {
+  my_td = &td;
   if (sep_buttons_enabled) { // already activated
     sep_disable();
     return false;
   } else if (IS_BUTTON_PRESSED()) {
-    soMsg_sep_button_pressed_error();
+    soMsg_sep_button_pressed_error(*my_td);
     return false;
   } else {
 
@@ -136,7 +139,7 @@ sep_enable(fsbT *fsb) {
     } else {
       return false;
     }
-    soMsg_sep_enable();
+    soMsg_sep_enable(*my_td);
     sep_fsb = *fsb;
     sep_buttons_enabled = true;
     TIMEOUT_SET();

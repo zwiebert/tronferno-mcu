@@ -161,7 +161,8 @@ bool pair_getControllerPairings(u32 a, GmBitMask *gm) {
   return success;
 }
 
-kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
+static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
+    auto td = static_cast<struct TargetDesc *>(args);
     so_arg_kmm_t arg;
     GmBitMask gm;
     arg.mm = &gm;
@@ -170,17 +171,17 @@ kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     read_controller(&gm, key);
 
     D(printf("key '%s', type '%d' a=%x \n", info.key, info.type, arg.a));
-    soMsg_pair_print_kmm(arg);
+    soMsg_pair_print_kmm(*td, arg);
     return kvsCb_match;
 }
 
-bool pair_so_output_all_pairings(void) {
+bool pair_so_output_all_pairings(const struct TargetDesc &td) {
 
-  soMsg_pair_all_begin();
+  soMsg_pair_all_begin(td);
 
-  kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, KEY_PREFIX, kvs_foreach_cb, 0);
+  kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, KEY_PREFIX, kvs_foreach_cb, (void*)&td);
 
-  soMsg_pair_all_end();
+  soMsg_pair_all_end(td);
   return true;
 }
 

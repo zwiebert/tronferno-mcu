@@ -5,7 +5,7 @@
 #include <sys/param.h>
 #include <mbedtls/base64.h>
 #include "net/http/server/http_server.h"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "app/uout/callbacks.h"
 #include "app/settings/config.h"
 #include "app/cli/cli_app.h"
@@ -41,17 +41,20 @@ static int ws_nfds;
 struct ws_send_arg {
   httpd_handle_t hd;
   char *json;
+  size_t json_len;
+  int fd;
 };
 
 static void ws_send(void *arg) {
   auto a = static_cast<ws_send_arg *>(arg);
-  httpd_ws_frame_t ws_pkt = {  .final = true, .type = HTTPD_WS_TYPE_TEXT, .payload = (u8*)a->json, .len = strlen(a->json)};
+  httpd_ws_frame_t ws_pkt = {  .final = true, .type = HTTPD_WS_TYPE_TEXT, .payload = (u8*)a->json, .len = a->json_len };
 
   for (int fd = 0; fd < ws_nfds; ++fd) {
     if (!FD_ISSET(fd, &ws_fds))
       continue;
     esp_err_t res = httpd_ws_send_frame_async(a->hd, fd, &ws_pkt);
     if (res != ESP_OK) {
+      ESP_LOGE(TAG, "httpd_ws_send_frame failed with %d (%s)", res, esp_err_to_name(res));
       FD_CLR(fd, &ws_fds);
       if (ws_nfds == fd + 1)
         ws_nfds = fd;
@@ -61,15 +64,29 @@ static void ws_send(void *arg) {
   free(a);
 }
 
-static esp_err_t ws_trigger_send(httpd_handle_t handle, const char *json) {
+static esp_err_t ws_trigger_send(httpd_handle_t handle, const char *json, size_t len, int fd = -1) {
   struct ws_send_arg *arg = static_cast<struct ws_send_arg *>(malloc(sizeof(struct ws_send_arg)));
   arg->hd = handle;
   arg->json = strdup(json);
+  arg->json_len = len;
+  arg->fd = fd;
   return httpd_queue_work(handle, ws_send, arg);
 }
 
-void ws_send_json(const char *json) {
-  ws_trigger_send(hts_server, json);
+void ws_send_json(const char *json, size_t len) {
+  ws_trigger_send(hts_server, json, len ? len : strlen(json));
+}
+
+static int ws_write(void *req, const char *s, ssize_t len = -1, bool final = true) {
+  if (len < 0)
+    len = strlen(s);
+  httpd_ws_frame_t ws_pkt = {  .final = final, .type = HTTPD_WS_TYPE_TEXT, .payload = (u8*)s, .len = len };
+  if (auto res = httpd_ws_send_frame((httpd_req_t *)req, &ws_pkt); res != ESP_OK) {
+    ESP_LOGE(TAG, "httpd_ws_send_frame failed with %d (%s)", res, esp_err_to_name(res));
+    return -1;
+  }
+
+  return len;
 }
 
 /*
@@ -93,11 +110,19 @@ static void ws_async_send(void *arg)
     free(resp_arg);
 }
 #endif
+/////////////////////////////////////////////////////////////////////////
+int ht_write(void *req, const char *s, size_t len) {
+  if (ESP_OK == httpd_resp_send_chunk(static_cast<httpd_req_t *>(req), s, len))
+    return len;
+  return -1;
+}
+
 
 ////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   char buf[256];
   int ret, remaining = req->content_len;
+  int result = ESP_OK;
 
   if (!check_access_allowed(req))
     return ESP_FAIL;
@@ -108,15 +133,21 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 
   { LockGuard lock(cli_mutex); 
     buf[ret] = '\0';
-    hts_query0(HQT_NONE, buf); // parse and process received command
 
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, sj_get_json());
-
-    sj_free_buffer();
+    httpd_resp_set_type(req, "application/json") == ESP_OK || (result = ESP_FAIL);
+#if 0
+    TargetDesc td { req, static_cast<so_target_bits>(SO_TGT_HTTP | SO_TGT_FLAG_JSON), ht_write };
+    cli_process_json(buf, td); // parse and process received command
+    td.sj().write_json() >= 0 || (result = ESP_FAIL);
+    httpd_resp_send_chunk(req, 0, 0);
+#else
+    TargetDesc td { static_cast<so_target_bits>(SO_TGT_HTTP | SO_TGT_FLAG_JSON)};
+    cli_process_json(buf, td); // parse and process received command
+    httpd_resp_sendstr(req, td.sj().get_json()) == ESP_OK || (result = ESP_FAIL);
+#endif
   }
 
-  return ESP_OK;
+  return result;
 }
 
 
@@ -214,7 +245,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, (sizeof buf)-1);
 
   if (ret != ESP_OK) {
-      ESP_LOGE(TAG, "httpd_ws_recv_frame failed with %d", ret);
+    ESP_LOGE(TAG, "httpd_ws_recv_frame failed with %d (%s)", ret, esp_err_to_name(ret));
       return ret;
   }
 
@@ -224,20 +255,10 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   }
 
 
-  { LockGuard lock(cli_mutex); 
-    buf[ws_pkt.len] = '\0';
-    hts_query0(HQT_NONE, (char*)buf); // parse and process received command
-
-    ws_pkt.payload = (u8*)sj_get_json();
-    ws_pkt.len = strlen((char*)ws_pkt.payload);
-    ws_pkt.type = HTTPD_WS_TYPE_TEXT;
-
-    ret = httpd_ws_send_frame(req, &ws_pkt);
-    if (ret != ESP_OK) {
-      ESP_LOGE(TAG, "httpd_ws_send_frame failed with %d", ret);
-    }
-
-    sj_free_buffer();
+  {
+    LockGuard lock(cli_mutex);
+    TargetDescWs td { req, static_cast<so_target_bits>(SO_TGT_WS | SO_TGT_FLAG_JSON), ws_write };
+    cli_process_json((char*)buf, td);// parse and process received command
   }
   return ret;
 }
@@ -269,7 +290,6 @@ static void ws_send_json_cb(const uoCb_msgT msg) {
 void hts_setup_content() {
   hts_register_uri_handlers_cb = hts_register_uri_handlers;
 #ifdef USE_WS
-  ws_print_json_cb = ws_send_json;
   uo_flagsT flags;
   flags.tgt.websocket = true;
   flags.evt.pin_change = true;

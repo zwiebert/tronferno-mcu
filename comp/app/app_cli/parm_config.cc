@@ -28,6 +28,7 @@
 #include "app/common.h"
 #include "misc/int_types.h"
 #include "gpio/pin.h"
+#include <misc/mutex.hh>
 
 
 #include <stdlib.h>
@@ -112,7 +113,7 @@ const char *const *cfg_args[SO_CFG_size] = {
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
-bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask);
+bool process_parmKvsConfig(const struct TargetDesc &td, so_msg_t so_key, const char *val, u32 *changed_mask);
 
 
 static so_msg_t so_soMsg_from_otok(otok kt) {
@@ -121,7 +122,10 @@ static so_msg_t so_soMsg_from_otok(otok kt) {
 }
 
 int 
-process_parmConfig(clpar p[], int len) {
+process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
+ // static RecMutex settings_mutex;
+ // std::lock_guard<RecMutex> lock(settings_mutex);
+
   int arg_idx;
   int errors = 0;
   so_msg_t so_key = SO_NONE;
@@ -136,8 +140,8 @@ process_parmConfig(clpar p[], int len) {
 #define hasChanged_txtio (changed_mask & (BIT(CB_VERBOSE)))
 
   bool hasChanged_geo = false, hasChanged_gpio = false;
-
-  so_object<void> cfgObj(soCfg_begin, soCfg_end);
+  {
+  so_object<void> cfgObj(soCfg_begin, soCfg_end, td);
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -145,7 +149,7 @@ process_parmConfig(clpar p[], int len) {
     otok kt = optMap_findToken(key);
 
     if (key == NULL || val == NULL) {  // don't allow any default values in config
-      return cli_replyFailure();
+      return cli_replyFailure(td);
 #if ENABLE_RESTART
     } else if (is_kt(restart)) {
       if (mcu_restart_cb)
@@ -154,28 +158,28 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (is_kt(all)) {
       if (is_val("?")) {
-        so_output_message(SO_CFG_all, "cj");
+        so_output_message(td, SO_CFG_all, "cj");
       }
     } else if (SO_NONE != (so_key = so_soMsg_from_otok(kt))) {
       if (is_val("?")) {
-        so_output_message(so_key, NULL);
-      } else if (process_parmKvsConfig(so_key, val, &changed_mask)) {
+        so_output_message(td, so_key, NULL);
+      } else if (process_parmKvsConfig(td, so_key, val, &changed_mask)) {
 
       } else switch (so_key) {
        case SO_CFG_RTC: {
-          cli_replyResult(val ? rtc_set_by_string(val) : false);
+          cli_replyResult(td, val ? rtc_set_by_string(val) : false);
         }
           break;
 
         case SO_CFG_CU: {
           if (is_val("auto")) {
-            cu_auto_set(cli_msgid, 60);
-            cli_replySuccess();
+            cu_auto_set(td, cli_msgid, 60);
+            cli_replySuccess(td);
           } else {
             u32 cu = (is_val("auto-old")) ? FSB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
 
             if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
-              return cli_replyFailure();
+              return cli_replyFailure(td);
             }
             (void)set_optN(u32, cu, CB_CUID);
           }
@@ -210,7 +214,7 @@ process_parmConfig(clpar p[], int len) {
             }
           }
           if (!success)
-            cli_replyFailure();
+            cli_replyFailure(td);
         }
         break;
 #endif
@@ -245,7 +249,7 @@ process_parmConfig(clpar p[], int len) {
           }
 
           if (!flag_isValid)
-            cli_replyFailure();
+            cli_replyFailure(td);
 #endif
         }
         break;
@@ -260,7 +264,7 @@ process_parmConfig(clpar p[], int len) {
           } else if (is_val("1")) {
             v = dstAlways;
           } else {
-            cli_warning_optionUnknown(key);
+            cli_warning_optionUnknown(td, key);
           }
           rtc_setup();
           (void)set_optN(i8, v, CB_DST);
@@ -306,7 +310,7 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (is_kt(cuas)) {
       if (is_val("?")) {
-        soMsg_cuas_state(cuas_getState());
+        soMsg_cuas_state(td, cuas_getState());
       }
 
 
@@ -315,17 +319,17 @@ process_parmConfig(clpar p[], int len) {
 #ifdef ACCESS_GPIO
     } else if (is_kt(gpio)) {
       if (is_val("?")) {
-        soCfg_GPIO_MODES();
+        soCfg_GPIO_MODES(td);
       } else if (*val == '$') {
-        soCfg_GPIO_MODES_AS_STRING();
+        soCfg_GPIO_MODES_AS_STRING(td);
       }
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
 
       if (is_val("?")) {
-        soCfg_GPIO_PIN(gpio_number);
+        soCfg_GPIO_PIN(td, gpio_number);
       } else if (!is_gpio_number_usable(gpio_number, true)) {
-        reply_message("gpio:error", "gpio number cannot be used");
+        reply_message(td, "gpio:error", "gpio number cannot be used");
         ++errors;
       } else {
         const char *error = "unknown gpio config";
@@ -342,7 +346,7 @@ process_parmConfig(clpar p[], int len) {
         }
         if (error) {
           ++errors;
-          reply_message("gpio:failure", error);
+          reply_message(td, "gpio:failure", error);
         }
       }
 #endif
@@ -351,17 +355,17 @@ process_parmConfig(clpar p[], int len) {
       if (set_optStr_ifValid(val, CB_CFG_PASSWD)){}
 
       if (!flag_isValid)
-        cli_replyFailure();
+        cli_replyFailure(td);
 
     } else if (is_kt(receiver)) {
-      cli_replyResult(config_receiver(val));
+      cli_replyResult(td, config_receiver(val));
 
     } else if (is_kt(transmitter)) {
-      cli_replyResult(config_transmitter(val));
+      cli_replyResult(td, config_transmitter(val));
 
     } else {
       ++errors;
-      cli_warning_optionUnknown(key);
+      cli_warning_optionUnknown(td, key);
     }
   }
 
@@ -391,6 +395,8 @@ process_parmConfig(clpar p[], int len) {
   if (hasChanged_txtio) {
     config_setup_txtio();
   }
-  cli_replyResult(errors==0);
+
+  }
+  cli_replyResult(td, errors==0);
   return 0;
 }

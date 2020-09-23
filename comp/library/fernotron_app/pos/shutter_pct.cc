@@ -10,7 +10,7 @@
 #include "misc/int_macros.h"
 #include "app/uout/status_output.h"
 #include "app/uout/callbacks.h"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "uout/cli_out.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
@@ -160,10 +160,10 @@ int statPos_setPcts(GmBitMask *mm, u8 p) {
 }
 
 int 
-statPos_printAllPcts() {
+statPos_printAllPcts(const struct TargetDesc &td) {
   GmBitMask msk;
 
-  soMsg_pos_begin();
+  soMsg_pos_begin(td);
   for (gT g=1; g < 8; ++g) {
     if (pm_isGroupUnused(g))
       continue;
@@ -190,10 +190,10 @@ statPos_printAllPcts() {
         }
       }
       so_arg_mmp_t mmp = { &pos_msk, pct };
-      soMsg_pos_print_mmp(mmp);
+      soMsg_pos_print_mmp(td, mmp);
     }
   }
-  soMsg_pos_end();
+  soMsg_pos_end(td);
   return 0;
 }
 
@@ -245,7 +245,7 @@ typedef u8 u8a8[8];
 
 
 static char *g_to_name(u8 g, char *buf) {
-  strcpy(buf, "PMAP_Gx");
+  STRCPY(buf, "PMAP_Gx");
   buf[6] = '0' + g;
   return buf;
 }

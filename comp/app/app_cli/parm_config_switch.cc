@@ -20,7 +20,7 @@
 
 
 
-bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask) {
+bool process_parmKvsConfig(const struct TargetDesc &td, so_msg_t so_key, const char *val, u32 *changed_mask) {
   bool result = true;
   bool flag_isValid = true;
 
@@ -35,7 +35,7 @@ bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask) 
     set_optStr(val, CB_WIFI_SSID);
 
     if (!flag_isValid)
-      cli_replyFailure();
+      cli_replyFailure(td);
   }
     break;
 
@@ -43,7 +43,7 @@ bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask) 
     set_optStr(val, CB_WIFI_PASSWD);
 
     if (!flag_isValid)
-      cli_replyFailure();
+      cli_replyFailure(td);
   }
     break;
 #endif // USE_WLAN

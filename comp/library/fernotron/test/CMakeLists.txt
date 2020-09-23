@@ -12,5 +12,5 @@ idf_component_register(SRC_DIRS "."
                        INCLUDE_DIRS "." ../include 
                        PRIV_INCLUDE_DIRS ../include/fernotron
                        PRIV_REQUIRES app_settings debug
-                       REQUIRES app_misc unity txtio)
+                       REQUIRES app_misc unity txtio jsmn)
                             

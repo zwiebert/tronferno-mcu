@@ -6,26 +6,35 @@
  */
 
 #include "cli/cli.h"
+extern "C++" {
+#include <uout/cli_out.h>
+}
 #include "txtio/inout.h"
 #include "debug/dbg.h"
 #include "cli_imp.h"
 #include <string.h>
 
-int process_parmHelp(clpar p[], int len) {
+int process_parmHelp(clpar p[], int len, const struct TargetDesc &td) {
   int i;
+
 
   static const char usage[] = "syntax: command option=value ...;\n"
       "commands are: ";
 
-  io_putlf();
+  td << '\n';
+
+  if (!cli_parm_handlers) {
+    td << "no commands available\n";
+    return -1;
+  }
 
   // print help for help;
   if (len == 1) {
-    io_puts(cli_help_parmHelp);
-    for (i = 0; i < parm_handlers.count; ++i) {
-      io_puts(parm_handlers.handlers[i].parm), io_puts(", ");
+    td << cli_help_parmHelp;
+    for (i = 0; i < cli_parm_handlers->count; ++i) {
+      td << cli_parm_handlers->handlers[i].parm << ", ";
     }
-    io_putlf();
+    td << '\n';
     return 0;
   }
 
@@ -36,35 +45,35 @@ int process_parmHelp(clpar p[], int len) {
     bool keyProcessed = false;
 
     if (strcmp(key, "all") == 0) {
-      io_puts(usage);
-      for (i = 0; i < parm_handlers.count; ++i) {
-        io_puts(parm_handlers.handlers[i].parm), io_puts(", ");
+      td << usage;
+      for (i = 0; i < cli_parm_handlers->count; ++i) {
+        td << cli_parm_handlers->handlers[i].parm << ", ";
       }
-      io_putlf();
+      td << '\n';
 
-      for (i = 0; i < parm_handlers.count; ++i) {
-        io_puts(parm_handlers.handlers[i].parm), io_puts(" options:\n");
-        io_puts(parm_handlers.handlers[i].help), io_putlf();
+      for (i = 0; i < cli_parm_handlers->count; ++i) {
+        td << cli_parm_handlers->handlers[i].parm << " options:\n";
+        td << cli_parm_handlers->handlers[i].help << '\n';
       }
 
     } else {
 
-      for (k = 0; k < parm_handlers.count; ++k) {
-        if (strcmp(parm_handlers.handlers[k].parm, key) == 0) {
-          io_puts(parm_handlers.handlers[k].help), io_putlf();
+      for (k = 0; k < cli_parm_handlers->count; ++k) {
+        if (strcmp(cli_parm_handlers->handlers[k].parm, key) == 0) {
+          td << cli_parm_handlers->handlers[k].help << '\n';
           keyProcessed = true;
           break;
         }
       }
 
       if (!keyProcessed) {
-        cli_warning_optionUnknown(key);
+        cli_warning_optionUnknown(td, key);
       }
     }
   }
 
-  io_puts("\ncommon options:\n"
-      "mid=N  N is used as an ID in the cli_reply\n");
+  td << "\ncommon options:\n"
+      "mid=N  N is used as an ID in the cli_reply\n";
 
   return 0;
 }

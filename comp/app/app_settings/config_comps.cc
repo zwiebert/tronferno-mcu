@@ -64,8 +64,8 @@ void config_setup_global() {
     .app_configPassword = {0},
     .app_expertPassword = {0},
 };
-  strncpy(C.app_configPassword, MY_APP_CONFIG_PASSWORD, sizeof C.app_configPassword);
-  strncpy(C.app_expertPassword, MY_APP_EXPERT_PASSWORD, sizeof C.app_expertPassword);
+  STRLCPY(C.app_configPassword, MY_APP_CONFIG_PASSWORD, sizeof C.app_configPassword - 1);
+  STRLCPY(C.app_expertPassword, MY_APP_EXPERT_PASSWORD, sizeof C.app_expertPassword - 1);
 
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
 
@@ -95,7 +95,7 @@ struct cfg_astro* config_read_astro(struct cfg_astro *c) {
 
     kvsRb(CB_LONGITUDE, c->geo_longitude);
     kvsRb(CB_LATITUDE, c->geo_latitude);
-    {i8 tmp = c->astroCorrection; kvsR(i8, CB_ASTRO_CORRECTION, tmp); c->astroCorrection = (astroCorrection)tmp;}
+    kvsRead(i8, astroCorrection, CB_ASTRO_CORRECTION, c->astroCorrection);
 
 #ifndef POSIX_TIME
       kvsRb(CI(CB_TIZO), c->geo_timezone);

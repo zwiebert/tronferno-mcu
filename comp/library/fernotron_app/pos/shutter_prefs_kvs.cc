@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-
+#include "app/config/proj_app_cfg.h"
 #include "fernotron/pos/shutter_prefs.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
@@ -53,7 +53,7 @@ static char* sts_make_key(char *key, const char *tag, u8 g, u8 m) {
   char gm[] = "00";
   gm[0] += g;
   gm[1] += m;
-  strcat(strcat(strcpy(key, STS_PREFIX), gm), tag);
+  strcat(strcat(STRCPY(key, STS_PREFIX), gm), tag);
   return key;
 }
 #define sts_get_tag(key) (key+ (sizeof(STS_PREFIX)-1 + 2))
@@ -84,6 +84,7 @@ bool ferSp_strByM_load(char *dst, unsigned size, const char *tag, uint8_t g, uin
 
 struct cb_args {
   ferSp_strCallBackT callback;
+  const struct TargetDesc &td;
 };
 
 static kvs_cbrT ferSp_strByM_forEach_cb(const char *key, kvs_type_t type, void *args) {
@@ -97,20 +98,20 @@ static kvs_cbrT ferSp_strByM_forEach_cb(const char *key, kvs_type_t type, void *
     kvs_close(handle);
   }
   if (success) {
-    (*ap->callback)(sts_get_tag(key), dst);
+    (*ap->callback)(ap->td, sts_get_tag(key), dst);
     return kvsCb_match;
   }
   return kvsCb_noMatch;
 }
 
-int ferSp_strByM_forEach(const char *tag, uint8_t g, uint8_t m, ferSp_strCallBackT callback) {
+int ferSp_strByM_forEach(const struct TargetDesc &td, const char *tag, uint8_t g, uint8_t m, ferSp_strCallBackT callback) {
   char *key = sts_make_key((char*)alloca(sts_key_len(tag) + 1), tag, g, m);
-  struct cb_args cb_args = { .callback = callback };
+  struct cb_args cb_args = { .callback = callback, .td = td };
   return kvs_foreach(STS_KVS_NAMESPACE, KVS_TYPE_STR, key, ferSp_strByM_forEach_cb, &cb_args);
 }
-bool ferSp_strByM_forOne(const char *tag, uint8_t g, uint8_t m, ferSp_strCallBackT callback) {
+bool ferSp_strByM_forOne(const struct TargetDesc &td, const char *tag, uint8_t g, uint8_t m, ferSp_strCallBackT callback) {
   char *key = sts_make_key((char*)alloca(sts_key_len(tag) + 1), tag, g, m);
-  struct cb_args cb_args = { .callback = callback };
+  struct cb_args cb_args = { .callback = callback, .td = td };
   return kvsCb_match == ferSp_strByM_forEach_cb(key, KVS_TYPE_none, &cb_args);
 }
 

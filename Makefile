@@ -20,9 +20,9 @@ $(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(tgt))))
 
 .PHONY: http_proxy http_clean
 http_proxy:
-	cd src/components/webapp && make proxy
+	cd comp/app/app_webapp && make proxy
 http_clean:
-	cd src/components/webapp && make clean
+	cd comp/app/app_webapp && make clean
 
 esp8266_build_cmd := make -C src/esp8266
 esp8266_tgts_auto := all clean flash app-flash flashinit flasherase spiffs
@@ -43,16 +43,16 @@ ifdef V
 esp32_build_opts += -v
 endif
 
-BUILD_BASE ?= $(realpath .)/build/esp32
-
-esp32_build_dir = $(BUILD_BASE)
-esp32_src_dir := src/esp32
+THIS_ROOT := $(realpath .)
+BUILD_BASE ?= $(THIS_ROOT)/build/esp32
+esp32_build_dir := $(BUILD_BASE)
+esp32_src_dir := $(THIS_ROOT)/src/esp32
 
 esp32_build_cmd := idf.py -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
 esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
 
 ######### ESP32 Targets ##################
-esp32_tgts_auto := menuconfig clean fullclean app flash monitor
+esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui
 
 .PHONY: esp32-all-force esp32-rebuild
 .PHONY: esp32-all esp32-lan esp32-flash esp32-flash-ocd

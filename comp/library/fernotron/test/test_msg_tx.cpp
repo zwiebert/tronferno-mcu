@@ -63,8 +63,8 @@ TEST_CASE("tx: repeats and queue", "[fernotron]")
 #ifdef TEST_HOST
 //volatile bool ftx_messageToSend_isReady;
 //volatile u16 ftx_messageToSend_wordCount;
-volatile uint32_t run_time_s_;
-volatile uint32_t run_time_ts_;
+//volatile uint32_t run_time_s_;
+//volatile uint32_t run_time_ts_;
 uint32_t run_time_ts() { return 0; }
 uint32_t run_time_s() { return 0; }
 bool mcu_get_rxPin() { return false; }

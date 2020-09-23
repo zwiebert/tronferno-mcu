@@ -17,6 +17,7 @@
 #include "fernotron/fer_msg_rx.h"
 #include "fernotron/fer_msg_attachment.h"
 
+static const struct TargetDesc *my_td;
 
 void (*cuas_enable_disable_cb)(bool enable);
 
@@ -38,15 +39,16 @@ cuas_state_T cuas_getState() {
 static bool cuas_active;
 static time_t end_time;
 
-bool cu_auto_set(u16 id, unsigned timeout_secs) {
+bool cu_auto_set(const struct TargetDesc &td, u16 id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
+  my_td = &td;
 
   if (timeout_secs > 0) {
     end_time = run_time_s() + timeout_secs;
     last_received_sender.data[0] = 0;
     cuas_active = true;
-    soMsg_cuas_start(id);
+    soMsg_cuas_start(*my_td, id);
     cuas_state = CUAS_SCANNING;
     cuas_ENABLE_cb();
   }
@@ -59,7 +61,7 @@ void cu_auto_set_check_timeout() {
 
   if (end_time < run_time_s()) {
     end_time = 0;
-    soMsg_cuas_timeout();
+    soMsg_cuas_timeout(*my_td);
     cuas_state = CUAS_TIME_OUT;
     cuas_active = false;
     cuas_DISABLE_cb();
@@ -76,7 +78,7 @@ bool cu_auto_set_check(const fsbT *fsb) {
     config_save_item_n_u32(CI(CB_CUID), cu);
     config_item_modified(CI(CB_CUID));
     end_time = 0;
-    soMsg_cuas_done();
+    soMsg_cuas_done(*my_td);
     cuas_state = CUAS_SUCCESS;
     config_save_item_n_u32(CI(CB_CUID), cu);
     config_item_modified(CI(CB_CUID));

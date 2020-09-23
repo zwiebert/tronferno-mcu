@@ -7,9 +7,7 @@
 
 <div class="main-area">
   <div class="mt-4 p-2">
-    <ShutterGM
-      gmc_fetch_mask={httpFetch.FETCH_ALIASES | httpFetch.FETCH_SHUTTER_PREFS | httpFetch.FETCH_SHUTTER_NAME}
-      hideGroups="true" />
+    <ShutterGM hideGroups="true" />
   </div>
   <div class="area">
     <ShutterAlias />

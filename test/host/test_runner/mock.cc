@@ -16,4 +16,7 @@ volatile u32 run_time_s_, run_time_ts_;
 extern const char * const config_keys[10] = {};
 
 void setup_pin(const struct cfg_gpio *c) {}
-extern "C" void   txtio_mcu_setup() {}
+void   txtio_mcu_setup() {}
+
+void mcu_put_txPin(unsigned char) {}
+int frx_getQuality(struct frx_quality*) {}

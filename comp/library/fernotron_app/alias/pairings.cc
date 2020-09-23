@@ -25,6 +25,7 @@ void (*pair_enable_disable_cb)(bool enable);
 static bool pras_active;
 static time_t end_time;
 static u8 pras_g, pras_m, pras_c;
+static const struct TargetDesc *my_td;
 
 static inline void pair_ENABLE_cb() {
   if (pair_enable_disable_cb)
@@ -35,9 +36,10 @@ static inline void pair_DISABLE_cb() {
     pair_enable_disable_cb(false);
 }
 
-bool  pair_auto_set(u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
+bool  pair_auto_set(const struct TargetDesc &td, u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
+  my_td = &td;
 
   if (timeout_secs > 0) {
     pras_g = g;
@@ -46,7 +48,7 @@ bool  pair_auto_set(u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
     end_time = run_time_s() + timeout_secs;
     last_received_sender.data[0] = 0;
     pras_active = true;
-    soMsg_pras_start_listening(id);
+    soMsg_pras_start_listening(*my_td, id);
     pair_ENABLE_cb();
   }
   return false;
@@ -58,8 +60,8 @@ void pair_auto_set_check_timeout(void) {
 
   if (end_time < run_time_s()) {
     end_time = 0;
-    soMsg_pras_stop_listening();
-    soMsg_pras_timeout();
+    soMsg_pras_stop_listening(*my_td);
+    soMsg_pras_timeout(*my_td);
     pras_active = false;
     pair_DISABLE_cb();
   }
@@ -81,7 +83,7 @@ bool  pair_auto_set_check(const fsbT *fsb) {
       }
     }
 
-    soMsg_pras_done(success, pras_c == PC_unpair);
+    soMsg_pras_done(*my_td, success, pras_c == PC_unpair);
     end_time = 0;
 
     pras_active = false;

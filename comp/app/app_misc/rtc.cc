@@ -86,7 +86,7 @@ time_t  time_iso2time(const char *dateTimeString) {
   if (strlen(dateTimeString) == 19) {
     char s[20], *token;
 
-    strncpy(s, dateTimeString, 19);
+    STRCPY(s, dateTimeString);
     s[19] = '\0';
     struct tm t = { 0, };
 

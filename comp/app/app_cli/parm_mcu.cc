@@ -5,6 +5,7 @@
 #include "app/firmware.h"
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/shutter_pct.h"
+#include <fernotron/alias/pairings.h>
 #include "txtio/inout.h"
 #include "gpio/pin.h"
 #include "app/uout/status_output.h"
@@ -58,10 +59,10 @@ static void kvs_print_keys(const char *name_space);
 #define is_val(k) (strcmp(val, k) == 0)
 
 //TODO: add IP address query option
-int process_parmMcu(clpar p[], int len) {
+int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
 
-  so_object<void> soObj(soMsg_mcu_begin, soMsg_mcu_end);
+  so_object<void> soObj(soMsg_mcu_begin, soMsg_mcu_end, td);
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -73,7 +74,7 @@ int process_parmMcu(clpar p[], int len) {
 
     if (is_kt(boot_count)) {
       if (is_val("?")) {
-        soMsg_mcu_boot_count();
+        soMsg_mcu_boot_count(td);
       } else if (strcmp("0", val) == 0) {
         // TODO: reset boot counter
       }
@@ -107,7 +108,7 @@ int process_parmMcu(clpar p[], int len) {
         so_arg_gm_t gm;
         gm.g = val[0] - '0';
         gm.m = val[1] - '0';
-        soMsg_timer_event_print(gm);
+        soMsg_timer_event_print(td, gm);
       }
     } else if (is_kt(am)) {
       if (strlen(val) == 2) {
@@ -115,7 +116,7 @@ int process_parmMcu(clpar p[], int len) {
         u8 m = val[1] - '0';
         timer_minutes_t tmi;
         if (fau_get_timer_minutes_now(&tmi, &g, &m, true)) {
-          soMsg_astro_minutes_print(tmi.minutes[ASTRO_MINTS]);
+          soMsg_astro_minutes_print(td, tmi.minutes[ASTRO_MINTS]);
         }
       }
 #ifdef USE_FREERTOS
@@ -138,18 +139,17 @@ int process_parmMcu(clpar p[], int len) {
       }
 #ifdef USE_PAIRINGS
     } else if (is_kt(dbp)) {
-      bool pair_so_output_all_pairings(void);
-      pair_so_output_all_pairings();
+      pair_so_output_all_pairings(td);
 #endif
     } else if (is_kt(cs)) {
-      statPos_printAllPcts();
+      statPos_printAllPcts(td);
 #ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
 
 
       if (!is_gpio_number_usable(gpio_number, true)) {
-        reply_message("gpio:error", "gpio number cannot be used");
+        reply_message(td, "gpio:error", "gpio number cannot be used");
         return -1;
       } else {
 
@@ -172,7 +172,7 @@ int process_parmMcu(clpar p[], int len) {
           case PIN_READ:
           error = mcu_access_pin(gpio_number, &ps_result, ps);
           if (!error) {
-            soMsg_gpio_pin(so_arg_pch_t {gpio_number, ps_result});
+            soMsg_gpio_pin(td, so_arg_pch_t {gpio_number, ps_result});
           }
           break;
 
@@ -182,7 +182,7 @@ int process_parmMcu(clpar p[], int len) {
         }
 
         if (error) {
-          reply_message("gpio:failure", error);
+          reply_message(td, "gpio:failure", error);
           return -1;
         }
       }
@@ -190,31 +190,29 @@ int process_parmMcu(clpar p[], int len) {
 
     } else if (is_kt(up_time)) {
       if (is_val("?")) {
-        soMsg_mcu_run_time();
+        soMsg_mcu_run_time(td);
       } else {
-        reply_message("error:mcu:up-time", "option is read-only");
+        reply_message(td, "error:mcu:up-time", "option is read-only");
       }
 
     } else if (is_kt(version)) {
-      soMsg_mcu_version();
+      soMsg_mcu_version(td);
 #ifdef USE_OTA
     } else if (is_kt(ota)) {
       if (is_val("?")) {
-        soMsg_mcu_ota_state();
+        soMsg_mcu_ota_state(td);
       } else if (is_val("github-master")) {
-        soMsg_mcu_ota(OTA_FWURL_MASTER);
+        soMsg_mcu_ota(td, OTA_FWURL_MASTER);
         ota_doUpdate(OTA_FWURL_MASTER, ca_cert_pem);
       } else if (is_val("github-beta")) {
-        soMsg_mcu_ota(OTA_FWURL_BETA);
+        soMsg_mcu_ota(td, OTA_FWURL_BETA);
         ota_doUpdate(OTA_FWURL_BETA, ca_cert_pem);
       } else if (0 == strncmp(val, OTA_FWURL_TAG_COOKIE, strlen(OTA_FWURL_TAG_COOKIE))) {
         const char *tag = val + strlen(OTA_FWURL_TAG_COOKIE);
-        int url_len = strlen(OTA_FWURL_TAG_HEAD) + strlen(OTA_FWURL_TAG_TAIL) + strlen(tag);
-        char *url;
-        if ((url = (char*)alloca(url_len + 1))) {
-          strcat(strcat(strcpy(url, OTA_FWURL_TAG_HEAD), tag), OTA_FWURL_TAG_TAIL);
-          ota_doUpdate(url, ca_cert_pem);
-        }
+        const size_t url_len = strlen(OTA_FWURL_TAG_HEAD) + strlen(OTA_FWURL_TAG_TAIL) + strlen(tag);
+        char url[url_len + 1];
+        csu_copy_cat(url, url_len, OTA_FWURL_TAG_HEAD, tag, OTA_FWURL_TAG_TAIL);
+        ota_doUpdate(url, ca_cert_pem);
       } else {
 #ifdef DISTRIBUTION
         ets_printf("forbidden: ota update from given URL\n");
@@ -225,7 +223,7 @@ int process_parmMcu(clpar p[], int len) {
       }
 #endif
     } else {
-      cli_warning_optionUnknown(key);
+      cli_warning_optionUnknown(td, key);
     }
 
   }

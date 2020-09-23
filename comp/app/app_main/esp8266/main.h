@@ -2,7 +2,7 @@
 
 
 #ifdef __cplusplus
-  extern "C" {
+  extern "C++" {
 #endif
 
   void user_init(void);

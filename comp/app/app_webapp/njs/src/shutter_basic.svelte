@@ -6,8 +6,6 @@
   import { onMount,onDestroy } from 'svelte';
   import DisplayIcons from './display_icons.svelte';
 
-  export let gmc_fetch_mask = 0;
-
 let on_destroy = [];
 onMount(() => {
      on_destroy.push(GM.subscribe(() => gmChanged()));
@@ -31,7 +29,7 @@ onDestroy(() => {
   }
 
   function gmChanged() {
-      httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO | httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME | gmc_fetch_mask);
+      httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO | httpFetch.FETCH_POS | httpFetch.FETCH_SHUTTER_NAME);
   }
 
   function hClick_G() {

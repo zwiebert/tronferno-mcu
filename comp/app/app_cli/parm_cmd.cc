@@ -37,7 +37,7 @@ const char cli_help_parmSend[]  =
 #define is_val(k) (strcmp(val, k) == 0)
 
 int 
-process_parmSend(clpar p[], int len) {
+process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
 
   u32 addr = cfg_getCuId();
@@ -74,7 +74,7 @@ process_parmSend(clpar p[], int len) {
         if (0 <= arg && arg <= 7) {
           g = arg;
         } else {
-          return cli_replyFailure();
+          return cli_replyFailure(td);
         }
       }
         break;
@@ -84,7 +84,7 @@ process_parmSend(clpar p[], int len) {
         if (0 <= arg && arg <= 7) {
           m = arg;
         } else {
-          return cli_replyFailure();
+          return cli_replyFailure(td);
         }
       }
         break;
@@ -93,7 +93,7 @@ process_parmSend(clpar p[], int len) {
         NODEFAULT();
         repeats = atoi(val);
         if (!(repeats <= 10)) {
-          return cli_replyFailure();
+          return cli_replyFailure(td);
         }
       }
         break;
@@ -105,7 +105,7 @@ process_parmSend(clpar p[], int len) {
         } else {
           pct = atoi(val);
           if (!(0 <= pct && pct <= 100))
-            return cli_replyFailure();
+            return cli_replyFailure(td);
         }
       }
         break;
@@ -115,7 +115,7 @@ process_parmSend(clpar p[], int len) {
         if (is_val("?")) {
           has_requested_position = true;
         } else if (!cli_parm_to_ferCMD(val, &cmd)) {
-          return cli_replyFailure();
+          return cli_replyFailure(td);
         }
       }
         break;
@@ -128,11 +128,11 @@ process_parmSend(clpar p[], int len) {
         break;
 
       default:
-        cli_warning_optionUnknown(key);
+        cli_warning_optionUnknown(td, key);
         break;
       }
     } else {
-      cli_warning_optionUnknown(key);
+      cli_warning_optionUnknown(td, key);
     }
   }
 
@@ -141,23 +141,23 @@ process_parmSend(clpar p[], int len) {
       int pos = simPos_getPct_whileMoving(addr, g, m);
       if (pos >= 0) {
         so_arg_gmp_t gmp = {g, m, pos};
-        soMsg_pos_print_gmp(gmp);
+        soMsg_pos_print_gmp(td, gmp);
       }
     } else {
-      statPos_printAllPcts();
+      statPos_printAllPcts(td);
     }
   } else {
     if (has_sep) { // enable hardware buttons to set end position
       if (set_end_pos)
-        sep_enable(get_fsb(addr,g,m,cmd));
+        sep_enable(td, get_fsb(addr,g,m,cmd));
       else
         sep_disable();
     } else if (has_pct) {
-      cli_replyResult(commands_moveShutterToPct(addr, g, m, pct, repeats));
+      cli_replyResult(td, commands_moveShutterToPct(addr, g, m, pct, repeats));
     } else if (has_cmd) {
-      cli_replyResult(commands_sendShutterCommand(addr, g, m, cmd, repeats));
+      cli_replyResult(td, commands_sendShutterCommand(addr, g, m, cmd, repeats));
     } else {
-      cli_replyFailure();
+      cli_replyFailure(td);
     }
   }
   return 0;

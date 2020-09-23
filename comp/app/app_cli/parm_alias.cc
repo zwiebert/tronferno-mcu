@@ -36,11 +36,11 @@ const char cli_help_parmPair[] = ""
 #define is_val(k) (strcmp(val, #k) == 0)
 
 int 
-process_parmPair(clpar p[], int len) {
+process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
   int i;
 
-  so_object<void> cfgObj(&soMsg_pair_begin, &soMsg_pair_end);
+  so_object<void> cfgObj(&soMsg_pair_begin, &soMsg_pair_end, td);
 
   u32 addr = 0;
   const char *addr_as_string = "";
@@ -74,7 +74,7 @@ process_parmPair(clpar p[], int len) {
       case otok::g: {
         fer_grp group;
         if (!asc2group(val, &group) || group == 0)
-          return cli_replyFailure();
+          return cli_replyFailure(td);
         g = group;
       }
         break;
@@ -82,7 +82,7 @@ process_parmPair(clpar p[], int len) {
       case otok::m: {
         fer_memb memb;
         if (!asc2memb(val, &memb) || memb == 0)
-          return cli_replyFailure();
+          return cli_replyFailure(td);
         m = memb - 7;
       }
         break;
@@ -127,10 +127,10 @@ process_parmPair(clpar p[], int len) {
       } else if (strncmp(key, "gpout", 5) == 0) {
         int gpio_number = atoi(key + 5);
       } else {
-        cli_replyFailure();
+        cli_replyFailure(td);
       }
 #else
-      cli_replyFailure();
+      cli_replyFailure(td);
 #endif
     }
   }
@@ -138,31 +138,31 @@ process_parmPair(clpar p[], int len) {
   if (store && has_mm) {
     if (pair_setControllerPairings(addr, &mm)) {
       so_arg_kmm_t kmm = {addr_as_string, &mm };
-      soMsg_pair_print_kmm_single(kmm);
+      soMsg_pair_print_kmm_single(td, kmm);
     } else {
       read = true;
     }
   }
 
   if (scan) {
-    pair_auto_set(g, m, c, cli_msgid, PRAS_TIMEOUT);
+    pair_auto_set(td, g, m, c, cli_msgid, PRAS_TIMEOUT);
   }
 
   if (read_all) {
-    pair_so_output_all_pairings();
+    pair_so_output_all_pairings(td);
   }
 
   if (addr && (((pair || unpair) && g && m) || (read && !g && !m))) {
 
     if (pair || unpair) {
-      cli_replyResult(pair_controller(addr, g, m, unpair));
+      cli_replyResult(td, pair_controller(addr, g, m, unpair));
     }
 
     if (read) {
       GmBitMask gm;
       if (pair_getControllerPairings(addr, &gm)) {
         so_arg_amm_t amm = {addr, &gm };
-        soMsg_pair_print_amm(amm);
+        soMsg_pair_print_amm(td, amm);
       }
     }
 

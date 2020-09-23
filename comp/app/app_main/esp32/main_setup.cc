@@ -30,6 +30,7 @@
 #include <ctime>
 #include "config_kvs/config.h"
 #include "app/uout/status_output.h"
+#include "uout/callbacks.h"
 #include "../app_private.h"
 #include "fernotron/types.h"
 
@@ -65,9 +66,15 @@ void ntpApp_setup(void) {
   config_setup_ntpClient();
 }
 
-extern "C" void main_setup_ip_dependent() { //XXX called from library
+
+
+extern "C++" void main_setup_ip_dependent() { //XXX called from library
   static int once;
-  soMsg_inet_print_address();
+  {
+    char buf[20];
+    ipnet_addr_as_string(buf, 20);
+    uoCb_publish_ipAddress(buf);
+  }
   if (!once) {
     once = 1;
 #ifdef USE_NTP
@@ -94,22 +101,28 @@ extern "C" void main_setup_ip_dependent() { //XXX called from library
       lf_setBit(lf_loopFauTimerDataHasChanged);
     };
 #ifdef ACCESS_GPIO
-  gpio_INPUT_PIN_CHANGED_ISR_cb = [] () IRAM_ATTR {
-      lf_setBit_ISR(lf_gpio_input_intr, true);
+  //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
+    struct pin_change_cb {static void IRAM_ATTR cb() {
+      lf_setBit_ISR(lf_gpio_input_intr, true);}
     };
+    gpio_INPUT_PIN_CHANGED_ISR_cb = pin_change_cb::cb;
 #endif
-  mcu_restart_cb = mcu_restart;
+    mcu_restart_cb = mcu_restart;
 
   #ifdef FER_RECEIVER
-  frx_MSG_RECEIVED_ISR_cb = [] () IRAM_ATTR {
-      lf_setBit_ISR(lf_loopFerRx, true);
+    //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
+    struct msg_received_cb { static void IRAM_ATTR cb() {
+      lf_setBit_ISR(lf_loopFerRx, true);}
     };
+  frx_MSG_RECEIVED_ISR_cb = msg_received_cb::cb;
   #endif
 
   #ifdef FER_TRANSMITTER
-  ftx_MSG_TRANSMITTED_ISR_cb = [] () IRAM_ATTR {
-    lf_setBit_ISR(lf_loopFerTx, true);
+  //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
+  struct msg_transmitted_cb { static void IRAM_ATTR cb() {
+    lf_setBit_ISR(lf_loopFerTx, true);}
   };
+  ftx_MSG_TRANSMITTED_ISR_cb = msg_transmitted_cb::cb;
   #endif
 #ifdef USE_SEP
   sep_enable_disable_cb = [] (bool enable) {
@@ -141,6 +154,7 @@ void mcu_init() {
   io_puts("\r\n\r\n");
 
   ESP_ERROR_CHECK(esp_event_loop_create_default());
+  cliApp_setup();
 #ifdef USE_CLI_TASK
   cli_setup_task(true);
 #else

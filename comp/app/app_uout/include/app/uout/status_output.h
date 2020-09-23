@@ -20,7 +20,7 @@
 
 
 void so_broadcast_message(so_msg_t mt, void *arg);
-void so_output_message(so_msg_t mt, const void *arg);
+void so_output_message(const struct TargetDesc &td, so_msg_t mt, const void *arg);
 void so_output_message_tgt(so_msg_t mt, void *arg, so_target_bits tgt);
 
 so_msg_t so_parse_config_key(const char *k);
@@ -29,38 +29,38 @@ so_msg_t so_parse_config_key(const char *k);
 #ifdef __cplusplus
 
 
-typedef void (*voidFuncP)(void);
+typedef void (*voidFuncP)(const struct TargetDesc &td);
 
 template<class T>
 class so_object {
 private:
+  const struct TargetDesc *my_td;
   voidFuncP mEnd;
 public:
-  so_object(void (*begin)(T), T args, voidFuncP end) {
+  so_object(void (*begin)(const struct TargetDesc &td, T), T args, voidFuncP end, const struct TargetDesc &td) {
+    my_td = &td;
     mEnd = end;
-    begin(args);
-  }
-  so_object(voidFuncP begin, voidFuncP end) {
-    mEnd = end;
-    begin();
+    begin(td, args);
   }
   ~so_object() {
-    mEnd();
+    mEnd(*my_td);
   }
 };
 
 template<>
 class so_object<void> {
 private:
+  const struct TargetDesc *my_td;
   voidFuncP mEnd;
 public:
-  so_object(voidFuncP begin, voidFuncP end) {
+  so_object(voidFuncP begin, voidFuncP end, const struct TargetDesc &td)  {
+    my_td = &td;
     mEnd = end;
-    begin();
+    begin(td);
   }
 
   ~so_object() {
-    mEnd();
+    mEnd(*my_td);
   }
 };
 

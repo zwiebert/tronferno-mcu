@@ -1,5 +1,5 @@
 set(srcs  status_output_switch.cc so_out.cc so_print.cc callbacks.cc
-    so_write_msg.cc so_write_config.cc cli_out.cc
+    so_write_msg.cc so_write_config.cc
 ) 
 
 idf_component_register(

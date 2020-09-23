@@ -35,11 +35,11 @@ static bool save_restore_item(enum configItem item, int count) {
   {
      int random = abs(rand()) % sizeof(val);
      char buf[80];
-     strncpy(buf, val, random);
+     STRLCPY(buf, val, random);
      buf[random] = '\0';
-     strcpy(C.wifi.SSID, buf);
+     STRCPY(C.wifi.SSID, buf);
      save_config_item(item);
-     strcpy (C.wifi.SSID, "------");
+     STRCPY (C.wifi.SSID, "------");
      read_config_item(item);
      char msg_buf[80];
      make_msg(msg_buf, count);
@@ -50,11 +50,11 @@ static bool save_restore_item(enum configItem item, int count) {
   {
      int random = abs(rand()) % sizeof(val);
      char buf[80];
-     strncpy(buf, val, random);
+     STRLCPY(buf, val, random);
      buf[random] = '\0';
-     strcpy(C.wifi.password, buf);
+     STRCPY(C.wifi.password, buf);
      save_config_item(item);
-     strcpy (C.wifi.password, "------");
+     STRCPY (C.wifi.password, "------");
      read_config_item(item);
      char msg_buf[80];
      make_msg(msg_buf, count);

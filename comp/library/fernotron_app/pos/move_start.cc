@@ -10,7 +10,7 @@
 #include "misc/int_macros.h"
 #include "misc/time/run_time.h"
 #include "app/uout/status_output.h"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
 

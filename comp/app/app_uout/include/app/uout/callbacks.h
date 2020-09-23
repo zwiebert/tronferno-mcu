@@ -23,5 +23,5 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags = {});
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT tgtFlags = {});
 
 void uoApp_publish_timer_json(const char *json, bool fragment = true);
-void uoApp_publish_pinChange(const so_arg_pch_t args);
+
 

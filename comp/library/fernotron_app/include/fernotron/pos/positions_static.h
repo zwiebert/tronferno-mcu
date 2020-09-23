@@ -23,7 +23,7 @@ int statPos_setPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct);
 int statPos_setPcts(GmBitMask *mm, uint8_t pct);
 int statPos_getPct(uint32_t a, uint8_t g, uint8_t m);
 
-int statPos_printAllPcts(void);
+int statPos_printAllPcts(const struct TargetDesc &td);
 
 bool statPos_pctsByGroup_store(uint8_t g, shutterGroupPositionsT positions);
 bool statPos_pctsByGroup_load(uint8_t g, const shutterGroupPositionsT positions);

@@ -38,21 +38,23 @@ static const char *const opts_kvd[] = {"mvut", "mvdt", "mvspdt"};
 #define OPTS_KVD_SIZE (sizeof opts_kvd / sizeof opts_kvd[0])
 #define OPTS_CLEAR_KEY() (*p[arg_idx].key = '\0')
 
-static void output_message_kvs(const char *tag, const char *val) {
-  char *key = strcat(strcpy((char*)alloca(strlen(tag) + sizeof PARM_OPT_TAG_PREFIX), PARM_OPT_TAG_PREFIX), tag);
+static void output_message_kvs(const struct TargetDesc &td, const char *tag, const char *val) {
+  size_t key_size = strlen(tag) + sizeof PARM_OPT_TAG_PREFIX;
+  char key[key_size];
+  csu_copy_cat(key, key_size - 1, PARM_OPT_TAG_PREFIX, tag);
   so_arg_kvs_t arg = { .key = key, .val = val };
-  soMsg_print_kvs(arg);
+  soMsg_print_kvs(td, arg);
 }
-static void output_message_kvd(const char *key, int val) {
+static void output_message_kvd(const struct TargetDesc &td, const char *key, int val) {
   so_arg_kvd_t arg = { .key = key, .val = val };
-  soMsg_print_kvd(arg);
+  soMsg_print_kvd(td, arg);
 }
 
 #define is_kt(k) (kt == otok:: k)
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
-int process_parmShpref(clpar p[], int len) {
+int process_parmShpref(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
   int err_ct = 0;
   u8 g = 0, m = 0;
@@ -71,19 +73,19 @@ int process_parmShpref(clpar p[], int len) {
 
     if (is_kt(g)) {
       if (!asc2u8(val, &g, FER_G_MAX))
-        return cli_replyFailure();
+        return cli_replyFailure(td);
       OPTS_CLEAR_KEY();
 
     } else if (is_kt(m)) {
       if (!asc2u8(val, &m, FER_M_MAX))
-        return cli_replyFailure();
+        return cli_replyFailure(td);
       OPTS_CLEAR_KEY();
     }
   }
 
-  so_object<void> shprefObj(soMsg_shpref_obj_begin,soMsg_shpref_obj_end);
+  so_object<void> shprefObj(soMsg_shpref_obj_begin,soMsg_shpref_obj_end, td);
   so_arg_gm_t shprefObjGmArgs = { .g = g, .m = m };
-  so_object shprefObjGm(soMsg_shpref_obj_gm_begin, shprefObjGmArgs,soMsg_shpref_obj_gm_end);
+  so_object shprefObjGm(soMsg_shpref_obj_gm_begin, shprefObjGmArgs,soMsg_shpref_obj_gm_end, td);
 
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
@@ -103,7 +105,7 @@ int process_parmShpref(clpar p[], int len) {
         st.sta[k] = atoi(val);
         haveStStore = true;
       }
-      output_message_kvd(key, st.sta[k]);
+      output_message_kvd(td, key, st.sta[k]);
       goto NEXT_ARG;
     }
 
@@ -111,7 +113,7 @@ int process_parmShpref(clpar p[], int len) {
       if (!is_val("?")) {
         goto NEXT_ARG_ERROR;
       }
-      ferSp_strByM_forEach("", g, m, output_message_kvs);
+      ferSp_strByM_forEach(td, "", g, m, output_message_kvs);
 
     } else if (strncmp(key, PARM_OPT_TAG_PREFIX, strlen(PARM_OPT_TAG_PREFIX)) == 0) {
       char *tag = p[arg_idx].key + strlen(PARM_OPT_TAG_PREFIX);
@@ -125,12 +127,12 @@ int process_parmShpref(clpar p[], int len) {
           goto NEXT_ARG_ERROR;
       }
       if (wildcard)
-        ferSp_strByM_forEach(tag, g, m, output_message_kvs);
+        ferSp_strByM_forEach(td, tag, g, m, output_message_kvs);
       else
-        ferSp_strByM_forOne(tag, g, m, output_message_kvs);
+        ferSp_strByM_forOne(td, tag, g, m, output_message_kvs);
 
     } else {
-      cli_replyFailure();
+      cli_replyFailure(td);
     }
     NEXT_ARG: continue;
     NEXT_ARG_ERROR: ++err_ct; continue;
@@ -142,7 +144,7 @@ int process_parmShpref(clpar p[], int len) {
   }
 
   if (err_ct)
-    return cli_replyFailure();
+    return cli_replyFailure(td);
 
   return 0;
 }

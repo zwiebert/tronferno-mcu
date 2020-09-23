@@ -19,7 +19,7 @@
 
 struct ftrx_counter {
   u16 Words;
-  u8 Ticks, Bits;
+  u16 Ticks, Bits;
 };
 
 #ifdef FER_TRANSMITTER
@@ -32,10 +32,7 @@ static fer_rawMsg *ftx_buf;
 
 void (*ftx_MSG_TRANSMITTED_ISR_cb)(void);
 
-static inline void ftx_msg_transmitted_isr_cb() {
-  if (ftx_MSG_TRANSMITTED_ISR_cb)
-    ftx_MSG_TRANSMITTED_ISR_cb();
-}
+
 
 void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type) {
   precond(!ftx_isTransmitterBusy());
@@ -48,6 +45,10 @@ void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type) {
 #define ct_incr(ct, limit) (!((++ct >= limit) ? (ct = 0) : 1))
 #define ct_incrementP(ctp, limit) ((++*ctp, *ctp %= limit) == 0)
 #define init_counter() (ftxCount.Ticks = ftxCount.Bits = ftxCount.Words = 0)
+
+
+#define advanceLeadIntCounter() (ct_incr(ftxCount.Ticks, FER_INIT_WIDTH_DCK))
+#define ftx_update_output_lead_in() (output_level = (ftxCount.Ticks < FER_INIT_NEDGE_DCK))
 
 #define advanceStopBitCounter() (ct_incr(ftxCount.Ticks, FER_STP_WIDTH_DCK))
 #define ftx_update_output_stop_bit() (output_level = (ftxCount.Ticks < FER_STP_NEDGE_DCK))
@@ -62,21 +63,25 @@ void ftx_transmitFerMsg(fer_rawMsg *msg, fmsg_type msg_type) {
 
 #define advanceLeadOutCounter() (ct_incr(ftxCount.Ticks, 18)) // XXX: add pause after done (usefulness?)
 
+static inline void IRAM_ATTR ftx_msg_transmitted_isr_cb() {
+  if (ftx_MSG_TRANSMITTED_ISR_cb)
+    ftx_MSG_TRANSMITTED_ISR_cb();
+}
 
 #if 0 // compiler bug
 // XXX: this crashes because somehow the switch() statement uses inaccessible memory (0x3f40_xxxx) for jumping to case labels
-// XXX: works fine with if/else (GCC bug? Needs bug report?)
+// XXX: workaround: GCC option -fno-jump-tables or using if/else
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 
 static bool IRAM_ATTR ftx_send_message() {
-  static enum {    state_preamble_stop_bit, state_preamble, state_data_stop_bit, state_data_word, state_lead_out,  } ftx_state;
+  static enum {    state_lead_in, state_preamble, state_data_stop_bit, state_data_word, state_lead_out,  } ftx_state;
   static u16 word_buffer;
 
   switch (ftx_state) {
-  case state_preamble_stop_bit:
-    ftx_update_output_stop_bit();
-    if (advanceStopBitCounter())
+  case state_lead_in:
+    ftx_update_output_lead_in();
+    if (advanceLeadIntCounter())
       ftx_state = state_preamble;
     break;
 
@@ -103,7 +108,7 @@ static bool IRAM_ATTR ftx_send_message() {
   case state_lead_out:
     output_level = 0;
     if (advanceLeadOutCounter()) {
-      ftx_state = state_preamble_stop_bit;
+      ftx_state = state_lead_in;
       return true;
     }
 
@@ -117,13 +122,13 @@ return false; // continue
 
 static bool IRAM_ATTR ftx_send_message() {
   static enum {
-    state_preamble_stop_bit, state_preamble, state_data_stop_bit, state_data_word, state_lead_out,
+    state_lead_in, state_preamble, state_data_stop_bit, state_data_word, state_lead_out,
   } ftx_state;
   static u16 word_buffer;
 
-  if (ftx_state == state_preamble_stop_bit) {
-    ftx_update_output_stop_bit();
-    if (advanceStopBitCounter())
+  if (ftx_state == state_lead_in) {
+    ftx_update_output_lead_in();
+    if (advanceLeadIntCounter())
       ftx_state = state_preamble;
 
   } else if (ftx_state == state_preamble) {
@@ -146,7 +151,7 @@ static bool IRAM_ATTR ftx_send_message() {
   } else if (ftx_state == state_lead_out) {
     output_level = 0;
     if (advanceLeadOutCounter()) {
-      ftx_state = state_preamble_stop_bit;
+      ftx_state = state_lead_in;
       return true;
     }
 

@@ -91,7 +91,7 @@ u32 loop_eventBits_wait();
 
 void  mcu_delayedRestart(unsigned delay_ms);
 
-extern "C" void main_setup_ip_dependent();
+extern "C++" void main_setup_ip_dependent();
 void mcu_init();
 
 

@@ -9,7 +9,7 @@
 #include "gpio/pin.h"
 
 #include "txtio/inout.h"
-#include "app/uout/status_output.h"
+#include "uout/callbacks.h"
 #include <misc/int_macros.h>
 #include "freertos/FreeRTOS.h"
 #include <esp_intr_alloc.h>
@@ -245,7 +245,7 @@ void pin_notify_input_change() {
       continue;
     bool level = gpio_get_level(static_cast<gpio_num_t>(i));
     so_arg_pch_t a { i, level };
-    soMsg_gpio_pin(a, true);
+    uoApp_publish_pinChange(a);
   }
 }
 

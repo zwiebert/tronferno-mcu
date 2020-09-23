@@ -26,21 +26,19 @@
 
 
 ////////////////// private ///////////////////////////////////////////////////////////////
-#define TD_KVS_NAMESPACE "auto_td"
-#define TD_PREFIX "td"
+const char TD_KVS_NAMESPACE[] = "auto_td";
 
-#define td_key_len(tag) (strlen(tag)+sizeof(TD_PREFIX)-1 + 2)
-
-static char* td_make_key(char *key, const char *tag, u8 g, u8 m) {
-  char gm[] = "00";
-  gm[0] += g;
-  gm[1] += m;
-  strcat(strcat(strcpy(key, TD_PREFIX), gm), tag);
-  return key;
-}
-#define td_get_tag(key) (key+ (sizeof(TD_PREFIX)-1 + 2))
-
-#define tag ""
+class TdKey {
+public:
+  constexpr TdKey(u8 g, u8 m) {
+    myKey[2] += g;
+    myKey[3] += m;
+  }
+  TdKey() = delete;
+  constexpr operator const char*() const { return myKey; }
+private:
+  char myKey[5] = "td00";
+};
 
 static int delete_shadowded_kv(u8 group, u8 memb) {
   int result = 0;
@@ -48,13 +46,12 @@ static int delete_shadowded_kv(u8 group, u8 memb) {
 
   kvshT handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE);
   if (handle) {
-    char key[td_key_len(tag) + 1];
     for (gm_iterator it; it; ++it) {
       const gT g = it.getG();
       const mT m = it.getM();
       if ((group == 0 || group == g) && (memb == 0 || (memb == m && C.fer_usedMemberMask.getBit(g, m)))) {
-        if (kvs_erase_key(handle, td_make_key(key, tag, group, memb))) {
-          DB2(printf("shadow deleted: g=%d, m=%d, key=%s\n", (int)g, (int)m, key));
+        if (kvs_erase_key(handle, TdKey(g, m))) {
+          DB2(printf("shadow deleted: g=%d, m=%d\n", (int)g, (int)m));
           ++result;
         }
       }
@@ -82,8 +79,7 @@ bool  save_timer_data_kvs(timer_data_t *p, u8 g, u8 m) {
 
   kvshT handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE);
   if (handle) {
-    char *key = td_make_key((char*)alloca(td_key_len(tag) + 1), tag, g, m);
-    success = kvs_rw_blob(handle, key, p, sizeof(*p), true);
+    success = kvs_rw_blob(handle, TdKey(g, m), p, sizeof(*p), true);
     kvs_commit(handle);
     kvs_close(handle);
   }
@@ -91,22 +87,22 @@ bool  save_timer_data_kvs(timer_data_t *p, u8 g, u8 m) {
 
 }
 
-bool  read_timer_data_kvs(timer_data_t *p, u8 *g, u8 *m, bool wildcard) {
+bool  read_timer_data_kvs(timer_data_t *p, u8 *gp, u8 *mp, bool wildcard) {
   bool success = false;
-  precond(p && g && m && *g <= 7 && *m <= 7);
+  precond(p && gp && mp && *gp <= 7 && *mp <= 7);
+
 
   kvshT handle = kvs_open(TD_KVS_NAMESPACE, kvs_READ);
   if (handle) {
-    char *key = td_make_key((char*)alloca(td_key_len(tag) + 1), tag, *g, *m);
-    success = kvs_rw_blob(handle, key, p, sizeof(*p), false);
+    success = kvs_rw_blob(handle,  TdKey(*gp, *mp), p, sizeof(*p), false);
 
     if (!success && wildcard) {
-      if ((success = kvs_rw_blob(handle, td_make_key(key, tag, *g, 0), p, sizeof(*p), false))) {
-        *m = 0;
-      } else if ((success = kvs_rw_blob(handle, td_make_key(key, tag, 0, *m), p, sizeof(*p), false))) {
-        *g = 0;
-      }  else if ((success = kvs_rw_blob(handle, td_make_key(key, tag, 0, *m), p, sizeof(*p), false))) {
-        *m = *g = 0;
+      if ((success = kvs_rw_blob(handle, TdKey(*gp, 0), p, sizeof(*p), false))) {
+        *mp = 0;
+      } else if ((success = kvs_rw_blob(handle, TdKey(0, *mp), p, sizeof(*p), false))) {
+        *gp = 0;
+      }  else if ((success = kvs_rw_blob(handle, TdKey(0, 0), p, sizeof(*p), false))) {
+        *mp = *gp = 0;
       }
     }
     kvs_close(handle);
@@ -129,11 +125,10 @@ int timer_data_transition_fs_to_kvs() {
     timer_data_t td;
     if (read_timer_data_fs(&td, &g, &m, false)) {
       if (handle || (handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE))) {
-        char *key = td_make_key((char*) alloca(td_key_len(tag) + 1), tag, g, m);
-        if (!kvs_rw_blob(handle, key, &td, sizeof(td), true)) {
+        if (!kvs_rw_blob(handle,  TdKey(g, m), &td, sizeof(td), true)) {
           error = true;
           continue;
-        }DB2(printf("copied timer data from fs to kvs: g=%d, m=%d, key=%s\n", (int)g, (int)m, key));
+        }DB2(printf("copied timer data from fs to kvs: g=%d, m=%d\n", (int)g, (int)m));
         ++result;
       } else {
         postcond(!"kvs");

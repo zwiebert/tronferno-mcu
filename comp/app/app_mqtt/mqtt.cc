@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include "cli/cli.h"
 #include "cli/mutex.hh"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "app/uout/status_output.h"
 #include <app/uout/callbacks.h>
 
@@ -46,15 +46,15 @@ static char *io_mqtt_topic_root;
 #define TOPIC_PCT_OUT_END "pct_out"
 #define TOPIC_GPO_OUT_END "gpo_out"
 
-void io_mqtt_publish_topic_end(const char *topic_end, const char *json) {
+static void io_mqtt_publish_topic_end(const char *topic_end, const char *json) {
   char topic[64];
   snprintf(topic, sizeof topic, "%s%s", TOPIC_ROOT, topic_end);
 
   io_mqtt_publish(topic, json);
 }
 
-void io_mqtt_publish_topic_end_get_json(const char *topic_end) {
-  char *json = sj_get_json();
+static void io_mqtt_publish_topic_end_get_json(const TargetDesc &td, const char *topic_end) {
+  char *json = td.sj().get_json();
   if (!json && !*json)
     return;
   io_mqtt_publish_topic_end(topic_end, json);
@@ -117,7 +117,7 @@ static void io_mqtt_disconnected () {
 }
 
 static void io_mqtt_received(const char *topic, int topic_len, const char *data, int data_len) {
-
+  TargetDesc td { SO_TGT_MQTT };
   if (!topic_startsWith(topic, topic_len, TOPIC_ROOT)) {
     return; // all topics start with this
   }
@@ -136,7 +136,7 @@ static void io_mqtt_received(const char *topic, int topic_len, const char *data,
 
       sprintf(line, "mcu gpio%.*s=%.*s", addr_len, addr, data_len, data);
 
-      cli_process_cmdline(line, SO_TGT_MQTT);
+      cli_process_cmdline(line, td);
 
     } else if (topic_endsWith(topic, topic_len, TOPIC_PCT_END)) {
       const char *addr = topic + strlen(TOPIC_ROOT);
@@ -152,7 +152,7 @@ static void io_mqtt_received(const char *topic, int topic_len, const char *data,
        return;
         // wrong topic format in wildcard
       }
-      cli_process_cmdline(line, SO_TGT_MQTT);
+      cli_process_cmdline(line, td);
 
     } else if (topic_endsWith(topic, topic_len, TOPIC_CMD_END)) {
       const char *addr = topic + strlen(TOPIC_ROOT);
@@ -168,7 +168,7 @@ static void io_mqtt_received(const char *topic, int topic_len, const char *data,
         return;
         // wrong topic format in wildcard
       }
-      cli_process_cmdline(line, SO_TGT_MQTT);
+      cli_process_cmdline(line, td);
 
     } else if (topic_endsWith(topic, topic_len, TOPIC_CLI_END)) {
       if (data_len > TAG_CLI_LEN && strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
@@ -177,8 +177,8 @@ static void io_mqtt_received(const char *topic, int topic_len, const char *data,
       }
       memcpy(line, data, data_len);
       line[data_len] = '\0';
-      cli_process_cmdline(line, SO_TGT_MQTT);
-      io_mqtt_publish_topic_end_get_json(TOPIC_CLI_OUT_END);
+      cli_process_cmdline(line, td);
+      io_mqtt_publish_topic_end_get_json(td, TOPIC_CLI_OUT_END);
 
     }
   }
@@ -188,7 +188,7 @@ void io_mqttApp_setup(const char *topic_root) {
   if (topic_root && *topic_root && (!io_mqtt_topic_root || 0 != strcmp(io_mqtt_topic_root, topic_root))) {
     char *tr = (char*)malloc(strlen(topic_root)+1);
     if (tr) {
-      strcpy (tr, topic_root);
+      STRCPY (tr, topic_root);
       free(io_mqtt_topic_root);
       io_mqtt_topic_root = tr;
     }

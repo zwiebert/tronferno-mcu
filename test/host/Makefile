@@ -17,12 +17,12 @@ vecho := @echo
 endif
 
 make := make --no-print-dir -s
-grep_results := ! grep -H -e IGNORE -e FAIL -e Aborted
+grep_results := ! grep -H -e IGNORE -e FAIL -e Aborted -e failed
 
 THIS_ROOT := $(realpath .)
 SRC_BASE :=$(THIS_ROOT)/../..
 BUILD_BASE ?= $(THIS_ROOT)/build
-BUILD_PATH=$(BUILD_BASE)/test_host
+BUILD_PATH=$(BUILD_BASE)/test.host
 BUILD_OBJ_PATH=$(BUILD_PATH)/obj
 BUILD_OBJ_LIB=$(BUILD_PATH)/obj.a
 #LOG_BASE = $(realpath $(BUILD_PATH)/logs)
@@ -53,7 +53,7 @@ CXX_SRC := $(shell find $(COMP_PATHS) '(' -name '*.cc' -or -name '*.cpp' ')' \
                    -or -wholename '*/node_modules/*' ')' )
 C_SRC := $(shell find $(COMP_PATHS) -name '*.c' \
                    -and -not '(' -wholename '*/esp8266/*' -or  -wholename '*/esp32/*' -or -wholename '*/nanopb/*' \
-                   -or -wholename '*/jsmn/*' -or -wholename '*/node_modules/*' -or -wholename '*/esp8266/spiffs/*' ')')
+                   -or -wholename '*/jsmnXXX/*' -or -wholename '*/node_modules/*' -or -wholename '*/esp8266/spiffs/*' ')')
 TEST_SRC := $(shell find $(COMP_PATHS) -maxdepth 2 -and '(' -name '*.c' -or -name '*.cc' -or -name '*.cpp' ')' -and -wholename '*/test/test_*')
                    
 C_OBJ         := $(addsuffix .o,$(subst $(SRC_BASE)/,$(BUILD_OBJ_PATH)/,$(C_SRC))) $(TEST_RUNNER_C_OBJ)
@@ -154,6 +154,8 @@ print_c_src:
 	$(info $(C_SRC))
 print_c_obj:
 	$(info $(C_OBJ))
+print_valid_obj:
+	$(info $(VALID_OBJ))
 print_comp_names:
 	$(info $(COMP_NAMES))
 print_comp_paths:

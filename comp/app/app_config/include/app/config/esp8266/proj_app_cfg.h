@@ -57,8 +57,8 @@ extern const char *const build_time;
 #define snprintf ets_snprintf
 #define sprintf ets_sprintf
 #ifdef __cplusplus
-extern "C" void  user_pre_init(void);
-extern "C" void  user_init(void);
+extern "C++" void  user_pre_init(void);
+extern "C++" void  user_init(void);
 #endif
 
 #define NO_CXX_MOVE

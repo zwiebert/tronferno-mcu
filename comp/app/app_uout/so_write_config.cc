@@ -15,7 +15,7 @@
 #include "app/settings/config.h"
 #include "net/ipnet.h"
 #include "txtio/inout.h"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "app/uout/status_output.h"
 
 #include <app/uout/so_config.h>
@@ -25,98 +25,99 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 
 #define D(x)
 
-bool so_output_message2(so_msg_t mt, const void *arg);
+bool so_output_message2(const struct TargetDesc &td, so_msg_t mt, const void *arg);
 
-void soCfg_BAUD() {
+void soCfg_BAUD(const struct TargetDesc &td) {
 #ifndef MCU_ESP32
-    so_out_x_reply_entry_l(SO_CFG_BAUD, config_read_baud());
+  td.so().print(gk(SO_CFG_BAUD), config_read_baud());
 #endif
 }
 
-void soCfg_RTC() {
+void soCfg_RTC(const struct TargetDesc &td) {
   char buf[64];
   if (rtc_get_by_string(buf)) {
-    so_out_x_reply_entry_s(SO_CFG_RTC, buf);
+    td.so().print(gk(SO_CFG_RTC), buf);
   }
 }
 
-void soCfg_CU() {
-  so_out_x_reply_entry_lx(SO_CFG_CU, cfg_getCuId());
+void soCfg_CU(const struct TargetDesc &td) {
+  td.so().print(gk(SO_CFG_CU), cfg_getCuId(), 16);
 }
 
-void soCfg_NETWORK() {
+void soCfg_NETWORK(const struct TargetDesc &td) {
 #ifdef USE_NETWORK
-  so_out_x_reply_entry_s(SO_CFG_NETWORK, cfg_args_network[config_read_network_connection()]);
+  td.so().print(gk(SO_CFG_NETWORK),cfg_args_network[config_read_network_connection()]);
 #endif
 }
 
-void soCfg_TZ() {
+void soCfg_TZ(const struct TargetDesc &td) {
 #ifdef POSIX_TIME
   char buf[64];
-  so_out_x_reply_entry_s(SO_CFG_TZ, config_read_tz(buf, sizeof buf));
+  td.so().print(gk(SO_CFG_TZ),config_read_tz(buf, sizeof buf));
 #endif
 }
 
-void soCfg_LONGITUDE() {
-  so_out_x_reply_entry_f(SO_CFG_LONGITUDE, config_read_longitude(), 5);
+void soCfg_LONGITUDE(const struct TargetDesc &td) {
+  td.so().print(gk(SO_CFG_LONGITUDE), config_read_longitude(), 5);
 }
 
-void soCfg_LATITUDE() {
-  so_out_x_reply_entry_f(SO_CFG_LATITUDE, config_read_latitude(), 5);
+void soCfg_LATITUDE(const struct TargetDesc &td) {
+  td.so().print(gk(SO_CFG_LATITUDE), config_read_latitude(), 5);
 }
 
-void soCfg_TIMEZONE() {
+void soCfg_TIMEZONE(const struct TargetDesc &td) {
 #ifndef POSIX_TIME
-    so_out_x_reply_entry_f(SO_CFG_TIMEZONE, config_read_timezone(), 5);
+  td.so().print(gk(SO_CFG_TIMEZONE), config_read_timezone(), 5);
 #endif
 }
 
-void soCfg_DST() {
+void soCfg_DST(const struct TargetDesc &td) {
 #ifdef MDR_TIME
   {
     enum dst geo_dst = config_read_dst();
     const char *dst = (geo_dst == dstEU ? "eu" : (geo_dst == dstNone ? "0" : "1"));
-    so_out_x_reply_entry_s(SO_CFG_DST, dst);
+    td.so().print(gk(SO_CFG_DST), dst);
   }
 #endif
 }
 
-void soCfg_GM_USED() {
-  so_out_x_reply_entry_lx(SO_CFG_GM_USED, config_read_used_members());
+void soCfg_GM_USED(const struct TargetDesc &td) {
+  td.so().print(gk(SO_CFG_GM_USED),config_read_used_members(), 16);
 }
 
-void soCfg_GPIO_RFOUT() {
-  so_out_x_reply_entry_d(SO_CFG_GPIO_RFOUT, config_read_rfout_gpio());
+void soCfg_GPIO_RFOUT(const struct TargetDesc &td) {
+  td.so().print(gk(SO_CFG_GPIO_RFOUT),config_read_rfout_gpio());
 }
 
-void soCfg_GPIO_RFIN() {
-  so_out_x_reply_entry_d(SO_CFG_GPIO_RFIN, config_read_rfin_gpio());
+void soCfg_GPIO_RFIN(const struct TargetDesc &td) {
+  td.so().print(gk(SO_CFG_GPIO_RFIN),config_read_rfin_gpio());
 }
 
-void soCfg_GPIO_SETBUTTON() {
-  so_out_x_reply_entry_d(SO_CFG_GPIO_SETBUTTON, config_read_setbutton_gpio());
+void soCfg_GPIO_SETBUTTON(const struct TargetDesc &td) {
+  td.so().print(gk(SO_CFG_GPIO_SETBUTTON),config_read_setbutton_gpio());
 }
 
-void soCfg_GPIO_PIN(const int gpio_number) {
+void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
 #ifdef ACCESS_GPIO
   {
     char buf[64];
     char key[10] = "gpio";
-    strcpy(key + 4, itoa(gpio_number, buf, 10));
+    STRCPY(key + 4, itoa(gpio_number, buf, 10));
     char ps[2] = "x";
     if (is_gpio_number_usable(gpio_number, true)) {
       enum mcu_pin_mode mps = pin_getPinMode(gpio_number);
       ps[0] = pin_state_args[mps];
     }
-    so_out_x_reply_entry_ss(key, ps);
+    td.so().print(key, ps);
   }
 #endif
 }
 
-void soCfg_GPIO_MODES() {
+void soCfg_GPIO_MODES(const struct TargetDesc &td) {
 #ifdef ACCESS_GPIO
   {
     char buf[64];
@@ -124,7 +125,7 @@ void soCfg_GPIO_MODES() {
     char key[10] = "gpio";
     char pin_level_args[] = "mhl";
     for (gpio_number = 0; gpio_number < CONFIG_GPIO_SIZE; ++gpio_number) {
-      strcpy(key + 4, itoa(gpio_number, buf, 10));
+      STRCPY(key + 4, itoa(gpio_number, buf, 10));
       char ps[3] = "x";
       if (is_gpio_number_usable(gpio_number, true)) {
         enum mcu_pin_mode mps = pin_getPinMode(gpio_number);
@@ -132,7 +133,7 @@ void soCfg_GPIO_MODES() {
           enum mcu_pin_level mpl = pin_getPinLevel(gpio_number);
           ps[0] = pin_mode_args[mps];
           ps[1] = pin_level_args[3 - mpl];
-          so_out_x_reply_entry_ss(key, ps);
+          td.so().print(key, ps);
         }
       }
 
@@ -141,7 +142,7 @@ void soCfg_GPIO_MODES() {
 #endif
 }
 
-void soCfg_GPIO_MODES_AS_STRING() {
+void soCfg_GPIO_MODES_AS_STRING(const struct TargetDesc &td) {
 #ifdef ACCESS_GPIO
   {
     int gpio_number;
@@ -155,26 +156,26 @@ void soCfg_GPIO_MODES_AS_STRING() {
         val[gpio_number] = 'x';
       }
     }
-    so_out_x_reply_entry_ss("gpio", val);
+    td.so().print("gpio", val);
   }
 #endif
 }
 
-void soCfg_ASTRO_CORRECTION() {
-  so_out_x_reply_entry_l(SO_CFG_ASTRO_CORRECTION, config_read_astro_correction());
+void soCfg_ASTRO_CORRECTION(const struct TargetDesc &td) {
+  td.so().print(gk(SO_CFG_ASTRO_CORRECTION),config_read_astro_correction());
 }
 
-void soCfg_begin() {
-  so_out_x_open("config");
+void soCfg_begin(const struct TargetDesc &td) {
+  td.so().x_open("config");
 }
 
-void soCfg_end() {
-  so_out_x_close();
+void soCfg_end(const struct TargetDesc &td) {
+  td.so().x_close();
 }
 
-void so_output_message(so_msg_t mt, const void *arg) {
+void so_output_message(const struct TargetDesc &td, so_msg_t mt, const void *arg) {
 
-  if (so_output_message2(mt, arg))
+  if (so_output_message2(td, mt, arg))
     return;
 
   switch (mt) {
@@ -182,71 +183,74 @@ void so_output_message(so_msg_t mt, const void *arg) {
   /////////////////////////////////////////////////////////////////////////////////
   case SO_CFG_all: {
     for (int i = SO_CFG_begin + 1; i < SO_CFG_end; ++i) {
-      so_output_message(static_cast<so_msg_t>(i), NULL);
+      so_output_message(td, static_cast<so_msg_t>(i), NULL);
     }
   }
     break;
   case SO_CFG_begin:
-    soCfg_begin();
+    soCfg_begin(td);
     break;
   case SO_CFG_CU:
-    soCfg_CU();
+    soCfg_CU(td);
     break;
   case SO_CFG_BAUD:
-    soCfg_BAUD();
+    soCfg_BAUD(td);
     break;
   case SO_CFG_RTC:
-    soCfg_RTC();
+    soCfg_RTC(td);
     break;
   case SO_CFG_NETWORK:
-    soCfg_NETWORK();
+    soCfg_NETWORK(td);
     break;
   case SO_CFG_TZ:
-    soCfg_TZ();
+    soCfg_TZ(td);
     break;
   case SO_CFG_LONGITUDE:
-    soCfg_LONGITUDE();
+    soCfg_LONGITUDE(td);
     break;
   case SO_CFG_LATITUDE:
-    soCfg_LATITUDE();
+    soCfg_LATITUDE(td);
     break;
   case SO_CFG_TIMEZONE:
-    soCfg_TIMEZONE();
+    soCfg_TIMEZONE(td);
     break;
   case SO_CFG_DST:
-    soCfg_DST();
+    soCfg_DST(td);
     break;
   case SO_CFG_GM_USED:
-    soCfg_GM_USED();
+    soCfg_GM_USED(td);
     break;
   case SO_CFG_GPIO_RFOUT:
-    soCfg_GPIO_RFOUT();
+    soCfg_GPIO_RFOUT(td);
     break;
   case SO_CFG_GPIO_RFIN:
-    soCfg_GPIO_RFIN();
+    soCfg_GPIO_RFIN(td);
     break;
   case SO_CFG_GPIO_SETBUTTON:
-    soCfg_GPIO_SETBUTTON();
+    soCfg_GPIO_SETBUTTON(td);
     break;
   case SO_CFG_GPIO_PIN:
-    soCfg_GPIO_PIN(*(int*) arg);
+    soCfg_GPIO_PIN(td, *(int*) arg);
     break;
   case SO_CFG_GPIO_MODES:
-    soCfg_GPIO_MODES();
+    soCfg_GPIO_MODES(td);
     break;
   case SO_CFG_GPIO_MODES_AS_STRING:
-    soCfg_GPIO_MODES_AS_STRING();
+    soCfg_GPIO_MODES_AS_STRING(td);
     break;
   case SO_CFG_ASTRO_CORRECTION:
-    soCfg_ASTRO_CORRECTION();
+    soCfg_ASTRO_CORRECTION(td);
     break;
   case SO_CFG_end:
-    soCfg_end();
+    soCfg_end(td);
     break;
 
   default:
 #ifndef DISTRIBUTION
-    io_puts("internal_error:so_output_message() unhandled message: "), io_putd(mt), io_putlf();
+    char buf[64];
+    if (int n = snprintf(buf, sizeof buf, "internal_error:so_output_message() unhandled message: %d;\n", mt); n > 0 && n < sizeof buf) {
+      td.write(buf, n);
+    }
 #endif
     break;
   }

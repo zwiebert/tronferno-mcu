@@ -4,7 +4,7 @@
 #include <txtio/txtio_mutex.hh>
 #include <app/uout/so_msg.h>
 #include <app/uout/so_types.h>
-#include <uout/status_json.h>
+#include <uout/status_json.hh>
 #include <stdio.h>
 #include <string.h>
 #include <debug/dbg.h>
@@ -28,72 +28,48 @@ static void publish_fragJson(uoCb_cbT cb, const char *json, uo_flagsT flags) {
   publish(cb, buf, flags);
 }
 
-void uoApp_publish_pinChange(const so_arg_pch_t args) {
-  for (auto const &it : uoCb_cbs) {
-    if (!it.cb)
-      continue;
-    if (!it.flags.evt.pin_change)
-      continue;
 
-    if (it.flags.fmt.obj) {
-      uo_flagsT flags;
-      flags.fmt.obj = true;
-      flags.evt.pin_change = true;
-
-      publish(it.cb, &args, flags);
-    }
-
-    if (it.flags.fmt.json) {
-      uo_flagsT flags;
-      flags.fmt.json = true;
-      flags.evt.pin_change = true;
-
-      char buf[64];
-      snprintf(buf, sizeof buf, "{\"mcu\":{\"gpio%d\":%d}}", args.gpio_num, args.level);
-      publish(it.cb, buf, flags);
-    }
-
-  }
-}
 
 
 static void publish_pctChange_gmp_asJson(uoCb_cbT cb, const so_arg_gmp_t a) {
-  LockGuard lock(cli_mutex);
+  char sj_buf[128];
+  StatusJsonT sj = { sj_buf, sizeof sj_buf };
 
-  if (sj_open_root_object("tfmcu")) {
-    sj_add_object("pct");
+  if (sj.open_root_object("tfmcu")) {
+    sj.add_object("pct");
     char buf[] = "00";
     buf[0] += a.g;
     buf[1] += a.m;
-    sj_add_key_value_pair_d(buf, a.p);
-    sj_close_object();
-    sj_close_root_object();
+    sj.add_key_value_pair_d(buf, a.p);
+    sj.close_object();
+    sj.close_root_object();
 
     uo_flagsT flags;
     flags.fmt.json = true;
     flags.evt.pct_change = true;
-    publish(cb, sj_get_json(), flags);
+    publish(cb, sj.get_json(), flags);
   }
 }
 
 void publish_pctChange_gmp_asJson(uoCb_cbT cb, const so_arg_gmp_t *a, size_t len) {
-  LockGuard lock(cli_mutex);
+  char sj_buf[128];
+  StatusJsonT sj = { sj_buf, sizeof sj_buf };
 
-  if (sj_open_root_object("tfmcu")) {
-    int start = sj_add_object("pct");
+  if (sj.open_root_object("tfmcu")) {
+    sj.add_object("pct");
     for (int i = 0; a[i].g <= 7; ++i) {
       char buf[] = "00";
       buf[0] += a[i].g;
       buf[1] += a[i].m;
-      sj_add_key_value_pair_d(buf, a[i].p);
+      sj.add_key_value_pair_d(buf, a[i].p);
     }
-    sj_close_object();
-    sj_close_root_object();
+    sj.close_object();
+    sj.close_root_object();
 
     uo_flagsT flags;
     flags.fmt.json = true;
     flags.evt.pct_change = true;
-    publish(cb, sj_get_json(), flags);
+    publish(cb, sj.get_json(), flags);
   }
 }
 

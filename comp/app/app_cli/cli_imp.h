@@ -6,7 +6,7 @@
 
 
 
-#define NODEFAULT() if (val==0) return cli_replyFailure()
+#define NODEFAULT() if (val==0) return cli_replyFailure(td)
 
 
 

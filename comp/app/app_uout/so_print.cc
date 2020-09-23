@@ -12,7 +12,7 @@
 #include <fernotron/types.h>
 #include "net/ipnet.h"
 #include "txtio/inout.h"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "uout/cli_out.h"
 #include "app/uout/status_output.h"
 #include <app/uout/callbacks.h>
@@ -75,13 +75,4 @@ void so_gmbitmask_to_str(char *dst, GmBitMask *mm) {
     *dst++ = '0';
     *dst++ = '0';
   }
-}
-
-void so_print_startup_info(void) {
-  static const char msg_starting[] = "\n\n" "tf: info: start: tronferno-mcu\n" "tf: info: build-date: " __DATE__ " " __TIME__ "\n";
-  static const char msg_hint[] = "tf: hint: type 'help;' to get a command list\n";
-
-  io_puts(msg_starting);
-  io_puts(msg_hint);
-
 }

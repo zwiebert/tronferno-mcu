@@ -11,11 +11,14 @@
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "app/cli/cli_app.h"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "fernotron/fsb.h"
 #include "cli/cli.h"
 #include "app/uout/status_output.h"
 #include "app/settings/config.h"
+
+#include <algorithm>
+#include <iterator>
 
 #define CI(cb) static_cast<configItem>(cb)
 
@@ -26,11 +29,16 @@ struct c_map {
   fer_cmd fc;
 };
 
-struct c_map const fc_map[] = { { "down", fer_cmd_DOWN }, { "up", fer_cmd_UP },
-                                { "stop", fer_cmd_STOP }, { "sun-down", fer_cmd_SunDOWN },
-                                { "sun-up", fer_cmd_SunUP }, { "sun-inst", fer_cmd_SunINST },
-                                //		{"sun-test", fer_cmd_Program},
-                                { "set", fer_cmd_SET }, };
+struct c_map const fc_map[] = { //
+    { "down", fer_cmd_DOWN }, //
+    { "up", fer_cmd_UP }, //
+    { "stop", fer_cmd_STOP }, //
+    { "sun-down", fer_cmd_SunDOWN }, //
+    { "sun-up", fer_cmd_SunUP }, //
+    { "sun-inst", fer_cmd_SunINST }, //
+    //{"sun-test", fer_cmd_Program},//
+    { "set", fer_cmd_SET },  //
+    };
 
 bool 
 cli_parm_to_ferCMD(const char *token, fer_cmd *cmd) {
@@ -114,30 +122,39 @@ int process_parmHelp(clpar p[], int len);
 const char cli_help_parmHelp[]  =
 "type 'help command;'  or 'help all;'\ncommands are: ";
 
-
-static struct parm_handler handlers[] = {
-                      { "send", process_parmSend, cli_help_parmSend },
-                      { "cmd", process_parmSend, cli_help_parmSend }, // alias
-                      { "config", process_parmConfig, cli_help_parmConfig },
-                      { "mcu", process_parmMcu, cli_help_parmMcu },
-                      { "timer", process_parmTimer, cli_help_parmTimer },
-                      { "auto", process_parmTimer, cli_help_parmTimer }, // alias
-                      { "help", process_parmHelp, cli_help_parmHelp },
+static struct parm_handler const handlers[] = { //
+        { "cmd", process_parmSend, cli_help_parmSend },
+        { "config", process_parmConfig, cli_help_parmConfig }, //
+        { "mcu", process_parmMcu, cli_help_parmMcu }, //
+        { "auto", process_parmTimer, cli_help_parmTimer },
+        { "help", process_parmHelp, cli_help_parmHelp }, //
 #ifdef USE_PAIRINGS
-                      { "pair", process_parmPair, cli_help_parmPair},
+        { "pair", process_parmPair, cli_help_parmPair},//
 #endif
-                      { "shpref", process_parmShpref, cli_help_parmShpref},
-  };
+        { "shpref", process_parmShpref, cli_help_parmShpref }, //
+    };
 
-const struct parm_handlers parm_handlers = {
-    .handlers = handlers,
-    .count = sizeof(handlers) / sizeof(handlers[0]),
-};
+static const struct parm_handlers our_parm_handlers = { .handlers = handlers, .count = sizeof(handlers) / sizeof(handlers[0]), };
 
+const parm_handler* cli_parmHandler_find(const char *key) {
+  auto handler = std::find_if(std::begin(handlers), std::end(handlers), [&key](auto el) {
+    return strcmp(key, el.parm) == 0;
+  });
+  if (std::end(handlers) == handler) {
+    if (strcmp("timer", key) == 0)  // alias
+      return cli_parmHandler_find("auto");
+    if (strcmp("send", key) == 0)  // alias
+      return cli_parmHandler_find("cmd");
+
+    return nullptr;
+  }
+
+  return handler;
+}
 
 /////////////// setup //////////////////
 
-static bool cliApp_checkPassword(clpar p[], int len, so_target_bits tgt) {
+static bool cliApp_checkPassword(clpar p[], int len, const struct TargetDesc &td) {
   if (len < 2)
     return true;
 
@@ -148,13 +165,13 @@ static bool cliApp_checkPassword(clpar p[], int len, so_target_bits tgt) {
     return true;
   if (strcmp(p[1].key, "pw") == 0) {
     if (strcmp(p[1].val, C.app_configPassword) == 0) {
-      soMsg_cfgpasswd_ok();
+      soMsg_cfgpasswd_ok(td);
       return true;
     } else {
-      soMsg_cfgpasswd_wrong();
+      soMsg_cfgpasswd_wrong(td);
     }
   } else {
-    soMsg_cfgpasswd_missing();
+    soMsg_cfgpasswd_missing(td);
   }
 
   return false;
@@ -163,6 +180,8 @@ static bool cliApp_checkPassword(clpar p[], int len, so_target_bits tgt) {
 
 void cliApp_setup() {
   cli_hook_checkPassword = cliApp_checkPassword;
+  cli_parmHandler_find_cb = cli_parmHandler_find;
+  cli_parm_handlers = &our_parm_handlers;
 }
 
 

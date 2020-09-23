@@ -7,7 +7,7 @@
 #include "app/uout/status_output.h"
 #include "app/uout/so_msg.h"
 #include "app/uout/callbacks.h"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "app/config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
 #include "app/rtc.h"
@@ -23,7 +23,7 @@
 #include <stdlib.h>
 
 
-static void print_timer(u8 g, u8 m, bool wildcard); //XXX
+static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard); //XXX
 
 enum {
   TIMER_KEY_WEEKLY, TIMER_KEY_DAILY, TIMER_KEY_ASTRO, TIMER_KEY_RTC_ONLY, TIMER_KEY_FLAG_RANDOM, TIMER_KEY_FLAG_SUN_AUTO
@@ -58,7 +58,7 @@ const char cli_help_parmTimer[] = "daily=T        set daily timer\n"
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
-int process_parmTimer(clpar p[], int len) {
+int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   int i;
   bool f_disableWeekly = false, f_disableDaily = false, f_disableAstro = false, f_disableManu = false;
   bool f_enableManu = false;
@@ -87,10 +87,10 @@ int process_parmTimer(clpar p[], int len) {
 
     if (is_key(timer_keys[TIMER_KEY_WEEKLY])) {
       NODEFAULT();
-      strncpy(tda.weekly, val, sizeof(tda.weekly) - 1);
+      STRLCPY(tda.weekly, val, sizeof(tda.weekly) - 1);
     } else if (is_key(timer_keys[TIMER_KEY_DAILY])) {
       NODEFAULT();
-      strncpy(tda.daily, val, sizeof(tda.daily) - 1);
+      STRLCPY(tda.daily, val, sizeof(tda.daily) - 1);
     } else if (is_key(timer_keys[TIMER_KEY_ASTRO])) {
       tda.astro = val ? atoi(val) : 0;
     } else if (is_key(timer_keys[TIMER_KEY_FLAG_RANDOM])) {
@@ -113,10 +113,10 @@ int process_parmTimer(clpar p[], int len) {
       if (tmp) addr = tmp;
     } else if (is_kt(g)) {
       if (!asc2group(val, &group))
-      return cli_replyFailure();
+      return cli_replyFailure(td);
     } else if (is_kt(m)) {
       if (!asc2memb(val, &memb))
-      return cli_replyFailure();
+      return cli_replyFailure(td);
 
       mn = memb ? (memb - 7) : 0;
     } else if (is_kt(rtc)) {
@@ -152,10 +152,10 @@ int process_parmTimer(clpar p[], int len) {
         }
       } else {
         if (is_kt(rs)) {
-          cli_replyFailure();
+          cli_replyFailure(td);
           return -1;
         }
-        cli_warning_optionUnknown(key);
+        cli_warning_optionUnknown(td, key);
       }
     }
 
@@ -214,31 +214,31 @@ int process_parmTimer(clpar p[], int len) {
 
   if (!f_no_send) {
     if (flag_rtc_only == FLAG_TRUE) {
-      cli_replyResult(send_rtc_message(fsb, timer));
+      cli_replyResult(td, send_rtc_message(fsb, timer));
     } else if (f_manual) {
-      cli_replyResult(send_empty_timer_message(fsb, timer));
+      cli_replyResult(td, send_empty_timer_message(fsb, timer));
     } else {
-      cli_replyResult(send_timer_message(fsb, timer, &tda));
+      cli_replyResult(td, send_timer_message(fsb, timer, &tda));
     }
   }
 
   // save timer data
   if (need_save_td) {
     if (save_timer_data(&tda, group, mn)) {
-      reply_message("rs", "saved");
+      reply_message(td, "rs", "saved");
     } else {
-      reply_message("bug", "rs not saved");
-      print_enr();
+      reply_message(td, "bug", "rs not saved");
+      print_enr(td);
     }
   }
 
   if (rs) {
-    if (int start = soMsg_timer_print_begin(); start >= 0) {
-      print_timer(group, mn, true);
-      soMsg_timer_print_end();
+    if (int start = soMsg_timer_print_begin(td); start >= 0) {
+      print_timer(td, group, mn, true);
+      soMsg_timer_print_end(td);
 
       if (need_save_td) {
-        const char *json = sj_get_json() + start;
+        const char *json = td.sj().get_json() + start;
         uoApp_publish_timer_json(json);
       }
     }
@@ -248,13 +248,13 @@ int process_parmTimer(clpar p[], int len) {
 }
 
 
-static void print_timer(u8 g, u8 m, bool wildcard) {
+static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard) {
   timer_data_t tdr;
 
   u8 g_res = g, m_res = m;
 
   if (read_timer_data(&tdr, &g_res, &m_res, wildcard)) {
-    soMsg_timer_begin(so_arg_gm_t { g, m });
+    soMsg_timer_begin(td, so_arg_gm_t { g, m });
 
     {
       bool f_manual = manual_bits.getBit(g, m);
@@ -266,26 +266,26 @@ static void print_timer(u8 g, u8 m, bool wildcard) {
       *p++ = td_is_daily(&tdr) ? 'D' : 'd';
       *p++ = td_is_weekly(&tdr) ? 'W' : 'w';
       *p++ = '\0';
-      soMsg_kv("f", flags);
+      soMsg_kv(td, "f", flags);
     }
 
     if (td_is_daily(&tdr)) {
-      soMsg_kv("daily", tdr.daily);
+      soMsg_kv(td, "daily", tdr.daily);
     }
 
     if (td_is_weekly(&tdr)) {
-      soMsg_kv("weekly", tdr.weekly);
+      soMsg_kv(td, "weekly", tdr.weekly);
     }
 
     if (td_is_astro(&tdr)) {
-      soMsg_kv("astro", tdr.astro);
+      soMsg_kv(td, "astro", tdr.astro);
 
       timer_minutes_t tmi;
       fau_get_timer_minutes_now(&tmi, &g_res, &m_res, false);
-      soMsg_kv("asmin", tmi.minutes[ASTRO_MINTS]);
+      soMsg_kv(td, "asmin", tmi.minutes[ASTRO_MINTS]);
     }
 
-    soMsg_timer_end();
+    soMsg_timer_end(td);
   }
 }
 

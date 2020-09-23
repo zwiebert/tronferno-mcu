@@ -1,4 +1,6 @@
 #pragma once
+
+#include <uout/status_output.h>
 #include <stdint.h>
 
 typedef enum {
@@ -89,7 +91,3 @@ typedef struct {
   struct GmBitMask *mm;
 } so_arg_kmm_t;
 
-typedef struct {
-  uint8_t gpio_num;
-  bool level;
-} so_arg_pch_t;

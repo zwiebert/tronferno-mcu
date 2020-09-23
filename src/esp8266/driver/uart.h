@@ -2,7 +2,7 @@
 
 
 #ifdef __cplusplus
-  extern "C" {
+  extern "C++" {
 #endif
 
 #include "uart_register.h"
