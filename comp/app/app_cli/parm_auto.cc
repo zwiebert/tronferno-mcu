@@ -55,9 +55,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   int i;
   bool f_disableWeekly = false, f_disableDaily = false, f_disableAstro = false, f_disableManu = false;
   bool f_enableManu = false;
-
-  fer_grp group = fer_grp_Broadcast;
-  fer_memb memb = fer_memb_Broadcast;
+  u8 parm_g = 0, parm_m = 0;
   u32 addr = cfg_getCuId();
   ;
   u8 fpr0_mask = 0;
@@ -67,7 +65,6 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   bool f_no_send = false;
   Fer_TimerData tdr;
   Fer_TimerData tda = fer_td_initializer;
-  u8 mn = 0;
   u8 rs = 0;
 
   for (i = 1; i < len; ++i) {
@@ -115,27 +112,21 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
         addr = tmp;
       }
       break;
-      case otok::g:
-      if (!asc2group(val, &group))
-      return cli_replyFailure(td);
+      case otok::g: {
+        if (!asc2u8(val, &parm_g, 7))
+        return cli_replyFailure(td);
+      }
       break;
-      case otok::m:
-      if (!asc2memb(val, &memb))
+      case otok::m: {
+      if (!asc2u8(val, &parm_m, 7))
       return cli_replyFailure(td);
-      mn = memb ? (memb - 7) : 0;
+      }
       break;
       case otok::rtc: {
         time_t t = time_iso2time(val);
         if (t >= 0) {
           timer = t;
         }
-      }
-      break;
-      case otok::rs: { // obsolete
-        NODEFAULT();
-        rs = atoi(val);
-        f_no_send = true;
-        f_modify = true;
       }
       break;
 
@@ -196,17 +187,17 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
   } //rof
 
-  fer_sbT *fsb = fer_get_fsb(addr, group, mn, fer_cmd_Program);
+  fer_sbT *fsb = fer_get_fsb(addr, parm_g, parm_m, fer_cmd_Program);
 
   bool is_timer_frame = (FER_SB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE);
   bool f_manual = false;
 
   if (is_timer_frame) {
     if (f_disableManu || f_enableManu) {
-      manual_bits.putBit(group, mn, f_enableManu);
+      manual_bits.putBit(parm_g, parm_m, f_enableManu);
       fer_stor_gmBitMask_save("MANU", manual_bits, 1);
     }
-    f_manual = manual_bits.getBit(group, mn);
+    f_manual = manual_bits.getBit(parm_g, parm_m);
   }
 
   bool need_reload_td,
@@ -226,7 +217,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
   // use (parts of) previously saved data
   if (need_reload_td) {
-    u8 g = group, m = mn;
+    u8 g = parm_g, m = parm_m;
     // fill in missing parts from stored timer data
     if (fer_stor_timerData_load(&tdr, &g, &m, true)) {
       if (!f_disableDaily && !fer_td_is_daily(&tda) && fer_td_is_daily(&tdr)) {
@@ -261,7 +252,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
   // save timer data
   if (need_save_td) {
-    if (fer_stor_timerData_save(&tda, group, mn)) {
+    if (fer_stor_timerData_save(&tda, parm_g, parm_m)) {
       reply_message(td, "rs", "saved");
     } else {
       reply_message(td, "bug", "rs not saved");
@@ -271,7 +262,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
   if (rs) {
     if (int start = soMsg_timer_print_begin(td); start >= 0) {
-      print_timer(td, group, mn, true);
+      print_timer(td, parm_g, parm_m, true);
       soMsg_timer_print_end(td);
 
       if (need_save_td) {
