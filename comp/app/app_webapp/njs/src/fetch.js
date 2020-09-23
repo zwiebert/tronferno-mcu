@@ -4,21 +4,22 @@ import * as httpResp from "./http_resp.js";
 import { G, M0 } from "./store/curr_shutter.js";
 import { ws_isOpen } from "./net/conn_ws";
 
-export const FETCH_CONFIG = 1;
-export const FETCH_AUTO = 2;
-export const FETCH_POS = 4;
-export const FETCH_VERSION = 8;
-export const FETCH_ALIASES = 16;
-export const FETCH_ALIASES_START_PAIRING = 32;
-export const FETCH_ALIASES_START_UNPAIRING = 64;
-export const FETCH_SHUTTER_PREFS = 128;
-export const FETCH_GMU = 256;
-export const FETCH_GIT_TAGS = 512;
-export const FETCH_SHUTTER_NAME = 1024;
-export const FETCH_ALL_POS = 2048;
-export const FETCH_BOOT_COUNT = 2048;
+let b = 0;
+export const FETCH_CONFIG = 1 << b++;
+export const FETCH_AUTO = 1 << b++;
+export const FETCH_POS = 1 << b++;
+export const FETCH_VERSION = 1 << b++;
+export const FETCH_ALIASES = 1 << b++;
+export const FETCH_ALIASES_START_PAIRING = 1 << b++;
+export const FETCH_ALIASES_START_UNPAIRING = 1 << b++;
+export const FETCH_SHUTTER_PREFS = 1 << b++;
+export const FETCH_GMU = 1 << b++;
+export const FETCH_GIT_TAGS = 1 << b++;
+export const FETCH_SHUTTER_NAME = 1 << b++;
+export const FETCH_ALL_POS = 1 << b++;
+export const FETCH_BOOT_COUNT = 1 << b++;
 
-const FETCHES_REPLY_BY_WS =  0;
+const FETCHES_REPLY_BY_WS = 0;
 
 const MAX_RETRY_COUNT = 3;
 
@@ -27,11 +28,7 @@ G.subscribe((value) => (g = value));
 let m;
 M0.subscribe((value) => (m = value));
 
-export function http_postRequest(
-  url = "",
-  data = {},
-  state = { retry_count: 0 }
-) {
+export function http_postRequest(url = "", data = {}, state = { retry_count: 0 }) {
   appDebug.dbLog("post-json: " + JSON.stringify(data));
 
   const fetch_data = {
@@ -80,9 +77,7 @@ export function getFile(url) {
   });
 }
 
-export function http_postShutterCommand(
-  c = document.getElementById("send-c").value
-) {
+export function http_postShutterCommand(c = document.getElementById("send-c").value) {
   let tfmcu = { to: "tfmcu" };
 
   let send = {
@@ -101,10 +96,10 @@ let fetchMask = 0;
 function async_fetchByMask() {
   let mask = fetchMask;
   fetchMask = 0;
-  if ((mask & FETCHES_REPLY_BY_WS) && !ws_isOpen()) {
-   fetchMask = mask & FETCHES_REPLY_BY_WS;
-   mask &=  ~FETCHES_REPLY_BY_WS;
-   setTimeout(async_fetchByMask, 125);
+  if (mask & FETCHES_REPLY_BY_WS && !ws_isOpen()) {
+    fetchMask = mask & FETCHES_REPLY_BY_WS;
+    mask &= ~FETCHES_REPLY_BY_WS;
+    setTimeout(async_fetchByMask, 125);
   }
   http_fetchByMask(mask, true);
 }
@@ -115,12 +110,11 @@ export function http_fetchByMask(mask, synchron) {
   }
 
   if (!synchron) {
-    if (!fetchMask)
-      setTimeout(async_fetchByMask, 125);
+    if (!fetchMask) setTimeout(async_fetchByMask, 125);
     fetchMask |= mask;
     return;
   }
-  
+
   let tfmcu = { to: "tfmcu" };
 
   if (mask & FETCH_CONFIG) tfmcu.config = { all: "?" };
@@ -149,8 +143,6 @@ export function http_fetchByMask(mask, synchron) {
 
   if (mask & FETCH_ALL_POS)
     tfmcu.cmd = {
-      g: g,
-      m: m,
       p: "?",
     };
 
@@ -160,12 +152,7 @@ export function http_fetchByMask(mask, synchron) {
     add_kv(tfmcu, "pair", "g", g);
     add_kv(tfmcu, "pair", "m", m);
     add_kv(tfmcu, "pair", "a", "?");
-    add_kv(
-      tfmcu,
-      "pair",
-      "c",
-      mask & FETCH_ALIASES_START_PAIRING ? "pair" : "unpair"
-    );
+    add_kv(tfmcu, "pair", "c", mask & FETCH_ALIASES_START_PAIRING ? "pair" : "unpair");
   }
 
   if (mask & FETCH_SHUTTER_PREFS) {
@@ -198,10 +185,7 @@ function add_kv(root, cmd, key, val) {
 export function fetchWithTimeout(url, data, timeout) {
   return new Promise((resolve, reject) => {
     // Set timeout timer
-    let timer = setTimeout(
-      () => reject(new Error("Request timed out")),
-      timeout
-    );
+    let timer = setTimeout(() => reject(new Error("Request timed out")), timeout);
 
     fetch(url, data)
       .then(
@@ -213,8 +197,7 @@ export function fetchWithTimeout(url, data, timeout) {
 }
 
 function gitTags_fetch() {
-  const tag_url =
-    "https://api.github.com/repos/zwiebert/tronferno-mcu-bin/tags";
+  const tag_url = "https://api.github.com/repos/zwiebert/tronferno-mcu-bin/tags";
   const fetch_data = {
     method: "GET",
     cache: "no-cache",
