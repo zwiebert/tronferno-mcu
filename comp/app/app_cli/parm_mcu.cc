@@ -116,7 +116,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
         u8 m = val[1] - '0';
         Fer_TimerMinutes tmi;
         if (fer_au_get_timer_minutes_now(&tmi, &g, &m, true)) {
-          soMsg_astro_minutes_print(td, tmi.minutes[ASTRO_MINTS]);
+          soMsg_astro_minutes_print(td, tmi.minutes[FER_MINTS_ASTRO]);
         }
       }
 #ifdef USE_FREERTOS

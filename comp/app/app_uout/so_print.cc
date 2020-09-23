@@ -25,7 +25,7 @@
 #include <time.h>
 
 
-void print_timer_event_minute(const char *label, minutes_t mins) {
+void print_timer_event_minute(const char *label, fer_au_minutesT mins) {
   io_puts(label);
   if (mins == MINUTES_DISABLED)
     io_puts("=none\n");

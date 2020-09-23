@@ -25,7 +25,7 @@
 #endif
 
 static bool 
-timer_to_minutes(minutes_t *result, const char *ts) {
+timer_to_minutes(fer_au_minutesT *result, const char *ts) {
   char buf[3];
   DT(ets_printf("%s: ts=%s\n", __FUNCTION__, ts));
 
@@ -54,24 +54,24 @@ bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const F
   // weekly strings starts with monday, not sunday
   u8 weekday = (tm->tm_wday == 0) ? 6 : tm->tm_wday - 1;
 
-  for (i = 0; i < SIZE_MINTS; ++i)
+  for (i = 0; i < FER_MINTS_size; ++i)
     timi->minutes[i] = MINUTES_DISABLED;
 
   if (fer_td_is_daily(tdp)) {
     p = tdp->daily;
 
-    if (timer_to_minutes(&timi->minutes[DAILY_UP_MINTS], p))
+    if (timer_to_minutes(&timi->minutes[FER_MINTS_DAILY_UP], p))
       p += 4;
     else
       ++p;
 
-    timer_to_minutes(&timi->minutes[DAILY_DOWN_MINTS], p);
+    timer_to_minutes(&timi->minutes[FER_MINTS_DAILY_DOWN], p);
 
   }
 
   if (fer_td_is_weekly(tdp)) {
     int i;
-    minutes_t up_mints = MINUTES_DISABLED, down_mints = MINUTES_DISABLED;
+    fer_au_minutesT up_mints = MINUTES_DISABLED, down_mints = MINUTES_DISABLED;
     p = tdp->weekly;
     D(ets_printf("weekly:<%s>\n", p));
 
@@ -91,18 +91,18 @@ bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const F
       }
 
       if (i == weekday) {
-        timi->minutes[WEEKLY_UP_MINTS] = up_mints;
-        timi->minutes[WEEKLY_DOWN_MINTS] = down_mints;
+        timi->minutes[FER_MINTS_WEEKLY_UP] = up_mints;
+        timi->minutes[FER_MINTS_WEEKLY_DOWN] = down_mints;
         break;
       }
     }
   }
 
   if (fer_td_is_astro(tdp)) {
-    timi->minutes[ASTRO_MINTS] = fer_astro_calc_minutes(tm) + tdp->astro;
+    timi->minutes[FER_MINTS_ASTRO] = fer_astro_calc_minutes(tm) + tdp->astro;
   }
 
-  postcond(timi->minutes[ASTRO_MINTS] == MINUTES_DISABLED || timi->minutes[ASTRO_MINTS] < MINT_PER_DAY);
+  postcond(timi->minutes[FER_MINTS_ASTRO] == MINUTES_DISABLED || timi->minutes[FER_MINTS_ASTRO] < MINT_PER_DAY);
 
   return true;
 }
@@ -112,7 +112,7 @@ bool fer_au_get_timer_minutes_tm(Fer_TimerMinutes *timi, u8 *group, u8 *member, 
   precond(timi && group && member);
 
   Fer_TimerData td;
-  if (read_timer_data(&td, group, member, wildcard)) {
+  if (fer_stor_timerData_load(&td, group, member, wildcard)) {
     return fer_au_get_timer_minutes_from_timer_data_tm(timi, &td, tm);
   }
 
@@ -131,11 +131,11 @@ fer_au_get_timer_minutes_now(Fer_TimerMinutes *timi, u8 *group, u8 *member, bool
   return fer_au_get_timer_minutes_tim(timi, group, member, wildcard, &now_time);
 }
 
-minutes_t
-fer_au_get_earliest_from_timer_minutes(Fer_TimerMinutes *timi, minutes_t now) {
+fer_au_minutesT
+fer_au_get_earliest_from_timer_minutes(Fer_TimerMinutes *timi, fer_au_minutesT now) {
   u8 i;
-  minutes_t last = MINUTES_DISABLED;
-  for (i=0; i < SIZE_MINTS; ++i) {
+  fer_au_minutesT last = MINUTES_DISABLED;
+  for (i=0; i < FER_MINTS_size; ++i) {
     if (timi->minutes[i] <= now)
       continue; // timer not in future
 

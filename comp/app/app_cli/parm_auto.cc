@@ -22,14 +22,7 @@
 
 #include <stdlib.h>
 
-
 static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard); //XXX
-
-enum {
-  TIMER_KEY_WEEKLY, TIMER_KEY_DAILY, TIMER_KEY_ASTRO, TIMER_KEY_RTC_ONLY, TIMER_KEY_FLAG_RANDOM, TIMER_KEY_FLAG_SUN_AUTO
-};
-
-const char *const timer_keys[] = { "weekly", "daily", "astro", "rtc-only", "random", "sun-auto" };
 
 #define FLAG_NONE -2
 #define FLAG_ERROR -1
@@ -85,94 +78,138 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
     otok kt = optMap_findToken(key);
 
-    if (is_key(timer_keys[TIMER_KEY_WEEKLY])) {
+    switch (kt) {
+      case otok::weekly:
       NODEFAULT();
       STRLCPY(tda.weekly, val, sizeof(tda.weekly) - 1);
-    } else if (is_key(timer_keys[TIMER_KEY_DAILY])) {
+      break;
+      case otok::daily:
       NODEFAULT();
       STRLCPY(tda.daily, val, sizeof(tda.daily) - 1);
-    } else if (is_key(timer_keys[TIMER_KEY_ASTRO])) {
+      break;
+      case otok::astro:
       tda.astro = val ? atoi(val) : 0;
-    } else if (is_key(timer_keys[TIMER_KEY_FLAG_RANDOM])) {
-      int flag = asc2bool(val);
-      fer_td_put_random(&tda, flag >= 0);
-      if (flag >= 0) {
-        SET_BIT(fpr0_mask, flag_Random);
+      break;
+      case otok::random: {
+        int flag = asc2bool(val);
+        fer_td_put_random(&tda, flag >= 0);
+        if (flag >= 0) {
+          SET_BIT(fpr0_mask, flag_Random);
+        }
       }
-    } else if (is_key(timer_keys[TIMER_KEY_FLAG_SUN_AUTO])) {
-      int flag = asc2bool(val);
-      fer_td_put_sun_auto(&tda, flag >= 0);
-      if (flag >= 0) {
-        SET_BIT(fpr0_mask, flag_SunAuto);
+      break;
+      case otok::sun_auto: {
+        int flag = asc2bool(val);
+        fer_td_put_sun_auto(&tda, flag >= 0);
+        if (flag >= 0) {
+          SET_BIT(fpr0_mask, flag_SunAuto);
+        }
       }
-
-    } else if (is_key(timer_keys[TIMER_KEY_RTC_ONLY])) {
+      break;
+      case otok::rtc_only:
       flag_rtc_only = asc2bool(val);
-    } else if (is_kt(a)) {
-      u32 tmp = val ? strtol(val, NULL, 16) : 0;
-      if (tmp) addr = tmp;
-    } else if (is_kt(g)) {
+      break;
+      case otok::a: {
+        u32 tmp = val ? strtol(val, NULL, 16) : 0;
+        if (tmp)
+        addr = tmp;
+      }
+      break;
+      case otok::g:
       if (!asc2group(val, &group))
       return cli_replyFailure(td);
-    } else if (is_kt(m)) {
+      break;
+      case otok::m:
       if (!asc2memb(val, &memb))
       return cli_replyFailure(td);
-
       mn = memb ? (memb - 7) : 0;
-    } else if (is_kt(rtc)) {
-      time_t t = time_iso2time(val);
-      if (t >= 0) {
-        timer = t;
+      break;
+      case otok::rtc: {
+        time_t t = time_iso2time(val);
+        if (t >= 0) {
+          timer = t;
+        }
       }
-    } else if (is_kt(rs)) { // obsolete
+      break;
+      case otok::rs: { // obsolete
         NODEFAULT();
         rs = atoi(val);
         f_no_send = true;
         f_modify = true;
-      } else if (is_kt(f)) {
+      }
+      break;
+
+      case otok::f: {
         const char *p = val;
         NODEFAULT();
         while (*p) {
           switch (*p++) {
-            case 'i': rs = 1; break;
-            case 'I': rs = 2; break;
-            case 'k': f_modify = true; break;
-            case 'M': f_enableManu = true; break;
-            case 'm': f_disableManu = true; break;
+            case 'i':
+            rs = 1;
+            break;
+            case 'I':
+            rs = 2;
+            break;
+            case 'k':
+            f_modify = true;
+            break;
+            case 'M':
+            f_enableManu = true;
+            break;
+            case 'm':
+            f_disableManu = true;
+            break;
             case 'r':
-            case 'R': SET_BIT(fpr0_mask, flag_Random); fer_td_put_random(&tda, p[-1] == 'R'); break;
+            case 'R':
+            SET_BIT(fpr0_mask, flag_Random);
+            fer_td_put_random(&tda, p[-1] == 'R');
+            break;
             case 's':
-            case 'S': SET_BIT(fpr0_mask, flag_SunAuto); fer_td_put_sun_auto(&tda, p[-1] == 'S'); break;
-            case 'u': f_no_send = true; break;
+            case 'S':
+            SET_BIT(fpr0_mask, flag_SunAuto);
+            fer_td_put_sun_auto(&tda, p[-1] == 'S');
+            break;
+            case 'u':
+            f_no_send = true;
+            break;
             // disable timers and override any implicit enabling by value
-            case 'd': f_disableDaily = true; break;
-            case 'w': f_disableWeekly = true; break;
-            case 'a': f_disableAstro = true; break;
+            case 'd':
+            f_disableDaily = true;
+            break;
+            case 'w':
+            f_disableWeekly = true;
+            break;
+            case 'a':
+            f_disableAstro = true;
+            break;
           }
         }
-      } else {
-        if (is_kt(rs)) {
-          cli_replyFailure(td);
-          return -1;
-        }
-        cli_warning_optionUnknown(td, key);
+
       }
+      break;
+
+      default:
+      cli_warning_optionUnknown(td, key);
+      break;
+
+    } //esac
+
+  } //rof
+
+  fer_sbT *fsb = fer_get_fsb(addr, group, mn, fer_cmd_Program);
+
+  bool is_timer_frame = (FER_SB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE);
+  bool f_manual = false;
+
+  if (is_timer_frame) {
+    if (f_disableManu || f_enableManu) {
+      manual_bits.putBit(group, mn, f_enableManu);
+      fer_stor_gmBitMask_save("MANU", manual_bits, 1);
     }
+    f_manual = manual_bits.getBit(group, mn);
+  }
 
-    fer_sbT *fsb = fer_get_fsb(addr, group, mn, fer_cmd_Program);
-
-    bool is_timer_frame = (FER_SB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE);
-    bool f_manual = false;
-
-    if (is_timer_frame) {
-      if (f_disableManu || f_enableManu) {
-        manual_bits.putBit(group, mn, f_enableManu);
-        fer_gmByName_store("MANU", manual_bits, 1);
-      }
-      f_manual = manual_bits.getBit(group, mn);
-    }
-
-    bool need_reload_td,
+  bool need_reload_td,
   need_save_td;
   {
     bool f_modified =
@@ -191,7 +228,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   if (need_reload_td) {
     u8 g = group, m = mn;
     // fill in missing parts from stored timer data
-    if (read_timer_data(&tdr, &g, &m, true)) {
+    if (fer_stor_timerData_load(&tdr, &g, &m, true)) {
       if (!f_disableDaily && !fer_td_is_daily(&tda) && fer_td_is_daily(&tdr)) {
         memcpy(tda.daily, tdr.daily, sizeof tdr.daily);
       }
@@ -224,7 +261,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
   // save timer data
   if (need_save_td) {
-    if (save_timer_data(&tda, group, mn)) {
+    if (fer_stor_timerData_save(&tda, group, mn)) {
       reply_message(td, "rs", "saved");
     } else {
       reply_message(td, "bug", "rs not saved");
@@ -247,13 +284,12 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   return 0;
 }
 
-
 static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard) {
   Fer_TimerData tdr;
 
   u8 g_res = g, m_res = m;
 
-  if (read_timer_data(&tdr, &g_res, &m_res, wildcard)) {
+  if (fer_stor_timerData_load(&tdr, &g_res, &m_res, wildcard)) {
     soMsg_timer_begin(td, so_arg_gm_t { g, m });
 
     {
@@ -282,7 +318,7 @@ static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard) 
 
       Fer_TimerMinutes tmi;
       fer_au_get_timer_minutes_now(&tmi, &g_res, &m_res, false);
-      soMsg_kv(td, "asmin", tmi.minutes[ASTRO_MINTS]);
+      soMsg_kv(td, "asmin", tmi.minutes[FER_MINTS_ASTRO]);
     }
 
     soMsg_timer_end(td);

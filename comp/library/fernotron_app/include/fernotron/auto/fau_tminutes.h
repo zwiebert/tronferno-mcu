@@ -8,21 +8,21 @@
 #include <time.h>
 
 
-typedef uint16_t minutes_t;
+typedef uint16_t fer_au_minutesT;
 
-#define MINUTES_DISABLED ((minutes_t)~0)
+#define MINUTES_DISABLED ((fer_au_minutesT)~0)
 
 enum {
-  ASTRO_MINTS, DAILY_UP_MINTS, DAILY_DOWN_MINTS, WEEKLY_UP_MINTS, WEEKLY_DOWN_MINTS, SIZE_MINTS
+  FER_MINTS_ASTRO, FER_MINTS_DAILY_UP, FER_MINTS_DAILY_DOWN, FER_MINTS_WEEKLY_UP, FER_MINTS_WEEKLY_DOWN, FER_MINTS_size
 };
 
 typedef struct {
-  minutes_t minutes[SIZE_MINTS];
+  fer_au_minutesT minutes[FER_MINTS_size];
 } Fer_TimerMinutes;
 
-#define tm_DMin(tm) (tm->tm_hour * 60 + tm->tm_min)
-minutes_t get_now_min();
-minutes_t get_min(const time_t *timer);
+#define fer_au_mintsFromTm(tm) (tm->tm_hour * 60 + tm->tm_min)
+fer_au_minutesT fer_au_mintsNow();
+fer_au_minutesT fer_au_mintsFromTime(const time_t *timer);
 
 // return minute offsets of todays timer events in parameter *result
 // offsets are minutes after 00:00 hour.
@@ -33,5 +33,5 @@ bool fer_au_get_timer_minutes_tim(Fer_TimerMinutes *result, uint8_t *group, uint
 bool fer_au_get_timer_minutes_tm(Fer_TimerMinutes *result, uint8_t *group, uint8_t *member, bool wildcard, const struct tm *tm);
 
 // find earliest event in Fer_TimerMinutes
-minutes_t fer_au_get_earliest_from_timer_minutes(Fer_TimerMinutes *timi, minutes_t now);
+fer_au_minutesT fer_au_get_earliest_from_timer_minutes(Fer_TimerMinutes *timi, fer_au_minutesT now);
 

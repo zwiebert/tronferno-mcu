@@ -42,7 +42,7 @@ enum class otok : otokBaseT  {
   r, p, SEP, // cmd
   boot_count, print, kvs_pk, tm, am, stack, te, dbp, cs, up_time, version, ota, // mcu
 
-
+  weekly, daily, astro, rtc_only, random, sun_auto, // auto
 
   SIZE // key array size
 };
@@ -65,5 +65,7 @@ constexpr const_cstringT otok_strings[static_cast<otokBaseT>(otok::SIZE)] = {
   "rs", "f", // auto
   "r", "p", "SEP", // cmd
   "boot-count", "print", "kvs-pk", "tm", "am", "stack", "te", "dbp", "cs", "up-time", "version", "ota", // mcu
+
+  "weekly", "daily", "astro", "rtc-only", "random", "sun-auto", // auto
 
 };

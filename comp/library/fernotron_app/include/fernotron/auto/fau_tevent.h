@@ -5,7 +5,7 @@
 
 typedef struct {
   Fer_GmBitMask member_mask[2];
-  minutes_t next_event;
+  fer_au_minutesT next_event;
 } Fer_TimerEvent;
 #define te_getMaskUp(te) (&(te)->member_mask[0])
 #define te_getMaskDown(te) (&(te)->member_mask[1])

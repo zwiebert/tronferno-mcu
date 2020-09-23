@@ -149,7 +149,7 @@ bool fer_pos_shouldMove_sunDown(u8 g, u8 m) {
     return false;
 
   Fer_TimerData td = { };
-  if (read_timer_data(&td, &g, &m, true)) {
+  if (fer_stor_timerData_load(&td, &g, &m, true)) {
     if (!fer_td_is_sun_auto(&td))
       return false;
   }
