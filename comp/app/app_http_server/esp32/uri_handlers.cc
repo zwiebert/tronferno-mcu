@@ -45,7 +45,7 @@ struct ws_send_arg {
   int fd;
 };
 
-static void ws_send(void *arg) {
+static void ws_async_broadcast(void *arg) {
   auto a = static_cast<ws_send_arg *>(arg);
   httpd_ws_frame_t ws_pkt = {  .final = true, .type = HTTPD_WS_TYPE_TEXT, .payload = (u8*)a->json, .len = a->json_len };
 
@@ -70,7 +70,7 @@ static esp_err_t ws_trigger_send(httpd_handle_t handle, const char *json, size_t
   arg->json = strdup(json);
   arg->json_len = len;
   arg->fd = fd;
-  return httpd_queue_work(handle, ws_send, arg);
+  return httpd_queue_work(handle, ws_async_broadcast, arg);
 }
 
 void ws_send_json(const char *json, size_t len) {

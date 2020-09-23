@@ -241,7 +241,7 @@ void soMsg_pos_print_gmp(const struct TargetDesc &td, const so_arg_gmp_t a) {
   }
 
   if (so_jco) {
-    int start = td.sj().add_object("pct");
+    td.sj().add_object("pct");
     char buf[] = "00";
     buf[0] += a.g;
     buf[1] += a.m;
@@ -260,7 +260,7 @@ void soMsg_pos_print_gmpa(const struct TargetDesc &td, const so_arg_gmp_t *a) {
     }
 
   if (so_jco) {
-    int start = td.sj().add_object("pct");
+    td.sj().add_object("pct");
     for (int i = 0; a[i].g <= 7; ++i) {
       char buf[] = "00";
       buf[0] += a[i].g;
