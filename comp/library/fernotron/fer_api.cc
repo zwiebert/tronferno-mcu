@@ -50,14 +50,14 @@ timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
   return i == size_dst;
 }
 
-bool fill_rtc_buf(fer_sbT *fsb, time_t rtc) {
+bool fer_fill_rtc_buf(fer_sbT *fsb, time_t rtc) {
   (void)fsb;
   fer_msg_raw_init(fer_tx_msg);
   fer_msg_raw_from_rtc(fer_tx_msg, rtc, true);
   return true;
 }
 
-bool fill_timer_buf(fer_sbT *fsb, time_t rtc, Fer_TimerData *tdr) {
+bool fer_fill_timer_buf(fer_sbT *fsb, time_t rtc, const Fer_TimerData *tdr) {
 
   fer_msg_raw_init(fer_tx_msg);
 
@@ -96,18 +96,18 @@ bool fill_timer_buf(fer_sbT *fsb, time_t rtc, Fer_TimerData *tdr) {
 }
 
 bool fer_send_rtc_message(fer_sbT *fsb, time_t rtc) {
-  bool success = fill_rtc_buf(fsb, rtc) && fer_send_msg(fsb, MSG_TYPE_RTC, 0);
+  bool success = fer_fill_rtc_buf(fsb, rtc) && fer_send_msg(fsb, MSG_TYPE_RTC, 0);
   return success;
 }
 
-bool fer_send_timer_message(fer_sbT *fsb, time_t rtc, Fer_TimerData *td) {
-  bool success = fill_timer_buf(fsb, rtc, td) && fer_send_msg(fsb, MSG_TYPE_TIMER, 0);
+bool fer_send_timer_message(fer_sbT *fsb, time_t rtc, const Fer_TimerData *td) {
+  bool success = fer_fill_timer_buf(fsb, rtc, td) && fer_send_msg(fsb, MSG_TYPE_TIMER, 0);
   return success;
 }
 
 bool fer_send_empty_timer_message(fer_sbT *fsb, time_t rtc) {
   Fer_TimerData tde = fer_td_initializer;
-  bool success = fill_timer_buf(fsb, rtc, &tde) && fer_send_msg(fsb, MSG_TYPE_TIMER, 0); // XXX: wasteful
+  bool success = fer_fill_timer_buf(fsb, rtc, &tde) && fer_send_msg(fsb, MSG_TYPE_TIMER, 0); // XXX: wasteful
   return success;
 }
 

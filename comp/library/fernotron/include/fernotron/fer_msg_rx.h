@@ -22,7 +22,7 @@ bool fer_send_delayed_msg(const fer_sbT *fsb, fer_msg_type msgType, uint16_t del
 bool fer_send_msg_with_stop(const fer_sbT *fsb, uint16_t delay, uint16_t stopDelay, int8_t repeats);
 
 bool fer_send_rtc_message(fer_sbT *fsb, time_t rtc);
-bool fer_send_timer_message(fer_sbT *fsb, time_t rtc, Fer_TimerData *td);
+bool fer_send_timer_message(fer_sbT *fsb, time_t rtc, const Fer_TimerData *td);
 bool fer_send_empty_timer_message(fer_sbT *fsb, time_t rtc);
 
 uint8_t fer_tglNibble_ctUp(uint8_t toggle_nibble, int step);

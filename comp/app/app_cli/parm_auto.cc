@@ -1,9 +1,8 @@
 #include "app/config/proj_app_cfg.h"
 
 #include <string.h>
-#include "fernotron/fer_msg_rx.h"
-#include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/shutter_pct.h"
+#include "fernotron/fer_msg_rx.h"
 #include "app/uout/status_output.h"
 #include "app/uout/so_msg.h"
 #include "app/uout/callbacks.h"
@@ -19,6 +18,8 @@
 #include "fernotron/auto/fau_tdata_store.h"
 #include "app/settings/config.h"
 #include <fernotron/fer_main.h>
+
+#include <fernotron/api/fer_msg_send.hh>
 
 #include <stdlib.h>
 
@@ -47,18 +48,13 @@ const char cli_help_parmTimer[] = "daily=T        set daily timer\n"
     "  s|S sun automatic\n"
     "  r|R random timer\n";
 
-#define is_kt(k) (kt == otok:: k)
-#define is_key(k) (strcmp(key, k) == 0)
-#define is_val(k) (strcmp(val, k) == 0)
-
 int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   int i;
   bool f_disableWeekly = false, f_disableDaily = false, f_disableAstro = false, f_disableManu = false;
   bool f_enableManu = false;
   u8 parm_g = 0, parm_m = 0;
   u32 addr = cfg_getCuId();
-  ;
-  u8 fpr0_mask = 0;
+  bool has_parm_Random = false, has_parm_SunAuto = false;
   i8 flag_rtc_only = FLAG_NONE;
   time_t timer = time(NULL);
   bool f_modify = false;
@@ -91,7 +87,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
         int flag = asc2bool(val);
         fer_td_put_random(&tda, flag >= 0);
         if (flag >= 0) {
-          SET_BIT(fpr0_mask, flag_Random);
+          has_parm_Random = true;
         }
       }
       break;
@@ -99,7 +95,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
         int flag = asc2bool(val);
         fer_td_put_sun_auto(&tda, flag >= 0);
         if (flag >= 0) {
-          SET_BIT(fpr0_mask, flag_SunAuto);
+          has_parm_SunAuto = true;
         }
       }
       break;
@@ -152,12 +148,12 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
             break;
             case 'r':
             case 'R':
-            SET_BIT(fpr0_mask, flag_Random);
+            has_parm_Random = true;
             fer_td_put_random(&tda, p[-1] == 'R');
             break;
             case 's':
             case 'S':
-            SET_BIT(fpr0_mask, flag_SunAuto);
+            has_parm_SunAuto = true;
             fer_td_put_sun_auto(&tda, p[-1] == 'S');
             break;
             case 'u':
@@ -188,6 +184,8 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   } //rof
 
   fer_sbT *fsb = fer_get_fsb(addr, parm_g, parm_m, fer_cmd_Program);
+  const u32 cu_id = FER_SB_GET_DEVID(fsb);
+
 
   bool is_timer_frame = (FER_SB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE);
   bool f_manual = false;
@@ -206,7 +204,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
     bool f_modified =
         !f_modify
             || fer_td_is_astro(
-                &tda) || f_disableAstro || fer_td_is_daily(&tda) || f_disableDaily || fer_td_is_weekly(&tda) || f_disableWeekly || GET_BIT(fpr0_mask, flag_Random) || GET_BIT(fpr0_mask, flag_SunAuto);
+                &tda) || f_disableAstro || fer_td_is_daily(&tda) || f_disableDaily || fer_td_is_weekly(&tda) || f_disableWeekly || has_parm_Random || has_parm_SunAuto;
     bool no_read_save_td = (!f_modified && !f_disableManu) && !(f_modify && !f_no_send); // when not modified read/save would do nothing. but wee need to read when disabling manual mode
 
     need_reload_td = !no_read_save_td && is_timer_frame && f_modify; // load when modify existing data
@@ -229,10 +227,10 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
       if (!f_disableAstro && !fer_td_is_astro(&tda) && fer_td_is_astro(&tdr)) {
         tda.astro = tdr.astro;
       }
-      if (0 == GET_BIT(fpr0_mask, flag_Random)) {
+      if (!has_parm_Random) {
         fer_td_put_random(&tda, fer_td_is_random(&tdr));
       }
-      if (0 == GET_BIT(fpr0_mask, flag_SunAuto)) {
+      if (!has_parm_SunAuto) {
         fer_td_put_sun_auto(&tda, fer_td_is_sun_auto(&tdr));
       }
     }
@@ -242,11 +240,14 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
   if (!f_no_send) {
     if (flag_rtc_only == FLAG_TRUE) {
-      cli_replyResult(td, fer_send_rtc_message(fsb, timer));
+      Fer_MsgRtc msg { .a = cu_id, .g = parm_g, .m = parm_m, .rtc = timer };
+      cli_replyResult(td, fer_api_tx.send(msg));
     } else if (f_manual) {
-      cli_replyResult(td, fer_send_empty_timer_message(fsb, timer));
+      Fer_MsgRtc msg { .a = cu_id, .g = parm_g, .m = parm_m, .rtc = timer };
+      cli_replyResult(td, fer_api_tx.send_empty_timer(msg));
     } else {
-      cli_replyResult(td, fer_send_timer_message(fsb, timer, &tda));
+      Fer_MsgTimer msg { .a = cu_id, .g = parm_g, .m = parm_m, .rtc = timer, .td = tda };
+      cli_replyResult(td, fer_api_tx.send(msg));
     }
   }
 

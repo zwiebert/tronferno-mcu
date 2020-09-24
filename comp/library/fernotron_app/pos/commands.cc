@@ -14,6 +14,7 @@
 #include "app/config/proj_app_cfg.h"
 #include "app/settings/config.h"
 #include "debug/dbg.h"
+#include <fernotron/api/fer_msg_send.hh>
 
 #define GRP_COUNT 7
 #define MBR_COUNT 7
@@ -21,8 +22,8 @@
 #define MBR_MAX 7
 
 bool   fer_cmd_sendShutterCommand(u32 a, u8 g, u8 m, fer_cmd cmd, u8 repeats) {
-  fer_sbT *fsb = fer_get_fsb(a,g,m,cmd);
-  return fer_send_msg(fsb, MSG_TYPE_PLAIN, repeats);
+  Fer_MsgCmd msg { .a = a, .g = g, .m = m, .cmd = cmd, .repeats = repeats };
+  return fer_api_tx.send(msg);
 }
 
 bool fer_cmd_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
