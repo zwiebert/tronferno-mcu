@@ -23,7 +23,7 @@
 #include "net/ntp.h"
 #endif
 #include "fernotron/astro.h"
-#include "fernotron/fer_msg_rx.h"
+#include <fernotron/api/fer_msg_send.hh>
 #include "app/cli/fernotron.h"
 #include "app/common.h"
 #include "misc/int_types.h"
@@ -176,7 +176,7 @@ process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
             fer_cuas_set(td, cli_msgid, 60);
             cli_replySuccess(td);
           } else {
-            u32 cu = (is_val("auto-old")) ? FER_SB_GET_DEVID(&last_received_sender) : strtoul(val, NULL, 16);
+            u32 cu = strtoul(val, NULL, 16);
 
             if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
               return cli_replyFailure(td);

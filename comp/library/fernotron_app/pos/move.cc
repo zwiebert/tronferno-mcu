@@ -150,7 +150,7 @@ bool fer_pos_shouldMove_sunDown(u8 g, u8 m) {
 
   Fer_TimerData td = { };
   if (fer_stor_timerData_load(&td, &g, &m, true)) {
-    if (!fer_td_is_sun_auto(&td))
+    if (!td.getSunAuto())
       return false;
   }
 

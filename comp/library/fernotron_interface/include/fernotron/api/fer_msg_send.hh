@@ -4,6 +4,15 @@
 #include <fernotron/timer_data.h>
 #include <time.h>
 
+#ifndef FER_ADDR_TYPE_PlainSender
+////// device type
+#define FER_ADDR_TYPE_PlainSender  0x10
+#define FER_ADDR_TYPE_SunSensor     0x20
+#define FER_ADDR_TYPE_CentralUnit   0x80
+#define FER_ADDR_TYPE_Receiver      0x90 // 0x9xxxxx (code written on motor label)
+#define FER_U32_TEST_TYPE(u32_a, t) (((u32_a) >> 16) == (t))
+#endif
+
 typedef enum {
   fer_if_cmd_None,
   fer_if_cmd_1,

@@ -57,8 +57,8 @@ bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const F
   for (i = 0; i < FER_MINTS_size; ++i)
     timi->minutes[i] = MINUTES_DISABLED;
 
-  if (fer_td_is_daily(tdp)) {
-    p = tdp->daily;
+  if (tdp->hasDaily()) {
+    p = tdp->getDaily();
 
     if (timer_to_minutes(&timi->minutes[FER_MINTS_DAILY_UP], p))
       p += 4;
@@ -69,10 +69,10 @@ bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const F
 
   }
 
-  if (fer_td_is_weekly(tdp)) {
+  if (tdp->hasWeekly()) {
     int i;
     fer_au_minutesT up_mints = MINUTES_DISABLED, down_mints = MINUTES_DISABLED;
-    p = tdp->weekly;
+    p = tdp->getWeekly();
     D(ets_printf("weekly:<%s>\n", p));
 
     for (i = 0; i < 7 /* week */; ++i) {
@@ -98,8 +98,8 @@ bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const F
     }
   }
 
-  if (fer_td_is_astro(tdp)) {
-    timi->minutes[FER_MINTS_ASTRO] = fer_astro_calc_minutes(tm) + tdp->astro;
+  if (tdp->hasAstro()) {
+    timi->minutes[FER_MINTS_ASTRO] = fer_astro_calc_minutes(tm) + tdp->getAstro();
   }
 
   postcond(timi->minutes[FER_MINTS_ASTRO] == MINUTES_DISABLED || timi->minutes[FER_MINTS_ASTRO] < MINT_PER_DAY);

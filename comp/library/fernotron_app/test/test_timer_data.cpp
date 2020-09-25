@@ -12,7 +12,7 @@
 #include "time.h"
 #include "debug/dbg.h"
 
-static Fer_TimerData td, tde = fer_td_initializer;
+static Fer_TimerData td, tde;
 
 static int save_and_restore_gm(uint8_t g, uint8_t m) {
   if (!fer_stor_timerData_save(&tde, g, m))

@@ -6,6 +6,8 @@
 #include <fernotron/fer_msg_tx.h>
 #include "fernotron/fer_radio_trx.h"
 #include "fernotron/fer_rawmsg_buffer.h"
+#include "fernotron/fsb.h"
+
 #include "gpio/pin.h"
 
 #include "app/rtc.h"
@@ -114,8 +116,10 @@ fer_sep_disable(void) {
   }
 }
 
-bool 
-fer_sep_enable(const struct TargetDesc &td, fer_sbT *fsb) {
+bool
+fer_sep_enable(const struct TargetDesc &td, u32 a, u8 g, u8 m, fer_if_cmd cmd) {
+  fer_sbT *fsb = fer_get_fsb(a,g,m,(fer_cmd)cmd);
+//fer_sep_enable(const struct TargetDesc &td, fer_sbT *fsb) {
   my_td = &td;
   if (fer_sep_buttons_enabled) { // already activated
     fer_sep_disable();

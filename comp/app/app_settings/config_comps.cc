@@ -64,8 +64,8 @@ void config_setup_global() {
     .app_configPassword = {0},
     .app_expertPassword = {0},
 };
-  STRLCPY(C.app_configPassword, MY_APP_CONFIG_PASSWORD, sizeof C.app_configPassword - 1);
-  STRLCPY(C.app_expertPassword, MY_APP_EXPERT_PASSWORD, sizeof C.app_expertPassword - 1);
+  STRLCPY(C.app_configPassword, MY_APP_CONFIG_PASSWORD, sizeof C.app_configPassword);
+  STRLCPY(C.app_expertPassword, MY_APP_EXPERT_PASSWORD, sizeof C.app_expertPassword);
 
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
 

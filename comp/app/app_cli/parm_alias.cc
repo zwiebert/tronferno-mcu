@@ -1,11 +1,10 @@
-#include <fernotron/fer_msg_plain.h>
 #include "app/config/proj_app_cfg.h"
 
 #include <string.h>
 
 #include "fernotron/pos/shutter_pct.h"
 #include "cli_imp.h"
-#include "app/cli/cli_fer.h"
+#include "cli_fer.h"
 #include "app/common.h"
 #include "fernotron/alias/pairings.h"
 #include "app/uout/status_output.h"
@@ -72,20 +71,15 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
         break;
 
       case otok::g: {
-        fer_grp group;
-        if (!asc2group(val, &group) || group == 0)
-          return cli_replyFailure(td);
-        g = group;
+        if (!asc2u8(val, &g, 7))
+        return cli_replyFailure(td);
       }
-        break;
-
+      break;
       case otok::m: {
-        fer_memb memb;
-        if (!asc2memb(val, &memb) || memb == 0)
-          return cli_replyFailure(td);
-        m = memb - 7;
+      if (!asc2u8(val, &m, 7))
+      return cli_replyFailure(td);
       }
-        break;
+      break;
 
       case otok::mm: {
         uint64_t n = strtoll(val, 0, 16);

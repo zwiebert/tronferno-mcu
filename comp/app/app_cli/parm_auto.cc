@@ -2,7 +2,6 @@
 
 #include <string.h>
 #include "fernotron/pos/shutter_pct.h"
-#include "fernotron/fer_msg_rx.h"
 #include "app/uout/status_output.h"
 #include "app/uout/so_msg.h"
 #include "app/uout/callbacks.h"
@@ -10,10 +9,9 @@
 #include "app/config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
 #include "app/rtc.h"
-#include "fernotron/fer_msg_attachment.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
-#include "app/cli/cli_fer.h"
+#include "cli_fer.h"
 #include "app/opt_map.hh"
 #include "fernotron/auto/fau_tdata_store.h"
 #include "app/settings/config.h"
@@ -60,7 +58,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   bool f_modify = false;
   bool f_no_send = false;
   Fer_TimerData tdr;
-  Fer_TimerData tda = fer_td_initializer;
+  Fer_TimerData tda;
   u8 rs = 0;
 
   for (i = 1; i < len; ++i) {
@@ -74,18 +72,18 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
     switch (kt) {
       case otok::weekly:
       NODEFAULT();
-      STRLCPY(tda.weekly, val, sizeof(tda.weekly) - 1);
+      tda.putWeekly(val);
       break;
       case otok::daily:
       NODEFAULT();
-      STRLCPY(tda.daily, val, sizeof(tda.daily) - 1);
+      tda.putDaily(val);
       break;
       case otok::astro:
-      tda.astro = val ? atoi(val) : 0;
+      tda.putAstro(val ? atoi(val) : 0);
       break;
       case otok::random: {
         int flag = asc2bool(val);
-        fer_td_put_random(&tda, flag >= 0);
+        tda.putRandom( flag >= 0);
         if (flag >= 0) {
           has_parm_Random = true;
         }
@@ -93,7 +91,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
       break;
       case otok::sun_auto: {
         int flag = asc2bool(val);
-        fer_td_put_sun_auto(&tda, flag >= 0);
+        tda.putSunAuto( flag >= 0);
         if (flag >= 0) {
           has_parm_SunAuto = true;
         }
@@ -149,12 +147,12 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
             case 'r':
             case 'R':
             has_parm_Random = true;
-            fer_td_put_random(&tda, p[-1] == 'R');
+            tda.putRandom( p[-1] == 'R');
             break;
             case 's':
             case 'S':
             has_parm_SunAuto = true;
-            fer_td_put_sun_auto(&tda, p[-1] == 'S');
+            tda.putSunAuto( p[-1] == 'S');
             break;
             case 'u':
             f_no_send = true;
@@ -200,8 +198,8 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   {
     bool f_modified =
         !f_modify
-            || fer_td_is_astro(
-                &tda) || f_disableAstro || fer_td_is_daily(&tda) || f_disableDaily || fer_td_is_weekly(&tda) || f_disableWeekly || has_parm_Random || has_parm_SunAuto;
+            || 
+                tda.hasAstro() || f_disableAstro || tda.hasDaily() || f_disableDaily || tda.hasWeekly() || f_disableWeekly || has_parm_Random || has_parm_SunAuto;
     bool no_read_save_td = (!f_modified && !f_disableManu) && !(f_modify && !f_no_send); // when not modified read/save would do nothing. but wee need to read when disabling manual mode
 
     need_reload_td = !no_read_save_td && is_timer_frame && f_modify; // load when modify existing data
@@ -215,20 +213,20 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
     u8 g = parm_g, m = parm_m;
     // fill in missing parts from stored timer data
     if (fer_stor_timerData_load(&tdr, &g, &m, true)) {
-      if (!f_disableDaily && !fer_td_is_daily(&tda) && fer_td_is_daily(&tdr)) {
-        memcpy(tda.daily, tdr.daily, sizeof tdr.daily);
+      if (!f_disableDaily && !tda.hasDaily() && tdr.hasDaily()) {
+        tda.putDaily(tdr.getDaily());
       }
-      if (!f_disableWeekly && !fer_td_is_weekly(&tda) && fer_td_is_weekly(&tdr)) {
-        memcpy(tda.weekly, tdr.weekly, sizeof tdr.weekly);
+      if (!f_disableWeekly && !tda.hasWeekly() && tdr.hasWeekly()) {
+        tda.putWeekly(tdr.getWeekly());
       }
-      if (!f_disableAstro && !fer_td_is_astro(&tda) && fer_td_is_astro(&tdr)) {
-        tda.astro = tdr.astro;
+      if (!f_disableAstro && !tda.hasAstro() && tdr.hasAstro()) {
+        tda.putAstro(tdr.getAstro());
       }
       if (!has_parm_Random) {
-        fer_td_put_random(&tda, fer_td_is_random(&tdr));
+        tda.putRandom(tdr.getRandom());
       }
       if (!has_parm_SunAuto) {
-        fer_td_put_sun_auto(&tda, fer_td_is_sun_auto(&tdr));
+        tda.putSunAuto(tdr.getSunAuto());
       }
     }
   }
@@ -285,25 +283,25 @@ static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard) 
       bool f_manual = manual_bits.getBit(g, m);
       char flags[10], *p = flags;
       *p++ = f_manual ? 'M' : 'm';
-      *p++ = fer_td_is_random(&tdr) ? 'R' : 'r';
-      *p++ = fer_td_is_sun_auto(&tdr) ? 'S' : 's';
-      *p++ = fer_td_is_astro(&tdr) ? 'A' : 'a';
-      *p++ = fer_td_is_daily(&tdr) ? 'D' : 'd';
-      *p++ = fer_td_is_weekly(&tdr) ? 'W' : 'w';
+      *p++ = tdr.getRandom() ? 'R' : 'r';
+      *p++ = tdr.getSunAuto() ? 'S' : 's';
+      *p++ = tdr.hasAstro() ? 'A' : 'a';
+      *p++ = tdr.hasDaily() ? 'D' : 'd';
+      *p++ = tdr.hasWeekly() ? 'W' : 'w';
       *p++ = '\0';
       soMsg_kv(td, "f", flags);
     }
 
-    if (fer_td_is_daily(&tdr)) {
-      soMsg_kv(td, "daily", tdr.daily);
+    if (tdr.hasDaily()) {
+      soMsg_kv(td, "daily", tdr.getDaily());
     }
 
-    if (fer_td_is_weekly(&tdr)) {
-      soMsg_kv(td, "weekly", tdr.weekly);
+    if (tdr.hasWeekly()) {
+      soMsg_kv(td, "weekly", tdr.getWeekly());
     }
 
-    if (fer_td_is_astro(&tdr)) {
-      soMsg_kv(td, "astro", tdr.astro);
+    if (tdr.hasAstro()) {
+      soMsg_kv(td, "astro", tdr.getAstro());
 
       Fer_TimerMinutes tmi;
       fer_au_get_timer_minutes_now(&tmi, &g_res, &m_res, false);

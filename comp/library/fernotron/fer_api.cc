@@ -64,29 +64,29 @@ bool fer_fill_timer_buf(fer_sbT *fsb, time_t rtc, const Fer_TimerData *tdr) {
   fer_msg_raw_from_rtc(fer_tx_msg, rtc, false);
 
 
-  if (fer_td_is_weekly(tdr)) {
+  if (tdr->hasWeekly()) {
     u8 weekly_data[FER_FPR_TIMER_STAMP_WIDTH * 7];
-    if (!timerString2bcd(tdr->weekly, weekly_data, sizeof weekly_data))
+    if (!timerString2bcd(tdr->getWeekly(), weekly_data, sizeof weekly_data))
       return false;
     fer_msg_raw_from_weeklyTimer(fer_tx_msg, weekly_data);
   }
 
-  if (fer_td_is_daily(tdr)) {
+  if (tdr->hasDaily()) {
     u8 daily_data[FER_FPR_TIMER_STAMP_WIDTH];
-    if (!timerString2bcd(tdr->daily, daily_data, sizeof daily_data))
+    if (!timerString2bcd(tdr->getDaily(), daily_data, sizeof daily_data))
       return false;
     fer_msg_raw_from_dailyTimer(fer_tx_msg, daily_data);
   }
 
-  if (fer_td_is_astro(tdr)) {
-    fer_msg_raw_from_astro(fer_tx_msg, tdr->astro);
+  if (tdr->hasAstro()) {
+    fer_msg_raw_from_astro(fer_tx_msg, tdr->getAstro());
   }
 
-  if (fer_td_is_random(tdr)) {
+  if (tdr->getRandom()) {
     fer_msg_raw_from_flags(fer_tx_msg, BIT(flag_Random), BIT(flag_Random));
   }
 
-  if (fer_td_is_sun_auto(tdr)) {
+  if (tdr->getSunAuto()) {
     fer_msg_raw_from_flags(fer_tx_msg, BIT(flag_SunAuto), BIT(flag_SunAuto));
   }
 
@@ -106,7 +106,7 @@ bool fer_send_timer_message(fer_sbT *fsb, time_t rtc, const Fer_TimerData *td) {
 }
 
 bool fer_send_empty_timer_message(fer_sbT *fsb, time_t rtc) {
-  Fer_TimerData tde = fer_td_initializer;
+  Fer_TimerData tde;
   bool success = fer_fill_timer_buf(fsb, rtc, &tde) && fer_send_msg(fsb, MSG_TYPE_TIMER, 0); // XXX: wasteful
   return success;
 }

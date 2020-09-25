@@ -1,20 +1,17 @@
 #include "app/config/proj_app_cfg.h"
 
 #include <string.h>
-#include <fernotron/fer_msg_rx.h>
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/commands.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "txtio/inout.h"
 #include "app/config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
-#include "fernotron/fer_msg_tx.h"
-#include "fernotron/fer_msg_attachment.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "app/uout/status_output.h"
 #include "app/settings/config.h"
-#include "app/cli/cli_fer.h"
+#include "cli_fer.h"
 #include "app/opt_map.hh"
 #include <stdlib.h>
 #include <fernotron/api/fer_msg_send.hh>
@@ -70,24 +67,15 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
         break;
 
       case otok::g: {
-        int arg = atoi(val);
-        if (0 <= arg && arg <= 7) {
-          g = arg;
-        } else {
-          return cli_replyFailure(td);
-        }
+        if (!asc2u8(val, &g, 7))
+        return cli_replyFailure(td);
       }
-        break;
-
+      break;
       case otok::m: {
-        int arg = atoi(val);
-        if (0 <= arg && arg <= 7) {
-          m = arg;
-        } else {
-          return cli_replyFailure(td);
-        }
+      if (!asc2u8(val, &m, 7))
+      return cli_replyFailure(td);
       }
-        break;
+      break;
 
       case otok::r: {
         NODEFAULT();
@@ -149,7 +137,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
   } else {
     if (has_sep) { // enable hardware buttons to set end position
       if (set_end_pos)
-        fer_sep_enable(td, fer_get_fsb(addr,g,m,(fer_cmd)cmd));
+        fer_sep_enable(td, addr,g,m, cmd);
       else
         fer_sep_disable();
     } else if (has_pct) {
