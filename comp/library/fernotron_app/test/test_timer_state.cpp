@@ -22,9 +22,11 @@ static int t2m(int hour, int minute) {
 
 static void test_timer_event4() {
   fer_stor_timerData_erase(0,0);
-  Fer_TimerData t1 = {15, 0, "03452123", "" };
+  Fer_TimerData t1;
+  t1.putAstro(15); t1.putDaily("03452123");
   fer_stor_timerData_save(&t1, 1, 0);
-  Fer_TimerData t2 = {0, 0, "", "06542109+++0822-07082211+" };
+  Fer_TimerData t2;
+  t2.putAstro(0); t2.putWeekly("06542109+++0822-07082211+");
   fer_stor_timerData_save(&t2, 1, 1);
 
   struct tm now_tm = {
@@ -52,9 +54,11 @@ static void test_timer_event4() {
 
 static void test_timer_event3() {
   fer_stor_timerData_erase(0,0);
-  Fer_TimerData t1 = {20000, 0, "03452123", "" };
+  Fer_TimerData t1;
+  t1.putDaily("03452123");
   fer_stor_timerData_save(&t1, 1, 0);
-  Fer_TimerData t2 = {20000, 0, "", "06542109+++0822-07082211+" };
+  Fer_TimerData t2;
+  t2.putWeekly("06542109+++0822-07082211+");
   fer_stor_timerData_save(&t2, 1, 1);
 
   struct tm now_tm = {
@@ -82,9 +86,11 @@ static void test_timer_event3() {
 
 static void test_timer_event2() {
   fer_stor_timerData_erase(0,0);
-  Fer_TimerData t1 = {20000, 0, "03452123", "" };
+  Fer_TimerData t1;
+  t1.putDaily("03452123");
   fer_stor_timerData_save(&t1, 1, 0);
-  Fer_TimerData t2 = {20000, 0, "04562345", "" };
+  Fer_TimerData t2;
+  t2.putDaily("04562345");
   fer_stor_timerData_save(&t2, 1, 1);
 
   struct tm now_tm = {
@@ -130,9 +136,11 @@ struct tm test_tm, *test_tmp;
 static void test_timer_event() {
   fer_stor_timerData_erase(0,0);
 
-  Fer_TimerData t1 = {20000, 0, "04562345", "" };
+  Fer_TimerData t1;
+  t1.putDaily("04562345");
   fer_stor_timerData_save(&t1, 1, 0);
-  Fer_TimerData t2 = {20000, 0, "03452123", "" };
+  Fer_TimerData t2;
+  t2.putDaily("03452123");
   fer_stor_timerData_save(&t2, 1, 1);
 
   struct tm now_tm = {
@@ -206,8 +214,10 @@ static void test_timer_event() {
 
 
 static void test_timer_minutes() {
-  Fer_TimerData t1 = {20000,  0, "04562345", "" };
-  Fer_TimerData t2 = {20000,  0, "", "06542109+++0822-07082211+" };
+  Fer_TimerData t1;
+  t1.putDaily("04562345");
+  Fer_TimerData t2;
+  t2.putWeekly("06542109+++0822-07082211+");
 
   struct tm tm = {
      .tm_sec = 0,
@@ -359,7 +369,7 @@ void setUp() {
 
   C.fer_usedMembers = ~0U;
   C.fer_usedMemberMask.fromNibbleCounters(C.fer_usedMembers);
-  astro_init_and_reinit(&cfg_astro);
+  fer_astro_init_and_reinit(&cfg_astro);
 }
 #endif
 

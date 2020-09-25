@@ -1,9 +1,12 @@
 #pragma once
+#include <app/config/proj_app_cfg.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <debug/dbg.h>
 
-typedef struct {
+
+struct Fer_TimerData {
   /*
    * daily=T - sets the daily timer
    * T  - T is a 8 digit time string like 07302000. The four left digits are the up-time. The four on the right the down-time. A minus sign can replace 4 digits, which means the timer is cleared.
@@ -19,10 +22,11 @@ typedef struct {
     return daily;
   }
   void putDaily(const char *dt) {
+    precond(!dt || strlen(dt) < sizeof daily);
     if (!dt)
       daily[0] = '\0';
     else
-      strlcpy(daily, dt, sizeof daily);
+      STRLCPY(daily, dt, sizeof daily);
   }
 
   /*
@@ -40,10 +44,11 @@ typedef struct {
     return weekly;
   }
   void putWeekly(const char *wt) {
+    precond(!wt || strlen(wt) < sizeof weekly);
     if (!wt)
       weekly[0] = '\0';
     else
-      strlcpy(weekly, wt, sizeof weekly);
+      STRLCPY(weekly, wt, sizeof weekly);
   }
 
   /*
@@ -101,4 +106,4 @@ private:
   };
   char daily[8 + 1] = "";    // ASCII string of one daily timer
   char weekly[7 * 8 + 1] = ""; // ASCII string of seven weekly timers
-} Fer_TimerData;
+};

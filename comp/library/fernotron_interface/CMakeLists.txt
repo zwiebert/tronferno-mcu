@@ -2,7 +2,7 @@
 
 idf_component_register(
     INCLUDE_DIRS "./include"
-   REQUIRES fernotron
+   REQUIRES fernotron app_config debug
     PRIV_REQUIRES fernotron fernotron_app
      )
 

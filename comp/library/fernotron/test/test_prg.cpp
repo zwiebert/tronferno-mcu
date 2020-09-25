@@ -10,6 +10,7 @@
 #include "fernotron/astro.h"
 #include <string.h>
 #include "../fer_app_cfg.h"
+#include "../fer_api.h"
 #include "debug/dbg.h"
 #include "fernotron/fer_rawmsg_build.h"
 #include "misc/bcd.h"
@@ -155,6 +156,6 @@ TEST_CASE("fer_msg modify data and verify checksums", "[fernotron]")
 static struct cfg_astro cfg_astro =
     { .astroCorrection = acAverage, .geo_longitude = 13, .geo_latitude = 52, .geo_timezone = 1,  };
 void setUp() {
-  astro_init_and_reinit(&cfg_astro);
+  fer_astro_init_and_reinit(&cfg_astro);
 }
 #endif
