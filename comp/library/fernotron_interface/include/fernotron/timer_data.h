@@ -7,6 +7,7 @@
 
 
 struct Fer_TimerData {
+  enum { DAILY_MAX_LEN = (8), WEEKLY_MAX_LEN = (8 * 7)};
   /*
    * daily=T - sets the daily timer
    * T  - T is a 8 digit time string like 07302000. The four left digits are the up-time. The four on the right the down-time. A minus sign can replace 4 digits, which means the timer is cleared.
@@ -22,7 +23,7 @@ struct Fer_TimerData {
     return daily;
   }
   void putDaily(const char *dt) {
-    precond(!dt || strlen(dt) < sizeof daily);
+    precond(!dt || strlen(dt) <= DAILY_MAX_LEN);
     if (!dt)
       daily[0] = '\0';
     else
@@ -44,7 +45,7 @@ struct Fer_TimerData {
     return weekly;
   }
   void putWeekly(const char *wt) {
-    precond(!wt || strlen(wt) < sizeof weekly);
+    precond(!wt || strlen(wt) <= WEEKLY_MAX_LEN);
     if (!wt)
       weekly[0] = '\0';
     else
@@ -104,6 +105,6 @@ private:
     } flags;
     uint8_t bf = 0;         // bitfield
   };
-  char daily[8 + 1] = "";    // ASCII string of one daily timer
-  char weekly[7 * 8 + 1] = ""; // ASCII string of seven weekly timers
+  char daily[DAILY_MAX_LEN + 1] = "";    // ASCII string of one daily timer
+  char weekly[WEEKLY_MAX_LEN + 1] = ""; // ASCII string of seven weekly timers
 };

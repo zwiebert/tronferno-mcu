@@ -60,10 +60,10 @@
 
 #ifdef __cplusplus
 #include <misc/cstring_utils.hh>
-#define STRLCPY(d,s,l) csu_copy((d),(s),(l))
-#define STRCPY(d,s) csu_copy((d),(s))
+#define STRLCPY(dst,src,size) csu_copy((dst),(size),(src))
+#define STRCPY(dst,src) csu_copy((dst),(src))
 #else
-#define STRLCPY(d,s,l) strlcpy((d),(s),(l))
-#define STRCPY(d,s) strcpy((d),(s))
+#define STRLCPY(dst,src,size) strlcpy((dst),(src),(size))
+#define STRCPY(dst,src) strcpy((dst),(src))
 #endif
 
