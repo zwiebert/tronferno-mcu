@@ -19,7 +19,7 @@ typedef union fer_sbT {
 #define FER_SB_GET_DEVID(fsb) (((uint32_t)(fsb)->data[fer_dat_ADDR_2] << 16) | (uint16_t)((fsb)->data[fer_dat_ADDR_1] << 8) | ((fsb)->data[fer_dat_ADDR_0]))
 
 #define FER_SB_GET_CMD(fsb)          ((fer_cmd)(fsb)->sd.cmd)
-#define FER_SB_PUT_CMD(fsb,val)      ((fsb)->sd.cmd = (val))
+#define FER_SB_PUT_CMD(fsb,val)      ((fsb)->sd.cmd = (fer_cmd)(val))
 
 #define FER_SB_GET_TGL(fsb)          ((fsb)->sd.tgl)
 #define FER_SB_PUT_TGL(fsb,val)      ((fsb)->sd.tgl = (val))

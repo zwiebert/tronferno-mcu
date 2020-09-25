@@ -16,7 +16,7 @@
 #include "cli/cli.h"
 #include "app/uout/status_output.h"
 #include "app/settings/config.h"
-
+#include <fernotron/api/fer_msg_send.hh>
 #include <algorithm>
 #include <iterator>
 
@@ -26,22 +26,22 @@
 
 struct c_map {
   const char *fs;
-  fer_cmd fc;
+  fer_if_cmd fc;
 };
 
 struct c_map const fc_map[] = { //
-    { "down", fer_cmd_DOWN }, //
-    { "up", fer_cmd_UP }, //
-    { "stop", fer_cmd_STOP }, //
-    { "sun-down", fer_cmd_SunDOWN }, //
-    { "sun-up", fer_cmd_SunUP }, //
-    { "sun-inst", fer_cmd_SunINST }, //
-    //{"sun-test", fer_cmd_Program},//
-    { "set", fer_cmd_SET },  //
+    { "down", fer_if_cmd_DOWN }, //
+    { "up", fer_if_cmd_UP }, //
+    { "stop", fer_if_cmd_STOP }, //
+    { "sun-down", fer_if_cmd_SunDOWN }, //
+    { "sun-up", fer_if_cmd_SunUP }, //
+    { "sun-inst", fer_if_cmd_SunINST }, //
+    //{"sun-test", fer_if_cmd_Program},//
+    { "set", fer_if_cmd_SET },  //
     };
 
 bool 
-cli_parm_to_ferCMD(const char *token, fer_cmd *cmd) {
+cli_parm_to_ferCMD(const char *token, fer_if_cmd *cmd) {
   int i;
   
 

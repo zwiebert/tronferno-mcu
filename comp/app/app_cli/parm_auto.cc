@@ -183,11 +183,8 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
   } //rof
 
-  fer_sbT *fsb = fer_get_fsb(addr, parm_g, parm_m, fer_cmd_Program);
-  const u32 cu_id = FER_SB_GET_DEVID(fsb);
 
-
-  bool is_timer_frame = (FER_SB_ADDR_IS_CENTRAL(fsb) && flag_rtc_only != FLAG_TRUE);
+  bool is_timer_frame = FER_U32_TEST_TYPE(addr, FER_ADDR_TYPE_CentralUnit) && flag_rtc_only != FLAG_TRUE;
   bool f_manual = false;
 
   if (is_timer_frame) {
@@ -240,13 +237,13 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
   if (!f_no_send) {
     if (flag_rtc_only == FLAG_TRUE) {
-      Fer_MsgRtc msg { .a = cu_id, .g = parm_g, .m = parm_m, .rtc = timer };
+      Fer_MsgRtc msg { .a = addr, .g = parm_g, .m = parm_m, .rtc = timer };
       cli_replyResult(td, fer_api_tx.send(msg));
     } else if (f_manual) {
-      Fer_MsgRtc msg { .a = cu_id, .g = parm_g, .m = parm_m, .rtc = timer };
+      Fer_MsgRtc msg { .a = addr, .g = parm_g, .m = parm_m, .rtc = timer };
       cli_replyResult(td, fer_api_tx.send_empty_timer(msg));
     } else {
-      Fer_MsgTimer msg { .a = cu_id, .g = parm_g, .m = parm_m, .rtc = timer, .td = tda };
+      Fer_MsgTimer msg { .a = addr, .g = parm_g, .m = parm_m, .rtc = timer, .td = tda };
       cli_replyResult(td, fer_api_tx.send(msg));
     }
   }

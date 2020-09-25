@@ -11,7 +11,6 @@
 #include "config_kvs/config.h"
 #include "txtio/inout.h"
 #include "fernotron/types.h"
-#include "fernotron/astro.h"
 #include "net/ethernet.h"
 #include "gpio/pin.h"
 #include "stdbool.h"
@@ -155,7 +154,6 @@ void config_setup_astro();
 struct cfg_astro* config_read_astro(struct cfg_astro *c);
 float config_read_longitude();
 float config_read_latitude();
-enum astroCorrection config_read_astro_correction();
 
 void config_setup_mqttAppClient();
 

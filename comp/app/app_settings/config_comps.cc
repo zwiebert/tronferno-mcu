@@ -8,7 +8,7 @@
 #include "app/settings/config.h"
 #include "app/settings/config_defaults.h"
 #include "config_kvs.h"
-
+#include "fernotron/astro.h"
 #include "misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
@@ -76,7 +76,6 @@ void config_setup_global() {
     kvs_close(h);
   }
   C.fer_usedMemberMask.fromNibbleCounters(C.fer_usedMembers);
-  FER_SB_PUT_DEVID(&default_sender, C.fer_centralUnitID);
 }
 uint32_t config_read_used_members() {
   return  config_read_item_u32(CI(CB_USED_MEMBERS), MY_FER_GM_USE);

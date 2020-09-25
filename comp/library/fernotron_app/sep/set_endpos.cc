@@ -11,7 +11,7 @@
 #include "app/rtc.h"
 #include "txtio/inout.h"
 #include "app/uout/status_output.h"
-
+#include <fernotron/api/fer_msg_send.hh>
 
 //////////////////////////////////////////////////////////////////
 // DANGER ZONE
@@ -28,11 +28,11 @@
 // DANGER ZONE
 //////////////////////////////////////////////////////////////////
 #if ENABLE_SET_ENDPOS
-#define SEP_DOWN fer_cmd_EndPosDOWN // harmful down command moving beyond current end position
-#define SEP_UP fer_cmd_EndPosUP     // harmful up command moving beyond current end position
+#define SEP_DOWN fer_if_cmd_EndPosDOWN // harmful down command moving beyond current end position
+#define SEP_UP fer_if_cmd_EndPosUP     // harmful up command moving beyond current end position
 #else
-#define SEP_DOWN fer_cmd_DOWN   // normal down command
-#define SEP_UP fer_cmd_UP       // normal up command
+#define SEP_DOWN fer_if_cmd_DOWN   // normal down command
+#define SEP_UP fer_if_cmd_UP       // normal up command
 #endif
 //////////////////////////////////////////////////////////////////
 
@@ -52,7 +52,7 @@ static inline void fer_sep_DISABLE_cb() {
 static fer_sbT fer_sep_fsb;
 static bool fer_sep_buttons_enabled;
 static bool up_pressed, down_pressed;
-static fer_cmd fer_sep_cmd;
+static fer_if_cmd fer_sep_cmd;
 
 static time_t end_time;
 
@@ -79,7 +79,7 @@ bool  fer_sep_is_enabled(void) {
 static bool 
 fer_sep_send_stop(void) {
   fer_sbT * const fsb = &fer_sep_fsb;
-  FER_SB_PUT_CMD(fsb, fer_cmd_STOP);
+  FER_SB_PUT_CMD(fsb, fer_if_cmd_STOP);
   fer_update_tglNibble(fsb);
   while (fer_send_msg(fsb, MSG_TYPE_PLAIN, 2)) {
     fer_update_tglNibble(fsb);
@@ -132,9 +132,9 @@ fer_sep_enable(const struct TargetDesc &td, fer_sbT *fsb) {
     }
 
     // set our endpos-up/down command according to normal up/down command in fsb
-    if (FER_SB_GET_CMD(fsb) == fer_cmd_UP) {
+    if (FER_SB_GET_CMD(fsb) == fer_if_cmd_UP) {
       fer_sep_cmd = SEP_UP;
-    } else if (FER_SB_GET_CMD(fsb) == fer_cmd_DOWN) {
+    } else if (FER_SB_GET_CMD(fsb) == fer_if_cmd_DOWN) {
       fer_sep_cmd = SEP_DOWN;
     } else {
       return false;

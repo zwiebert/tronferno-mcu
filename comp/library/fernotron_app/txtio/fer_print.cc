@@ -16,6 +16,7 @@
 #include "fernotron/fer_msg_attachment.h"
 #include "misc/int_macros.h"
 #include "txtio/inout.h"
+#include <fernotron/api/fer_msg_send.hh>
 
 typedef uint8_t u8;
 typedef int8_t i8;
@@ -136,7 +137,7 @@ void  fer_msg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fer_msg_t
 
 
 
-  fer_cmd c = FER_SB_GET_CMD(fsb);
+  fer_if_cmd c = (fer_if_cmd)FER_SB_GET_CMD(fsb);
   u32 id = FER_SB_GET_DEVID(fsb);
 
   const char *cs = 0;
@@ -145,13 +146,13 @@ void  fer_msg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fer_msg_t
   if ((FER_SB_ADDR_IS_PLAIN(fsb) && (fdt = "plain"))
       || (FER_SB_ADDR_IS_CENTRAL(fsb) && (fdt = "central"))) {
     switch (c) {
-    case fer_cmd_DOWN:
+    case fer_if_cmd_DOWN:
       cs = "down";
       break;
-    case fer_cmd_UP:
+    case fer_if_cmd_UP:
       cs = "up";
       break;
-    case fer_cmd_STOP:
+    case fer_if_cmd_STOP:
       cs = "stop";
       break;
     default:
@@ -160,13 +161,13 @@ void  fer_msg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fer_msg_t
     }
   } else if (FER_SB_ADDR_IS_SUNSENS(fsb) && (fdt = "sun")) {
     switch (c) {
-    case fer_cmd_SunDOWN:
+    case fer_if_cmd_SunDOWN:
       cs = "sun-down";
       break;
-    case fer_cmd_SunUP:
+    case fer_if_cmd_SunUP:
       cs = "sun-up";
       break;
-    case fer_cmd_SunINST:
+    case fer_if_cmd_SunINST:
       cs = "sun-pos";
       break;    default:
       cs = 0;

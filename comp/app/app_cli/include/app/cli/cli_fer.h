@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "fernotron/fsb.h"
+#include <fernotron/api/fer_msg_send.hh>
 
-bool cli_parm_to_ferCMD(const char *token, fer_cmd *cmd);
+bool cli_parm_to_ferCMD(const char *token, fer_if_cmd *cmd);
 bool asc2group(const char *s, fer_grp *grp);
 bool asc2memb(const char *s, fer_memb *memb);
 

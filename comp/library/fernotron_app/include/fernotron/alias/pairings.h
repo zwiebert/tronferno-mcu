@@ -1,6 +1,5 @@
 #pragma once
 
-#include "fernotron/fsb.h"
 #include "fernotron/types.h"
 #include "app/config/proj_app_cfg.h"
 
@@ -25,5 +24,5 @@ bool fer_alias_so_output_all_pairings(const struct TargetDesc &td);
 bool fer_alias_auto_set(const struct TargetDesc &td, uint8_t g, uint8_t m, uint8_t c, uint16_t id, unsigned timeout_secs);
 // check for result (called from main loop)
 void fer_alias_auto_set_check_timeout(void);
-bool fer_alias_auto_set_check(const fer_sbT *fsb);
+bool fer_alias_auto_set_check(uint32_t a);
 

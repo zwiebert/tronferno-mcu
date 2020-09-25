@@ -17,7 +17,7 @@
 #include "app/cli/cli_fer.h"
 #include "app/opt_map.hh"
 #include <stdlib.h>
-
+#include <fernotron/api/fer_msg_send.hh>
 
 #define FER_SB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
@@ -42,7 +42,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
 
   u32 addr = cfg_getCuId();
   u8 g = 0, m = 0;
-  fer_cmd cmd = fer_cmd_None;
+  fer_if_cmd cmd = fer_if_cmd_None;
   int set_end_pos = -1;
   u8 repeats = FER_SB_PLAIN_REPEATS;
   bool has_requested_position = false;
@@ -149,7 +149,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
   } else {
     if (has_sep) { // enable hardware buttons to set end position
       if (set_end_pos)
-        fer_sep_enable(td, fer_get_fsb(addr,g,m,cmd));
+        fer_sep_enable(td, fer_get_fsb(addr,g,m,(fer_cmd)cmd));
       else
         fer_sep_disable();
     } else if (has_pct) {

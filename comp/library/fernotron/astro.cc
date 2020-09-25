@@ -6,12 +6,13 @@
 */
 
 #include <fernotron/fer_msg_plain.h>
+#include <fernotron/fer_msg_attachment.h>
 #include <stdlib.h>
 #include <math.h>
 #include "stdbool.h"
 
 #include "fer_app_cfg.h"
-
+#include "fer_api.h"
 
 #include "fernotron/astro.h"
 #include "misc/sun.h"

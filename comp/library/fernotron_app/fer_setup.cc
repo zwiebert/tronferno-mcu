@@ -21,16 +21,13 @@
 
 
 struct fer_configT fer_config;
-fer_sbT default_sender;
 Fer_GmBitMask manual_bits;
 
-fer_sbT *fer_main_getSenderByAddress(long addr) {
+uint32_t fer_main_getSenderByAddress(long addr) {
   if (addr == 0) {
-    return &default_sender;
-  } else if (addr > 0 && 10 > addr) {
-    //return &senders[addr];
+    return fer_config.cu;
   }
-  return NULL ;
+  return addr;
 }
 
 
@@ -55,10 +52,13 @@ static void rawMessageReceived_cb(fer_msg_type msg_type, const fer_sbT *fsb, con
 }
 
 static void plainMessageReceived_cb(const fer_sbT *fsb) {
-  fer_cuas_set_check(fsb);
+  if (FER_SB_ADDR_IS_CENTRAL(fsb)) {
+  const u32 a = FER_SB_GET_DEVID(fsb);
+  fer_cuas_set_check(a);
 #ifdef USE_PAIRINGS
-  fer_alias_auto_set_check(fsb);
+  fer_alias_auto_set_check(a);
 #endif
+}
   {
     u8 g = 0, m = 0;
 
@@ -68,13 +68,13 @@ static void plainMessageReceived_cb(const fer_sbT *fsb) {
       if (m)
         m -= 7;
     }
-    fer_simPos_registerMovingShutter(FER_SB_GET_DEVID(fsb), g, m, FER_SB_GET_CMD(fsb));
+    fer_simPos_registerMovingShutter(FER_SB_GET_DEVID(fsb), g, m, (fer_if_cmd)FER_SB_GET_CMD(fsb));
   }
 }
 
 static void beforeFirstSend_cb(const fer_sbT *fsb) {
   if (FER_SB_GET_DEVID(fsb) == fer_config.cu) {
-    fer_simPos_registerMovingShutter(FER_SB_GET_DEVID(fsb), FER_SB_GET_GRP(fsb), FER_SB_GET_MEMB(fsb) == 0 ? 0 : FER_SB_GET_MEMB(fsb) - 7, FER_SB_GET_CMD(fsb));
+    fer_simPos_registerMovingShutter(FER_SB_GET_DEVID(fsb), FER_SB_GET_GRP(fsb), FER_SB_GET_MEMB(fsb) == 0 ? 0 : FER_SB_GET_MEMB(fsb) - 7, (fer_if_cmd)FER_SB_GET_CMD(fsb));
   }
 }
 
@@ -90,7 +90,6 @@ static void beforeAnySend_cb(fer_msg_type msg_type, const fer_sbT *fsb, const fe
 
 void fer_main_setup(const fer_configT &ferConfig, const bool reinit) {
    fer_config = ferConfig;
-   fer_init_sender(&default_sender, fer_config.cu);
    manual_bits = Fer_GmBitMask("MANU");
    if (reinit)
      return;

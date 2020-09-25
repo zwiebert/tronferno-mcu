@@ -69,12 +69,11 @@ void fer_cuas_set_check_timeout() {
 }
 #define CI(cb) static_cast<configItem>(cb)
 
-bool fer_cuas_set_check(const fer_sbT *fsb) {
+bool fer_cuas_set_check(const u32 cu) {
   if (end_time == 0)
     return false;
 
-  if (FER_SB_ADDR_IS_CENTRAL(fsb)) {
-    u32 cu = FER_SB_GET_DEVID(fsb);
+{
     config_save_item_n_u32(CI(CB_CUID), cu);
     config_item_modified(CI(CB_CUID));
     end_time = 0;

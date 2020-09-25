@@ -122,33 +122,33 @@ static struct Fer_Move* add_to_new_movement_mm(Fer_GmBitMask *mm, u32 now_ts, en
 }
 
 // register moving related commands sent to a shutter to keep track of its changing position
-int fer_simPos_registerMovingShutters(Fer_GmBitMask *mm, fer_cmd cmd) {
+int fer_simPos_registerMovingShutters(Fer_GmBitMask *mm, fer_if_cmd cmd) {
   u32 now_ts = get_now_time_ts();
 
   enum direction dir = DIRECTION_NONE;
   struct filter filter = { };
 
   switch (cmd) {
-  case fer_cmd_STOP:
+  case fer_if_cmd_STOP:
     dir = DIRECTION_STOP;
     break;
-  case fer_cmd_SunUP:
+  case fer_if_cmd_SunUP:
     dir = DIRECTION_SUN_UP;
     filter.destination_already_reached = true;
     break;
-  case fer_cmd_UP:
+  case fer_if_cmd_UP:
     dir = DIRECTION_UP;
     filter.destination_already_reached = true;
     filter.same_direction = true;
     filter.same_direction = true;
     break;
-  case fer_cmd_SunDOWN:
+  case fer_if_cmd_SunDOWN:
     dir = DIRECTION_SUN_DOWN;
     filter.destination_already_reached = true;
     filter.sun_not_ready_to_move_down = true;
     filter.same_direction = true; // XXX?
     break;
-  case fer_cmd_DOWN:
+  case fer_if_cmd_DOWN:
     dir = DIRECTION_DOWN;
     filter.destination_already_reached = true;
     filter.same_direction = true;
@@ -177,7 +177,7 @@ int fer_simPos_registerMovingShutters(Fer_GmBitMask *mm, fer_cmd cmd) {
 }
 
 
-int fer_simPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_cmd cmd) {
+int fer_simPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_if_cmd cmd) {
   precond(g <= 7 && m <= 7);
 
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, cmd=%d\n", __func__, a, (int)g, (int)m, (int)cmd));

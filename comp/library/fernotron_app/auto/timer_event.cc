@@ -62,8 +62,8 @@ void fer_am_loop(void) {
   if (te->next_event != fer_au_mintsNow())
     return;
 
-  fer_simPos_registerMovingShutters(te_getMaskUp(te), fer_cmd_UP);
-  fer_simPos_registerMovingShutters(te_getMaskDown(te), fer_cmd_DOWN);
+  fer_simPos_registerMovingShutters(te_getMaskUp(te), fer_if_cmd_UP);
+  fer_simPos_registerMovingShutters(te_getMaskDown(te), fer_if_cmd_DOWN);
   fer_am_updateTimerEvent();
 }
 

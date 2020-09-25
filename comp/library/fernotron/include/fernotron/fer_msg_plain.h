@@ -47,3 +47,5 @@ static_assert(sizeof(fer_cmd_row) == FER_CMD_BYTE_CT, "wrong msg size");
 
 #define FER_RB_GET_DEVID(data) (((uint32_t)(data[fer_dat_ADDR_2]) << 16) | ((uint16_t)(data[fer_dat_ADDR_1]) << 8) | (data[fer_dat_ADDR_0]))
 
+#define FER_U32_TEST_TYPE(u32_a, t) (((u32_a) >> 16) == (t))
+
