@@ -98,6 +98,14 @@ clean:
 init: build_lib
 
 
+CM_BUILD_PATH = $(BUILD_BASE)/cm
+
+.PHONY: test_cm
+test_cm:
+	mkdir -p $(CM_BUILD_PATH)
+	cmake -B $(CM_BUILD_PATH) -S $(THIS_ROOT)
+	make -C $(CM_BUILD_PATH) all test
+
 # create log file by running test
 $(LOG_BASE)/%.log:$(TEST_BASE)/%
 	$(Q) mkdir -p $(dir $@) $(TEST_ENV)/$(basename $(@F))

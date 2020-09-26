@@ -1,6 +1,6 @@
 set(GRAPHVIZ_UNKNOWN_LIBS FALSE)
 set(GRAPHVIZ_IGNORE_TARGETS "^[^_][^_][^i][^d]"
-     __idf_app_config __idf_debug _idf_misc$ ^__idf_txtio$ # avoid cluttering
+     #__idf_app_config __idf_debug _idf_misc$ ^__idf_txtio$ # avoid cluttering
      __idf_esp
      __idf_hal
      __idf_bootloader __idf_esptool_py  __idf_partition_table  __idf_soc __idf_log __idf_spi_flash __idf_micro-ecc __idf_efuse __idf_driver __idf_esp_rom

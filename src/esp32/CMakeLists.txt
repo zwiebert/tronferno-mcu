@@ -39,3 +39,5 @@ endfunction()
 
 project(tronferno-mcu esptool_py)
 
+
+include(CTest)

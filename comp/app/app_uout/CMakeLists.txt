@@ -4,7 +4,7 @@ set(srcs  status_output_switch.cc so_out.cc so_print.cc callbacks.cc
 
 idf_component_register(
     SRCS ${srcs} 
-    INCLUDE_DIRS . "./include" 
+    INCLUDE_DIRS "./include" 
     REQUIRES uout
     PRIV_REQUIRES  app_misc misc app_settings  debug fernotron_app_interface cli
                    app_update
