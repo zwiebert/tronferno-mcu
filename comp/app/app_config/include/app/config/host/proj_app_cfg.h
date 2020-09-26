@@ -43,7 +43,7 @@
 
 #define IRAM_ATTR
 #undef CONFIG_BLOB
-#undef CONFIG_DICT
+//#undef CONFIG_DICT
 #undef ACCESS_GPIO
 #undef MDR_TIME
 

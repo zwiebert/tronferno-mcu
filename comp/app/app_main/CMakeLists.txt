@@ -4,7 +4,7 @@ idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS "./include" ../.. 
     PRIV_INCLUDE_DIRS "./include/app"
-    REQUIRES uout firmware_update misc_time debug
+    REQUIRES uout firmware_update misc_time dbg
     PRIV_REQUIRES fernotron_app_interface gpio net misc app_http_server  app_cli app_settings key_value_store net app_mqtt storage config_kvs app_uout app_misc
                   freertos
                   

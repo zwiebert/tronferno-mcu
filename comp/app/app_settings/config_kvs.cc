@@ -23,10 +23,9 @@
 #define D(x) 
 
 #define CFG_KEY "global.C"
-
 #ifdef CONFIG_DICT
-
-extern const char * const config_keys[] = {
+extern const char * const config_keys[];
+const char * const config_keys[] = {
   "C_RECEIVER", "C_TRANSM", "C_CUID", "C_GMU", "C_BAUD", "C_GPIO",
   "C_CFG_PASSWD", "C_LONGITUDE", "C_LATITUDE",
 #ifndef POSIX_TIME
