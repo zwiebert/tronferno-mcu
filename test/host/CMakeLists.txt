@@ -8,9 +8,7 @@ set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++
 
 project(tfmcu-test)
 
-#find_package(unity PATHS comp/test/test_host/unity)
-#add_library(unity STATIC comp/test/test_host/unity/src/unity.c)
-
+# find_package(unity PATHS comp/test/test_host/unity) add_library(unity STATIC comp/test/test_host/unity/src/unity.c)
 
 add_compile_definitions(HOST TEST_HOST TEST HOST_TESTING UNITY_SUPPORT_TEST_CASES)
 set(TEST_HOST true)
@@ -92,12 +90,12 @@ if(${test_this})
 endif()
 
 macro(my_filter_sources)
-   list(FILTER ${ARGV0} EXCLUDE "esp32/*")
+  list(FILTER ${ARGV0} EXCLUDE "esp32/*")
 endmacro()
 
 function(set_comp_vars)
   cmake_parse_arguments(MY "" "NAME" "" "${ARGN}")
-  #message("MY_NAME: ${MY_NAME}")
+  # message("MY_NAME: ${MY_NAME}")
   set("${MY_NAME}_INCLUDE_DIRS"
       ${INC_PATHS}
       CACHE INTERNAL "${MY_NAME}_INCLUDE_DIRS")
@@ -114,6 +112,79 @@ function(set_comp_vars)
       ${__PRIV_REQUIRES}
       CACHE INTERNAL "${MY_NAME}_PRIV_REQUIRES")
 endfunction()
+
+macro(add_tests)
+  message("%%%%%%%%%%%% ${CMAKE_CURRENT_LIST_DIR} %%%%%%%%%%%%%%%%%%%%%% srcs: ${__SRC_DIRS}")
+
+  get_filename_component(parent_dir ${CMAKE_CURRENT_LIST_DIR} DIRECTORY)
+  get_filename_component(parent_dir_name ${parent_dir} NAME)
+
+  foreach(test_dir ${__SRC_DIRS})
+    file(GLOB test_files "${test_dir}/test_*.cc" "${test_dir}/test_*.cpp" "${test_dir}/test_*.c")
+    set(__SRCS ${__SRCS} ${test_files})
+  endforeach()
+
+  foreach(test_file ${__SRCS})
+    message("file: ${test_file}")
+    get_filename_component(test_file_name ${test_file} NAME_WE)
+    set(test_name "test.${parent_dir_name}.${test_file_name}")
+
+    add_executable(${test_name} ${test_file})
+    target_compile_options(${test_name} PRIVATE ${comp_compile_opts})
+    target_compile_features(${test_name} PRIVATE ${comp_compile_feats})
+    # target_link_options(${test_name} PRIVATE "-flto" "-O2") target_link_libraries(${test_name} PRIVATE unity)
+    set(working_directory "${PROJECT_BINARY_DIR}/test_wd/${test_name}")
+    file(MAKE_DIRECTORY ${working_directory})
+    add_test(NAME ${test_name} COMMAND ${test_name} WORKING_DIRECTORY ${working_directory})
+    set_comp_vars(NAME ${test_name})
+    set(TEST_EXECUTABLES
+        "${TEST_EXECUTABLES}" "${test_name}"
+        CACHE INTERNAL "${TEST_EXECUTABLES}")
+
+  endforeach()
+endmacro()
+
+
+macro(add_libs)
+set_comp_vars(NAME ${COMPONENT_LIB})
+
+if("${__SRCS}" STREQUAL "")
+  message("INTERFACE LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
+  set(COMP_ACC INTERFACE)
+  add_library(${COMPONENT_LIB} INTERFACE ${__SRCS})
+else()
+  message("PUBLIC LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
+  set(COMP_ACC PUBLIC)
+  add_library(${COMPONENT_LIB} STATIC ${__SRCS})
+endif()
+
+set(COMPONENT_LIBS
+    "${COMPONENT_LIBS}" "${COMPONENT_LIB}"
+    CACHE INTERNAL "${COMPONENT_LIBS}")
+
+set("${COMPONENT_LIB}_ACCESS"
+    ${COMP_ACC}
+    CACHE INTERNAL "${COMPONENT_LIB}_ACCESS")
+
+foreach(comp_dir ${COMPONENT_DIRECTORIES})
+  foreach(req ${__REQUIRES} ${__PRIV_REQUIRES})
+    if(EXISTS "${PROJECT_SOURCE_DIR}/${comp_dir}/${req}/CMakeLists.txt")
+      if(NOT EXISTS "${PROJECT_BINARY_DIR}/${comp_dir}/${req}")
+        add_subdirectory("${PROJECT_SOURCE_DIR}/${comp_dir}/${req}" "${PROJECT_BINARY_DIR}/${comp_dir}/${req}")
+      endif()
+    endif()
+  endforeach()
+endforeach()
+
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/test/CMakeLists.txt")
+  message("test_directory: ${CMAKE_CURRENT_LIST_DIR}/test srcs: ${__SRCS}")
+  # if("fernotron_app" STREQUAL ${COMPONENT_LIB}) # XXX: experimental code
+  add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/test")
+  # endif()
+endif()
+endmacro()
+
+
 
 macro(idf_component_register)
   set(options)
@@ -151,103 +222,48 @@ macro(idf_component_register)
   list(TRANSFORM _PRIV_INCLUDE_DIRS PREPEND "${CMAKE_CURRENT_LIST_DIR}/" OUTPUT_VARIABLE PRIV_INC_PATHS)
   list(APPEND __PRIV_REQUIRES test_host)
 
-  # return()
-
   get_filename_component(COMPONENT_LIB ${CMAKE_CURRENT_LIST_DIR} NAME)
 
   if("test" STREQUAL "${COMPONENT_LIB}")
-
-    message("%%%%%%%%%%%% ${CMAKE_CURRENT_LIST_DIR} %%%%%%%%%%%%%%%%%%%%%% srcs: ${__SRC_DIRS}")
-
-   
-
-    foreach(test_dir ${__SRC_DIRS})
-      file(GLOB test_files "${test_dir}/test_*.cc" "${test_dir}/test_*.cpp" "${test_dir}/test_*.c")
-      set(__SRCS ${__SRCS} ${test_files})
-    endforeach()
-
-    foreach(test_file ${__SRCS})
-      message("file: ${test_file}")
-      get_filename_component(test_name ${test_file} NAME_WE)
-      add_executable(${test_name} ${test_file})
-      target_compile_options(${test_name} PRIVATE ${comp_compile_opts})
-      target_compile_features(${test_name} PRIVATE ${comp_compile_feats})
-      #target_link_options(${test_name} PRIVATE "-flto" "-O2")
-      #target_link_libraries(${test_name} PRIVATE unity)
-      add_test(NAME ${test_name} COMMAND $<TARGET_FILE:${test_name}>)
-      set_comp_vars(NAME ${test_name})
-    set(TEST_EXECUTABLES
-      "${TEST_EXECUTABLES}" "${test_name}"
-    CACHE INTERNAL "${TEST_EXECUTABLES}")
-
-    endforeach()
-
+    add_tests()
   else()
-    set_comp_vars(NAME ${COMPONENT_LIB})
-
-    if("${__SRCS}" STREQUAL "")
-      message("INTERFACE LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
-      set(COMP_ACC INTERFACE)
-      add_library(${COMPONENT_LIB} INTERFACE ${__SRCS})
-    else()
-      message("PUBLIC LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
-      set(COMP_ACC PUBLIC)
-      add_library(${COMPONENT_LIB} STATIC ${__SRCS})
-    endif()
-
-    set(COMPONENT_LIBS
-        "${COMPONENT_LIBS}" "${COMPONENT_LIB}"
-        CACHE INTERNAL "${COMPONENT_LIBS}")
-
-    set("${COMPONENT_LIB}_ACCESS"
-        ${COMP_ACC}
-        CACHE INTERNAL "${COMPONENT_LIB}_ACCESS")
-
-    foreach(comp_dir ${COMPONENT_DIRECTORIES})
-      foreach(req ${__REQUIRES} ${__PRIV_REQUIRES})
-        if(EXISTS "${PROJECT_SOURCE_DIR}/${comp_dir}/${req}/CMakeLists.txt")
-          if(NOT EXISTS "${PROJECT_BINARY_DIR}/${comp_dir}/${req}")
-            add_subdirectory("${PROJECT_SOURCE_DIR}/${comp_dir}/${req}" "${PROJECT_BINARY_DIR}/${comp_dir}/${req}")
-          endif()
-        endif()
-      endforeach()
-    endforeach()
-
-    if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/test/CMakeLists.txt")
-      message("test_directory: ${CMAKE_CURRENT_LIST_DIR}/test srcs: ${__SRCS}")
-      #if("fernotron_app" STREQUAL ${COMPONENT_LIB}) # XXX: experimental code
-        add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/test")
-      #endif()
-    endif()
+    add_libs()
   endif()
-endmacro()
+  endmacro()
 
-function(component_compile_features)
+
+  function(component_compile_features)
 if(NOT "${__SRCS}" STREQUAL "")
-  if(NOT ${COMPONENT_LIB} STREQUAL "test")
-    target_compile_features(${COMPONENT_LIB} PRIVATE ${ARGV})
-  endif()
+if(NOT ${COMPONENT_LIB} STREQUAL "test")
+  target_compile_features(${COMPONENT_LIB} PRIVATE ${ARGV})
 endif()
+  endif()
 endfunction()
 
 function(component_compile_options)
   if(NOT "${__SRCS}" STREQUAL "")
-  if(NOT ${COMPONENT_LIB} STREQUAL "test")
-    target_compile_options(${COMPONENT_LIB} PRIVATE ${ARGV})
-  endif()
+    if(NOT ${COMPONENT_LIB} STREQUAL "test")
+      target_compile_options(${COMPONENT_LIB} PRIVATE ${ARGV})
+    endif()
   endif()
 endfunction()
 
 add_subdirectory(comp/test/test_host)
 
 foreach(comp ${COMPONENT_LIBS})
-   message("@all_lib_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
-  my_include_from_list(COMP    ${comp}    ACCESS    ${${comp}_ACCESS}    INC_LIST    ${${comp}_INCLUDE_DIRS}    ${${comp}_PRIV_INCLUDE_DIRS})
+  message("@all_lib_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
+  my_include_from_list(
+    COMP
+    ${comp}
+    ACCESS
+    ${${comp}_ACCESS}
+    INC_LIST
+    ${${comp}_INCLUDE_DIRS}
+    ${${comp}_PRIV_INCLUDE_DIRS})
   my_comp_add_includes(COMP ${comp} ACCESS ${${comp}_ACCESS} COMP_LIST ${${comp}_REQUIRES})
   my_comp_add_includes(COMP ${comp} ACCESS ${${comp}_ACCESS} COMP_LIST ${${comp}_PRIV_REQUIRES})
 
-
-  set(reqs ${${comp}_REQUIRES}  ${${comp}_PRIV_REQUIRES})
+  set(reqs ${${comp}_REQUIRES} ${${comp}_PRIV_REQUIRES})
   foreach(req ${reqs})
     list(FIND COMPONENT_LIBS "${req}" idx)
     if(${idx} EQUAL -1)
@@ -259,12 +275,19 @@ foreach(comp ${COMPONENT_LIBS})
 endforeach()
 
 foreach(comp ${TEST_EXECUTABLES})
-   message("@all_test_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
-  my_include_from_list(COMP ${comp} ACCESS PUBLIC INC_LIST    ${${comp}_INCLUDE_DIRS}    ${${comp}_PRIV_INCLUDE_DIRS})
+  message("@all_test_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
+  my_include_from_list(
+    COMP
+    ${comp}
+    ACCESS
+    PUBLIC
+    INC_LIST
+    ${${comp}_INCLUDE_DIRS}
+    ${${comp}_PRIV_INCLUDE_DIRS})
   my_comp_add_includes(COMP ${comp} ACCESS PUBLIC COMP_LIST ${${comp}_REQUIRES})
   my_comp_add_includes(COMP ${comp} ACCESS PUBLIC COMP_LIST ${${comp}_PRIV_REQUIRES})
 
-  set(reqs ${${comp}_REQUIRES}  ${${comp}_PRIV_REQUIRES})
+  set(reqs ${${comp}_REQUIRES} ${${comp}_PRIV_REQUIRES})
   foreach(req ${reqs})
     list(FIND COMPONENT_LIBS "${req}" idx)
     if(${idx} EQUAL -1)

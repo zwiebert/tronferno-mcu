@@ -202,18 +202,20 @@ include $(DEPFILES)
 ################ New Cmake based test build ########################
 CM_BUILD_PATH=$(BUILD_BASE)/cm.test.host
 
-.PHONY: test.cm.config test.cm.build
+.PHONY: test.cm.configure test.cm.build
 
-test.cm.config:
+test.cm.configure:
 	rm -r $(CM_BUILD_PATH)
 	mkdir -p $(CM_BUILD_PATH)
-	cmake -B $(CM_BUILD_PATH)
+	cmake -B $(CM_BUILD_PATH) -G Ninja
 
+cm_build := $(make) C $(CM_BUILD_PATH)  -k -j  - VERBOSE=1
+cm_build := ninja -C $(CM_BUILD_PATH)   -k 0 -v  
 	
 test.cm.build:
-	$(make) -k -j -C $(CM_BUILD_PATH) VERBOSE=1
+	$(cm_build)
 
 test.cm.ctest:
-	$(make)  -C $(CM_BUILD_PATH) VERBOSE=1  test
+	$(cm_build) test
 	
 	
