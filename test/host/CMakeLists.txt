@@ -4,7 +4,7 @@ set(COMPONENT_DIRECTORIES comp/app comp/external/components-mcu/components comp/
 
 set(comp_compile_feats cxx_std_20)
 set(comp_compile_opts "$<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>" -Wno-missing-field-initializers)
-set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++2a>" -O2)
+set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++2a>" -Og -ggdb)
 
 project(tfmcu-test)
 
