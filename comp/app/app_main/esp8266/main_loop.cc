@@ -18,7 +18,7 @@
 #include "fernotron/fer_msg_attachment.h"
 #include "fernotron/fer_msg_tx.h"
 #include "fernotron/fer_msg_rx.h"
-#include "fernotron/callbacks.h"
+#include "fernotron/trx/callbacks.h"
 #include "app/fernotron.h"
 
 void loop(void);

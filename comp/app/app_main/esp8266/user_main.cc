@@ -17,7 +17,7 @@
 #include "app/uout/status_output.h"
 #include "txtio/inout.h"
 #include "driver/uart.h"
-#include "fernotron/callbacks.h"
+#include "fernotron/trx/callbacks.h"
 
 
 

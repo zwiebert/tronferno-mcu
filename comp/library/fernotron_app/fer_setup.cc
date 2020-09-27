@@ -6,7 +6,7 @@
 #include "fernotron/alias/pairings.h"
 #include "fernotron/astro.h"
 #include "fernotron/auto/fau_tevent.h"
-#include "fernotron/callbacks.h"
+#include "fernotron/trx/callbacks.h"
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "fernotron/fer_msg_attachment.h"
 #include "fernotron/fer_msg_rx.h"

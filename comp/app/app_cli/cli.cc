@@ -15,7 +15,7 @@
 #include "cli/cli.h"
 #include "app/uout/status_output.h"
 #include "app/settings/config.h"
-#include <fernotron/api/fer_msg_send.hh>
+#include <fernotron/trx/fer_msg_send.hh>
 #include <algorithm>
 #include <iterator>
 

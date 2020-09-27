@@ -23,7 +23,7 @@
 #include "net/ntp.h"
 #endif
 #include "fernotron/astro.h"
-#include <fernotron/api/fer_msg_send.hh>
+#include <fernotron/trx/fer_msg_send.hh>
 #include "app/cli/fernotron.h"
 #include "app/common.h"
 #include "misc/int_types.h"

@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include "fernotron/timer_data.h"
+#include "fernotron/trx/timer_data.h"
 #include "app/config/proj_app_cfg.h"
 
 

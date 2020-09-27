@@ -1,4 +1,4 @@
-#include <fernotron/api/fer_msg_send.hh>
+#include <fernotron/trx/fer_msg_send.hh>
 #include "fernotron/fer_msg_rx.h"
 #include <debug/dbg.h>
 

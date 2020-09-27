@@ -12,7 +12,7 @@
 #include "app/config/proj_app_cfg.h"
 #include "app/settings/config.h"
 #include "debug/dbg.h"
-#include <fernotron/api/fer_msg_send.hh>
+#include <fernotron/trx/fer_msg_send.hh>
 
 #define GRP_MAX 7
 #define MBR_MAX 7

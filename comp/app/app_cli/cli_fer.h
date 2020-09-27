@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fernotron/api/fer_msg_send.hh>
+#include <fernotron/trx/fer_msg_send.hh>
 
 bool cli_parm_to_ferCMD(const char *token, fer_if_cmd *cmd);
 

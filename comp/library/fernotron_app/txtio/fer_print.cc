@@ -16,7 +16,7 @@
 #include "fernotron/fer_msg_attachment.h"
 #include "misc/int_macros.h"
 #include "txtio/inout.h"
-#include <fernotron/api/fer_msg_send.hh>
+#include <fernotron/trx/fer_msg_send.hh>
 
 typedef uint8_t u8;
 typedef int8_t i8;

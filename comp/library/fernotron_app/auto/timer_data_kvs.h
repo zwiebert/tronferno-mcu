@@ -9,7 +9,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "fernotron/timer_data.h"
+#include "fernotron/trx/timer_data.h"
 
 
 bool save_timer_data_kvs(Fer_TimerData *p, uint8_t group, uint8_t member);
