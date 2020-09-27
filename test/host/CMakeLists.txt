@@ -8,8 +8,6 @@ set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++
 
 project(tfmcu-test)
 
-# find_package(unity PATHS comp/test/test_host/unity) add_library(unity STATIC comp/test/test_host/unity/src/unity.c)
-
 add_compile_definitions(HOST TEST_HOST TEST HOST_TESTING UNITY_SUPPORT_TEST_CASES)
 set(TEST_HOST true)
 set(UNIT_TESTING true)
@@ -78,7 +76,6 @@ set(test_this 0)
 # set(MY_SEEN_LIST a b c)
 set(req b)
 list(FIND MY_SEEN_LIST "${req}" seen_idx)
-message("si: ${seen_idx}")
 
 if(${test_this})
   message("start testing this")
@@ -114,8 +111,6 @@ function(set_comp_vars)
 endfunction()
 
 macro(add_tests)
-  message("%%%%%%%%%%%% ${CMAKE_CURRENT_LIST_DIR} %%%%%%%%%%%%%%%%%%%%%% srcs: ${__SRC_DIRS}")
-
   get_filename_component(parent_dir ${CMAKE_CURRENT_LIST_DIR} DIRECTORY)
   get_filename_component(parent_dir_name ${parent_dir} NAME)
 
@@ -125,7 +120,7 @@ macro(add_tests)
   endforeach()
 
   foreach(test_file ${__SRCS})
-    message("file: ${test_file}")
+    #message("file: ${test_file}")
     get_filename_component(test_file_name ${test_file} NAME_WE)
     set(test_name "test.${parent_dir_name}.${test_file_name}")
 
@@ -149,11 +144,11 @@ macro(add_libs)
 set_comp_vars(NAME ${COMPONENT_LIB})
 
 if("${__SRCS}" STREQUAL "")
-  message("INTERFACE LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
+  #message("INTERFACE LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
   set(COMP_ACC INTERFACE)
   add_library(${COMPONENT_LIB} INTERFACE ${__SRCS})
 else()
-  message("PUBLIC LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
+  #message("PUBLIC LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
   set(COMP_ACC PUBLIC)
   add_library(${COMPONENT_LIB} STATIC ${__SRCS})
 endif()
@@ -177,7 +172,7 @@ foreach(comp_dir ${COMPONENT_DIRECTORIES})
 endforeach()
 
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/test/CMakeLists.txt")
-  message("test_directory: ${CMAKE_CURRENT_LIST_DIR}/test srcs: ${__SRCS}")
+  #message("test_directory: ${CMAKE_CURRENT_LIST_DIR}/test srcs: ${__SRCS}")
   # if("fernotron_app" STREQUAL ${COMPONENT_LIB}) # XXX: experimental code
   add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/test")
   # endif()
@@ -202,21 +197,15 @@ macro(idf_component_register)
       EMBED_FILES
       EMBED_TXTFILES)
   cmake_parse_arguments(_ "${options}" "${single_value}" "${multi_value}" "${ARGN}")
-  set(__component_priv_requires "${__PRIV_REQUIRES}")
-  set(__component_requires "${__REQUIRES}")
-  set(__component_kconfig "${__KCONFIG}")
-  set(__component_kconfig_projbuild "${__KCONFIG_PROJBUILD}")
   set(__component_registered 1)
 
-  message("orig_sources: ${__SRCS}")
-  list(FILTER __SRCS EXCLUDE REGEX "^esp[0-9]+/.*")
-  message("fil_sources: ${__SRCS}")
+  list(FILTER __SRCS EXCLUDE REGEX "^(esp32|esp8266|atmega*)/.*")
 
   set(host_dir ${CMAKE_CURRENT_LIST_DIR}/host)
   file(GLOB host_files "${host_dir}/*.cc" "${host_dir}/*.cpp" "${host_dir}/*.c")
   set(__SRCS ${__SRCS} ${host_files})
-  message("###############host_files: ${host_files}")
-  message("host_sources: ${__SRCS}")
+  #message("###############host_files: ${host_files}")
+  #message("host_sources: ${__SRCS}")
 
   list(TRANSFORM __INCLUDE_DIRS PREPEND "${CMAKE_CURRENT_LIST_DIR}/" OUTPUT_VARIABLE INC_PATHS)
   list(TRANSFORM _PRIV_INCLUDE_DIRS PREPEND "${CMAKE_CURRENT_LIST_DIR}/" OUTPUT_VARIABLE PRIV_INC_PATHS)
@@ -251,7 +240,7 @@ endfunction()
 add_subdirectory(comp/test/test_host)
 
 foreach(comp ${COMPONENT_LIBS})
-  message("@all_lib_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
+  #message("@all_lib_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
   my_include_from_list(
     COMP
     ${comp}
@@ -275,7 +264,7 @@ foreach(comp ${COMPONENT_LIBS})
 endforeach()
 
 foreach(comp ${TEST_EXECUTABLES})
-  message("@all_test_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
+  #message("@all_test_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
   my_include_from_list(
     COMP
     ${comp}
@@ -298,5 +287,21 @@ foreach(comp ${TEST_EXECUTABLES})
 endforeach()
 
 message("all_libs: ${COMPONENT_LIBS}")
-
 message("all_tests: ${TEST_EXECUTABLES}")
+
+if (1)
+foreach(comp ${COMPONENT_LIBS} ${TEST_EXECUTABLES})
+  foreach(var ACCESS REQUIRES PRIV_REQUIRES INCLUDE_DIRS PRIV_INCLUDE_DIRS)
+    unset("${comp}_${var}" CACHE)
+  endforeach()
+endforeach()
+
+foreach(var TEST_EXECUTABLES COMPONENT_LIBS)
+  unset("${var}" CACHE)
+endforeach()
+endif()
+
+
+foreach(comp ${COMPONENT_LIBS} ${TEST_EXECUTABLES})
+  message("@all: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
+endforeach()
