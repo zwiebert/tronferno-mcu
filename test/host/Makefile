@@ -205,7 +205,7 @@ CM_BUILD_PATH=$(BUILD_BASE)/cm.test.host
 .PHONY: test.cm.configure test.cm.build
 
 test.cm.configure:
-	rm -r $(CM_BUILD_PATH)
+	rm -fr $(CM_BUILD_PATH)
 	mkdir -p $(CM_BUILD_PATH)
 	cmake -B $(CM_BUILD_PATH) -G Ninja
 
