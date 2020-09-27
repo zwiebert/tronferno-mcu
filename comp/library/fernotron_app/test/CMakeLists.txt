@@ -4,7 +4,7 @@ idf_component_register(SRC_DIRS "."
                        PRIV_REQUIRES fernotron_interface fernotron_app_interface app_config app_settings dbg utils_misc txtio
                                      unity
                        #REQUIRES 
-                       #app_misc unity txtio  fernotron fernotron_app
+                       #app_misc unity txtio  fernotron_trx fernotron_app
                        #fernotron_app_interface app_settings dbg config_kvs
                        )
 
