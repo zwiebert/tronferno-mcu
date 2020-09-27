@@ -53,7 +53,7 @@ CXX_SRC := $(shell find $(COMP_PATHS) '(' -name '*.cc' -or -name '*.cpp' ')' \
                    -or -wholename '*/node_modules/*' ')' )
 C_SRC := $(shell find $(COMP_PATHS) -name '*.c' \
                    -and -not '(' -wholename '*/esp8266/*' -or  -wholename '*/esp32/*' -or -wholename '*/nanopb/*' \
-                   -or -wholename '*/jsmn/*' -or -wholename '*/node_modules/*' -or -wholename '*/esp8266/spiffs/*' ')')
+                   -or -wholename '*/jsmn/*test*' -or -wholename '*/node_modules/*' -or -wholename '*/esp8266/spiffs/*' ')')
 TEST_SRC := $(shell find $(COMP_PATHS) -maxdepth 2 -and '(' -name '*.c' -or -name '*.cc' -or -name '*.cpp' ')' -and -wholename '*/test/test_*')
                    
 C_OBJ         := $(addsuffix .o,$(subst $(SRC_BASE)/,$(BUILD_OBJ_PATH)/,$(C_SRC))) $(TEST_RUNNER_C_OBJ)

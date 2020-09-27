@@ -8,7 +8,11 @@ set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++
 
 project(tfmcu-test)
 
-add_compile_definitions(HOST TEST_HOST TEST HOST_TESTING)
+#find_package(unity PATHS comp/test/test_host/unity)
+#add_library(unity STATIC comp/test/test_host/unity/src/unity.c)
+
+
+add_compile_definitions(HOST TEST_HOST TEST HOST_TESTING UNITY_SUPPORT_TEST_CASES)
 set(TEST_HOST true)
 set(UNIT_TESTING true)
 
@@ -145,6 +149,7 @@ macro(idf_component_register)
 
   list(TRANSFORM __INCLUDE_DIRS PREPEND "${CMAKE_CURRENT_LIST_DIR}/" OUTPUT_VARIABLE INC_PATHS)
   list(TRANSFORM _PRIV_INCLUDE_DIRS PREPEND "${CMAKE_CURRENT_LIST_DIR}/" OUTPUT_VARIABLE PRIV_INC_PATHS)
+  list(APPEND __PRIV_REQUIRES test_host)
 
   # return()
 
@@ -154,7 +159,7 @@ macro(idf_component_register)
 
     message("%%%%%%%%%%%% ${CMAKE_CURRENT_LIST_DIR} %%%%%%%%%%%%%%%%%%%%%% srcs: ${__SRC_DIRS}")
 
-    list(PREPEND __REQUIRES test_host)
+   
 
     foreach(test_dir ${__SRC_DIRS})
       file(GLOB test_files "${test_dir}/test_*.cc" "${test_dir}/test_*.cpp" "${test_dir}/test_*.c")
@@ -168,6 +173,7 @@ macro(idf_component_register)
       target_compile_options(${test_name} PRIVATE ${comp_compile_opts})
       target_compile_features(${test_name} PRIVATE ${comp_compile_feats})
       target_link_options(${test_name} PRIVATE "-flto" "-O2")
+      #target_link_libraries(${test_name} PRIVATE unity)
       add_test(NAME ${test_name} COMMAND $<TARGET_FILE:${test_name}>)
       set_comp_vars(NAME ${test_name})
     set(TEST_EXECUTABLES

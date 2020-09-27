@@ -13,7 +13,7 @@ bool config_item_modified(enum configItem item) {}
 void  mcu_restart(void) {}
 bool mcu_get_buttonPin(void) {}
 volatile u32 run_time_s_, run_time_ts_;
-extern const char * const config_keys[10] = {};
+//extern const char * const config_keys[10] = {};
 
 void setup_pin(const struct cfg_gpio *c) {}
 void   txtio_mcu_setup() {}
