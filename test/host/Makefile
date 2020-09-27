@@ -196,3 +196,24 @@ $(foreach test_obj,$(TEST_OBJ),$(eval $(call build_test,$(test_obj))))
 ##################
 DEPFILES = $(shell find $(BUILD_OBJ_PATH) -name '*.d')
 include $(DEPFILES)
+
+
+
+################ New Cmake based test build ########################
+CM_BUILD_PATH=$(BUILD_BASE)/cm.test.host
+
+.PHONY: test.cm.config test.cm.build
+
+test.cm.config:
+	rm -r $(CM_BUILD_PATH)
+	mkdir -p $(CM_BUILD_PATH)
+	cmake -B $(CM_BUILD_PATH)
+
+	
+test.cm.build:
+	$(make) -k -j -C $(CM_BUILD_PATH) VERBOSE=1
+
+test.cm.ctest:
+	$(make)  -C $(CM_BUILD_PATH) VERBOSE=1  test
+	
+	

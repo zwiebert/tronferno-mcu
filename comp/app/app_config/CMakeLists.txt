@@ -1,6 +1,6 @@
 idf_component_register(
     INCLUDE_DIRS "./include"
-    REQUIRES "misc"
+    REQUIRES "utils_misc"
 )
    
 if(NOT TEST_HOST)
@@ -15,5 +15,3 @@ add_custom_target(app_config_kconfig_header ALL  DEPENDS ${COMPONENT_DIR}/_force
 add_dependencies(  ${COMPONENT_LIB} app_config_kconfig_header)
 endif()
 
-component_compile_options(${comp_compile_opts})
-component_compile_features(${comp_compile_feats})

@@ -1,15 +1,13 @@
-#include <string.h>
 #include "app/config/proj_app_cfg.h"
-
+#include "app/settings/config.h"
 #include "app/rtc.h"
 
 #include <stdlib.h>
-
 #include <time.h>
 #ifdef POSIX_TIME
 #include <sys/time.h>
 #endif
-#include "app/settings/config.h"
+#include <string.h>
 
 rtc_time_source_t rtc_last_time_source;
 
