@@ -16,6 +16,7 @@
 #include "fernotron/trx/raw/fer_rawmsg_build.h"
 #include "misc/bcd.h"
 #include "app/settings/config.h"
+#include <fernotron/trx/fer_trx_api.hh>
 
 #if 0
 static u8 data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];

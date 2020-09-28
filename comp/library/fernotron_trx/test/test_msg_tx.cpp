@@ -1,6 +1,6 @@
 #include "unity.h"
 #include "fernotron/trx/raw/fer_msg_tx.h"
-
+#include <fernotron/trx/fer_trx_api.hh>
 
 
 void test_txq_repeats() {

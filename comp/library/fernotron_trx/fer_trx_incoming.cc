@@ -102,7 +102,6 @@ void Fer_Trx_API::push_event(struct Fer_Trx_IncomingEvent *evt) {
 
 ///////////////// ISR //////////////////////////////
 #include <fernotron/trx/raw/fer_radio_trx.h>
-#include <esp_attr.h>
 void IRAM_ATTR Fer_Trx_API::isr_sample_rx_pin(bool level) {
   fer_rx_sampleInput(level);
 }

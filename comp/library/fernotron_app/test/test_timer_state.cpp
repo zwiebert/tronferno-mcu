@@ -13,6 +13,7 @@
 #include "debug/dbg.h"
 #include "app/settings/config.h"
 #include <misc/int_types.h>
+#include <fernotron/trx/fer_trx_api.hh>
 
 bool succ;
 

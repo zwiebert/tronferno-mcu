@@ -13,6 +13,7 @@
 #include "../fer_api.h"
 #include "debug/dbg.h"
 #include "fernotron/trx/raw/fer_rawmsg_build.h"
+#include <fernotron/trx/fer_trx_api.hh>
 #include "misc/bcd.h"
 
 

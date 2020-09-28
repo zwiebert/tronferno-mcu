@@ -209,8 +209,8 @@ test.cm.configure:
 	mkdir -p $(CM_BUILD_PATH)
 	cmake -B $(CM_BUILD_PATH) -G Ninja
 
-cm_build := $(make) C $(CM_BUILD_PATH)  -k -j  - VERBOSE=1
-cm_build := ninja -C $(CM_BUILD_PATH)   -k 0 -v  
+cm_build := $(make) C $(CM_BUILD_PATH)  -k -j   VERBOSE=1
+cm_build := ninja -C $(CM_BUILD_PATH)   -k 0 # -v  
 	
 test.cm.build:
 	$(cm_build)

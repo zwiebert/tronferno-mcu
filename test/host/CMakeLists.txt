@@ -41,32 +41,13 @@ function(my_comp_add_includes)
   endif()
 
   foreach(req ${MY_COMP_LIST})
-    my_include_from_list(
-      COMP
-      ${MY_COMP}
-      TAG
-      "(depth: ${MY_CURRENT_DEPTH}, ${req})"
-      ACCESS
-      ${MY_ACCESS}
-      INC_LIST
-      ${${req}_INCLUDE_DIRS})
-
+    my_include_from_list( COMP ${MY_COMP} TAG "(depth: ${MY_CURRENT_DEPTH}, ${req})" ACCESS ${MY_ACCESS} INC_LIST ${${req}_INCLUDE_DIRS})
     list(FIND MY_SEEN_LIST ${req} seen_idx)
     if(${seen_idx} EQUAL -1)
       list(APPEND MY_SEEN_LIST ${req})
-      my_comp_add_includes(
-        MAX_DEPTH
-        ${MY_MAX_DEPTH}
-        CURRENT_DEPTH
-        ${MY_CURRENT_DEPTH}
-        SEEN_LIST
-        "${MY_SEEN_LIST}"
-        COMP
-        ${MY_COMP}
-        ACCESS
-        ${MY_ACCESS}
-        COMP_LIST
-        ${${req}_REQUIRES})
+      my_comp_add_includes( MAX_DEPTH ${MY_MAX_DEPTH} CURRENT_DEPTH ${MY_CURRENT_DEPTH} SEEN_LIST "${MY_SEEN_LIST}" COMP ${MY_COMP} ACCESS ${MY_ACCESS} COMP_LIST ${${req}_REQUIRES})
+    else()
+      message("########## circular dependency: ${req} (${MY_SEEN_LIST}) ################")
     endif()
   endforeach()
 
@@ -120,7 +101,7 @@ macro(add_tests)
   endforeach()
 
   foreach(test_file ${__SRCS})
-    #message("file: ${test_file}")
+    # message("file: ${test_file}")
     get_filename_component(test_file_name ${test_file} NAME_WE)
     set(test_name "test.${parent_dir_name}.${test_file_name}")
 
@@ -130,7 +111,10 @@ macro(add_tests)
     # target_link_options(${test_name} PRIVATE "-flto" "-O2") target_link_libraries(${test_name} PRIVATE unity)
     set(working_directory "${PROJECT_BINARY_DIR}/test_wd/${test_name}")
     file(MAKE_DIRECTORY ${working_directory})
-    add_test(NAME ${test_name} COMMAND ${test_name} WORKING_DIRECTORY ${working_directory})
+    add_test(
+      NAME ${test_name}
+      COMMAND ${test_name}
+      WORKING_DIRECTORY ${working_directory})
     set_comp_vars(NAME ${test_name})
     set(TEST_EXECUTABLES
         "${TEST_EXECUTABLES}" "${test_name}"
@@ -139,63 +123,51 @@ macro(add_tests)
   endforeach()
 endmacro()
 
-
 macro(add_libs)
-set_comp_vars(NAME ${COMPONENT_LIB})
+  set_comp_vars(NAME ${COMPONENT_LIB})
 
-if("${__SRCS}" STREQUAL "")
-  #message("INTERFACE LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
-  set(COMP_ACC INTERFACE)
-  add_library(${COMPONENT_LIB} INTERFACE ${__SRCS})
-else()
-  #message("PUBLIC LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
-  set(COMP_ACC PUBLIC)
-  add_library(${COMPONENT_LIB} STATIC ${__SRCS})
-endif()
+  if("${__SRCS}" STREQUAL "")
+    # message("INTERFACE LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
+    set(COMP_ACC INTERFACE)
+    add_library(${COMPONENT_LIB} INTERFACE ${__SRCS})
+    target_include_directories(${COMPONENT_LIB} INTERFACE ${INC_PATHS})
+  else()
+    # message("PUBLIC LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
+    set(COMP_ACC PUBLIC)
+    add_library(${COMPONENT_LIB} STATIC ${__SRCS})
+    target_include_directories(${COMPONENT_LIB} PUBLIC ${INC_PATHS})
+    target_include_directories(${COMPONENT_LIB} PRIVATE ${PRIV_INC_PATHS})
+  endif()
 
-set(COMPONENT_LIBS
-    "${COMPONENT_LIBS}" "${COMPONENT_LIB}"
-    CACHE INTERNAL "${COMPONENT_LIBS}")
+  set(COMPONENT_LIBS
+      "${COMPONENT_LIBS}" "${COMPONENT_LIB}"
+      CACHE INTERNAL "${COMPONENT_LIBS}")
 
-set("${COMPONENT_LIB}_ACCESS"
-    ${COMP_ACC}
-    CACHE INTERNAL "${COMPONENT_LIB}_ACCESS")
+  set("${COMPONENT_LIB}_ACCESS"
+      ${COMP_ACC}
+      CACHE INTERNAL "${COMPONENT_LIB}_ACCESS")
 
-foreach(comp_dir ${COMPONENT_DIRECTORIES})
-  foreach(req ${__REQUIRES} ${__PRIV_REQUIRES})
-    if(EXISTS "${PROJECT_SOURCE_DIR}/${comp_dir}/${req}/CMakeLists.txt")
-      if(NOT EXISTS "${PROJECT_BINARY_DIR}/${comp_dir}/${req}")
-        add_subdirectory("${PROJECT_SOURCE_DIR}/${comp_dir}/${req}" "${PROJECT_BINARY_DIR}/${comp_dir}/${req}")
+  foreach(comp_dir ${COMPONENT_DIRECTORIES})
+    foreach(req ${__REQUIRES} ${__PRIV_REQUIRES})
+      if(EXISTS "${PROJECT_SOURCE_DIR}/${comp_dir}/${req}/CMakeLists.txt")
+        if(NOT EXISTS "${PROJECT_BINARY_DIR}/${comp_dir}/${req}")
+          add_subdirectory("${PROJECT_SOURCE_DIR}/${comp_dir}/${req}" "${PROJECT_BINARY_DIR}/${comp_dir}/${req}")
+        endif()
       endif()
-    endif()
+    endforeach()
   endforeach()
-endforeach()
 
-if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/test/CMakeLists.txt")
-  #message("test_directory: ${CMAKE_CURRENT_LIST_DIR}/test srcs: ${__SRCS}")
-  # if("fernotron_app" STREQUAL ${COMPONENT_LIB}) # XXX: experimental code
-  add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/test")
-  # endif()
-endif()
+  if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/test/CMakeLists.txt")
+    # message("test_directory: ${CMAKE_CURRENT_LIST_DIR}/test srcs: ${__SRCS}") if("fernotron_app" STREQUAL ${COMPONENT_LIB}) # XXX: experimental code
+    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/test")
+    # endif()
+  endif()
 endmacro()
-
-
 
 macro(idf_component_register)
   set(options)
   set(single_value KCONFIG KCONFIG_PROJBUILD)
-  set(multi_value
-      SRCS
-      SRC_DIRS
-      EXCLUDE_SRCS
-      INCLUDE_DIRS
-      PRIV_INCLUDE_DIRS
-      LDFRAGMENTS
-      REQUIRES
-      PRIV_REQUIRES
-      REQUIRED_IDF_TARGETS
-      EMBED_FILES
-      EMBED_TXTFILES)
+  set(multi_value SRCS SRC_DIRS EXCLUDE_SRCS INCLUDE_DIRS PRIV_INCLUDE_DIRS LDFRAGMENTS REQUIRES PRIV_REQUIRES REQUIRED_IDF_TARGETS EMBED_FILES EMBED_TXTFILES)
   cmake_parse_arguments(_ "${options}" "${single_value}" "${multi_value}" "${ARGN}")
   set(__component_registered 1)
 
@@ -204,8 +176,7 @@ macro(idf_component_register)
   set(host_dir ${CMAKE_CURRENT_LIST_DIR}/host)
   file(GLOB host_files "${host_dir}/*.cc" "${host_dir}/*.cpp" "${host_dir}/*.c")
   set(__SRCS ${__SRCS} ${host_files})
-  #message("###############host_files: ${host_files}")
-  #message("host_sources: ${__SRCS}")
+  # message("###############host_files: ${host_files}") message("host_sources: ${__SRCS}")
 
   list(TRANSFORM __INCLUDE_DIRS PREPEND "${CMAKE_CURRENT_LIST_DIR}/" OUTPUT_VARIABLE INC_PATHS)
   list(TRANSFORM _PRIV_INCLUDE_DIRS PREPEND "${CMAKE_CURRENT_LIST_DIR}/" OUTPUT_VARIABLE PRIV_INC_PATHS)
@@ -218,14 +189,13 @@ macro(idf_component_register)
   else()
     add_libs()
   endif()
-  endmacro()
+endmacro()
 
-
-  function(component_compile_features)
-if(NOT "${__SRCS}" STREQUAL "")
-if(NOT ${COMPONENT_LIB} STREQUAL "test")
-  target_compile_features(${COMPONENT_LIB} PRIVATE ${ARGV})
-endif()
+function(component_compile_features)
+  if(NOT "${__SRCS}" STREQUAL "")
+    if(NOT ${COMPONENT_LIB} STREQUAL "test")
+      target_compile_features(${COMPONENT_LIB} PRIVATE ${ARGV})
+    endif()
   endif()
 endfunction()
 
@@ -239,69 +209,63 @@ endfunction()
 
 add_subdirectory(comp/test/test_host)
 
-foreach(comp ${COMPONENT_LIBS})
-  #message("@all_lib_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
-  my_include_from_list(
-    COMP
-    ${comp}
-    ACCESS
-    ${${comp}_ACCESS}
-    INC_LIST
-    ${${comp}_INCLUDE_DIRS}
-    ${${comp}_PRIV_INCLUDE_DIRS})
-  my_comp_add_includes(COMP ${comp} ACCESS ${${comp}_ACCESS} COMP_LIST ${${comp}_REQUIRES})
-  my_comp_add_includes(COMP ${comp} ACCESS ${${comp}_ACCESS} COMP_LIST ${${comp}_PRIV_REQUIRES})
-
-  set(reqs ${${comp}_REQUIRES} ${${comp}_PRIV_REQUIRES})
-  foreach(req ${reqs})
+macro(filter_system_comps)
+  foreach(req ${${ARGV0}})
     list(FIND COMPONENT_LIBS "${req}" idx)
     if(${idx} EQUAL -1)
-      list(REMOVE_ITEM reqs ${req})
+      list(REMOVE_ITEM ${ARGV0} ${req})
     endif()
   endforeach()
+endmacro()
 
-  target_link_libraries("${comp}" "${${comp}_ACCESS}" ${reqs})
+foreach(comp ${COMPONENT_LIBS})
+  message("@all_lib_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
+  #my_include_from_list( COMP ${comp} ACCESS ${${comp}_ACCESS} INC_LIST ${${comp}_INCLUDE_DIRS} ${${comp}_PRIV_INCLUDE_DIRS})
+  #my_comp_add_includes(COMP ${comp} ACCESS ${${comp}_ACCESS} COMP_LIST ${${comp}_REQUIRES})
+  #my_comp_add_includes(COMP ${comp} ACCESS ${${comp}_ACCESS} COMP_LIST ${${comp}_PRIV_REQUIRES})
+
+
+  filter_system_comps(${comp}_REQUIRES)
+  filter_system_comps(${comp}_PRIV_REQUIRES)
+
+  if("INTERFACE" STREQUAL "${${comp}_ACCESS}")
+    target_link_libraries("${comp}" INTERFACE ${${comp}_REQUIRES})
+  else()
+    set_target_properties(${comp} PROPERTIES LINK_INTERFACE_MULTIPLICITY 4)
+    target_link_libraries("${comp}" PUBLIC ${${comp}_REQUIRES})
+    target_link_libraries("${comp}" PRIVATE ${${comp}_PRIV_REQUIRES})
+  endif()
 endforeach()
 
 foreach(comp ${TEST_EXECUTABLES})
-  #message("@all_test_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
-  my_include_from_list(
-    COMP
-    ${comp}
-    ACCESS
-    PUBLIC
-    INC_LIST
-    ${${comp}_INCLUDE_DIRS}
-    ${${comp}_PRIV_INCLUDE_DIRS})
+  message("@all_test_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
+  my_include_from_list( COMP ${comp} ACCESS PUBLIC INC_LIST ${${comp}_INCLUDE_DIRS} ${${comp}_PRIV_INCLUDE_DIRS})
   my_comp_add_includes(COMP ${comp} ACCESS PUBLIC COMP_LIST ${${comp}_REQUIRES})
   my_comp_add_includes(COMP ${comp} ACCESS PUBLIC COMP_LIST ${${comp}_PRIV_REQUIRES})
 
-  set(reqs ${${comp}_REQUIRES} ${${comp}_PRIV_REQUIRES})
-  foreach(req ${reqs})
-    list(FIND COMPONENT_LIBS "${req}" idx)
-    if(${idx} EQUAL -1)
-      list(REMOVE_ITEM reqs ${req})
-    endif()
-  endforeach()
-  target_link_libraries("${comp}" PUBLIC ${reqs})
+  filter_system_comps(${comp}_REQUIRES)
+  filter_system_comps(${comp}_PRIV_REQUIRES)
+
+  if("INTERFACE" STREQUAL "${${comp}_ACCESS}")
+    target_link_libraries("${comp}" INTERFACE ${${comp}_REQUIRES})
+  else()
+    target_link_libraries("${comp}" PUBLIC ${${comp}_REQUIRES})
+    target_link_libraries("${comp}" PRIVATE ${${comp}_PRIV_REQUIRES})
+  endif()
 endforeach()
 
 message("all_libs: ${COMPONENT_LIBS}")
 message("all_tests: ${TEST_EXECUTABLES}")
 
-if (1)
-foreach(comp ${COMPONENT_LIBS} ${TEST_EXECUTABLES})
-  foreach(var ACCESS REQUIRES PRIV_REQUIRES INCLUDE_DIRS PRIV_INCLUDE_DIRS)
-    unset("${comp}_${var}" CACHE)
+# cleanup cached variables XXX: is this useful?
+if(1)
+  foreach(comp ${COMPONENT_LIBS} ${TEST_EXECUTABLES})
+    foreach(var ACCESS REQUIRES PRIV_REQUIRES INCLUDE_DIRS PRIV_INCLUDE_DIRS)
+      unset("${comp}_${var}" CACHE)
+    endforeach()
   endforeach()
-endforeach()
 
-foreach(var TEST_EXECUTABLES COMPONENT_LIBS)
-  unset("${var}" CACHE)
-endforeach()
+  foreach(var TEST_EXECUTABLES COMPONENT_LIBS)
+    unset("${var}" CACHE)
+  endforeach()
 endif()
-
-
-foreach(comp ${COMPONENT_LIBS} ${TEST_EXECUTABLES})
-  message("@all: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
-endforeach()
