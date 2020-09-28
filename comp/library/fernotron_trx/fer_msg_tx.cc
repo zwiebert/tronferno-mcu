@@ -69,7 +69,7 @@ static bool fer_send_queued_msg(struct sf *msg) {
     FER_SB_PUT_TGL(&msg->fsb, sf_toggle);
     if (msg->mt == MSG_TYPE_PLAIN) {
       evt.first = true;
-      Fer_Trx_IncomingMsg::push_event(&evt);
+      Fer_Trx_API::push_event(&evt);
     }
   }
 
@@ -77,7 +77,7 @@ static bool fer_send_queued_msg(struct sf *msg) {
   fer_msg_raw_checksumsCreate(fer_tx_msg, msg->mt);
 
   evt.first = false;
-  Fer_Trx_IncomingMsg::push_event(&evt);
+  Fer_Trx_API::push_event(&evt);
 
   fer_tx_transmitFerMsg(0, msg->mt);
 

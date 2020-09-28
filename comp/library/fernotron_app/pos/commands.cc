@@ -12,14 +12,14 @@
 #include "app/config/proj_app_cfg.h"
 #include "app/settings/config.h"
 #include "debug/dbg.h"
-#include <fernotron/trx/fer_msg_send.hh>
+#include <fernotron/trx/fer_trx_incoming.hh>
 
 #define GRP_MAX 7
 #define MBR_MAX 7
 
 bool fer_cmd_sendShutterCommand(u32 a, u8 g, u8 m, fer_if_cmd cmd, u8 repeats) {
   Fer_MsgCmd msg { .a = a, .g = g, .m = m, .cmd = cmd, .repeats = repeats };
-  return fer_api_tx.send(msg);
+  return Fer_Trx_API::send(msg);
 }
 
 bool fer_cmd_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
@@ -59,7 +59,7 @@ bool fer_cmd_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
       return false;
     fer_if_cmd fc = (pct < curr_pct) ? fer_if_cmd_DOWN : fer_if_cmd_UP;
     Fer_MsgCmd msg { .a = a, .g = g, .m = m, .cmd = fc, .repeats = repeats, .stopDelay = stop_delay };
-    return fer_api_tx.send(msg);
+    return Fer_Trx_API::send(msg);
   }
 
   {
@@ -69,7 +69,7 @@ bool fer_cmd_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     if (stop_delay == 0)
       return false;
     Fer_MsgCmd msg { .a = a, .g = g, .m = m, .cmd = fer_if_cmd_DOWN, .repeats = repeats, .delay = delay, .stopDelay = stop_delay };
-    return fer_api_tx.send(msg);
+    return Fer_Trx_API::send(msg);
   }
 
   return true;

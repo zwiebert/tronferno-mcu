@@ -3,15 +3,15 @@
 #include <misc/int_types.h>
 #include <fernotron/trx/fer_msg_send.hh>
 
-class Fer_Trx_IncomingMsg {
+class Fer_Trx_API {
 public:
   enum MsgKind {
     MSG_TYPE_NONE, MSG_TYPE_PLAIN, MSG_TYPE_PLAIN_DOUBLE, MSG_TYPE_RTC, MSG_TYPE_TIMER
   };
 
 public:
-  virtual ~Fer_Trx_IncomingMsg() = default;
-  static void setup(Fer_Trx_IncomingMsg *derived_object);
+  virtual ~Fer_Trx_API() = default;
+  static void setup(Fer_Trx_API *derived_object);
 
 public:
   u32 get_a() const;
@@ -44,6 +44,13 @@ public:
 
 
 public:
+  static bool send(const Fer_MsgCmd &msg);
+  static bool send(const Fer_MsgRtc &msg);
+  static bool send(const Fer_MsgTimer &msg);
+  static bool send_empty_timer(const Fer_MsgRtc &msg);
+
+
+public:
   static void push_event(struct Fer_Trx_IncomingEvent *evt);
 
 
@@ -51,4 +58,4 @@ private:
   struct Fer_Trx_IncomingEvent *myEvt;
 };
 
-typedef Fer_Trx_IncomingMsg::MsgKind fer_msg_kindT;
+typedef Fer_Trx_API::MsgKind fer_msg_kindT;

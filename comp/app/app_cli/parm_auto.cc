@@ -16,8 +16,7 @@
 #include "fernotron/auto/fau_tdata_store.h"
 #include "app/settings/config.h"
 #include <fernotron/fer_main.h>
-
-#include <fernotron/trx/fer_msg_send.hh>
+#include <fernotron/trx/fer_trx_incoming.hh>
 
 #include <stdlib.h>
 
@@ -236,13 +235,13 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   if (!f_no_send) {
     if (flag_rtc_only == FLAG_TRUE) {
       Fer_MsgRtc msg { .a = addr, .g = parm_g, .m = parm_m, .rtc = timer };
-      cli_replyResult(td, fer_api_tx.send(msg));
+      cli_replyResult(td, Fer_Trx_API::send(msg));
     } else if (f_manual) {
       Fer_MsgRtc msg { .a = addr, .g = parm_g, .m = parm_m, .rtc = timer };
       cli_replyResult(td, fer_api_tx.send_empty_timer(msg));
     } else {
       Fer_MsgTimer msg { .a = addr, .g = parm_g, .m = parm_m, .rtc = timer, .td = tda };
-      cli_replyResult(td, fer_api_tx.send(msg));
+      cli_replyResult(td, Fer_Trx_API::send(msg));
     }
   }
 

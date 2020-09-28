@@ -29,7 +29,7 @@ void fer_rx_loop() {
     }
 
     if (fer_msg_raw_checksumsVerify(fer_rx_msg, fer_rx_messageReceived)) {
-      Fer_Trx_IncomingMsg::push_event(&evt);
+      Fer_Trx_API::push_event(&evt);
       fer_rx_clear();
     }
   }

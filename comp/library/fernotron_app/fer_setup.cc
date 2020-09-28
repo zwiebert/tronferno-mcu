@@ -25,7 +25,7 @@ struct fer_configT fer_config;
 Fer_GmBitMask manual_bits;
 
 
-static class IncomingMsg : public Fer_Trx_IncomingMsg {
+static class IncomingMsg : public Fer_Trx_API {
 
 public:
   virtual void event_plain_message_was_received() {
@@ -112,7 +112,7 @@ void fer_main_setup(const fer_configT &ferConfig, const bool reinit) {
    if (reinit)
      return;
 
-  Fer_Trx_IncomingMsg::setup(&MyIncomingMsg);
+  Fer_Trx_API::setup(&MyIncomingMsg);
   fer_pos_init();
 
 }
