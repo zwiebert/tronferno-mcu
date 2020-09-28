@@ -12,6 +12,8 @@
 #include "debug/dbg.h"
 #include <string.h>
 
+#include <fernotron/trx/fer_trx_incoming.hh>
+#include "fer_trx_incoming_event.hh"
 
 void (*fer_rawMessageReceived_cb)(fer_msg_type msg_type, fer_sbT *fsb, fer_rawMsg *fmsg);
 
@@ -63,19 +65,24 @@ static void notify_messageReceived(fer_msg_type msg_type) {
 void fer_rx_loop() {
 #ifdef FER_RECEIVER
   if (fer_rx_messageReceived != MSG_TYPE_NONE) {
-    fer_msg_type msgType = fer_rx_messageReceived;
+    Fer_Trx_IncomingEvent evt {};
+    evt.kind  = fer_rx_messageReceived;
+    memcpy(&evt.fsb, fer_rx_msg->cmd.bd, 5);
 
-    if (msgType == MSG_TYPE_PLAIN) {
+    if (evt.kind == MSG_TYPE_PLAIN) {
       if (0 == memcmp(&last_received_sender.data, fer_rx_msg->cmd.bd, 5)) {
-        msgType = MSG_TYPE_PLAIN_DOUBLE;
+        evt.kind = MSG_TYPE_PLAIN_DOUBLE;
       } else {
         memcpy(&last_received_sender.data, fer_rx_msg->cmd.bd, 5);
+        last_received_sender = evt.fsb;
       }
+    } else {
+      evt.raw = fer_rx_msg;
     }
 
     if (fer_msg_raw_checksumsVerify(fer_rx_msg, fer_rx_messageReceived)) {
-      notify_rawMessageReceived(msgType);
-      notify_messageReceived(msgType);
+      notify_rawMessageReceived(evt.kind);
+      notify_messageReceived(evt.kind);
       fer_rx_clear();
     }
   }
