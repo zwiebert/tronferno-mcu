@@ -8,8 +8,8 @@
 #pragma once
 
 #include <stdint.h>
-#include "fernotron/fsb.h"  //XX
-#include "fernotron/fer_msg_attachment.h" // XXX
+#include "fernotron/trx/raw/fer_fsb.h"  //XX
+#include "fernotron/trx/raw/fer_msg_attachment.h" // XXX
 #include "fernotron/trx/timer_data.h"
 #include "fer_trx_incoming.hh"
 

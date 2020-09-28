@@ -5,8 +5,8 @@
 *  Author: bertw
 */
 
-#include <fernotron/fer_msg_plain.h>
-#include <fernotron/fer_msg_attachment.h>
+#include <fernotron/trx/raw/fer_msg_plain.h>
+#include <fernotron/trx/raw/fer_msg_attachment.h>
 #include <stdlib.h>
 #include <math.h>
 #include "stdbool.h"

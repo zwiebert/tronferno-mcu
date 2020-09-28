@@ -94,7 +94,7 @@ void Fer_Trx_API::push_event(struct Fer_Trx_IncomingEvent *evt) {
 ///////////////// send API ///////////////////////////
 
 #include <fernotron/trx/fer_msg_send.hh>
-#include "fernotron/fer_msg_rx.h"
+#include "fernotron/trx/raw/fer_msg_rx.h"
 #include <debug/dbg.h>
 
 static void fill_fsb(fer_sbT &fsb, u32 a, u8 g, u8 m, fer_cmd cmd) {

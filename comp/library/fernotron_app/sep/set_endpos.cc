@@ -1,12 +1,12 @@
 #include "app/config/proj_app_cfg.h"
 #include "fernotron/sep/set_endpos.h"
 
-#include <fernotron/fer_msg_plain.h>
-#include <fernotron/fer_msg_attachment.h>
-#include <fernotron/fer_msg_tx.h>
-#include "fernotron/fer_radio_trx.h"
-#include "fernotron/fer_rawmsg_buffer.h"
-#include "fernotron/fsb.h"
+#include <fernotron/trx/raw/fer_msg_plain.h>
+#include <fernotron/trx/raw/fer_msg_attachment.h>
+#include <fernotron/trx/raw/fer_msg_tx.h>
+#include "fernotron/trx/raw/fer_radio_trx.h"
+#include "fernotron/trx/raw/fer_rawmsg_buffer.h"
+#include "fernotron/trx/raw/fer_fsb.h"
 
 #include "gpio/pin.h"
 

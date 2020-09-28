@@ -1,6 +1,6 @@
 #include "fer_api.h"
 #include "misc/bcd.h"
-#include "fernotron/fer_rawmsg_buffer.h"
+#include "fernotron/trx/raw/fer_rawmsg_buffer.h"
 #include "misc/int_macros.h"
 #include <stdlib.h>
 #include <string.h>

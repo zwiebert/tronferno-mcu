@@ -2,12 +2,12 @@
 
 #include <stdint.h>
 #include "stdbool.h"
-#include "fernotron/fer_msg_attachment.h"
+#include "fernotron/trx/raw/fer_msg_attachment.h"
 
-#include "fernotron/fer_rawmsg_build.h"
-#include "fernotron/fer_msg_attachment.h"
+#include "fernotron/trx/raw/fer_rawmsg_build.h"
+#include "fernotron/trx/raw/fer_msg_attachment.h"
 #include "fer_msg_rx.h"
-#include "fernotron/fer_radio_trx.h"
+#include "fernotron/trx/raw/fer_radio_trx.h"
 
 typedef enum {
   fer_OK, fer_PAIR_NOT_EQUAL, fer_BAD_WORD_PARITY, fer_BAD_CHECKSUM

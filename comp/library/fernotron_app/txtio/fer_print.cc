@@ -11,9 +11,9 @@
 #include <stdint.h>
 #include "stdbool.h"
 
-#include "fernotron/fer_radio_timings.h"
-#include "fernotron/fsb.h"
-#include "fernotron/fer_msg_attachment.h"
+#include "fernotron/trx/raw/fer_radio_timings.h"
+#include "fernotron/trx/raw/fer_fsb.h"
+#include "fernotron/trx/raw/fer_msg_attachment.h"
 #include "misc/int_macros.h"
 #include "txtio/inout.h"
 #include <fernotron/trx/fer_msg_send.hh>

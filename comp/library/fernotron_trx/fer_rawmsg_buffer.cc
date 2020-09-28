@@ -5,9 +5,9 @@
  *      Author: bertw
  */
 
-#include "fernotron/fer_msg_attachment.h"
+#include "fernotron/trx/raw/fer_msg_attachment.h"
 #include "fer_app_cfg.h"
-#include "fernotron/fer_rawmsg_buffer.h"
+#include "fernotron/trx/raw/fer_rawmsg_buffer.h"
 #include "fernotron/int_timer.h"
 #include "stdbool.h"
 

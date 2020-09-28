@@ -10,7 +10,7 @@
 #include "stdbool.h"
 #include <stdint.h>
 
-#include "fernotron/fsb.h"
+#include "fernotron/trx/raw/fer_fsb.h"
 #include "app/config/proj_app_cfg.h"
 
 // true while sending in progress

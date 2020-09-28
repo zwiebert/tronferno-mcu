@@ -1,13 +1,13 @@
 #include "app/config/proj_app_cfg.h"
 
 #include "fer_radio_parity.h"
-#include <fernotron/fer_msg_plain.h>
+#include <fernotron/trx/raw/fer_msg_plain.h>
 #include "fernotron/int_timer.h"
 #include <stdlib.h>
 #include "fernotron/trx/callbacks.h"
 #include "fer_app_cfg.h"
-#include "fernotron/fer_rawmsg_buffer.h"
-#include "fernotron/fer_msg_tx.h"
+#include "fernotron/trx/raw/fer_rawmsg_buffer.h"
+#include "fernotron/trx/raw/fer_msg_tx.h"
 #include "fernotron/extern.h"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"

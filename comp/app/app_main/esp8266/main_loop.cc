@@ -15,9 +15,9 @@
 #include "app/uout/status_output.h"
 #include "fernotron/txtio/fer_print.h"
 #include "fernotron/astro.h"
-#include "fernotron/fer_msg_attachment.h"
-#include "fernotron/fer_msg_tx.h"
-#include "fernotron/fer_msg_rx.h"
+#include "fernotron/trx/raw/fer_msg_attachment.h"
+#include "fernotron/trx/raw/fer_msg_tx.h"
+#include "fernotron/trx/raw/fer_msg_rx.h"
 #include "fernotron/trx/callbacks.h"
 #include "app/fernotron.h"
 

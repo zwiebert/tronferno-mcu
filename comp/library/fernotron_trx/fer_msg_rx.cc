@@ -1,7 +1,7 @@
 #include "fer_app_cfg.h"
-#include "fernotron/fer_msg_type.h"
-#include "fernotron/fer_msg_rx.h"
-#include "fernotron/fer_rawmsg_buffer.h"
+#include "fernotron/trx/raw/fer_msg_type.h"
+#include "fernotron/trx/raw/fer_msg_rx.h"
+#include "fernotron/trx/raw/fer_rawmsg_buffer.h"
 #include "fernotron/trx/timer_data.h"
 #include "debug/dbg.h"
 #include <string.h>

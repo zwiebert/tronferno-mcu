@@ -12,8 +12,8 @@
 #include "fernotron/pos/positions_static.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/sep/set_endpos.h"
-#include "fernotron/fer_msg_rx.h"
-#include "fernotron/fer_msg_tx.h"
+#include "fernotron/trx/raw/fer_msg_rx.h"
+#include "fernotron/trx/raw/fer_msg_tx.h"
 #include "net/ipnet.h"
 #include "gpio/pin.h"
 

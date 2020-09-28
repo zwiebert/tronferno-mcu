@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "fernotron/fer_msg_attachment.h"
+#include "fernotron/trx/raw/fer_msg_attachment.h"
 #include <fernotron/trx/fer_trx_incoming.hh>
 
 void fer_msg_print(const char *tag, const fer_rawMsg *msg, fer_msg_kindT t, bool verbose);

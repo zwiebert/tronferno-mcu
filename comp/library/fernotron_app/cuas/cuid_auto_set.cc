@@ -14,8 +14,8 @@
 #include "app/common.h"
 #include "app/uout/status_output.h"
 #include "app/rtc.h"
-#include "fernotron/fer_msg_rx.h"
-#include "fernotron/fer_msg_attachment.h"
+#include "fernotron/trx/raw/fer_msg_rx.h"
+#include "fernotron/trx/raw/fer_msg_attachment.h"
 
 static const struct TargetDesc *my_td;
 

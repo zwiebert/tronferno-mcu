@@ -5,14 +5,14 @@
  *  Author: bertw
  */
 
-#include <fernotron/fer_msg_plain.h>
+#include <fernotron/trx/raw/fer_msg_plain.h>
 #include "fernotron/astro.h"
 #include <string.h>
 #include "fer_app_cfg.h"
 #include "fer_api.h"
 #include "debug/dbg.h"
 
-#include "fernotron/fer_rawmsg_buffer.h"
+#include "fernotron/trx/raw/fer_rawmsg_buffer.h"
 //#include "app/rtc.h"
 //#include "fernotron/auto/astro.h"
 //#include "app/settings/config.h"

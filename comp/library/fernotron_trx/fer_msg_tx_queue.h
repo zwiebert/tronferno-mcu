@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "fernotron/fsb.h"
+#include "fernotron/trx/raw/fer_fsb.h"
 #include <stdint.h>
 #include <stdbool.h>
 
