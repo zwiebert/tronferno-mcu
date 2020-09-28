@@ -6,7 +6,7 @@
 #include "debug/dbg.h"
 #include <string.h>
 
-#include <fernotron/trx/fer_trx_incoming.hh>
+#include <fernotron/trx/fer_trx_api.hh>
 #include "fer_trx_incoming_event.hh"
 
 fer_sbT last_received_sender;

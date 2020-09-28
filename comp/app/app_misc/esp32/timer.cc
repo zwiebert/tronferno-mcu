@@ -10,9 +10,8 @@
 #include "app/rtc.h"
 #include "app/timer.h"
 #include "app/settings/config.h"
-#include "fernotron/trx/raw/fer_radio_timings.h"
-#include "fernotron/trx/raw/fer_radio_trx.h"
-#include "fernotron/int_timer.h"
+#include "fernotron/trx/isr_timer_config.h"
+#include <fernotron/trx/fer_trx_api.hh>
 #include "txtio/inout.h"
 
 #include "driver/periph_ctrl.h"
@@ -57,10 +56,10 @@ static void IRAM_ATTR intTimer_isr(void *args) {
   int timer_idx = (int) args;
 
 #ifdef FER_TRANSMITTER
-  fer_tx_setOutput();
+  mcu_put_txPin(Fer_Trx_API::isr_get_tx_level());
 #endif
 #ifdef FER_RECEIVER
-  fer_rx_sampleInput();
+  Fer_Trx_API::isr_sample_rx_pin(mcu_get_rxPin());
 #endif
 
   /* Retrieve the interrupt status and the counter value
@@ -77,13 +76,13 @@ static void IRAM_ATTR intTimer_isr(void *args) {
   {
     static uint_fast8_t tick_count;
     if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
-      fer_tx_dck();
+      Fer_Trx_API::isr_handle_tx();
     }
   }
 #endif
 
 #ifdef FER_RECEIVER
-  fer_rx_tick();
+  Fer_Trx_API::isr_handle_rx();
 #endif
 
 #ifndef USE_ESP_GET_TIME

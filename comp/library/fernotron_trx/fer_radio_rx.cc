@@ -2,13 +2,11 @@
 
 #include "fer_radio_parity.h"
 #include <fernotron/trx/raw/fer_msg_plain.h>
-#include "fernotron/int_timer.h"
+#include "fernotron/trx/isr_timer_config.h"
 #include <stdlib.h>
-#include "fernotron/trx/callbacks.h"
 #include "fer_app_cfg.h"
 #include "fernotron/trx/raw/fer_rawmsg_buffer.h"
 #include "fernotron/trx/raw/fer_msg_tx.h"
-#include "fernotron/extern.h"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
 
@@ -240,8 +238,7 @@ static void IRAM_ATTR fer_rx_tick_receive_message() {
   }
 }
 
-void IRAM_ATTR fer_rx_sampleInput() {
-  bool pin_level = mcu_get_rxPin();
+void IRAM_ATTR fer_rx_sampleInput(bool pin_level) {
 
   input_edge_pos = input_edge_neg = false;
   if (input_level != pin_level) {

@@ -8,7 +8,7 @@
 #include "fernotron/trx/raw/fer_msg_attachment.h"
 #include "fer_app_cfg.h"
 #include "fernotron/trx/raw/fer_rawmsg_buffer.h"
-#include "fernotron/int_timer.h"
+#include "fernotron/trx/isr_timer_config.h"
 #include "stdbool.h"
 
 

@@ -8,8 +8,8 @@ set(srcs   astro.cc fer_api.cc fer_msg_basic.cc fer_msg_rx.cc fer_msg_tx.cc fer_
 idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS "./include" 
-    REQUIRES utils_misc fernotron_app_interface
-    PRIV_REQUIRES app_config  dbg misc_time utils_misc    
+    REQUIRES utils_misc dbg
+    PRIV_REQUIRES app_config   utils_misc    
      )
 
 component_compile_options(${comp_compile_opts})

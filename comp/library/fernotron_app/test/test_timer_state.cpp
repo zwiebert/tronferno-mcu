@@ -369,7 +369,7 @@ void setUp() {
 
   C.fer_usedMembers = ~0U;
   C.fer_usedMemberMask.fromNibbleCounters(C.fer_usedMembers);
-  fer_astro_init_and_reinit(&cfg_astro);
+  Fer_Trx_API::setup_astro(&cfg_astro);
 }
 #endif
 

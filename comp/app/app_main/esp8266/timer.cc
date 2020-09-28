@@ -18,7 +18,7 @@
 #include "app/settings/config.h"
 #include "app/rtc.h"
 #include "fernotron/trx/raw/fer_radio_timings.h"
-#include "fernotron/int_timer.h"
+#include "fernotron/trx/isr_timer_config.h"
 #include "fernotron/trx/raw/fer_radio_trx.h"
 
 

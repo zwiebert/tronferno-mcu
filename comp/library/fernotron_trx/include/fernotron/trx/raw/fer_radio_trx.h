@@ -46,8 +46,8 @@ void fer_tx_dck(void);  // call it from timer tick interrupt
 
 void fer_tx_transmitFerMsg(fer_rawMsg *msg, fer_msg_type msg_type);
 
-void fer_rx_sampleInput(void); // call this from top of timer ISR handler
-void fer_tx_setOutput(void); // call this from top of timer ISR handler
+void fer_rx_sampleInput(bool pin_level); // call this from top of timer ISR handler
+bool fer_tx_setOutput(void); // call this from top of timer ISR handler
 
 
 

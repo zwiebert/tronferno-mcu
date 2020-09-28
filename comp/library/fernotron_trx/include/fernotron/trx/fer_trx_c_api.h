@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 #include <misc/int_types.h>
 #include <fernotron/trx/timer_data.h>
 #include <time.h>
@@ -58,13 +62,11 @@ struct Fer_MsgTimer {
   Fer_TimerData td;
 };
 
-class Fer_SendMsg {
-public:
-  Fer_SendMsg() = default;
-  bool send(const Fer_MsgCmd &msg);
-  bool send(const Fer_MsgRtc &msg);
-  bool send(const Fer_MsgTimer &msg);
-  bool send_empty_timer(const Fer_MsgRtc &msg);
-};
+bool fer_trx_send_cmd(const Fer_MsgCmd &msg);
+bool fer_trx_send_rtc(const Fer_MsgRtc &msg);
+bool fer_trx_send_timer(const Fer_MsgTimer &msg);
+bool fer_trx_send_empty_timer(const Fer_MsgRtc &msg);
 
-extern Fer_SendMsg fer_api_tx;
+#ifdef __cplusplus
+  }
+#endif

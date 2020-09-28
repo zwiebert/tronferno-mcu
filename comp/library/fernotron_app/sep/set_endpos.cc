@@ -13,7 +13,7 @@
 #include "app/rtc.h"
 #include "txtio/inout.h"
 #include "app/uout/status_output.h"
-#include <fernotron/trx/fer_msg_send.hh>
+#include <fernotron/trx/fer_trx_c_api.h>
 
 //////////////////////////////////////////////////////////////////
 // DANGER ZONE

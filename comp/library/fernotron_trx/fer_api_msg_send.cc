@@ -1,8 +1,7 @@
-#include <fernotron/trx/fer_msg_send.hh>
+#include <fernotron/trx/fer_trx_c_api.h>
 #include "fernotron/trx/raw/fer_msg_rx.h"
 #include <debug/dbg.h>
 
-Fer_SendMsg fer_api_tx;
 
 static void fill_fsb(fer_sbT &fsb, u32 a, u8 g, u8 m, fer_cmd cmd) {
   fer_init_sender(&fsb, a);
@@ -16,7 +15,7 @@ static void fill_fsb(fer_sbT &fsb, u32 a, u8 g, u8 m, fer_cmd cmd) {
 
 
 
-bool Fer_SendMsg::send(const Fer_MsgCmd &msg) {
+bool fer_trx_send_cmd(const Fer_MsgCmd &msg) {
   fer_sbT fsb;
   fill_fsb(fsb,msg.a, msg.g, msg.m, (fer_cmd)msg.cmd);
   if (msg.stopDelay) {
@@ -27,7 +26,7 @@ bool Fer_SendMsg::send(const Fer_MsgCmd &msg) {
 
   return false;
 }
-bool Fer_SendMsg::send(const Fer_MsgRtc &msg) {
+bool fer_trx_send_rtc(const Fer_MsgRtc &msg) {
   fer_sbT fsb;
   fill_fsb(fsb,msg.a, msg.g, msg.m, fer_cmd_Program);
 
@@ -35,14 +34,14 @@ bool Fer_SendMsg::send(const Fer_MsgRtc &msg) {
 
   return false;
 }
-bool Fer_SendMsg::send(const Fer_MsgTimer &msg) {
+bool fer_trx_send_timer(const Fer_MsgTimer &msg) {
   fer_sbT fsb;
   fill_fsb(fsb, msg.a, msg.g, msg.m, fer_cmd_Program);
 
   return fer_send_timer_message(&fsb, msg.rtc, &msg.td);
 }
 
-bool Fer_SendMsg::send_empty_timer(const Fer_MsgRtc &msg) {
+bool fer_trx_send_empty_timer(const Fer_MsgRtc &msg) {
   fer_sbT fsb;
   fill_fsb(fsb, msg.a, msg.g, msg.m, fer_cmd_Program);
 

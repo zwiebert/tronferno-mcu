@@ -156,6 +156,6 @@ TEST_CASE("fer_msg modify data and verify checksums", "[fernotron]")
 static struct cfg_astro cfg_astro =
     { .astroCorrection = acAverage, .geo_longitude = 13, .geo_latitude = 52, .geo_timezone = 1,  };
 void setUp() {
-  fer_astro_init_and_reinit(&cfg_astro);
+  Fer_Trx_API::setup_astro(&cfg_astro);
 }
 #endif

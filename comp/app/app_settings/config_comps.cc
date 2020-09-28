@@ -8,7 +8,7 @@
 #include "app/settings/config.h"
 #include "app/settings/config_defaults.h"
 #include "config_kvs.h"
-#include "fernotron/astro.h"
+#include <fernotron/trx/fer_trx_api.hh>
 #include "misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
@@ -114,7 +114,7 @@ void config_setup_astro() {
 #endif
       };
   config_read_astro(&c);
-  fer_astro_init_and_reinit(&c);
+  Fer_Trx_API::setup_astro(&c);
 }
 float config_read_longitude() {
   return config_read_item_f(CI(CB_LONGITUDE), MY_GEO_LONGITUDE);

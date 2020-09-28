@@ -8,7 +8,7 @@
 
 #include "stdbool.h"
 #include "app/config/proj_app_cfg.h"
-#include <fernotron/trx/fer_msg_send.hh>
+#include <fernotron/trx/fer_trx_c_api.h>
 
 #ifndef USER_MAIN_SET_ENDPOS_H_
 #define USER_MAIN_SET_ENDPOS_H_

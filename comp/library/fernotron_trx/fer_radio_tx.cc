@@ -9,12 +9,10 @@
 #include "fer_radio_parity.h"
 
 #include <fernotron/trx/raw/fer_msg_plain.h>
-#include "fernotron/int_timer.h"
-#include "fernotron/trx/callbacks.h"
+#include "fernotron/trx/isr_timer_config.h"
 #include "fer_app_cfg.h"
 #include "fernotron/trx/raw/fer_rawmsg_buffer.h"
 #include "fernotron/trx/raw/fer_msg_tx.h"
-#include "fernotron/extern.h"
 #include "debug/dbg.h"
 
 struct ftrx_counter {
@@ -173,8 +171,8 @@ static void IRAM_ATTR fer_tx_dck_send_message() {
 }
 
 
-void IRAM_ATTR fer_tx_setOutput(void) {
-  mcu_put_txPin(output_level);
+bool IRAM_ATTR fer_tx_setOutput(void) {
+  return output_level;
 }
 
 void IRAM_ATTR fer_tx_dck(void) {

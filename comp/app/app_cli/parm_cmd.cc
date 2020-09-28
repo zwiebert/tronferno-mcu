@@ -14,7 +14,7 @@
 #include "cli_fer.h"
 #include "app/opt_map.hh"
 #include <stdlib.h>
-#include <fernotron/trx/fer_msg_send.hh>
+#include <fernotron/trx/fer_trx_c_api.h>
 
 #define FER_SB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
