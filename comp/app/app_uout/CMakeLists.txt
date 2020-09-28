@@ -6,7 +6,7 @@ idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS "./include" 
     REQUIRES uout
-    PRIV_REQUIRES  app_misc utils_misc app_settings  utils_debug fernotron_app_interface cli net
+    PRIV_REQUIRES  app_misc utils_misc app_settings  utils_debug fernotron_app cli net
                    app_update
     )
 

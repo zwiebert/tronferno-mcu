@@ -5,7 +5,7 @@ idf_component_register(
     INCLUDE_DIRS "./include" ../.. 
     PRIV_INCLUDE_DIRS "./include/app"
     REQUIRES uout firmware_update utils_time utils_debug
-    PRIV_REQUIRES fernotron_app_interface gpio net utils_misc app_http_server  app_cli app_settings key_value_store net app_mqtt storage config_kvs app_uout app_misc net_http_server
+    PRIV_REQUIRES fernotron_app gpio net utils_misc app_http_server  app_cli app_settings key_value_store net app_mqtt storage config_kvs app_uout app_misc net_http_server
                   freertos
                   
 )
