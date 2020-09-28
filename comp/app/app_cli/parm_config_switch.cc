@@ -8,6 +8,7 @@
 #include "app/uout/status_output.h"
 #include "misc/int_macros.h"
 #include "misc/int_types.h"
+#include <net/ethernet.h>
 #include <string.h>
 
 #define isValid_optStr(cfg, new) true
