@@ -10,58 +10,81 @@ void Fer_Trx_IncomingMsg::setup(Fer_Trx_IncomingMsg *derived_object) {
 u32 Fer_Trx_IncomingMsg::get_a() const {
   return FER_SB_GET_DEVID(&myEvt->fsb);
 }
+
 u8 Fer_Trx_IncomingMsg::get_g() const {
+  if (!is_centralUnit())
+    return 0;
+
   fer_grp grp = myEvt->fsb.sd.grp;
   return grp;
 }
+
 u8 Fer_Trx_IncomingMsg::get_m() const {
+  if (!is_centralUnit())
+    return 0;
+
   fer_memb memb = myEvt->fsb.sd.memb;
   return memb == 0 ? 0 : memb - 7;
 }
 
-#if 0
-virtual void Fer_Trx_IncomingMsg::event_plain_message_was_received() {
+fer_if_cmd Fer_Trx_IncomingMsg::get_cmd() const {
+  return static_cast<fer_if_cmd>(myEvt->fsb.sd.cmd);
 }
-virtual void Fer_Trx_IncomingMsg::event_plain_double_message_was_received() {
+
+const void *Fer_Trx_IncomingMsg::get_raw() const {
+  return myEvt->raw;
 }
-virtual void Fer_Trx_IncomingMsg::event_rtc_message_was_received() {
+
+const void *Fer_Trx_IncomingMsg::get_fsb() const {
+  return &myEvt->fsb;
 }
-virtual void Fer_Trx_IncomingMsg::event_timer_message_was_received() {
+
+bool Fer_Trx_IncomingMsg::is_centralUnit() const {
+  return FER_SB_ADDR_IS_CENTRAL(&myEvt->fsb);
 }
-virtual void Fer_Trx_IncomingMsg::event_any_message_was_received() {
+
+Fer_Trx_IncomingMsg::MsgKind Fer_Trx_IncomingMsg::get_msgKind() const {
+  return static_cast<MsgKind>(myEvt->kind);
 }
-#endif
 
 void Fer_Trx_IncomingMsg::push_event(struct Fer_Trx_IncomingEvent *evt) {
   if (!OurDerivedObject)
     return;
 
   Fer_Trx_IncomingMsg &that = *OurDerivedObject;
-
   that.myEvt = evt;
-  switch (evt->kind) {
-  case MSG_TYPE_PLAIN_DOUBLE:
-    that.event_any_message_was_received();
-    that.event_plain_double_message_was_received();
-    break;
 
-  case MSG_TYPE_PLAIN:
-    that.event_any_message_was_received();
-    that.event_plain_message_was_received();
-    break;
+  if (evt->tx) {
+    if (evt->first)
+      that.event_first_message_will_be_sent();
+    else
+      that.event_any_message_will_be_sent();
 
-  case MSG_TYPE_RTC:
-    that.event_any_message_was_received();
-    that.event_rtc_message_was_received();
-    break;
-  case MSG_TYPE_TIMER:
-    that.event_any_message_was_received();
-    that.event_timer_message_was_received();
-    break;
+  } else { //rx
+    switch (evt->kind) {
+    case MSG_TYPE_PLAIN_DOUBLE:
+      that.event_any_message_was_received();
+      that.event_plain_double_message_was_received();
+      break;
 
-  case MSG_TYPE_NONE:
-  default:
-    break;
+    case MSG_TYPE_PLAIN:
+      that.event_any_message_was_received();
+      that.event_plain_message_was_received();
+      break;
+
+    case MSG_TYPE_RTC:
+      that.event_any_message_was_received();
+      that.event_rtc_message_was_received();
+      break;
+    case MSG_TYPE_TIMER:
+      that.event_any_message_was_received();
+      that.event_timer_message_was_received();
+      break;
+
+    case MSG_TYPE_NONE:
+    default:
+      break;
+    }
   }
 
   that.myEvt = 0;

@@ -17,6 +17,7 @@
 #include "misc/int_macros.h"
 #include "txtio/inout.h"
 #include <fernotron/trx/fer_msg_send.hh>
+#include <fernotron/trx/fer_trx_incoming.hh>
 
 typedef uint8_t u8;
 typedef int8_t i8;
@@ -106,17 +107,17 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 #define fer_msg_get_data(msg) ((u8(*)[FER_PRG_BYTE_CT])(msg)->rtc.bd)
 typedef u8(*fer_msg_data)[FER_PRG_BYTE_CT];
 
-void  fer_msg_print(const char *tag, const fer_rawMsg *msg, fer_msg_type t, bool verbose) {
+void  fer_msg_print(const char *tag, const fer_rawMsg *msg, fer_msg_kindT t, bool verbose) {
 
   io_puts(tag);
   frb_printPacket(&msg->cmd);
 
 #ifndef FER_RECEIVER_MINIMAL
-  if (t == MSG_TYPE_RTC || t == MSG_TYPE_TIMER) {
+  if (t == fer_msg_kindT::MSG_TYPE_RTC || t == fer_msg_kindT::MSG_TYPE_TIMER) {
     int i, used_lines;
     fer_msg_data prg = fer_msg_get_data(msg);
 
-    used_lines = t == MSG_TYPE_RTC ? FER_RTC_PACK_CT : FER_PRG_PACK_CT;
+    used_lines = t == fer_msg_kindT::MSG_TYPE_RTC ? FER_RTC_PACK_CT : FER_PRG_PACK_CT;
     if (verbose) {
       for (i = 0; i < used_lines; ++i) {
         print_array_8(prg[i], FER_PRG_BYTE_CT);
@@ -129,10 +130,10 @@ void  fer_msg_print(const char *tag, const fer_rawMsg *msg, fer_msg_type t, bool
 #endif
 }
 
-void  fer_msg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fer_msg_type t) {
+void  fer_msg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fer_msg_kindT t) {
   const fer_sbT *fsb = (fer_sbT*) msg;
 
-  if (t != MSG_TYPE_PLAIN && t !=  MSG_TYPE_PLAIN_DOUBLE)
+  if (t != fer_msg_kindT::MSG_TYPE_PLAIN && t !=  fer_msg_kindT::MSG_TYPE_PLAIN_DOUBLE)
     return; // ignore long messages for now
 
 

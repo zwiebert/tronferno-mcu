@@ -7,12 +7,9 @@
 #include "fernotron/fer_msg_tx.h"
 #include "debug/dbg.h"
 #include "misc/time/run_time.h"
-
 #include "fer_msg_tx_queue.h"
-
-void (*fer_beforeFirstSend_cb)(const fer_sbT *fsb);
-void (*fer_beforeAnySend_cb)(fer_msg_type msg_type, const fer_sbT *fsb, const fer_rawMsg *fmsg);
-
+#include <fernotron/trx/fer_trx_incoming.hh>
+#include "fer_trx_incoming_event.hh"
 
 void (*fer_tx_READY_TO_TRANSMIT_cb)(uint32_t time_ts);
 
@@ -62,24 +59,25 @@ bool fer_send_delayed_msg(const fer_sbT *fsb, fer_msg_type msgType, u16 delay, i
 
 static bool fer_send_queued_msg(struct sf *msg) {
   static u8 sf_toggle;
-
   precond(!fer_tx_isTransmitterBusy());
   precond(msg);
+
+  Fer_Trx_IncomingEvent evt { .raw = fer_tx_msg, .fsb = msg->fsb, .kind = msg->mt, .tx = true };
 
   if (msg->sent_ct++ == 0) {
     sf_toggle = fer_tglNibble_ctUp(sf_toggle, 1);
     FER_SB_PUT_TGL(&msg->fsb, sf_toggle);
     if (msg->mt == MSG_TYPE_PLAIN) {
-      if (fer_beforeFirstSend_cb)
-        fer_beforeFirstSend_cb(&msg->fsb);
+      evt.first = true;
+      Fer_Trx_IncomingMsg::push_event(&evt);
     }
   }
 
   memcpy(fer_tx_msg->cmd.bd, msg->fsb.data, 5);
   fer_msg_raw_checksumsCreate(fer_tx_msg, msg->mt);
 
-  if (fer_beforeAnySend_cb)
-    fer_beforeAnySend_cb(msg->mt, &msg->fsb, fer_tx_msg);
+  evt.first = false;
+  Fer_Trx_IncomingMsg::push_event(&evt);
 
   fer_tx_transmitFerMsg(0, msg->mt);
 

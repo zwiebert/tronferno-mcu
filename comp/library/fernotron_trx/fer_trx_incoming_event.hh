@@ -7,5 +7,7 @@
 struct Fer_Trx_IncomingEvent {
   fer_rawMsg *raw = 0;
   fer_sbT fsb = {};
-  fer_msg_type kind = MSG_TYPE_NONE;
+  fer_msg_type kind:3 = MSG_TYPE_NONE;
+  bool tx:1 = false;
+  bool first:1 = false;
 };
