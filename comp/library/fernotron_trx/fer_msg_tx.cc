@@ -10,16 +10,8 @@
 #include "fer_msg_tx_queue.h"
 #include <fernotron/trx/fer_trx_api.hh>
 #include "fer_trx_incoming_event.hh"
-
-#ifndef USE_ESP_GET_TIME
 #include "misc/time/run_time.h"
-#else
-#include <esp_timer.h>
-#define run_time_s() (esp_timer_get_time() / 1000000)
-#define run_time_ts() (esp_timer_get_time() / 100000)
-#define get_now_time_ts() run_time_ts()
-#define get_now_time_s() run_time_s()
-#endif
+
 
 
 void (*fer_tx_READY_TO_TRANSMIT_cb)(uint32_t time_ts);
