@@ -12,7 +12,7 @@ set(srcs
 idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS "./include" 
-    REQUIRES utils_misc fernotron_interface
+    REQUIRES utils_misc fernotron_trx
     PRIV_REQUIRES app_config dbg key_value_store misc_time app_settings app_uout storage txtio
      )
 
