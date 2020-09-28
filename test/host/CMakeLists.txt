@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
+project(tfmcu-test)
 
 set(COMPONENT_DIRECTORIES comp/app comp/external/components-mcu/components comp/library comp/test)
 
@@ -6,84 +7,15 @@ set(comp_compile_feats cxx_std_20)
 set(comp_compile_opts "$<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>" -Wno-missing-field-initializers)
 set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++2a>" -Og -ggdb)
 
-project(tfmcu-test)
-
 add_compile_definitions(HOST TEST_HOST TEST HOST_TESTING UNITY_SUPPORT_TEST_CASES)
 set(TEST_HOST true)
 set(UNIT_TESTING true)
 
 include(CTest)
 
-function(my_include_from_list)
-  cmake_parse_arguments(MY "" "ACCESS;TAG;COMP" "INC_LIST" "${ARGN}")
-  # message("@inc_from_list: TAG:${MY_TAG}, COMP: ${MY_COMP}, ACCESS: ${MY_ACCESS},  INC_LIST: ${MY_INC_LIST}")
-  foreach(inc_dir ${MY_INC_LIST})
-    # message("${COMPONENT_LIB}: include: ${inc_dir} ")
-    target_include_directories("${MY_COMP}" "${MY_ACCESS}" "${inc_dir}")
-  endforeach()
-endfunction()
-
-function(my_comp_add_includes)
-  cmake_parse_arguments(MY "" "COMP;ACCESS;MAX_DEPTH;CURRENT_DEPTH" "COMP_LIST;SEEN_LIST" "${ARGN}")
-  if(NOT DEFINED MY_CURRENT_DEPTH)
-    set(MY_CURRENT_DEPTH 0)
-  endif()
-  if(NOT DEFINED MY_MAX_DEPTH)
-    set(MY_MAX_DEPTH 50)
-  endif()
-
-  # message("@comp_add_inc: curr_depth: ${MY_CURRENT_DEPTH}: comps: ${MY_COMP_LIST} seen: ${MY_SEEN_LIST}")
-
-  math(EXPR MY_CURRENT_DEPTH "${MY_CURRENT_DEPTH} + 1")
-  if(${MY_CURRENT_DEPTH} GREATER ${MY_MAX_DEPTH})
-    message("error: components nested too deep")
-    return()
-  endif()
-
-  foreach(req ${MY_COMP_LIST})
-    my_include_from_list( COMP ${MY_COMP} TAG "(depth: ${MY_CURRENT_DEPTH}, ${req})" ACCESS ${MY_ACCESS} INC_LIST ${${req}_INCLUDE_DIRS})
-    list(FIND MY_SEEN_LIST ${req} seen_idx)
-    if(${seen_idx} EQUAL -1)
-      list(APPEND MY_SEEN_LIST ${req})
-      my_comp_add_includes( MAX_DEPTH ${MY_MAX_DEPTH} CURRENT_DEPTH ${MY_CURRENT_DEPTH} SEEN_LIST "${MY_SEEN_LIST}" COMP ${MY_COMP} ACCESS ${MY_ACCESS} COMP_LIST ${${req}_REQUIRES})
-    else()
-      message("########## circular dependency: ${req} (${MY_SEEN_LIST}) ################")
-    endif()
-  endforeach()
-
-endfunction()
-
-set(test_this 0)
-# set(MY_SEEN_LIST a b c)
-set(req b)
-list(FIND MY_SEEN_LIST "${req}" seen_idx)
-
-if(${test_this})
-  message("start testing this")
-  set(test_comp_list app_main)
-
-  my_comp_add_includes(ACCESS "PUBLIC" COMP_LIST ${test_comp_list})
-
-  return()
-endif()
-
-macro(my_filter_sources)
-  list(FILTER ${ARGV0} EXCLUDE "esp32/*")
-endmacro()
-
-function(set_comp_vars)
-  cmake_parse_arguments(MY "" "NAME" "" "${ARGN}")
-  # message("MY_NAME: ${MY_NAME}")
-  set("${MY_NAME}_REQUIRES"
-      ${__REQUIRES}
-      CACHE INTERNAL "${MY_NAME}_REQUIRES")
-
-  set("${MY_NAME}_PRIV_REQUIRES"
-      ${__PRIV_REQUIRES}
-      CACHE INTERNAL "${MY_NAME}_PRIV_REQUIRES")
-endfunction()
-
 macro(add_tests)
+  list(APPEND __PRIV_REQUIRES test_host)
+
   get_filename_component(parent_dir ${CMAKE_CURRENT_LIST_DIR} DIRECTORY)
   get_filename_component(parent_dir_name ${parent_dir} NAME)
 
@@ -100,16 +32,24 @@ macro(add_tests)
     add_executable(${test_name} ${test_file})
     target_include_directories(${test_name} PUBLIC ${INC_PATHS})
     target_include_directories(${test_name} PRIVATE ${PRIV_INC_PATHS})
+  
+    set_target_properties(${test_name} PROPERTIES LINK_INTERFACE_MULTIPLICITY 6)
+    target_link_libraries("${test_name}" PUBLIC ${__REQUIRES})
+    target_link_libraries("${test_name}" PRIVATE ${__PRIV_REQUIRES})
+
+
     target_compile_options(${test_name} PRIVATE ${comp_compile_opts})
     target_compile_features(${test_name} PRIVATE ${comp_compile_feats})
     # target_link_options(${test_name} PRIVATE "-flto" "-O2") target_link_libraries(${test_name} PRIVATE unity)
+
+
     set(working_directory "${PROJECT_BINARY_DIR}/test_wd/${test_name}")
     file(MAKE_DIRECTORY ${working_directory})
     add_test(
       NAME ${test_name}
       COMMAND ${test_name}
       WORKING_DIRECTORY ${working_directory})
-    set_comp_vars(NAME ${test_name})
+
     set(TEST_EXECUTABLES
         "${TEST_EXECUTABLES}" "${test_name}"
         CACHE INTERNAL "${TEST_EXECUTABLES}")
@@ -117,29 +57,33 @@ macro(add_tests)
   endforeach()
 endmacro()
 
+macro(filter_valid_comps)
+  foreach(req ${${ARGV0}})
+    list(FIND ${ARGV1} "${req}" idx)
+    if(${idx} EQUAL -1)
+      list(REMOVE_ITEM ${ARGV0} ${req})
+    endif()
+  endforeach()
+endmacro()
+
 macro(add_libs)
-  set_comp_vars(NAME ${COMPONENT_LIB})
+  if (NOT ${COMPONENT_LIB} STREQUAL "test_host")
+    list(APPEND __PRIV_REQUIRES test_host)
+  endif()
+
+  set(VALID_COMPS ${VALID_COMPS} ${COMPONENT_LIB} PARENT_SCOPE)
 
   if("${__SRCS}" STREQUAL "")
     # message("INTERFACE LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
     set(COMP_ACC INTERFACE)
-    add_library(${COMPONENT_LIB} INTERFACE ${__SRCS})
-    target_include_directories(${COMPONENT_LIB} INTERFACE ${INC_PATHS})
   else()
     # message("PUBLIC LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
     set(COMP_ACC PUBLIC)
-    add_library(${COMPONENT_LIB} STATIC ${__SRCS})
-    target_include_directories(${COMPONENT_LIB} PUBLIC ${INC_PATHS})
-    target_include_directories(${COMPONENT_LIB} PRIVATE ${PRIV_INC_PATHS})
   endif()
 
   set(COMPONENT_LIBS
       "${COMPONENT_LIBS}" "${COMPONENT_LIB}"
       CACHE INTERNAL "${COMPONENT_LIBS}")
-
-  set("${COMPONENT_LIB}_ACCESS"
-      ${COMP_ACC}
-      CACHE INTERNAL "${COMPONENT_LIB}_ACCESS")
 
   foreach(comp_dir ${COMPONENT_DIRECTORIES})
     foreach(req ${__REQUIRES} ${__PRIV_REQUIRES})
@@ -151,6 +95,28 @@ macro(add_libs)
     endforeach()
   endforeach()
 
+  message("fvc: ${VALID_COMPS}: ${__REQUIRES}, ${__PRIV_REQUIRES} ")
+  filter_valid_comps(__REQUIRES COMPONENT_LIBS)
+  filter_valid_comps(__PRIV_REQUIRES COMPONENT_LIBS)
+  message("FVC: ${VALID_COMPS}: ${__REQUIRES}, ${__PRIV_REQUIRES} ")
+
+  if("${COMP_ACC}" STREQUAL "INTERFACE")
+    # message("INTERFACE LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
+    add_library(${COMPONENT_LIB} INTERFACE ${__SRCS})
+    target_include_directories(${COMPONENT_LIB} INTERFACE ${INC_PATHS})
+    target_link_libraries("${COMPONENT_LIB}" INTERFACE ${__REQUIRES})
+
+  else()
+    # message("PUBLIC LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
+    add_library(${COMPONENT_LIB} STATIC ${__SRCS})
+    target_include_directories(${COMPONENT_LIB} PUBLIC ${INC_PATHS})
+    target_include_directories(${COMPONENT_LIB} PRIVATE ${PRIV_INC_PATHS})
+     set_target_properties(${COMPONENT_LIB} PROPERTIES LINK_INTERFACE_MULTIPLICITY 6)
+     target_link_libraries("${COMPONENT_LIB}" PUBLIC ${__REQUIRES})
+     target_link_libraries("${COMPONENT_LIB}" PRIVATE ${__PRIV_REQUIRES})
+  endif()
+  
+
   if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/test/CMakeLists.txt")
     # message("test_directory: ${CMAKE_CURRENT_LIST_DIR}/test srcs: ${__SRCS}") if("fernotron_app" STREQUAL ${COMPONENT_LIB}) # XXX: experimental code
     add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/test")
@@ -158,7 +124,7 @@ macro(add_libs)
   endif()
 endmacro()
 
-macro(idf_component_register)
+function(idf_component_register)
   set(options)
   set(single_value KCONFIG KCONFIG_PROJBUILD)
   set(multi_value SRCS SRC_DIRS EXCLUDE_SRCS INCLUDE_DIRS PRIV_INCLUDE_DIRS LDFRAGMENTS REQUIRES PRIV_REQUIRES REQUIRED_IDF_TARGETS EMBED_FILES EMBED_TXTFILES)
@@ -174,16 +140,18 @@ macro(idf_component_register)
 
   list(TRANSFORM __INCLUDE_DIRS PREPEND "${CMAKE_CURRENT_LIST_DIR}/" OUTPUT_VARIABLE INC_PATHS)
   list(TRANSFORM _PRIV_INCLUDE_DIRS PREPEND "${CMAKE_CURRENT_LIST_DIR}/" OUTPUT_VARIABLE PRIV_INC_PATHS)
-  list(APPEND __PRIV_REQUIRES test_host)
+
 
   get_filename_component(COMPONENT_LIB ${CMAKE_CURRENT_LIST_DIR} NAME)
+  set(COMPONENT_LIB ${COMPONENT_LIB} PARENT_SCOPE)
+  set(__SRCS ${__SRCS} PARENT_SCOPE)
 
   if("test" STREQUAL "${COMPONENT_LIB}")
     add_tests()
   else()
     add_libs()
   endif()
-endmacro()
+endfunction()
 
 function(component_compile_features)
   if(NOT "${__SRCS}" STREQUAL "")
@@ -203,54 +171,7 @@ endfunction()
 
 add_subdirectory(comp/test/test_host)
 
-macro(filter_system_comps)
-  foreach(req ${${ARGV0}})
-    list(FIND COMPONENT_LIBS "${req}" idx)
-    if(${idx} EQUAL -1)
-      list(REMOVE_ITEM ${ARGV0} ${req})
-    endif()
-  endforeach()
-endmacro()
-
-foreach(comp ${COMPONENT_LIBS})
-  message("@all_lib_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
-  filter_system_comps(${comp}_REQUIRES)
-  filter_system_comps(${comp}_PRIV_REQUIRES)
-
-  if("INTERFACE" STREQUAL "${${comp}_ACCESS}")
-    target_link_libraries("${comp}" INTERFACE ${${comp}_REQUIRES})
-  else()
-    set_target_properties(${comp} PROPERTIES LINK_INTERFACE_MULTIPLICITY 6)
-    target_link_libraries("${comp}" PUBLIC ${${comp}_REQUIRES})
-    target_link_libraries("${comp}" PRIVATE ${${comp}_PRIV_REQUIRES})
-  endif()
-endforeach()
-
-foreach(comp ${TEST_EXECUTABLES})
-  message("@all_test_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
-  filter_system_comps(${comp}_REQUIRES)
-  filter_system_comps(${comp}_PRIV_REQUIRES)
-
-  if("INTERFACE" STREQUAL "${${comp}_ACCESS}")
-    target_link_libraries("${comp}" INTERFACE ${${comp}_REQUIRES})
-  else()
-    target_link_libraries("${comp}" PUBLIC ${${comp}_REQUIRES})
-    target_link_libraries("${comp}" PRIVATE ${${comp}_PRIV_REQUIRES})
-  endif()
-endforeach()
 
 message("all_libs: ${COMPONENT_LIBS}")
 message("all_tests: ${TEST_EXECUTABLES}")
 
-# cleanup cached variables XXX: is this useful?
-if(1)
-  foreach(comp ${COMPONENT_LIBS} ${TEST_EXECUTABLES})
-    foreach(var ACCESS REQUIRES PRIV_REQUIRES INCLUDE_DIRS PRIV_INCLUDE_DIRS)
-      unset("${comp}_${var}" CACHE)
-    endforeach()
-  endforeach()
-
-  foreach(var TEST_EXECUTABLES COMPONENT_LIBS)
-    unset("${var}" CACHE)
-  endforeach()
-endif()
