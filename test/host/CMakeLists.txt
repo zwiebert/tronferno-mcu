@@ -71,8 +71,6 @@ macro(add_libs)
     list(APPEND __PRIV_REQUIRES test_host)
   endif()
 
-  set(VALID_COMPS ${VALID_COMPS} ${COMPONENT_LIB} PARENT_SCOPE)
-
   if("${__SRCS}" STREQUAL "")
     # message("INTERFACE LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
     set(COMP_ACC INTERFACE)
@@ -95,10 +93,9 @@ macro(add_libs)
     endforeach()
   endforeach()
 
-  message("fvc: ${VALID_COMPS}: ${__REQUIRES}, ${__PRIV_REQUIRES} ")
+
   filter_valid_comps(__REQUIRES COMPONENT_LIBS)
   filter_valid_comps(__PRIV_REQUIRES COMPONENT_LIBS)
-  message("FVC: ${VALID_COMPS}: ${__REQUIRES}, ${__PRIV_REQUIRES} ")
 
   if("${COMP_ACC}" STREQUAL "INTERFACE")
     # message("INTERFACE LIB: ${COMPONENT_LIB}: srcs: >>>${__SRCS}<<<")
@@ -124,7 +121,7 @@ macro(add_libs)
   endif()
 endmacro()
 
-function(idf_component_register)
+macro(idf_component_register)
   set(options)
   set(single_value KCONFIG KCONFIG_PROJBUILD)
   set(multi_value SRCS SRC_DIRS EXCLUDE_SRCS INCLUDE_DIRS PRIV_INCLUDE_DIRS LDFRAGMENTS REQUIRES PRIV_REQUIRES REQUIRED_IDF_TARGETS EMBED_FILES EMBED_TXTFILES)
@@ -143,15 +140,15 @@ function(idf_component_register)
 
 
   get_filename_component(COMPONENT_LIB ${CMAKE_CURRENT_LIST_DIR} NAME)
-  set(COMPONENT_LIB ${COMPONENT_LIB} PARENT_SCOPE)
-  set(__SRCS ${__SRCS} PARENT_SCOPE)
+  set(COMPONENT_LIB ${COMPONENT_LIB} )
+  set(__SRCS ${__SRCS} )
 
   if("test" STREQUAL "${COMPONENT_LIB}")
     add_tests()
   else()
     add_libs()
   endif()
-endfunction()
+endmacro()
 
 function(component_compile_features)
   if(NOT "${__SRCS}" STREQUAL "")

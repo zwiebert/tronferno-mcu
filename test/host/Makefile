@@ -6,6 +6,10 @@
 
 .PHONY: all clean init tests build_lib sdkconfig
 
+
+all:
+	make -j 1 test.cm.configure test.cm.build test.cm.ctest
+
 test_blacklist :=  test_config_keys
 
 ifeq ("$(V)","1")
