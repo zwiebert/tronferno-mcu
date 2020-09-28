@@ -15,9 +15,8 @@
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/txtio/fer_print.h"
 #include "fernotron/fer_main.h"
-
 #include <fernotron/trx/fer_trx_api.hh>
-
+#include <app/uout/callbacks.h>
 #include <string.h>
 
 struct fer_configT fer_config;
@@ -32,6 +31,9 @@ public:
     const auto g = get_g();
     const auto m = get_m();
     const auto cmd = get_cmd();
+
+    Fer_MsgPlainCmd msg {.a = a, .g = g, .m = m, .cmd = cmd };
+    uoApp_publish_fer_msgReceived(&msg);
 
     if (is_centralUnit()) {
       fer_cuas_set_check(a);
@@ -51,7 +53,7 @@ public:
 
     if (msg_type == MSG_TYPE_PLAIN || msg_type == MSG_TYPE_PLAIN_DOUBLE) {
       fer_msg_print("R:", fer_rx_msg, msg_type, TXTIO_IS_VERBOSE(vrbDebug));
-      fer_msg_print_as_cmdline((msg_type == MSG_TYPE_PLAIN_DOUBLE ? "Rc:" : "RC:"), fer_rx_msg, msg_type);
+     // fer_msg_print_as_cmdline((msg_type == MSG_TYPE_PLAIN_DOUBLE ? "Rc:" : "RC:"), fer_rx_msg, msg_type);
     }
 
 #ifndef FER_RECEIVER_MINIMAL

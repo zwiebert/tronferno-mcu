@@ -36,6 +36,13 @@ typedef enum {
   fer_if_cmd_Program // RTC/TImer data (or Sun-Test if dat_MEMB=fer_memb_SUN)
 } fer_if_cmd;
 
+struct Fer_MsgPlainCmd {
+  u32 a:24;
+  u32 g :4;
+  u8 m :4;
+  fer_if_cmd cmd :4;
+};
+
 
 struct Fer_MsgCmd {
   u32 a:24;

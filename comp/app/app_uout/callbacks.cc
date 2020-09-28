@@ -1,10 +1,12 @@
 
 #include <misc/int_macros.h>
+#include <misc/cstring_utils.hh>
 #include <cli/mutex.hh>
 #include <txtio/txtio_mutex.hh>
 #include <app/uout/so_msg.h>
 #include <app/uout/so_types.h>
 #include <uout/status_json.hh>
+#include <fernotron/trx/fer_trx_api.hh>
 #include <stdio.h>
 #include <string.h>
 #include <debug/dbg.h>
@@ -155,5 +157,75 @@ void uoApp_publish_timer_json(const char *json, bool fragment) {
       publish(it.cb, json, flags);
     }
   }
+}
+
+static void publish_fer_msgReceived_asTxt(uoCb_cbT cb, const struct Fer_MsgPlainCmd &m) {
+  char buf[64];
+  fer_if_cmd c = m.cmd;
+  u32 id = m.a;
+
+  const char *cs = 0;
+  const char *fdt = 0;
+
+  if ((FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_PlainSender) && (fdt = "plain")) || (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit) && (fdt = "central"))) {
+    switch (c) {
+    case fer_if_cmd_DOWN:
+      cs = "down";
+      break;
+    case fer_if_cmd_UP:
+      cs = "up";
+      break;
+    case fer_if_cmd_STOP:
+      cs = "stop";
+      break;
+    default:
+      cs = 0;
+      break;
+    }
+  } else if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_SunSensor) && (fdt = "sun")) {
+    switch (c) {
+    case fer_if_cmd_SunDOWN:
+      cs = "sun-down";
+      break;
+    case fer_if_cmd_SunUP:
+      cs = "sun-up";
+      break;
+    case fer_if_cmd_SunINST:
+      cs = "sun-pos";
+      break;
+    default:
+      cs = 0;
+      break;
+    }
+  }
+
+  if (!cs)
+    return; // unsupported command
+
+  if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit)) {
+    snprintf(buf, sizeof buf, "RC:type=central: a=%06x g=%d m=%d c=%s;\n", m.a, m.g, m.m, cs);
+  } else {
+    snprintf(buf, sizeof buf, "RC:type=%s: a=%06x g=%d m=%d c=%s;\n", fdt, m.a, m.g, m.m, cs);
+  }
+  uo_flagsT flags;
+  flags.fmt.txt = true;
+  flags.evt.rf_msg_received = true;
+  publish(cb, buf, flags);
+
+}
+
+void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
+  for (auto const &it : uoCb_cbs) {
+    if (!it.cb)
+      continue;
+    if (!it.flags.evt.rf_msg_received)
+      continue;
+    //TODO: add json output for this (RF msg received)
+
+    if (it.flags.fmt.txt) {
+      publish_fer_msgReceived_asTxt(it.cb, *msg);
+    }
+  }
+
 }
 

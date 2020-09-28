@@ -5,9 +5,6 @@
 
 static Fer_Trx_API *OurDerivedObject;
 
-
-Fer_Trx_GPIO IRAM_ATTR gpio_obj;
-
 void Fer_Trx_API::setup(Fer_Trx_API *derived_object) {
   OurDerivedObject = derived_object;
 }

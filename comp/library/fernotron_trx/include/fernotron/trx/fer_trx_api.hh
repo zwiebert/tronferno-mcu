@@ -82,11 +82,11 @@ public:
   ////////////////////////////////////////////////////////////////
   ///////// timer interrupt for RF transceiver ///////////////////
   ////////////////////////////////////////////////////////////////
-  static void isr_sample_rx_pin(bool level);
-  static void isr_handle_rx();
+  static void isr_sample_rx_pin(bool level);  // call this on top of timer ISR
+  static void isr_handle_rx(); // call this from timer ISR every (200/INTR_TICK_FREQ_MULT)us
 
-  static bool isr_get_tx_level();
-  static void isr_handle_tx();
+  static bool isr_get_tx_level(); // call this son top of timer ISR
+  static void isr_handle_tx();  // call this from timer ISR every 200us
 
 
 
@@ -99,13 +99,4 @@ private:
 
 typedef Fer_Trx_API::MsgKind fer_msg_kindT;
 
-class Fer_Trx_GPIO {
-public:
-  virtual ~Fer_Trx_GPIO() = default;
-public:
-  static void setup(Fer_Trx_GPIO *derived_object);
-public:
-  virtual bool get_rx() const { return false; }
-  virtual void put_rx(bool level) const { }
-};
 
