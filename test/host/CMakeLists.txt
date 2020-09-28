@@ -74,14 +74,6 @@ endmacro()
 function(set_comp_vars)
   cmake_parse_arguments(MY "" "NAME" "" "${ARGN}")
   # message("MY_NAME: ${MY_NAME}")
-  set("${MY_NAME}_INCLUDE_DIRS"
-      ${INC_PATHS}
-      CACHE INTERNAL "${MY_NAME}_INCLUDE_DIRS")
-
-  set("${MY_NAME}_PRIV_INCLUDE_DIRS"
-      ${PRIV_INC_PATHS}
-      CACHE INTERNAL "${MY_NAME}_PRIV_INCLUDE_DIRS")
-
   set("${MY_NAME}_REQUIRES"
       ${__REQUIRES}
       CACHE INTERNAL "${MY_NAME}_REQUIRES")
@@ -106,6 +98,8 @@ macro(add_tests)
     set(test_name "test.${parent_dir_name}.${test_file_name}")
 
     add_executable(${test_name} ${test_file})
+    target_include_directories(${test_name} PUBLIC ${INC_PATHS})
+    target_include_directories(${test_name} PRIVATE ${PRIV_INC_PATHS})
     target_compile_options(${test_name} PRIVATE ${comp_compile_opts})
     target_compile_features(${test_name} PRIVATE ${comp_compile_feats})
     # target_link_options(${test_name} PRIVATE "-flto" "-O2") target_link_libraries(${test_name} PRIVATE unity)
@@ -220,18 +214,13 @@ endmacro()
 
 foreach(comp ${COMPONENT_LIBS})
   message("@all_lib_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
-  #my_include_from_list( COMP ${comp} ACCESS ${${comp}_ACCESS} INC_LIST ${${comp}_INCLUDE_DIRS} ${${comp}_PRIV_INCLUDE_DIRS})
-  #my_comp_add_includes(COMP ${comp} ACCESS ${${comp}_ACCESS} COMP_LIST ${${comp}_REQUIRES})
-  #my_comp_add_includes(COMP ${comp} ACCESS ${${comp}_ACCESS} COMP_LIST ${${comp}_PRIV_REQUIRES})
-
-
   filter_system_comps(${comp}_REQUIRES)
   filter_system_comps(${comp}_PRIV_REQUIRES)
 
   if("INTERFACE" STREQUAL "${${comp}_ACCESS}")
     target_link_libraries("${comp}" INTERFACE ${${comp}_REQUIRES})
   else()
-    set_target_properties(${comp} PROPERTIES LINK_INTERFACE_MULTIPLICITY 4)
+    set_target_properties(${comp} PROPERTIES LINK_INTERFACE_MULTIPLICITY 6)
     target_link_libraries("${comp}" PUBLIC ${${comp}_REQUIRES})
     target_link_libraries("${comp}" PRIVATE ${${comp}_PRIV_REQUIRES})
   endif()
@@ -239,10 +228,6 @@ endforeach()
 
 foreach(comp ${TEST_EXECUTABLES})
   message("@all_test_inc: COMP: ${comp}, ACCESS: ${${comp}_ACCESS}, REQUIRES:${${comp}_REQUIRES}, PRIV_REQUIRES: ${${comp}_PRIV_REQUIRES}")
-  my_include_from_list( COMP ${comp} ACCESS PUBLIC INC_LIST ${${comp}_INCLUDE_DIRS} ${${comp}_PRIV_INCLUDE_DIRS})
-  my_comp_add_includes(COMP ${comp} ACCESS PUBLIC COMP_LIST ${${comp}_REQUIRES})
-  my_comp_add_includes(COMP ${comp} ACCESS PUBLIC COMP_LIST ${${comp}_PRIV_REQUIRES})
-
   filter_system_comps(${comp}_REQUIRES)
   filter_system_comps(${comp}_PRIV_REQUIRES)
 
