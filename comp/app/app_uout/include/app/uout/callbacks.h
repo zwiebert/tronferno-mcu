@@ -24,4 +24,4 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
 
 void uoApp_publish_timer_json(const char *json, bool fragment = true);
 
-
+void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg);

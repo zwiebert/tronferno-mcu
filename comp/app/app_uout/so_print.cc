@@ -25,7 +25,7 @@
 #include <time.h>
 
 
-void print_timer_event_minute(const char *label, minutes_t mins) {
+void print_timer_event_minute(const char *label, fer_au_minutesT mins) {
   io_puts(label);
   if (mins == MINUTES_DISABLED)
     io_puts("=none\n");
@@ -34,8 +34,8 @@ void print_timer_event_minute(const char *label, minutes_t mins) {
 }
 
 void  so_print_timer_event_minutes(u8 g, u8 m) {
-  timer_minutes_t tm;
-  if (fau_get_timer_minutes_now(&tm, &g, &m, true)) {
+  Fer_TimerMinutes tm;
+  if (fer_au_get_timer_minutes_now(&tm, &g, &m, true)) {
     print_timer_event_minute("astro-down", tm.minutes[0]);
     print_timer_event_minute("daily-up", tm.minutes[1]);
     print_timer_event_minute("daily-down", tm.minutes[2]);
@@ -44,7 +44,7 @@ void  so_print_timer_event_minutes(u8 g, u8 m) {
   }
 }
 
-void  so_print_gmbitmask(GmBitMask *mm) {
+void  so_print_gmbitmask(Fer_GmBitMask *mm) {
   u8 g;
 
   for (g = 0; g < 8; ++g) {
@@ -54,7 +54,7 @@ void  so_print_gmbitmask(GmBitMask *mm) {
   }
 }
 
-void so_gmbitmask_to_str(char *dst, GmBitMask *mm) {
+void so_gmbitmask_to_str(char *dst, Fer_GmBitMask *mm) {
   i8 g;
   bool leading_zeros = true;
 

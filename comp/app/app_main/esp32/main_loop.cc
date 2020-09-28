@@ -12,8 +12,8 @@
 #include "fernotron/pos/positions_static.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/sep/set_endpos.h"
-#include "fernotron/fer_msg_rx.h"
-#include "fernotron/fer_msg_tx.h"
+#include "fernotron/trx/raw/fer_msg_rx.h"
+#include "fernotron/trx/raw/fer_msg_tx.h"
 #include "net/ipnet.h"
 #include "gpio/pin.h"
 
@@ -35,7 +35,7 @@ static const lfa_funT lfa_table[lf_Len] = {
     ipnet_disconnected,
 #endif
 #ifdef USE_NTP
-    fam_updateTimerEvent,
+    fer_am_updateTimerEvent,
 #endif
 #if defined USE_AP_FALLBACK || defined USE_WLAN_AP
     lfa_createWifiAp,
@@ -51,16 +51,16 @@ static const lfa_funT lfa_table[lf_Len] = {
     fer_rx_loop,
 #endif
 #ifdef USE_SEP
-    sep_loop,
+    fer_sep_loop,
 #endif
-    ferPos_loop, fam_loop, fam_updateTimerEvent,
+    fer_pos_loop, fer_am_loop, fer_am_updateTimerEvent,
 #ifdef USE_CUAS
-    cu_auto_set_check_timeout,
+    fer_cuas_set_check_timeout,
 #endif
 #ifdef USE_PAIRINGS
-    pair_auto_set_check_timeout,
+    fer_alias_auto_set_check_timeout,
 #endif
-    statPos_loopAutoSave, ferPos_loopCheckMoving,
+    fer_statPos_loopAutoSave, fer_pos_loopCheckMoving,
     pin_notify_input_change,
     [] { mcu_delayedRestart(1500); }
 };

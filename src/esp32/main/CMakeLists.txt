@@ -10,4 +10,4 @@ if(DEFINED ENV{FLAVOR_LAN})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFLAVOR_LAN")
 endif()
 
-register_component(PRIV_REQUIRES app_main misc INCLUDE_DIRS ..)
+register_component(PRIV_REQUIRES app_main utils_misc INCLUDE_DIRS ..)

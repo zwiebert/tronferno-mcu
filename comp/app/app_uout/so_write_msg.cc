@@ -153,15 +153,15 @@ void soMsg_cfgpasswd_missing(const struct TargetDesc &td) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-static uint16_t cuas_msgid;
+static uint16_t fer_cuas_msgid;
 void soMsg_cuas_start(const struct TargetDesc &td, uint16_t id) {
-  cuas_msgid = id;
+  fer_cuas_msgid = id;
   td.write("U: Press Stop on the Fernotron central unit\n");
 }
 
 void soMsg_cuas_timeout(const struct TargetDesc &td) {
   td.write("U: Nothing received\n");
-  reply_id_message(td, cuas_msgid, "cuas=time-out", 0);
+  reply_id_message(td, fer_cuas_msgid, "cuas=time-out", 0);
 }
 
 void soMsg_cuas_done(const struct TargetDesc &td) {

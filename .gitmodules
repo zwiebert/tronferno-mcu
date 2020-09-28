@@ -2,5 +2,5 @@
 	path = comp/external/components-mcu
 	url = https://github.com/zwiebert/components-mcu.git
 [submodule "test/unity"]
-	path = test/host/unity
+	path = comp/test/test_host/unity
 	url = https://github.com/ThrowTheSwitch/Unity.git

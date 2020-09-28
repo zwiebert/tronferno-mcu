@@ -12,11 +12,10 @@
 #include "cli_imp.h"
 #include "app/cli/cli_app.h"
 #include "uout/status_json.hh"
-#include "fernotron/fsb.h"
 #include "cli/cli.h"
 #include "app/uout/status_output.h"
 #include "app/settings/config.h"
-
+#include <fernotron/trx/fer_trx_c_api.h>
 #include <algorithm>
 #include <iterator>
 
@@ -26,22 +25,22 @@
 
 struct c_map {
   const char *fs;
-  fer_cmd fc;
+  fer_if_cmd fc;
 };
 
 struct c_map const fc_map[] = { //
-    { "down", fer_cmd_DOWN }, //
-    { "up", fer_cmd_UP }, //
-    { "stop", fer_cmd_STOP }, //
-    { "sun-down", fer_cmd_SunDOWN }, //
-    { "sun-up", fer_cmd_SunUP }, //
-    { "sun-inst", fer_cmd_SunINST }, //
-    //{"sun-test", fer_cmd_Program},//
-    { "set", fer_cmd_SET },  //
+    { "down", fer_if_cmd_DOWN }, //
+    { "up", fer_if_cmd_UP }, //
+    { "stop", fer_if_cmd_STOP }, //
+    { "sun-down", fer_if_cmd_SunDOWN }, //
+    { "sun-up", fer_if_cmd_SunUP }, //
+    { "sun-inst", fer_if_cmd_SunINST }, //
+    //{"sun-test", fer_if_cmd_Program},//
+    { "set", fer_if_cmd_SET },  //
     };
 
 bool 
-cli_parm_to_ferCMD(const char *token, fer_cmd *cmd) {
+cli_parm_to_ferCMD(const char *token, fer_if_cmd *cmd) {
   int i;
   
 
@@ -77,33 +76,6 @@ config_transmitter(const char *val) {
   }
   config_save_item_n_i8(CI(CB_TRANSM), C.app_transm);
   return true;
-}
-
-
-
-
-
-bool  asc2group(const char *s, fer_grp *grp) {
-  if (s) {
-    int g = atoi(s);
-    if (0 <= g && g <= 7) {
-      *grp = ngrp2fer_grp(g);
-      return true;
-    }
-  }
-  return false;
-}
-
-bool  asc2memb(const char *s, fer_memb *memb) {
-  if (s) {
-
-    int m = atoi(s);
-    if (0 <= m && m <= 7) {
-      *memb = nmb2fer_memb(m);
-      return true;
-    }
-  }
-  return false;
 }
 
 bool asc2u8(const char *s, u8 *n, u8 limit) {

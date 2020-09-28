@@ -11,8 +11,7 @@
 #include "config_kvs/config.h"
 #include "txtio/inout.h"
 #include "fernotron/types.h"
-#include "fernotron/astro.h"
-#include "net/ethernet.h"
+//#include "net/ethernet.h"
 #include "gpio/pin.h"
 #include "stdbool.h"
 
@@ -53,7 +52,7 @@ typedef struct {
   enum transmitter app_transm;
   enum rtclock app_rtc;
   uint32_t fer_usedMembers; // each of the nibbles 1-7 stands for a group. nibble 1 == group 1. nibble 0 = number of used Groups (stored for the front-end, not used here on the MCU)
-  GmBitMask fer_usedMemberMask;
+  Fer_GmBitMask fer_usedMemberMask;
   char app_configPassword[16];
   char app_expertPassword[16];
 } config;
@@ -155,7 +154,6 @@ void config_setup_astro();
 struct cfg_astro* config_read_astro(struct cfg_astro *c);
 float config_read_longitude();
 float config_read_latitude();
-enum astroCorrection config_read_astro_correction();
 
 void config_setup_mqttAppClient();
 

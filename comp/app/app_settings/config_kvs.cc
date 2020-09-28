@@ -23,10 +23,9 @@
 #define D(x) 
 
 #define CFG_KEY "global.C"
-
 #ifdef CONFIG_DICT
-
-extern const char * const config_keys[] = {
+extern const char * const config_keys[];
+const char * const config_keys[] = {
   "C_RECEIVER", "C_TRANSM", "C_CUID", "C_GMU", "C_BAUD", "C_GPIO",
   "C_CFG_PASSWD", "C_LONGITUDE", "C_LATITUDE",
 #ifndef POSIX_TIME
@@ -50,8 +49,7 @@ bool config_item_modified(enum configItem item) {
     switch ((int)item) {
     case CB_CUID:
       kvsR(u32, item, C.fer_centralUnitID);
-      FSB_PUT_DEVID(&default_sender, C.fer_centralUnitID);
-      fer_setup(fer_configT{C.fer_centralUnitID}, true);
+      fer_main_setup(fer_configT{C.fer_centralUnitID}, true);
       break;
     case CB_BAUD:
       kvsR(i8, item, C.mcu_serialBaud);

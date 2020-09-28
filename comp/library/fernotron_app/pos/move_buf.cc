@@ -14,24 +14,24 @@
 #include "misc/int_macros.h"
 #include "misc/int_types.h"
 
-#define mv_SIZE 8
-struct mv moving[mv_SIZE];
+#define fer_mv_SIZE 8
+struct Fer_Move moving[fer_mv_SIZE];
 u8 moving_mask;
 
 
-void (*fpos_POSITIONS_MOVE_cb)(bool has_unsaved);
-static inline void fpos_HAS_MOVING_cb() {
-  if (fpos_POSITIONS_MOVE_cb)
-    fpos_POSITIONS_MOVE_cb(true);
+void (*fer_pos_POSITIONS_MOVE_cb)(bool has_unsaved);
+static inline void fer_pos_HAS_MOVING_cb() {
+  if (fer_pos_POSITIONS_MOVE_cb)
+    fer_pos_POSITIONS_MOVE_cb(true);
 }
-static inline void fpos_HAS_NO_MOVING_cb() {
-  if (fpos_POSITIONS_MOVE_cb)
-    fpos_POSITIONS_MOVE_cb(false);
+static inline void fer_pos_HAS_NO_MOVING_cb() {
+  if (fer_pos_POSITIONS_MOVE_cb)
+    fer_pos_POSITIONS_MOVE_cb(false);
 }
 
 
 
-struct mv* mv_getNext(struct mv *pred) {
+struct Fer_Move* fer_mv_getNext(struct Fer_Move *pred) {
   if (!moving_mask)
     return 0;
 
@@ -45,25 +45,25 @@ struct mv* mv_getNext(struct mv *pred) {
   return 0;
 }
 
-struct mv* mv_calloc() {
+struct Fer_Move* fer_mv_calloc() {
   u8 mvi;
 
-  for (mvi = 0; mvi < mv_SIZE; ++mvi) {
+  for (mvi = 0; mvi < fer_mv_SIZE; ++mvi) {
     if (GET_BIT(moving_mask, mvi))
       continue;
 
     SET_BIT(moving_mask, mvi);
-    moving[mvi] = (struct mv ) { };
-    fpos_HAS_MOVING_cb();
+    moving[mvi] = (struct Fer_Move ) { };
+    fer_pos_HAS_MOVING_cb();
     return &moving[mvi];
   }
   return 0;
 }
 
-void mv_free(struct mv *mv) {
-  int mvi = mv - moving;
+void fer_mv_free(struct Fer_Move *Fer_Move) {
+  int mvi = Fer_Move - moving;
   CLR_BIT(moving_mask, mvi);
   if (!moving_mask)
-    fpos_HAS_NO_MOVING_cb();
+    fer_pos_HAS_NO_MOVING_cb();
 }
 

@@ -11,5 +11,5 @@ void main_setup() {
   TargetDescCon td { SO_TGT_CLI };
   soMsg_fw_start_msg_print(td);
 
-  fer_setup(fer_configT {C.fer_centralUnitID});
+  fer_main_setup(fer_configT {C.fer_centralUnitID});
 }

@@ -1,17 +1,19 @@
 #include "app/config/proj_app_cfg.h"
 #include "fernotron/sep/set_endpos.h"
 
-#include <fernotron/fer_msg_plain.h>
-#include <fernotron/fer_msg_attachment.h>
-#include <fernotron/fer_msg_tx.h>
-#include "fernotron/fer_radio_trx.h"
-#include "fernotron/fer_rawmsg_buffer.h"
+#include <fernotron/trx/raw/fer_msg_plain.h>
+#include <fernotron/trx/raw/fer_msg_attachment.h>
+#include <fernotron/trx/raw/fer_msg_tx.h>
+#include "fernotron/trx/raw/fer_radio_trx.h"
+#include "fernotron/trx/raw/fer_rawmsg_buffer.h"
+#include "fernotron/trx/raw/fer_fsb.h"
+
 #include "gpio/pin.h"
 
 #include "app/rtc.h"
 #include "txtio/inout.h"
 #include "app/uout/status_output.h"
-
+#include <fernotron/trx/fer_trx_c_api.h>
 
 //////////////////////////////////////////////////////////////////
 // DANGER ZONE
@@ -28,31 +30,31 @@
 // DANGER ZONE
 //////////////////////////////////////////////////////////////////
 #if ENABLE_SET_ENDPOS
-#define SEP_DOWN fer_cmd_EndPosDOWN // harmful down command moving beyond current end position
-#define SEP_UP fer_cmd_EndPosUP     // harmful up command moving beyond current end position
+#define SEP_DOWN fer_if_cmd_EndPosDOWN // harmful down command moving beyond current end position
+#define SEP_UP fer_if_cmd_EndPosUP     // harmful up command moving beyond current end position
 #else
-#define SEP_DOWN fer_cmd_DOWN   // normal down command
-#define SEP_UP fer_cmd_UP       // normal up command
+#define SEP_DOWN fer_if_cmd_DOWN   // normal down command
+#define SEP_UP fer_if_cmd_UP       // normal up command
 #endif
 //////////////////////////////////////////////////////////////////
 
 static const struct TargetDesc *my_td;
 
-void (*sep_enable_disable_cb)(bool enable);
+void (*fer_sep_enable_disable_cb)(bool enable);
 
-static inline void sep_ENABLE_cb() {
-  if (sep_enable_disable_cb)
-    sep_enable_disable_cb(true);
+static inline void fer_sep_ENABLE_cb() {
+  if (fer_sep_enable_disable_cb)
+    fer_sep_enable_disable_cb(true);
 }
-static inline void sep_DISABLE_cb() {
-  if (sep_enable_disable_cb)
-    sep_enable_disable_cb(false);
+static inline void fer_sep_DISABLE_cb() {
+  if (fer_sep_enable_disable_cb)
+    fer_sep_enable_disable_cb(false);
 }
 
-static fsbT sep_fsb;
-static bool sep_buttons_enabled;
+static fer_sbT fer_sep_fsb;
+static bool fer_sep_buttons_enabled;
 static bool up_pressed, down_pressed;
-static fer_cmd sep_cmd;
+static fer_if_cmd fer_sep_cmd;
 
 static time_t end_time;
 
@@ -66,20 +68,20 @@ static time_t end_time;
 #define BUTT_DOWN (mcu_get_buttonDownPin())
 #define BUTT_UP (mcu_get_buttonUpPin())
 #else
-#define BUTT_DOWN (mcu_get_buttonPin() && SEP_DOWN == sep_cmd)
-#define BUTT_UP (mcu_get_buttonPin() && SEP_UP == sep_cmd)
+#define BUTT_DOWN (mcu_get_buttonPin() && SEP_DOWN == fer_sep_cmd)
+#define BUTT_UP (mcu_get_buttonPin() && SEP_UP == fer_sep_cmd)
 #endif
 
 #define IS_BUTTON_PRESSED()  (mcu_get_buttonPin())
 
-bool  sep_is_enabled(void) {
-  return sep_buttons_enabled;
+bool  fer_sep_is_enabled(void) {
+  return fer_sep_buttons_enabled;
 }
 
 static bool 
-sep_send_stop(void) {
-  fsbT * const fsb = &sep_fsb;
-  FSB_PUT_CMD(fsb, fer_cmd_STOP);
+fer_sep_send_stop(void) {
+  fer_sbT * const fsb = &fer_sep_fsb;
+  FER_SB_PUT_CMD(fsb, fer_if_cmd_STOP);
   fer_update_tglNibble(fsb);
   while (fer_send_msg(fsb, MSG_TYPE_PLAIN, 2)) {
     fer_update_tglNibble(fsb);
@@ -88,37 +90,39 @@ sep_send_stop(void) {
 }
 
 static bool 
-sep_send_down(void) {
-  fsbT * const fsb = &sep_fsb;
-  FSB_PUT_CMD(fsb, SEP_DOWN);
+fer_sep_send_down(void) {
+  fer_sbT * const fsb = &fer_sep_fsb;
+  FER_SB_PUT_CMD(fsb, SEP_DOWN);
   fer_update_tglNibble(fsb);
   return fer_send_msg(fsb, MSG_TYPE_PLAIN, 0);
 }
 
 static bool 
-sep_send_up(void) {
-  fsbT * const fsb = &sep_fsb;
-  FSB_PUT_CMD(fsb, SEP_UP);
+fer_sep_send_up(void) {
+  fer_sbT * const fsb = &fer_sep_fsb;
+  FER_SB_PUT_CMD(fsb, SEP_UP);
   fer_update_tglNibble(fsb);
   return fer_send_msg(fsb, MSG_TYPE_PLAIN, 0);
 }
 
 void 
-sep_disable(void) {
-  if (sep_buttons_enabled) {
-    sep_DISABLE_cb();
-    sep_send_stop();  // don't remove this line
+fer_sep_disable(void) {
+  if (fer_sep_buttons_enabled) {
+    fer_sep_DISABLE_cb();
+    fer_sep_send_stop();  // don't remove this line
     soMsg_sep_disable(*my_td);
     up_pressed = down_pressed = false;
-    sep_buttons_enabled = false;
+    fer_sep_buttons_enabled = false;
   }
 }
 
-bool 
-sep_enable(const struct TargetDesc &td, fsbT *fsb) {
+bool
+fer_sep_enable(const struct TargetDesc &td, u32 a, u8 g, u8 m, fer_if_cmd cmd) {
+  fer_sbT *fsb = fer_get_fsb(a,g,m,(fer_cmd)cmd);
+//fer_sep_enable(const struct TargetDesc &td, fer_sbT *fsb) {
   my_td = &td;
-  if (sep_buttons_enabled) { // already activated
-    sep_disable();
+  if (fer_sep_buttons_enabled) { // already activated
+    fer_sep_disable();
     return false;
   } else if (IS_BUTTON_PRESSED()) {
     soMsg_sep_button_pressed_error(*my_td);
@@ -126,57 +130,57 @@ sep_enable(const struct TargetDesc &td, fsbT *fsb) {
   } else {
 
     // check for possible broadcast
-    if (FSB_ADDR_IS_CENTRAL(fsb)
-        && !((fer_memb_M1 <= FSB_GET_MEMB(fsb) && FSB_GET_MEMB(fsb) <= fer_memb_M7) && (fer_grp_G1 <= FSB_GET_GRP(fsb) && FSB_GET_GRP(fsb) <= fer_grp_G7))) {
+    if (FER_SB_ADDR_IS_CENTRAL(fsb)
+        && !((fer_memb_M1 <= FER_SB_GET_MEMB(fsb) && FER_SB_GET_MEMB(fsb) <= fer_memb_M7) && (fer_grp_G1 <= FER_SB_GET_GRP(fsb) && FER_SB_GET_GRP(fsb) <= fer_grp_G7))) {
       return false; // no broadcast allowed
     }
 
     // set our endpos-up/down command according to normal up/down command in fsb
-    if (FSB_GET_CMD(fsb) == fer_cmd_UP) {
-      sep_cmd = SEP_UP;
-    } else if (FSB_GET_CMD(fsb) == fer_cmd_DOWN) {
-      sep_cmd = SEP_DOWN;
+    if (FER_SB_GET_CMD(fsb) == fer_if_cmd_UP) {
+      fer_sep_cmd = SEP_UP;
+    } else if (FER_SB_GET_CMD(fsb) == fer_if_cmd_DOWN) {
+      fer_sep_cmd = SEP_DOWN;
     } else {
       return false;
     }
     soMsg_sep_enable(*my_td);
-    sep_fsb = *fsb;
-    sep_buttons_enabled = true;
+    fer_sep_fsb = *fsb;
+    fer_sep_buttons_enabled = true;
     TIMEOUT_SET();
-    sep_ENABLE_cb();
+    fer_sep_ENABLE_cb();
     return true;
   }
   return false;
 }
 
 void
-sep_loop(void) {
-  if (sep_buttons_enabled) {
+fer_sep_loop(void) {
+  if (fer_sep_buttons_enabled) {
     const bool up_pin = BUTT_UP;
     const bool down_pin = BUTT_DOWN;
 
     if (up_pin && down_pin) {  // emergency stop
-      sep_disable();
+      fer_sep_disable();
       return;
     }
 
     if (!up_pressed && !down_pressed) {
       if ((up_pressed = up_pin)) {
-        sep_send_up();
+        fer_sep_send_up();
         TIMEOUT_SET();
       } else if ((down_pressed = down_pin)) {
-        sep_send_down();
+        fer_sep_send_down();
         TIMEOUT_SET();
       } else if (IS_TIMEOUT_REACHED()) {
-        sep_disable();
+        fer_sep_disable();
         return;
       }
     } else {
       if (up_pressed && !(up_pressed = up_pin)) {
-        sep_send_stop();
+        fer_sep_send_stop();
       }
       if (down_pressed && !(down_pressed = down_pin)) {
-        sep_send_stop();
+        fer_sep_send_stop();
       }
     }
   }

@@ -98,7 +98,7 @@ int process_parmShpref(clpar p[], int len, const struct TargetDesc &td) {
       if (strcmp(key, opts_kvd[k]) != 0)
         continue;
       if (!haveStLoad) {
-        ferPos_prefByM_load(&st.sts, g, m);
+        fer_pos_prefByM_load(&st.sts, g, m);
         haveStLoad = true;
       }
       if (!is_val("?")) {
@@ -113,7 +113,7 @@ int process_parmShpref(clpar p[], int len, const struct TargetDesc &td) {
       if (!is_val("?")) {
         goto NEXT_ARG_ERROR;
       }
-      ferSp_strByM_forEach(td, "", g, m, output_message_kvs);
+      fer_shPref_strByM_forEach(td, "", g, m, output_message_kvs);
 
     } else if (strncmp(key, PARM_OPT_TAG_PREFIX, strlen(PARM_OPT_TAG_PREFIX)) == 0) {
       char *tag = p[arg_idx].key + strlen(PARM_OPT_TAG_PREFIX);
@@ -123,13 +123,13 @@ int process_parmShpref(clpar p[], int len, const struct TargetDesc &td) {
         wildcard = true;
       }
       if (!is_val("?")) {
-        if (wildcard || !ferSp_strByM_store(val, tag, g, m))
+        if (wildcard || !fer_shPref_strByM_store(val, tag, g, m))
           goto NEXT_ARG_ERROR;
       }
       if (wildcard)
-        ferSp_strByM_forEach(td, tag, g, m, output_message_kvs);
+        fer_shPref_strByM_forEach(td, tag, g, m, output_message_kvs);
       else
-        ferSp_strByM_forOne(td, tag, g, m, output_message_kvs);
+        fer_shPref_strByM_forOne(td, tag, g, m, output_message_kvs);
 
     } else {
       cli_replyFailure(td);
@@ -139,7 +139,7 @@ int process_parmShpref(clpar p[], int len, const struct TargetDesc &td) {
   }
 
   if (haveStStore) {
-    if (!ferPos_prefByM_store(&st.sts, g, m))
+    if (!fer_pos_prefByM_store(&st.sts, g, m))
       ++err_ct;
   }
 

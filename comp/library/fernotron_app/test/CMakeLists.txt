@@ -1,8 +1,13 @@
 idf_component_register(SRC_DIRS "."
                        INCLUDE_DIRS "." ../include 
                        PRIV_INCLUDE_DIRS ../include/fernotron
-                       PRIV_REQUIRES app_settings debug
-                       REQUIRES app_misc unity txtio)
-                       
+                       PRIV_REQUIRES fernotron_trx fernotron_app fernotron_app app_config app_settings utils_debug utils_misc txtio
+                                     unity
+                       #REQUIRES 
+                       #app_misc unity txtio  fernotron_trx fernotron_app
+                       #fernotron_app app_settings utils_debug config_kvs
+                       )
+
+
 component_compile_options(${comp_compile_opts})
 component_compile_features(${comp_compile_feats})

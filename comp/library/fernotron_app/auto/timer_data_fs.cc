@@ -36,19 +36,19 @@ gm_to_file_name (u8 g, u8 m) {
   return file_name;
 }
 
-static bool  save_data2(timer_data_t *p, const char *file_name) {
-  return stor_fileWrite(file_name, p, sizeof (timer_data_t));
+static bool  save_data2(Fer_TimerData *p, const char *file_name) {
+  return stor_fileWrite(file_name, p, sizeof (Fer_TimerData));
 }
 
 
-static bool  read_data2(timer_data_t *p, const char *file_name) {
-  return stor_fileRead(file_name, p, sizeof (timer_data_t));
+static bool  read_data2(Fer_TimerData *p, const char *file_name) {
+  return stor_fileRead(file_name, p, sizeof (Fer_TimerData));
 }
 
 static int delete_shadowded_files(u8 group, u8 memb) {
   int result = 0;
   DB2(printf("delete shadowed files(group=%d, memb=%d)\n", (int)group, (int)memb));
-  for (gm_iterator it; it; ++it) {
+  for (Fer_GmIterator it; it; ++it) {
     const gT g = it.getG();
     const mT m = it.getM();
     if ((group == 0 || group == g) && (memb == 0 || (memb == m && C.fer_usedMemberMask.getBit(g, m)))) {
@@ -70,7 +70,7 @@ bool erase_timer_data_fs(u8 g, u8 m) {
   return delete_shadowded_files(g, m) > 0;
 }
 
-bool  save_timer_data_fs(timer_data_t *p, u8 g, u8 m) {
+bool  save_timer_data_fs(Fer_TimerData *p, u8 g, u8 m) {
   bool result = false;
   precond(p && g <= 7 && m <= 7);
 
@@ -80,7 +80,7 @@ bool  save_timer_data_fs(timer_data_t *p, u8 g, u8 m) {
   return result;
 }
 
-bool  read_timer_data_fs(timer_data_t *p, u8 *g, u8 *m, bool wildcard) {
+bool  read_timer_data_fs(Fer_TimerData *p, u8 *g, u8 *m, bool wildcard) {
   bool result;
   precond(p && g && m && *g <= 7 && *m <= 7);
 

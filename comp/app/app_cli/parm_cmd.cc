@@ -1,25 +1,22 @@
 #include "app/config/proj_app_cfg.h"
 
 #include <string.h>
-#include <fernotron/fer_msg_rx.h>
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/commands.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "txtio/inout.h"
 #include "app/config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
-#include "fernotron/fer_msg_tx.h"
-#include "fernotron/fer_msg_attachment.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "app/uout/status_output.h"
 #include "app/settings/config.h"
-#include "app/cli/cli_fer.h"
+#include "cli_fer.h"
 #include "app/opt_map.hh"
 #include <stdlib.h>
+#include <fernotron/trx/fer_trx_c_api.h>
 
-
-#define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
+#define FER_SB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
 const char cli_help_parmSend[]  =
     "a=(0|ID)  0  hex ID of sender or receiver.\n"
@@ -42,9 +39,9 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
 
   u32 addr = cfg_getCuId();
   u8 g = 0, m = 0;
-  fer_cmd cmd = fer_cmd_None;
+  fer_if_cmd cmd = fer_if_cmd_None;
   int set_end_pos = -1;
-  u8 repeats = FSB_PLAIN_REPEATS;
+  u8 repeats = FER_SB_PLAIN_REPEATS;
   bool has_requested_position = false;
   i8 pct = -1;
 #define has_pct (pct >= 0)
@@ -70,24 +67,15 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
         break;
 
       case otok::g: {
-        int arg = atoi(val);
-        if (0 <= arg && arg <= 7) {
-          g = arg;
-        } else {
-          return cli_replyFailure(td);
-        }
+        if (!asc2u8(val, &g, 7))
+        return cli_replyFailure(td);
       }
-        break;
-
+      break;
       case otok::m: {
-        int arg = atoi(val);
-        if (0 <= arg && arg <= 7) {
-          m = arg;
-        } else {
-          return cli_replyFailure(td);
-        }
+      if (!asc2u8(val, &m, 7))
+      return cli_replyFailure(td);
       }
-        break;
+      break;
 
       case otok::r: {
         NODEFAULT();
@@ -138,24 +126,24 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
 
   if (has_requested_position) {
     if (g != 0) {
-      int pos = simPos_getPct_whileMoving(addr, g, m);
+      int pos = fer_simPos_getPct_whileMoving(addr, g, m);
       if (pos >= 0) {
         so_arg_gmp_t gmp = {g, m, pos};
         soMsg_pos_print_gmp(td, gmp);
       }
     } else {
-      statPos_printAllPcts(td);
+      fer_statPos_printAllPcts(td);
     }
   } else {
     if (has_sep) { // enable hardware buttons to set end position
       if (set_end_pos)
-        sep_enable(td, get_fsb(addr,g,m,cmd));
+        fer_sep_enable(td, addr,g,m, cmd);
       else
-        sep_disable();
+        fer_sep_disable();
     } else if (has_pct) {
-      cli_replyResult(td, commands_moveShutterToPct(addr, g, m, pct, repeats));
+      cli_replyResult(td, fer_cmd_moveShutterToPct(addr, g, m, pct, repeats));
     } else if (has_cmd) {
-      cli_replyResult(td, commands_sendShutterCommand(addr, g, m, cmd, repeats));
+      cli_replyResult(td, fer_cmd_sendShutterCommand(addr, g, m, cmd, repeats));
     } else {
       cli_replyFailure(td);
     }

@@ -27,7 +27,7 @@
 
 
 
-static bool store (const char *name, gmBitMaskT *gm, int count, bool write) {
+static bool gm_save(const char *name, gmBitMaskT *gm, int count, bool write) {
   char nb[NB_SIZE] = NB_PFX;
   strncat (nb, name, NB_N);
   bool success = false;
@@ -45,12 +45,12 @@ static bool store (const char *name, gmBitMaskT *gm, int count, bool write) {
   return success;
 }
 
-bool fer_gmByName_load(const char *name, const gmBitMaskT *gm, int count) {
-  return store (name, (gmBitMaskT*)gm, count, false);
+bool fer_stor_gmBitMask_load(const char *name, const gmBitMaskT *gm, int count) {
+  return gm_save (name, (gmBitMaskT*)gm, count, false);
 }
 
-bool fer_gmByName_store(const char *name, gmBitMaskT *gm, int count) {
-  return store (name, gm, count, true);
+bool fer_stor_gmBitMask_save(const char *name, gmBitMaskT *gm, int count) {
+  return gm_save (name, gm, count, true);
 }
 
 

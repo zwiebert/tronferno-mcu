@@ -46,7 +46,7 @@ static int delete_shadowded_kv(u8 group, u8 memb) {
 
   kvshT handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE);
   if (handle) {
-    for (gm_iterator it; it; ++it) {
+    for (Fer_GmIterator it; it; ++it) {
       const gT g = it.getG();
       const mT m = it.getM();
       if ((group == 0 || group == g) && (memb == 0 || (memb == m && C.fer_usedMemberMask.getBit(g, m)))) {
@@ -71,7 +71,7 @@ bool erase_timer_data_kvs(u8 g, u8 m) {
   return delete_shadowded_kv(g, m) > 0;
 }
 
-bool  save_timer_data_kvs(timer_data_t *p, u8 g, u8 m) {
+bool  save_timer_data_kvs(Fer_TimerData *p, u8 g, u8 m) {
   bool success = false;
   precond(p && g <= 7 && m <= 7);
 
@@ -87,7 +87,7 @@ bool  save_timer_data_kvs(timer_data_t *p, u8 g, u8 m) {
 
 }
 
-bool  read_timer_data_kvs(timer_data_t *p, u8 *gp, u8 *mp, bool wildcard) {
+bool  read_timer_data_kvs(Fer_TimerData *p, u8 *gp, u8 *mp, bool wildcard) {
   bool success = false;
   precond(p && gp && mp && *gp <= 7 && *mp <= 7);
 
@@ -119,10 +119,10 @@ int timer_data_transition_fs_to_kvs() {
   bool error = false;
 
   kvshT handle = 0;
-  for (gm_iterator it; it; ++it) {
+  for (Fer_GmIterator it; it; ++it) {
     gT g = it.getG();
     mT m = it.getM();
-    timer_data_t td;
+    Fer_TimerData td;
     if (read_timer_data_fs(&td, &g, &m, false)) {
       if (handle || (handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE))) {
         if (!kvs_rw_blob(handle,  TdKey(g, m), &td, sizeof(td), true)) {

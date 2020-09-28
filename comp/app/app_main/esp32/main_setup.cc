@@ -12,8 +12,8 @@
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/positions_static.h"
 #include "fernotron/pos/positions_dynamic.h"
-#include "fernotron/fer_msg_tx.h"
-#include "fernotron/fer_radio_trx.h"
+#include "fernotron/trx/raw/fer_msg_tx.h"
+#include "fernotron/trx/raw/fer_radio_trx.h"
 #include "fernotron/fer_main.h"
 #include "fernotron/auto/fau_tdata_store.h"
 #include "key_value_store/kvs_wrapper.h"
@@ -90,14 +90,14 @@ extern "C++" void main_setup_ip_dependent() { //XXX called from library
   config_setup_httpServer();
 #endif
 
-  fpos_POSITIONS_MOVE_cb = [](bool enable) {
+  fer_pos_POSITIONS_MOVE_cb = [](bool enable) {
     lfPer_putBit(lf_loopPosCheckMoving, enable);
   };
-  fpos_POSITIONS_SAVE_cb  = [](bool enable) {
+  fer_pos_POSITIONS_SAVE_cb  = [](bool enable) {
     lfPer_putBit(lf_loopPosAutoSave, enable);
   };
-  ftx_READY_TO_TRANSMIT_cb = loop_setBit_txLoop;
-  fau_TIMER_DATA_CHANGE_cb = [] {
+  fer_tx_READY_TO_TRANSMIT_cb = loop_setBit_txLoop;
+  fer_au_TIMER_DATA_CHANGE_cb = [] {
       lf_setBit(lf_loopFauTimerDataHasChanged);
     };
 #ifdef ACCESS_GPIO
@@ -114,7 +114,7 @@ extern "C++" void main_setup_ip_dependent() { //XXX called from library
     struct msg_received_cb { static void IRAM_ATTR cb() {
       lf_setBit_ISR(lf_loopFerRx, true);}
     };
-  frx_MSG_RECEIVED_ISR_cb = msg_received_cb::cb;
+  fer_rx_MSG_RECEIVED_ISR_cb = msg_received_cb::cb;
   #endif
 
   #ifdef FER_TRANSMITTER
@@ -122,20 +122,20 @@ extern "C++" void main_setup_ip_dependent() { //XXX called from library
   struct msg_transmitted_cb { static void IRAM_ATTR cb() {
     lf_setBit_ISR(lf_loopFerTx, true);}
   };
-  ftx_MSG_TRANSMITTED_ISR_cb = msg_transmitted_cb::cb;
+  fer_tx_MSG_TRANSMITTED_ISR_cb = msg_transmitted_cb::cb;
   #endif
 #ifdef USE_SEP
-  sep_enable_disable_cb = [] (bool enable) {
+  fer_sep_enable_disable_cb = [] (bool enable) {
     lfPer_putBit(lf_loopFerSep, enable);
   };
 #endif
 #ifdef USE_PAIRINGS
-  pair_enable_disable_cb = [] (bool enable) {
+  fer_alias_enable_disable_cb = [] (bool enable) {
     lfPer_putBit(lf_checkPairingTimeout, enable);
   };
 #endif
 #ifdef USE_CUAS
-  cuas_enable_disable_cb = [] (bool enable) {
+  fer_cuas_enable_disable_cb = [] (bool enable) {
     lfPer_putBit(lf_checkCuasTimeout, enable);
 };
 #endif
@@ -165,7 +165,7 @@ void mcu_init() {
 #endif
 #ifdef USE_TCPS_TASK
 #endif
-  fam_updateTimerEvent();
+  fer_am_updateTimerEvent();
   lfPer_setBit(lf_loopFerTimerState);
 
 

@@ -7,7 +7,5 @@
 
 #pragma once
 
-#include "fernotron/fsb.h"
-extern fsbT default_sender;
 
 

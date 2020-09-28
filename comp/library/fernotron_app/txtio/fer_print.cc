@@ -11,11 +11,13 @@
 #include <stdint.h>
 #include "stdbool.h"
 
-#include "fernotron/fer_radio_timings.h"
-#include "fernotron/fsb.h"
-#include "fernotron/fer_msg_attachment.h"
+#include "fernotron/trx/raw/fer_radio_timings.h"
+#include "fernotron/trx/raw/fer_fsb.h"
+#include "fernotron/trx/raw/fer_msg_attachment.h"
 #include "misc/int_macros.h"
 #include "txtio/inout.h"
+#include <fernotron/trx/fer_trx_c_api.h>
+#include <fernotron/trx/fer_trx_api.hh>
 
 typedef uint8_t u8;
 typedef int8_t i8;
@@ -81,8 +83,8 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
 
   io_puts("Timer data:\n");
-  for (row = FPR_TIMER_START_ROW; row < (FPR_TIMER_START_ROW + FPR_TIMER_HEIGHT); ++row) {
-    for (col = 0; (col+1) < FPR_TIMER_WIDTH; col += 2) {
+  for (row = FER_FPR_TIMER_START_ROW; row < (FER_FPR_TIMER_START_ROW + FER_FPR_TIMER_HEIGHT); ++row) {
+    for (col = 0; (col+1) < FER_FPR_TIMER_WIDTH; col += 2) {
       printTimerStamp(d, row, col);
       io_puts(", ");
     }
@@ -90,8 +92,8 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
   }
 
   io_puts("Astro data:\n");
-  for (row = FPR_ASTRO_START_ROW; row < (FPR_ASTRO_START_ROW + FPR_ASTRO_HEIGHT); ++row) {
-    for (col = 0; (col+1) < FPR_ASTRO_WIDTH; col += 2) {
+  for (row = FER_FPR_ASTRO_START_ROW; row < (FER_FPR_ASTRO_START_ROW + FER_FPR_ASTRO_HEIGHT); ++row) {
+    for (col = 0; (col+1) < FER_FPR_ASTRO_WIDTH; col += 2) {
       //    for (col = (FPR_ASTRO_WIDTH - 2); col >= 0; col -= 2) {
       printTimerStamp(d, row, col);
       io_puts(", ");
@@ -102,20 +104,20 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 }
 
 //cast data (message after cmd) to byte array
-#define fmsg_get_data(msg) ((u8(*)[FER_PRG_BYTE_CT])(msg)->rtc.bd)
-typedef u8(*fmsg_data)[FER_PRG_BYTE_CT];
+#define fer_msg_get_data(msg) ((u8(*)[FER_PRG_BYTE_CT])(msg)->rtc.bd)
+typedef u8(*fer_msg_data)[FER_PRG_BYTE_CT];
 
-void  fmsg_print(const char *tag, const fer_rawMsg *msg, fmsg_type t, bool verbose) {
+void  fer_msg_print(const char *tag, const fer_rawMsg *msg, fer_msg_kindT t, bool verbose) {
 
   io_puts(tag);
   frb_printPacket(&msg->cmd);
 
 #ifndef FER_RECEIVER_MINIMAL
-  if (t == MSG_TYPE_RTC || t == MSG_TYPE_TIMER) {
+  if (t == fer_msg_kindT::MSG_TYPE_RTC || t == fer_msg_kindT::MSG_TYPE_TIMER) {
     int i, used_lines;
-    fmsg_data prg = fmsg_get_data(msg);
+    fer_msg_data prg = fer_msg_get_data(msg);
 
-    used_lines = t == MSG_TYPE_RTC ? FER_RTC_PACK_CT : FER_PRG_PACK_CT;
+    used_lines = t == fer_msg_kindT::MSG_TYPE_RTC ? FER_RTC_PACK_CT : FER_PRG_PACK_CT;
     if (verbose) {
       for (i = 0; i < used_lines; ++i) {
         print_array_8(prg[i], FER_PRG_BYTE_CT);
@@ -128,45 +130,45 @@ void  fmsg_print(const char *tag, const fer_rawMsg *msg, fmsg_type t, bool verbo
 #endif
 }
 
-void  fmsg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fmsg_type t) {
-  const fsbT *fsb = (fsbT*) msg;
+void  fer_msg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fer_msg_kindT t) {
+  const fer_sbT *fsb = (fer_sbT*) msg;
 
-  if (t != MSG_TYPE_PLAIN && t !=  MSG_TYPE_PLAIN_DOUBLE)
+  if (t != fer_msg_kindT::MSG_TYPE_PLAIN && t !=  fer_msg_kindT::MSG_TYPE_PLAIN_DOUBLE)
     return; // ignore long messages for now
 
 
 
-  fer_cmd c = FSB_GET_CMD(fsb);
-  u32 id = FSB_GET_DEVID(fsb);
+  fer_if_cmd c = (fer_if_cmd)FER_SB_GET_CMD(fsb);
+  u32 id = FER_SB_GET_DEVID(fsb);
 
   const char *cs = 0;
   const char *fdt = 0;
 
-  if ((FSB_ADDR_IS_PLAIN(fsb) && (fdt = "plain"))
-      || (FSB_ADDR_IS_CENTRAL(fsb) && (fdt = "central"))) {
+  if ((FER_SB_ADDR_IS_PLAIN(fsb) && (fdt = "plain"))
+      || (FER_SB_ADDR_IS_CENTRAL(fsb) && (fdt = "central"))) {
     switch (c) {
-    case fer_cmd_DOWN:
+    case fer_if_cmd_DOWN:
       cs = "down";
       break;
-    case fer_cmd_UP:
+    case fer_if_cmd_UP:
       cs = "up";
       break;
-    case fer_cmd_STOP:
+    case fer_if_cmd_STOP:
       cs = "stop";
       break;
     default:
       cs = 0;
       break;
     }
-  } else if (FSB_ADDR_IS_SUNSENS(fsb) && (fdt = "sun")) {
+  } else if (FER_SB_ADDR_IS_SUNSENS(fsb) && (fdt = "sun")) {
     switch (c) {
-    case fer_cmd_SunDOWN:
+    case fer_if_cmd_SunDOWN:
       cs = "sun-down";
       break;
-    case fer_cmd_SunUP:
+    case fer_if_cmd_SunUP:
       cs = "sun-up";
       break;
-    case fer_cmd_SunINST:
+    case fer_if_cmd_SunINST:
       cs = "sun-pos";
       break;    default:
       cs = 0;
@@ -181,9 +183,9 @@ void  fmsg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fmsg_type t)
 
   io_puts("type="), io_puts(fdt),
   io_puts(" a="), io_print_hex(id, false);
-  if (FSB_ADDR_IS_CENTRAL(fsb)) {
-    u8 g = FSB_GET_GRP(fsb);
-    u8 m = FSB_GET_MEMB(fsb);
+  if (FER_SB_ADDR_IS_CENTRAL(fsb)) {
+    u8 g = FER_SB_GET_GRP(fsb);
+    u8 m = FER_SB_GET_MEMB(fsb);
     if (g != 0) {
       io_puts(" g="), io_putd(g);
       if (m != 0) {

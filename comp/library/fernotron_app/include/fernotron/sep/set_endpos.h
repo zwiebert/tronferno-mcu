@@ -5,19 +5,20 @@
  *      Author: bertw
  */
 
-#include "fernotron/fsb.h"
+
 #include "stdbool.h"
 #include "app/config/proj_app_cfg.h"
+#include <fernotron/trx/fer_trx_c_api.h>
 
 #ifndef USER_MAIN_SET_ENDPOS_H_
 #define USER_MAIN_SET_ENDPOS_H_
 
-extern void (*sep_enable_disable_cb)(bool enable);
+extern void (*fer_sep_enable_disable_cb)(bool enable);
 
-bool sep_enable(const struct TargetDesc &td, fsbT *fsb);
-void sep_disable(void);
-void sep_loop(void);
-bool sep_is_enabled(void);
+bool fer_sep_enable(const struct TargetDesc &td, u32 a, u8 g, u8 m, fer_if_cmd cmd);
+void fer_sep_disable(void);
+void fer_sep_loop(void);
+bool fer_sep_is_enabled(void);
 
 
 #endif

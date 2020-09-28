@@ -1,11 +1,10 @@
-#include <fernotron/fer_msg_plain.h>
 #include "app/config/proj_app_cfg.h"
 
 #include <string.h>
 
 #include "fernotron/pos/shutter_pct.h"
 #include "cli_imp.h"
-#include "app/cli/cli_fer.h"
+#include "cli_fer.h"
 #include "app/common.h"
 #include "fernotron/alias/pairings.h"
 #include "app/uout/status_output.h"
@@ -45,7 +44,7 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
   u32 addr = 0;
   const char *addr_as_string = "";
   u8 g = 0, m = 0, c = 0;
-  GmBitMask mm ;
+  Fer_GmBitMask mm ;
   bool has_mm = false;
   bool pair = false, unpair = false, read = false, read_all = false,  scan = false, store = false;
 
@@ -72,20 +71,15 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
         break;
 
       case otok::g: {
-        fer_grp group;
-        if (!asc2group(val, &group) || group == 0)
-          return cli_replyFailure(td);
-        g = group;
+        if (!asc2u8(val, &g, 7))
+        return cli_replyFailure(td);
       }
-        break;
-
+      break;
       case otok::m: {
-        fer_memb memb;
-        if (!asc2memb(val, &memb) || memb == 0)
-          return cli_replyFailure(td);
-        m = memb - 7;
+      if (!asc2u8(val, &m, 7))
+      return cli_replyFailure(td);
       }
-        break;
+      break;
 
       case otok::mm: {
         uint64_t n = strtoll(val, 0, 16);
@@ -136,7 +130,7 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
   }
 
   if (store && has_mm) {
-    if (pair_setControllerPairings(addr, &mm)) {
+    if (fer_alias_setControllerPairings(addr, &mm)) {
       so_arg_kmm_t kmm = {addr_as_string, &mm };
       soMsg_pair_print_kmm_single(td, kmm);
     } else {
@@ -145,22 +139,22 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
   }
 
   if (scan) {
-    pair_auto_set(td, g, m, c, cli_msgid, PRAS_TIMEOUT);
+    fer_alias_auto_set(td, g, m, c, cli_msgid, PRAS_TIMEOUT);
   }
 
   if (read_all) {
-    pair_so_output_all_pairings(td);
+    fer_alias_so_output_all_pairings(td);
   }
 
   if (addr && (((pair || unpair) && g && m) || (read && !g && !m))) {
 
     if (pair || unpair) {
-      cli_replyResult(td, pair_controller(addr, g, m, unpair));
+      cli_replyResult(td, fer_alias_controller(addr, g, m, unpair));
     }
 
     if (read) {
-      GmBitMask gm;
-      if (pair_getControllerPairings(addr, &gm)) {
+      Fer_GmBitMask gm;
+      if (fer_alias_getControllerPairings(addr, &gm)) {
         so_arg_amm_t amm = {addr, &gm };
         soMsg_pair_print_amm(td, amm);
       }

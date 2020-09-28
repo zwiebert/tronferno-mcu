@@ -11,7 +11,18 @@
 
 //#define USE_PCT_ARRAY
 
-#include "misc/int_types.h"
+#include <stdint.h>
+typedef uint8_t u8;
+typedef int8_t i8;
+typedef uint16_t u16;
+typedef int16_t i16;
+typedef uint32_t u32;
+typedef int32_t i32;
+typedef uint64_t u64;
+typedef int64_t i64;
+
+
+//#include "misc/int_types.h"
 
 #ifndef CONFIG_LOG_DEFAULT_LEVEL
 #define CONFIG_LOG_DEFAULT_LEVEL 3
@@ -60,10 +71,10 @@
 
 #ifdef __cplusplus
 #include <misc/cstring_utils.hh>
-#define STRLCPY(d,s,l) csu_copy((d),(s),(l))
-#define STRCPY(d,s) csu_copy((d),(s))
+#define STRLCPY(dst,src,size) csu_copy((dst),(size),(src))
+#define STRCPY(dst,src) csu_copy((dst),(src))
 #else
-#define STRLCPY(d,s,l) strlcpy((d),(s),(l))
-#define STRCPY(d,s) strcpy((d),(s))
+#define STRLCPY(dst,src,size) strlcpy((dst),(src),(size))
+#define STRCPY(dst,src) strcpy((dst),(src))
 #endif
 

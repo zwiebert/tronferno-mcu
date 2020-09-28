@@ -18,14 +18,14 @@ enum direction { DIRECTION_NONE=0, DIRECTION_UP=0x01, DIRECTION_DOWN=0x02, DIREC
 #define direction_isStop(dir) ((dir) & 0x08)
 #define direction_isMove(dir) ((dir) & 0x07)
 
-struct mv {
-  GmBitMask mask;
+struct Fer_Move {
+  Fer_GmBitMask mask;
   uint32_t start_time;
   enum direction dir;
 };
 
-#define mv_getFirst() mv_getNext(0)
-struct mv *mv_getNext(struct mv *pred);
-struct mv *mv_calloc();
-void mv_free(struct mv *mv);
+#define fer_mv_getFirst() fer_mv_getNext(0)
+struct Fer_Move *fer_mv_getNext(struct Fer_Move *pred);
+struct Fer_Move *fer_mv_calloc();
+void fer_mv_free(struct Fer_Move *Fer_Move);
 

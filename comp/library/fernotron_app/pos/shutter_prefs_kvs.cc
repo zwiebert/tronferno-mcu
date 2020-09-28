@@ -15,7 +15,7 @@
 #define SHPREF_KVS_NAMESPACE "shref"
 #define ST_PREFIX "st"
 
-bool ferPos_prefByM_store(struct shutter_timings *src, uint8_t g, uint8_t m) {
+bool fer_pos_prefByM_store(struct shutter_timings *src, uint8_t g, uint8_t m) {
   bool success = false;
   kvshT handle = kvs_open(SHPREF_KVS_NAMESPACE, kvs_WRITE);
   if (handle) {
@@ -30,7 +30,7 @@ bool ferPos_prefByM_store(struct shutter_timings *src, uint8_t g, uint8_t m) {
   return success;
 }
 
-bool ferPos_prefByM_load(struct shutter_timings *dst, uint8_t g, uint8_t m) {
+bool fer_pos_prefByM_load(struct shutter_timings *dst, uint8_t g, uint8_t m) {
   bool success = false;
   kvshT handle = kvs_open(SHPREF_KVS_NAMESPACE, kvs_READ);
   if (handle) {
@@ -58,7 +58,7 @@ static char* sts_make_key(char *key, const char *tag, u8 g, u8 m) {
 }
 #define sts_get_tag(key) (key+ (sizeof(STS_PREFIX)-1 + 2))
 
-bool ferSp_strByM_store(const char *src, const char *tag, uint8_t g, uint8_t m) {
+bool fer_shPref_strByM_store(const char *src, const char *tag, uint8_t g, uint8_t m) {
   bool success = false;
   kvshT handle = kvs_open(STS_KVS_NAMESPACE, kvs_WRITE);
   if (handle) {
@@ -70,7 +70,7 @@ bool ferSp_strByM_store(const char *src, const char *tag, uint8_t g, uint8_t m) 
   return success;
 
 }
-bool ferSp_strByM_load(char *dst, unsigned size, const char *tag, uint8_t g, uint8_t m) {
+bool fer_shPref_strByM_load(char *dst, unsigned size, const char *tag, uint8_t g, uint8_t m) {
 
   bool success = false;
   kvshT handle = kvs_open(STS_KVS_NAMESPACE, kvs_READ);
@@ -83,11 +83,11 @@ bool ferSp_strByM_load(char *dst, unsigned size, const char *tag, uint8_t g, uin
 }
 
 struct cb_args {
-  ferSp_strCallBackT callback;
+  fer_shPref_strCallBackT callback;
   const struct TargetDesc &td;
 };
 
-static kvs_cbrT ferSp_strByM_forEach_cb(const char *key, kvs_type_t type, void *args) {
+static kvs_cbrT fer_shPref_strByM_forEach_cb(const char *key, kvs_type_t type, void *args) {
   struct cb_args *ap = (struct cb_args*) args;
   char dst[64] = "";
 
@@ -104,15 +104,15 @@ static kvs_cbrT ferSp_strByM_forEach_cb(const char *key, kvs_type_t type, void *
   return kvsCb_noMatch;
 }
 
-int ferSp_strByM_forEach(const struct TargetDesc &td, const char *tag, uint8_t g, uint8_t m, ferSp_strCallBackT callback) {
+int fer_shPref_strByM_forEach(const struct TargetDesc &td, const char *tag, uint8_t g, uint8_t m, fer_shPref_strCallBackT callback) {
   char *key = sts_make_key((char*)alloca(sts_key_len(tag) + 1), tag, g, m);
   struct cb_args cb_args = { .callback = callback, .td = td };
-  return kvs_foreach(STS_KVS_NAMESPACE, KVS_TYPE_STR, key, ferSp_strByM_forEach_cb, &cb_args);
+  return kvs_foreach(STS_KVS_NAMESPACE, KVS_TYPE_STR, key, fer_shPref_strByM_forEach_cb, &cb_args);
 }
-bool ferSp_strByM_forOne(const struct TargetDesc &td, const char *tag, uint8_t g, uint8_t m, ferSp_strCallBackT callback) {
+bool fer_shPref_strByM_forOne(const struct TargetDesc &td, const char *tag, uint8_t g, uint8_t m, fer_shPref_strCallBackT callback) {
   char *key = sts_make_key((char*)alloca(sts_key_len(tag) + 1), tag, g, m);
   struct cb_args cb_args = { .callback = callback, .td = td };
-  return kvsCb_match == ferSp_strByM_forEach_cb(key, KVS_TYPE_none, &cb_args);
+  return kvsCb_match == fer_shPref_strByM_forEach_cb(key, KVS_TYPE_none, &cb_args);
 }
 
 

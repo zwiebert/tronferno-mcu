@@ -10,7 +10,7 @@
 
 #include "txtio/inout.h"
 #include "driver/uart.h"
-#include "fernotron/callbacks.h"
+#include "fernotron/trx/callbacks.h"
 #include "app/common.h"
 #include "app/settings/config.h"
 #include "net/wifistation.h"

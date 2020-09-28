@@ -17,7 +17,7 @@
 #include "txtio/inout.h"
 #include "uout/status_json.hh"
 #include "app/uout/status_output.h"
-
+#include "fernotron/astro.h"
 #include <app/uout/so_config.h>
 
 //#include "misc/int_macros.h"

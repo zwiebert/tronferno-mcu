@@ -27,7 +27,7 @@
 
 
   
-static void  fixController(const char *key, GmBitMask *gm) {
+static void  fixController(const char *key, Fer_GmBitMask *gm) {
   // there seems to be existing keys which cannot be found by iteration.
   // to fix this: erase and create them new here.
   if (!kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, key, 0, 0)) {
@@ -42,7 +42,7 @@ static void  fixController(const char *key, GmBitMask *gm) {
 }
 
 
-static bool read_controller(GmBitMask *gm, const char *key) {
+static bool read_controller(Fer_GmBitMask *gm, const char *key) {
   bool success = false;
   kvshT handle = kvs_open(CFG_NAMESPACE, kvs_READ);
   if (handle) {
@@ -63,7 +63,7 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
 
   handle = kvs_open(CFG_NAMESPACE, kvs_READ_WRITE);
   if (handle) {
-    GmBitMask gm;
+    Fer_GmBitMask gm;
     if (!kvs_rw_blob(handle, key, &gm, sizeof gm, false)) {
       gm.clear();
     }
@@ -100,7 +100,7 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
 
 
 
-bool pair_setControllerPairings(uint32_t controller, GmBitMask *mm) {
+bool fer_alias_setControllerPairings(uint32_t controller, Fer_GmBitMask *mm) {
   bool success = false;
   a2key(controller);
 
@@ -118,7 +118,7 @@ bool pair_setControllerPairings(uint32_t controller, GmBitMask *mm) {
   return success;
 }
 
-bool pair_rmController(uint32_t a) {
+bool fer_alias_rmController(uint32_t a) {
   bool success = false;
   kvshT handle;
 
@@ -133,7 +133,7 @@ bool pair_rmController(uint32_t a) {
 }
 
 bool
-pair_controller(u32 controller, u8 g, u8 m, bool unpair) {
+fer_alias_controller(u32 controller, u8 g, u8 m, bool unpair) {
   D(ets_printf("%s: g=%d, m=%d, unpair=%d\n", __func__, (int)g, (int)m, (int)unpair));
   precond ((controller & 0xff000000) == 0);
   precond (1 <= g && g <= 7 && 1 <= m && m <= 7);
@@ -146,7 +146,7 @@ pair_controller(u32 controller, u8 g, u8 m, bool unpair) {
 }
 
 
-bool pair_getControllerPairings(u32 a, GmBitMask *gm) {
+bool fer_alias_getControllerPairings(u32 a, Fer_GmBitMask *gm) {
   precond(gm && (a & 0xff000000) == 0);
 
   a2key(a);
@@ -164,7 +164,7 @@ bool pair_getControllerPairings(u32 a, GmBitMask *gm) {
 static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     auto td = static_cast<struct TargetDesc *>(args);
     so_arg_kmm_t arg;
-    GmBitMask gm;
+    Fer_GmBitMask gm;
     arg.mm = &gm;
 
     arg.key = &key[sizeof(KEY_PREFIX) - 1];
@@ -175,7 +175,7 @@ static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     return kvsCb_match;
 }
 
-bool pair_so_output_all_pairings(const struct TargetDesc &td) {
+bool fer_alias_so_output_all_pairings(const struct TargetDesc &td) {
 
   soMsg_pair_all_begin(td);
 

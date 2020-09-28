@@ -8,7 +8,7 @@
 #include "app/settings/config.h"
 #include "app/settings/config_defaults.h"
 #include "config_kvs.h"
-
+#include <fernotron/trx/fer_trx_api.hh>
 #include "misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
@@ -64,8 +64,8 @@ void config_setup_global() {
     .app_configPassword = {0},
     .app_expertPassword = {0},
 };
-  STRLCPY(C.app_configPassword, MY_APP_CONFIG_PASSWORD, sizeof C.app_configPassword - 1);
-  STRLCPY(C.app_expertPassword, MY_APP_EXPERT_PASSWORD, sizeof C.app_expertPassword - 1);
+  STRLCPY(C.app_configPassword, MY_APP_CONFIG_PASSWORD, sizeof C.app_configPassword);
+  STRLCPY(C.app_expertPassword, MY_APP_EXPERT_PASSWORD, sizeof C.app_expertPassword);
 
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
 
@@ -76,7 +76,6 @@ void config_setup_global() {
     kvs_close(h);
   }
   C.fer_usedMemberMask.fromNibbleCounters(C.fer_usedMembers);
-  FSB_PUT_DEVID(&default_sender, C.fer_centralUnitID);
 }
 uint32_t config_read_used_members() {
   return  config_read_item_u32(CI(CB_USED_MEMBERS), MY_FER_GM_USE);
@@ -115,7 +114,7 @@ void config_setup_astro() {
 #endif
       };
   config_read_astro(&c);
-  astro_init_and_reinit(&c);
+  Fer_Trx_API::setup_astro(&c);
 }
 float config_read_longitude() {
   return config_read_item_f(CI(CB_LONGITUDE), MY_GEO_LONGITUDE);
