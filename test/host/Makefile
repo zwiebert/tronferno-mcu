@@ -41,12 +41,15 @@ test.cm.configure:
 	cmake -B $(CM_BUILD_PATH) -G Ninja
 
 cm_build := $(make) C $(CM_BUILD_PATH)  -k -j  $(make_verbose_opts)
-cm_build := ninja -C $(CM_BUILD_PATH)   -k 0 $(ninja_verbose_opts) 
+cm_build := ninja -C $(CM_BUILD_PATH)   -k 0 $(ninja_verbose_opts)
+
 	
 test.cm.build:
 	$(cm_build)
 
-test.cm.ctest:
+test.cm.ctest: test.cm.build
 	$(cm_build) test
 	
+test.cm.ctest.current: test.cm.build
+	(cd  $(CM_BUILD_PATH) && ctest --verbose -R "fernotron_trx.test_send")
 	

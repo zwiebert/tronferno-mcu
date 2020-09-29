@@ -67,7 +67,7 @@ public:
   ///////// transmit messages ////////////////////////////////////
   ////////////////////////////////////////////////////////////////
   static bool send_cmd(const Fer_MsgCmd &msg);
-  static bool send_cmd(u32 a, u8 g, u8 m, fer_if_cmd cmd, i8 repeats, u16 delay, u16 stopDelay);
+  static bool send_cmd(u32 a, u8 g, u8 m, fer_if_cmd cmd, i8 repeats = 0, u16 delay = 0, u16 stopDelay = 0);
 
   static bool send_rtc(const Fer_MsgRtc &msg);
   static bool send_rtc(u32 a, u8 g, u8 m, time_t rtc);
