@@ -240,7 +240,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
       Fer_MsgRtc msg { .a = addr, .g = parm_g, .m = parm_m, .rtc = timer };
       cli_replyResult(td, Fer_Trx_API::send_empty_timer(msg));
     } else {
-      Fer_MsgTimer msg { .a = addr, .g = parm_g, .m = parm_m, .rtc = timer, .td = tda };
+      Fer_MsgTimer msg { .a = addr, .g = parm_g, .m = parm_m, .rtc = timer, .td = &tda };
       cli_replyResult(td, Fer_Trx_API::send_timer(msg));
     }
   }

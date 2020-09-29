@@ -66,13 +66,13 @@ struct Fer_MsgTimer {
   u32 g :4;
   u8 m :4;
   time_t rtc;
-  Fer_TimerData td;
+  const struct Fer_TimerData *td;
 };
 
-bool fer_trx_send_cmd(const Fer_MsgCmd &msg);
-bool fer_trx_send_rtc(const Fer_MsgRtc &msg);
-bool fer_trx_send_timer(const Fer_MsgTimer &msg);
-bool fer_trx_send_empty_timer(const Fer_MsgRtc &msg);
+bool fer_trx_send_cmd(const Fer_MsgCmd *msg);
+bool fer_trx_send_rtc(const Fer_MsgRtc *msg);
+bool fer_trx_send_timer(const Fer_MsgTimer *msg);
+bool fer_trx_send_empty_timer(const Fer_MsgRtc *msg);
 
 typedef void (*CallBackFnType)(void);
 extern CallBackFnType fer_rx_MSG_RECEIVED_ISR_cb;

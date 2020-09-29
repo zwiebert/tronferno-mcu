@@ -17,6 +17,43 @@ inline void Fer_Trx_API::register_callback_msgTransmitted_ISR(CallBackFnType cb)
   fer_tx_MSG_TRANSMITTED_ISR_cb = cb;
 }
 
+///////////////// send ////////////////////////////
+inline bool Fer_Trx_API::send_cmd(const Fer_MsgCmd &msg) {
+  return fer_trx_send_cmd(&msg);
+}
+
+inline bool Fer_Trx_API::send_rtc(const Fer_MsgRtc &msg) {
+  return fer_trx_send_rtc(&msg);
+}
+
+inline bool Fer_Trx_API::send_timer(const Fer_MsgTimer &msg) {
+  return fer_trx_send_timer(&msg);
+}
+
+inline bool Fer_Trx_API::send_empty_timer(const Fer_MsgRtc &msg) {
+  return fer_trx_send_empty_timer(&msg);
+}
+
+inline bool Fer_Trx_API::send_cmd(u32 a, u8 g, u8 m, fer_if_cmd cmd, i8 repeats, u16 delay, u16 stopDelay) {
+  Fer_MsgCmd msg { a, g, m, cmd, repeats, delay, stopDelay };
+  return fer_trx_send_cmd(&msg);
+}
+
+inline bool Fer_Trx_API::send_rtc(u32 a, u8 g, u8 m, time_t rtc) {
+  Fer_MsgRtc msg { a, g, m, rtc };
+  return fer_trx_send_rtc(&msg);
+}
+
+inline bool Fer_Trx_API::send_timer(u32 a, u8 g, u8 m, time_t rtc, const Fer_TimerData &td) {
+  Fer_MsgTimer msg { a, g, m, rtc, &td };
+  return fer_trx_send_timer(&msg);
+}
+
+inline bool Fer_Trx_API::send_empty_timer(u32 a, u8 g, u8 m, time_t rtc) {
+  Fer_MsgRtc msg { a, g, m, rtc };
+  return fer_trx_send_empty_timer(&msg);
+}
+
 
 ///////////////// ISR //////////////////////////////
 inline void IRAM_ATTR Fer_Trx_API::isr_sample_rx_pin(bool level) {
@@ -32,6 +69,7 @@ inline bool IRAM_ATTR Fer_Trx_API::isr_get_tx_level() {
 inline void IRAM_ATTR Fer_Trx_API::isr_handle_tx() {
   fer_tx_dck();
 }
+
 
 //////////////////// getter //////////////////////////
 inline Fer_MsgPlainCmd Fer_Trx_API::get_msg() const {

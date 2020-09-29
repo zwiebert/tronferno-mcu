@@ -41,26 +41,18 @@ public:
   ////////////////////////////////////////////////////////////////
   ///////// get notified if a message was received ///////////////
   ////////////////////////////////////////////////////////////////
-  virtual void event_plain_message_was_received() {
-  }
-  virtual void event_plain_double_message_was_received() {
-  }
-  virtual void event_rtc_message_was_received() {
-  }
-  virtual void event_timer_message_was_received() {
-  }
-  virtual void event_any_message_was_received() {
-  }
+  virtual void event_plain_message_was_received() {  }
+  virtual void event_plain_double_message_was_received() {  }
+  virtual void event_rtc_message_was_received() {  }
+  virtual void event_timer_message_was_received() {  }
+  virtual void event_any_message_was_received() {  }
 
 public:
   ////////////////////////////////////////////////////////////////
   ///////// get notified if a message is about to be send ////////
   ////////////////////////////////////////////////////////////////
-  virtual void event_first_message_will_be_sent() { // no repeats
-  }
-
-  virtual void event_any_message_will_be_sent() { // first + repeats
-  }
+  virtual void event_first_message_will_be_sent() {   }
+  virtual void event_any_message_will_be_sent() {  }
 
 
 public:
@@ -90,13 +82,19 @@ public:
   static void isr_handle_tx();  // call this from timer ISR every 200us
 
 public:
-  ///////////  loop ///////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+  /////////////// run the action /////////////////////////////////
+  ////////////////////////////////////////////////////////////////
+
+  // getting notified if there is something to do
   virtual void event_ready_to_transmit() { }  // something to do for loop_tx()
-  static void register_callback_msgReceived_ISR(CallBackFnType cb); // something to do for loop_rx() (called from ISR)
-  static void register_callback_msgTransmitted_ISR(CallBackFnType cb); // something to do for loop_rx() (called from ISR)
+  // getting notified from ISR by callbacks (no virtual functions possible from ISR)
+  // note: the callback functions must be located in IRAM (use ATTR_IRAM)
+  static void register_callback_msgReceived_ISR(CallBackFnType cb);
+  static void register_callback_msgTransmitted_ISR(CallBackFnType cb);
+  // call the worker loop, after getting notified. It will do the work and return.
   static void loop_rx();
   static void loop_tx();
-
 
    ////////// implementation. ///////////////////////////////////
 public:
