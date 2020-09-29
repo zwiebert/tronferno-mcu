@@ -30,6 +30,8 @@ THIS_ROOT := $(realpath .)
 SRC_BASE :=$(THIS_ROOT)/../..
 BUILD_BASE ?= $(THIS_ROOT)/build
 
+SRC_BASE :=$(realpath ./../..)
+
 ################ New Cmake based test build ########################
 CM_BUILD_PATH=$(BUILD_BASE)/cm.test.host
 
@@ -38,10 +40,10 @@ CM_BUILD_PATH=$(BUILD_BASE)/cm.test.host
 test.cm.configure:
 	rm -fr $(CM_BUILD_PATH)
 	mkdir -p $(CM_BUILD_PATH)
-	cmake -B $(CM_BUILD_PATH) -G Ninja
+	cmake -B $(CM_BUILD_PATH) #-G Ninja
 
-cm_build := $(make) C $(CM_BUILD_PATH)  -k -j  $(make_verbose_opts)
-cm_build := ninja -C $(CM_BUILD_PATH)   -k 0 $(ninja_verbose_opts)
+cm_build := $(make) -C $(CM_BUILD_PATH)  -k -j  $(make_verbose_opts)
+#cm_build := ninja -C $(CM_BUILD_PATH)   -k 0 $(ninja_verbose_opts)
 
 	
 test.cm.build:

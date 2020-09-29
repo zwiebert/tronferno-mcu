@@ -107,10 +107,32 @@ endef
 $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
+############## On Host ########################
+CM_BUILD_PATH=$(BUILD_BASE)/cm.test.host
+
+.PHONY: test.cm.configure test.cm.build
+
+test.cm.configure:
+	rm -fr $(CM_BUILD_PATH)
+	mkdir -p $(CM_BUILD_PATH)
+	cmake -B $(CM_BUILD_PATH) -S $(realpath .) #-G Ninja
+
+cm_build := make -C $(CM_BUILD_PATH)  -k -j  -s --no-print-dir $(make_verbose_opts)
+#cm_build := (cd $(CM_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
+
+	
+test.cm.build:
+	$(cm_build)
+
+test.cm.ctest: test.cm.build
+	$(cm_build) test
+	
+test.cm.ctest.current: test.cm.build
+	(cd  $(CM_BUILD_PATH) && ctest --verbose -R "fernotron_trx.test_send")
+
+
 host-test-all:
-	make -j -C test/host -s --no-print-directory
-
-
+	make -s --no-print-directory  test.cm.configure test.cm.ctest
 
 
 ############# TCP Terminal ##############

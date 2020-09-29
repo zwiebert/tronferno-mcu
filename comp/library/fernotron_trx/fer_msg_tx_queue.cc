@@ -7,6 +7,7 @@
 
 #include "fer_msg_tx_queue.h"
 #include "misc/int_types.h"
+#include "fernotron/trx/raw/fer_msg_tx.h"
 
 #define sf_SIZE 16
 static struct sf sf[sf_SIZE];

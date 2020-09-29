@@ -10,6 +10,7 @@
 #include "fer_msg_tx_queue.h"
 #include <fernotron/trx/fer_trx_api.hh>
 #include "fer_trx_incoming_event.hh"
+#include "fer_trx_api_private.hh"
 #include "misc/time/run_time.h"
 
 
@@ -19,6 +20,7 @@ void (*fer_tx_READY_TO_TRANSMIT_cb)(uint32_t time_ts);
 static inline void fer_tx_ready_to_transmit_cb(uint32_t time_ts) {
   if (fer_tx_READY_TO_TRANSMIT_cb)
     fer_tx_READY_TO_TRANSMIT_cb(time_ts);
+  fer_trx_api_pushEvent_readyToTransmit();
 }
 
 static void fer_send_checkQuedState() {

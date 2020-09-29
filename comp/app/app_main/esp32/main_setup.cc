@@ -14,6 +14,7 @@
 #include "fernotron/pos/positions_dynamic.h"
 #include "fernotron/trx/raw/fer_msg_tx.h"
 #include "fernotron/trx/raw/fer_radio_trx.h"
+#include "fernotron/trx/fer_trx_api.hh"
 #include "fernotron/fer_main.h"
 #include "fernotron/auto/fau_tdata_store.h"
 #include "key_value_store/kvs_wrapper.h"
@@ -114,7 +115,7 @@ extern "C++" void main_setup_ip_dependent() { //XXX called from library
     struct msg_received_cb { static void IRAM_ATTR cb() {
       lf_setBit_ISR(lf_loopFerRx, true);}
     };
-  fer_rx_MSG_RECEIVED_ISR_cb = msg_received_cb::cb;
+    Fer_Trx_API::register_callback_msgReceived_ISR(msg_received_cb::cb);
   #endif
 
   #ifdef FER_TRANSMITTER
@@ -122,7 +123,7 @@ extern "C++" void main_setup_ip_dependent() { //XXX called from library
   struct msg_transmitted_cb { static void IRAM_ATTR cb() {
     lf_setBit_ISR(lf_loopFerTx, true);}
   };
-  fer_tx_MSG_TRANSMITTED_ISR_cb = msg_transmitted_cb::cb;
+  Fer_Trx_API::register_callback_msgTransmitted_ISR(msg_transmitted_cb::cb);
   #endif
 #ifdef USE_SEP
   fer_sep_enable_disable_cb = [] (bool enable) {

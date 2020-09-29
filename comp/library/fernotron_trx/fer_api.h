@@ -13,11 +13,6 @@
 #include "fernotron/trx/raw/fer_fsb.h"
 #include "time.h"
 
-bool fer_send_rtc_message(fer_sbT *fsb, time_t rtc);
-bool fer_send_timer_message(fer_sbT *fsb, time_t rtc, const Fer_TimerData *td);
-bool fer_send_empty_timer_message(fer_sbT *fsb, time_t rtc);
-
-
 bool fer_timerString2bcd(const char *src, uint8_t *dst, uint16_t size_dst);
 bool fer_fill_timer_buf(fer_sbT *fsb, time_t rtc, const Fer_TimerData *tdr);
 bool fer_fill_rtc_buf(fer_sbT *fsb, time_t rtc);

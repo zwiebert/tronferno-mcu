@@ -20,8 +20,9 @@ struct sf {
 };
 
 
+
 struct sf *fer_tx_nextMsg();
 void fer_tx_popMsg();
 bool fer_tx_pushMsg(const struct sf *msg);
-int fer_tx_get_msgPendingCount();
+extern "C" int fer_tx_get_msgPendingCount();
 

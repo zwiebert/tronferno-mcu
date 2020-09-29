@@ -27,21 +27,16 @@ static class IncomingMsg : public Fer_Trx_API {
 
 public:
   virtual void event_plain_message_was_received() {
-    const auto a = get_a();
-    const auto g = get_g();
-    const auto m = get_m();
-    const auto cmd = get_cmd();
-
-    Fer_MsgPlainCmd msg {.a = a, .g = g, .m = m, .cmd = cmd };
+    Fer_MsgPlainCmd msg = get_msg();
     uoApp_publish_fer_msgReceived(&msg);
 
     if (is_centralUnit()) {
-      fer_cuas_set_check(a);
+      fer_cuas_set_check(msg.a);
 #ifdef USE_PAIRINGS
-     fer_alias_auto_set_check(a);
+     fer_alias_auto_set_check(msg.a);
 #endif
     }
-    fer_simPos_registerMovingShutter(a, g, m, cmd);
+    fer_simPos_registerMovingShutter(msg.a, msg.g, msg.m, msg.cmd);
   }
   //virtual void event_plain_double_message_was_received() {  }
   //virtual void event_rtc_message_was_received() {  }

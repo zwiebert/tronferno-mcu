@@ -14,7 +14,7 @@ static class FA : public Fer_Trx_API {
 
   virtual void event_any_message_will_be_sent() { // first + repeats
     ++any_msg_count;
-    any_msg_cmd = Fer_MsgPlainCmd { get_a(), get_g(), get_m(), get_cmd() };
+    any_msg_cmd = get_msg();
   }
 
 } MyFa;
@@ -27,7 +27,7 @@ void test_send() {
 
   Fer_Trx_API::send_cmd(m.a, m.g, m.m, m.cmd );
   TEST_ASSERT_EQUAL(first_msg_count, 0);
-  fer_tx_loop();
+  Fer_Trx_API::loop_tx();
   TEST_ASSERT_EQUAL(first_msg_count, 1);
   TEST_ASSERT_EQUAL(any_msg_count, 1);
   TEST_ASSERT_EQUAL_MEMORY(&m, &first_msg_cmd, sizeof m);

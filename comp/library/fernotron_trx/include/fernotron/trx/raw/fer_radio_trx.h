@@ -16,6 +16,9 @@
 #define WORDS_MSG_RTC (2*FER_BYTES_MSG_RTC)
 #define WORDS_MSG_TIMER  (2*FER_BYTES_MSG_TIMER)
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
 
 extern void (*fer_rx_MSG_RECEIVED_ISR_cb)(void);
 extern void (*fer_tx_MSG_TRANSMITTED_ISR_cb)(void);
@@ -34,6 +37,8 @@ extern volatile uint16_t fer_tx_messageToSend_wordCount;
 #define fer_rx_isReceiverBlocked() (fer_rx_messageReceived)
 #endif
 
+
+
 // unlock read buffer after done with data
 void fer_rx_clear(void); // call it after received data buffers has been processed by main thread
 struct fer_rx_quality { uint8_t bad_pair_count; };
@@ -49,5 +54,7 @@ void fer_tx_transmitFerMsg(fer_rawMsg *msg, fer_msg_type msg_type);
 void fer_rx_sampleInput(bool pin_level); // call this from top of timer ISR handler
 bool fer_tx_setOutput(void); // call this from top of timer ISR handler
 
-
+#ifdef __cplusplus
+  }
+#endif
 

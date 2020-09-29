@@ -74,6 +74,20 @@ bool fer_trx_send_rtc(const Fer_MsgRtc &msg);
 bool fer_trx_send_timer(const Fer_MsgTimer &msg);
 bool fer_trx_send_empty_timer(const Fer_MsgRtc &msg);
 
+typedef void (*CallBackFnType)(void);
+extern CallBackFnType fer_rx_MSG_RECEIVED_ISR_cb;
+extern CallBackFnType fer_tx_MSG_TRANSMITTED_ISR_cb;
+extern void (*fer_tx_READY_TO_TRANSMIT_cb)(uint32_t time_ts);
+
+void fer_tx_loop(void);
+void fer_rx_loop(void);
+void fer_rx_sampleInput(bool pin_level); // call this from top of timer ISR handler
+bool fer_tx_setOutput(void); // call this from top of timer ISR handler
+
+
+void fer_rx_tick(void);  // call it from timer tick interrupt
+void fer_tx_dck(void);  // call it from timer tick interrupt
+
 #ifdef __cplusplus
   }
 #endif

@@ -14,6 +14,10 @@
 
 extern fer_sbT last_received_sender;
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 void fer_rx_loop(void);
 
 // send short or long messages (data already in send-buffer)
@@ -33,3 +37,6 @@ fer_sbT* fer_get_fsb(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd);
 void fer_rx_tick(void);  // call it from timer tick interrupt
 void fer_tx_dck(void);  // call it from timer tick interrupt
 
+#ifdef __cplusplus
+  }
+#endif

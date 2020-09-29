@@ -13,6 +13,10 @@
 #include "fernotron/trx/raw/fer_fsb.h"
 #include "app/config/proj_app_cfg.h"
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 // true while sending in progress
 extern volatile bool fer_tx_messageToSend_isReady;
 
@@ -30,4 +34,6 @@ void fer_tx_loop(void);
 int fer_tx_get_msgPendingCount();
 
 
-
+#ifdef __cplusplus
+  }
+#endif

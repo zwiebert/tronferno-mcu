@@ -1,5 +1,6 @@
 #include <fernotron/trx/fer_trx_api.hh>
 #include "fer_trx_incoming_event.hh"
+#include "fer_trx_api_private.hh"
 
 
 
@@ -14,30 +15,6 @@ void Fer_Trx_API::setup_astro(const struct cfg_astro *cfg_astro) {
 }
 
 
-u32 Fer_Trx_API::get_a() const {
-  return FER_SB_GET_DEVID(&myEvt->fsb);
-}
-
-u8 Fer_Trx_API::get_g() const {
-  if (!is_centralUnit())
-    return 0;
-
-  fer_grp grp = myEvt->fsb.sd.grp;
-  return grp;
-}
-
-u8 Fer_Trx_API::get_m() const {
-  if (!is_centralUnit())
-    return 0;
-
-  fer_memb memb = myEvt->fsb.sd.memb;
-  return memb == 0 ? 0 : memb - 7;
-}
-
-fer_if_cmd Fer_Trx_API::get_cmd() const {
-  return static_cast<fer_if_cmd>(myEvt->fsb.sd.cmd);
-}
-
 const void *Fer_Trx_API::get_raw() const {
   return myEvt->raw;
 }
@@ -46,20 +23,39 @@ const void *Fer_Trx_API::get_fsb() const {
   return &myEvt->fsb;
 }
 
-bool Fer_Trx_API::is_centralUnit() const {
-  return FER_SB_ADDR_IS_CENTRAL(&myEvt->fsb);
-}
-
 Fer_Trx_API::MsgKind Fer_Trx_API::get_msgKind() const {
   return static_cast<MsgKind>(myEvt->kind);
 }
 
+//////////////// helper /////////////////////
+static Fer_MsgPlainCmd make_plainMsg(const fer_sbT &fsb) {
+  Fer_MsgPlainCmd pc { .a = FER_SB_GET_DEVID(&fsb) };
+  if (FER_U32_TEST_TYPE(pc.a, FER_ADDR_TYPE_CentralUnit)) {
+    pc.g = fsb.sd.grp;
+    pc.m = fsb.sd.memb ? fsb.sd.memb - 7 : 0;
+    pc.cmd = static_cast<fer_if_cmd>(fsb.sd.cmd);
+  }
+  return pc;
+}
+
+
+
+/////////////////////// push functions ////////////////////////////
+void fer_trx_api_pushEvent_readyToTransmit() {
+  if (!OurDerivedObject)
+    return;
+  OurDerivedObject->event_ready_to_transmit();
+}
 void Fer_Trx_API::push_event(struct Fer_Trx_IncomingEvent *evt) {
   if (!OurDerivedObject)
     return;
 
+
+
+
   Fer_Trx_API &that = *OurDerivedObject;
   that.myEvt = evt;
+  that.myMsg = make_plainMsg(evt->fsb);
 
   if (evt->tx) {
     if (evt->first)
@@ -97,21 +93,6 @@ void Fer_Trx_API::push_event(struct Fer_Trx_IncomingEvent *evt) {
   that.myEvt = 0;
 }
 
-///////////////// ISR //////////////////////////////
-#include <fernotron/trx/raw/fer_radio_trx.h>
-void IRAM_ATTR Fer_Trx_API::isr_sample_rx_pin(bool level) {
-  fer_rx_sampleInput(level);
-}
-void IRAM_ATTR Fer_Trx_API::isr_handle_rx() {
-  fer_rx_tick();
-}
-
-bool IRAM_ATTR Fer_Trx_API::isr_get_tx_level() {
-  return fer_tx_setOutput();
-}
-void IRAM_ATTR Fer_Trx_API::isr_handle_tx() {
-  fer_tx_dck();
-}
 
 
 ///////////////// send API ///////////////////////////
@@ -202,3 +183,4 @@ bool Fer_Trx_API::send_empty_timer(const Fer_MsgRtc &msg) {
 
   return false;
 }
+

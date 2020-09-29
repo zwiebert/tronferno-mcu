@@ -27,6 +27,7 @@ public:
   ////////////////////////////////////////////////////////////////
   ///////// get data of message (both rx and tx) /////////////////
   ////////////////////////////////////////////////////////////////
+  Fer_MsgPlainCmd get_msg() const;
   u32 get_a() const;
   u8 get_g() const;
   u8 get_m() const;
@@ -88,6 +89,13 @@ public:
   static bool isr_get_tx_level(); // call this son top of timer ISR
   static void isr_handle_tx();  // call this from timer ISR every 200us
 
+public:
+  ///////////  loop ///////////////////////////////////////////////
+  virtual void event_ready_to_transmit() { }  // something to do for loop_tx()
+  static void register_callback_msgReceived_ISR(CallBackFnType cb); // something to do for loop_rx() (called from ISR)
+  static void register_callback_msgTransmitted_ISR(CallBackFnType cb); // something to do for loop_rx() (called from ISR)
+  static void loop_rx();
+  static void loop_tx();
 
 
    ////////// implementation. ///////////////////////////////////
@@ -95,8 +103,9 @@ public:
   static void push_event(struct Fer_Trx_IncomingEvent *evt);
 private:
   struct Fer_Trx_IncomingEvent *myEvt;
+  Fer_MsgPlainCmd myMsg;
 };
 
 typedef Fer_Trx_API::MsgKind fer_msg_kindT;
 
-
+#include "fer_trx_api__inline.hh"

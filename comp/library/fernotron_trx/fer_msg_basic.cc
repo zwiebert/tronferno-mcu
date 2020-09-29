@@ -1,6 +1,7 @@
 #include "fer_app_cfg.h"
 #include "fernotron/trx/raw/fer_msg_plain.h"
 #include "fernotron/trx/raw/fer_fsb.h"
+#include <fernotron/trx/raw/fer_msg_rx.h>
 
 void 
 fer_init_sender(fer_sbT *fsb, u32 devID) {
