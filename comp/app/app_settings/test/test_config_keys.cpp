@@ -1,4 +1,7 @@
-#include "unity.h"
+#include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
 
 #include "app/config/proj_app_cfg.h"
 #include "app/settings/config.h"

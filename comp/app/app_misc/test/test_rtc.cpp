@@ -5,7 +5,10 @@
  *      Author: bertw
  */
 
-#include "unity.h"
+#include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
 #include "stdbool.h"
 
 #include "app/rtc.h"

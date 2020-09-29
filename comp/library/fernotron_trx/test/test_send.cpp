@@ -1,4 +1,7 @@
 #include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
 #include <fernotron/trx/fer_trx_api.hh>
 #include "fernotron/trx/raw/fer_msg_tx.h"
 

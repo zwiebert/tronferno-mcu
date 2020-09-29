@@ -4,7 +4,10 @@
  *  Created on: 10.03.2020
  *      Author: bertw
  */
-#include "unity.h"
+#include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
 #include "fernotron/auto/fau_tdata_store.h"
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron/astro.h"

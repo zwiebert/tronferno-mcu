@@ -5,7 +5,10 @@
  *      Author: bertw
  */
 
-#include "unity.h"
+#include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
 #include "fernotron/auto/fau_tdata_store.h"
 #include "fernotron/auto/fau_tminutes.h"
 #include "fernotron/astro.h"

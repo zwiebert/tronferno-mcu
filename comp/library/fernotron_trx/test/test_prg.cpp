@@ -4,7 +4,10 @@
  *  Created on: 07.03.2020
  *      Author: bertw
  */
-#include "unity.h"
+#include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
 
 #include <fernotron/trx/raw/fer_msg_plain.h>
 #include "fernotron/astro.h"

@@ -9,7 +9,10 @@
 #include "fernotron/pos/shutter_pct.h"
 #include "../pos/move.h"
 
-#include "unity.h"
+#include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
 
 
 

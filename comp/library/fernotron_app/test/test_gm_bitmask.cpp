@@ -6,7 +6,10 @@
  */
 
 
-#include "unity.h"
+#include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
 
 #include <string.h>
 #include "misc/int_types.h"
