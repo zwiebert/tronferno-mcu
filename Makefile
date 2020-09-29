@@ -108,7 +108,7 @@ $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
 ############## On Host ########################
-CM_BUILD_PATH=$(BUILD_BASE)/cm.test.host
+CM_BUILD_PATH=$(BUILD_BASE)/../host/test
 
 .PHONY: test.cm.configure test.cm.build
 
