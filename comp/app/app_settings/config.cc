@@ -11,7 +11,7 @@
 
 config C;
 
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
 double tz2offset(const char *tz) {
   double offset = 0.0;
 
@@ -25,7 +25,7 @@ double tz2offset(const char *tz) {
 }
 
 #endif
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
 const char* config_read_tz(char *d, unsigned d_size) {
   return config_read_item_s(CI(CB_TZ), d, d_size, MY_GEO_TZ);
 }

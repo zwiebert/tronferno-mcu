@@ -70,7 +70,7 @@ const char cli_help_parmConfig[]  =
     "time-zone=(N|?)    time zone hour offset\n"
     "dst=(eu|0|1|?)     daylight saving time\n"
 #endif
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
     "tz=(POSIX_TZ|?)    time zone for RTC/NTP\n"
 #endif
     "astro-correction   modifies astro table: 0=average, 1=bright 2=dark\n"
@@ -233,7 +233,7 @@ process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
         break;
 
         case SO_CFG_TIMEZONE: {
-#ifndef POSIX_TIME
+#ifndef USE_POSIX_TIME
           if (set_opt(f, val, CB_TIZO)) {
             hasChanged_geo = true;
             rtc_setup();
@@ -243,7 +243,7 @@ process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
         break;
 
         case SO_CFG_TZ: {
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
           if (set_optStr_ifValid(val, CB_TZ)) {
             rtc_setup();
           }

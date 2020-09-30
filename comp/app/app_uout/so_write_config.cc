@@ -55,7 +55,7 @@ void soCfg_NETWORK(const struct TargetDesc &td) {
 }
 
 void soCfg_TZ(const struct TargetDesc &td) {
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
   char buf[64];
   td.so().print(gk(SO_CFG_TZ),config_read_tz(buf, sizeof buf));
 #endif
@@ -70,7 +70,7 @@ void soCfg_LATITUDE(const struct TargetDesc &td) {
 }
 
 void soCfg_TIMEZONE(const struct TargetDesc &td) {
-#ifndef POSIX_TIME
+#ifndef USE_POSIX_TIME
   td.so().print(gk(SO_CFG_TIMEZONE), config_read_timezone(), 5);
 #endif
 }

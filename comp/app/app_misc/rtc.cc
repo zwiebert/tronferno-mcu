@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include <time.h>
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
 #include <sys/time.h>
 #endif
 #include <string.h>
@@ -16,7 +16,7 @@ void set_system_time(time_t timestamp);
 
 void  rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t source) {
   rtc_last_time_source = source;
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
   struct timeval tv = {.tv_sec = stamp, .tv_usec = 0 };
   settimeofday(&tv, NULL);
 #else
@@ -70,7 +70,7 @@ rtc_get_by_string(char *s) {
   time_t timer = time(NULL);
   struct tm t;
   localtime_r(&timer, &t);
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
   strftime(s, 20, "%FT%H:%M:%S", &t);
 #else
   isotime_r(&t, s);
@@ -150,7 +150,7 @@ time_t rtc_timezone_in_secs() {
 void 
 rtc_setup() {
 
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
   char buf[64];
   setenv("TZ", config_read_tz(buf, sizeof buf), 1);
   tzset();

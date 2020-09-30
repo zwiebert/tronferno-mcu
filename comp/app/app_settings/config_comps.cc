@@ -96,7 +96,7 @@ struct cfg_astro* config_read_astro(struct cfg_astro *c) {
     kvsRb(CB_LATITUDE, c->geo_latitude);
     kvsRead(i8, astroCorrection, CB_ASTRO_CORRECTION, c->astroCorrection);
 
-#ifndef POSIX_TIME
+#ifndef USE_POSIX_TIME
       kvsRb(CI(CB_TIZO), c->geo_timezone);
 #else
     char tz[64] = MY_GEO_TZ;
@@ -109,7 +109,7 @@ struct cfg_astro* config_read_astro(struct cfg_astro *c) {
 }
 void config_setup_astro() {
   struct cfg_astro c = { .astroCorrection = acAverage, .geo_longitude = MY_GEO_LONGITUDE, .geo_latitude = MY_GEO_LATITUDE,
-#ifndef POSIX_TIME
+#ifndef USE_POSIX_TIME
       .geo_timezone = MY_GEO_TIMEZONE,
 #endif
       };

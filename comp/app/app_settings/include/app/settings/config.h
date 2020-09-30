@@ -36,7 +36,7 @@ enum nwConnection {
 };
 
 
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
 void cfg_tz2timezone(void);
 #endif
 
@@ -68,7 +68,7 @@ enum configAppItem {
   CBA_start = CB_size-1,
   CB_RECV, CB_TRANSM, CB_CUID, CB_USED_MEMBERS, CB_BAUD, CB_GPIO,
   CB_CFG_PASSWD, CB_LONGITUDE, CB_LATITUDE,
-#ifndef POSIX_TIME
+#ifndef USE_POSIX_TIME
 CB_TIZO,
 #else
   CB_TZ,
@@ -109,7 +109,7 @@ constexpr uint8_t cb_types[CBA_size] = {
    //-----------
     CBT_i8/* CB_RECV */, CBT_i8/* CB_TRANSM */, CBT_u32/* CB_CUID */, CBT_u32/* CB_USED_MEMBERS */, CBT_u32/* CB_BAUD */, CBT_str/* CB_GPIO */,
      CBT_str/* CB_CFG_PASSWD */, CBT_f/* CB_LONGITUDE */, CBT_f/* CB_LATITUDE */,
-     #ifndef POSIX_TIME
+     #ifndef USE_POSIX_TIME
      /* CB_TIZO */,
      #else
      CBT_str/* CB_TZ */,

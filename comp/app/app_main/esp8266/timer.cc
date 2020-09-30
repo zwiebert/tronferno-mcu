@@ -99,7 +99,7 @@ void IRAM_ATTR timer_handler(void) {
         s_ticks = 10;
         ++run_time_s_;
 
-#ifndef POSIX_TIME
+#ifndef USE_POSIX_TIME
         extern volatile time_t __system_time;
 ++__system_time;
 #endif
