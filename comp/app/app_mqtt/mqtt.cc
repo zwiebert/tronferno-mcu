@@ -6,8 +6,6 @@
  */
 
 #include "app/config/proj_app_cfg.h"
-#ifdef USE_MQTT
-
 #include "net/mqtt/app/mqtt.h"
 #include "net/mqtt/mqtt_imp.h"
 
@@ -87,7 +85,9 @@ static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
       Net_Mqtt::publish("tfmcu/timer_out", json);
   }
 }
+
 static class AppNetMqtt final : public Net_Mqtt {
+public:
 virtual void connected () override {
   char topic[64];
   snprintf(topic, sizeof topic, "%scli", TOPIC_ROOT);
@@ -202,5 +202,4 @@ void io_mqttApp_setup(const char *topic_root) {
   Net_Mqtt::setup(&MyMqtt);
 }
 
-#endif // USE_MQTT
 

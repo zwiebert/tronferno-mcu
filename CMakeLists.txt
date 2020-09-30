@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 option(BUILD_HOST_TESTS "build host test" OFF)
 
+option(BUILD_DOXY "build doxy docs" OFF)
+
 if (BUILD_HOST_TESTS)
 project(tfmcu-test)
 
@@ -18,4 +20,31 @@ add_subdirectory(comp/app/app_main)
 
 message("all_libs: ${COMPONENT_LIBS}")
 message("all_tests: ${TEST_EXECUTABLES}")
+
+message("all_libs_inc_Dirs: ${COMPONENT_LIBS_INC_DIRS}")
+
+file(WRITE "${CMAKE_BINARY_DIR}/all_libs_dirs.txt" ${COMPONENT_LIBS_DIRS})
+
+set(doxy_input_file "${CMAKE_BINARY_DIR}/doxy_input_file.txt")
+file(WRITE ${doxy_input_file} "")
+foreach(src ${COMPONENT_LIBS_SRCS})
+  file(APPEND ${doxy_input_file} "INPUT += ${src}\n")
+endforeach()
+
+file(GLOB host_files "${host_dir}/*.cc" "${host_dir}/*.cpp" "${host_dir}/*.c")
+
+foreach(dir ${COMPONENT_LIBS_INC_DIRS})
+  foreach(suffix .h .hh .hpp)
+    file(GLOB_RECURSE hdr_files "${dir}/*${suffix}")
+    foreach(hdr_file ${hdr_files})
+      file(APPEND ${doxy_input_file} "INPUT += ${hdr_file}\n")
+    endforeach()
+  endforeach()
+endforeach()
+
+endif()
+
+if (BUILD_DOXY)
+ message("config: ${DOXY_CONFIG}")
+
 endif()

@@ -73,8 +73,8 @@ static esp_err_t ws_trigger_send(httpd_handle_t handle, const char *json, size_t
   return httpd_queue_work(handle, ws_async_broadcast, arg);
 }
 
-void ws_send_json(const char *json, size_t len) {
-  ws_trigger_send(hts_server, json, len ? len : strlen(json));
+void ws_send_json(const char *json, ssize_t len) {
+  ws_trigger_send(hts_server, json, len >= 0 ? len : strlen(json));
 }
 
 static int ws_write(void *req, const char *s, ssize_t len = -1, bool final = true) {

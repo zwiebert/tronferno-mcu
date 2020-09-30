@@ -135,6 +135,37 @@ host-test-all:
 	make -s --no-print-directory  test.cm.configure test.cm.ctest
 
 
+############# Doxygen ###################
+
+DOXY_BUILD_PATH=$(BUILD_BASE)/../doxy
+DOXY_CONFIG_FILES = ./Doxyfile $(HOST_TEST_BUILD_PATH)/doxy_input_file.txt
+DOXY_CONFIG_FILE = /tmp/Doxyfile
+
+.PHONY: doxy doxy.cm.configure doxy.cm.build
+
+$(DOXY_CONFIG_FILE): test.cm.configure
+	cat $(DOXY_CONFIG_FILES) >$(DOXY_CONFIG_FILE)
+doxy: $(DOXY_CONFIG_FILE)
+	doxygen $(DOXY_CONFIG_FILE)
+
+doxy.cm.configure:
+	rm -fr $(DOXY_BUILD_PATH)
+	mkdir -p $(DOXY_BUILD_PATH)
+	cat $(DOXY_CONFIG_FILES) >$(DOXY_CONFIG_FILE)
+	cmake -B $(DOXY_BUILD_PATH) -D BUILD_DOXY=ON -D DOXY_CONFIG=$(DOXY_CONFIG_FILE)  -S $(realpath .)
+
+doxy_cm_build := make -C $(HOST_TEST_BUILD_PATH) -k -j  -s --no-print-dir $(make_verbose_opts)
+#doxy_cm_build := (cd $(HOST_TEST_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
+
+	
+doxy.cm.build:
+	$(doxy_cm_build)
+
+doxy.cm.ctest: test.cm.build
+	$(doxy_cm_build) test
+
+
+
 ############# TCP Terminal ##############
 IPADDR ?= 192.168.1.65
 
