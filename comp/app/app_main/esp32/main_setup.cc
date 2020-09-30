@@ -91,6 +91,36 @@ extern "C++" void main_setup_ip_dependent() { //XXX called from library
   config_setup_httpServer();
 #endif
 
+  }
+}
+
+void mcu_init() {
+#ifdef USE_EG
+  loop_eventBits_setup();
+#endif
+  kvs_setup();
+  config_setup_txtio();
+
+  config_setup_global();
+
+  io_puts("\r\n\r\n");
+
+  ESP_ERROR_CHECK(esp_event_loop_create_default());
+  cliApp_setup();
+#ifdef USE_CLI_TASK
+  cli_setup_task(true);
+#else
+  lfPer_setBit(lf_loopCli);
+#endif
+#ifdef USE_TCPS
+  lfPer_setBit(lf_loopTcpServer);
+#endif
+#ifdef USE_TCPS_TASK
+#endif
+  fer_am_updateTimerEvent();
+  lfPer_setBit(lf_loopFerTimerState);
+
+
   fer_pos_POSITIONS_MOVE_cb = [](bool enable) {
     lfPer_putBit(lf_loopPosCheckMoving, enable);
   };
@@ -140,35 +170,6 @@ extern "C++" void main_setup_ip_dependent() { //XXX called from library
     lfPer_putBit(lf_checkCuasTimeout, enable);
 };
 #endif
-  }
-}
-
-void mcu_init() {
-#ifdef USE_EG
-  loop_eventBits_setup();
-#endif
-  kvs_setup();
-  config_setup_txtio();
-
-  config_setup_global();
-
-  io_puts("\r\n\r\n");
-
-  ESP_ERROR_CHECK(esp_event_loop_create_default());
-  cliApp_setup();
-#ifdef USE_CLI_TASK
-  cli_setup_task(true);
-#else
-  lfPer_setBit(lf_loopCli);
-#endif
-#ifdef USE_TCPS
-  lfPer_setBit(lf_loopTcpServer);
-#endif
-#ifdef USE_TCPS_TASK
-#endif
-  fer_am_updateTimerEvent();
-  lfPer_setBit(lf_loopFerTimerState);
-
 
 #ifdef USE_NETWORK
   enum nwConnection network = config_read_network_connection();
