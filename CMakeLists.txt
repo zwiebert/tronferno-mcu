@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
+option(BUILD_HOST_TESTS "build host test" OFF)
+
+if (BUILD_HOST_TESTS)
 project(tfmcu-test)
 
 set(COMPONENT_DIRECTORIES comp/app comp/external/components-mcu/components comp/library)
@@ -9,10 +12,10 @@ set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++
 
 include(comp/external/components-mcu/components/test_host/host_test.cmake)
 
-
-add_subdirectory(comp/external/components-mcu/components/test_host)
+add_subdirectory(comp/app/app_main)
+#add_subdirectory(comp/external/components-mcu/components/test_host)
 
 
 message("all_libs: ${COMPONENT_LIBS}")
 message("all_tests: ${TEST_EXECUTABLES}")
-
+endif()

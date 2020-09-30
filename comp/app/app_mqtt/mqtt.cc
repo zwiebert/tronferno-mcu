@@ -12,7 +12,7 @@
 #include "net/mqtt/mqtt_imp.h"
 
 #include "mqtt_private.h"
-
+#include "net/mqtt/mqtt.hh"
 #include <string.h>
 #include <stdio.h>
 #include "cli/cli.h"
@@ -50,7 +50,7 @@ static void io_mqtt_publish_topic_end(const char *topic_end, const char *json) {
   char topic[64];
   snprintf(topic, sizeof topic, "%s%s", TOPIC_ROOT, topic_end);
 
-  io_mqtt_publish(topic, json);
+  Net_Mqtt::publish(topic, json);
 }
 
 static void io_mqtt_publish_topic_end_get_json(const TargetDesc &td, const char *topic_end) {
@@ -66,14 +66,14 @@ void io_mqtt_publish_gmp(const so_arg_gmp_t *gmp) {
   snprintf(topic, 64, "%s%u%u/pct_out", TOPIC_ROOT, gmp->g, gmp->m);
   snprintf(data, 16, "%u", gmp->p);
 
-  io_mqtt_publish(topic, data);
+  Net_Mqtt::publish(topic, data);
 }
 
 void io_mqttApp_publishPinChange(int gpio_num, bool level) {
   char topic[64];
   const char *data = level ? "H" : "L";
   snprintf(topic, 64, "%sgpi/%d/level", TOPIC_ROOT, gpio_num);
-  io_mqtt_publish(topic, data);
+  Net_Mqtt::publish(topic, data);
 }
 
 
@@ -84,23 +84,23 @@ static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
     io_mqtt_publish_gmp(gmp);
   if (auto json = uoCb_jsonFromMsg(msg)) {
     if (msg.flags.evt.timer_change)
-      io_mqtt_publish("tfmcu/timer_out", json);
+      Net_Mqtt::publish("tfmcu/timer_out", json);
   }
 }
-
-static void io_mqtt_connected () {
+static class AppNetMqtt final : public Net_Mqtt {
+virtual void connected () override {
   char topic[64];
   snprintf(topic, sizeof topic, "%scli", TOPIC_ROOT);
-  io_mqtt_subscribe(topic, 0);
+  subscribe(topic, 0);
   snprintf(topic, sizeof topic, "%s+/pct", TOPIC_ROOT);
-  io_mqtt_subscribe(topic, 0);
+  subscribe(topic, 0);
   snprintf(topic, sizeof topic, "%s+/cmd", TOPIC_ROOT);
-  io_mqtt_subscribe(topic, 0);
+  subscribe(topic, 0);
   snprintf(topic, sizeof topic, "%sstatus", TOPIC_ROOT);
-  io_mqtt_publish(topic, "connected"); // for autocreate (ok???)
+  Net_Mqtt::publish(topic, "connected"); // for autocreate (ok???)
 
   snprintf(topic, sizeof topic, "%s%s+%s", TOPIC_ROOT, TOPIC_GPO_MID, TOPIC_GPO_END);
-  io_mqtt_subscribe(topic, 0);
+  subscribe(topic, 0);
 
   uo_flagsT flags {};
   flags.tgt.mqtt = true;
@@ -112,11 +112,11 @@ static void io_mqtt_connected () {
   uoCb_subscribe(io_mqttApp_uoutPublish_cb, flags);
 }
 
-static void io_mqtt_disconnected () {
+virtual void disconnected () override {
   uoCb_unsubscribe(io_mqttApp_uoutPublish_cb);
 }
 
-static void io_mqtt_received(const char *topic, int topic_len, const char *data, int data_len) {
+virtual void received(const char *topic, int topic_len, const char *data, int data_len) override {
   TargetDesc td { SO_TGT_MQTT };
   if (!topic_startsWith(topic, topic_len, TOPIC_ROOT)) {
     return; // all topics start with this
@@ -184,6 +184,11 @@ static void io_mqtt_received(const char *topic, int topic_len, const char *data,
   }
 }
 
+
+
+} MyMqtt;
+
+
 void io_mqttApp_setup(const char *topic_root) {
   if (topic_root && *topic_root && (!io_mqtt_topic_root || 0 != strcmp(io_mqtt_topic_root, topic_root))) {
     char *tr = (char*)malloc(strlen(topic_root)+1);
@@ -194,9 +199,7 @@ void io_mqttApp_setup(const char *topic_root) {
     }
   }
 
-  io_mqtt_received_cb = io_mqtt_received;
-  io_mqtt_connected_cb = io_mqtt_connected;
-  io_mqtt_disconnected_cb = io_mqtt_disconnected;
+  Net_Mqtt::setup(&MyMqtt);
 }
 
 #endif // USE_MQTT
