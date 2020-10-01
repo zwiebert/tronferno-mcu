@@ -136,17 +136,28 @@ host-test-all:
 
 
 ############# Doxygen ###################
-
-DOXY_BUILD_PATH=$(BUILD_BASE)/../doxy
-DOXY_CONFIG_FILES = ./Doxyfile $(HOST_TEST_BUILD_PATH)/doxy_input_file.txt
+DOXY_BUILD_PATH=$(THIS_ROOT)/build/doxy
+DOXY_INPUT_FILE =  /tmp/doxy_input # $(HOST_TEST_BUILD_PATH)/doxy_input_file.txt
+DOXY_CONFIG_FILES = ./Doxyfile $(DOXY_INPUT_FILE)
 DOXY_CONFIG_FILE = /tmp/Doxyfile
 
-.PHONY: doxy doxy.cm.configure doxy.cm.build
+.PHONY: doxy-build doxy-view doxy.cm.configure doxy.cm.build
 
-$(DOXY_CONFIG_FILE): test.cm.configure
+/tmp/doxy_input: FORCE
+	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
+	cd comp/external/components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/comp/external/components-mcu/~" >> $@
+	
+$(HOST_TEST_BUILD_PATH)/doxy_input_file.txt:  test.cm.configure
+
+$(DOXY_CONFIG_FILE): $(DOXY_INPUT_FILE)
 	cat $(DOXY_CONFIG_FILES) >$(DOXY_CONFIG_FILE)
-doxy: $(DOXY_CONFIG_FILE)
+
+doxy-build: $(DOXY_CONFIG_FILE)
 	doxygen $(DOXY_CONFIG_FILE)
+	
+doxy-view: doxy-build
+	xdg-open $(DOXY_BUILD_PATH)/html/index.html
+	
 
 doxy.cm.configure:
 	rm -fr $(DOXY_BUILD_PATH)

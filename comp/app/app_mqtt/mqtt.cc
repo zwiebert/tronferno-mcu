@@ -107,7 +107,7 @@ virtual void connected () override {
   flags.evt.pin_change = true;
   flags.evt.pct_change = true;
   flags.evt.timer_change = true;
-  flags.fmt.obj = true;
+  flags.fmt.raw = true;
   flags.fmt.json = true;
   uoCb_subscribe(io_mqttApp_uoutPublish_cb, flags);
 }

@@ -18,7 +18,7 @@
 
 static void publish(uoCb_cbT cb, const void *ptr, uo_flagsT flags) {
   std::scoped_lock lock { cli_mutex, txtio_mutex };
-  uoCb_msgT  msg { .cv_ptr = ptr, .flags = flags };
+  uoCb_msgT  msg { .cptr = ptr, .flags = flags };
   cb(msg);
 }
 static void publish_fragJson(uoCb_cbT cb, const char *json, uo_flagsT flags) {
@@ -96,9 +96,9 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
       publish_pctChange_gmp_asJson(it.cb, a, len);
     }
 
-    if (it.flags.fmt.obj) {
+    if (it.flags.fmt.raw) {
       uo_flagsT flags;
-      flags.fmt.obj = true;
+      flags.fmt.raw = true;
       flags.evt.pct_change = true;
       for (int i = 0; i < len; ++i) {
         publish(it.cb, &a[i], flags);
@@ -125,9 +125,9 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
       publish_pctChange_gmp_asJson(it.cb, a);
     }
 
-    if (it.flags.fmt.obj) {
+    if (it.flags.fmt.raw) {
       uo_flagsT flags;
-      flags.fmt.obj = true;
+      flags.fmt.raw = true;
       flags.evt.pct_change = true;
       publish(it.cb, &a, flags);
     }

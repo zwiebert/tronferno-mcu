@@ -1,7 +1,5 @@
 #pragma once
-
-#include <cli/cli_types.h>
-#include "cli/cli_json.h"
+#include "cli/cli.h"
 
 
 extern const char cli_help_parmSend[];

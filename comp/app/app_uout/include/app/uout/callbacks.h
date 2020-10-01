@@ -8,13 +8,13 @@
 
 
 inline const so_arg_pch_t *uoCb_pchFromMsg(const uoCb_msgT msg) {
-  if (msg.flags.evt.pin_change && msg.flags.fmt.obj)
-    return static_cast<const so_arg_pch_t *>(msg.cv_ptr);
+  if (msg.flags.evt.pin_change && msg.flags.fmt.raw)
+    return static_cast<const so_arg_pch_t *>(msg.cptr);
   return nullptr;
 }
 inline const so_arg_gmp_t *uoCb_gmpFromMsg(const uoCb_msgT msg) {
-  if (msg.flags.evt.pct_change && msg.flags.fmt.obj)
-    return static_cast<const so_arg_gmp_t *>(msg.cv_ptr);
+  if (msg.flags.evt.pct_change && msg.flags.fmt.raw)
+    return static_cast<const so_arg_gmp_t *>(msg.cptr);
   return nullptr;
 }
 

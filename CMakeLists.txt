@@ -21,33 +21,7 @@ add_subdirectory(comp/app/app_main)
 message("all_libs: ${COMPONENT_LIBS}")
 message("all_tests: ${TEST_EXECUTABLES}")
 
-message("all_libs_inc_Dirs: ${COMPONENT_LIBS_INC_DIRS}")
-
-file(WRITE "${CMAKE_BINARY_DIR}/all_libs_dirs.txt" ${COMPONENT_LIBS_DIRS})
-
-set(doxy_input_file "${CMAKE_BINARY_DIR}/doxy_input_file.txt")
-file(WRITE ${doxy_input_file} "")
-foreach(src ${COMPONENT_LIBS_SRCS})
-  file(APPEND ${doxy_input_file} "INPUT += ${src}\n")
-endforeach()
-
-foreach(dir ${COMPONENT_LIBS_INC_DIRS})
-  foreach(suffix .h .hh .hpp)
-    file(GLOB_RECURSE hdr_files "${dir}/*${suffix}")
-    foreach(hdr_file ${hdr_files})
-      file(APPEND ${doxy_input_file} "INPUT += ${hdr_file}\n")
-    endforeach()
-  endforeach()
-endforeach()
-
-foreach(dir ${COMPONENT_LIBS_DIRS})
-  foreach(suffix .h .hh .hpp)
-    file(GLOB hdr_files "${dir}/*${suffix}")
-    foreach(hdr_file ${hdr_files})
-      file(APPEND ${doxy_input_file} "INPUT += ${hdr_file}\n")
-    endforeach()
-  endforeach()
-endforeach()
+doxy_create_input()
 
 endif()
 

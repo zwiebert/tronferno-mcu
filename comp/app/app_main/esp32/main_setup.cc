@@ -69,7 +69,7 @@ void ntpApp_setup(void) {
 
 
 
-extern "C++" void main_setup_ip_dependent() { //XXX called from library
+void main_setup_ip_dependent() {
   static int once;
   {
     char buf[20];
@@ -172,6 +172,7 @@ void mcu_init() {
 #endif
 
 #ifdef USE_NETWORK
+  ipnet_CONNECTED_cb = main_setup_ip_dependent;
   enum nwConnection network = config_read_network_connection();
 #ifdef USE_AP_FALLBACK
   esp_netif_init();
