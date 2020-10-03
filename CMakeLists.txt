@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 option(BUILD_HOST_TESTS "build host test" OFF)
-
+option(CMAKE_EXPORT_COMPILE_COMMANDS "generate compilation database for clang-tidy" ON)
 option(BUILD_DOXY "build doxy docs" OFF)
 
 if (BUILD_HOST_TESTS)
@@ -10,7 +10,11 @@ set(COMPONENT_DIRECTORIES comp/app comp/external/components-mcu/components comp/
 #list(TRANSFORM COMPONENT_DIRECTORIES PREPEND ${CMAKE_CURRENT_LIST_DIR})
 set(comp_compile_feats cxx_std_20)
 set(comp_compile_opts "$<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>" -Wno-missing-field-initializers)
-set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++2a>" -Og -ggdb)
+set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++2a>" -O0 -ggdb  -fstack-protector-all # -fanalyzer
+)
+
+add_link_options(-fsanitize=address)
+add_compile_options(-fsanitize=address)
 
 include(comp/external/components-mcu/components/test_host/host_test.cmake)
 

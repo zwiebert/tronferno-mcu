@@ -116,7 +116,7 @@ static void intTimer_init(timer_group_t timer_group, timer_idx_t timer_idx, time
   timer_start(timer_group, timer_idx);
 }
 
-void intTimer_setup(void) {
+void app_timerISR_setup(void) {
   intTimer_init(TIMER_GROUP_0, TIMER_1, TIMER_AUTORELOAD_EN, TICK_PERIOD_US);
 }
 

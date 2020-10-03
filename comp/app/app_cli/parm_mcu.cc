@@ -203,22 +203,22 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
         soMsg_mcu_ota_state(td);
       } else if (is_val("github-master")) {
         soMsg_mcu_ota(td, OTA_FWURL_MASTER);
-        ota_doUpdate(OTA_FWURL_MASTER, ca_cert_pem);
+        app_doFirmwareUpdate(OTA_FWURL_MASTER);
       } else if (is_val("github-beta")) {
         soMsg_mcu_ota(td, OTA_FWURL_BETA);
-        ota_doUpdate(OTA_FWURL_BETA, ca_cert_pem);
+        app_doFirmwareUpdate(OTA_FWURL_BETA);
       } else if (0 == strncmp(val, OTA_FWURL_TAG_COOKIE, strlen(OTA_FWURL_TAG_COOKIE))) {
         const char *tag = val + strlen(OTA_FWURL_TAG_COOKIE);
         const size_t url_len = strlen(OTA_FWURL_TAG_HEAD) + strlen(OTA_FWURL_TAG_TAIL) + strlen(tag);
         char url[url_len + 1];
         csu_copy_cat(url, url_len, OTA_FWURL_TAG_HEAD, tag, OTA_FWURL_TAG_TAIL);
-        ota_doUpdate(url, ca_cert_pem);
+        app_doFirmwareUpdate(url);
       } else {
 #ifdef DISTRIBUTION
         ets_printf("forbidden: ota update from given URL\n");
 #else
         ets_printf("doing ota update from given URL\n");
-        ota_doUpdate(val, ca_cert_pem);
+        app_doFirmwareUpdate(val);
 #endif
       }
 #endif

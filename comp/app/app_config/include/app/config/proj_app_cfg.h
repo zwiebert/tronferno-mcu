@@ -1,8 +1,9 @@
-// User configuration
+/**
+ * \file       app/config/pro_app_cfg.h
+ * \brief      application configuration
+ */
+
 #pragma once
-
-#define APP_VERSION "0.11.0.beta"
-
 
 #define CONFIG_BLOB
 #define CONFIG_DICT

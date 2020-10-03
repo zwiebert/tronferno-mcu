@@ -97,7 +97,7 @@ void soMsg_mcu_version(const struct TargetDesc &td) {
   char buf[64];
 
   td.so().print("chip", MCU_TYPE);
-  td.so().print("firmware", (csu_copy_cat(buf, "tronferno-mcu-", APP_VERSION), buf));
+  //td.so().print("firmware", (csu_copy_cat(buf, "tronferno-mcu-", APP_VERSION), buf));
 
   char *p = STRCPY(buf, ISO_BUILD_TIME);
   do

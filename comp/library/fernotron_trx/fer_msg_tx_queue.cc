@@ -26,7 +26,7 @@ typedef struct sf T;
 
 
 static bool comp_fun(const T *a, const T *b) {
-  return a->s10 >= b->s10;
+  return a->when_to_transmit_ts >= b->when_to_transmit_ts;
 }
 
 static bool sf_append(const T *msg) {

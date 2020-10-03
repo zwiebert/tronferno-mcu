@@ -15,7 +15,7 @@
 
 
 
-void (*fer_tx_READY_TO_TRANSMIT_cb)(uint32_t time_ts);
+void (*fer_tx_READY_TO_TRANSMIT_cb)(uint32_t when_to_transmit_ts);
 
 static inline void fer_tx_ready_to_transmit_cb(uint32_t time_ts) {
   if (fer_tx_READY_TO_TRANSMIT_cb)
@@ -30,7 +30,7 @@ static void fer_send_checkQuedState() {
     return;
 
   if ((msg = fer_tx_nextMsg())) {
-    fer_tx_ready_to_transmit_cb(msg->s10);
+    fer_tx_ready_to_transmit_cb(msg->when_to_transmit_ts);
   }
 }
 
@@ -54,7 +54,7 @@ bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, i8 repeats) {
 bool fer_send_delayed_msg(const fer_sbT *fsb, fer_msg_type msgType, u16 delay, i8 repeats) {
   precond(fsb);
 
-  struct sf msg = { .fsb = *fsb, .s10 = (delay + (u32)get_now_time_ts()), .mt = msgType, .repeats = repeats };
+  struct sf msg = { .fsb = *fsb, .when_to_transmit_ts = (delay + (u32)get_now_time_ts()), .mt = msgType, .repeats = repeats };
   if (!fer_tx_pushMsg(&msg))
     return false;
 
@@ -112,7 +112,7 @@ void fer_tx_loop() {
 
   struct sf *msg = fer_tx_nextMsg();
 
-  if (msg && msg->s10 <= get_now_time_ts()) {
+  if (msg && msg->when_to_transmit_ts <= get_now_time_ts()) {
     if (fer_send_queued_msg(msg)) {
       fer_tx_popMsg();
     }

@@ -5,6 +5,16 @@
 
 
 
+int process_parmSend(clpar p[], int len, const struct TargetDesc &td);
+int process_parmConfig(clpar p[], int len, const struct TargetDesc &td);
+int process_parmMcu(clpar p[], int len, const struct TargetDesc &td);
+int process_parmTimer(clpar p[], int len, const struct TargetDesc &td);
+int process_parmHelp(clpar p[], int len, const struct TargetDesc &td);
+int process_parmPair(clpar p[], int len, const struct TargetDesc &td);
+int process_parmShpref(clpar p[], int len, const struct TargetDesc &td);
+
+
+
 
 #define NODEFAULT() if (val==0) return cli_replyFailure(td)
 

@@ -1,7 +1,7 @@
 #include "app/config/proj_app_cfg.h"
 #include "app/settings/config.h"
 #include "app/settings/config_defaults.h"
-#include "app/cli/fernotron.h"
+
 #include "misc/int_types.h"
 #include <ctype.h>
 #include <stdlib.h>

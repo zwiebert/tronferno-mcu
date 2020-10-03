@@ -110,7 +110,7 @@ void IRAM_ATTR timer_handler(void) {
 }
 
 
-void  intTimer_setup(void) {
+void  app_timerISR_setup(void) {
   u32 ticks = F_CPU / TICK_FREQ_HZ;
   u16 flags = TIMER1_DIVIDE_BY_1 | TIMER1_ENABLE_TIMER | TIMER1_AUTO_LOAD;
 

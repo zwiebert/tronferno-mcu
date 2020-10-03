@@ -1,25 +1,24 @@
+/**
+ * \file      cli/cli_app.h
+ * \brief     Component to insert parameter handlers into cli framework
+ */
+
+
 #pragma once
 #include "cli/cli.h"
 
+extern const char cli_help_parmSend[]; ///< help text for CLI command
+extern const char cli_help_parmTimer[]; ///< help text for CLI command
+extern const char cli_help_parmConfig[]; ///< help text for CLI command
+extern const char cli_help_parmMcu[]; ///< help text for CLI command
+extern const char cli_help_parmPair[]; ///< help text for CLI command
+extern const char cli_help_parmShpref[]; ///< help text for CLI command
+extern const char cli_help_parmHelp[]; ///< help text for CLI command
 
-extern const char cli_help_parmSend[];
-extern const char cli_help_parmTimer[];
-extern const char cli_help_parmConfig[];
-extern const char cli_help_parmMcu[];
-extern const char cli_help_parmPair[];
-extern const char cli_help_parmShpref[];
-extern const char cli_help_parmHelp[];
-
-int process_parmSend(clpar p[], int len, const struct TargetDesc &td);
-int process_parmConfig(clpar p[], int len, const struct TargetDesc &td);
-int process_parmMcu(clpar p[], int len, const struct TargetDesc &td);
-int process_parmTimer(clpar p[], int len, const struct TargetDesc &td);
-int process_parmHelp(clpar p[], int len, const struct TargetDesc &td);
-int process_parmPair(clpar p[], int len, const struct TargetDesc &td);
-int process_parmShpref(clpar p[], int len, const struct TargetDesc &td);
-
-
-
+/// \brief provide a pointer to MCU restart function here
 extern void (*mcu_restart_cb)();
 
+/**
+ * \brief setup this component
+ */
 void cliApp_setup();

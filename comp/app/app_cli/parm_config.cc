@@ -1,6 +1,6 @@
 #include "app/config/proj_app_cfg.h"
 
-#include "app/cli/cli_config.h"
+#include "cli_config.h"
 #include "app/opt_map.hh"
 #include <string.h>
 
@@ -24,7 +24,7 @@
 #endif
 #include "fernotron/astro.h"
 #include <fernotron/trx/fer_trx_c_api.h>
-#include "app/cli/fernotron.h"
+
 #include "app/common.h"
 #include "misc/int_types.h"
 #include "gpio/pin.h"

@@ -1,17 +1,16 @@
-/*
- * timer.h
- *
- *  Created on: 27.02.2020
- *      Author: bertw
+/**
+ * \file     app/timer.h
+ * \brief    timer ISR to call transmit and receive functions for RF transceiver
  */
 
 #pragma once
 
 #include <stdint.h>
 
-void intTimer_setup(void);
+/// start timer ISR
+void app_timerISR_setup(void);
 
 #ifndef USE_ESP_GET_TIME
-extern "C++" volatile uint32_t run_time_ts_, run_time_s_;
+volatile uint32_t run_time_ts_, run_time_s_;
 #endif
 

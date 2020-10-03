@@ -12,11 +12,11 @@
 #include <stdbool.h>
 
 struct sf {
-  fer_sbT fsb;
-  uint32_t s10; // time in tenth of secs
-  fer_msg_type mt : 3;
-  int16_t repeats : 4;
-  int16_t sent_ct : 5;
+  fer_sbT fsb; ///< message data
+  uint32_t when_to_transmit_ts; ///< run-time (in s/10) when the messages should be sent
+  fer_msg_type mt : 3; ///< type/kind of message.
+  int16_t repeats : 4; ///< message should be transmitted  (1 + REPEATS) times
+  int16_t sent_ct : 5; ///< counter, how often the message has been transmitted already
 };
 
 

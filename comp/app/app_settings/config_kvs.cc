@@ -6,8 +6,6 @@
  */
 
 #include "app/config/proj_app_cfg.h"
-
-#include "app/cli/fernotron.h"
 #include "fernotron/fer_main.h"
 #include "app/settings/config.h"
 #include "config_kvs.h"

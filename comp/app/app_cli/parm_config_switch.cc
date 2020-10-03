@@ -1,7 +1,7 @@
 #include "app/config/proj_app_cfg.h"
 #include "config_kvs/config.h"
 #include "cli_imp.h"
-#include "app/cli/cli_config.h"
+#include "cli_config.h"
 #include "cli/cli.h"
 #include "net/mqtt/mqtt.h"
 #include "net/http/server/http_server.h"
@@ -10,6 +10,8 @@
 #include "misc/int_types.h"
 #include <net/ethernet.h>
 #include <string.h>
+#include <algorithm>
+#include <iterator>
 
 #define isValid_optStr(cfg, new) true
 #define set_optStr(v, cb) if (config_save_item_s(cb, v)) has_changed(cb)
@@ -51,14 +53,9 @@ bool process_parmKvsConfig(const struct TargetDesc &td, so_msg_t so_key, const c
 #ifdef USE_LAN
   case SO_CFG_LAN_PHY: {
     NODEFAULT();
-    bool success = false;
-    u8 i;
-    for (i = 0; i < lanPhyLEN; ++i) {
-      if (strcasecmp(val, cfg_args_lanPhy[i]) == 0) {
-        set_optN(i8, i, CB_LAN_PHY);
-        success = true;
-        break;
-      }
+    if (auto it = std::find(std::begin(cfg_args_lanPhy), std::end(cfg_args_lanPhy), val); it != std::end(cfg_args_lanPhy)) {
+      int idx = std::distance(std::begin(cfg_args_lanPhy), it);
+      set_optN(i8, idx, CB_LAN_PHY);
     }
   }
     break;

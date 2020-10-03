@@ -23,7 +23,6 @@ set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
-
 add_compile_definitions(MCU_ESP32)
 if(DEFINED ENV{DISTRO})
 add_compile_definitions(DISTRIBUTION)
@@ -31,7 +30,6 @@ endif()
 if(DEFINED ENV{FLAVOR_LAN})
 add_compile_definitions(FLAVOR_LAN)
 endif()
-
 
 function(component_compile_features)
     target_compile_features(${COMPONENT_LIB} PRIVATE ${ARGV})

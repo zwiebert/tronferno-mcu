@@ -34,6 +34,7 @@
 #include "uout/callbacks.h"
 #include "../app_private.h"
 #include "fernotron/types.h"
+#include "app/loop.h"
 
 #ifdef FER_TRANSMITTER
 
@@ -47,13 +48,16 @@ void tmr_setBit_txLoop_start(u32 interval_ms) {
   }
 }
 
-void loop_setBit_txLoop(u32 time_ts) {
+void loop_setBit_txLoop(u32 when_to_transmit_ts) {
   u32 now_ts = get_now_time_ts();
-  if (now_ts >= time_ts) {
+  if (now_ts >= when_to_transmit_ts) {
     lf_setBit(lf_loopFerTx);
     return;
   }
-  u32 delay_ms = (time_ts - now_ts) * 100;
+
+  // message sent time lies in future
+
+  u32 delay_ms = (when_to_transmit_ts - now_ts) * 100;
   tmr_setBit_txLoop_start(delay_ms);
 }
 #endif
@@ -218,7 +222,7 @@ void mcu_init() {
   if (network != nwWlanAp)
     tmr_checkNetwork_start();
 #endif
-  intTimer_setup();
+  app_timerISR_setup();
   stor_setup();
   main_setup();
 

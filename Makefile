@@ -128,7 +128,7 @@ test.cm.ctest: test.cm.build
 	$(cm_build) test
 	
 test.cm.ctest.current: test.cm.build
-	(cd  $(HOST_TEST_BUILD_PATH) && ctest --verbose -R "fernotron_trx.test_send")
+	(cd  $(HOST_TEST_BUILD_PATH) && ctest -VV -R "fernotron_trx.test_send")
 
 
 host-test-all:
@@ -137,45 +137,47 @@ host-test-all:
 
 ############# Doxygen ###################
 DOXY_BUILD_PATH=$(THIS_ROOT)/build/doxy
-DOXY_INPUT_FILE =  /tmp/doxy_input # $(HOST_TEST_BUILD_PATH)/doxy_input_file.txt
-DOXY_CONFIG_FILES = ./Doxyfile $(DOXY_INPUT_FILE)
-DOXY_CONFIG_FILE = /tmp/Doxyfile
 
-.PHONY: doxy-build doxy-view doxy.cm.configure doxy.cm.build
+.PHONY: FORCE
+.PHONY: doxy-usr-view  doxy-dev-view  doxy-api-view
+.PHONY: doxy-usr-build doxy-dev-build doxy-api-build 
 
-/tmp/doxy_input: FORCE
+$(DOXY_BUILD_PATH)/%/html/index.html: /tmp/doxy_%_file 
+	mkdir -p $(dir $@)
+	doxygen $^
+	
+
+doxy-usr-build: $(DOXY_BUILD_PATH)/usr/html/index.html FORCE
+doxy-usr-view: doxy-usr-build
+	xdg-open $(DOXY_BUILD_PATH)/usr/html/index.html
+
+doxy-dev-build: $(DOXY_BUILD_PATH)/dev/html/index.html FORCE
+doxy-dev-view: doxy-dev-build
+	xdg-open $(DOXY_BUILD_PATH)/dev/html/index.html
+	
+doxy-api-build: $(DOXY_BUILD_PATH)/api/html/index.html FORCE
+doxy-api-view: doxy-api-build
+	xdg-open $(DOXY_BUILD_PATH)/api/html/index.html
+
+
+/tmp/doxy_%_file: ./Doxyfile_% /tmp/doxy_input_%
+	cat $^ > $@
+
+/tmp/doxy_input_dev: FORCE
 	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
 	cd comp/external/components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/comp/external/components-mcu/~" >> $@
+/tmp/doxy_input_api: FORCE
+	git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
+	cd comp/external/components-mcu && git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~INPUT += $(THIS_ROOT)/comp/external/components-mcu/~" >> $@
+
+/tmp/doxy_input_usr: FORCE
+	echo "" > $@
 	
-$(HOST_TEST_BUILD_PATH)/doxy_input_file.txt:  test.cm.configure
-
-$(DOXY_CONFIG_FILE): $(DOXY_INPUT_FILE)
-	cat $(DOXY_CONFIG_FILES) >$(DOXY_CONFIG_FILE)
-
-doxy-build: $(DOXY_CONFIG_FILE)
-	doxygen $(DOXY_CONFIG_FILE)
+doxy-%-view: doxy-%-build FORCE
+	xdg-open $(DOXY_BUILD_PATH)/$*/html/index.html
 	
-doxy-view: doxy-build
-	xdg-open $(DOXY_BUILD_PATH)/html/index.html
 	
-
-doxy.cm.configure:
-	rm -fr $(DOXY_BUILD_PATH)
-	mkdir -p $(DOXY_BUILD_PATH)
-	cat $(DOXY_CONFIG_FILES) >$(DOXY_CONFIG_FILE)
-	cmake -B $(DOXY_BUILD_PATH) -D BUILD_DOXY=ON -D DOXY_CONFIG=$(DOXY_CONFIG_FILE)  -S $(realpath .)
-
-doxy_cm_build := make -C $(HOST_TEST_BUILD_PATH) -k -j  -s --no-print-dir $(make_verbose_opts)
-#doxy_cm_build := (cd $(HOST_TEST_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
-
-	
-doxy.cm.build:
-	$(doxy_cm_build)
-
-doxy.cm.ctest: test.cm.build
-	$(doxy_cm_build) test
-
-
+FORCE:
 
 ############# TCP Terminal ##############
 IPADDR ?= 192.168.1.65

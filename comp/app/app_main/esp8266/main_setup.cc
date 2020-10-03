@@ -20,7 +20,7 @@
 
 #include "main.h"
 
-extern void intTimer_setup(void);
+extern void app_timerISR_setup(void);
 extern void setup_serial(u32 baudrate);
 extern void setup_notImplemented(void);
 void task_setup(void);
@@ -53,7 +53,7 @@ void user_init() {
  // setup_udp();
   main_setup();
   task_setup();
-  intTimer_setup();
+  app_timerISR_setup();
 
   kvshT h;
   if ((h = kvs_open("misc", kvs_READ_WRITE))) {
