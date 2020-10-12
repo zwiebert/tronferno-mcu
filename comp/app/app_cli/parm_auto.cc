@@ -186,10 +186,10 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
   if (is_timer_frame) {
     if (f_disableManu || f_enableManu) {
-      manual_bits.putBit(parm_g, parm_m, f_enableManu);
+      manual_bits.putMember(parm_g, parm_m, f_enableManu);
       fer_stor_gmSet_save("MANU", manual_bits, 1);
     }
-    f_manual = manual_bits.getBit(parm_g, parm_m);
+    f_manual = manual_bits.getMember(parm_g, parm_m);
   }
 
   bool need_reload_td,
@@ -279,7 +279,7 @@ static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard) 
     soMsg_timer_begin(td, so_arg_gm_t { g, m });
 
     {
-      bool f_manual = manual_bits.getBit(g, m);
+      bool f_manual = manual_bits.getMember(g, m);
       char flags[10], *p = flags;
       *p++ = f_manual ? 'M' : 'm';
       *p++ = tdr.getRandom() ? 'R' : 'r';

@@ -317,8 +317,8 @@ void soMsg_pos_print_mmp(const struct TargetDesc &td, const so_arg_mmp_t a) {
   if (so_cco) {
     char buf[64];
     if (int n = snprintf(buf, sizeof buf, "U:position: p=%d mm=%02x,%02x,%02x,%02x,%02x,%02x,%02x,%02x;\n", a.p,
-        a.mm->getByte(0), a.mm->getByte(1), a.mm->getByte(2), a.mm->getByte(3),
-        a.mm->getByte(4), a.mm->getByte(5), a.mm->getByte(6), a.mm->getByte(7)
+        a.mm->getGroup(0), a.mm->getGroup(1), a.mm->getGroup(2), a.mm->getGroup(3),
+        a.mm->getGroup(4), a.mm->getGroup(5), a.mm->getGroup(6), a.mm->getGroup(7)
         ); n > 0 && n < sizeof buf) {
       td.write(buf, n);
     }

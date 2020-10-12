@@ -1,3 +1,7 @@
+/**
+ * \file     fernotron/auto/fau_tdata_store.h
+ * \brief    Persistent timer data storage
+ */
 /*
  * timer_data.h
  *
@@ -9,17 +13,36 @@
 #include "fernotron/trx/timer_data.h"
 #include "app/config/proj_app_cfg.h"
 
-
+/**
+ * \brief      Called if stored timer data has been modified.
+ *
+ *             It will not tell you which timer has been changed.  It may be just one of them or even all of them.
+ */
 extern void (*fer_au_TIMER_DATA_CHANGE_cb)(void);
 
-// save and read timer data on flash memory
-// group  0...7
-// member 0...7
-// wildcard  if true, find the best matching data. may return timer g=1 m=0 data on a search for g=1 m=1
-//
-// when saving data with group=0 or menber=0, all matching old data will be deleted. So g=0 m=0 will delete all other data, because it addresses all receivers
-bool fer_stor_timerData_save(Fer_TimerData *p, uint8_t group, uint8_t member);
-bool fer_stor_timerData_load(Fer_TimerData *p, uint8_t *group, uint8_t *member, bool wildcard);
+/**
+ * \brief         Store timer data
+ * \param p       Timer data object
+ * \param g,m     Group/Member to which the timer data is attached to.  Wild-cards allowed.  All overshadowed timers will then be removed. (e.g. g0,m0 will erase all existing timers)
+ * \return        true on success
+ */
+bool fer_stor_timerData_save(Fer_TimerData *p, uint8_t g, uint8_t m);
+
+/**
+ * \brief              Load timer data
+ * \param p            Timer data object
+ * \param[in,out] g,m  Pointer to Group/Member to match. Return the g,m the timer is attached to.
+ * \param wildcard     If true, return the best matching timer (a stored g1,m0 will match a g1,m2 parameter).  If false return only an exact match.
+ * \return             true on success
+ */
+bool fer_stor_timerData_load(Fer_TimerData *p, uint8_t *g, uint8_t *m, bool wildcard);
+
+
+/**
+ * \brief              Erase one or more timers
+ * \param g,m          Group/members. Each one can be 0, which will match any. (e.g. g0,m0 will erase all stored timers).
+ * \return             true on success
+ */
 bool fer_stor_timerData_erase(u8 g, u8 m);
 
 
