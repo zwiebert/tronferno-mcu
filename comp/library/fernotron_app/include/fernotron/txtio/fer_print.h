@@ -1,3 +1,7 @@
+/**
+ * \file     fernotron/txtio/fer_print.h
+ * \brief    Print raw message as formatted text to standard output (for debug purposes).
+ */
 /*
  * fer_print.h
  *

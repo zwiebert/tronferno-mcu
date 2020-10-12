@@ -1,3 +1,7 @@
+/**
+ * \file    fernotron/types.h
+ * \brief   XXX
+ */
 /*
  * types.h
  *

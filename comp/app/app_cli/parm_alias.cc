@@ -43,7 +43,8 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
 
   u32 addr = 0;
   const char *addr_as_string = "";
-  u8 g = 0, m = 0, c = 0;
+  u8 g = 0, m = 0;
+  fer_alias_cmds c = PC_none;
   Fer_GmBitMask mm ;
   bool has_mm = false;
   bool pair = false, unpair = false, read = false, read_all = false,  scan = false, store = false;

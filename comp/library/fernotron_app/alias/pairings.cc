@@ -24,7 +24,8 @@ void (*fer_alias_enable_disable_cb)(bool enable);
 
 static bool pras_active;
 static time_t end_time;
-static u8 pras_g, pras_m, pras_c;
+static u8 pras_g, pras_m;
+static fer_alias_cmds pras_c;
 static const struct TargetDesc *my_td;
 
 static inline void fer_alias_ENABLE_cb() {
@@ -36,7 +37,7 @@ static inline void fer_alias_DISABLE_cb() {
     fer_alias_enable_disable_cb(false);
 }
 
-bool  fer_alias_auto_set(const struct TargetDesc &td, u8 g, u8 m, u8 c, u16 id, unsigned timeout_secs) {
+bool  fer_alias_auto_set(const struct TargetDesc &td, u8 g, u8 m, fer_alias_cmds c, u16 id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
   my_td = &td;

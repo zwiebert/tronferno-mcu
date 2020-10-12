@@ -1,3 +1,8 @@
+/**
+ * \file     fernotron/gm_bitmas.hh
+ * \brief    Provide set of groups/members with iterator
+ */
+
 #pragma once
 
 #include <misc/int_macros.h>
@@ -10,10 +15,21 @@
 typedef uint8_t gmBitMaskT[8];
 typedef uint8_t gT, mT;
 
+
+/**
+ * \brief          Load COUNT bitmasks from storage NAME and store them to GM
+ * \param name     File name of bitmask storage
+ * \param[out] gm  Destination pointer or array
+ * \param count    Number of bitmaps to read from file
+ * \return         true for success
+ */
 bool fer_stor_gmBitMask_load(const char *name, const gmBitMaskT *gm, int count);
 
 using gm_pairT = std::pair<gT, mT>;
 
+/**
+ * \brief Iterator to iterate over all 1-bits of a bit-mask
+ */
 class Fer_GmIterator {
 
 public:
@@ -52,6 +68,9 @@ private:
   const bool mSkipGroups :1;
 };
 
+/**
+ * \brief    Set of groups and/or members
+ */
 class Fer_GmBitMask {
 
 public:
