@@ -11,6 +11,7 @@
 #include "app/uout/status_output.h"
 #include <app/uout/so_msg.h>
 #include "fernotron/auto/fau_tevent.h"
+#include "fernotron/auto/fau_tdata_store.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/bcd.h"
 #include "app/rtc.h"
@@ -115,7 +116,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
         u8 g = val[0] - '0';
         u8 m = val[1] - '0';
         Fer_TimerMinutes tmi;
-        if (fer_au_get_timer_minutes_now(&tmi, &g, &m, true)) {
+        if (Fer_TimerData tid; fer_stor_timerData_load(&tid, &g, &m, true) && fer_au_get_timer_minutes_from_timer_data_tm(&tmi, &tid)) {
           soMsg_astro_minutes_print(td, tmi.minutes[FER_MINTS_ASTRO]);
         }
       }

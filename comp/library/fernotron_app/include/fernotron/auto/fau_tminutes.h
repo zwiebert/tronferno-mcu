@@ -61,20 +61,10 @@ fer_au_minutesT fer_au_mintsFromTime(const time_t *timer);
  * \brief        Convert Fer_TimerData object to Fer_TimerMinutes object for the given point of time.
  * \param timi   Caller provided memory where the created object will be stored
  * \param tdp    Data to convert from
- * \param tm     The point of time.  This determines which will be the next event.
+ * \param tm     The point of time.  This determines which will be the next event.  NULL for current time.
  * \return       false if an error occurred (will never happen)  XXX
  */
-bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const Fer_TimerData *tdp, const struct tm *tm);
-
-/**
- * \brief           Convert stored timer data directly to Fer_TimerMinutes.
- * \param result    Caller provided memory where the created object will be stored
- * \param g,m       Which timer data to load
- * \param wildcard
- */
-bool fer_au_get_timer_minutes_now(Fer_TimerMinutes *result, uint8_t *group, uint8_t *member, bool wildcard);
-bool fer_au_get_timer_minutes_tim(Fer_TimerMinutes *result, uint8_t *group, uint8_t *member, bool wildcard, const time_t *now_time);
-bool fer_au_get_timer_minutes_tm(Fer_TimerMinutes *result, uint8_t *group, uint8_t *member, bool wildcard, const struct tm *tm);
+bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const Fer_TimerData *tdp, const struct tm *tm = NULL);
 
 // find earliest event in Fer_TimerMinutes
 fer_au_minutesT fer_au_get_earliest_from_timer_minutes(Fer_TimerMinutes *timi, fer_au_minutesT now);

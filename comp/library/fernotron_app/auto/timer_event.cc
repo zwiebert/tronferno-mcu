@@ -68,23 +68,28 @@ void fer_am_loop(void) {
 }
 
 static int set_earliest(u8 g, u8 m, fer_au_minutesT *earliest, const struct tm *tm_now, fer_au_minutesT minutes_now, Fer_GmSet *gm) {
-  int result = 0;
+  Fer_TimerData td;
+  if (!fer_stor_timerData_load(&td, &g, &m, false))
+    return 0;
 
   Fer_TimerMinutes timi;
-  if (fer_au_get_timer_minutes_tm(&timi, &g, &m, false, tm_now)) {
+  if (!fer_au_get_timer_minutes_from_timer_data_tm(&timi, &td, tm_now))
+    return 0;
+
     fer_au_minutesT temp = fer_au_get_earliest_from_timer_minutes(&timi, minutes_now);
     if (temp == MINUTES_DISABLED)
-      result = 0;
-    else if (temp == *earliest)
-      result = 1;
-    else if (temp < *earliest) {
+      return 0;
+
+    if (temp == *earliest)
+      return 1;
+
+    if (temp < *earliest) {
       *earliest = temp;
       gm->clear();
-      result = 2;
+      return 2;
     }
-  }
 
-  return result;
+  return 0;
 }
 
 
@@ -149,10 +154,13 @@ bool fer_am_get_next_timer_event(Fer_TimerEvent *evt, const time_t *now_time) {
     if (manual_bits.getMember(g, m))
       continue;
 
+
     Fer_TimerMinutes timi;
     u8 g2 = g, m2 = m;
-    if (!fer_au_get_timer_minutes_tm(&timi, &g2, &m2, true, &tm_now))
+    Fer_TimerData td;
+    if (!(fer_stor_timerData_load(&td, &g2, &m2, true) && fer_au_get_timer_minutes_from_timer_data_tm(&timi, &td, &tm_now))) {
       continue; // should not happen
+    }
 
     fer_au_minutesT temp = fer_au_get_earliest_from_timer_minutes(&timi, minutes_now);
     if (temp <= earliest) {

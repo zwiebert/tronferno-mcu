@@ -9,6 +9,7 @@
 #include "app/settings/config.h"
 
 #include "fernotron/auto/fau_tminutes.h"
+#include "fernotron/auto/fau_tdata_store.h"
 #include <fernotron/types.h>
 #include "net/ipnet.h"
 #include "txtio/inout.h"
@@ -35,7 +36,7 @@ void print_timer_event_minute(const char *label, fer_au_minutesT mins) {
 
 void  so_print_timer_event_minutes(u8 g, u8 m) {
   Fer_TimerMinutes tm;
-  if (fer_au_get_timer_minutes_now(&tm, &g, &m, true)) {
+  if (Fer_TimerData tid; fer_stor_timerData_load(&tid, &g, &m, true) && fer_au_get_timer_minutes_from_timer_data_tm(&tm, &tid)) {
     print_timer_event_minute("astro-down", tm.minutes[0]);
     print_timer_event_minute("daily-up", tm.minutes[1]);
     print_timer_event_minute("daily-down", tm.minutes[2]);

@@ -48,6 +48,11 @@ bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const F
 
   precond(timi && tdp);
 
+  if (!tm) {
+    const time_t now = time(NULL);
+    tm = localtime(&now);
+  }
+
   const char *p = 0;
   int i;
 
@@ -105,30 +110,6 @@ bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const F
   postcond(timi->minutes[FER_MINTS_ASTRO] == MINUTES_DISABLED || timi->minutes[FER_MINTS_ASTRO] < MINT_PER_DAY);
 
   return true;
-}
-
-bool fer_au_get_timer_minutes_tm(Fer_TimerMinutes *timi, u8 *group, u8 *member, bool wildcard, const struct tm *tm) {
-
-  precond(timi && group && member);
-
-  Fer_TimerData td;
-  if (fer_stor_timerData_load(&td, group, member, wildcard)) {
-    return fer_au_get_timer_minutes_from_timer_data_tm(timi, &td, tm);
-  }
-
-  return false;
-}
-
-bool 
-fer_au_get_timer_minutes_tim(Fer_TimerMinutes *timi, u8 *group, u8 *member, bool wildcard, const time_t *now_time) {
-  struct tm *tm = localtime(now_time);
-  return fer_au_get_timer_minutes_tm(timi, group, member, wildcard, tm);
-}
-
-bool
-fer_au_get_timer_minutes_now(Fer_TimerMinutes *timi, u8 *group, u8 *member, bool wildcard) {
-  time_t now_time = time(NULL);
-  return fer_au_get_timer_minutes_tim(timi, group, member, wildcard, &now_time);
 }
 
 fer_au_minutesT

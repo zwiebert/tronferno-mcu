@@ -303,7 +303,7 @@ static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard) 
       soMsg_kv(td, "astro", tdr.getAstro());
 
       Fer_TimerMinutes tmi;
-      fer_au_get_timer_minutes_now(&tmi, &g_res, &m_res, false);
+      fer_au_get_timer_minutes_from_timer_data_tm(&tmi, &tdr);
       soMsg_kv(td, "asmin", tmi.minutes[FER_MINTS_ASTRO]);
     }
 
