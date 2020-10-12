@@ -33,7 +33,7 @@ bool fer_alias_controller(uint32_t controller, uint8_t g, uint8_t m, bool unpair
  * \param gm            Pair for each bit set to 1. Un-pair for each bit set to 0.
  * \return              true on success
  */
-bool fer_alias_setControllerPairings(uint32_t controller, Fer_GmBitMask *gm);
+bool fer_alias_setControllerPairings(uint32_t controller, Fer_GmSet *gm);
 
 /**
  * \brief               Get current pairings for CONTROLLER
@@ -41,7 +41,7 @@ bool fer_alias_setControllerPairings(uint32_t controller, Fer_GmBitMask *gm);
  * \param[out] gm       Set bit for each paired g/m.
  * \return              true on success
  */
-bool fer_alias_getControllerPairings(uint32_t controller, /*out*/ Fer_GmBitMask *gm);
+bool fer_alias_getControllerPairings(uint32_t controller, /*out*/ Fer_GmSet *gm);
 
 /**
  * \brief               Delete any data we have stored about CONTROLLER. All pairings will be lost.

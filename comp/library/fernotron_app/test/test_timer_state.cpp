@@ -49,7 +49,7 @@ static void test_timer_event4() {
   fer_am_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(20,54), tevt.next_event); // astro time
-  Fer_GmBitMask test1;
+  Fer_GmSet test1;
   test1[1] = C.fer_usedMemberMask[1]&0x02;
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
@@ -81,7 +81,7 @@ static void test_timer_event3() {
   fer_am_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(6,54), tevt.next_event);
-  Fer_GmBitMask test1;
+  Fer_GmSet test1;
   test1[1] = C.fer_usedMemberMask[1]&0x02;
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskUp(&tevt), 8);
 
@@ -113,7 +113,7 @@ static void test_timer_event2() {
   fer_am_get_next_timer_event(&tevt, &now_time);
 
   TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
-  Fer_GmBitMask test1;
+  Fer_GmSet test1;
   test1[1] = C.fer_usedMemberMask[1]&0xfc;
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
@@ -364,7 +364,7 @@ TEST_CASE("timer next event", "[fernotron/auto]") {
 
 #ifdef TEST_HOST
 #include "app/settings/config.h"
-//Fer_GmBitMask manual_bits;
+//Fer_GmSet manual_bits;
 //config C;
 
 static struct cfg_astro cfg_astro =

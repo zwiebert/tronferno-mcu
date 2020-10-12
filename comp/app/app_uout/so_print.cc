@@ -44,30 +44,30 @@ void  so_print_timer_event_minutes(u8 g, u8 m) {
   }
 }
 
-void  so_print_gmbitmask(Fer_GmBitMask *mm) {
+void  so_print_gmbitmask(Fer_GmSet *mm) {
   u8 g;
 
   for (g = 0; g < 8; ++g) {
-    io_putx8(mm->getByte(g));
+    io_putx8(mm->getGroup(g));
     if (g < 7)
       io_putc(',');
   }
 }
 
-void so_gmbitmask_to_str(char *dst, Fer_GmBitMask *mm) {
+void so_gmbitmask_to_str(char *dst, Fer_GmSet *mm) {
   i8 g;
   bool leading_zeros = true;
 
   for (g = 7; g >= 0; --g) {
-    if (leading_zeros && mm->getByte(g) == 0)
+    if (leading_zeros && mm->getGroup(g) == 0)
       continue; // no leading zeros
     leading_zeros = false;
 
-    if (mm->getByte(g) & 0xf0) {
-      itoa(mm->getByte(g), dst, 16);
+    if (mm->getGroup(g) & 0xf0) {
+      itoa(mm->getGroup(g), dst, 16);
     } else {
       *dst++ = '0';
-      itoa(mm->getByte(g), dst, 16);
+      itoa(mm->getGroup(g), dst, 16);
     }
     dst = dst + strlen(dst);
   }

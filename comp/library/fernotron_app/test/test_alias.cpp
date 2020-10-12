@@ -14,10 +14,10 @@
 #include <string.h>
 
 #define A 0x101234
-static Fer_GmBitMask gm, gme;
-const Fer_GmBitMask gmz;
+static Fer_GmSet gm, gme;
+const Fer_GmSet gmz;
 static bool succ;
-#define SIZE_GM sizeof (Fer_GmBitMask)
+#define SIZE_GM sizeof (Fer_GmSet)
 
 
 static int fer_alias_and_read_back(unsigned a, uint8_t g, uint8_t m, bool unpair) {
@@ -26,7 +26,7 @@ static int fer_alias_and_read_back(unsigned a, uint8_t g, uint8_t m, bool unpair
   if (!fer_alias_getControllerPairings(a, &gm))
     return -2;
 
-  gme.putBit(g, m, !unpair);
+  gme.putMember(g, m, !unpair);
   return 0;
 }
 

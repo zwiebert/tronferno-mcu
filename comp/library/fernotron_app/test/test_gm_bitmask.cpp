@@ -13,7 +13,7 @@
 
 #include <string.h>
 #include "misc/int_types.h"
-#include "fernotron/gm_bitmask.hh"
+#include "fernotron/gm_set.hh"
 
 
 #pragma GCC push_options
@@ -22,11 +22,11 @@
 static void test_gm_bitmask_iterator() {
 
   {
-    Fer_GmBitMask gmm;
-    gmm.setBit(0, 0);
-    gmm.setBit(1, 4);
-    gmm.setBit(2, 6);
-    gmm.setBit(7, 7);
+    Fer_GmSet gmm;
+    gmm.setMember(0, 0);
+    gmm.setMember(1, 4);
+    gmm.setMember(2, 6);
+    gmm.setMember(7, 7);
 
     auto it = gmm.begin();
 
@@ -52,9 +52,9 @@ static void test_gm_bitmask_iterator() {
   }
 
   {
-    Fer_GmBitMask gmm;
-    gmm.setBit(1, 4);
-    gmm.setBit(2, 6);
+    Fer_GmSet gmm;
+    gmm.setMember(1, 4);
+    gmm.setMember(2, 6);
 
     auto it = gmm.begin();
 
@@ -70,7 +70,7 @@ static void test_gm_bitmask_iterator() {
   }
 
   {
-    Fer_GmBitMask gmm;
+    Fer_GmSet gmm;
     for (auto it = gmm.begin(); it; ++it) {
       printf("g=%d, m=%d\n", it.getG(), it.getM());
       TEST_ASSERT_LESS_THAN(8, it.getG());

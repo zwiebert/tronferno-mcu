@@ -19,7 +19,7 @@ enum direction { DIRECTION_NONE=0, DIRECTION_UP=0x01, DIRECTION_DOWN=0x02, DIREC
 #define direction_isMove(dir) ((dir) & 0x07)
 
 struct Fer_Move {
-  Fer_GmBitMask mask;
+  Fer_GmSet mask;
   uint32_t start_time;
   enum direction dir;
 };

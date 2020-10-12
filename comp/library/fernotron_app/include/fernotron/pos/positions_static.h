@@ -19,7 +19,7 @@ typedef uint8_t fer_shutterGroupPositionsT[8];
 
 // keep track of static positions
 int fer_statPos_setPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct);
-int fer_statPos_setPcts(Fer_GmBitMask *mm, uint8_t pct);
+int fer_statPos_setPcts(Fer_GmSet *mm, uint8_t pct);
 int fer_statPos_getPct(uint32_t a, uint8_t g, uint8_t m);
 
 int fer_statPos_printAllPcts(const struct TargetDesc &td);

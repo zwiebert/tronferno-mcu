@@ -33,7 +33,7 @@ bool fer_cmd_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
     return false;
 
   if (is_cu && m == 0) {
-    Fer_GmBitMask gm;
+    Fer_GmSet gm;
     gm[g] = 0xfe;
     return fer_if_cmd_moveShuttersToPct(a, &gm, pct, repeats);
   }
@@ -75,7 +75,7 @@ bool fer_cmd_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct, u8 repeats) {
   return true;
 }
 
-bool   fer_if_cmd_moveShuttersToPct(u32 a, Fer_GmBitMask *gm, u8 pct, u8 repeats) {
+bool   fer_if_cmd_moveShuttersToPct(u32 a, Fer_GmSet *gm, u8 pct, u8 repeats) {
   u8 g, m;
 
   for (g=1; g <= GRP_MAX; ++g) {
@@ -83,7 +83,7 @@ bool   fer_if_cmd_moveShuttersToPct(u32 a, Fer_GmBitMask *gm, u8 pct, u8 repeats
     for (m=1; m <= MBR_MAX; ++m) {
       if (m > um)
         break;
-      if (!gm->getBit(g, m))
+      if (!gm->getMember(g, m))
         continue;
 
       if (!fer_cmd_moveShutterToPct(a, g, m, pct, 0)) {

@@ -20,7 +20,7 @@
 #include <string.h>
 
 struct fer_configT fer_config;
-Fer_GmBitMask manual_bits;
+Fer_GmSet manual_bits;
 
 
 static class FerTrx final : public Fer_Trx_API {
@@ -104,7 +104,7 @@ uint32_t fer_main_getSenderByAddress(long addr) {
 
 void fer_main_setup(const fer_configT &ferConfig, const bool reinit) {
    fer_config = ferConfig;
-   manual_bits = Fer_GmBitMask("MANU");
+   manual_bits = Fer_GmSet("MANU");
    if (reinit)
      return;
 

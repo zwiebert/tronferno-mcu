@@ -1,5 +1,5 @@
 /**
- * \file     fernotron/gm_bitmas.hh
+ * \file     fernotron/gm_set.hh
  * \brief    Provide set of groups/members with iterator
  */
 
@@ -12,42 +12,42 @@
 #include <misc/int_types.h>
 
 
-typedef uint8_t gmBitMaskT[8];
+typedef uint8_t gmSetT[8];
 typedef uint8_t gT, mT;
 
 
 /**
- * \brief          Load COUNT bitmasks from storage NAME and store them to GM
- * \param name     File name of bitmask storage
- * \param[out] gm  Destination pointer or array
- * \param count    Number of bitmaps to read from file
+ * \brief          Load one or more Fer_GmSet from persistent storage.
+ * \param name     File name of storage
+ * \param[out] gm  Destination pointer to an array of capacity of at least COUNT
+ * \param count    Number of sets to read from file
  * \return         true for success
  */
-bool fer_stor_gmBitMask_load(const char *name, const gmBitMaskT *gm, int count);
+bool fer_stor_gmSet_load(const char *name, const gmSetT *gm, int count);
 
 using gm_pairT = std::pair<gT, mT>;
 
 /**
- * \brief Iterator to iterate over all 1-bits of a bit-mask
+ * \brief Iterator to iterate over all set groups/members in a set
  */
-class Fer_GmIterator {
+class Fer_GmSet_Iterator {
 
 public:
-  Fer_GmIterator(gT g = 0, mT m = 0, bool skip_groups = false) :
+  Fer_GmSet_Iterator(gT g = 0, mT m = 0, bool skip_groups = false) :
       mGm(0x3f & ((g << 3) | m)), mSkipGroups(skip_groups) {
   }
 
 public:
-  bool operator==(const Fer_GmIterator &rhs) const {
+  bool operator==(const Fer_GmSet_Iterator &rhs) const {
     return mGm == rhs.mGm;
   }
-  bool operator!=(const Fer_GmIterator &rhs) const {
+  bool operator!=(const Fer_GmSet_Iterator &rhs) const {
     return mGm != rhs.mGm;
   }
   operator bool() const {
     return 0 == (mGm & ~0x3f);
   }
-  Fer_GmIterator& operator++() {
+  Fer_GmSet_Iterator& operator++() {
     if ((mGm & ~0x3f) == 0) {
       ++mGm;
     }
@@ -71,22 +71,22 @@ private:
 /**
  * \brief    Set of groups and/or members
  */
-class Fer_GmBitMask {
+class Fer_GmSet {
 
 public:
-  Fer_GmBitMask() = default;
+  Fer_GmSet() = default;
 
-  explicit Fer_GmBitMask(gmBitMaskT bm) {
+  explicit Fer_GmSet(gmSetT bm) {
     if (bm)
       memcpy(mBm, bm, sizeof(mBm));
   }
 
-  explicit Fer_GmBitMask(const char *name) {
-    fer_stor_gmBitMask_load("MANU", &mBm, 1);
+  explicit Fer_GmSet(const char *name) {
+    fer_stor_gmSet_load("MANU", &mBm, 1);
   }
 
 public:
-  operator gmBitMaskT*() {
+  operator gmSetT*() {
     return &mBm;
   } //XXX
   uint8_t& operator[](int idx) {
@@ -95,29 +95,29 @@ public:
 
 public:
   void clear() {
-    memset(mBm, 0, sizeof(gmBitMaskT));
+    memset(mBm, 0, sizeof(gmSetT));
   }
-  uint8_t getByte(gT g) const {
+  uint8_t getGroup(gT g) const {
     return mBm[g];
   }
-  void setByte(gT g, uint8_t b) {
+  void setGroup(gT g, uint8_t b) {
     mBm[g] = b;
   }
-  bool getBit(gT g, mT m) const {
+  bool getMember(gT g, mT m) const {
     return GET_BIT(mBm[g], m);
   }
-  void putBit(gT g, mT m, bool val) {
+  void putMember(gT g, mT m, bool val) {
     PUT_BIT(mBm[g], m, val);
   }
-  void clearBit(gT g, mT m) {
+  void clearMember(gT g, mT m) {
     CLR_BIT(mBm[g], m);
   }
-  void setBit(gT g, mT m) {
+  void setMember(gT g, mT m) {
     SET_BIT(mBm[g], m);
   }
   bool isAllClear() const {
     for (int i = 0; i < 8; ++i)
-      if (getByte(i))
+      if (getGroup(i))
         return false;
     return true;
   }
@@ -127,37 +127,37 @@ public:
     for (g = 0; g < 8; ++g, (um >>= 4)) {
       u8 u = um & 0x07;
       for (m = 1; m <= u; ++m) {
-        setBit(g, m);
+        setMember(g, m);
       }
     }
   }
 
 public:
-  class iterator: public Fer_GmIterator {
-    Fer_GmBitMask *mPtr;
+  class iterator: public Fer_GmSet_Iterator {
+    Fer_GmSet *mPtr;
   public:
-    iterator(Fer_GmBitMask *bm, gT g = 0, mT m = 0) :
-        Fer_GmIterator(g, m), mPtr(bm) {
+    iterator(Fer_GmSet *bm, gT g = 0, mT m = 0) :
+        Fer_GmSet_Iterator(g, m), mPtr(bm) {
     }
     iterator& operator++() {
-      while (Fer_GmIterator::operator++()) {
-        if (mPtr->getBit(getG(), getM())) {
+      while (Fer_GmSet_Iterator::operator++()) {
+        if (mPtr->getMember(getG(), getM())) {
           break;
         }
       }
       return *this;
     }
-    Fer_GmBitMask* operator->() const {
+    Fer_GmSet* operator->() const {
       return mPtr;
     }
   };
 
   iterator begin(gT g = 0, mT m = 0) {
     auto it = iterator(this, g, m);
-    return it->getBit(0, 0) ? it : ++it;
+    return it->getMember(0, 0) ? it : ++it;
   }
 
 private:
-  gmBitMaskT mBm = { };
+  gmSetT mBm = { };
 };
 

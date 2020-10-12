@@ -67,7 +67,7 @@ void fer_am_loop(void) {
   fer_am_updateTimerEvent();
 }
 
-static int set_earliest(u8 g, u8 m, fer_au_minutesT *earliest, const struct tm *tm_now, fer_au_minutesT minutes_now, Fer_GmBitMask *gm) {
+static int set_earliest(u8 g, u8 m, fer_au_minutesT *earliest, const struct tm *tm_now, fer_au_minutesT minutes_now, Fer_GmSet *gm) {
   int result = 0;
 
   Fer_TimerMinutes timi;
@@ -88,7 +88,7 @@ static int set_earliest(u8 g, u8 m, fer_au_minutesT *earliest, const struct tm *
 }
 
 
-static bool fer_am_get_next_timer_event_earliest(Fer_GmBitMask *mask_result, fer_au_minutesT *earliest_result, const struct tm *tm_now, fer_au_minutesT minutes_now) {
+static bool fer_am_get_next_timer_event_earliest(Fer_GmSet *mask_result, fer_au_minutesT *earliest_result, const struct tm *tm_now, fer_au_minutesT minutes_now) {
   u8 g;
   fer_au_minutesT earliest = MINUTES_DISABLED;
   bool result = false;
@@ -107,11 +107,11 @@ static bool fer_am_get_next_timer_event_earliest(Fer_GmBitMask *mask_result, fer
 
   for (auto it = C.fer_usedMemberMask.begin(1); it; ++it) {
     u8 g = it.getG(), m = it.getM();
-    if (manual_bits.getBit(g, m))
+    if (manual_bits.getMember(g, m))
       continue;
 
     if (set_earliest(g, m, &earliest, tm_now, minutes_now, mask_result)) {
-      mask_result->setBit(g, m);
+      mask_result->setMember(g, m);
     }
   }
 
@@ -132,7 +132,7 @@ bool fer_am_get_next_timer_event(Fer_TimerEvent *evt, const time_t *now_time) {
   precond(evt);
 
   fer_au_minutesT earliest = MINUTES_DISABLED;
-  Fer_GmBitMask existing_members ;
+  Fer_GmSet existing_members ;
 
   *evt = (Fer_TimerEvent ) { .next_event = MINUTES_DISABLED, };
   struct tm tm_now;
@@ -146,7 +146,7 @@ bool fer_am_get_next_timer_event(Fer_TimerEvent *evt, const time_t *now_time) {
 
   for (auto it = C.fer_usedMemberMask.begin(); it; ++it) {
     u8 g = it.getG(), m = it.getM();
-    if (manual_bits.getBit(g, m))
+    if (manual_bits.getMember(g, m))
       continue;
 
     Fer_TimerMinutes timi;
@@ -158,11 +158,11 @@ bool fer_am_get_next_timer_event(Fer_TimerEvent *evt, const time_t *now_time) {
     if (temp <= earliest) {
 
       if (timi.minutes[FER_MINTS_DAILY_UP] == earliest || timi.minutes[FER_MINTS_WEEKLY_UP] == earliest) {
-        te_getMaskUp(evt)->setBit(g, m);
+        te_getMaskUp(evt)->setMember(g, m);
 
       }
       if (timi.minutes[FER_MINTS_ASTRO] == earliest || timi.minutes[FER_MINTS_DAILY_DOWN] == earliest || timi.minutes[FER_MINTS_WEEKLY_DOWN] == earliest) {
-        te_getMaskDown(evt)->setBit(g, m);
+        te_getMaskDown(evt)->setMember(g, m);
       }
     }
   }

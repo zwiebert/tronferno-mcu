@@ -76,10 +76,10 @@ int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts) {
 
   u16 duration_ts = now_ts - Fer_Move->start_time;
 
-  for (Fer_GmIterator it; it; ++it) {
+  for (Fer_GmSet_Iterator it; it; ++it) {
     const gT g = it.getG();
     const mT m = it.getM();
-    if (!Fer_Move->mask.getBit(g, m))
+    if (!Fer_Move->mask.getMember(g, m))
       continue;
 
     pct = fer_simPos_getPct_afterDuration(g, m, direction_isUp(Fer_Move->dir), duration_ts);
@@ -145,7 +145,7 @@ bool fer_pos_shouldMove_sunDown(u8 g, u8 m) {
   if (pct_curr <= pct_sun)
     return false;
 
-  if (manual_bits.getBit(g, m))
+  if (manual_bits.getMember(g, m))
     return false;
 
   Fer_TimerData td = { };
@@ -200,7 +200,7 @@ int fer_simPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
 
   struct Fer_Move *Fer_Move;
   for (Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {
-    if (Fer_Move->mask.getBit(g, m)) {
+    if (Fer_Move->mask.getMember(g, m)) {
       u16 duration_ts = now_ts - Fer_Move->start_time;
       u8 pct = fer_simPos_getPct_afterDuration(g, m, direction_isUp(Fer_Move->dir), duration_ts);
       return pct;

@@ -36,7 +36,7 @@ struct filter {
   enum direction dir;
 };
 
-static int fer_pos_filter_mm(Fer_GmBitMask *mm, struct filter *filter) {
+static int fer_pos_filter_mm(Fer_GmSet *mm, struct filter *filter) {
 
   int remaining = 0;
 
@@ -56,7 +56,7 @@ static int fer_pos_filter_mm(Fer_GmBitMask *mm, struct filter *filter) {
     ++remaining;
     continue;
     filter_out:
-    mm->clearBit(g, m);
+    mm->clearMember(g, m);
 
   }
 
@@ -65,7 +65,7 @@ static int fer_pos_filter_mm(Fer_GmBitMask *mm, struct filter *filter) {
     for (Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {
       for (auto it = mm->begin(); it; ++it) {
         u8 g = it.getG(), m = it.getM();
-        if (!Fer_Move->mask.getBit(g, m))
+        if (!Fer_Move->mask.getMember(g, m))
           continue;
 
         if (filter->same_direction) {
@@ -77,7 +77,7 @@ static int fer_pos_filter_mm(Fer_GmBitMask *mm, struct filter *filter) {
 
         continue;
         filter_out_mv: --remaining;
-        mm->clearBit(g, m);
+        mm->clearMember(g, m);
       }
     }
   }
@@ -85,18 +85,18 @@ static int fer_pos_filter_mm(Fer_GmBitMask *mm, struct filter *filter) {
 }
 
 
-static void fer_pos_createMovement_mm(struct Fer_Move *Fer_Move, Fer_GmBitMask *mm, u32 now_ts, enum direction dir) {
+static void fer_pos_createMovement_mm(struct Fer_Move *Fer_Move, Fer_GmSet *mm, u32 now_ts, enum direction dir) {
   u8 g;
 
   for (g = 1; g <= GRP_MAX; ++g) {
-    Fer_Move->mask[g] = mm->getByte(g);
+    Fer_Move->mask[g] = mm->getGroup(g);
   }
 
   Fer_Move->start_time = now_ts;
   Fer_Move->dir = dir;
 }
 
-struct Fer_Move *fer_pos_addToMovement_mm(Fer_GmBitMask *mm, u32 now_ts, enum direction dir) {
+struct Fer_Move *fer_pos_addToMovement_mm(Fer_GmSet *mm, u32 now_ts, enum direction dir) {
   u8 g;
   struct Fer_Move *Fer_Move;
 
@@ -104,7 +104,7 @@ struct Fer_Move *fer_pos_addToMovement_mm(Fer_GmBitMask *mm, u32 now_ts, enum di
     if (dir == Fer_Move->dir && now_ts == Fer_Move->start_time) {
       // add to an in-use bitmask, if having same start_time and direction
       for (g = 1; g <= GRP_MAX; ++g) {
-        Fer_Move->mask[g] |= mm->getByte(g);
+        Fer_Move->mask[g] |= mm->getGroup(g);
       }
       return Fer_Move;
     }
@@ -112,7 +112,7 @@ struct Fer_Move *fer_pos_addToMovement_mm(Fer_GmBitMask *mm, u32 now_ts, enum di
   return 0;
 }
 
-static struct Fer_Move* add_to_new_movement_mm(Fer_GmBitMask *mm, u32 now_ts, enum direction dir) {
+static struct Fer_Move* add_to_new_movement_mm(Fer_GmSet *mm, u32 now_ts, enum direction dir) {
   struct Fer_Move *Fer_Move = fer_mv_calloc();
 
   if (Fer_Move) {
@@ -122,7 +122,7 @@ static struct Fer_Move* add_to_new_movement_mm(Fer_GmBitMask *mm, u32 now_ts, en
 }
 
 // register moving related commands sent to a shutter to keep track of its changing position
-int fer_simPos_registerMovingShutters(Fer_GmBitMask *mm, fer_if_cmd cmd) {
+int fer_simPos_registerMovingShutters(Fer_GmSet *mm, fer_if_cmd cmd) {
   u32 now_ts = get_now_time_ts();
 
   enum direction dir = DIRECTION_NONE;
@@ -183,14 +183,14 @@ int fer_simPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_if_cmd cmd) {
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, cmd=%d\n", __func__, a, (int)g, (int)m, (int)cmd));
 #ifdef USE_PAIRINGS
   if (!(a == 0 || a == cfg_getCuId())) {
-    Fer_GmBitMask gm;
+    Fer_GmSet gm;
     if (fer_alias_getControllerPairings(a, &gm))
       return fer_simPos_registerMovingShutters(&gm, cmd);
     return 0;
   }
 #endif
 
-  Fer_GmBitMask mm ;
+  Fer_GmSet mm ;
   if (g == 0) {
     for (g = 1; g <= GRP_MAX; ++g) {
       mm[g] = 0xfe;
@@ -198,7 +198,7 @@ int fer_simPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_if_cmd cmd) {
   } else if (m == 0) {
      mm[g] = 0xfe;
   } else {
-    mm.setBit(g, m);
+    mm.setMember(g, m);
   }
 
   return fer_simPos_registerMovingShutters(&mm, cmd);

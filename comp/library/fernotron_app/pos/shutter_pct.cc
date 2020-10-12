@@ -35,7 +35,7 @@
 #define MBR_MAX 7
 
 
-#define cfg_isMemberUnused(g,m) !C.fer_usedMemberMask.getBit(g, m)
+#define cfg_isMemberUnused(g,m) !C.fer_usedMemberMask.getMember(g, m)
 
 
 void (*fer_pos_POSITIONS_SAVE_cb)(bool has_unsaved);
@@ -117,12 +117,12 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, pct=%d\n", __func__, a, (int)g, (int)m, (int)pct));
 #ifdef USE_PAIRINGS
   if (!(a == 0 || a == cfg_getCuId())) {
-    Fer_GmBitMask gm;
+    Fer_GmSet gm;
     if (fer_alias_getControllerPairings(a, &gm))
-      for (Fer_GmIterator it(1,1,true); it; ++it) {
+      for (Fer_GmSet_Iterator it(1,1,true); it; ++it) {
         const gT g = it.getG();
         const mT m = it.getM();
-        if (gm.getBit(g, m)) {
+        if (gm.getMember(g, m)) {
           // recursion for each paired g/m
           fer_statPos_setPct(0, g, m, pct);
         }
@@ -148,11 +148,11 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   return result;
 }
 
-int fer_statPos_setPcts(Fer_GmBitMask *mm, u8 p) {
-  for (Fer_GmIterator it(1, 1, true); it; ++it) {
+int fer_statPos_setPcts(Fer_GmSet *mm, u8 p) {
+  for (Fer_GmSet_Iterator it(1, 1, true); it; ++it) {
     const gT g = it.getG();
     const mT m = it.getM();
-    if (mm->getBit(g, m)) {
+    if (mm->getMember(g, m)) {
       fer_statPos_setPct(0, g, m, p);
     }
   }
@@ -161,7 +161,7 @@ int fer_statPos_setPcts(Fer_GmBitMask *mm, u8 p) {
 
 int 
 fer_statPos_printAllPcts(const struct TargetDesc &td) {
-  Fer_GmBitMask msk;
+  Fer_GmSet msk;
 
   soMsg_pos_begin(td);
   for (gT g=1; g < 8; ++g) {
@@ -173,20 +173,20 @@ fer_statPos_printAllPcts(const struct TargetDesc &td) {
       if (m != 0 && cfg_isMemberUnused(g,m))
         continue; //
 
-      if (msk.getBit(g, m))
+      if (msk.getMember(g, m))
         continue; // was already processed by a previous pass
 
       u8 pct = pm_getPct(g,m);
-      Fer_GmBitMask pos_msk;
-      for (Fer_GmIterator it(g); it; ++it) {
+      Fer_GmSet pos_msk;
+      for (Fer_GmSet_Iterator it(g); it; ++it) {
         const gT g2 = it.getG();
         const mT m2 = it.getM();
 
         if (pm_getPct(g2,m2) == pct) {
           if (m2 != 0 && cfg_isMemberUnused(g2, m2))
             continue;
-          pos_msk.setBit(g2, m2); // mark as being equal to pct
-          msk.setBit(g2, m2); // mark as already processed
+          pos_msk.setMember(g2, m2); // mark as being equal to pct
+          msk.setMember(g2, m2); // mark as already processed
         }
       }
       so_arg_mmp_t mmp = { &pos_msk, pct };
@@ -252,7 +252,7 @@ static char *g_to_name(u8 g, char *buf) {
 
 bool fer_statPos_pctsByGroup_load(u8 g, const fer_shutterGroupPositionsT positions) {
   char buf[8];
-  if (fer_stor_gmBitMask_load(g_to_name(g, buf), (gmBitMaskT*) positions, 1)) {
+  if (fer_stor_gmSet_load(g_to_name(g, buf), (gmSetT*) positions, 1)) {
     pm_setPct(g,0,fer_statPos_getAvgPctGroup(g)); // XXX: enforce new meaning of m==0
     return true;
   }
@@ -261,6 +261,6 @@ bool fer_statPos_pctsByGroup_load(u8 g, const fer_shutterGroupPositionsT positio
 
 bool fer_statPos_pctsByGroup_store(u8 g, fer_shutterGroupPositionsT positions) {
   char buf[8];
-  return fer_stor_gmBitMask_save(g_to_name(g, buf), (gmBitMaskT*) positions, 1);
+  return fer_stor_gmSet_save(g_to_name(g, buf), (gmSetT*) positions, 1);
 }
 

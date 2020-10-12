@@ -27,7 +27,7 @@
 
 
   
-static void  fixController(const char *key, Fer_GmBitMask *gm) {
+static void  fixController(const char *key, Fer_GmSet *gm) {
   // there seems to be existing keys which cannot be found by iteration.
   // to fix this: erase and create them new here.
   if (!kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, key, 0, 0)) {
@@ -42,7 +42,7 @@ static void  fixController(const char *key, Fer_GmBitMask *gm) {
 }
 
 
-static bool read_controller(Fer_GmBitMask *gm, const char *key) {
+static bool read_controller(Fer_GmSet *gm, const char *key) {
   bool success = false;
   kvshT handle = kvs_open(CFG_NAMESPACE, kvs_READ);
   if (handle) {
@@ -63,12 +63,12 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
 
   handle = kvs_open(CFG_NAMESPACE, kvs_READ_WRITE);
   if (handle) {
-    Fer_GmBitMask gm;
+    Fer_GmSet gm;
     if (!kvs_rw_blob(handle, key, &gm, sizeof gm, false)) {
       gm.clear();
     }
 
-    gm.putBit(g, m, !remove);
+    gm.putMember(g, m, !remove);
 
     bool not_empty = !gm.isAllClear();
 
@@ -100,7 +100,7 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
 
 
 
-bool fer_alias_setControllerPairings(uint32_t controller, Fer_GmBitMask *mm) {
+bool fer_alias_setControllerPairings(uint32_t controller, Fer_GmSet *mm) {
   bool success = false;
   a2key(controller);
 
@@ -146,7 +146,7 @@ fer_alias_controller(u32 controller, u8 g, u8 m, bool unpair) {
 }
 
 
-bool fer_alias_getControllerPairings(u32 a, Fer_GmBitMask *gm) {
+bool fer_alias_getControllerPairings(u32 a, Fer_GmSet *gm) {
   precond(gm && (a & 0xff000000) == 0);
 
   a2key(a);
@@ -164,7 +164,7 @@ bool fer_alias_getControllerPairings(u32 a, Fer_GmBitMask *gm) {
 static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     auto td = static_cast<struct TargetDesc *>(args);
     so_arg_kmm_t arg;
-    Fer_GmBitMask gm;
+    Fer_GmSet gm;
     arg.mm = &gm;
 
     arg.key = &key[sizeof(KEY_PREFIX) - 1];

@@ -46,10 +46,10 @@ static int delete_shadowded_kv(u8 group, u8 memb) {
 
   kvshT handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE);
   if (handle) {
-    for (Fer_GmIterator it; it; ++it) {
+    for (Fer_GmSet_Iterator it; it; ++it) {
       const gT g = it.getG();
       const mT m = it.getM();
-      if ((group == 0 || group == g) && (memb == 0 || (memb == m && C.fer_usedMemberMask.getBit(g, m)))) {
+      if ((group == 0 || group == g) && (memb == 0 || (memb == m && C.fer_usedMemberMask.getMember(g, m)))) {
         if (kvs_erase_key(handle, TdKey(g, m))) {
           DB2(printf("shadow deleted: g=%d, m=%d\n", (int)g, (int)m));
           ++result;
@@ -119,7 +119,7 @@ int timer_data_transition_fs_to_kvs() {
   bool error = false;
 
   kvshT handle = 0;
-  for (Fer_GmIterator it; it; ++it) {
+  for (Fer_GmSet_Iterator it; it; ++it) {
     gT g = it.getG();
     mT m = it.getM();
     Fer_TimerData td;
