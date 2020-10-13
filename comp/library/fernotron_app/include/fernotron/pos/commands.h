@@ -1,8 +1,11 @@
-/*
- * commands.h
+/**
+ * \file     fernotron/pos/commands.h
+ * \brief    commands to move or stop a shutter with position support
  *
- *  Created on: 09.02.2020
- *      Author: bertw
+ *           Each command will result in:
+ *              - the related RF commands to be sent
+ *              - keeping track of any movement for user feedback
+ *              - store the reached end position
  */
 
 #pragma once

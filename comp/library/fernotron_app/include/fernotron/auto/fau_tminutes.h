@@ -1,4 +1,5 @@
 /**
+ * \file     fernotron/auto/fau_tminutes.h
  * \brief    Represent  when each kind of timer will be scheduled for a given day and g/m. Calculate the next event from it.
  */
 
@@ -66,6 +67,13 @@ fer_au_minutesT fer_au_mintsFromTime(const time_t *timer);
  */
 bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const Fer_TimerData *tdp, const struct tm *tm = NULL);
 
-// find earliest event in Fer_TimerMinutes
+/**
+ * \brief        Get next event in Fer_TimerMinutes.
+ * \param timi   Input data
+ * \param now    Current time as minute-of-day
+ * \return
+ *         - The minute-of-day the next event will occur.
+ *         - MINUTES_DISABLED: no event will happen until the end of day
+ */
 fer_au_minutesT fer_au_get_earliest_from_timer_minutes(Fer_TimerMinutes *timi, fer_au_minutesT now);
 

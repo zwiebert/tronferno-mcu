@@ -250,17 +250,17 @@ static char *g_to_name(u8 g, char *buf) {
   return buf;
 }
 
-bool fer_statPos_pctsByGroup_load(u8 g, const fer_shutterGroupPositionsT positions) {
+bool fer_statPos_pctsByGroup_load(u8 g, fer_shutterGroupPositionsT &positions) {
   char buf[8];
-  if (fer_stor_gmSet_load(g_to_name(g, buf), (gmSetT*) positions, 1)) {
+  if (fer_stor_gmSet_load(g_to_name(g, buf), &positions, 1)) {
     pm_setPct(g,0,fer_statPos_getAvgPctGroup(g)); // XXX: enforce new meaning of m==0
     return true;
   }
   return false;
 }
 
-bool fer_statPos_pctsByGroup_store(u8 g, fer_shutterGroupPositionsT positions) {
+bool fer_statPos_pctsByGroup_store(u8 g, const fer_shutterGroupPositionsT &positions) {
   char buf[8];
-  return fer_stor_gmSet_save(g_to_name(g, buf), (gmSetT*) positions, 1);
+  return fer_stor_gmSet_save(g_to_name(g, buf), &positions, 1);
 }
 

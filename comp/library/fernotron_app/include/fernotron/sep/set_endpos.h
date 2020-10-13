@@ -1,4 +1,5 @@
 /**
+ * \file       fernotron/sep/set_endpos.h
  * \brief      Mode for setting shutter end positions
  * \date       28.11.2017
  * \author     bertw

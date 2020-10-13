@@ -23,7 +23,7 @@ typedef uint8_t gT, mT;
  * \param count    Number of sets to read from file
  * \return         true for success
  */
-bool fer_stor_gmSet_load(const char *name, const gmSetT *gm, int count);
+bool fer_stor_gmSet_load(const char *name, gmSetT gm[], int count);
 
 using gm_pairT = std::pair<gT, mT>;
 
@@ -161,3 +161,4 @@ private:
   gmSetT mBm = { };
 };
 
+static_assert(sizeof (gmSetT) == sizeof (Fer_GmSet));

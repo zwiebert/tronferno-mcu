@@ -27,16 +27,16 @@
 
 
 
-static bool gm_save(const char *name, gmSetT *gm, int count, bool write) {
+static bool gm_save(const char *name, const gmSetT gm[], int count, bool write) {
   char nb[NB_SIZE] = NB_PFX;
   strncat (nb, name, NB_N);
   bool success = false;
-  size_t len = sizeof(*gm) * count;
+  const size_t byte_len = sizeof(gm[0]) * count;
 
   kvshT handle = kvs_open(CFG_NAMESPACE, write ? kvs_WRITE : kvs_READ);
 
   if (handle) {
-    success = (kvs_rw_blob(handle, nb, gm, len, write));
+    success = (kvs_rw_blob(handle, nb, (void*)gm, byte_len, write));
     if (write) {
       kvs_commit(handle);
     }
@@ -45,11 +45,11 @@ static bool gm_save(const char *name, gmSetT *gm, int count, bool write) {
   return success;
 }
 
-bool fer_stor_gmSet_load(const char *name, const gmSetT *gm, int count) {
+bool fer_stor_gmSet_load(const char *name, gmSetT gm[], int count) {
   return gm_save (name, (gmSetT*)gm, count, false);
 }
 
-bool fer_stor_gmSet_save(const char *name, gmSetT *gm, int count) {
+bool fer_stor_gmSet_save(const char *name, const gmSetT gm[], int count) {
   return gm_save (name, gm, count, true);
 }
 
