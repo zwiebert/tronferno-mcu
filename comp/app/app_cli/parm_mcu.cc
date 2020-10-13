@@ -38,24 +38,21 @@
 #define ets_printf printf
 #endif
 
-
 #include <alloca.h>
 
 const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #ifndef NO_SPIFFS
-    "spiffs=(format|test)\n"
+        "spiffs=(format|test)\n"
 #endif
 #ifdef CONFIG_GPIO_SIZE
     "gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N\n"
 #endif
-        "up-time=?\n"
-        "version=full\n";
-
-
+    "up-time=?\n"
+    "version=full\n";
 
 static void kvs_print_keys(const char *name_space);
 
-#define is_kt(k) (kt == otok:: k)
+#define is_kt(k) (kt == otok::k_##k)
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
@@ -73,13 +70,17 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 
     otok kt = optMap_findToken(key);
 
-    if (is_kt(boot_count)) {
+    switch (kt) {
+    case otok::k_boot_count: {
       if (is_val("?")) {
         soMsg_mcu_boot_count(td);
       } else if (strcmp("0", val) == 0) {
         // TODO: reset boot counter
       }
-    } else if (is_kt(print)) {
+    }
+      break;
+
+    case otok::k_print: {
 #ifdef MCU_ESP8266
       if (is_val("reset-info")) {
         print_reset_info();
@@ -90,20 +91,22 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
         system_print_meminfo();
       }
 #endif
+    }
+      break;
+
 #ifndef NO_SPIFFS
-    } else if (is_kt(spiffs)) {
+    case otok::k_spiffs: {
 
       if (is_val("format")) {
-        spiffs_format_fs(fs_A);
+        spiffs_format_fs (fs_A);
       } else if (is_val("test")) {
         spiffs_test();
       }
+    }
+      break;
 #endif
-    } else if (is_kt(kvs_pk)) {
 
-      kvs_print_keys(val);
-
-    } else if (is_kt(tm)) {
+    case otok::k_tm: {
 
       if (strlen(val) == 2) {
         so_arg_gm_t gm;
@@ -111,7 +114,9 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
         gm.m = val[1] - '0';
         soMsg_timer_event_print(td, gm);
       }
-    } else if (is_kt(am)) {
+    }
+      break;
+    case otok::k_am: {
       if (strlen(val) == 2) {
         u8 g = val[0] - '0';
         u8 m = val[1] - '0';
@@ -120,13 +125,19 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
           soMsg_astro_minutes_print(td, tmi.minutes[FER_MINTS_ASTRO]);
         }
       }
+    }
+      break;
+
 #ifdef USE_FREERTOS
-    } else if (is_kt(stack)) {
+   case otok::k_stack: {
       int words = uxTaskGetStackHighWaterMark(NULL);
       ets_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
+   }
+   break;
 #endif
-    } else if (is_kt(te)) {
-      int i,k;
+
+    case otok::k_te: {
+      int i, k;
 
       Fer_TimerEvent tevt;
       time_t now_time = time(NULL);
@@ -138,14 +149,62 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
         }
         io_putlf();
       }
+    }
+      break;
 #ifdef USE_PAIRINGS
-    } else if (is_kt(dbp)) {
+    case otok::k_dbp: {
       fer_alias_so_output_all_pairings(td);
+    } break;
 #endif
-    } else if (is_kt(cs)) {
+    case otok::k_cs: {
       fer_statPos_printAllPcts(td);
+
+    }
+      break;
+    case otok::k_up_time: {
+      if (is_val("?")) {
+        soMsg_mcu_run_time(td);
+      } else {
+        reply_message(td, "error:mcu:up-time", "option is read-only");
+      }
+
+    }
+      break;
+    case otok::k_version: {
+      soMsg_mcu_version(td);
+    }
+      break;
+#ifdef USE_OTA
+    case otok::k_ota: {
+      if (is_val("?")) {
+        soMsg_mcu_ota_state(td);
+      } else if (is_val("github-master")) {
+        soMsg_mcu_ota(td, OTA_FWURL_MASTER);
+        app_doFirmwareUpdate(OTA_FWURL_MASTER);
+      } else if (is_val("github-beta")) {
+        soMsg_mcu_ota(td, OTA_FWURL_BETA);
+        app_doFirmwareUpdate(OTA_FWURL_BETA);
+      } else if (0 == strncmp(val, OTA_FWURL_TAG_COOKIE, strlen(OTA_FWURL_TAG_COOKIE))) {
+        const char *tag = val + strlen(OTA_FWURL_TAG_COOKIE);
+        const size_t url_len = strlen(OTA_FWURL_TAG_HEAD) + strlen(OTA_FWURL_TAG_TAIL) + strlen(tag);
+        char url[url_len + 1];
+        csu_copy_cat(url, url_len, OTA_FWURL_TAG_HEAD, tag, OTA_FWURL_TAG_TAIL);
+        app_doFirmwareUpdate(url);
+      } else {
+#ifdef DISTRIBUTION
+        ets_printf("forbidden: ota update from given URL\n");
+#else
+        ets_printf("doing ota update from given URL\n");
+        app_doFirmwareUpdate(val);
+#endif
+      }
+    }
+       break;
+#endif
+
+    default:
 #ifdef ACCESS_GPIO
-    } else if (strncmp(key, "gpio", 4) == 0) {
+    if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
 
 
@@ -187,55 +246,21 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
           return -1;
         }
       }
-#endif
-
-    } else if (is_kt(up_time)) {
-      if (is_val("?")) {
-        soMsg_mcu_run_time(td);
-      } else {
-        reply_message(td, "error:mcu:up-time", "option is read-only");
-      }
-
-    } else if (is_kt(version)) {
-      soMsg_mcu_version(td);
-#ifdef USE_OTA
-    } else if (is_kt(ota)) {
-      if (is_val("?")) {
-        soMsg_mcu_ota_state(td);
-      } else if (is_val("github-master")) {
-        soMsg_mcu_ota(td, OTA_FWURL_MASTER);
-        app_doFirmwareUpdate(OTA_FWURL_MASTER);
-      } else if (is_val("github-beta")) {
-        soMsg_mcu_ota(td, OTA_FWURL_BETA);
-        app_doFirmwareUpdate(OTA_FWURL_BETA);
-      } else if (0 == strncmp(val, OTA_FWURL_TAG_COOKIE, strlen(OTA_FWURL_TAG_COOKIE))) {
-        const char *tag = val + strlen(OTA_FWURL_TAG_COOKIE);
-        const size_t url_len = strlen(OTA_FWURL_TAG_HEAD) + strlen(OTA_FWURL_TAG_TAIL) + strlen(tag);
-        char url[url_len + 1];
-        csu_copy_cat(url, url_len, OTA_FWURL_TAG_HEAD, tag, OTA_FWURL_TAG_TAIL);
-        app_doFirmwareUpdate(url);
-      } else {
-#ifdef DISTRIBUTION
-        ets_printf("forbidden: ota update from given URL\n");
-#else
-        ets_printf("doing ota update from given URL\n");
-        app_doFirmwareUpdate(val);
-#endif
-      }
-#endif
-    } else {
-      cli_warning_optionUnknown(td, key);
+      break;
     }
+#endif
 
-  }
-
+      cli_warning_optionUnknown(td, key);
+      break;
+    } // switch
+  } // for
   //so_output_message(error_count ? SO_STATUS_ERROR : SO_STATUS_OK, 0);
 
   return 0;
 }
 
 static kvs_cbrT kvs_print_keys_cb(const char *key, kvs_type_t type, void *args) {
-  io_printf("key: %s, type: %d\n", key, (int)type);
+  io_printf("key: %s, type: %d\n", key, (int )type);
   return kvsCb_match;
 }
 

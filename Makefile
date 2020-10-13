@@ -125,10 +125,10 @@ test.cm.build:
 	$(cm_build)
 
 test.cm.ctest: test.cm.build
-	$(cm_build) test
+	cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure
 	
 test.cm.ctest.current: test.cm.build
-	(cd  $(HOST_TEST_BUILD_PATH) && ctest -VV -R "fernotron_trx.test_send")
+	(cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure -R "fernotron_trx.test_send")
 
 
 host-test-all:

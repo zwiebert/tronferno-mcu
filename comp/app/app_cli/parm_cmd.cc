@@ -59,25 +59,25 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
 
     if (kt != otok::NONE) {
       switch (kt) {
-      case otok::a: {
+      case otok::k_a: {
         u32 tmp = val ? strtol(val, NULL, 16) : 0;
         if (tmp)
           addr = tmp;
       }
         break;
 
-      case otok::g: {
+      case otok::k_g: {
         if (!asc2u8(val, &g, 7))
         return cli_replyFailure(td);
       }
       break;
-      case otok::m: {
+      case otok::k_m: {
       if (!asc2u8(val, &m, 7))
       return cli_replyFailure(td);
       }
       break;
 
-      case otok::r: {
+      case otok::k_r: {
         NODEFAULT();
         repeats = atoi(val);
         if (!(repeats <= 10)) {
@@ -86,7 +86,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
       }
         break;
 
-      case otok::p: {
+      case otok::k_p: {
         NODEFAULT();
         if (is_val("?")) {
           has_requested_position = true;
@@ -98,7 +98,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
       }
         break;
 
-      case otok::c: {
+      case otok::k_c: {
         NODEFAULT();
         if (is_val("?")) {
           has_requested_position = true;
@@ -108,7 +108,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
       }
         break;
 
-      case otok::SEP: {
+      case otok::k_SEP: {
         set_end_pos = asc2bool(val);
         if (set_end_pos != 1)
           set_end_pos = 0;  // force disable

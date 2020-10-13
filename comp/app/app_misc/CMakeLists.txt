@@ -1,4 +1,4 @@
-set(srcs esp32/timer.cc rtc.cc  opt_map.cc) 
+set(srcs esp32/timer.cc rtc.cc  opt_map_consteval.cc) 
 
 idf_component_register(
     SRCS ${srcs}

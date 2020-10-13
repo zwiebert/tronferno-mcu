@@ -109,7 +109,7 @@ const char *const *cfg_args[SO_CFG_size] = {
 
 #define has_changed() SET_BIT(*changed_mask, so_key)
 
-#define is_kt(k) (kt == otok:: k)
+#define is_kt(k) (kt == otok::k_##k)
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 

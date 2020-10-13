@@ -50,7 +50,7 @@ static void output_message_kvd(const struct TargetDesc &td, const char *key, int
   soMsg_print_kvd(td, arg);
 }
 
-#define is_kt(k) (kt == otok:: k)
+#define is_kt(k) (kt == otok::k_##k)
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 

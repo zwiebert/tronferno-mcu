@@ -8,6 +8,18 @@
 int first_msg_count, any_msg_count;
 Fer_MsgPlainCmd first_msg_cmd, any_msg_cmd;
 
+bool is_equal(const Fer_MsgPlainCmd &a, const Fer_MsgPlainCmd &b) {
+  if (a.a != b.a)
+     return false;
+  if (a.g != b.g)
+     return false;
+  if (a.m != b.m)
+     return false;
+  if (a.cmd != b.cmd)
+     return false;
+  return true;
+}
+
 static class FA : public Fer_Trx_API {
 
   virtual void event_first_message_will_be_sent() { // no repeats
@@ -33,8 +45,8 @@ void test_send() {
   Fer_Trx_API::loop_tx();
   TEST_ASSERT_EQUAL(first_msg_count, 1);
   TEST_ASSERT_EQUAL(any_msg_count, 1);
-  TEST_ASSERT_EQUAL_MEMORY(&m, &first_msg_cmd, sizeof m);
-  TEST_ASSERT_EQUAL_MEMORY(&m, &any_msg_cmd, sizeof m);
+  TEST_ASSERT_TRUE(is_equal(m, first_msg_cmd));
+  TEST_ASSERT_TRUE(is_equal(m, any_msg_cmd));
 
 }
 

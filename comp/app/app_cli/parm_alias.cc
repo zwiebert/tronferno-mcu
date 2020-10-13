@@ -60,7 +60,7 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
     if (kt != otok::NONE) {
       switch (kt) {
 
-      case otok::a: {
+      case otok::k_a: {
         if (is_val(?))
           scan = true;
         else {
@@ -71,18 +71,18 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
       }
         break;
 
-      case otok::g: {
+      case otok::k_g: {
         if (!asc2u8(val, &g, 7))
         return cli_replyFailure(td);
       }
       break;
-      case otok::m: {
+      case otok::k_m: {
       if (!asc2u8(val, &m, 7))
       return cli_replyFailure(td);
       }
       break;
 
-      case otok::mm: {
+      case otok::k_mm: {
         uint64_t n = strtoll(val, 0, 16);
         for (i = 0; n; ++i, (n >>= 8)) {
           mm[i] = n & 0xff;
@@ -91,7 +91,7 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
       }
         break;
 
-      case otok::c: {
+      case otok::k_c: {
         if (is_val(unpair)) {
           unpair = true;
           c = PC_unpair;

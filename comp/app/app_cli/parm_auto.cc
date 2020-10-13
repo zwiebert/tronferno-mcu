@@ -69,18 +69,18 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
     otok kt = optMap_findToken(key);
 
     switch (kt) {
-      case otok::weekly:
+      case otok::k_weekly:
       NODEFAULT();
       tda.putWeekly(val);
       break;
-      case otok::daily:
+      case otok::k_daily:
       NODEFAULT();
       tda.putDaily(val);
       break;
-      case otok::astro:
+      case otok::k_astro:
       tda.putAstro(val ? atoi(val) : 0);
       break;
-      case otok::random: {
+      case otok::k_random: {
         int flag = asc2bool(val);
         tda.putRandom( flag >= 0);
         if (flag >= 0) {
@@ -88,7 +88,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
         }
       }
       break;
-      case otok::sun_auto: {
+      case otok::k_sun_auto: {
         int flag = asc2bool(val);
         tda.putSunAuto( flag >= 0);
         if (flag >= 0) {
@@ -96,26 +96,26 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
         }
       }
       break;
-      case otok::rtc_only:
+      case otok::k_rtc_only:
       flag_rtc_only = asc2bool(val);
       break;
-      case otok::a: {
+      case otok::k_a: {
         u32 tmp = val ? strtol(val, NULL, 16) : 0;
         if (tmp)
         addr = tmp;
       }
       break;
-      case otok::g: {
+      case otok::k_g: {
         if (!asc2u8(val, &parm_g, 7))
         return cli_replyFailure(td);
       }
       break;
-      case otok::m: {
+      case otok::k_m: {
       if (!asc2u8(val, &parm_m, 7))
       return cli_replyFailure(td);
       }
       break;
-      case otok::rtc: {
+      case otok::k_rtc: {
         time_t t = time_iso2time(val);
         if (t >= 0) {
           timer = t;
@@ -123,7 +123,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
       }
       break;
 
-      case otok::f: {
+      case otok::k_f: {
         const char *p = val;
         NODEFAULT();
         while (*p) {

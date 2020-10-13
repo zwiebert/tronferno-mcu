@@ -27,27 +27,27 @@ constexpr cfg_args_lanPhyT cfg_args_lanPhy = { "none", "lan8270", "rtl8201", "ip
 
 
 typedef int8_t otokBaseT;
-
+#if 1
 /// \brief options as enum (matching the string options in \link otok_strings \endlink )
 enum class otok : otokBaseT  {
   NONE = -1,  // not existing
       /////////// begin of config keys //////////////////
-      cu, baud, rtc, //
-      network, wlan_ssid, wlan_password, ntp_server, lan_phy, lan_pwr_gpio, //
-      longitude, latitude, timezone, dst, tz, verbose, //
-      mqtt_enable, mqtt_url, mqtt_user, mqtt_password, mqtt_client_id, //
-      http_enable, http_user, http_password, //
-      gm_used, //
-      astro_correction, //
-      rf_tx_pin, rf_rx_pin, set_button_pin, gpio, //
+      k_cu, k_baud, k_rtc, //
+      k_network, k_wlan_ssid, k_wlan_password, k_ntp_server, k_lan_phy, k_lan_pwr_gpio, //
+      k_longitude, k_latitude, k_timezone, k_dst, k_tz, k_verbose, //
+      k_mqtt_enable, k_mqtt_url, k_mqtt_user, k_mqtt_password, k_mqtt_client_id, //
+      k_http_enable, k_http_user, k_http_password, //
+      k_gm_used, //
+      k_astro_correction, //
+      k_rf_tx_pin, k_rf_rx_pin, k_set_button_pin, k_gpio, //
       ///////////// end of config keys /////////////////
 
-  a, g, m, mm, c, //
-  restart, all, cuas, set_pw, receiver, transmitter, // config
-  r, p, SEP, // cmd
-  boot_count, print, kvs_pk, tm, am, stack, te, dbp, cs, up_time, version, ota, // mcu
+  k_a, k_g, k_m, k_mm, k_c, //
+  k_restart, k_all, k_cuas, k_set_pw, k_receiver, k_transmitter, // config
+  k_r, k_p, k_SEP, // cmd
+  k_boot_count, k_print, k_kvs_pk, k_tm, k_am, k_stack, k_te, k_dbp, k_cs, k_up_time, k_version, k_ota, // mcu
 
-  weekly, daily, astro, rtc_only, random, sun_auto, f, // auto
+  k_weekly, k_daily, k_astro, k_rtc_only, k_random, k_sun_auto, k_f, // auto
 
   SIZE // key array size
 };
@@ -73,6 +73,8 @@ constexpr const_cstringT otok_strings[] = {
     "weekly", "daily", "astro", "rtc-only", "random", "sun-auto", "f" // auto
 
     };
-
+#else
+#include "generated_opts.hh"
+#endif
 static_assert(!((sizeof otok_strings / sizeof otok_strings[0]) > (size_t)otok::SIZE));
 static_assert(!((sizeof otok_strings / sizeof otok_strings[0]) < (size_t)otok::SIZE));

@@ -1,5 +1,5 @@
 idf_component_register(SRC_DIRS "."
-                       REQUIRES app_misc
+                       REQUIRES app_misc app_uout
                                 unity)
 
 component_compile_options(${comp_compile_opts})

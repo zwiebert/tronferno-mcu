@@ -138,43 +138,41 @@ bool fer_am_get_next_timer_event(Fer_TimerEvent *evt, const time_t *now_time) {
   fer_au_minutesT earliest = MINUTES_DISABLED;
   Fer_GmSet existing_members;
 
-  *evt = (Fer_TimerEvent)
-  {
-  .next_event = MINUTES_DISABLED,};
-struct tm tm_now;
-localtime_r(now_time, &tm_now);
-fer_au_minutesT minutes_now = tm_now.tm_hour * 60 + tm_now.tm_min;
+  *evt = Fer_TimerEvent { .next_event = MINUTES_DISABLED, };
+  struct tm tm_now;
+  localtime_r(now_time, &tm_now);
+  fer_au_minutesT minutes_now = tm_now.tm_hour * 60 + tm_now.tm_min;
 
-if (!fer_am_get_next_timer_event_earliest(&existing_members, &earliest, &tm_now, minutes_now))
-  return false;
+  if (!fer_am_get_next_timer_event_earliest(&existing_members, &earliest, &tm_now, minutes_now))
+    return false;
 
-evt->next_event = earliest;
+  evt->next_event = earliest;
 
-for (auto it = C.fer_usedMemberMask.begin(); it; ++it) {
-  u8 g = it.getG(), m = it.getM();
-  if (manual_bits.getMember(g, m))
-    continue;
+  for (auto it = C.fer_usedMemberMask.begin(); it; ++it) {
+    u8 g = it.getG(), m = it.getM();
+    if (manual_bits.getMember(g, m))
+      continue;
 
-  Fer_TimerMinutes timi;
-  u8 g2 = g, m2 = m;
-  Fer_TimerData td;
-  if (!(fer_stor_timerData_load(&td, &g2, &m2, true) && fer_au_get_timer_minutes_from_timer_data_tm(&timi, &td, &tm_now))) {
-    continue; // should not happen
+    Fer_TimerMinutes timi;
+    u8 g2 = g, m2 = m;
+    Fer_TimerData td;
+    if (!(fer_stor_timerData_load(&td, &g2, &m2, true) && fer_au_get_timer_minutes_from_timer_data_tm(&timi, &td, &tm_now))) {
+      continue; // should not happen
+    }
+
+    fer_au_minutesT temp = fer_au_get_earliest_from_timer_minutes(&timi, minutes_now);
+    if (temp <= earliest) {
+
+      if (timi.minutes[FER_MINTS_DAILY_UP] == earliest || timi.minutes[FER_MINTS_WEEKLY_UP] == earliest) {
+        te_getMaskUp(evt)->setMember(g, m);
+
+      }
+      if (timi.minutes[FER_MINTS_ASTRO] == earliest || timi.minutes[FER_MINTS_DAILY_DOWN] == earliest || timi.minutes[FER_MINTS_WEEKLY_DOWN] == earliest) {
+        te_getMaskDown(evt)->setMember(g, m);
+      }
+    }
   }
 
-  fer_au_minutesT temp = fer_au_get_earliest_from_timer_minutes(&timi, minutes_now);
-  if (temp <= earliest) {
-
-    if (timi.minutes[FER_MINTS_DAILY_UP] == earliest || timi.minutes[FER_MINTS_WEEKLY_UP] == earliest) {
-      te_getMaskUp(evt)->setMember(g, m);
-
-    }
-    if (timi.minutes[FER_MINTS_ASTRO] == earliest || timi.minutes[FER_MINTS_DAILY_DOWN] == earliest || timi.minutes[FER_MINTS_WEEKLY_DOWN] == earliest) {
-      te_getMaskDown(evt)->setMember(g, m);
-    }
-  }
-}
-
-return true;
+  return true;
 }
 
