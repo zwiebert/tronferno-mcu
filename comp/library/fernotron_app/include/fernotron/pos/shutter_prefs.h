@@ -1,8 +1,6 @@
-/*
- * shutter_preferences.h
- *
- *  Created on: 24.02.2020
- *      Author: bertw
+/**
+ * \file   fernotron/pos/shutter_prefs.h
+ * \brief  store persistent data for a shutter or group
  */
 
 #pragma once

@@ -1,3 +1,7 @@
+/**
+ * \file  fernotron/fer_main.h
+ * \brief Component settings.
+ */
 #pragma once
 
 #include <stdint.h>

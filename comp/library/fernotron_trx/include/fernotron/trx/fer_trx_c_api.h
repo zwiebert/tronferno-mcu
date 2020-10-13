@@ -1,6 +1,6 @@
 /**
  * \file        fernotron/trx/fer_trx_c_api.h
- * \brief       C-API of Fernotron transceiver component.
+ * \brief       C-API for sending and receiving Fernotron RF messages.
  */
 
 #pragma once

@@ -1,3 +1,8 @@
+/**
+ * \file fernotron/trx/isr_timer_config.h
+ * \brief configure timer interrupt
+ */
+
 #pragma once
 
 // imaginary "data clock" which is "four times preamble frequency"

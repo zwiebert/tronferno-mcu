@@ -1,3 +1,7 @@
+/**
+ * \file fernotron/trx/fer_trx_api__inline.hh
+ * \brief Private implementation
+ */
 #include <app/config/proj_app_cfg.h>
 
 ////////////////////// loop /////////////////////////

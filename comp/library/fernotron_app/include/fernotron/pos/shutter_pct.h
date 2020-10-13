@@ -1,8 +1,6 @@
-/*
- * shutter_pct.h
- *
- *  Created on: 04.09.2018
- *      Author: bertw
+/**
+ * \file fernotron/pos/shutter_pct.h
+ * \brief include positions_static.h and positions_dynamic.h
  */
 
 #pragma once

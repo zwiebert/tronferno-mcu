@@ -1,3 +1,7 @@
+/**
+ * \file   fernotron/astro.h
+ * \brief  civil dusk timer calculations
+ */
 #pragma once
 
 #include "time.h"
