@@ -37,6 +37,7 @@
 
 #define cfg_isMemberUnused(g,m) !C.fer_usedMemberMask.getMember(g, m)
 
+static char *g_to_name(u8 g, char *buf);
 
 void (*fer_pos_POSITIONS_SAVE_cb)(bool has_unsaved);
 static inline void fer_pos_POSITIONS_UNSAVED_cb() {
@@ -48,35 +49,78 @@ static inline void fer_pos_POSTIONS_SAVED_cb() {
     fer_pos_POSITIONS_SAVE_cb(false);
 }
 
-
-static fer_shutterGroupPositionsT pos_map[8];
-static u8  pos_map_changed;
-
 enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
-#define pm_getPct(g,m) (pos_map[(g)][(m)]+0)
-#define pm_setPct(g,m,pct) pos_map[(g)][(m)] = (pct)
-#define pm_setMemberUnused(g,m) pm_setPct((g),(m),pm_MEMBER_UNUSED)
-#define pm_isMemberUnused(g, m) (pm_getPct((g),(m)) == pm_MEMBER_UNUSED)
-#define pm_setGroupUnused(g) pm_setPct((g),0,pm_GROUP_UNUSED)
-#define pm_isGroupUnused(g) (pm_getPct((g),0) == pm_GROUP_UNUSED)
+
+static class Fer_Pos_Map {
+  fer_shutterGroupPositionsT allPos_[8];
+  u8 changedGroupMask_;
+
+public:
+  fer_shutterGroupPositionsT & operator[](int idx) { return allPos_[idx]; }
+  u8 getChangedGroups()  { u8 result = changedGroupMask_; changedGroupMask_ = 0; return result; }
+
+  inline u8 getPct(u8 g, u8 m) { return (allPos_[(g)][(m)]+0); }
+  inline void setPct(u8 g, u8 m, u8 pct) { allPos_[(g)][(m)] = (pct); SET_BIT(changedGroupMask_, g); }
+  inline void setMemberUnused(u8 g, u8 m) { setPct((g),(m),pm_MEMBER_UNUSED); SET_BIT(changedGroupMask_, g); }
+  inline bool isMemberUnused(u8 g, u8 m) { return (getPct((g),(m)) == pm_MEMBER_UNUSED); }
+  inline void setGroupUnused(u8 g) { setPct((g),0,pm_GROUP_UNUSED); SET_BIT(changedGroupMask_, g); }
+  inline bool isGroupUnused(u8 g) { return (getPct((g),0) == pm_GROUP_UNUSED); }
 
 
-static int fer_statPos_getAvgPctGroup(u8 g) {
-  u8 m;
-  int count=0, sum=0;
-  for (m = 1; m <= MBR_MAX; ++m) {
-    if (pm_isMemberUnused(g, m))
-      continue;
-    if (cfg_isMemberUnused(g,m))
-      continue;
-    ++count;
-    sum += pm_getPct(g, m);
+  void fer_pos_autoSavePositions_iv(int interval_ts) {
+    DT(ets_printf("%s: interval_tx=%d\n", __func__, interval_ts));
+    static unsigned next_save_pos;
+    u8 mask = changedGroupMask_;
+    if (mask && periodic_ts(interval_ts, &next_save_pos)) {
+      fer_pos_POSTIONS_SAVED_cb();
+      changedGroupMask_ = 0;
+      next_save_pos = 0;
+
+      u8 g;
+      for (g = 0; mask; ++g, (mask >>= 1)) {
+        if ((mask & 1) == 0)
+          continue;
+
+        store_group_positions(g);
+        D(io_printf_v(vrbDebug, "autosave_pos: g=%d\n", (int)g));
+      }
+    }
   }
-  if (count) {
-    return sum/count;
+
+  bool load_group_positions(u8 g) {
+    char buf[8];
+    if (fer_stor_gmSet_load(g_to_name(g, buf), &allPos_[g].grpPos_, 1)) {
+      setPct(g,0,fer_statPos_getAvgPctGroup(g)); // XXX: enforce new meaning of m==0
+      return true;
+    }
+    return false;
   }
-  return pm_GROUP_UNUSED;
-}
+
+  bool store_group_positions(u8 g) {
+    char buf[8];
+    return fer_stor_gmSet_save(g_to_name(g, buf), &allPos_[g].grpPos_, 1);
+  }
+
+  int fer_statPos_getAvgPctGroup(u8 g) {
+    u8 m;
+    int count=0, sum=0;
+    for (m = 1; m <= MBR_MAX; ++m) {
+      if (isMemberUnused(g, m))
+        continue;
+      if (cfg_isMemberUnused(g,m))
+        continue;
+      ++count;
+      sum += getPct(g, m);
+    }
+    if (count) {
+      return sum/count;
+    }
+    return pm_GROUP_UNUSED;
+  }
+
+} pos_map;
+
+
 
 int
 fer_statPos_getPct(u32 a, u8 g, u8 m) {
@@ -85,9 +129,9 @@ fer_statPos_getPct(u32 a, u8 g, u8 m) {
   if (g == 0) {
     return -1; // TODO: average all?
   } else {
-    if (pm_isMemberUnused(g, m))
+    if (pos_map.isMemberUnused(g, m))
       return -1;
-    return pm_getPct(g, m);
+    return pos_map.getPct(g, m);
   }
   return -1;
 }
@@ -98,11 +142,10 @@ set_state(u32 a, int g, int m, int position) {
   precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
   precond(0 <= position && position <= 100);
 
-  pm_setMemberUnused(g,0);
-  pm_setPct(g,m,position);
-  pm_setPct(g,0,fer_statPos_getAvgPctGroup(g));
+  pos_map.setMemberUnused(g,0);
+  pos_map.setPct(g,m,position);
+  pos_map.setPct(g,0, pos_map.fer_statPos_getAvgPctGroup(g));
 
-  SET_BIT(pos_map_changed, g);
   fer_pos_POSITIONS_UNSAVED_cb();
   return 0;
 }
@@ -139,7 +182,7 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   if (pct <= 100) {
     if (a == 0 || a == cfg_getCuId()) {
 
-      so_arg_gmp_t gmp[3] = { { g, m, pct }, { g, 0, (u8) pm_getPct(g, 0) }, { 0xff, 0xff, 0xff } };
+      so_arg_gmp_t gmp[3] = { { g, m, pct }, { g, 0, (u8) pos_map.getPct(g, 0) }, { 0xff, 0xff, 0xff } };
       uoApp_publish_pctChange_gmp(gmp, 2);
     }
   }
@@ -165,10 +208,10 @@ fer_statPos_printAllPcts(const struct TargetDesc &td) {
 
   soMsg_pos_begin(td);
   for (gT g=1; g < 8; ++g) {
-    if (pm_isGroupUnused(g))
+    if (pos_map.isGroupUnused(g))
       continue;
     for (mT m=0; m < 8; ++m) {
-      if (pm_isMemberUnused(g,m))
+      if (pos_map.isMemberUnused(g,m))
         continue; //
       if (m != 0 && cfg_isMemberUnused(g,m))
         continue; //
@@ -176,13 +219,13 @@ fer_statPos_printAllPcts(const struct TargetDesc &td) {
       if (msk.getMember(g, m))
         continue; // was already processed by a previous pass
 
-      u8 pct = pm_getPct(g,m);
+      u8 pct = pos_map.getPct(g,m);
       Fer_GmSet pos_msk;
       for (Fer_GmSet_Iterator it(g); it; ++it) {
         const gT g2 = it.getG();
         const mT m2 = it.getM();
 
-        if (pm_getPct(g2,m2) == pct) {
+        if (pos_map.getPct(g2,m2) == pct) {
           if (m2 != 0 && cfg_isMemberUnused(g2, m2))
             continue;
           pos_msk.setMember(g2, m2); // mark as being equal to pct
@@ -197,45 +240,27 @@ fer_statPos_printAllPcts(const struct TargetDesc &td) {
   return 0;
 }
 
-static void fer_pos_autoSavePositions_iv(int interval_ts) {
-  DT(ets_printf("%s: interval_tx=%d\n", __func__, interval_ts));
-  static unsigned next_save_pos;
-  u8 mask = pos_map_changed;
-  if (mask && periodic_ts(interval_ts, &next_save_pos)) {
-    fer_pos_POSTIONS_SAVED_cb();
-    next_save_pos = 0;
-    pos_map_changed = 0;
 
-    u8 g;
-    for (g = 0; mask; ++g, (mask >>= 1)) {
-      if ((mask & 1) == 0)
-        continue;
-
-      fer_statPos_pctsByGroup_store(g, pos_map[g]);
-      D(io_printf_v(vrbDebug, "autosave_pos: g=%d\n", (int)g));
-    }
-  }
-}
 
 void fer_pos_loop() {
   fer_pos_checkStatus_whileMoving_periodic(20);
-  fer_pos_autoSavePositions_iv(100);
+  pos_map.fer_pos_autoSavePositions_iv(100);
 }
 
 void fer_statPos_loopAutoSave() {
-  fer_pos_autoSavePositions_iv(100);
+  pos_map.fer_pos_autoSavePositions_iv(100);
 }
 
 void fer_pos_init() {
   u8 g, m;
 
   for (g=0; g < 8; ++g) {
-    fer_statPos_pctsByGroup_load(g, pos_map[g]);
-    if (pm_getPct(g,0) >= pm_INVALID)
-      pm_setGroupUnused(g);
+    pos_map.load_group_positions(g);
+    if (pos_map.getPct(g,0) >= pm_INVALID)
+      pos_map.setGroupUnused(g);
     for (m=1; m < 8; ++m) {
-      if (pm_getPct(g,m) >= pm_INVALID)
-        pm_setMemberUnused(g,m);
+      if (pos_map.getPct(g,m) >= pm_INVALID)
+        pos_map.setMemberUnused(g,m);
     }
 
   }
@@ -250,17 +275,5 @@ static char *g_to_name(u8 g, char *buf) {
   return buf;
 }
 
-bool fer_statPos_pctsByGroup_load(u8 g, fer_shutterGroupPositionsT &positions) {
-  char buf[8];
-  if (fer_stor_gmSet_load(g_to_name(g, buf), &positions, 1)) {
-    pm_setPct(g,0,fer_statPos_getAvgPctGroup(g)); // XXX: enforce new meaning of m==0
-    return true;
-  }
-  return false;
-}
 
-bool fer_statPos_pctsByGroup_store(u8 g, const fer_shutterGroupPositionsT &positions) {
-  char buf[8];
-  return fer_stor_gmSet_save(g_to_name(g, buf), &positions, 1);
-}
 

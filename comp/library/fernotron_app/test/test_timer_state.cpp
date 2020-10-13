@@ -160,8 +160,9 @@ static void test_timer_event() {
   fer_au_minutesT now_minutes = t2m(now_tm.tm_hour, now_tm.tm_min);
 
   Fer_TimerMinutes timi;
+  Fer_TimerData tida;
   uint8_t g=1, m=2;
-  succ = fer_au_get_timer_minutes_tm(&timi, &g, &m, true, &now_tm);
+  succ = fer_stor_timerData_load(&tida, &g, &m, true) && fer_au_get_timer_minutes_from_timer_data_tm(&timi, &tida, &now_tm);
   TEST_ASSERT_TRUE(succ);
   TEST_ASSERT_EQUAL(1, g);
   TEST_ASSERT_EQUAL(0, m);
@@ -178,8 +179,7 @@ static void test_timer_event() {
   g=1;
   m=1;
 
-
-  succ = fer_au_get_timer_minutes_tm(&timi, &g, &m, false, &now_tm);
+  succ = fer_stor_timerData_load(&tida, &g, &m, true) && fer_au_get_timer_minutes_from_timer_data_tm(&timi, &tida, &now_tm);
   TEST_ASSERT_TRUE(succ);
   TEST_ASSERT_EQUAL(1, g);
   TEST_ASSERT_EQUAL(1, m);
