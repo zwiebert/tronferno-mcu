@@ -10,12 +10,12 @@
 #include "fernotron/pos/shutter_pct.h"
 #include "fernotron/pos/shutter_prefs.h"
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "debug/dbg.h"
-#include "misc/int_macros.h"
-#include "app/uout/status_output.h"
+#include "utils_misc/int_macros.h"
+#include "app_uout/status_output.h"
 #include "uout/status_json.hh"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"

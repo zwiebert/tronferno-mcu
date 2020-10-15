@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include <misc/int_macros.h>
+#include <utils_misc/int_macros.h>
 #include <utility>
 #include <stdint.h>
 #include <string.h>
-#include <misc/int_types.h>
+#include <utils_misc/int_types.h>
 
 
 typedef uint8_t gmSetT[8];

@@ -1,4 +1,4 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "main.h"
 #include <cli/cli.h>
@@ -6,14 +6,14 @@
 #include <freertos/projdefs.h>
 #include <freertos/timers.h>
 #include <cstdio>
-#include "misc/int_types.h"
+#include "utils_misc/int_types.h"
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron/pos/positions_dynamic.h"
 #include "fernotron/pos/positions_static.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/sep/set_endpos.h"
-#include "fernotron/trx/raw/fer_msg_rx.h"
-#include "fernotron/trx/raw/fer_msg_tx.h"
+#include "fernotron_trx/raw/fer_msg_rx.h"
+#include "fernotron_trx/raw/fer_msg_tx.h"
 #include "net/ipnet.h"
 #include "gpio/pin.h"
 

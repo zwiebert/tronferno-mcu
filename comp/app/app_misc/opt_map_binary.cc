@@ -1,7 +1,7 @@
-#include "app/opt_map.hh"
+#include "app_misc/opt_map.hh"
 
-#include <misc/int_types.h>
-#include <misc/allocator_malloc.hh>
+#include <utils_misc/int_types.h>
+#include <utils_misc/allocator_malloc.hh>
 #include <map>
 #include <utility>
 #include <cstring>

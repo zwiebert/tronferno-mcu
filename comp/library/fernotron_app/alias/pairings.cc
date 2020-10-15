@@ -1,14 +1,14 @@
 #include <string.h>
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
-#include "fernotron/trx/raw/fer_msg_rx.h"
-#include "misc/bcd.h"
+#include "fernotron_trx/raw/fer_msg_rx.h"
+#include "utils_misc/bcd.h"
 #include "fernotron/alias/pairings.h"
-#include "app/rtc.h"
-#include "app/uout/status_output.h"
+#include "app_misc/rtc.h"
+#include "app_uout/status_output.h"
 #include "debug/dbg.h"
-#include "misc/int_types.h"
+#include "utils_misc/int_types.h"
 
 #if defined DISTRIBUTION || 0
 #define D(x) x

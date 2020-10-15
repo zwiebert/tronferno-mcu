@@ -1,6 +1,6 @@
-#include "app/config/proj_app_cfg.h"
-#include "app/settings/config.h"
-#include "app/rtc.h"
+#include "app_config/proj_app_cfg.h"
+#include "app_settings/config.h"
+#include "app_misc/rtc.h"
 
 #include <stdlib.h>
 #include <time.h>

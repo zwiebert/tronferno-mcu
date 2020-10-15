@@ -11,7 +11,7 @@
 #endif
 #include "fernotron/auto/fau_tdata_store.h"
 #include "fernotron/auto/fau_tminutes.h"
-#include "fernotron/astro.h"
+#include "fernotron_trx/astro.h"
 #include "time.h"
 #include "debug/dbg.h"
 
@@ -51,7 +51,7 @@ TEST_CASE("save and restore timer data", "[fernotron/auto]") {
 }
 
 #ifdef TEST_HOST
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 config C;
 #endif
 

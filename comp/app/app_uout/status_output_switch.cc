@@ -1,13 +1,13 @@
-#include "app/config/proj_app_cfg.h"
-#include "app/config/options.hh"
+#include "app_config/proj_app_cfg.h"
+#include "app_config/options.hh"
 #include "so_out.h"
 #include "so_print.h"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "net/ipnet.h"
-#include "net/mqtt/mqtt.h"
+#include "net_mqtt/mqtt.h"
 #include "txtio/inout.h"
 #include "uout/status_json.hh"
-#include "app/uout/status_output.h"
+#include "app_uout/status_output.h"
 
 #include <string.h>
 #include <stdio.h>

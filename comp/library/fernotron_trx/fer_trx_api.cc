@@ -1,4 +1,4 @@
-#include <fernotron/trx/fer_trx_api.hh>
+#include <fernotron_trx/fer_trx_api.hh>
 #include "fer_trx_incoming_event.hh"
 #include "fer_trx_api_private.hh"
 

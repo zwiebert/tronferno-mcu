@@ -1,17 +1,17 @@
-#include <fernotron/trx/raw/fer_msg_plain.h>
-#include <fernotron/trx/raw/fer_msg_rx.h>
-#include "fernotron/trx/raw/fer_radio_trx.h"
+#include <fernotron_trx/raw/fer_msg_plain.h>
+#include <fernotron_trx/raw/fer_msg_rx.h>
+#include "fernotron_trx/raw/fer_radio_trx.h"
 #include <string.h>
 #include "fer_app_cfg.h"
-#include "fernotron/trx/raw/fer_rawmsg_buffer.h"
-#include "fernotron/trx/raw/fer_msg_tx.h"
+#include "fernotron_trx/raw/fer_rawmsg_buffer.h"
+#include "fernotron_trx/raw/fer_msg_tx.h"
 #include "debug/dbg.h"
 
 #include "fer_msg_tx_queue.h"
-#include <fernotron/trx/fer_trx_api.hh>
+#include <fernotron_trx/fer_trx_api.hh>
 #include "fer_trx_incoming_event.hh"
 #include "fer_trx_api_private.hh"
-#include "misc/time/run_time.h"
+#include "utils_time/run_time.h"
 
 
 

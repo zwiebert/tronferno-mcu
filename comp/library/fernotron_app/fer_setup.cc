@@ -1,22 +1,22 @@
 
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "debug/dbg.h"
 #include "fernotron/alias/pairings.h"
-#include "fernotron/astro.h"
+#include "fernotron_trx/astro.h"
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron/cuas/cuid_auto_set.h"
-#include "fernotron/trx/raw/fer_msg_attachment.h"
-#include "fernotron/trx/raw/fer_msg_rx.h"
-#include "fernotron/trx/raw/fer_msg_tx.h"
-#include "fernotron/trx/raw/fer_radio_trx.h"
+#include "fernotron_trx/raw/fer_msg_attachment.h"
+#include "fernotron_trx/raw/fer_msg_rx.h"
+#include "fernotron_trx/raw/fer_msg_tx.h"
+#include "fernotron_trx/raw/fer_radio_trx.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/txtio/fer_print.h"
 #include "fernotron/fer_main.h"
-#include <fernotron/trx/fer_trx_api.hh>
-#include <app/uout/callbacks.h>
+#include <fernotron_trx/fer_trx_api.hh>
+#include <app_uout/callbacks.h>
 #include <string.h>
 
 struct fer_configT fer_config;

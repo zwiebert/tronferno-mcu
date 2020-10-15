@@ -5,10 +5,10 @@
  *      Author: bertw
  */
 
-#include "fernotron/trx/raw/fer_msg_attachment.h"
+#include "fernotron_trx/raw/fer_msg_attachment.h"
 #include "fer_app_cfg.h"
-#include "fernotron/trx/raw/fer_rawmsg_buffer.h"
-#include "fernotron/trx/isr_timer_config.h"
+#include "fernotron_trx/raw/fer_rawmsg_buffer.h"
+#include "fernotron_trx/isr_timer_config.h"
 #include "stdbool.h"
 
 

@@ -4,11 +4,11 @@
  *  Created on: 08.09.2018
  *      Author: bertw
  */
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "timer_data_kvs.h"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "key_value_store/kvs_wrapper.h"
-#include "misc/int_types.h"
+#include "utils_misc/int_types.h"
 #include "debug/dbg.h"
 #include <alloca.h>
 #include <string.h>

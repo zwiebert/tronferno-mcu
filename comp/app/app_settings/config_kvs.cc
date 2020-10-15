@@ -5,17 +5,17 @@
  *      Author: bertw
  */
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "fernotron/fer_main.h"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "config_kvs.h"
-#include <app/settings/config.h>
-#include "app/settings/config_defaults.h"
+#include <app_settings/config.h>
+#include "app_settings/config_defaults.h"
 
-#include "misc/int_macros.h"
+#include "utils_misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
-#include "misc/int_types.h"
-#include "misc/stof.h"
+#include "utils_misc/int_types.h"
+#include "utils_misc/stof.h"
 #include <stdbool.h>
 
 #define D(x) 

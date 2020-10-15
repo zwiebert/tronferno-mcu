@@ -1,14 +1,14 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include <string.h>
 
 #include "fernotron/pos/shutter_pct.h"
 #include "cli_imp.h"
 #include "cli_fer.h"
-#include "app/common.h"
+#include "app_misc/common.h"
 #include "fernotron/alias/pairings.h"
-#include "app/uout/status_output.h"
-#include "app/opt_map.hh"
+#include "app_uout/status_output.h"
+#include "app_misc/opt_map.hh"
 
 #if defined DISTRIBUTION || 0
 #define D(x) x

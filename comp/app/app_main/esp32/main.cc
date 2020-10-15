@@ -1,11 +1,11 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "main.h"
-#include "misc/int_types.h"
+#include "utils_misc/int_types.h"
 #include "net/ipnet.h"
 #include "net/tcp_cli_server.h"
 #include "net/wifi_ap.h"
-#include "net/http/server/http_server.h"
+#include "net_http_server/http_server.h"
 #include "net/tcp_cli_server.h"
 #include "../app_private.h"
 

@@ -1,12 +1,12 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "fernotron/alias/pairings.h"
 #include <stdio.h>
 #include <string.h>
-#include "app/uout/status_output.h"
+#include "app_uout/status_output.h"
 #include "key_value_store/kvs_wrapper.h"
-#include "misc/int_types.h"
-#include "misc/itoa.h"
+#include "utils_misc/int_types.h"
+#include "utils_misc/itoa.h"
 #include "debug/dbg.h"
 
 #ifndef DISTRIBUTION

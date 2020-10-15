@@ -1,22 +1,22 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include <string.h>
 #include "fernotron/pos/shutter_pct.h"
-#include "app/uout/status_output.h"
-#include "app/uout/so_msg.h"
-#include "app/uout/callbacks.h"
+#include "app_uout/status_output.h"
+#include "app_uout/so_msg.h"
+#include "app_uout/callbacks.h"
 #include "uout/status_json.hh"
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
-#include "app/rtc.h"
-#include "misc/bcd.h"
+#include "app_misc/rtc.h"
+#include "utils_misc/bcd.h"
 #include "cli_imp.h"
 #include "cli_fer.h"
-#include "app/opt_map.hh"
+#include "app_misc/opt_map.hh"
 #include "fernotron/auto/fau_tdata_store.h"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include <fernotron/fer_main.h>
-#include <fernotron/trx/fer_trx_api.hh>
+#include <fernotron_trx/fer_trx_api.hh>
 
 #include <stdlib.h>
 

@@ -9,10 +9,10 @@
 
 #include "fernotron/pos/commands.h"
 #include "fernotron/pos/shutter_pct.h"
-#include "app/config/proj_app_cfg.h"
-#include "app/settings/config.h"
+#include "app_config/proj_app_cfg.h"
+#include "app_settings/config.h"
 #include "debug/dbg.h"
-#include <fernotron/trx/fer_trx_api.hh>
+#include <fernotron_trx/fer_trx_api.hh>
 
 #define GRP_MAX 7
 #define MBR_MAX 7

@@ -4,17 +4,17 @@
  *  Created on: 13.03.2019
  *      Author: bertw
  */
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "so_out.h"
 #include <uout/so_out.h>
-#include <app/config/options.hh>
+#include <app_config/options.hh>
 #include "txtio/inout.h"
 #include "uout/status_json.hh"
 #include "debug/dbg.h"
-#include "misc/int_macros.h"
-#include "misc/ftoa.h"
-#include "misc/itoa.h"
-#include <app/opt_map.hh>
+#include "utils_misc/int_macros.h"
+#include "utils_misc/ftoa.h"
+#include "utils_misc/itoa.h"
+#include <app_misc/opt_map.hh>
 #include <string.h>
 #include <stdio.h>
 

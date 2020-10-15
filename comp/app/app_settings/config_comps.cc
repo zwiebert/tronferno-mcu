@@ -5,13 +5,13 @@
  *      Author: bertw
  */
 
-#include "app/settings/config.h"
-#include "app/settings/config_defaults.h"
+#include "app_settings/config.h"
+#include "app_settings/config_defaults.h"
 #include "config_kvs.h"
-#include <fernotron/trx/fer_trx_api.hh>
-#include "misc/int_macros.h"
+#include <fernotron_trx/fer_trx_api.hh>
+#include "utils_misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
-#include "misc/int_types.h"
+#include "utils_misc/int_types.h"
 
 #include <string.h>
 
@@ -84,7 +84,7 @@ uint32_t config_read_used_members() {
 
 
 #if 1
-#include "fernotron/astro.h"
+#include "fernotron_trx/astro.h"
 double tz2offset(const char *tz);
 struct cfg_astro* config_read_astro(struct cfg_astro *c) {
   kvshT h;
@@ -127,7 +127,7 @@ enum astroCorrection config_read_astro_correction() {
 #endif
 
 #ifdef USE_MQTT
-#include "net/mqtt/app/mqtt.h"
+#include "app_mqtt/mqtt.h"
 void config_setup_mqttAppClient() {
   config_setup_mqttClient();
   io_mqttApp_setup("tfmcu/");

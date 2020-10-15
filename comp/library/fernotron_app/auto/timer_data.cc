@@ -4,11 +4,11 @@
  *  Created on: 08.09.2018
  *      Author: bertw
  */
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "timer_data_fs.h"
 #include "timer_data_kvs.h"
 #include "fernotron/auto/fau_tdata_store.h"
-#include "misc/int_types.h"
+#include "utils_misc/int_types.h"
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 void (*fer_au_TIMER_DATA_CHANGE_cb)(void);

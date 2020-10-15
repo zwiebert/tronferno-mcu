@@ -5,13 +5,13 @@
  *      Author: bertw
  */
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
-#include "app/rtc.h"
-#include "app/timer.h"
-#include "app/settings/config.h"
-#include "fernotron/trx/isr_timer_config.h"
-#include <fernotron/trx/fer_trx_api.hh>
+#include "app_misc/rtc.h"
+#include "app_misc/timer.h"
+#include "app_settings/config.h"
+#include "fernotron_trx/isr_timer_config.h"
+#include <fernotron_trx/fer_trx_api.hh>
 #include "txtio/inout.h"
 
 #include "driver/periph_ctrl.h"
@@ -20,7 +20,7 @@
 #include "esp_timer.h"
 #include "esp_types.h"
 #include "hal/timer_types.h"
-#include "misc/int_types.h"
+#include "utils_misc/int_types.h"
 #include "sdkconfig.h"
 #include "soc/timer_group_struct.h"
 #include <esp32/rom/ets_sys.h>

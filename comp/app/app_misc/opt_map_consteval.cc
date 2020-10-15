@@ -4,8 +4,8 @@
  * \note  XXX: its not using std::sort, std::swap, ... because they are not constexpr in the current esp32 gcc version.
  */
 
-#include "app/opt_map.hh"
-#include <misc/int_types.h>
+#include "app_misc/opt_map.hh"
+#include <utils_misc/int_types.h>
 #include <utility>
 #include <cstring>
 #include <algorithm>

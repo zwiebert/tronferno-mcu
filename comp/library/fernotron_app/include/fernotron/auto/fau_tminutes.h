@@ -6,7 +6,7 @@
 #pragma once
 
 #include "fernotron/types.h"
-#include "fernotron/trx/timer_data.h"
+#include "fernotron_trx/timer_data.h"
 
 #include <stdint.h>
 #include <stdbool.h>

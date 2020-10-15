@@ -15,11 +15,11 @@
 #include "txtio/inout.h"
 #include "driver/uart.h"
 
-#include "app/settings/config.h"
-#include "app/rtc.h"
-#include "fernotron/trx/raw/fer_radio_timings.h"
-#include "fernotron/trx/isr_timer_config.h"
-#include "fernotron/trx/raw/fer_radio_trx.h"
+#include "app_settings/config.h"
+#include "app_misc/rtc.h"
+#include "fernotron_trx/raw/fer_radio_timings.h"
+#include "fernotron_trx/isr_timer_config.h"
+#include "fernotron_trx/raw/fer_radio_trx.h"
 
 
 

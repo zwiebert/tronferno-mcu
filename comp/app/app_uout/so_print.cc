@@ -1,12 +1,12 @@
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "so_out.h"
 
-#include "app/common.h"
-#include "app/firmware.h"
-#include "app/rtc.h"
+#include "app_misc/common.h"
+#include "app_misc/firmware.h"
+#include "app_misc/rtc.h"
 
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 
 #include "fernotron/auto/fau_tminutes.h"
 #include "fernotron/auto/fau_tdata_store.h"
@@ -15,12 +15,12 @@
 #include "txtio/inout.h"
 #include "uout/status_json.hh"
 #include "uout/cli_out.h"
-#include "app/uout/status_output.h"
-#include <app/uout/callbacks.h>
+#include "app_uout/status_output.h"
+#include <app_uout/callbacks.h>
 
-#include "misc/int_macros.h"
-#include "misc/ftoa.h"
-#include "misc/itoa.h"
+#include "utils_misc/int_macros.h"
+#include "utils_misc/ftoa.h"
+#include "utils_misc/itoa.h"
 #include <string.h>
 #include <stdio.h>
 #include <time.h>

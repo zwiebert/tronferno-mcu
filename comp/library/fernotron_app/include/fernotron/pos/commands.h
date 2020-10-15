@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "fernotron/trx/raw/fer_msg_plain.h"
+#include "fernotron_trx/raw/fer_msg_plain.h"
 #include <stdint.h>
 #include "stdbool.h"
 #include "shutter_pct.h"

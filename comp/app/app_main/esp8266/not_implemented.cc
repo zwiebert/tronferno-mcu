@@ -14,11 +14,11 @@
 #include "driver/uart.h"
 #include <mem.h>
 
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include <time.h>
 
 #include "txtio/inout.h"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 
 
 

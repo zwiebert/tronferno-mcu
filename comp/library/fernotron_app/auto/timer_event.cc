@@ -1,12 +1,12 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron/auto/fau_tdata_store.h"
-#include "app/rtc.h"
-#include "fernotron/astro.h"
-#include "app/settings/config.h"
+#include "app_misc/rtc.h"
+#include "fernotron_trx/astro.h"
+#include "app_settings/config.h"
 #include "debug/dbg.h"
-#include "misc/int_macros.h"
+#include "utils_misc/int_macros.h"
 #include "time.h"
 #include "fernotron/pos/shutter_pct.h"
 #include <fernotron/fer_main.h>

@@ -1,4 +1,4 @@
 #pragma once
-#include <fernotron/astro.h>
+#include <fernotron_trx/astro.h>
 
 enum astroCorrection config_read_astro_correction();

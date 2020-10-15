@@ -3,8 +3,8 @@
 #include <test_runner.h>
 #endif
 
-#include <app/opt_map.hh>
-#include <app/uout/so_types.h>
+#include <app_misc/opt_map.hh>
+#include <app_uout/so_types.h>
 
 static void testOptMap1() {
 

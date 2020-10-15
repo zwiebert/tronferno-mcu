@@ -6,16 +6,16 @@
  */
 
 #include <string.h>
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "fernotron/cuas/cuid_auto_set.h"
 
-#include "app/settings/config.h"
-#include "app/common.h"
-#include "app/uout/status_output.h"
-#include "app/rtc.h"
-#include "fernotron/trx/raw/fer_msg_rx.h"
-#include "fernotron/trx/raw/fer_msg_attachment.h"
+#include "app_settings/config.h"
+#include "app_misc/common.h"
+#include "app_uout/status_output.h"
+#include "app_misc/rtc.h"
+#include "fernotron_trx/raw/fer_msg_rx.h"
+#include "fernotron_trx/raw/fer_msg_attachment.h"
 
 static const struct TargetDesc *my_td;
 

@@ -5,19 +5,19 @@
  *      Author: bertw
  */
 
-#include "app/config/proj_app_cfg.h"
-#include "net/mqtt/app/mqtt.h"
-#include "net/mqtt/mqtt_imp.h"
+#include "app_config/proj_app_cfg.h"
+#include "app_mqtt/mqtt.h"
+#include "net_mqtt/mqtt_imp.h"
 
 #include "mqtt_private.h"
-#include "net/mqtt/mqtt.hh"
+#include "net_mqtt/mqtt.hh"
 #include <string.h>
 #include <stdio.h>
 #include "cli/cli.h"
 #include "cli/mutex.hh"
 #include "uout/status_json.hh"
-#include "app/uout/status_output.h"
-#include <app/uout/callbacks.h>
+#include "app_uout/status_output.h"
+#include <app_uout/callbacks.h>
 
 static char *io_mqtt_topic_root;
 

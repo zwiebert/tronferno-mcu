@@ -1,10 +1,10 @@
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "fernotron/pos/shutter_prefs.h"
 #include "cli_imp.h"
-#include "app/opt_map.hh"
-#include "app/uout/status_output.h"
-#include "misc/int_types.h"
+#include "app_misc/opt_map.hh"
+#include "app_uout/status_output.h"
+#include "utils_misc/int_types.h"
 #include "debug/dbg.h"
 #include <string.h>
 #include <alloca.h>

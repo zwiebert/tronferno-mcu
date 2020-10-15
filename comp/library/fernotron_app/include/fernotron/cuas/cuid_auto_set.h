@@ -7,7 +7,7 @@
 #pragma once
 
 #include "stdbool.h"
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 
 extern void (*fer_cuas_enable_disable_cb)(bool enable);

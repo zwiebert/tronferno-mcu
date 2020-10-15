@@ -12,8 +12,8 @@
 #define CFG_NAMESPACE "tf_gmbm"   // dedicated file, so all objects are same size
 #endif
 
-#include "app/config/proj_app_cfg.h"
-#include "app/settings/config.h"
+#include "app_config/proj_app_cfg.h"
+#include "app_settings/config.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "debug/dbg.h"
 

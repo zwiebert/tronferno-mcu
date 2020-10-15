@@ -1,19 +1,19 @@
 
-#include <misc/int_macros.h>
-#include <misc/cstring_utils.hh>
+#include <utils_misc/int_macros.h>
+#include <utils_misc/cstring_utils.hh>
 #include <cli/mutex.hh>
 #include <txtio/txtio_mutex.hh>
-#include <app/uout/so_msg.h>
-#include <app/uout/so_types.h>
+#include <app_uout/so_msg.h>
+#include <app_uout/so_types.h>
 #include <uout/status_json.hh>
-#include <fernotron/trx/fer_trx_api.hh>
+#include <fernotron_trx/fer_trx_api.hh>
 #include <stdio.h>
 #include <string.h>
 #include <debug/dbg.h>
 
 #define UOUT_PROTECTED
 #include <uout/uo_callbacks.h>
-#include <app/uout/callbacks.h>
+#include <app_uout/callbacks.h>
 
 
 static void publish(uoCb_cbT cb, const void *ptr, uo_flagsT flags) {

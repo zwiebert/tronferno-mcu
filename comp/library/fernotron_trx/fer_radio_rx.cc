@@ -1,14 +1,14 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "fer_radio_parity.h"
-#include <fernotron/trx/raw/fer_msg_plain.h>
-#include "fernotron/trx/isr_timer_config.h"
+#include <fernotron_trx/raw/fer_msg_plain.h>
+#include "fernotron_trx/isr_timer_config.h"
 #include <stdlib.h>
 #include "fer_app_cfg.h"
-#include "fernotron/trx/raw/fer_rawmsg_buffer.h"
-#include "fernotron/trx/raw/fer_msg_tx.h"
+#include "fernotron_trx/raw/fer_rawmsg_buffer.h"
+#include "fernotron_trx/raw/fer_msg_tx.h"
 #include "debug/dbg.h"
-#include "misc/int_macros.h"
+#include "utils_misc/int_macros.h"
 
 
 //  the same timings relative to ticks of interrupt frequency

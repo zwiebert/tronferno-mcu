@@ -2,24 +2,24 @@
 
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/shutter_pct.h"
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 
 #include "fernotron/auto/fau_tevent.h"
 #include "cli/cli.h"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "debug/dbg.h"
-#include "app/rtc.h"
+#include "app_misc/rtc.h"
 #include "fernotron/alias/pairings.h"
-#include "app/uout/status_output.h"
+#include "app_uout/status_output.h"
 #include "fernotron/txtio/fer_print.h"
-#include "fernotron/astro.h"
-#include "fernotron/trx/raw/fer_msg_attachment.h"
-#include "fernotron/trx/raw/fer_msg_tx.h"
-#include "fernotron/trx/raw/fer_msg_rx.h"
-#include "fernotron/trx/callbacks.h"
-#include "app/fernotron.h"
+#include "fernotron_trx/astro.h"
+#include "fernotron_trx/raw/fer_msg_attachment.h"
+#include "fernotron_trx/raw/fer_msg_tx.h"
+#include "fernotron_trx/raw/fer_msg_rx.h"
+#include "fernotron_trx/callbacks.h"
+#include "app_misc/fernotron.h"
 
 void loop(void);
 void tcpCli_loop(void);

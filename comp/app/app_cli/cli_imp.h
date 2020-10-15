@@ -1,6 +1,6 @@
 #pragma once
 #include "cli/cli.h"
-#include "app/cli/cli_app.h"
+#include "app_cli/cli_app.h"
 #include <uout/cli_out.h>
 
 

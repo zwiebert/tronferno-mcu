@@ -4,7 +4,7 @@
  *  Created on: 13.09.2017
  *      Author: bertw
  */
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "user_interface.h"
 #include <os_type.h>

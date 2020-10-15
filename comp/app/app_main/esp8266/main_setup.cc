@@ -1,4 +1,4 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "storage/storage.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "user_interface.h"
@@ -10,13 +10,13 @@
 
 #include "txtio/inout.h"
 #include "driver/uart.h"
-#include "fernotron/trx/callbacks.h"
-#include "app/common.h"
-#include "app/settings/config.h"
+#include "fernotron_trx/callbacks.h"
+#include "app_misc/common.h"
+#include "app_settings/config.h"
 #include "net/wifistation.h"
 #include "net/ntp.h"
 #include "net/tcp_cli_server.h"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 
 #include "main.h"
 

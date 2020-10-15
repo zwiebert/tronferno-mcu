@@ -9,15 +9,15 @@
 #include <test_runner.h>
 #endif
 
-#include <fernotron/trx/raw/fer_msg_plain.h>
-#include "fernotron/astro.h"
+#include <fernotron_trx/raw/fer_msg_plain.h>
+#include "fernotron_trx/astro.h"
 #include <string.h>
 #include "../fer_app_cfg.h"
 #include "../fer_api.h"
 #include "debug/dbg.h"
-#include "fernotron/trx/raw/fer_rawmsg_build.h"
-#include <fernotron/trx/fer_trx_api.hh>
-#include "misc/bcd.h"
+#include "fernotron_trx/raw/fer_rawmsg_build.h"
+#include <fernotron_trx/fer_trx_api.hh>
+#include "utils_misc/bcd.h"
 
 
 
@@ -58,7 +58,7 @@ const u8 testdat_wtimer[] =
 const u8 testdat_dtimer[] = { };
 extern const u8 astro_data[12][8];
 
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 
 static void test_ferMsg_size() {
   TEST_ASSERT_EQUAL(FER_CMD_BYTE_CT - 1, sizeof test_msg.cmd.sd.cmd);

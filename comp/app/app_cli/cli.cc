@@ -5,17 +5,17 @@
  *  Author: bertw
  */
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include <string.h>
-#include "app/settings/config.h"
-#include "misc/bcd.h"
+#include "app_settings/config.h"
+#include "utils_misc/bcd.h"
 #include "cli_imp.h"
-#include "app/cli/cli_app.h"
+#include "app_cli/cli_app.h"
 #include "uout/status_json.hh"
 #include "cli/cli.h"
-#include "app/uout/status_output.h"
-#include "app/settings/config.h"
-#include <fernotron/trx/fer_trx_c_api.h>
+#include "app_uout/status_output.h"
+#include "app_settings/config.h"
+#include <fernotron_trx/fer_trx_c_api.h>
 #include <algorithm>
 #include <iterator>
 

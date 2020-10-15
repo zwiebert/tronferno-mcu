@@ -5,18 +5,18 @@
  *  Author: bertw
  */
 
-#include <fernotron/trx/raw/fer_msg_plain.h>
-#include "fernotron/astro.h"
+#include <fernotron_trx/raw/fer_msg_plain.h>
+#include "fernotron_trx/astro.h"
 #include <string.h>
 #include "fer_app_cfg.h"
 #include "fer_api.h"
 #include "debug/dbg.h"
 
-#include "fernotron/trx/raw/fer_rawmsg_buffer.h"
-//#include "app/rtc.h"
+#include "fernotron_trx/raw/fer_rawmsg_buffer.h"
+//#include "app_misc/rtc.h"
 //#include "fernotron/auto/astro.h"
-//#include "app/settings/config.h"
-#include "misc/bcd.h"
+//#include "app_settings/config.h"
+#include "utils_misc/bcd.h"
 
 /* verify all checksums of message in place. */
 bool  fer_msg_raw_checksumsVerify(const struct fer_raw_msg *m, fer_msg_type t) {

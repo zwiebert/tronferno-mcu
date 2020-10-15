@@ -2,8 +2,8 @@
 #ifdef TEST_HOST
 #include <test_runner.h>
 #endif
-#include <fernotron/trx/fer_trx_api.hh>
-#include "fernotron/trx/raw/fer_msg_tx.h"
+#include <fernotron_trx/fer_trx_api.hh>
+#include "fernotron_trx/raw/fer_msg_tx.h"
 
 int first_msg_count, any_msg_count;
 Fer_MsgPlainCmd first_msg_cmd, any_msg_cmd;

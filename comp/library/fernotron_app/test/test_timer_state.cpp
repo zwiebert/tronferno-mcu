@@ -10,13 +10,13 @@
 #endif
 #include "fernotron/auto/fau_tdata_store.h"
 #include "fernotron/auto/fau_tevent.h"
-#include "fernotron/astro.h"
+#include "fernotron_trx/astro.h"
 #include <time.h>
 #include <fernotron/types.h>
 #include "debug/dbg.h"
-#include "app/settings/config.h"
-#include <misc/int_types.h>
-#include <fernotron/trx/fer_trx_api.hh>
+#include "app_settings/config.h"
+#include <utils_misc/int_types.h>
+#include <fernotron_trx/fer_trx_api.hh>
 
 bool succ;
 
@@ -363,7 +363,7 @@ TEST_CASE("timer next event", "[fernotron/auto]") {
 }
 
 #ifdef TEST_HOST
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 //Fer_GmSet manual_bits;
 //config C;
 

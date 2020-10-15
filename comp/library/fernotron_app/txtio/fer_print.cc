@@ -11,13 +11,13 @@
 #include <stdint.h>
 #include "stdbool.h"
 
-#include "fernotron/trx/raw/fer_radio_timings.h"
-#include "fernotron/trx/raw/fer_fsb.h"
-#include "fernotron/trx/raw/fer_msg_attachment.h"
-#include "misc/int_macros.h"
+#include "fernotron_trx/raw/fer_radio_timings.h"
+#include "fernotron_trx/raw/fer_fsb.h"
+#include "fernotron_trx/raw/fer_msg_attachment.h"
+#include "utils_misc/int_macros.h"
 #include "txtio/inout.h"
-#include <fernotron/trx/fer_trx_c_api.h>
-#include <fernotron/trx/fer_trx_api.hh>
+#include <fernotron_trx/fer_trx_c_api.h>
+#include <fernotron_trx/fer_trx_api.hh>
 
 typedef uint8_t u8;
 typedef int8_t i8;

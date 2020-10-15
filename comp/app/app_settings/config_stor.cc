@@ -1,6 +1,6 @@
 #include "stdbool.h"
 #include "storage/storage.h"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 
 #define CONFIG_FILE_NAME "mcu_cfg"
 

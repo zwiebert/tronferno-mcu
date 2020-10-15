@@ -11,7 +11,7 @@
 #endif
 #include "stdbool.h"
 
-#include "app/rtc.h"
+#include "app_misc/rtc.h"
 
 
 void test_rtc()

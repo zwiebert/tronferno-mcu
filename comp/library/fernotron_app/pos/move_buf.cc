@@ -11,8 +11,8 @@
 #include "stdbool.h"
 #include <stdint.h>
 #include "fernotron/types.h"
-#include "misc/int_macros.h"
-#include "misc/int_types.h"
+#include "utils_misc/int_macros.h"
+#include "utils_misc/int_types.h"
 
 #define fer_mv_SIZE 8
 struct Fer_Move moving[fer_mv_SIZE];

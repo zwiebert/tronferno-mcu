@@ -5,8 +5,8 @@
 *  Author: bertw
 */
 
-#include <fernotron/trx/raw/fer_msg_plain.h>
-#include <fernotron/trx/raw/fer_msg_attachment.h>
+#include <fernotron_trx/raw/fer_msg_plain.h>
+#include <fernotron_trx/raw/fer_msg_attachment.h>
 #include <stdlib.h>
 #include <math.h>
 #include "stdbool.h"
@@ -14,11 +14,11 @@
 #include "fer_app_cfg.h"
 #include "fer_api.h"
 
-#include "fernotron/astro.h"
-#include "misc/sun.h"
-#include "misc/bcd.h"
+#include "fernotron_trx/astro.h"
+#include "utils_misc/sun.h"
+#include "utils_misc/bcd.h"
 #include "debug/dbg.h"
-#include "misc/int_macros.h"
+#include "utils_misc/int_macros.h"
 
 #include <string.h>
 

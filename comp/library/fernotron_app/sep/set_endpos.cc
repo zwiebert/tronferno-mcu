@@ -1,19 +1,19 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "fernotron/sep/set_endpos.h"
 
-#include <fernotron/trx/raw/fer_msg_plain.h>
-#include <fernotron/trx/raw/fer_msg_attachment.h>
-#include <fernotron/trx/raw/fer_msg_tx.h>
-#include "fernotron/trx/raw/fer_radio_trx.h"
-#include "fernotron/trx/raw/fer_rawmsg_buffer.h"
-#include "fernotron/trx/raw/fer_fsb.h"
+#include <fernotron_trx/raw/fer_msg_plain.h>
+#include <fernotron_trx/raw/fer_msg_attachment.h>
+#include <fernotron_trx/raw/fer_msg_tx.h>
+#include "fernotron_trx/raw/fer_radio_trx.h"
+#include "fernotron_trx/raw/fer_rawmsg_buffer.h"
+#include "fernotron_trx/raw/fer_fsb.h"
 
 #include "gpio/pin.h"
 
-#include "app/rtc.h"
+#include "app_misc/rtc.h"
 #include "txtio/inout.h"
-#include "app/uout/status_output.h"
-#include <fernotron/trx/fer_trx_c_api.h>
+#include "app_uout/status_output.h"
+#include <fernotron_trx/fer_trx_c_api.h>
 
 //////////////////////////////////////////////////////////////////
 // DANGER ZONE

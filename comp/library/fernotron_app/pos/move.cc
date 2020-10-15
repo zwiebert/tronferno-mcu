@@ -9,20 +9,20 @@
 #include "fernotron/pos/shutter_pct.h"
 #include "fernotron/pos/shutter_prefs.h"
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "debug/dbg.h"
-#include "misc/int_macros.h"
-#include "app/uout/status_output.h"
-#include "app/uout/callbacks.h"
+#include "utils_misc/int_macros.h"
+#include "app_uout/status_output.h"
+#include "app_uout/callbacks.h"
 #include "uout/cli_out.h"
 #include "uout/status_json.hh"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
 #include <fernotron/fer_main.h>
-#include "misc/time/periodic.h"
-#include "misc/time/run_time.h"
+#include "utils_time/periodic.h"
+#include "utils_time/run_time.h"
 
 #include "move.h"
 

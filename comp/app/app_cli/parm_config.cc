@@ -1,34 +1,34 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "cli_config.h"
-#include "app/opt_map.hh"
+#include "app_misc/opt_map.hh"
 #include <string.h>
 
 #include "fernotron/sep/set_endpos.h"
-#include "app/uout/status_output.h"
+#include "app_uout/status_output.h"
 #include "fernotron/cuas/cuid_auto_set.h"
-#include "app/config/proj_app_cfg.h"
-#include "app/settings/config.h"
-#include "app/rtc.h"
-#include "misc/bcd.h"
+#include "app_config/proj_app_cfg.h"
+#include "app_settings/config.h"
+#include "app_misc/rtc.h"
+#include "utils_misc/bcd.h"
 #include "cli_imp.h"
-#include "misc/stof.h"
+#include "utils_misc/stof.h"
 #ifdef USE_MQTT
-#include "net/mqtt/app/mqtt.h"
+#include "app_mqtt/mqtt.h"
 #endif
 #ifdef USE_HTTP
-#include "net/http/server/http_server.h"
+#include "net_http_server/http_server.h"
 #endif
 #ifdef USE_NTP
 #include "net/ntp.h"
 #endif
-#include "fernotron/astro.h"
-#include <fernotron/trx/fer_trx_c_api.h>
+#include "fernotron_trx/astro.h"
+#include <fernotron_trx/fer_trx_c_api.h>
 
-#include "app/common.h"
-#include "misc/int_types.h"
+#include "app_misc/common.h"
+#include "utils_misc/int_types.h"
 #include "gpio/pin.h"
-#include <misc/mutex.hh>
+#include <utils_misc/mutex.hh>
 
 
 #include <stdlib.h>

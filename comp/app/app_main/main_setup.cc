@@ -1,8 +1,8 @@
-#include "app/rtc.h"
+#include "app_misc/rtc.h"
 #include "fernotron/fer_main.h"
-#include "app/uout/so_types.h"
-#include "app/uout/so_msg.h"
-#include "app/settings/config.h"
+#include "app_uout/so_types.h"
+#include "app_uout/so_msg.h"
+#include "app_settings/config.h"
 
 void main_setup() {
   rtc_setup();

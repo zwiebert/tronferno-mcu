@@ -10,16 +10,16 @@
 #include <test_runner.h>
 #endif
 
-#include <fernotron/trx/raw/fer_msg_plain.h>
-#include "fernotron/astro.h"
-#include "misc/sun.h"
+#include <fernotron_trx/raw/fer_msg_plain.h>
+#include "fernotron_trx/astro.h"
+#include "utils_misc/sun.h"
 #include <string.h>
 #include "../fer_app_cfg.h"
 #include "debug/dbg.h"
-#include "fernotron/trx/raw/fer_rawmsg_build.h"
-#include "misc/bcd.h"
-#include "app/settings/config.h"
-#include <fernotron/trx/fer_trx_api.hh>
+#include "fernotron_trx/raw/fer_rawmsg_build.h"
+#include "utils_misc/bcd.h"
+#include "app_settings/config.h"
+#include <fernotron_trx/fer_trx_api.hh>
 
 #if 0
 static u8 data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];

@@ -5,12 +5,12 @@
  *      Author: bertw
  */
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "gpio/pin.h"
 
 #include "txtio/inout.h"
 #include "uout/uo_callbacks.h"
-#include <misc/int_macros.h>
+#include <utils_misc/int_macros.h>
 #include "freertos/FreeRTOS.h"
 #include <esp_intr_alloc.h>
 #include "esp_wifi.h"

@@ -10,8 +10,8 @@
  */
 #pragma once
 
-#include "fernotron/trx/timer_data.h"
-#include "app/config/proj_app_cfg.h"
+#include "fernotron_trx/timer_data.h"
+#include "app_config/proj_app_cfg.h"
 
 /**
  * \brief      Called if stored timer data has been modified.

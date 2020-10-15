@@ -12,7 +12,7 @@
 #endif
 
 #include <string.h>
-#include "misc/int_types.h"
+#include "utils_misc/int_types.h"
 #include "fernotron/gm_set.hh"
 
 

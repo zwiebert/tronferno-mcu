@@ -1,20 +1,20 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include <string.h>
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/commands.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "txtio/inout.h"
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
-#include "misc/bcd.h"
+#include "utils_misc/bcd.h"
 #include "cli_imp.h"
-#include "app/uout/status_output.h"
-#include "app/settings/config.h"
+#include "app_uout/status_output.h"
+#include "app_settings/config.h"
 #include "cli_fer.h"
-#include "app/opt_map.hh"
+#include "app_misc/opt_map.hh"
 #include <stdlib.h>
-#include <fernotron/trx/fer_trx_c_api.h>
+#include <fernotron_trx/fer_trx_c_api.h>
 
 #define FER_SB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 

@@ -1,26 +1,26 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include <string.h>
 
-#include "app/firmware.h"
+#include "app_misc/firmware.h"
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/shutter_pct.h"
 #include <fernotron/alias/pairings.h>
 #include "txtio/inout.h"
 #include "gpio/pin.h"
-#include "app/uout/status_output.h"
-#include <app/uout/so_msg.h>
+#include "app_uout/status_output.h"
+#include <app_uout/so_msg.h>
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron/auto/fau_tdata_store.h"
 #include "key_value_store/kvs_wrapper.h"
-#include "misc/bcd.h"
-#include "app/rtc.h"
+#include "utils_misc/bcd.h"
+#include "app_misc/rtc.h"
 #include "cli_imp.h"
-#include "app/opt_map.hh"
+#include "app_misc/opt_map.hh"
 
 #include "debug/dbg.h"
 #ifdef USE_HTTP
-#include "http_server_content/hts_clients.h"
+#include "app_http_server/hts_clients.h"
 #endif
 
 #ifdef USE_FREERTOS

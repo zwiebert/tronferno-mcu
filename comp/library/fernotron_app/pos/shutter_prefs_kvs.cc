@@ -5,10 +5,10 @@
  *      Author: bertw
  */
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "fernotron/pos/shutter_prefs.h"
 #include "key_value_store/kvs_wrapper.h"
-#include "misc/int_types.h"
+#include "utils_misc/int_types.h"
 #include <alloca.h>
 #include <string.h>
 

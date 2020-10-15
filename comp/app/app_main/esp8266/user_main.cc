@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "user_interface.h"
 #include <os_type.h>
@@ -14,15 +14,15 @@
 #include <gpio.h>
 #include "gpio/pin.h"
 
-#include "app/uout/status_output.h"
+#include "app_uout/status_output.h"
 #include "txtio/inout.h"
 #include "driver/uart.h"
-#include "fernotron/trx/callbacks.h"
+#include "fernotron_trx/callbacks.h"
 
 
 
-#include "app/common.h"
-#include "app/settings/config.h"
+#include "app_misc/common.h"
+#include "app_settings/config.h"
 
 #include "main.h"
 

@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "app/config/proj_app_cfg.h"
-#include "app/settings/config.h"
+#include "app_config/proj_app_cfg.h"
+#include "app_settings/config.h"
 
 #ifndef CFG_NAMESPACE
 #define CFG_NAMESPACE "config"

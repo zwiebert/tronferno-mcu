@@ -8,7 +8,7 @@
 #include "fer_app_cfg.h"
 
 #include "fer_radio_parity.h"
-#include "misc/int_types.h"
+#include "utils_misc/int_types.h"
 
 /*  "t if VAL contains an even number of 1 bits" */
 bool IRAM_ATTR is_bits_even(u8 val) {
