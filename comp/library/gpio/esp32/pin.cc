@@ -9,7 +9,7 @@
 #include "gpio/pin.h"
 
 #include "txtio/inout.h"
-#include "uout/callbacks.h"
+#include "uout/uo_callbacks.h"
 #include <misc/int_macros.h>
 #include "freertos/FreeRTOS.h"
 #include <esp_intr_alloc.h>

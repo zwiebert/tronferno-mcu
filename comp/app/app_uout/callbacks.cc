@@ -12,7 +12,7 @@
 #include <debug/dbg.h>
 
 #define UOUT_PROTECTED
-#include <uout/callbacks.h>
+#include <uout/uo_callbacks.h>
 #include <app/uout/callbacks.h>
 
 

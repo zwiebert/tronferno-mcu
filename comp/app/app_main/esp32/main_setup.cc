@@ -31,7 +31,7 @@
 #include <ctime>
 #include "config_kvs/config.h"
 #include "app/uout/status_output.h"
-#include "uout/callbacks.h"
+#include "uout/uo_callbacks.h"
 #include "../app_private.h"
 #include "fernotron/types.h"
 #include "app/loop.h"

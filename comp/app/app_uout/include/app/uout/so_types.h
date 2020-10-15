@@ -1,6 +1,6 @@
 #pragma once
 
-#include <uout/status_output.h>
+#include <uout/uo_types.h>
 #include <stdint.h>
 
 typedef enum {

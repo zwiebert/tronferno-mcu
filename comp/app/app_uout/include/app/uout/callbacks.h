@@ -1,8 +1,11 @@
+/**
+ * \file app/uout/callbacks.h
+ */
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
 #include <app/uout/status_output.h>
-#include <uout/callbacks.h>
+#include <uout/uo_callbacks.h>
 #include <type_traits>
 
 

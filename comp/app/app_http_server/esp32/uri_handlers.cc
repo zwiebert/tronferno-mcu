@@ -284,7 +284,7 @@ void hts_register_uri_handlers(httpd_handle_t server) {
 
 static void ws_send_json_cb(const uoCb_msgT msg) {
   if (auto json = uoCb_jsonFromMsg(msg))
-    ws_send_json(json);
+    ws_send_json(json, -1);
 }
 
 void hts_setup_content() {

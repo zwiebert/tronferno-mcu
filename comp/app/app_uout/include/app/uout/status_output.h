@@ -9,7 +9,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "uout/status_output.h"
+#include "uout/uo_types.h"
 #include <app/uout/so_types.h>
 #include <app/uout/so_msg.h>
 #include <app/uout/so_config.h>
