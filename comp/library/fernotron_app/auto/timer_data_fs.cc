@@ -48,7 +48,7 @@ static bool  read_data2(Fer_TimerData *p, const char *file_name) {
 static int delete_shadowded_files(u8 group, u8 memb) {
   int result = 0;
   DB2(printf("delete shadowed files(group=%d, memb=%d)\n", (int)group, (int)memb));
-  for (Fer_GmSet_Iterator it; it; ++it) {
+  for (Fer_Gm_Counter it; it; ++it) {
     const gT g = it.getG();
     const mT m = it.getM();
     if ((group == 0 || group == g) && (memb == 0 || (memb == m && C.fer_usedMemberMask.getMember(g, m)))) {

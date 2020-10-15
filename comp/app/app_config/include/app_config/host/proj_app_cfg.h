@@ -1,4 +1,7 @@
-// override entries from sdkconfig if necessary
+/**
+ * \file app_config/host/proj_app_cfg.h
+ * \brief override entries from sdkconfig.h if necessary
+ */
 #define MCU_TYPE "host"
 
 #include "./sdkconfig.h"

@@ -11,7 +11,7 @@
 #include "fernotron/cuas/cuid_auto_set.h"
 
 #include "app_settings/config.h"
-#include "app_misc/common.h"
+#include "utils_misc/int_types.h"
 #include "app_uout/status_output.h"
 #include "app_misc/rtc.h"
 #include "fernotron_trx/raw/fer_msg_rx.h"

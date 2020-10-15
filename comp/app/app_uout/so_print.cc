@@ -2,7 +2,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "so_out.h"
 
-#include "app_misc/common.h"
+#include "utils_misc/int_types.h"
 #include "app_misc/firmware.h"
 #include "app_misc/rtc.h"
 

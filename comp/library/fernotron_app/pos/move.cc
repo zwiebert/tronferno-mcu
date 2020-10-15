@@ -76,7 +76,7 @@ int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts) {
 
   u16 duration_ts = now_ts - Fer_Move->start_time;
 
-  for (Fer_GmSet_Iterator it; it; ++it) {
+  for (Fer_Gm_Counter it; it; ++it) {
     const gT g = it.getG();
     const mT m = it.getM();
     if (!Fer_Move->mask.getMember(g, m))

@@ -19,9 +19,7 @@
 #include "app_misc/opt_map.hh"
 
 #include "debug/dbg.h"
-#ifdef USE_HTTP
-#include "app_http_server/hts_clients.h"
-#endif
+
 
 #ifdef USE_FREERTOS
 #include "freertos/FreeRTOS.h"

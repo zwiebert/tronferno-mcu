@@ -1,3 +1,8 @@
+/**
+ * \file   app_config/host/sdkconfig.h
+ * \brief  Default configuration values for host (tests). XXX: should be generated from Kconfig.projbuild
+ */
+
 #define CONFIG_APP_USE_HTTP 1
 #define CONFIG_APP_USE_LAN 1
 #define CONFIG_APP_USE_WLAN 1

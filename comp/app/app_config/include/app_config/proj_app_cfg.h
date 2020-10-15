@@ -1,6 +1,6 @@
 /**
- * \file       app_config/pro_app_cfg.h
- * \brief      application configuration
+ * \file  app_config/proj_app_cfg.h
+ * \brief application configuration
  */
 
 #pragma once

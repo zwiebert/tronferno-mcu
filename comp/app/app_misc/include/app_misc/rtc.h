@@ -1,23 +1,36 @@
+/**
+ * \file    app_misc/rtc.h
+ * \brief   Some time related functions and constants.
+ *
+ * XXX: Refactor this
+ */
+
 #pragma once
 
 #include <time.h>
 #include "utils_time/run_time.h"
 
-
-void rtc_secTick(void);
-
-//YYYY-MM-DDThh-mm-ss
+/**
+ * \brief                    Set current time by ISO string
+ * \param  dateTimeString    ISO format time string: YYYY-MM-DDThh-mm-ss
+ */
 bool rtc_set_by_string(const char *dateTimeString);
+
+/**
+ * \brief           Get current time as ISO string
+ * \param[out] dst  Pointer to buffer to store the ISO time string
+ * \return          true for success
+ */
 bool rtc_get_by_string(char *dst);
+
+/**
+ * \brief                   Get POSIX time value from ISO string
+ * \param dateTimeString    ISO format time string: YYYY-MM-DDThh-mm-ss
+ * \return                  POSIX time
+ */
 time_t time_iso2time(const char *dateTimeString);
 
-time_t rtc_timezone_in_secs();
-
-int8_t get_weekDay(void);
-int16_t get_yearDay(void);
-int get_dst(void);
-int16_t rtc_get_next_minute(void); // get next minute_of_day or -1 until next minute begins
-
+/// \brief  Set up this module
 void rtc_setup(void);
 
 #define MSEC_PER_SEC 1000
@@ -31,14 +44,7 @@ void rtc_setup(void);
 #define SECS_PER_HOUR (60 * 60)
 
 
-typedef time_t rtc_time_t;
-typedef enum { RTC_SRC_NONE, RTC_SRC_NTP, RTC_SRC_CLI } rtc_time_source_t;
 
-bool ntp_set_system_time(void);
 
-void rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t source);
-rtc_time_t rtc_time(void);
-
-extern rtc_time_source_t rtc_last_time_source;
 
 

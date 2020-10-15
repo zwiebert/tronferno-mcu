@@ -28,26 +28,37 @@ bool fer_stor_gmSet_load(const char *name, gmSetT gm[], int count);
 using gm_pairT = std::pair<gT, mT>;
 
 /**
- * \brief Iterator to iterate over all set groups/members in a set
+ * \brief Counter to iterate over all set and unset groups/members
  */
-class Fer_GmSet_Iterator {
+class Fer_Gm_Counter {
 
 public:
-  Fer_GmSet_Iterator(gT g = 0, mT m = 0, bool skip_groups = false) :
+  /**
+   * \param g,m          Group/member to start iteration from
+   * \param skip_groups  skip groups (g=N,m=0). Only visit members (m=1..7).
+   */
+  Fer_Gm_Counter(gT g = 0, mT m = 0, bool skip_groups = false) :
       mGm(0x3f & ((g << 3) | m)), mSkipGroups(skip_groups) {
   }
 
 public:
-  bool operator==(const Fer_GmSet_Iterator &rhs) const {
+  /// \brief    Compare counters
+  bool operator==(const Fer_Gm_Counter &rhs) const {
     return mGm == rhs.mGm;
   }
-  bool operator!=(const Fer_GmSet_Iterator &rhs) const {
+
+  /// \brief   Compare counters
+  bool operator!=(const Fer_Gm_Counter &rhs) const {
     return mGm != rhs.mGm;
   }
+
+  /// \brief   Test if end was reached (e.g. for (Fer_Gm_Counter it(1,1,true); it; ++it) {...})
+  /// \return  false if end was reached
   operator bool() const {
     return 0 == (mGm & ~0x3f);
   }
-  Fer_GmSet_Iterator& operator++() {
+  /// \brief   Increment counter
+  Fer_Gm_Counter& operator++() {
     if ((mGm & ~0x3f) == 0) {
       ++mGm;
     }
@@ -57,15 +68,17 @@ public:
     return *this;
   }
 public:
+  /// \brief Get current member
   mT getM() const {
     return mGm & 0x07;
   }
+  /// \brief Get current group
   gT getG() const {
     return mGm >> 3;
   }
 private:
-  uint8_t mGm;
-  const bool mSkipGroups :1;
+  uint8_t mGm; ///< Byte-counter (group = high nibble, member = low nibble)
+  const bool mSkipGroups :1;  ///< If set, skip groups (skip any g==0 or m==0)
 };
 
 /**
@@ -94,33 +107,52 @@ public:
   }
 
 public:
+  /// \brief  Make the set empty
   void clear() {
     memset(mBm, 0, sizeof(gmSetT));
   }
+  /// \brief Get a group as bit-mask
   uint8_t getGroup(gT g) const {
     return mBm[g];
   }
+  /// \brief Set a group as bit-mask
   void setGroup(gT g, uint8_t b) {
     mBm[g] = b;
   }
+  /// \brief Test if a Member is set
   bool getMember(gT g, mT m) const {
     return GET_BIT(mBm[g], m);
   }
+
+  /**
+  * \brief     Add or remove a member or group
+  * \param g   group number
+  * \param m   member number. 0 adds the group with no members.
+  * \param val true to add. false to remove
+  */
   void putMember(gT g, mT m, bool val) {
     PUT_BIT(mBm[g], m, val);
   }
+  /// \brief Remove member.
   void clearMember(gT g, mT m) {
     CLR_BIT(mBm[g], m);
   }
+  /// \brief Add member.
   void setMember(gT g, mT m) {
     SET_BIT(mBm[g], m);
   }
+  /// \brief Test for empty set
   bool isAllClear() const {
     for (int i = 0; i < 8; ++i)
       if (getGroup(i))
         return false;
     return true;
   }
+  /**
+   * \brief   Construct set from nibble counter (one group per nibble)
+   * \note    All Previous content of this set will be deleted.
+   * \param um  each nibble except of nibble 0 contains a count (1-7) of members of a group to set
+   */
   void fromNibbleCounters(u32 um) {
     int g, m;
     clear();
@@ -133,25 +165,37 @@ public:
   }
 
 public:
-  class iterator: public Fer_GmSet_Iterator {
+  /// \brief iterate over an Fer_GmSet
+  class iterator: public Fer_Gm_Counter {
     Fer_GmSet *mPtr;
   public:
+    /**
+     * \param bm      Pointer to container
+     * \param g,m     group and member to start iteration from
+     */
     iterator(Fer_GmSet *bm, gT g = 0, mT m = 0) :
-        Fer_GmSet_Iterator(g, m), mPtr(bm) {
+        Fer_Gm_Counter(g, m), mPtr(bm) {
     }
+    /// \brief Get next group or member
     iterator& operator++() {
-      while (Fer_GmSet_Iterator::operator++()) {
+      while (Fer_Gm_Counter::operator++()) {
         if (mPtr->getMember(getG(), getM())) {
           break;
         }
       }
       return *this;
     }
+    /// \brief  Get a pointer to the container
     Fer_GmSet* operator->() const {
       return mPtr;
     }
   };
 
+
+  /**
+   * \brief       Get an iterator
+   * \param g,m   Group/member to start with
+   */
   iterator begin(gT g = 0, mT m = 0) {
     auto it = iterator(this, g, m);
     return it->getMember(0, 0) ? it : ++it;

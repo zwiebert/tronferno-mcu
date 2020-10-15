@@ -11,7 +11,7 @@
 #include "txtio/inout.h"
 #include "driver/uart.h"
 #include "fernotron_trx/callbacks.h"
-#include "app_misc/common.h"
+#include "utils_misc/int_types.h"
 #include "app_settings/config.h"
 #include "net/wifistation.h"
 #include "net/ntp.h"

@@ -162,7 +162,7 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   if (!(a == 0 || a == cfg_getCuId())) {
     Fer_GmSet gm;
     if (fer_alias_getControllerPairings(a, &gm))
-      for (Fer_GmSet_Iterator it(1,1,true); it; ++it) {
+      for (Fer_Gm_Counter it(1,1,true); it; ++it) {
         const gT g = it.getG();
         const mT m = it.getM();
         if (gm.getMember(g, m)) {
@@ -192,7 +192,7 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
 }
 
 int fer_statPos_setPcts(Fer_GmSet *mm, u8 p) {
-  for (Fer_GmSet_Iterator it(1, 1, true); it; ++it) {
+  for (Fer_Gm_Counter it(1, 1, true); it; ++it) {
     const gT g = it.getG();
     const mT m = it.getM();
     if (mm->getMember(g, m)) {
@@ -221,7 +221,7 @@ fer_statPos_printAllPcts(const struct TargetDesc &td) {
 
       u8 pct = pos_map.getPct(g,m);
       Fer_GmSet pos_msk;
-      for (Fer_GmSet_Iterator it(g); it; ++it) {
+      for (Fer_Gm_Counter it(g); it; ++it) {
         const gT g2 = it.getG();
         const mT m2 = it.getM();
 

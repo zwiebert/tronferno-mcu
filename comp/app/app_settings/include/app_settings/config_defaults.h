@@ -1,8 +1,6 @@
-/*
- * config_defaults.h
- *
- *  Created on: 19.03.2020
- *      Author: bertw
+/**
+ * \file   app_settings/config_defaults.h
+ * \brief  default values for settings XXX: Refactor this
  */
 
 #pragma once

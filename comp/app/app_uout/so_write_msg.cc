@@ -8,7 +8,7 @@
 #include "so_out.h"
 #include "so_print.h"
 #include "app_uout/callbacks.h"
-#include "app_misc/common.h"
+#include "utils_misc/int_types.h"
 #include "app_misc/firmware.h"
 #include "app_misc/rtc.h"
 #include "app_settings/config.h"

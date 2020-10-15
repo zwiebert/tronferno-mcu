@@ -1,8 +1,6 @@
-/*
- * config.h
- *
- * Created: 24.08.2017 20:56:00
- *  Author: bertw
+/**
+ * \file    app_settings/config.h
+ * \brief   Application settings
  */
 
 #pragma once

@@ -25,7 +25,7 @@
 #include "fernotron_trx/astro.h"
 #include <fernotron_trx/fer_trx_c_api.h>
 
-#include "app_misc/common.h"
+#include "utils_misc/int_types.h"
 #include "utils_misc/int_types.h"
 #include "gpio/pin.h"
 #include <utils_misc/mutex.hh>
