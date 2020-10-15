@@ -256,7 +256,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   }
 
   if (rs) {
-    if (int start = soMsg_timer_print_begin(td); start >= 0) {
+    if (int start = soMsg_timer_print_begin(td, p[0].key); start >= 0) {
       print_timer(td, parm_g, parm_m, true);
       soMsg_timer_print_end(td);
 

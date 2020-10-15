@@ -26,7 +26,7 @@ void soMsg_pras_stop_listening(const struct TargetDesc &td);
 void soMsg_pras_timeout(const struct TargetDesc &td);
 void soMsg_pras_done(const struct TargetDesc &td, bool success, bool unpair);
 void soMsg_timer_event_print(const struct TargetDesc &td, const so_arg_gm_t a);
-int soMsg_timer_print_begin(const struct TargetDesc &td);
+int soMsg_timer_print_begin(const struct TargetDesc &td, const char *tag = "auto");
 void soMsg_timer_print_end(const struct TargetDesc &td);
 int soMsg_timer_begin(const struct TargetDesc &td, const so_arg_gm_t a);
 void soMsg_timer_end(const struct TargetDesc &td);

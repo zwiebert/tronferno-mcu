@@ -205,27 +205,35 @@ void soMsg_timer_event_print(const struct TargetDesc &td, const so_arg_gm_t a) {
   so_print_timer_event_minutes(a.g, a.m);
 }
 
-int soMsg_timer_print_begin(const struct TargetDesc &td) {
-  if (so_jco)
-    return td.sj().add_object("auto");
-  return -1;
+int soMsg_timer_print_begin(const struct TargetDesc &td, const char *tag) {
+  td.so().x_open(tag);
+  return 0;
 }
 
 void soMsg_timer_print_end(const struct TargetDesc &td) {
-  if (so_jco)
-     td.sj().close_object(); // XXX: disabled
+  td.so().x_close();
 }
 
 int soMsg_timer_begin(const struct TargetDesc &td, const so_arg_gm_t a) {
-  char dict[] = "autoGM";
-  dict[4] = '0' + a.g;
-  dict[5] = '0' + a.m;
-  return td.sj().add_object(dict);
+
+  if (so_cco) {
+    char val[] = "0";
+    val[0] = '0' + a.g;
+    td.st().cli_out_x_reply_entry("g", val);
+    val[0] = '0' + a.m;
+    td.st().cli_out_x_reply_entry("m", val);
+  }
+  if (so_jco) {
+    char dict[] = "autoGM";
+    dict[4] = '0' + a.g;
+    dict[5] = '0' + a.m;
+    td.sj().add_object(dict);
+  }
+  return 0;
 }
 
 void soMsg_timer_end(const struct TargetDesc &td) {
-  if (so_jco)
-    td.sj().close_object();
+  td.so().x_close();
 }
 
 void soMsg_astro_minutes_print(const struct TargetDesc &td, const int am) {
