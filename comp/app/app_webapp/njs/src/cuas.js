@@ -15,7 +15,7 @@ export function req_cuasStart() {
   let url = '/cmd.json';
   httpFetch.http_postRequest(url, json);
   cuas_State = 0;
-  cuas_Interval = window.setInterval(req_cuasStatus, 1000);
+ // cuas_Interval = window.setInterval(req_cuasStatus, 1000);
 }
 
 export function cuas_handle_cuasState(config) {
@@ -33,7 +33,7 @@ export function cuas_handle_cuasState(config) {
   }
 
   if (config.cuas > 1) {
-    window.clearInterval(cuas_Interval);
+   // window.clearInterval(cuas_Interval);
   }
   document.getElementById("id_cuasStatus").innerHTML = s;
   config.cuas = cuas_State;

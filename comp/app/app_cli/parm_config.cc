@@ -118,6 +118,8 @@ bool process_parmKvsConfig(const struct TargetDesc &td, so_msg_t so_key, const c
 
 static so_msg_t so_soMsg_from_otok(otok kt) {
   so_msg_t result = static_cast<so_msg_t>(SO_CFG_begin + 1 + static_cast<otokBaseT>(kt));
+  if (result >= SO_CFG_last)
+    return SO_NONE;
   return result;
 }
 

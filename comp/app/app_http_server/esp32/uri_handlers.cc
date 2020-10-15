@@ -294,6 +294,8 @@ void hts_setup_content() {
   flags.tgt.websocket = true;
   flags.evt.pin_change = true;
   flags.evt.pct_change = true;
+  flags.evt.uo_evt_flag_PRAS = true;
+  flags.evt.uo_evt_flag_CUAS = true;
   flags.evt.async_http_resp = true;
   flags.fmt.json = true;
   uoCb_subscribe(ws_send_json_cb, flags);

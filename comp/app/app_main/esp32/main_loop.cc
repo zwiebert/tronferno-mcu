@@ -11,6 +11,7 @@
 #include "fernotron/pos/positions_dynamic.h"
 #include "fernotron/pos/positions_static.h"
 #include "fernotron/alias/pairings.h"
+#include "fernotron/cuas/cuid_auto_set.h"
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron_trx/raw/fer_msg_rx.h"
 #include "fernotron_trx/raw/fer_msg_tx.h"

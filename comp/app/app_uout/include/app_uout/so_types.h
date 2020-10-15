@@ -17,6 +17,8 @@ typedef enum {
   SO_CFG_end, // values between begin/end will be used for 'all=?'
   SO_CFG_GPIO_PIN, SO_CFG_GPIO_MODES_AS_STRING,
 
+  SO_CFG_last,
+
 } so_msg_t;
 
 typedef struct {
@@ -57,3 +59,17 @@ typedef struct {
   struct Fer_GmSet *mm;
 } so_arg_kmm_t;
 
+typedef struct {
+  uint32_t a;
+  bool scanning:1;
+  bool success:1;
+  bool timeout:1; ///< true if timeout reached
+  bool pairing:1; ///< true for pairing, false for unpairing
+} so_arg_pras_t;
+
+typedef struct {
+  uint32_t a;
+  bool scanning:1;
+  bool success:1;
+  bool timeout:1; ///< true if timeout reached
+} so_arg_cuas_t;

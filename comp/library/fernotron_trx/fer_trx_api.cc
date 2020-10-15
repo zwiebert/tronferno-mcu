@@ -32,8 +32,8 @@ static Fer_MsgPlainCmd make_plainMsg(const fer_sbT &fsb) {
   if (FER_U32_TEST_TYPE(pc.a, FER_ADDR_TYPE_CentralUnit)) {
     pc.g = fsb.sd.grp;
     pc.m = fsb.sd.memb ? fsb.sd.memb - 7 : 0;
-    pc.cmd = static_cast<fer_if_cmd>(fsb.sd.cmd);
   }
+  pc.cmd = static_cast<fer_if_cmd>(fsb.sd.cmd);
   return pc;
 }
 

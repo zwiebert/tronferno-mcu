@@ -32,6 +32,7 @@ public:
 
     if (is_centralUnit()) {
       fer_cuas_set_check(msg.a);
+    } else {
 #ifdef USE_PAIRINGS
      fer_alias_auto_set_check(msg.a);
 #endif

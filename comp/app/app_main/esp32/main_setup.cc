@@ -9,6 +9,7 @@
 #include "app_settings/config.h"
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron/alias/pairings.h"
+#include "fernotron/cuas/cuid_auto_set.h"
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/positions_static.h"
 #include "fernotron/pos/positions_dynamic.h"

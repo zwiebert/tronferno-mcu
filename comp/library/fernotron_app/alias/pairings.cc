@@ -7,6 +7,7 @@
 #include "fernotron/alias/pairings.h"
 #include "app_misc/rtc.h"
 #include "app_uout/status_output.h"
+#include "app_uout/callbacks.h"
 #include "debug/dbg.h"
 #include "utils_misc/int_types.h"
 
@@ -26,7 +27,6 @@ static bool pras_active;
 static time_t end_time;
 static u8 pras_g, pras_m;
 static fer_alias_cmds pras_c;
-static const struct TargetDesc *my_td;
 
 static inline void fer_alias_ENABLE_cb() {
   if (fer_alias_enable_disable_cb)
@@ -40,7 +40,6 @@ static inline void fer_alias_DISABLE_cb() {
 bool  fer_alias_auto_set(const struct TargetDesc &td, u8 g, u8 m, fer_alias_cmds c, u16 id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
-  my_td = &td;
 
   if (timeout_secs > 0) {
     pras_g = g;
@@ -49,7 +48,8 @@ bool  fer_alias_auto_set(const struct TargetDesc &td, u8 g, u8 m, fer_alias_cmds
     end_time = run_time_s() + timeout_secs;
     last_received_sender.data[0] = 0;
     pras_active = true;
-    soMsg_pras_start_listening(*my_td, id);
+    uoApp_publish_fer_prasState({ .scanning = true, .pairing = pras_c == PC_pair });
+    soMsg_pras_start_listening(td, id);
     fer_alias_ENABLE_cb();
   }
   return false;
@@ -61,8 +61,7 @@ void fer_alias_auto_set_check_timeout(void) {
 
   if (end_time < run_time_s()) {
     end_time = 0;
-    soMsg_pras_stop_listening(*my_td);
-    soMsg_pras_timeout(*my_td);
+    uoApp_publish_fer_prasState({.timeout = true});
     pras_active = false;
     fer_alias_DISABLE_cb();
   }
@@ -81,8 +80,7 @@ bool fer_alias_auto_set_check(const u32 a) {
         success = true;
       }
     }
-
-    soMsg_pras_done(*my_td, success, pras_c == PC_unpair);
+    uoApp_publish_fer_prasState({.a=a, .success = success, .pairing = pras_c == PC_pair });
     end_time = 0;
 
     pras_active = false;

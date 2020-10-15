@@ -229,3 +229,93 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
 
 }
 
+void uoApp_publish_fer_prasState(const so_arg_pras_t args) {
+  for (auto const &it : uoCb_cbs) {
+    if (!it.cb)
+      continue;
+    if (!it.flags.evt.uo_evt_flag_PRAS)
+      continue;
+
+    if (it.flags.fmt.raw) {
+      uo_flagsT flags;
+      flags.fmt.raw = true;
+      flags.evt.uo_evt_flag_PRAS = true;
+
+      publish(it.cb, &args, flags);
+    }
+
+
+    if (it.flags.fmt.json) {
+      char a_hex[20];
+      ltoa(args.a, a_hex, 16);
+      char sj_buf[128];
+      StatusJsonT sj = { sj_buf, sizeof sj_buf };
+
+
+      if (sj.open_root_object("tfmcu")) {
+
+        sj.add_object("pras");
+        sj.add_key_value_pair_s("a",a_hex);
+        sj.add_key_value_pair_d("scanning", args.scanning);
+        sj.add_key_value_pair_d("success", args.success);
+        sj.add_key_value_pair_d("timeout", args.timeout);
+        sj.add_key_value_pair_d("pairing", args.pairing);
+        sj.close_object();
+
+        sj.close_root_object();
+
+        uo_flagsT flags;
+        flags.fmt.json = true;
+        flags.evt.uo_evt_flag_PRAS = true;
+        publish(it.cb, sj.get_json(), flags);
+      }
+    }
+  }
+}
+
+void uoApp_publish_fer_cuasState(const so_arg_cuas_t args) {
+  for (auto const &it : uoCb_cbs) {
+    if (!it.cb)
+      continue;
+    if (!it.flags.evt.uo_evt_flag_CUAS)
+      continue;
+
+    if (it.flags.fmt.raw) {
+      uo_flagsT flags;
+      flags.fmt.raw = true;
+      flags.evt.uo_evt_flag_CUAS = true;
+
+      publish(it.cb, &args, flags);
+    }
+
+    if (it.flags.fmt.json) {
+      char a_hex[20];
+      ltoa(args.a, a_hex, 16);
+
+      char sj_buf[128];
+      StatusJsonT sj = { sj_buf, sizeof sj_buf };
+
+      if (sj.open_root_object("tfmcu")) {
+
+        sj.add_object("cuas");
+        sj.add_key_value_pair_s("a", a_hex);
+        sj.add_key_value_pair_d("scanning", args.scanning);
+        sj.add_key_value_pair_d("success", args.success);
+        sj.add_key_value_pair_d("timeout", args.timeout);
+        sj.close_object();
+
+        int state = args.scanning ? 1 : args.timeout ? 2 : args.success ? 3 : 0;
+        sj.add_object("config");
+        sj.add_key_value_pair_d("cuas",state);
+        sj.close_object();
+
+        sj.close_root_object();
+
+        uo_flagsT flags;
+        flags.fmt.json = true;
+        flags.evt.uo_evt_flag_CUAS = true;
+        publish(it.cb, sj.get_json(), flags);
+      }
+    }
+  }
+}

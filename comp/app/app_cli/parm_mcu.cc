@@ -248,6 +248,11 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
     }
 #endif
 
+    if (strcmp(key, "kvs-pk") == 0) {
+      kvs_print_keys(val);
+      break;
+    }
+
       cli_warning_optionUnknown(td, key);
       break;
     } // switch

@@ -58,7 +58,7 @@ config APP_USE_STM32OTA
 
 config APP_USE_CUAS
   bool "Activate CUAS"
-  default n
+  default y
 
 config APP_USE_TCPS
   bool "Activate TCPS (non task)"
