@@ -430,7 +430,7 @@ void soMsg_gpio_pin(const struct TargetDesc &td, const so_arg_pch_t a, bool broa
   }
 
   if (broadcast)
-    uoApp_publish_pinChange(a);
+    uoCb_publish_pinChange(a);
 }
 
 

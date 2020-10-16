@@ -245,7 +245,7 @@ void pin_notify_input_change() {
       continue;
     bool level = gpio_get_level(static_cast<gpio_num_t>(i));
     so_arg_pch_t a { i, level };
-    uoApp_publish_pinChange(a);
+    uoCb_publish_pinChange(a);
   }
 }
 
