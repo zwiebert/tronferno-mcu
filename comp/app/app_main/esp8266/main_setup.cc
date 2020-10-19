@@ -13,8 +13,8 @@
 #include "fernotron_trx/callbacks.h"
 #include "utils_misc/int_types.h"
 #include "app_settings/config.h"
-#include "net/wifistation.h"
-#include "net/ntp.h"
+#include "net/wifi_station_setup.h"
+#include "net/ntp_setup.h"
 #include "net/tcp_cli_server.h"
 #include "app_settings/config.h"
 

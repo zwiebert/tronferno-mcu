@@ -9,7 +9,7 @@
 #include "config_kvs/config.h"
 #include "txtio/inout.h"
 #include "fernotron/types.h"
-//#include "net/ethernet.h"
+//#include "net/ethernet_setup.h"
 #include "gpio/pin.h"
 #include "stdbool.h"
 

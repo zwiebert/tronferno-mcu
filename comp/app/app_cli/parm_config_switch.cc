@@ -8,7 +8,7 @@
 #include "app_uout/status_output.h"
 #include "utils_misc/int_macros.h"
 #include "utils_misc/int_types.h"
-#include <net/ethernet.h>
+#include <net/ethernet_setup.h>
 #include <string.h>
 #include <algorithm>
 #include <iterator>

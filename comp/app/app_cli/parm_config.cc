@@ -20,7 +20,7 @@
 #include "net_http_server/http_server.h"
 #endif
 #ifdef USE_NTP
-#include "net/ntp.h"
+#include "net/ntp_setup.h"
 #endif
 #include "fernotron_trx/astro.h"
 #include <fernotron_trx/fer_trx_c_api.h>
