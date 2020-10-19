@@ -4,14 +4,14 @@
 #include <esp_system.h>
 #include <sys/param.h>
 #include <mbedtls/base64.h>
-#include "net_http_server/http_server.h"
+#include "net_http_server/http_server_setup.h"
 #include "uout/status_json.hh"
 #include "app_uout/callbacks.h"
 #include "app_settings/config.h"
 #include "app_cli/cli_app.h"
 #include "utils_misc/int_types.h"
 #include "cli/mutex.hh"
-#include "net_http_server/esp32/register_uris.h"
+#include "net_http_server/esp32/http_server_esp32.h"
 
 #include "webapp/content.h"
 

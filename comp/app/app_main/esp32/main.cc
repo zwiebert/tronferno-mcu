@@ -5,7 +5,7 @@
 #include "net/ipnet.h"
 #include "net/tcp_cli_server.h"
 #include "net/wifi_ap_setup.h"
-#include "net_http_server/http_server.h"
+#include "net_http_server/http_server_setup.h"
 #include "net/tcp_cli_server_setup.hh"
 #include "../app_private.h"
 

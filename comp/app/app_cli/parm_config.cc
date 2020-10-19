@@ -17,10 +17,10 @@
 #include "app_mqtt/mqtt.h"
 #endif
 #ifdef USE_HTTP
-#include "net_http_server/http_server.h"
+#include "net_http_server/http_server_setup.h"
 #endif
 #ifdef USE_NTP
-#include "net/ntp_setup.h"
+#include "net/ntp_client_setup.h"
 #endif
 #include "fernotron_trx/astro.h"
 #include <fernotron_trx/fer_trx_c_api.h>

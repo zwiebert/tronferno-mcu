@@ -4,7 +4,7 @@
 #include "cli_config.h"
 #include "cli/cli.h"
 #include "net_mqtt/mqtt.h"
-#include "net_http_server/http_server.h"
+#include "net_http_server/http_server_setup.h"
 #include "app_uout/status_output.h"
 #include "utils_misc/int_macros.h"
 #include "utils_misc/int_types.h"
