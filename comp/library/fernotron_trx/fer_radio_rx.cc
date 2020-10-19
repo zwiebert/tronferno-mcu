@@ -11,6 +11,10 @@
 #include "utils_misc/int_macros.h"
 
 
+// like FER_SB_ but works on array instead of struct
+#define FER_RB_ADDR_IS_CENTRAL(data)  (((data)[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)
+#define FER_RB_GET_FPR0_IS_RTC_ONLY(data) (((data)[fpr0_RTC_wday] & 0x80) != 0) //TODO:move
+
 //  the same timings relative to ticks of interrupt frequency
 #define FER_PRE_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_DCK)
 #define FER_PRE_WIDTH_MIN_TCK   DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_MIN_DCK)
