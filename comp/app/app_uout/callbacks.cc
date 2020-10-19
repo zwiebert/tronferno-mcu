@@ -317,5 +317,15 @@ void uoApp_publish_fer_cuasState(const so_arg_cuas_t args) {
         publish(it.cb, sj.get_json(), flags);
       }
     }
+
+    if (it.flags.fmt.txt) {
+      const char *msg = args.success ? "tf:event:cuas=ok:;\n" : args.timeout ? "tf:event:cuas=time-out:;\n" : "tf:event:cuas=scanning:;\n";
+
+      uo_flagsT flags;
+      flags.fmt.txt = true;
+      flags.evt.uo_evt_flag_CUAS = true;
+      publish(it.cb, msg, flags);
+    }
+
   }
 }

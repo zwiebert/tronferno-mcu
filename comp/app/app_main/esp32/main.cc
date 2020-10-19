@@ -4,9 +4,9 @@
 #include "utils_misc/int_types.h"
 #include "net/ipnet.h"
 #include "net/tcp_cli_server.h"
-#include "net/wifi_ap.h"
+#include "net/wifi_ap_setup.h"
 #include "net_http_server/http_server.h"
-#include "net/tcp_cli_server.h"
+#include "net/tcp_cli_server_setup.hh"
 #include "../app_private.h"
 
 #include <esp_attr.h>
@@ -25,8 +25,12 @@ void lfa_createWifiAp() {
     wifi_ap_active = true;
     wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
 
-    struct cfg_tcps cfg_tcps = { .enable = true };
-    tcpCli_setup(&cfg_tcps);
+    struct cfg_tcps cfg_tcps = { .enable = true }; // XXX: user-flags not set
+#ifdef USE_TCPS
+ tcpCli_setup(&cfg_tcps);
+#elif defined USE_TCPS_TASK
+ tcpCli_setup_task(&cfg_tcps);
+#endif
 
     struct cfg_http cfg_http = { .enable = true };
     hts_setup(&cfg_http);
