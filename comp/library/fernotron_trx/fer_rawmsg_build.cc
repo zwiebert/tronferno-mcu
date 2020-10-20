@@ -174,21 +174,17 @@ static void  write_flags(u8 *dst, u8 flags, u8 mask) {
 	*dst = (*dst & ~mask) | (flags & mask);
 }
 
-
-
-static void  write_lastline(const fer_sbT *fsb, u8 d[FER_PRG_BYTE_CT]) {
-	d[0] = 0x00;
-	d[1] = fsb->data[fer_dat_ADDR_2];
-	d[2] = fsb->data[fer_dat_ADDR_1];
-	d[3] = fsb->data[fer_dat_ADDR_0];
-	d[4] = 0x53;
-	d[5] = 0x00;
-	d[6] = 0x10;
-	d[7] = 0x11;
-	d[8] = 0x05;
+static void  write_lastline(u32 a, u8 d[FER_PRG_BYTE_CT]) {
+  d[0] = 0x00;
+  d[1] = GET_BYTE_2(a);
+  d[2] = GET_BYTE_1(a);
+  d[3] = GET_BYTE_0(a);
+  d[4] = 0x53;
+  d[5] = 0x00;
+  d[6] = 0x10;
+  d[7] = 0x11;
+  d[8] = 0x05;
 }
-
-
 
 void  fer_msg_raw_init(struct fer_raw_msg *m) {
 	memset(&m->rtc, 0, sizeof (m->rtc));
@@ -209,6 +205,6 @@ void  fer_msg_raw_from_dailyTimer(fer_rawMsg *msg, const u8 *dtimer_data) {
 void  fer_msg_raw_from_astro(fer_rawMsg *msg, int mint_offset) {
   fer_astro_write_data(msg->astro, mint_offset);
 }
-void  fer_msg_raw_footerCreate(fer_rawMsg *msg, const fer_sbT *fsb) {
-	write_lastline(fsb, msg->last);
+void  fer_msg_raw_footerCreate(fer_rawMsg *msg, u32 a) {
+	write_lastline(a, msg->last);
 }    

@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 #include "app_config/proj_app_cfg.h"
-
+#include <fernotron_trx/raw/fer_radio_trx.h>
 #include "fer_radio_parity.h"
 
 #include <fernotron_trx/raw/fer_msg_plain.h>
@@ -20,11 +20,16 @@ struct ftrx_counter {
   u16 Ticks, Bits;
 };
 
+#define WORDS_MSG_PLAIN (2*FER_BYTES_MSG_PLAIN)
+#define WORDS_MSG_RTC (2*FER_BYTES_MSG_RTC)
+#define WORDS_MSG_TIMER  (2*FER_BYTES_MSG_TIMER)
+
+
 #ifdef FER_TRANSMITTER
 /////////////////////////// transmitter /////////////////////////
 static struct ftrx_counter ftxCount;
 static bool output_level;   // output line
-volatile u16 fer_tx_messageToSend_wordCount;
+volatile u16 fer_tx_messageToSend_wordCount; ///< Telling the transmitter the size of the message to send
 volatile bool fer_tx_messageToSend_isReady;
 static fer_rawMsg *fer_tx_buf;
 

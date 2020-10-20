@@ -1,4 +1,5 @@
 #include "app_config/proj_app_cfg.h"
+#include <fernotron_trx/raw/fer_radio_trx.h>
 
 #include "fer_radio_parity.h"
 #include <fernotron_trx/raw/fer_msg_plain.h>
@@ -9,6 +10,21 @@
 #include "fernotron_trx/raw/fer_msg_tx.h"
 #include "debug/dbg.h"
 #include "utils_misc/int_macros.h"
+
+
+#define WORDS_MSG_PLAIN (2*FER_BYTES_MSG_PLAIN)
+#define WORDS_MSG_RTC (2*FER_BYTES_MSG_RTC)
+#define WORDS_MSG_TIMER  (2*FER_BYTES_MSG_TIMER)
+
+
+/// \brief  Possible errors/warnings when receiving a message
+/// \note   The only hard error is BAD_CHECKSUM
+enum fer_error {
+  fer_OK, ///< All is good
+  fer_PAIR_NOT_EQUAL, ///< Warning: Each byte is sent twice, as a pair. This error occurs if they are not equal.
+  fer_BAD_WORD_PARITY, ///< Warning: A Byte parity bit wrong
+  fer_BAD_CHECKSUM ///< Error: One or more of the embedded checksums are wrong
+} ;
 
 
 // like FER_SB_ but works on array instead of struct

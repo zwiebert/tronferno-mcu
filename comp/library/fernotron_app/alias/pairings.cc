@@ -46,7 +46,6 @@ bool  fer_alias_auto_set(const struct TargetDesc &td, u8 g, u8 m, fer_alias_cmds
     pras_m = m;
     pras_c = c;
     end_time = run_time_s() + timeout_secs;
-    last_received_sender.data[0] = 0;
     pras_active = true;
     uoApp_publish_fer_prasState({ .scanning = true, .pairing = pras_c == PC_pair });
     soMsg_pras_start_listening(td, id);

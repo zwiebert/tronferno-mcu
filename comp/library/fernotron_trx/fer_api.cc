@@ -1,6 +1,8 @@
 #include "fer_api.h"
 #include "utils_misc/bcd.h"
 #include "fernotron_trx/raw/fer_rawmsg_buffer.h"
+#include "fernotron_trx/raw/fer_rawmsg_build.h"
+#include "fernotron_trx/raw/fer_msg_tx.h"
 #include "utils_misc/int_macros.h"
 #include <stdlib.h>
 #include <string.h>
@@ -50,14 +52,13 @@ timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
   return i == size_dst;
 }
 
-bool fer_fill_rtc_buf(fer_sbT *fsb, time_t rtc) {
-  (void)fsb;
+bool fer_fill_rtc_buf(time_t rtc) {
   fer_msg_raw_init(fer_tx_msg);
   fer_msg_raw_from_rtc(fer_tx_msg, rtc, true);
   return true;
 }
 
-bool fer_fill_timer_buf(fer_sbT *fsb, time_t rtc, const Fer_TimerData *tdr) {
+bool fer_fill_timer_buf(u32 a, time_t rtc, const Fer_TimerData *tdr) {
 
   fer_msg_raw_init(fer_tx_msg);
 
@@ -90,26 +91,36 @@ bool fer_fill_timer_buf(fer_sbT *fsb, time_t rtc, const Fer_TimerData *tdr) {
     fer_msg_raw_from_flags(fer_tx_msg, BIT(flag_SunAuto), BIT(flag_SunAuto));
   }
 
-  fer_msg_raw_footerCreate(fer_tx_msg, fsb);
+  fer_msg_raw_footerCreate(fer_tx_msg, a);
 
   return true;
 }
 
-bool fer_send_rtc_message(fer_sbT *fsb, time_t rtc) {
-  bool success = fer_fill_rtc_buf(fsb, rtc) && fer_send_msg(fsb, MSG_TYPE_RTC, 0);
-  return success;
+bool fer_trx_send_cmd(const Fer_MsgCmd *msg) {
+  fer_sbT fsb = fer_construct_fsb(msg->a, msg->g, msg->m, (fer_cmd)msg->cmd);
+  if (msg->stopDelay) {
+    return fer_send_msg_with_stop(&fsb, msg->delay, msg->stopDelay, msg->repeats);
+  } else {
+    return fer_send_msg(&fsb, MSG_TYPE_PLAIN, msg->repeats, msg->delay);
+  }
+
+  return false;
+}
+bool fer_trx_send_rtc(const Fer_MsgRtc *msg) {
+  fer_sbT fsb = fer_construct_fsb(msg->a, msg->g, msg->m, fer_cmd_Program);
+  return fer_fill_rtc_buf(msg->rtc) && fer_send_msg(&fsb, MSG_TYPE_RTC, 0);
 }
 
-bool fer_send_timer_message(fer_sbT *fsb, time_t rtc, const Fer_TimerData *td) {
-  bool success = fer_fill_timer_buf(fsb, rtc, td) && fer_send_msg(fsb, MSG_TYPE_TIMER, 0);
-  return success;
+bool fer_trx_send_timer(const Fer_MsgTimer *msg) {
+  fer_sbT fsb = fer_construct_fsb(msg->a, msg->g, msg->m, fer_cmd_Program);
+  return fer_fill_timer_buf(msg->a, msg->rtc, msg->td) && fer_send_msg(&fsb, MSG_TYPE_TIMER, 0);;
 }
 
-bool fer_send_empty_timer_message(fer_sbT *fsb, time_t rtc) {
+bool fer_trx_send_empty_timer(const Fer_MsgRtc *msg) {
+  fer_sbT fsb = fer_construct_fsb(msg->a, msg->g, msg->m, fer_cmd_Program);
+
   Fer_TimerData tde;
-  bool success = fer_fill_timer_buf(fsb, rtc, &tde) && fer_send_msg(fsb, MSG_TYPE_TIMER, 0); // XXX: wasteful
-  return success;
+  return fer_fill_timer_buf(msg->a, msg->rtc, &tde) && fer_send_msg(&fsb, MSG_TYPE_TIMER, 0); // XXX: wasteful
 }
-
 
 

@@ -2,7 +2,7 @@
 #include "fernotron_trx/raw/fer_msg_plain.h"
 #include "fernotron_trx/raw/fer_fsb.h"
 #include <fernotron_trx/raw/fer_msg_rx.h>
-
+#include <fernotron_trx/raw/fer_msg_tx.h>
 
 static void
 fer_init_plain(fer_sbT *fsb, u32 a) {

@@ -63,5 +63,7 @@ void fer_msg_raw_from_astro(fer_rawMsg *msg, int mint_offset);
 
 /**
  * \brief         Build the footer part of message
+ * \param msg     message buffer
+ * \param a       device address (central unit)
  */
-void fer_msg_raw_footerCreate(fer_rawMsg *msg, const fer_sbT *fsb);
+void fer_msg_raw_footerCreate(fer_rawMsg *msg, uint32_t a);

@@ -1,7 +1,5 @@
 set(srcs   astro.cc fer_api.cc fer_msg_basic.cc fer_msg_rx.cc fer_msg_tx.cc fer_msg_tx_queue.cc fer_radio_rx.cc 
     fer_radio_tx.cc fer_radio_parity.cc fer_rawmsg_buffer.cc fer_rawmsg_build.cc
-    
-    fer_api_msg_send.cc
     fer_trx_api.cc
     )
 

@@ -4,6 +4,7 @@
 #include <string.h>
 #include "fer_app_cfg.h"
 #include "fernotron_trx/raw/fer_rawmsg_buffer.h"
+#include "fernotron_trx/raw/fer_rawmsg_build.h"
 #include "fernotron_trx/raw/fer_msg_tx.h"
 #include "debug/dbg.h"
 
@@ -38,20 +39,16 @@ bool fer_send_msg_with_stop(const fer_sbT *fsb, u16 delay, u16 stopDelay, i8 rep
   precond(fsb);
   precond(stopDelay > 0);
 
-  if (fer_send_delayed_msg(fsb, MSG_TYPE_PLAIN, delay, repeats)) {
+  if (fer_send_msg(fsb, MSG_TYPE_PLAIN, repeats, delay)) {
     fer_sbT stop_fsb = *fsb;
     FER_SB_PUT_CMD(&stop_fsb, fer_cmd_STOP);
     fer_update_tglNibble(&stop_fsb);
-    return fer_send_delayed_msg(&stop_fsb, MSG_TYPE_PLAIN, delay + stopDelay, 2);
+    return fer_send_msg(&stop_fsb, MSG_TYPE_PLAIN, 2, delay + stopDelay);
   }
   return false;
 }
 
-bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, i8 repeats) {
-  return fer_send_delayed_msg(fsb, msgType, 0, repeats);
-}
-
-bool fer_send_delayed_msg(const fer_sbT *fsb, fer_msg_type msgType, u16 delay, i8 repeats) {
+bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, i8 repeats, u16 delay) {
   precond(fsb);
 
   struct sf msg = { .fsb = *fsb, .when_to_transmit_ts = (delay + (u32)get_now_time_ts()), .mt = msgType, .repeats = repeats };
@@ -93,8 +90,8 @@ static bool fer_send_queued_msg(struct sf *msg) {
   return false;
 }
 
-fer_sbT* fer_get_fsb(u32 a, u8 g, u8 m, fer_cmd cmd) {
-  static fer_sbT fsb;
+fer_sbT fer_construct_fsb(u32 a, u8 g, u8 m, fer_cmd cmd) {
+  fer_sbT fsb;
   fer_init_sender(&fsb, a);
 
   if (FER_SB_ADDR_IS_CENTRAL(&fsb)) {
@@ -103,7 +100,7 @@ fer_sbT* fer_get_fsb(u32 a, u8 g, u8 m, fer_cmd cmd) {
   }
   FER_SB_PUT_CMD(&fsb, cmd);
 
-  return &fsb;
+  return fsb;
 }
 
 void fer_tx_loop() {

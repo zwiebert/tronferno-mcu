@@ -46,7 +46,6 @@ bool fer_cuas_set(const struct TargetDesc &td, u16 id, unsigned timeout_secs) {
 
   if (timeout_secs > 0) {
     end_time = run_time_s() + timeout_secs;
-    last_received_sender.data[0] = 0;
     fer_cuas_active = true;
     soMsg_cuas_start(td, id);
     fer_cuas_state = FER_CUAS_SCANNING;

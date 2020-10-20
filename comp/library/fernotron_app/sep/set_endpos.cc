@@ -4,6 +4,7 @@
 #include <fernotron_trx/raw/fer_msg_plain.h>
 #include <fernotron_trx/raw/fer_msg_attachment.h>
 #include <fernotron_trx/raw/fer_msg_tx.h>
+#include "fernotron_trx/raw/fer_msg_rx.h"
 #include "fernotron_trx/raw/fer_radio_trx.h"
 #include "fernotron_trx/raw/fer_rawmsg_buffer.h"
 #include "fernotron_trx/raw/fer_fsb.h"
@@ -117,9 +118,7 @@ fer_sep_disable(void) {
 }
 
 bool
-fer_sep_enable(const struct TargetDesc &td, u32 a, u8 g, u8 m, fer_if_cmd cmd) {
-  fer_sbT *fsb = fer_get_fsb(a,g,m,(fer_cmd)cmd);
-//fer_sep_enable(const struct TargetDesc &td, fer_sbT *fsb) {
+fer_sep_enable(const struct TargetDesc &td, const u32 a, const u8 g, const u8 m, const fer_if_cmd cmd) {
   my_td = &td;
   if (fer_sep_buttons_enabled) { // already activated
     fer_sep_disable();
@@ -129,22 +128,21 @@ fer_sep_enable(const struct TargetDesc &td, u32 a, u8 g, u8 m, fer_if_cmd cmd) {
     return false;
   } else {
 
-    // check for possible broadcast
-    if (FER_SB_ADDR_IS_CENTRAL(fsb)
-        && !((fer_memb_M1 <= FER_SB_GET_MEMB(fsb) && FER_SB_GET_MEMB(fsb) <= fer_memb_M7) && (fer_grp_G1 <= FER_SB_GET_GRP(fsb) && FER_SB_GET_GRP(fsb) <= fer_grp_G7))) {
+    // check for possible broadcast  XXX: should we also forbid any non motor address (FER_ADDR_TYPE_Receiver)?
+    if (FER_U32_TEST_TYPE(a, FER_ADDR_TYPE_CentralUnit) && !((1 <= m && m <= 7) && (1 <= g && g <= 7))) {
       return false; // no broadcast allowed
     }
 
     // set our endpos-up/down command according to normal up/down command in fsb
-    if (FER_SB_GET_CMD(fsb) == fer_if_cmd_UP) {
+    if (cmd == fer_if_cmd_UP) {
       fer_sep_cmd = SEP_UP;
-    } else if (FER_SB_GET_CMD(fsb) == fer_if_cmd_DOWN) {
+    } else if (cmd == fer_if_cmd_DOWN) {
       fer_sep_cmd = SEP_DOWN;
     } else {
       return false;
     }
     soMsg_sep_enable(*my_td);
-    fer_sep_fsb = *fsb;
+    fer_sep_fsb = fer_construct_fsb(a,g,m,(fer_cmd)cmd);
     fer_sep_buttons_enabled = true;
     TIMEOUT_SET();
     fer_sep_ENABLE_cb();
