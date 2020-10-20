@@ -25,7 +25,7 @@ struct Pct {
   bool invalid_ = false;
 public:
   uint8_t value() const { return pct_; }
-  operator bool () const { return invalid_; };
+  operator bool () const { return !invalid_; };
   operator uint8_t () const { return pct_; }
   Pct& operator =(uint8_t pct) { pct_ = pct; return *this; }
   bool operator ==(const Pct &other) const {  return pct_ == other.pct_;  }

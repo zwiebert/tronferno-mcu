@@ -230,7 +230,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
           case PIN_READ:
           error = mcu_access_pin(gpio_number, &ps_result, ps);
           if (!error) {
-            soMsg_gpio_pin(td, so_arg_pch_t {gpio_number, ps_result});
+            soMsg_gpio_pin(td, so_arg_pch_t {u8(gpio_number), ps_result});
           }
           break;
 
