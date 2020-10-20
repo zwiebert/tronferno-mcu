@@ -17,7 +17,7 @@
 
 
 void   test_set_get_pct() {
-  int pct;
+  u8 pct;
   fer_statPos_setPct(0, 2, 3, 42);
   pct = fer_statPos_getPct(0, 2, 3);
   TEST_ASSERT_EQUAL(42,pct);

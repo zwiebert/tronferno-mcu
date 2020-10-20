@@ -135,8 +135,7 @@ Pct fer_statPos_getPct(u32 a, u8 g, u8 m) {
   return Pct();
 }
 
-static int 
-set_state(u32 a, int g, int m, int position) {
+void set_state(u32 a, int g, int m, int position) {
   DT(db_printf("%s: a=%x, g=%d, m=%d, position=%d\n", __func__, a, g, m, position));
   precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
   precond(0 <= position && position <= 100);
@@ -146,14 +145,11 @@ set_state(u32 a, int g, int m, int position) {
   pos_map.setPct(g,0, pos_map.fer_statPos_getAvgPctGroup(g));
 
   fer_pos_POSITIONS_UNSAVED_cb();
-  return 0;
 }
 
-int 
+void
 fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   precond(0 < g && g <= 7 && 0 < m && m <= 7);
-  int result = -1;
-
 
 #ifndef TEST_HOST
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, pct=%d\n", __func__, a, (int)g, (int)m, (int)pct));
@@ -169,12 +165,12 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
           fer_statPos_setPct(0, g, m, pct);
         }
     }
-    return 0;
+    return;
   }
 #endif
 #endif
 
-  result = set_state(a, g, m, pct);
+  set_state(a, g, m, pct);
 
 
 #ifndef TEST_HOST
@@ -186,11 +182,9 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
     }
   }
 #endif
-
-  return result;
 }
 
-int fer_statPos_setPcts(Fer_GmSet *mm, u8 p) {
+void fer_statPos_setPcts(Fer_GmSet *mm, u8 p) {
   for (Fer_Gm_Counter it(1, 1, true); it; ++it) {
     const gT g = it.getG();
     const mT m = it.getM();
@@ -198,11 +192,9 @@ int fer_statPos_setPcts(Fer_GmSet *mm, u8 p) {
       fer_statPos_setPct(0, g, m, p);
     }
   }
-  return 0;
 }
 
-int 
-fer_statPos_printAllPcts(const struct TargetDesc &td) {
+void fer_statPos_printAllPcts(const struct TargetDesc &td) {
   Fer_GmSet msk;
 
   soMsg_pos_begin(td);
@@ -236,7 +228,6 @@ fer_statPos_printAllPcts(const struct TargetDesc &td) {
     }
   }
   soMsg_pos_end(td);
-  return 0;
 }
 
 
@@ -264,9 +255,6 @@ void fer_pos_init() {
 
   }
 }
-
-typedef u8 u8a8[8];
-
 
 static char *g_to_name(u8 g, char *buf) {
   STRCPY(buf, "PMAP_Gx");
