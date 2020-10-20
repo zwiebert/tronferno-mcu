@@ -10,6 +10,17 @@
 #include <fernotron_trx/fer_trx_c_api.h>
 #include "app_config/proj_app_cfg.h"
 
+struct Pct {
+  uint8_t pct_ = 0;
+  bool invalid_ = false;
+public:
+  operator bool () const { return invalid_; };
+  operator uint8_t () const { return pct_; }
+  Pct& operator =(uint8_t pct) { pct_ = pct; return *this; }
+  Pct(uint8_t pct) : pct_(pct) {}
+  Pct() : invalid_(true) { }
+};
+
 
 /**
  * \brief    will be called if a moving starts or stops by any command or duration

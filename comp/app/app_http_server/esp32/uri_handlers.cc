@@ -77,9 +77,9 @@ void ws_send_json(const char *json, ssize_t len) {
   ws_trigger_send(hts_server, json, len >= 0 ? len : strlen(json));
 }
 
-static int ws_write(void *req, const char *s, ssize_t len = -1, bool final = true) {
-  if (len < 0)
-    len = strlen(s);
+static int ws_write(void *req, const char *s, ssize_t s_len = -1, bool final = true) {
+  const size_t len = s_len < 0 ? strlen(s) : (size_t)s_len;
+
   httpd_ws_frame_t ws_pkt = {  .final = final, .type = HTTPD_WS_TYPE_TEXT, .payload = (u8*)s, .len = len };
   if (auto res = httpd_ws_send_frame((httpd_req_t *)req, &ws_pkt); res != ESP_OK) {
     ESP_LOGE(TAG, "httpd_ws_send_frame failed with %d (%s)", res, esp_err_to_name(res));

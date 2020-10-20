@@ -60,7 +60,7 @@ struct Fer_MsgCmd {
   u8 g; ///< group number (if central unit device)
   u8 m;  ///< group-member number (if central unit device)
   fer_if_cmd cmd; ///< Fernotron command code.
-  i8 repeats; ///< Repeat the transmission REPEATS times.
+  u8 repeats; ///< Repeat the transmission REPEATS times.
   u16 delay;  ///< Delay the transmission by DELAY (in s/10).
   u16 stopDelay; ///< Send a STOP command after STOP_DELAY (in s/10).
 };

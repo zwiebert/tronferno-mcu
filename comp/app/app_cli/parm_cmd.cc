@@ -45,7 +45,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
   bool has_requested_position = false;
   i8 pct = -1;
 #define has_pct (pct >= 0)
-#define has_cmd (cmd != fer_cmd_None)
+#define has_cmd (cmd != fer_if_cmd_None)
 #define has_sep (set_end_pos >= 0)
 
 
@@ -126,9 +126,10 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
 
   if (has_requested_position) {
     if (g != 0) {
-      int pos = fer_simPos_getPct_whileMoving(addr, g, m);
+      i8 pos = fer_simPos_getPct_whileMoving(addr, g, m);
       if (pos >= 0) {
-        so_arg_gmp_t gmp = {g, m, pos};
+        u8 upos = static_cast<u8>(pos);
+        so_arg_gmp_t gmp = {g, m, upos};
         soMsg_pos_print_gmp(td, gmp);
       }
     } else {

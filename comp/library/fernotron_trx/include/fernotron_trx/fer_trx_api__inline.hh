@@ -38,7 +38,7 @@ inline bool Fer_Trx_API::send_empty_timer(const Fer_MsgRtc &msg) {
   return fer_trx_send_empty_timer(&msg);
 }
 
-inline bool Fer_Trx_API::send_cmd(u32 a, u8 g, u8 m, fer_if_cmd cmd, i8 repeats, u16 delay, u16 stopDelay) {
+inline bool Fer_Trx_API::send_cmd(u32 a, u8 g, u8 m, fer_if_cmd cmd, u8 repeats, u16 delay, u16 stopDelay) {
   Fer_MsgCmd msg { a, g, m, cmd, repeats, delay, stopDelay };
   return fer_trx_send_cmd(&msg);
 }

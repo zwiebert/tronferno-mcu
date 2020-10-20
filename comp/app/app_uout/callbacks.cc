@@ -161,14 +161,12 @@ void uoApp_publish_timer_json(const char *json, bool fragment) {
 
 static void publish_fer_msgReceived_asTxt(uoCb_cbT cb, const struct Fer_MsgPlainCmd &m) {
   char buf[64];
-  fer_if_cmd c = m.cmd;
-  u32 id = m.a;
 
   const char *cs = 0;
   const char *fdt = 0;
 
   if ((FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_PlainSender) && (fdt = "plain")) || (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit) && (fdt = "central"))) {
-    switch (c) {
+    switch (m.cmd) {
     case fer_if_cmd_DOWN:
       cs = "down";
       break;
@@ -183,7 +181,7 @@ static void publish_fer_msgReceived_asTxt(uoCb_cbT cb, const struct Fer_MsgPlain
       break;
     }
   } else if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_SunSensor) && (fdt = "sun")) {
-    switch (c) {
+    switch (m.cmd) {
     case fer_if_cmd_SunDOWN:
       cs = "sun-down";
       break;
