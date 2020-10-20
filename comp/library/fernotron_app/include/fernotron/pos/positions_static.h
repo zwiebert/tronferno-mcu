@@ -45,7 +45,7 @@ int fer_statPos_setPcts(Fer_GmSet *mm, uint8_t pct);
  * \param a,g,m  Shutter, group or alias
  * \return        -1 for error or Position in percent.
  */
-int fer_statPos_getPct(uint32_t a, uint8_t g, uint8_t m);
+Pct fer_statPos_getPct(uint32_t a, uint8_t g, uint8_t m);
 
 /**
  * \brief        Output all tracked static positions to user

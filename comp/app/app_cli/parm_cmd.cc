@@ -126,10 +126,8 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
 
   if (has_requested_position) {
     if (g != 0) {
-      i8 pos = fer_simPos_getPct_whileMoving(addr, g, m);
-      if (pos >= 0) {
-        u8 upos = static_cast<u8>(pos);
-        so_arg_gmp_t gmp = {g, m, upos};
+      if (Pct pos = fer_simPos_getPct_whileMoving(addr, g, m)) {
+        so_arg_gmp_t gmp = {g, m, pos};
         soMsg_pos_print_gmp(td, gmp);
       }
     } else {

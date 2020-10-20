@@ -122,18 +122,17 @@ public:
 
 
 
-int
-fer_statPos_getPct(u32 a, u8 g, u8 m) {
+Pct fer_statPos_getPct(u32 a, u8 g, u8 m) {
   precond(g <= 7 && m <= 7);
 
   if (g == 0) {
-    return -1; // TODO: average all?
+    return Pct(); // TODO: average all?
   } else {
     if (pos_map.isMemberUnused(g, m))
-      return -1;
-    return pos_map.getPct(g, m);
+      return Pct();
+    return Pct(pos_map.getPct(g, m));
   }
-  return -1;
+  return Pct();
 }
 
 static int 

@@ -10,16 +10,6 @@
 #include <fernotron_trx/fer_trx_c_api.h>
 #include "app_config/proj_app_cfg.h"
 
-struct Pct {
-  uint8_t pct_ = 0;
-  bool invalid_ = false;
-public:
-  operator bool () const { return invalid_; };
-  operator uint8_t () const { return pct_; }
-  Pct& operator =(uint8_t pct) { pct_ = pct; return *this; }
-  Pct(uint8_t pct) : pct_(pct) {}
-  Pct() : invalid_(true) { }
-};
 
 
 /**
@@ -33,24 +23,24 @@ extern void (*fer_pos_POSITIONS_MOVE_cb)(bool has_moving);
  * \brief         register a move related command to a shutter or group
  * \param a,g,m   the shutter(s) or alias
  * \param cmd     the command to move or stop the shutter
- * \return        -1 for error; 0 for success.
+ * \return      success
  */
-int fer_simPos_registerMovingShutter(uint32_t a, uint8_t g, uint8_t m, fer_if_cmd cmd);
+bool fer_simPos_registerMovingShutter(uint32_t a, uint8_t g, uint8_t m, fer_if_cmd cmd);
 
 /**
  * \brief       register a move related command to a set of shutters or groups
  * \param mm    the shutter set
  * \param cmd   the command to move or stop the shutter
- * \return      -1 for error; 0 for success.
+ * \return      success
  */
-int fer_simPos_registerMovingShutters(Fer_GmSet *mm, fer_if_cmd cmd);
+bool fer_simPos_registerMovingShutters(Fer_GmSet *mm, fer_if_cmd cmd);
 
 /**
  * \brief        Get the current calculated position of the given shutter
  * \param a,g,m  Shutter or Alias
- * \return      -1 for error; 0 for success.
+ * \return       position or failure
  */
-int fer_simPos_getPct_whileMoving(uint32_t a, uint8_t g, uint8_t m);
+Pct fer_simPos_getPct_whileMoving(uint32_t a, uint8_t g, uint8_t m);
 
 
 /**
