@@ -45,8 +45,9 @@ typedef int64_t i64;
 #include "app_config/esp32/proj_app_cfg.h"
 
 #else
+#include "app_config/none/proj_app_cfg.h"
 #error "no supported MCU"
-
+#define MCU_ESP32
 #endif
 
 #include "proj_kconfig.h"

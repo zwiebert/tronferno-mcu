@@ -44,7 +44,6 @@ public:
   //virtual void event_timer_message_was_received() {  }
   virtual void event_any_message_was_received() {
     auto msg_type = get_msgKind();
-    const fer_sbT *fsb = static_cast<const fer_sbT*>(get_fsb());
     const fer_rawMsg *fer_rx_msg = static_cast<const fer_rawMsg*>(get_raw());
 
     if (msg_type == MSG_TYPE_PLAIN || msg_type == MSG_TYPE_PLAIN_DOUBLE) {
@@ -77,7 +76,6 @@ public:
 
   virtual void event_any_message_will_be_sent() { // first + repeats
     auto msg_type = get_msgKind();
-    const fer_sbT *fsb = static_cast<const fer_sbT*>(get_fsb());
     const fer_rawMsg *fer_tx_msg = static_cast<const fer_rawMsg*>(get_raw());
 
     if (TXTIO_IS_VERBOSE(vrb1)) {

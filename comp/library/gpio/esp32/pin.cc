@@ -237,10 +237,9 @@ const char *mcu_access_pin(int ngpio_number, mcu_pin_state *result, mcu_pin_stat
 void (*gpio_INPUT_PIN_CHANGED_ISR_cb)();
 
 void pin_notify_input_change() {
-  int i;
   uint64_t mask = pin_int_mask;
   pin_int_mask = 0;
-  for (i = 0; mask; ++i, (mask >>= 1)) {
+  for (u8 i = 0; mask; ++i, (mask >>= 1)) {
     if (!(mask & 1))
       continue;
     bool level = gpio_get_level(static_cast<gpio_num_t>(i));
