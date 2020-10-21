@@ -37,10 +37,10 @@ bool fer_simPos_registerMovingShutters(Fer_GmSet *mm, fer_if_cmd cmd);
 
 /**
  * \brief        Get the current calculated position of the given shutter
- * \param a,g,m  Shutter or Alias
+ * \param g,m    Shutter or group
  * \return       position or failure
  */
-Pct fer_simPos_getPct_whileMoving(uint32_t a, uint8_t g, uint8_t m);
+Pct fer_simPos_getPct_whileMoving(uint8_t g, uint8_t m);
 
 
 /**
@@ -59,7 +59,7 @@ uint16_t fer_simPos_calcMoveDuration_fromPctDiff_m(uint8_t g, uint8_t m, uint8_t
  * \param duration_ts  duration in s/10
  * \return             calculated position in percent
  */
-uint8_t  fer_simPos_getPct_afterDuration(uint8_t g, uint8_t m, bool direction_up, uint16_t duration_ts);
+Pct  fer_simPos_getPct_afterDuration(uint8_t g, uint8_t m, bool direction_up, uint16_t duration_ts);
 
 
 /**

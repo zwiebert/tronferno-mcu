@@ -128,7 +128,7 @@ bool fer_pos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts) {
   struct shutter_timings st;
   fer_pos_mGetSt(&st, g, m);
 
-  if (Pct pct = fer_statPos_getPct(0, g, m)) {
+  if (Pct pct = fer_statPos_getPct(g, m)) {
     int t = st.move_down_tsecs * (100 - pct.value()) / 100;
     if (t + duration_ts >= st.move_sundown_tsecs)
       return true;
@@ -138,7 +138,7 @@ bool fer_pos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts) {
 }
 
 bool fer_pos_shouldMove_sunDown(u8 g, u8 m) {
-  u8 pct_curr = fer_statPos_getPct(0, g, m);
+  u8 pct_curr = fer_statPos_getPct(g, m);
   u8 pct_sun = fer_pos_mGetSunPct(g, m);
 
   if (pct_curr <= pct_sun)
@@ -170,8 +170,8 @@ u16 fer_simPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct) {
 
 
 
-u8 fer_simPos_getPct_afterDuration(u8 g, u8 m, bool direction_up, u16 duration_ts) {
-  Pct pct = fer_statPos_getPct(0, g, m);
+Pct fer_simPos_getPct_afterDuration(u8 g, u8 m, bool direction_up, u16 duration_ts) {
+  Pct pct = fer_statPos_getPct(g, m);
   struct shutter_timings st;
   fer_pos_mGetSt(&st, g, m);
 
@@ -190,10 +190,7 @@ u8 fer_simPos_getPct_afterDuration(u8 g, u8 m, bool direction_up, u16 duration_t
     return add;
 }
 
-Pct fer_simPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
-  if (!(a == 0 || a == cfg_getCuId())) {
-    return Pct();
-  }
+Pct fer_simPos_getPct_whileMoving(u8 g, u8 m) {
 
   u32 now_ts = get_now_time_ts();
 
@@ -205,7 +202,7 @@ Pct fer_simPos_getPct_whileMoving(u32 a, u8 g, u8 m) {
       return Pct(pct);
     }
   }
-  return fer_statPos_getPct(a, g, m);
+  return fer_statPos_getPct(g, m);
 }
 
 void fer_pos_loopCheckMoving() {

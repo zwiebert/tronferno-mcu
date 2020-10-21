@@ -41,7 +41,7 @@ bool fer_cmd_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct_arg, u8 repeats) {
 
 
   if (is_our_cu && g > 0 && m > 0) {
-    curr_pct = fer_statPos_getPct(a, g, m);
+    curr_pct = fer_statPos_getPct(g, m);
     io_printf_v(vrbDebug, "curr_pct: %d\n", curr_pct.value());
   }
 

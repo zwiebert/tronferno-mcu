@@ -48,7 +48,7 @@ static int fer_pos_filter_mm(Fer_GmSet *mm, struct filter *filter) {
       goto filter_out;
 
     if (filter->destination_already_reached) {
-      u8 currPct = fer_statPos_getPct(0, g, m);
+      u8 currPct = fer_statPos_getPct(g, m);
       if ((direction_isUp(filter->dir) && currPct == PCT_UP) || (direction_isDown(filter->dir) && currPct == PCT_DOWN))
         goto filter_out;
     }

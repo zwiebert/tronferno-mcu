@@ -125,14 +125,17 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
   }
 
   if (has_requested_position) {
-    if (g != 0) {
-      if (Pct pos = fer_simPos_getPct_whileMoving(addr, g, m)) {
+    if (addr != cfg_getCuId()) {
+      return cli_replyFailure(td);
+    } else if (g != 0) {
+      if (Pct pos = fer_simPos_getPct_whileMoving(g, m)) {
         so_arg_gmp_t gmp = {g, m, pos};
         soMsg_pos_print_gmp(td, gmp);
       }
     } else {
       fer_statPos_printAllPcts(td);
     }
+
   } else {
     if (has_sep) { // enable hardware buttons to set end position
       if (set_end_pos)

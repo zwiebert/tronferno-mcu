@@ -122,22 +122,22 @@ public:
 
 
 
-Pct fer_statPos_getPct(u32 a, u8 g, u8 m) {
+Pct fer_statPos_getPct(u8 g, u8 m) {
   precond(g <= 7 && m <= 7);
 
   if (g == 0) {
-    return Pct(); // TODO: average all?
+    return Pct{}; // TODO: average all?
   } else {
     if (pos_map.isMemberUnused(g, m))
-      return Pct();
+      return Pct{};
     return Pct(pos_map.getPct(g, m));
   }
-  return Pct();
+  return Pct{};
 }
 
-void set_state(u32 a, int g, int m, int position) {
+static void set_state(u32 a, u8 g, u8 m, int position) {
   DT(db_printf("%s: a=%x, g=%d, m=%d, position=%d\n", __func__, a, g, m, position));
-  precond(0 <= g && g <= 7 && 0 <= m && m <= 7);
+  precond(g <= 7 && m <= 7);
   precond(0 <= position && position <= 100);
 
   pos_map.setMemberUnused(g,0);
