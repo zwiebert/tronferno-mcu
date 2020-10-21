@@ -78,7 +78,7 @@ void IRAM_ATTR timer_handler(void) {
 #ifdef FER_TRANSMITTER
   {
     static uint_fast8_t tick_count;
-    if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
+    if (0 == (++tick_count & (FER_ISR_FMULT - 1))) {
       fer_tx_dck();
     }
   }

@@ -72,17 +72,20 @@ static void IRAM_ATTR intTimer_isr(void *args) {
    we need enable it again, so it is triggered the next time */
   TIMERG0.hw_timer[timer_idx].config.alarm_en = TIMER_ALARM_EN;
 
+  static uint_fast8_t tick_count;
+  ++tick_count;
+
 #ifdef FER_TRANSMITTER
   {
-    static uint_fast8_t tick_count;
-    if (0 == (++tick_count & (INTR_TICK_FREQ_MULT - 1))) {
+    if (0 == (tick_count & ((FER_ISR_FMULT / FER_TX_FMULT) - 1))) {
       Fer_Trx_API::isr_handle_tx();
     }
   }
 #endif
-
 #ifdef FER_RECEIVER
-  Fer_Trx_API::isr_handle_rx();
+  if (0 == (tick_count & ((FER_ISR_FMULT / FER_RX_FMULT) - 1))) {
+    Fer_Trx_API::isr_handle_rx();
+  }
 #endif
 
 #ifndef USE_ESP_GET_TIME
@@ -117,6 +120,6 @@ static void intTimer_init(timer_group_t timer_group, timer_idx_t timer_idx, time
 }
 
 void app_timerISR_setup(void) {
-  intTimer_init(TIMER_GROUP_0, TIMER_1, TIMER_AUTORELOAD_EN, TICK_PERIOD_US);
+  intTimer_init(TIMER_GROUP_0, TIMER_1, TIMER_AUTORELOAD_EN, FER_ISR_TICK_US);
 }
 

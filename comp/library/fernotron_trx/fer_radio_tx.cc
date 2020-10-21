@@ -13,12 +13,14 @@
 #include "fer_app_cfg.h"
 #include "fernotron_trx/raw/fer_rawmsg_buffer.h"
 #include "fernotron_trx/raw/fer_msg_tx.h"
+#include "fernotron_trx/raw/fer_radio_timings_us.h"
 #include "debug/dbg.h"
 
 struct ftrx_counter {
   u16 Words;
   u16 Ticks, Bits;
 };
+#define US2DCK(us) FER_TX_US_TO_TCK(us)
 
 #ifdef FER_TRANSMITTER
 /////////////////////////// transmitter /////////////////////////
@@ -45,17 +47,17 @@ void fer_tx_transmitFerMsg(fer_rawMsg *msg, fer_msg_type msg_type) {
 #define init_counter() (ftxCount.Ticks = ftxCount.Bits = ftxCount.Words = 0)
 
 
-#define advanceLeadIntCounter() (ct_incr(ftxCount.Ticks, FER_INIT_WIDTH_DCK))
-#define fer_tx_update_output_lead_in() (output_level = (ftxCount.Ticks < FER_INIT_NEDGE_DCK))
+#define advanceLeadIntCounter() (ct_incr(ftxCount.Ticks, US2DCK(FER_INIT_WIDTH_US)))
+#define fer_tx_update_output_lead_in() (output_level = (ftxCount.Ticks < US2DCK(FER_INIT_NEDGE_US)))
 
-#define advanceStopBitCounter() (ct_incr(ftxCount.Ticks, FER_STP_WIDTH_DCK))
-#define fer_tx_update_output_stop_bit() (output_level = (ftxCount.Ticks < FER_STP_NEDGE_DCK))
+#define advanceStopBitCounter() (ct_incr(ftxCount.Ticks, US2DCK(FER_STP_WIDTH_US)))
+#define fer_tx_update_output_stop_bit() (output_level = (ftxCount.Ticks < US2DCK(FER_STP_NEDGE_US)))
 
-#define advancePreambleCounter() (ct_incr(ftxCount.Ticks, FER_PRE_WIDTH_DCK) && ct_incr(ftxCount.Bits, FER_PRE_BIT_CT))
-#define fer_tx_update_output_preamble() (output_level = (ftxCount.Ticks < FER_PRE_NEDGE_DCK))
+#define advancePreambleCounter() (ct_incr(ftxCount.Ticks, US2DCK(FER_PRE_WIDTH_US)) && ct_incr(ftxCount.Bits, FER_PRE_BIT_CT))
+#define fer_tx_update_output_preamble() (output_level = (ftxCount.Ticks < US2DCK(FER_PRE_NEDGE_US)))
 
-#define advanceWordBitCounter() (ct_incr(ftxCount.Ticks, FER_BIT_WIDTH_DCK) && ct_incr(ftxCount.Bits, FER_CMD_BIT_CT))
-#define fer_tx_update_output_data(word_buffer) (output_level = ftxCount.Ticks < FER_BIT_SHORT_DCK || (ftxCount.Ticks < FER_BIT_LONG_DCK && !GET_BIT(word_buffer, ftxCount.Bits)))
+#define advanceWordBitCounter() (ct_incr(ftxCount.Ticks, US2DCK(FER_BIT_WIDTH_US)) && ct_incr(ftxCount.Bits, FER_CMD_BIT_CT))
+#define fer_tx_update_output_data(word_buffer) (output_level = ftxCount.Ticks < US2DCK(FER_BIT_SHORT_US) || (ftxCount.Ticks < US2DCK(FER_BIT_LONG_US) && !GET_BIT(word_buffer, ftxCount.Bits)))
 
 #define advanceWordCounter() (ct_incr(ftxCount.Words, fer_tx_messageToSend_wordCount))
 

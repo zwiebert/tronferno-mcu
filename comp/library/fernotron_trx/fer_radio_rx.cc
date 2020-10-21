@@ -10,8 +10,9 @@
 #include "fernotron_trx/raw/fer_msg_tx.h"
 #include "debug/dbg.h"
 #include "utils_misc/int_macros.h"
+#include "fernotron_trx/raw/fer_radio_timings_us.h"
 
-
+#define US2TCK(us) FER_RX_US_TO_TCK(us)
 
 /// \brief  Possible errors/warnings when receiving a message
 /// \note   The only hard error is BAD_CHECKSUM
@@ -26,25 +27,6 @@ enum fer_error {
 // like FER_SB_ but works on array instead of struct
 #define FER_RB_ADDR_IS_CENTRAL(data)  (((data)[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)
 #define FER_RB_GET_FPR0_IS_RTC_ONLY(data) (((data)[fpr0_RTC_wday] & 0x80) != 0) //TODO:move
-
-//  the same timings relative to ticks of interrupt frequency
-#define FER_PRE_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_DCK)
-#define FER_PRE_WIDTH_MIN_TCK   DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_MIN_DCK)
-#define FER_PRE_WIDTH_MAX_TCK   DATA_CLOCK_TO_TICKS(FER_PRE_WIDTH_MAX_DCK)
-#define FER_PRE_NEDGE_MIN_TCK   DATA_CLOCK_TO_TICKS(FER_PRE_NEDGE_MIN_DCK)
-#define FER_PRE_NEDGE_MAX_TCK   DATA_CLOCK_TO_TICKS(FER_PRE_NEDGE_MAX_DCK)
-
-#define FER_STP_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_STP_WIDTH_DCK)
-#define FER_STP_WIDTH_MIN_TCK   DATA_CLOCK_TO_TICKS(FER_STP_WIDTH_MIN_DCK)
-#define FER_STP_WIDTH_MAX_TCK   DATA_CLOCK_TO_TICKS(FER_STP_WIDTH_MAX_DCK)
-#define FER_STP_NEDGE_TCK       DATA_CLOCK_TO_TICKS(FER_STP_NEDGE_DCK)
-#define FER_STP_NEDGE_MIN_TCK   DATA_CLOCK_TO_TICKS(FER_STP_NEDGE_MIN_DCK)
-#define FER_STP_NEDGE_MAX_TCK   DATA_CLOCK_TO_TICKS(FER_STP_NEDGE_MAX_DCK)
-
-#define FER_BIT_WIDTH_TCK       DATA_CLOCK_TO_TICKS(FER_BIT_WIDTH_DCK)
-#define FER_BIT_SHORT_TCK       DATA_CLOCK_TO_TICKS(FER_BIT_SHORT_DCK)
-#define FER_BIT_LONG_TCK        DATA_CLOCK_TO_TICKS(FER_BIT_LONG_DCK)
-#define FER_BIT_SAMP_POS_TCK    DATA_CLOCK_TO_TICKS(FER_BIT_SAMP_POS_DCK)
 
 #ifndef DISTRIBUTION
 //#define FTRX_TEST_LOOP_BACK
@@ -84,12 +66,12 @@ void fer_rx_getQuality(struct fer_rx_quality *dst) {
 }
 
 /////////////////////////// interrupt code //////////////////////
-#define bitLen               DATA_CLOCK_TO_TICKS(FER_BIT_WIDTH_DCK)
+#define bitLen               US2TCK(FER_BIT_WIDTH_US)
 // bit is 1, if data edge comes before sample position (/SHORT\..long../)
 // bit is 0, if data edge comes after sample position  (/..LONG..\short/)
-#define SAMPLE_BIT ((pTicks < DATA_CLOCK_TO_TICKS(FER_BIT_SAMP_POS_DCK)))
-#define veryLongPauseLow_Len (2 * DATA_CLOCK_TO_TICKS(FER_STP_WIDTH_MAX_DCK))
-#define MAX_PRG_TICK_COUNT (DATA_CLOCK_TO_TICKS(FER_PRG_FRAME_WIDTH_DCK) * 2) // FIXME
+#define SAMPLE_BIT ((pTicks < US2TCK(FER_BIT_SAMP_POS_US)))
+#define veryLongPauseLow_Len (2 * US2TCK(FER_STP_WIDTH_MAX_US))
+#define MAX_PRG_TICK_COUNT (US2TCK(FER_PRG_FRAME_WIDTH_US) * 2) // FIXME
 #define rxbuf_current_byte() (&fer_rx_msg->cmd.bd[0] + (frxCount.Words / 2))
 #define ct_incr(ct, limit) (!((++ct >= limit) ? (ct = 0) : 1))
 #define ct_incrementP(ctp, limit) ((++*ctp, *ctp %= limit) == 0)
@@ -153,11 +135,11 @@ static void IRAM_ATTR fer_rx_recv_decodeByte(u8 *dst) {
 }
 
 static bool  IRAM_ATTR fer_rx_is_stopBit(unsigned len, unsigned nedge) {
-  return ((FER_STP_WIDTH_MIN_TCK <= len && len <= FER_STP_WIDTH_MAX_TCK) && (FER_STP_NEDGE_MIN_TCK <= nedge && nedge <= FER_STP_NEDGE_MAX_TCK));
+  return ((US2TCK(FER_STP_WIDTH_MIN_US) <= len && len <= US2TCK(FER_STP_WIDTH_MAX_US)) && (US2TCK(FER_STP_NEDGE_MIN_US) <= nedge && nedge <= US2TCK(FER_STP_NEDGE_MAX_US)));
 }
 
 static bool  IRAM_ATTR fer_rx_is_pre_bit(unsigned len, unsigned nedge) {
-  return ((FER_PRE_WIDTH_MIN_TCK <= len && len <= FER_PRE_WIDTH_MAX_TCK) && (FER_PRE_NEDGE_MIN_TCK <= nedge && nedge <= FER_PRE_NEDGE_MAX_TCK));
+  return ((US2TCK(FER_PRE_WIDTH_MIN_US) <= len && len <= US2TCK(FER_PRE_WIDTH_MAX_US)) && (US2TCK(FER_PRE_NEDGE_MIN_US) <= nedge && nedge <= US2TCK(FER_PRE_NEDGE_MAX_US)));
 }
 
 

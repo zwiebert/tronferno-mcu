@@ -41,8 +41,8 @@ static_assert(sizeof(Fer_Cmd) == FER_CMD_BYTE_CT - 1, "wrong msg size");
 static_assert(sizeof(fer_cmd_row) == FER_CMD_BYTE_CT, "wrong msg size");
 #endif
 
-// high nibble of data[fer_dat_ADDR_2]
-////// device type
+//
+/// \brief device type (\link fer_dat_ADDR_2 \endlink)
 enum Fer_DevType : uint8_t {
   FER_PlainSender = 0x10,   ///< type byte of plain sender addresses
   FER_SunSensor = 0x20,   ///< type byte of  sun-sensor addresses

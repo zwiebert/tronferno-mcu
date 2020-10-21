@@ -170,7 +170,35 @@ FULL_PATH_NAMES        = YES
 # will be relative from the directory where doxygen is started.
 # This tag requires that the tag FULL_PATH_NAMES is set to YES.
 
-STRIP_FROM_PATH        = comp/app/app_cli/include comp/app/app_config/include comp/app/app_http_server/include comp/app/app_main/include comp/app/app_misc/include comp/app/app_mqtt/include comp/app/app_settings/include comp/app/app_uout/include comp/app/app_webapp/include comp/library/fernotron_app/include comp/library/fernotron_lib/include comp/library/fernotron_trx/include comp/library/gpio/include comp/external/components-mcu/components/cli/include comp/external/components-mcu/components/config_kvs/include comp/external/components-mcu/components/firmware_update/include comp/external/components-mcu/components/jsmn/include comp/external/components-mcu/components/key_value_store/include comp/external/components-mcu/components/nanopb/include comp/external/components-mcu/components/net_http_server/include comp/external/components-mcu/components/net/include comp/external/components-mcu/components/net_mqtt/include comp/external/components-mcu/components/stm32/include comp/external/components-mcu/components/storage/include comp/external/components-mcu/components/txtio/include comp/external/components-mcu/components/uout/include comp/external/components-mcu/components/utils_debug/include comp/external/components-mcu/components/utils_misc/include comp/external/components-mcu/components/utils_time/include
+STRIP_FROM_PATH        = comp/app/app_cli/include \
+                         comp/app/app_config/include \
+                         comp/app/app_http_server/include \
+                         comp/app/app_main/include \
+                         comp/app/app_misc/include \
+                         comp/app/app_mqtt/include \
+                         comp/app/app_settings/include \
+                         comp/app/app_uout/include \
+                         comp/app/app_webapp/include \
+                         comp/library/fernotron_app/include \
+                         comp/library/fernotron_lib/include \
+                         comp/library/fernotron_trx/include \
+                         comp/library/gpio/include \
+                         comp/external/components-mcu/components/cli/include \
+                         comp/external/components-mcu/components/config_kvs/include \
+                         comp/external/components-mcu/components/firmware_update/include \
+                         comp/external/components-mcu/components/jsmn/include \
+                         comp/external/components-mcu/components/key_value_store/include \
+                         comp/external/components-mcu/components/nanopb/include \
+                         comp/external/components-mcu/components/net_http_server/include \
+                         comp/external/components-mcu/components/net/include \
+                         comp/external/components-mcu/components/net_mqtt/include \
+                         comp/external/components-mcu/components/stm32/include \
+                         comp/external/components-mcu/components/storage/include \
+                         comp/external/components-mcu/components/txtio/include \
+                         comp/external/components-mcu/components/uout/include \
+                         comp/external/components-mcu/components/utils_debug/include \
+                         comp/external/components-mcu/components/utils_misc/include \
+                         comp/external/components-mcu/components/utils_time/include
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -491,7 +519,7 @@ EXTRACT_PACKAGE        = NO
 # included in the documentation.
 # The default value is: NO.
 
-EXTRACT_STATIC         = NO
+EXTRACT_STATIC         = YES
 
 # If the EXTRACT_LOCAL_CLASSES tag is set to YES, classes (and structs) defined
 # locally in source files will be included in the documentation. If set to NO,
@@ -499,7 +527,7 @@ EXTRACT_STATIC         = NO
 # for Java sources.
 # The default value is: YES.
 
-EXTRACT_LOCAL_CLASSES  = NO
+EXTRACT_LOCAL_CLASSES  = YES
 
 # This flag is only useful for Objective-C code. If set to YES, local methods,
 # which are defined in the implementation section but not in the interface are
@@ -2202,7 +2230,8 @@ INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = USE_MQTT \
                          USE_NETWORK \
                          USE_WS \
-                         MCU_ESP32
+                         MCU_ESP32 \
+                         __attribute__(x)=
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
