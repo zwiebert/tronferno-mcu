@@ -1,7 +1,7 @@
 #include "fer_app_cfg.h"
+#include "fernotron_trx/fer_trx_c_api.h"
 #include "fernotron_trx/raw/fer_msg_plain.h"
 #include "fernotron_trx/raw/fer_fsb.h"
-#include <fernotron_trx/raw/fer_msg_rx.h>
 #include <fernotron_trx/raw/fer_msg_tx.h>
 
 static void
@@ -18,18 +18,18 @@ fer_init_sender(fer_sbT *fsb, u32 devID) {
   fer_init_plain(fsb, devID);
 
   switch (GET_BYTE_2(devID)) {
-    case FER_ADDR_TYPE_PlainSender:
+    case FER_PlainSender:
         FER_SB_PUT_MEMB(fsb, fer_memb_FromPlainSender);
     break;
 
-    case FER_ADDR_TYPE_SunSensor:
+    case FER_SunSensor:
     FER_SB_PUT_MEMB(fsb, fer_memb_FromSunSensor);
     break;
 
-    case FER_ADDR_TYPE_CentralUnit:
+    case FER_CentralUnit:
     break;
     
-    case FER_ADDR_TYPE_Receiver:
+    case FER_Receiver:
     	FER_SB_PUT_MEMB(fsb, fer_memb_ToReceiver);
     break;
 

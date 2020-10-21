@@ -13,7 +13,6 @@
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/positions_static.h"
 #include "fernotron/pos/positions_dynamic.h"
-#include "fernotron_trx/raw/fer_msg_tx.h"
 #include "fernotron_trx/raw/fer_radio_trx.h"
 #include "fernotron_trx/fer_trx_api.hh"
 #include "fernotron/fer_main.h"

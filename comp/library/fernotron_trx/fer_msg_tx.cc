@@ -1,5 +1,5 @@
 #include <fernotron_trx/raw/fer_msg_plain.h>
-#include <fernotron_trx/raw/fer_msg_rx.h>
+#include "fernotron_trx/fer_trx_c_api.h"
 #include "fernotron_trx/raw/fer_radio_trx.h"
 #include <string.h>
 #include "fer_app_cfg.h"

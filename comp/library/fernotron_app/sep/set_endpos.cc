@@ -1,13 +1,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "fernotron/sep/set_endpos.h"
+#include "fernotron_trx/fer_trx_api.hh"
 
-#include <fernotron_trx/raw/fer_msg_plain.h>
-#include <fernotron_trx/raw/fer_msg_attachment.h>
-#include <fernotron_trx/raw/fer_msg_tx.h>
-#include "fernotron_trx/raw/fer_msg_rx.h"
-#include "fernotron_trx/raw/fer_radio_trx.h"
-#include "fernotron_trx/raw/fer_rawmsg_buffer.h"
-#include "fernotron_trx/raw/fer_fsb.h"
 
 #include "gpio/pin.h"
 
@@ -52,7 +46,16 @@ static inline void fer_sep_DISABLE_cb() {
     fer_sep_enable_disable_cb(false);
 }
 
-static fer_sbT fer_sep_fsb;
+static struct {
+  u32 a;
+  u8 g, m;
+
+  Fer_MsgCmd make_cmd(fer_if_cmd cmd, u8 repeats = 0) const {
+    return Fer_MsgCmd{ .a = a, .g = g, .m = m, .cmd = cmd, .repeats = repeats };
+  }
+
+} ourAgm;
+
 static bool fer_sep_buttons_enabled;
 static bool up_pressed, down_pressed;
 static fer_if_cmd fer_sep_cmd;
@@ -81,29 +84,17 @@ bool  fer_sep_is_enabled(void) {
 
 static bool 
 fer_sep_send_stop(void) {
-  fer_sbT * const fsb = &fer_sep_fsb;
-  FER_SB_PUT_CMD(fsb, fer_if_cmd_STOP);
-  fer_update_tglNibble(fsb);
-  while (fer_send_msg(fsb, MSG_TYPE_PLAIN, 2)) {
-    fer_update_tglNibble(fsb);
-  }
-  return true;
+  return Fer_Trx_API::send_cmd(ourAgm.make_cmd(fer_if_cmd_STOP, 2));
 }
 
 static bool 
 fer_sep_send_down(void) {
-  fer_sbT * const fsb = &fer_sep_fsb;
-  FER_SB_PUT_CMD(fsb, SEP_DOWN);
-  fer_update_tglNibble(fsb);
-  return fer_send_msg(fsb, MSG_TYPE_PLAIN, 0);
+  return Fer_Trx_API::send_cmd(ourAgm.make_cmd(SEP_DOWN));
 }
 
 static bool 
 fer_sep_send_up(void) {
-  fer_sbT * const fsb = &fer_sep_fsb;
-  FER_SB_PUT_CMD(fsb, SEP_UP);
-  fer_update_tglNibble(fsb);
-  return fer_send_msg(fsb, MSG_TYPE_PLAIN, 0);
+  return Fer_Trx_API::send_cmd(ourAgm.make_cmd(SEP_UP));
 }
 
 void 
@@ -142,7 +133,9 @@ fer_sep_enable(const struct TargetDesc &td, const u32 a, const u8 g, const u8 m,
       return false;
     }
     soMsg_sep_enable(*my_td);
-    fer_sep_fsb = fer_construct_fsb(a,g,m,(fer_cmd)cmd);
+    ourAgm.a = a;
+    ourAgm.g = g;
+    ourAgm.m = m;
     fer_sep_buttons_enabled = true;
     TIMEOUT_SET();
     fer_sep_ENABLE_cb();

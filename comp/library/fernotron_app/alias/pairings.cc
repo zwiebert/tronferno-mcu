@@ -2,7 +2,7 @@
 
 #include "app_config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
-#include "fernotron_trx/raw/fer_msg_rx.h"
+#include "fernotron_trx/fer_trx_c_api.h"
 #include "utils_misc/bcd.h"
 #include "fernotron/alias/pairings.h"
 #include "app_misc/rtc.h"

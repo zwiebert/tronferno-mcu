@@ -10,7 +10,7 @@
 
 /// \brief indices of data[5] array
 enum fer_dat {
-  fer_dat_ADDR_2, ///< sender or receiver address byte 2
+  fer_dat_ADDR_2, ///< sender or receiver address byte 2 (contains the type)
   fer_dat_ADDR_1, ///< sender or receiver address byte 1
   fer_dat_ADDR_0, ///< sender or receiver address byte 0
   fer_dat_TGL_and_MEMB, ///< key-press counter (0x1..0xf) + some ID of the sender (like Member number, Type of sender, ...)

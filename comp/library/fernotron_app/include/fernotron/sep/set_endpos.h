@@ -14,7 +14,10 @@
 
 
 
-
+/**
+ * \brief          Event callback: SEP-mode had been enabled or disabled
+ * \param enabled  true: was enabled, false: was disabled
+ */
 extern void (*fer_sep_enable_disable_cb)(bool enable);
 
 /**

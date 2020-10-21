@@ -21,10 +21,24 @@ inline Fer_GmSet * te_getMaskDown(Fer_TimerEvent *te) { return (&(te)->member_ma
 inline bool te_isDisabled(Fer_TimerEvent *te) { return ((te)->next_event == MINUTES_DISABLED); }  ///<  Test if this event is disabled
 
 
-
-// returns false, if no timer event occurs until midnight
+/**
+ * \brief             Get events left for today (events occurring between now and midnight)
+ * \param[out] evt    Pass an empty object to get the results.
+ * \param now_time    Current time.  Time span is NOW_TIME...midnight
+ * \return            true if there were any matching events
+ */
 bool fer_am_get_next_timer_event(Fer_TimerEvent *evt, const time_t *now_time);
 
+
+/**
+ * \brief   Update module internal state holding today's timer events
+ * \note    Call this after modifying any timers
+ */
 void fer_am_updateTimerEvent();
-void fer_am_loop_old(void);
+
+
+/**
+ * \brief     Do work.
+ * \note      Call it periodically from main loop (XXX ???)
+ */
 void fer_am_loop(void);

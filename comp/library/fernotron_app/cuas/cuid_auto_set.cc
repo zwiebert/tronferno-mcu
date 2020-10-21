@@ -15,9 +15,7 @@
 #include "app_uout/status_output.h"
 #include "app_uout/callbacks.h"
 #include "app_misc/rtc.h"
-#include "fernotron_trx/raw/fer_msg_rx.h"
-#include "fernotron_trx/raw/fer_msg_attachment.h"
-
+#include "fernotron_trx/fer_trx_c_api.h"
 
 
 void (*fer_cuas_enable_disable_cb)(bool enable);

@@ -9,9 +9,21 @@
 #include "stdbool.h"
 #include "app_config/proj_app_cfg.h"
 
-
+/**
+ * \brief          Event callback: CUAS-mode had been enabled or disabled
+ * \param enabled  true: was enabled, false: was disabled
+ */
 extern void (*fer_cuas_enable_disable_cb)(bool enable);
-typedef enum  { FER_CUAS_NONE, FER_CUAS_SCANNING, FER_CUAS_TIME_OUT, FER_CUAS_SUCCESS } fer_cuas_state_T;
+
+/**
+ * \brief      State of the module
+ */
+typedef enum  {
+  FER_CUAS_NONE, ///< Inactive
+  FER_CUAS_SCANNING, ///< Scanning in progress
+  FER_CUAS_TIME_OUT, ///< Scanning has timeout out
+  FER_CUAS_SUCCESS ///< RF message was received and new CU address set from its address
+} fer_cuas_state_T;
 
 /**
  * \brief              Start scanning RF messages for central unit
@@ -36,12 +48,8 @@ void fer_cuas_set_check_timeout(void);
 bool fer_cuas_set_check(const u32 cu);
 
 /**
- * \brief                Get current state of this module by polling
- * \return
- *     -  FER_CUAS_NONE       Inactive
- *     -  FER_CUAS_SCANNING   Scanning in progress
- *     -  FER_CUAS_TIME_OUT   Scanning has timeout out
- *     -  FER_CUAS_SUCCESS    RF message was received and new CU address set from its address
+ * \brief     Get current state of this module by polling
+ * \return    current state. Any value of /link fer_cuas_state_T /endlink
  */
 fer_cuas_state_T fer_cuas_getState();
 

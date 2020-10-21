@@ -10,7 +10,7 @@
 #include <stdint.h>
 
 #include "fernotron_trx/raw/fer_fsb.h"
-#include "app_config/proj_app_cfg.h"
+#include "fernotron_trx/fer_trx_c_api.h"
 
 #ifdef __cplusplus
   extern "C" {
@@ -20,21 +20,6 @@
  * \brief Set this to start RF transmission. It stays true until transmission is done.
  */
 extern volatile bool fer_tx_messageToSend_isReady;
-
-
-
-
-/**
- * \brief          Will be called if the next delayed message is ready for transmission in TIME_TS
- *
- * \note           You can use this to start a timer interval which will call \link fer_tx_loop \endlink  after TIME_TS.
- *                 Until then there is no work to do. So calling fer_tx_loo would be wasteful.
- *
- * \param time_ts  Duration (in s/10) until the next message is ready for transmission
- */
-extern void (*fer_tx_READY_TO_TRANSMIT_cb)(uint32_t time_ts);
-
-// send short or long messages (data already in send-buffer)
 
 /**
  * \brief          Push a raw message to send queue
@@ -70,15 +55,6 @@ uint8_t fer_tglNibble_ctUp(uint8_t toggle_nibble, int step);
  * \return              number of message in the queue
  */
 int fer_tx_get_msgPendingCount();
-
-/**
- * \brief   Do work.
- * \note    Call this from main thread in reaction to \link fer_tx_MSG_TRANSMITTED_ISR_cb  \endlink calls.
- * \note    Call this also from a timer interval in main thread, after pushing a delayed message (to avoid polling)
- * \note    Setup that interval in reaction to \link fer_tx_READY_TO_TRANSMIT_cb \endlink
- */
-void fer_tx_loop(void);
-
 
 #ifdef __cplusplus
   }

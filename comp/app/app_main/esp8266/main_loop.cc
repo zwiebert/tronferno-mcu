@@ -36,7 +36,6 @@ void loop(void) {
   cli_loop();
   fer_pos_loop();
 
-  fer_am_loop_old();
   fer_cuas_set_check_timeout();
 #ifdef USE_PAIRINGS
   fer_alias_auto_set_check_timeout();

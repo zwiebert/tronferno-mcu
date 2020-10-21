@@ -1,7 +1,7 @@
 #include "fer_app_cfg.h"
 #include "fernotron_trx/raw/fer_radio_trx.h"
 #include "fernotron_trx/raw/fer_msg_type.h"
-#include "fernotron_trx/raw/fer_msg_rx.h"
+#include "fernotron_trx/fer_trx_c_api.h"
 #include "fernotron_trx/raw/fer_rawmsg_buffer.h"
 #include "fernotron_trx/raw/fer_rawmsg_build.h"
 #include "fernotron_trx/timer_data.h"

@@ -13,8 +13,7 @@
 #include "fernotron/alias/pairings.h"
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "fernotron/sep/set_endpos.h"
-#include "fernotron_trx/raw/fer_msg_rx.h"
-#include "fernotron_trx/raw/fer_msg_tx.h"
+#include "fernotron_trx/fer_trx_c_api.h"
 #include "net/ipnet.h"
 #include "gpio/pin.h"
 
