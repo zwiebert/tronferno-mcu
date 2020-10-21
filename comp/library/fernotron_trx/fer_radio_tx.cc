@@ -7,7 +7,7 @@
 #include "app_config/proj_app_cfg.h"
 #include <fernotron_trx/raw/fer_radio_trx.h>
 #include "fer_radio_parity.h"
-
+#include "fer_trx_impl.hh"
 #include <fernotron_trx/raw/fer_msg_plain.h>
 #include "fernotron_trx/isr_timer_config.h"
 #include "fer_app_cfg.h"
@@ -19,11 +19,6 @@ struct ftrx_counter {
   u16 Words;
   u16 Ticks, Bits;
 };
-
-#define WORDS_MSG_PLAIN (2*FER_BYTES_MSG_PLAIN)
-#define WORDS_MSG_RTC (2*FER_BYTES_MSG_RTC)
-#define WORDS_MSG_TIMER  (2*FER_BYTES_MSG_TIMER)
-
 
 #ifdef FER_TRANSMITTER
 /////////////////////////// transmitter /////////////////////////

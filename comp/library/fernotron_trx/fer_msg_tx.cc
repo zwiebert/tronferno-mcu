@@ -11,7 +11,7 @@
 #include "fer_msg_tx_queue.h"
 #include <fernotron_trx/fer_trx_api.hh>
 #include "fer_trx_incoming_event.hh"
-#include "fer_trx_api_private.hh"
+#include "fer_trx_impl.hh"
 #include "utils_time/run_time.h"
 
 
