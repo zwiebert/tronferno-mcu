@@ -1,6 +1,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "main.h"
 #include "app_cli/cli_app.h"
+#include "app_settings/config.h"
 #include "utils_time/run_time.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "app_http_server/setup.h"
@@ -170,8 +171,11 @@ void mcu_init() {
   };
 #endif
 #ifdef USE_CUAS
-  fer_cuas_enable_disable_cb = [] (bool enable) {
+#define CI(cb) static_cast<configItem>(cb)
+  fer_cuas_enable_disable_cb = [] (bool enable, uint32_t cu) {
     lfPer_putBit(lf_checkCuasTimeout, enable);
+    config_save_item_n_u32(CI(CB_CUID), cu);
+    config_item_modified(CI(CB_CUID));
 };
 #endif
 

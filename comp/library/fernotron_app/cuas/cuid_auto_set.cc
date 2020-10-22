@@ -18,15 +18,15 @@
 #include "fernotron_trx/fer_trx_c_api.h"
 
 
-void (*fer_cuas_enable_disable_cb)(bool enable);
+void (*fer_cuas_enable_disable_cb)(bool enable, uint32_t cu);
 
 static inline void fer_cuas_ENABLE_cb() {
   if (fer_cuas_enable_disable_cb)
-    fer_cuas_enable_disable_cb(true);
+    fer_cuas_enable_disable_cb(true, 0);
 }
-static inline void fer_cuas_DISABLE_cb() {
+static inline void fer_cuas_DISABLE_cb(uint32_t cu = 0) {
   if (fer_cuas_enable_disable_cb)
-    fer_cuas_enable_disable_cb(false);
+    fer_cuas_enable_disable_cb(false, cu);
 }
 
 static fer_cuas_state_T fer_cuas_state;
@@ -67,27 +67,19 @@ void fer_cuas_set_check_timeout() {
 }
 
 #if 1
-#include "app_settings/config.h"
-#define CI(cb) static_cast<configItem>(cb)
 
 bool fer_cuas_set_check(const u32 cu) {
   if (end_time == 0)
     return false;
 
-{
-    config_save_item_n_u32(CI(CB_CUID), cu);
-    config_item_modified(CI(CB_CUID));
-    end_time = 0;
-    end_time = 0;
-    uoApp_publish_fer_cuasState({.a = cu, .success = true });
-    fer_cuas_state = FER_CUAS_SUCCESS;
-    config_save_item_n_u32(CI(CB_CUID), cu);
-    config_item_modified(CI(CB_CUID));
-    fer_cuas_active = false;
-    fer_cuas_DISABLE_cb();
-    return true;
-  }
+  end_time = 0;
+  uoApp_publish_fer_cuasState( { .a = cu, .success = true });
+  fer_cuas_state = FER_CUAS_SUCCESS;
 
-  return false;
+
+  fer_cuas_active = false;
+  fer_cuas_DISABLE_cb(cu);
+  return true;
+
 }
 #endif

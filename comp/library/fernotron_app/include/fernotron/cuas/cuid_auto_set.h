@@ -12,8 +12,9 @@
 /**
  * \brief          Event callback: CUAS-mode had been enabled or disabled
  * \param enabled  true: was enabled, false: was disabled
+ * \param cu       New cu-address or 0.
  */
-extern void (*fer_cuas_enable_disable_cb)(bool enable);
+extern void (*fer_cuas_enable_disable_cb)(bool enable, uint32_t cu);
 
 /**
  * \brief      State of the module
