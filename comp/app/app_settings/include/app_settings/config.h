@@ -49,8 +49,11 @@ typedef struct {
   enum receiver app_recv;
   enum transmitter app_transm;
   enum rtclock app_rtc;
-  uint32_t fer_usedMembers; // each of the nibbles 1-7 stands for a group. nibble 1 == group 1. nibble 0 = number of used Groups (stored for the front-end, not used here on the MCU)
-  Fer_GmSet fer_usedMemberMask;
+  /**
+   * \brief each of the nibbles 1-7 stands for a group. nibble 1 == group 1.
+   * \note nibble 0 = number of used Groups (stored for the front-end, not used here on the MCU)
+   */
+  uint32_t fer_usedMembers;
   char app_configPassword[16];
   char app_expertPassword[16];
 } config;

@@ -19,7 +19,7 @@
 #include <string.h>
 
 struct fer_configT fer_config;
-Fer_GmSet manual_bits;
+Fer_GmSet manual_bits, fer_usedMemberMask;
 
 
 static class FerTrx final : public Fer_Trx_API {
@@ -101,7 +101,9 @@ uint32_t fer_main_getSenderByAddress(long addr) {
 
 
 void fer_main_setup(const fer_configT &ferConfig, const bool reinit) {
+
    fer_config = ferConfig;
+   fer_usedMemberMask.fromNibbleCounters(ferConfig.usedMembers);
    manual_bits = Fer_GmSet("MANU");
    if (reinit)
      return;

@@ -37,7 +37,7 @@ bool fer_cmd_moveShutterToPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct, uin
 
 /**
  * \brief         Generate commands to move multiple shutters to a given position. Keeps track of all moving and stopping.
- * \param a       Device address of our central unit.
+ * \param a       Device address.
  * \param mm      Set of groups and members to move.
  * \param pct     Position (int %) to move to.
  * \param repeats Repeat mess N times

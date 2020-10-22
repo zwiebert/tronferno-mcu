@@ -98,6 +98,21 @@ public:
     fer_stor_gmSet_load("MANU", &mBm, 1);
   }
 
+  /**
+   * \brief   Construct set from nibble counter (one group per nibble)
+   * \param um  each nibble except of nibble 0 contains a count (1-7) of members of a group to set
+   */
+  explicit Fer_GmSet(uint32_t um) {
+    int g, m;
+    clear();
+    for (g = 0; g < 8; ++g, (um >>= 4)) {
+      u8 u = um & 0x07;
+      for (m = 1; m <= u; ++m) {
+        setMember(g, m);
+      }
+    }
+  }
+
 public:
   operator gmSetT*() {
     return &mBm;
@@ -173,8 +188,8 @@ public:
      * \param bm      Pointer to container
      * \param g,m     group and member to start iteration from
      */
-    iterator(Fer_GmSet *bm, gT g = 0, mT m = 0) :
-        Fer_Gm_Counter(g, m), mPtr(bm) {
+    iterator(Fer_GmSet *bm, gT g = 0, mT m = 0, bool skip_groups = false) :
+        Fer_Gm_Counter(g, m, skip_groups), mPtr(bm) {
     }
     /// \brief Get next group or member
     iterator& operator++() {
@@ -196,8 +211,8 @@ public:
    * \brief       Get an iterator
    * \param g,m   Group/member to start with
    */
-  iterator begin(gT g = 0, mT m = 0) {
-    auto it = iterator(this, g, m);
+  iterator begin(gT g = 0, mT m = 0, bool skip_groups = false) {
+    auto it = iterator(this, g, m, skip_groups);
     return it->getMember(0, 0) ? it : ++it;
   }
 

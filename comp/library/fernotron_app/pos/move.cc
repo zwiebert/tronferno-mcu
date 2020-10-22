@@ -11,7 +11,7 @@
 
 #include "app_config/proj_app_cfg.h"
 
-#include "app_settings/config.h"
+#include "fernotron/fer_main.h"
 #include "debug/dbg.h"
 #include "utils_misc/int_macros.h"
 #include "app_uout/status_output.h"

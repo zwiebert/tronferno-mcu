@@ -1,14 +1,15 @@
 #include "app_config/proj_app_cfg.h"
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron_trx/fer_trx_api.hh"
-
+#include "app_uout/status_output.h"
+#include <fernotron_trx/fer_trx_c_api.h>
 
 #include "gpio/pin.h"
 
-#include "app_misc/rtc.h"
+
+#include <utils_time/run_time.h>
 #include "txtio/inout.h"
-#include "app_uout/status_output.h"
-#include <fernotron_trx/fer_trx_c_api.h>
+
 
 //////////////////////////////////////////////////////////////////
 // DANGER ZONE

@@ -2,14 +2,15 @@
 
 #include "fernotron/auto/fau_tminutes.h"
 #include "fernotron/auto/fau_tdata_store.h"
-#include "app_misc/rtc.h"
+#include "fernotron/pos/shutter_pct.h"
 #include "fernotron_trx/astro.h"
-#include "app_settings/config.h"
+#include "fernotron/fer_main.h"
+
 #include "debug/dbg.h"
 #include "utils_misc/int_macros.h"
-#include "time.h"
-#include "fernotron/pos/shutter_pct.h"
+#include <utils_time/ut_constants.hh>
 
+#include "time.h"
 #include <stdlib.h>
 #include <string.h>
 

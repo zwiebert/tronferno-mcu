@@ -6,7 +6,7 @@
  */
 #include "app_config/proj_app_cfg.h"
 #include "timer_data_kvs.h"
-#include "app_settings/config.h"
+#include "fernotron/fer_main.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
 #include "debug/dbg.h"
@@ -49,7 +49,7 @@ static int delete_shadowded_kv(u8 group, u8 memb) {
     for (Fer_Gm_Counter it; it; ++it) {
       const gT g = it.getG();
       const mT m = it.getM();
-      if ((group == 0 || group == g) && (memb == 0 || (memb == m && C.fer_usedMemberMask.getMember(g, m)))) {
+      if ((group == 0 || group == g) && (memb == 0 || (memb == m && fer_usedMemberMask.getMember(g, m)))) {
         if (kvs_erase_key(handle, TdKey(g, m))) {
           DB2(printf("shadow deleted: g=%d, m=%d\n", (int)g, (int)m));
           ++result;

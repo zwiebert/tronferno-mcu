@@ -2,9 +2,8 @@
 
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron/auto/fau_tdata_store.h"
-#include "app_misc/rtc.h"
 #include "fernotron_trx/astro.h"
-#include "app_settings/config.h"
+#include "fernotron/fer_main.h"
 #include "debug/dbg.h"
 #include "utils_misc/int_macros.h"
 #include "time.h"
@@ -100,17 +99,17 @@ static bool fer_am_get_next_timer_event_earliest(Fer_GmSet *mask_result, fer_au_
 
   if (set_earliest(0, 0, &earliest, tm_now, minutes_now, mask_result)) {
     for (g = 1; g <= MAX_GRP; ++g) {
-      (*mask_result)[g] = C.fer_usedMemberMask[g];
+      (*mask_result)[g] = fer_usedMemberMask[g];
     }
   }
 
   for (g = 1; g <= MAX_GRP; ++g) {
     if (set_earliest(g, 0, &earliest, tm_now, minutes_now, mask_result)) {
-      (*mask_result)[g] = C.fer_usedMemberMask[g];
+      (*mask_result)[g] = fer_usedMemberMask[g];
     }
   }
 
-  for (auto it = C.fer_usedMemberMask.begin(1); it; ++it) {
+  for (auto it = fer_usedMemberMask.begin(1); it; ++it) {
     u8 g = it.getG(), m = it.getM();
     if (manual_bits.getMember(g, m))
       continue;
@@ -148,7 +147,7 @@ bool fer_am_get_next_timer_event(Fer_TimerEvent *evt, const time_t *now_time) {
 
   evt->next_event = earliest;
 
-  for (auto it = C.fer_usedMemberMask.begin(); it; ++it) {
+  for (auto it = fer_usedMemberMask.begin(); it; ++it) {
     u8 g = it.getG(), m = it.getM();
     if (manual_bits.getMember(g, m))
       continue;

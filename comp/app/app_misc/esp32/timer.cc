@@ -33,19 +33,10 @@
 #include <string.h>
 #include <unistd.h>
 
-
-
-
-#define TIMER_DIVIDER         16  //  Hardware timer clock divider
-#define TIMER_SCALE           (TIMER_BASE_CLK / TIMER_DIVIDER)  // convert counter value to seconds
-#define TIMER_INTERVAL0_SEC   (3.4179) // sample test interval for the first timer
-#define TIMER_INTERVAL1_SEC   (5.78)   // sample test interval for the second timer
-#define TEST_WITHOUT_RELOAD   0        // testing will be done without auto reload
-#define TEST_WITH_RELOAD      1        // testing will be done with auto reload
-#define TIMER_SCALE_MS        (TIMER_SCALE / 1000)
-#define TIMER_SCALE_US        (TIMER_SCALE_MS / 1000)
-
-
+constexpr unsigned TIMER_DIVIDER = 16; ///<   Hardware timer clock divider
+constexpr unsigned TIMER_SCALE = (TIMER_BASE_CLK / TIMER_DIVIDER); ///<  convert counter value to seconds
+constexpr unsigned TIMER_SCALE_MS = (TIMER_SCALE / 1000); ///<
+constexpr unsigned TIMER_SCALE_US = (TIMER_SCALE_MS / 1000); ///<
 
 //////////////////////////////////////////////////////////////////////////
 #ifndef USE_ESP_GET_TIME

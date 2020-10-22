@@ -5,7 +5,7 @@
 #include "fernotron/pos/shutter_pct.h"
 #include "fernotron/pos/shutter_prefs.h"
 
-#include "app_settings/config.h"
+#include "fernotron/fer_main.h"
 #include "debug/dbg.h"
 #include "utils_misc/int_macros.h"
 #include "app_uout/status_output.h"
@@ -35,7 +35,7 @@
 #define MBR_MAX 7
 
 
-#define cfg_isMemberUnused(g,m) !C.fer_usedMemberMask.getMember(g, m)
+#define cfg_isMemberUnused(g,m) !fer_usedMemberMask.getMember(g, m)
 
 static char *g_to_name(u8 g, char *buf);
 
@@ -149,12 +149,12 @@ static void set_state(u32 a, u8 g, u8 m, int position) {
 
 void
 fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
-  precond(0 < g && g <= 7 && 0 < m && m <= 7);
+  precond(g <= 7 && m <= 7);
 
 #ifndef TEST_HOST
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, pct=%d\n", __func__, a, (int)g, (int)m, (int)pct));
 #ifdef USE_PAIRINGS
-  if (!(a == 0 || a == cfg_getCuId())) {
+  if (!(a == 0 || a == fer_config.cu)) {
     Fer_GmSet gm;
     if (fer_alias_getControllerPairings(a, &gm))
       for (Fer_Gm_Counter it(1,1,true); it; ++it) {
@@ -175,7 +175,7 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
 
 #ifndef TEST_HOST
   if (pct <= 100) {
-    if (a == 0 || a == cfg_getCuId()) {
+    if (a == 0 || a == fer_config.cu) {
 
       so_arg_gmp_t gmp[3] = { { g, m, pct }, { g, 0, (u8) pos_map.getPct(g, 0) }, { 0xff, 0xff, 0xff } };
       uoApp_publish_pctChange_gmp(gmp, 2);

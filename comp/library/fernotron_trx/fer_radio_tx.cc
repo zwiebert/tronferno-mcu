@@ -46,6 +46,8 @@ void fer_tx_transmitFerMsg(fer_rawMsg *msg, fer_msg_type msg_type) {
 #define ct_incrementP(ctp, limit) ((++*ctp, *ctp %= limit) == 0)
 #define init_counter() (ftxCount.Ticks = ftxCount.Bits = ftxCount.Words = 0)
 
+static_assert(18 == US2DCK(FER_STP_WIDTH_US));
+static_assert(250 == US2DCK(FER_INIT_WIDTH_US));
 
 #define advanceLeadIntCounter() (ct_incr(ftxCount.Ticks, US2DCK(FER_INIT_WIDTH_US)))
 #define fer_tx_update_output_lead_in() (output_level = (ftxCount.Ticks < US2DCK(FER_INIT_NEDGE_US)))

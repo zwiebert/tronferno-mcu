@@ -10,11 +10,11 @@
 
 #include "fernotron/cuas/cuid_auto_set.h"
 
-#include "app_settings/config.h"
+#include "fernotron/fer_main.h"
 #include "utils_misc/int_types.h"
 #include "app_uout/status_output.h"
 #include "app_uout/callbacks.h"
-#include "app_misc/rtc.h"
+#include <utils_time/run_time.h>
 #include "fernotron_trx/fer_trx_c_api.h"
 
 
@@ -65,6 +65,9 @@ void fer_cuas_set_check_timeout() {
     fer_cuas_DISABLE_cb();
   }
 }
+
+#if 1
+#include "app_settings/config.h"
 #define CI(cb) static_cast<configItem>(cb)
 
 bool fer_cuas_set_check(const u32 cu) {
@@ -87,3 +90,4 @@ bool fer_cuas_set_check(const u32 cu) {
 
   return false;
 }
+#endif

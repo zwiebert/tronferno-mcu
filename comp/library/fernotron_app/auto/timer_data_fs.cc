@@ -6,7 +6,7 @@
  */
 #include "app_config/proj_app_cfg.h"
 #include "timer_data_fs.h"
-#include "app_settings/config.h"
+#include "fernotron/fer_main.h"
 #include "storage/storage.h"
 #include "utils_misc/int_types.h"
 #include "debug/dbg.h"
@@ -51,7 +51,7 @@ static int delete_shadowded_files(u8 group, u8 memb) {
   for (Fer_Gm_Counter it; it; ++it) {
     const gT g = it.getG();
     const mT m = it.getM();
-    if ((group == 0 || group == g) && (memb == 0 || (memb == m && C.fer_usedMemberMask.getMember(g, m)))) {
+    if ((group == 0 || group == g) && (memb == 0 || (memb == m && fer_usedMemberMask.getMember(g, m)))) {
       if (stor_fileDelete(gm_to_file_name(g, m))) {
         DB2(printf("shadow deleted: g=%d, m=%d, fid=%s\n", (int)g, (int)m, gm_to_file_name(g, m)));
         ++result;

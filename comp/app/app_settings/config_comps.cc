@@ -74,7 +74,6 @@ void config_setup_global() {
     kvsR(u32, CB_BAUD, C.mcu_serialBaud);
     kvs_close(h);
   }
-  C.fer_usedMemberMask.fromNibbleCounters(C.fer_usedMembers);
 }
 uint32_t config_read_used_members() {
   return  config_read_item_u32(CI(CB_USED_MEMBERS), MY_FER_GM_USE);

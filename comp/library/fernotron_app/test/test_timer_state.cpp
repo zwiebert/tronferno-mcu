@@ -14,7 +14,7 @@
 #include <time.h>
 #include <fernotron/types.h>
 #include "debug/dbg.h"
-#include "app_settings/config.h"
+#include "fernotron/fer_main.h"
 #include <utils_misc/int_types.h>
 #include <fernotron_trx/fer_trx_api.hh>
 
@@ -50,7 +50,7 @@ static void test_timer_event4() {
 
   TEST_ASSERT_EQUAL(t2m(20,54), tevt.next_event); // astro time
   Fer_GmSet test1;
-  test1[1] = C.fer_usedMemberMask[1]&0x02;
+  test1[1] = fer_usedMemberMask[1]&0x02;
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
 }
@@ -82,7 +82,7 @@ static void test_timer_event3() {
 
   TEST_ASSERT_EQUAL(t2m(6,54), tevt.next_event);
   Fer_GmSet test1;
-  test1[1] = C.fer_usedMemberMask[1]&0x02;
+  test1[1] = fer_usedMemberMask[1]&0x02;
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskUp(&tevt), 8);
 
 }
@@ -114,7 +114,7 @@ static void test_timer_event2() {
 
   TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
   Fer_GmSet test1;
-  test1[1] = C.fer_usedMemberMask[1]&0xfc;
+  test1[1] = fer_usedMemberMask[1]&0xfc;
   TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
 
   now_tm = tm {
@@ -363,24 +363,18 @@ TEST_CASE("timer next event", "[fernotron/auto]") {
 }
 
 #ifdef TEST_HOST
-#include "app_settings/config.h"
-//Fer_GmSet manual_bits;
-//config C;
+#include "fernotron/fer_main.h"
 
 static struct cfg_astro cfg_astro =
     { .astroCorrection = acAverage, .geo_longitude = 13.38, .geo_latitude = 52.5, .geo_timezone = 1,  };
 void setUp() {
-
-  C.fer_usedMembers = ~0U;
-  C.fer_usedMemberMask.fromNibbleCounters(C.fer_usedMembers);
+  fer_main_setup({0x801234, ~0U});
   Fer_Trx_API::setup_astro(&cfg_astro);
 }
 #endif
 
 #ifdef TEST_HOST
-#ifndef cfg_getCuId
-uint32_t cfg_getCuId() { return 0x801234; }
-#endif
+
 #include "time.h"
 
 uint32_t run_time_ts() {

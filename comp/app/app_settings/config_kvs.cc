@@ -43,11 +43,12 @@ const char * const config_keys[] = {
 
 bool config_item_modified(enum configItem item) {
   kvshT h;
+  bool ferCfg_isModified = false;
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
     switch ((int)item) {
     case CB_CUID:
       kvsR(u32, item, C.fer_centralUnitID);
-      fer_main_setup(fer_configT{C.fer_centralUnitID}, true);
+      ferCfg_isModified = true;
       break;
     case CB_BAUD:
       kvsR(i8, item, C.mcu_serialBaud);
@@ -58,8 +59,8 @@ bool config_item_modified(enum configItem item) {
       break;
 #endif
     case CB_USED_MEMBERS:
+      ferCfg_isModified = true;
       kvsR(u32, item, C.fer_usedMembers);
-      C.fer_usedMemberMask.fromNibbleCounters(C.fer_usedMembers);
       break;
     case CB_VERBOSE:
       config_setup_txtio();
@@ -70,6 +71,9 @@ bool config_item_modified(enum configItem item) {
     }
     kvs_close(h);
   }
+  if (ferCfg_isModified)
+     fer_main_setup({C.fer_centralUnitID,  C.fer_usedMembers}, true);
+
   return true;
 }
 #ifdef ACCESS_GPIO
