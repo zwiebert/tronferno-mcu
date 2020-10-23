@@ -28,12 +28,11 @@ typedef enum  {
 
 /**
  * \brief              Start scanning RF messages for central unit
- * \param td           Target descriptor for output
  * \param msg_id       Message ID of CLI command initiating this scan.
  * \param timout_secs  Operation will be stopped after the timout is reached
  * \return             true if scanning is now active
  */
-bool fer_cuas_set(const struct TargetDesc &td, uint16_t msg_id, unsigned timeout_secs);
+bool fer_cuas_set(uint16_t msg_id, unsigned timeout_secs);
 
 
 /**

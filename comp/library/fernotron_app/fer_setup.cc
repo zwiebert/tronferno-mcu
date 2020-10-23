@@ -15,7 +15,7 @@
 #include "fernotron/txtio/fer_print.h"
 #include "fernotron/fer_main.h"
 #include <fernotron_trx/fer_trx_api.hh>
-#include <app_uout/callbacks.h>
+#include <fernotron_uout/fer_uo_publish.h>
 #include <string.h>
 
 struct fer_configT fer_config;

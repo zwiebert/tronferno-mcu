@@ -1,12 +1,12 @@
-set(srcs  status_output_switch.cc so_out.cc so_print.cc callbacks.cc
+set(srcs  status_output_switch.cc so_out.cc so_print.cc #callbacks.cc
     so_write_msg.cc so_write_config.cc
 ) 
 
 idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS "./include" 
-    REQUIRES uout
-    PRIV_REQUIRES  app_misc utils_misc app_settings  utils_debug fernotron_app cli net
+    REQUIRES uout fernotron_uout
+    PRIV_REQUIRES  app_misc utils_misc app_settings  utils_debug fernotron_app  cli net
                    app_update
     )
 

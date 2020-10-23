@@ -7,7 +7,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "so_out.h"
 #include "so_print.h"
-#include "app_uout/callbacks.h"
+#include "fernotron_uout/fer_uo_publish.h"
 #include "utils_misc/int_types.h"
 #include "app_misc/firmware.h"
 #include "app_misc/rtc.h"
@@ -174,32 +174,7 @@ void soMsg_cuas_state(const struct TargetDesc &td, int state) {
 
 }
 
-/////////////////////////////////////////////////////////////////////////////////
-static uint16_t pras_msgid;
 
-void soMsg_pras_start_listening(const struct TargetDesc &td, uint16_t id) {
-  pras_msgid = id;
-  td.write("U:pras: start listening at RF\n");
-}
-
-void soMsg_pras_stop_listening(const struct TargetDesc &td) {
-  if (pras_msgid) {
-    td.write("U:pras: success\n");
-  } else {
-    td.write("U:pras: failure\n");
-  }
-}
-
-void soMsg_pras_timeout(const struct TargetDesc &td) {
-  reply_id_message(td, pras_msgid, "pras=time-out", 0);
-}
-
-void soMsg_pras_done(const struct TargetDesc &td, bool success, bool unpair) {
-  char buf[64];
-  snprintf(buf, sizeof buf, "U:pras: %s: controller was%s %spaired\n", success ? "success" : "failure", success ? "" : " NOT", unpair ? "un" : "");
-  reply_id_message(td, pras_msgid, success ? "pras=ok" : "pras:error", 0);
-
-}
 /////////////////////////////////////////////////////////////////////////////////
 void soMsg_timer_event_print(const struct TargetDesc &td, const so_arg_gm_t a) {
   so_print_timer_event_minutes(a.g, a.m);

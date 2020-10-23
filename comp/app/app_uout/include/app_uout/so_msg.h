@@ -1,5 +1,6 @@
 #pragma once
 #include <app_uout/so_types.h>
+#include <fernotron_uout/fer_uo_publish.h>
 
 struct TargetDesc;
 

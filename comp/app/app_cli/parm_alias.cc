@@ -140,7 +140,7 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
   }
 
   if (scan) {
-    fer_alias_auto_set(td, g, m, c, cli_msgid, PRAS_TIMEOUT);
+    fer_alias_auto_set(g, m, c, cli_msgid, PRAS_TIMEOUT);
   }
 
   if (read_all) {

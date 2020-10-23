@@ -8,7 +8,7 @@
 #include "app_config/options.hh"
 #include "so_out.h"
 #include "so_print.h"
-#include "app_uout/callbacks.h"
+#include "fernotron_uout/fer_uo_publish.h"
 #include "utils_misc/int_types.h"
 #include "app_misc/firmware.h"
 #include "app_misc/rtc.h"

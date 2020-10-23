@@ -4,7 +4,7 @@
 #include "fernotron/pos/shutter_pct.h"
 #include "app_uout/status_output.h"
 #include "app_uout/so_msg.h"
-#include "app_uout/callbacks.h"
+#include "fernotron_uout/fer_uo_publish.h"
 #include "uout/status_json.hh"
 #include "app_config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"

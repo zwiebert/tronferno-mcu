@@ -5,8 +5,7 @@
 #include "fernotron_trx/fer_trx_c_api.h"
 #include "utils_misc/bcd.h"
 #include "fernotron/alias/pairings.h"
-#include "app_uout/status_output.h"
-#include "app_uout/callbacks.h"
+#include "fernotron_uout/fer_uo_publish.h"
 #include "debug/dbg.h"
 #include "utils_misc/int_types.h"
 #include <utils_time/run_time.h>
@@ -37,7 +36,7 @@ static inline void fer_alias_DISABLE_cb() {
     fer_alias_enable_disable_cb(false);
 }
 
-bool  fer_alias_auto_set(const struct TargetDesc &td, u8 g, u8 m, fer_alias_cmds c, u16 id, unsigned timeout_secs) {
+bool  fer_alias_auto_set(u8 g, u8 m, fer_alias_cmds c, u16 id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
 
@@ -48,7 +47,6 @@ bool  fer_alias_auto_set(const struct TargetDesc &td, u8 g, u8 m, fer_alias_cmds
     end_time = run_time_s() + timeout_secs;
     pras_active = true;
     uoApp_publish_fer_prasState({ .scanning = true, .pairing = pras_c == PC_pair });
-    soMsg_pras_start_listening(td, id);
     fer_alias_ENABLE_cb();
   }
   return false;

@@ -6,7 +6,7 @@
 #include <mbedtls/base64.h>
 #include "net_http_server/http_server_setup.h"
 #include "uout/status_json.hh"
-#include "app_uout/callbacks.h"
+#include "fernotron_uout/fer_uo_publish.h"
 #include "app_settings/config.h"
 #include "app_cli/cli_app.h"
 #include "utils_misc/int_types.h"
@@ -294,8 +294,8 @@ void hts_setup_content() {
   flags.tgt.websocket = true;
   flags.evt.pin_change = true;
   flags.evt.pct_change = true;
-  flags.evt.uo_evt_flag_PRAS = true;
-  flags.evt.uo_evt_flag_CUAS = true;
+  flags.evt.gen_app_state_change = true;
+  flags.evt.gen_app_error_message = true;
   flags.evt.async_http_resp = true;
   flags.fmt.json = true;
   uoCb_subscribe(ws_send_json_cb, flags);

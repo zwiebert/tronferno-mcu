@@ -17,7 +17,7 @@
 #include "cli/mutex.hh"
 #include "uout/status_json.hh"
 #include "app_uout/status_output.h"
-#include <app_uout/callbacks.h>
+#include <fernotron_uout/fer_uo_publish.h>
 
 static char *io_mqtt_topic_root;
 

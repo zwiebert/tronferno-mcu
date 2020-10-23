@@ -1,4 +1,6 @@
-#include <app_uout/callbacks.h>
+#include "fernotron_uout/fer_uo_publish.h"
+
+#include <uout/uo_callbacks.h>
 
 // app
 #include <fernotron_trx/fer_trx_api.hh>
@@ -18,6 +20,7 @@
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT tgtFlags) {
   uo_flagsT flags;
   flags.evt.pct_change = true;
+  flags.evt.gen_app_state_change = true;
 
   flags.fmt.raw = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
@@ -71,6 +74,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
   uo_flagsT flags;
   flags.evt.pct_change = true;
+  flags.evt.gen_app_state_change = true;
 
   flags.fmt.raw = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
@@ -114,6 +118,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
 void uoApp_publish_timer_json(const char *json, bool fragment) {
   uo_flagsT flags;
   flags.evt.timer_change = true;
+  flags.evt.gen_app_state_change = true;
 
   flags.fmt.json = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
@@ -139,6 +144,7 @@ void uoApp_publish_timer_json(const char *json, bool fragment) {
 void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
   uo_flagsT flags;
   flags.evt.rf_msg_received = true;
+  flags.evt.gen_app_state_change = true;
 
   const Fer_MsgPlainCmd &m = *msg;
 
@@ -199,6 +205,7 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
 void uoApp_publish_fer_prasState(const so_arg_pras_t args) {
   uo_flagsT flags;
   flags.evt.uo_evt_flag_PRAS = true;
+  flags.evt.gen_app_state_change = true;
 
   flags.fmt.raw = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
@@ -237,6 +244,7 @@ void uoApp_publish_fer_prasState(const so_arg_pras_t args) {
 void uoApp_publish_fer_cuasState(const so_arg_cuas_t args) {
   uo_flagsT flags;
   flags.evt.uo_evt_flag_CUAS = true;
+  flags.evt.gen_app_state_change = true;
 
   flags.fmt.raw = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {

@@ -59,13 +59,12 @@ bool fer_alias_so_output_all_pairings(const struct TargetDesc &td);
 
 /**
  * \brief              Start listening on RF receiver for controller to pair/unpair
- * \param td           Target descriptor for output
  * \param g,m          Group/Member to pair to. 0 means "any".
  * \param c            If received a RF command, then do this command.
  * \return             true on success
  *
  */
-bool fer_alias_auto_set(const struct TargetDesc &td, uint8_t g, uint8_t m, fer_alias_cmds c, uint16_t id, unsigned timeout_secs);
+bool fer_alias_auto_set(uint8_t g, uint8_t m, fer_alias_cmds c, uint16_t id, unsigned timeout_secs);
 
 
 // check for result (called from main loop)

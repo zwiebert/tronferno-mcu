@@ -12,8 +12,7 @@
 
 #include "fernotron/fer_main.h"
 #include "utils_misc/int_types.h"
-#include "app_uout/status_output.h"
-#include "app_uout/callbacks.h"
+#include "fernotron_uout/fer_uo_publish.h"
 #include <utils_time/run_time.h>
 #include "fernotron_trx/fer_trx_c_api.h"
 
@@ -38,14 +37,13 @@ fer_cuas_state_T fer_cuas_getState() {
 static bool fer_cuas_active;
 static time_t end_time;
 
-bool fer_cuas_set(const struct TargetDesc &td, u16 id, unsigned timeout_secs) {
+bool fer_cuas_set(u16 id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
 
   if (timeout_secs > 0) {
     end_time = run_time_s() + timeout_secs;
     fer_cuas_active = true;
-    soMsg_cuas_start(td, id);
     fer_cuas_state = FER_CUAS_SCANNING;
     uoApp_publish_fer_cuasState({.scanning = true});
     fer_cuas_ENABLE_cb();
@@ -66,8 +64,6 @@ void fer_cuas_set_check_timeout() {
   }
 }
 
-#if 1
-
 bool fer_cuas_set_check(const u32 cu) {
   if (end_time == 0)
     return false;
@@ -76,10 +72,8 @@ bool fer_cuas_set_check(const u32 cu) {
   uoApp_publish_fer_cuasState( { .a = cu, .success = true });
   fer_cuas_state = FER_CUAS_SUCCESS;
 
-
   fer_cuas_active = false;
   fer_cuas_DISABLE_cb(cu);
   return true;
-
 }
-#endif
+

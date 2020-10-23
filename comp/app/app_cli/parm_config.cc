@@ -175,7 +175,7 @@ process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
 
         case SO_CFG_CU: {
           if (is_val("auto")) {
-            fer_cuas_set(td, cli_msgid, 60);
+            fer_cuas_set(cli_msgid, 60);
             cli_replySuccess(td);
           } else {
             u32 cu = strtoul(val, NULL, 16);
