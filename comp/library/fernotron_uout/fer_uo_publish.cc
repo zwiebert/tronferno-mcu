@@ -15,8 +15,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
-
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT tgtFlags) {
   uo_flagsT flags;
   flags.evt.pct_change = true;
@@ -24,9 +22,9 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
 
   flags.fmt.raw = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    for (auto i = 0; i < idxs.size; ++i) {
+    {
       for (auto k = 0; k < len; ++k) {
-        uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, &a[k], flags);
+        uoCb_publish(idxs, &a[k], flags);
       }
     }
   }
@@ -52,9 +50,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
       flags.fmt.json = true;
       flags.evt.pct_change = true;
 
-      for (auto i = 0; i < idxs.size; ++i) {
-        uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, sj.get_json(), flags);
-      }
+      uoCb_publish(idxs, sj.get_json(), flags);
     }
   }
 
@@ -64,9 +60,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
     char buf[64];
     for (auto k = 0; k < len; ++k) {
       snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;\n", a[k].g, a[k].m, a[k].p);  //XXX: Is inner or outer loop better?
-      for (auto i = 0; i < idxs.size; ++i) {
-        uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, &a[k], flags);
-      }
+      uoCb_publish(idxs, &a[k], flags);
     }
   }
 }
@@ -78,9 +72,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
 
   flags.fmt.raw = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    for (auto i = 0; i < idxs.size; ++i) {
-      uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, &a, flags);
-    }
+    uoCb_publish(idxs, &a, flags);
   }
 
   flags.fmt.raw = false;
@@ -98,9 +90,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
       sj.close_object();
       sj.close_root_object();
 
-      for (auto i = 0; i < idxs.size; ++i) {
-        uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, sj.get_json(), flags);
-      }
+      uoCb_publish(idxs, sj.get_json(), flags);
     }
   }
 
@@ -109,9 +99,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[64];
     snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;\n", a.g, a.m, a.p);
-    for (auto i = 0; i < idxs.size; ++i) {
-      uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, buf, flags);
-    }
+    uoCb_publish(idxs, buf, flags);
   }
 }
 
@@ -124,9 +112,7 @@ void uoApp_publish_timer_json(const char *json, bool fragment) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
 
     if (!fragment) {
-      for (auto i = 0; i < idxs.size; ++i) {
-        uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, json, flags);
-      }
+      uoCb_publish(idxs, json, flags);
     } else {
       size_t json_len = strlen(json);
       char buf[json_len + 4] = "{";
@@ -134,9 +120,7 @@ void uoApp_publish_timer_json(const char *json, bool fragment) {
       buf[json_len] = '}'; // overwrite trailing comma
       buf[json_len + 1] = '\0';
 
-      for (auto i = 0; i < idxs.size; ++i) {
-        uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, buf, flags);
-      }
+      uoCb_publish(idxs, buf, flags);
     }
   }
 }
@@ -196,9 +180,7 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
       snprintf(buf, sizeof buf, "RC:type=%s: a=%06x g=%d m=%d c=%s;\n", fdt, m.a, m.g, m.m, cs);
     }
 
-    for (auto i = 0; i < idxs.size; ++i) {
-      uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, buf, flags);
-    }
+    uoCb_publish(idxs, buf, flags);
   }
 }
 
@@ -209,9 +191,7 @@ void uoApp_publish_fer_prasState(const so_arg_pras_t args) {
 
   flags.fmt.raw = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    for (auto i = 0; i < idxs.size; ++i) {
-      uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, &args, flags);
-    }
+    uoCb_publish(idxs, &args, flags);
   }
 
   flags.fmt.raw = false;
@@ -234,9 +214,7 @@ void uoApp_publish_fer_prasState(const so_arg_pras_t args) {
 
       sj.close_root_object();
 
-      for (auto i = 0; i < idxs.size; ++i) {
-        uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, sj.get_json(), flags);
-      }
+      uoCb_publish(idxs, sj.get_json(), flags);
     }
   }
 }
@@ -248,9 +226,7 @@ void uoApp_publish_fer_cuasState(const so_arg_cuas_t args) {
 
   flags.fmt.raw = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    for (auto i = 0; i < idxs.size; ++i) {
-      uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, &args, flags);
-    }
+    uoCb_publish(idxs, &args, flags);
   }
 
   flags.fmt.raw = false;
@@ -277,9 +253,7 @@ void uoApp_publish_fer_cuasState(const so_arg_cuas_t args) {
 
       sj.close_root_object();
 
-      for (auto i = 0; i < idxs.size; ++i) {
-        uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, sj.get_json(), flags);
-      }
+      uoCb_publish(idxs, sj.get_json(), flags);
     }
   }
 
@@ -288,9 +262,7 @@ void uoApp_publish_fer_cuasState(const so_arg_cuas_t args) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     const char *msg = args.success ? "tf:event:cuas=ok:;\n" : args.timeout ? "tf:event:cuas=time-out:;\n" : "tf:event:cuas=scanning:;\n";
 
-    for (auto i = 0; i < idxs.size; ++i) {
-      uoCb_publish(uoCb_cbs[idxs.arr[i]].cb, msg, flags);
-    }
+    uoCb_publish(idxs, msg, flags);
   }
 }
 
