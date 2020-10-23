@@ -76,6 +76,7 @@ void io_mqttApp_publishPinChange(int gpio_num, bool level) {
 
 
 static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
+  // No lock required: esp_mqtt_client_publish is thread safe
   if (auto pch = uoCb_pchFromMsg(msg))
     io_mqttApp_publishPinChange(pch->gpio_num, pch->level);
   if (auto gmp = uoCb_gmpFromMsg(msg))
