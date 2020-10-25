@@ -25,6 +25,7 @@ static void test_gm_bitmask_iterator() {
     Fer_GmSet gmm;
     gmm.setMember(0, 0);
     gmm.setMember(1, 4);
+    gmm.setMember(2, 0);
     gmm.setMember(2, 6);
     gmm.setMember(7, 7);
 
@@ -41,6 +42,10 @@ static void test_gm_bitmask_iterator() {
 
     TEST_ASSERT_TRUE(++it);
     TEST_ASSERT_EQUAL(2, it.getG());
+    TEST_ASSERT_EQUAL(0, it.getM());
+
+    TEST_ASSERT_TRUE(++it);
+    TEST_ASSERT_EQUAL(2, it.getG());
     TEST_ASSERT_EQUAL(6, it.getM());
 
     TEST_ASSERT_TRUE(++it);
@@ -49,18 +54,38 @@ static void test_gm_bitmask_iterator() {
 
 
     TEST_ASSERT_FALSE(++it);
+
+{
+    auto it = gmm.begin(2,0,true);
+
+    TEST_ASSERT_TRUE(++it);
+    TEST_ASSERT_EQUAL(2, it.getG());
+    TEST_ASSERT_EQUAL(6, it.getM());
+
+    TEST_ASSERT_TRUE(++it);
+    TEST_ASSERT_EQUAL(7, it.getG());
+    TEST_ASSERT_EQUAL(7, it.getM());
+
+
+    TEST_ASSERT_FALSE(++it);
+}
   }
 
   {
     Fer_GmSet gmm;
     gmm.setMember(1, 4);
+    gmm.setMember(2, 0);
     gmm.setMember(2, 6);
 
-    auto it = gmm.begin();
+    auto it = gmm.begin(1);
 
     TEST_ASSERT_TRUE(it);
     TEST_ASSERT_EQUAL(1, it.getG());
     TEST_ASSERT_EQUAL(4, it.getM());
+
+    TEST_ASSERT_TRUE(++it);
+    TEST_ASSERT_EQUAL(2, it.getG());
+    TEST_ASSERT_EQUAL(0, it.getM());
 
     TEST_ASSERT_TRUE(++it);
     TEST_ASSERT_EQUAL(2, it.getG());

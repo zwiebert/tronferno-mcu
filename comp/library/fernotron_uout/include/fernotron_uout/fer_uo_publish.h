@@ -26,7 +26,7 @@ typedef struct {
 } so_arg_gm_t;
 
 typedef struct {
-  struct Fer_GmSet *mm;
+  const struct Fer_GmSet *mm;
   uint8_t p;
 } so_arg_mmp_t;
 

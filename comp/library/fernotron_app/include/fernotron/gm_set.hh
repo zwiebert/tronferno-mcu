@@ -11,10 +11,8 @@
 #include <string.h>
 #include <utils_misc/int_types.h>
 
-
 typedef uint8_t gmSetT[8];
 typedef uint8_t gT, mT;
-
 
 /**
  * \brief          Load one or more Fer_GmSet from persistent storage.
@@ -122,6 +120,30 @@ public:
   }
 
 public:
+  const Fer_GmSet& operator&=(const Fer_GmSet &other) {
+    for (auto i = 0; i < 8; ++i) {
+      mBm[i] &= other.mBm[i];
+    }
+    return *this;
+  }
+  const Fer_GmSet& operator|=(const Fer_GmSet &other) {
+    for (auto i = 0; i < 8; ++i) {
+      mBm[i] |= other.mBm[i];
+    }
+    return *this;
+  }
+  friend Fer_GmSet operator&(const Fer_GmSet &lhs, const Fer_GmSet &rhs) {
+    Fer_GmSet result = lhs;
+    result &= rhs;
+    return result;
+  }
+  friend Fer_GmSet operator|(const Fer_GmSet &lhs, const Fer_GmSet &rhs) {
+    Fer_GmSet result = lhs;
+    result |= rhs;
+    return result;
+  }
+
+public:
   /// \brief  Make the set empty
   void clear() {
     memset(mBm, 0, sizeof(gmSetT));
@@ -140,11 +162,11 @@ public:
   }
 
   /**
-  * \brief     Add or remove a member or group
-  * \param g   group number
-  * \param m   member number. 0 adds the group with no members.
-  * \param val true to add. false to remove
-  */
+   * \brief     Add or remove a member or group
+   * \param g   group number
+   * \param m   member number. 0 adds the group with no members.
+   * \param val true to add. false to remove
+   */
   void putMember(gT g, mT m, bool val) {
     PUT_BIT(mBm[g], m, val);
   }
@@ -181,18 +203,21 @@ public:
 
 public:
   /// \brief iterate over an Fer_GmSet
-  class iterator: public Fer_Gm_Counter {
-    Fer_GmSet *mPtr;
+  template<class T>
+  class iteratorT: public Fer_Gm_Counter {
+    T *mPtr;
   public:
     /**
      * \param bm      Pointer to container
      * \param g,m     group and member to start iteration from
      */
-    iterator(Fer_GmSet *bm, gT g = 0, mT m = 0, bool skip_groups = false) :
+    iteratorT(T *bm, gT g = 0, mT m = 0, bool skip_groups = false) :
         Fer_Gm_Counter(g, m, skip_groups), mPtr(bm) {
+      if (!mPtr->getMember(getG(), getM()))
+        operator++();
     }
     /// \brief Get next group or member
-    iterator& operator++() {
+    iteratorT& operator++() {
       while (Fer_Gm_Counter::operator++()) {
         if (mPtr->getMember(getG(), getM())) {
           break;
@@ -201,11 +226,13 @@ public:
       return *this;
     }
     /// \brief  Get a pointer to the container
-    Fer_GmSet* operator->() const {
+    T* operator->() const {
       return mPtr;
     }
   };
 
+  using iterator = iteratorT<Fer_GmSet>;
+  using const_iterator = iteratorT<const Fer_GmSet>;
 
   /**
    * \brief       Get an iterator
@@ -213,7 +240,12 @@ public:
    */
   iterator begin(gT g = 0, mT m = 0, bool skip_groups = false) {
     auto it = iterator(this, g, m, skip_groups);
-    return it->getMember(0, 0) ? it : ++it;
+    return it;
+  }
+
+  const_iterator begin(gT g = 0, mT m = 0, bool skip_groups = false) const {
+    auto it = const_iterator(this, g, m, skip_groups);
+    return it;
   }
 
 private:

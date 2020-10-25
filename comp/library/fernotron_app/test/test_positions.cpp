@@ -17,6 +17,9 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <iostream>
+
+#include <utils_time/ut_sleep.h>
+#define sleep(s) ut_sleep(s)
 #endif
 
 
