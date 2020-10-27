@@ -1,0 +1,62 @@
+<script>
+  "use strict";
+  import ShutterSelectGM from "./components/shutter_select_gm.svelte";
+  import { _ } from "./services/i18n";
+  import { G, M0, Name } from "./store/curr_shutter.js";
+  import { SetMode_isInSetMode, SetModeSrcAddress, SetModeSrcRadio, SetModeSrcMotorCode } from "./store/shutter_set_mode.js";
+  import * as httpFetch from "./fetch.js";
+
+  $: name = $Name || "";
+
+  function shn_fromHtml_toMcu(val) {
+    let tfmcu = { to: "tfmcu", shpref: { g: $G, m: $M0, "tag.NAME": val } };
+
+    let url = "/cmd.json";
+    httpFetch.http_postRequest(url, tfmcu);
+  }
+
+  function hChange_Name() {
+    shn_fromHtml_toMcu(name);
+  }
+
+  function onClick_SetByGM() {
+    let tfmcu = { to: "tfmcu", cmd: { g: $G, m: $M0, c: "set" } };
+    let url = "/cmd.json";
+    httpFetch.http_postRequest(url, tfmcu);
+    $SetMode_isInSetMode = true;
+  }
+
+  function onClick_SetByAddr() {
+    let tfmcu = { to: "tfmcu", cmd: { a: $SetModeSrcAddress, c: "set" } };
+    let url = "/cmd.json";
+    httpFetch.http_postRequest(url, tfmcu);
+    $SetMode_isInSetMode = true;
+  }
+</script>
+
+<style type="text/scss">
+</style>
+
+<p>
+  <label> <input type="radio" bind:group={$SetModeSrcRadio} value={0} /> {$_('app.setMode.gm_address')}</label>
+  <label> <input type="radio" bind:group={$SetModeSrcRadio} value={2} /> {$_('app.setMode.motor_code')}</label>
+  <label><input type="radio" bind:group={$SetModeSrcRadio} value={1} /> {$_('app.setMode.sender_address')} </label>
+  <label><input type="radio" bind:group={$SetModeSrcRadio} value={3} /> {$_('app.setMode.set_button_radio')} </label>
+</p>
+
+{#if $SetModeSrcRadio === 0}
+  <label>{$_('app.setMode.gm_address')}
+    <ShutterSelectGM />
+  </label>
+  <button on:click={onClick_SetByGM}>{$_('app.setMode.set_mode')}</button>
+{:else if $SetModeSrcRadio === 1}
+  <label>{$_('app.setMode.sender_address')} <input type="text" class="w-20" bind:value={$SetModeSrcAddress} on:change={hChange_Name} /> </label>
+  <button on:click={onClick_SetByAddr}>{$_('app.setMode.set_mode')}</button>
+{:else if $SetModeSrcRadio === 2}
+  <label>{$_('app.setMode.motor_code')} <input type="text" class="w-20" bind:value={$SetModeSrcMotorCode} on:change={hChange_Name} /> </label>
+  <button on:click={onClick_SetByAddr}>{$_('app.setMode.set_mode')}</button>
+  {:else if $SetModeSrcRadio === 3}
+  <button on:click={()=>{$SetMode_isInSetMode = true;}}>{$_('app.setMode.set_button')}</button>
+{/if}
+
+<div class="text-center"><br /></div>
