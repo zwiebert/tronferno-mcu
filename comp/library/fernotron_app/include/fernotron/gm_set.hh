@@ -142,7 +142,16 @@ public:
     result |= rhs;
     return result;
   }
-
+public:
+  /**
+   * \brief  Set/clear M0 according to M1..M7
+   */
+  const Fer_GmSet&  updateGroup() {
+    for (auto i = 0; i < 8; ++i) {
+      PUT_BIT(mBm[i], 0, (mBm[i] & 0xFE) != 0);
+    }
+    return *this;
+  }
 public:
   /// \brief  Make the set empty
   void clear() {

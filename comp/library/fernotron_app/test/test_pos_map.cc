@@ -29,33 +29,33 @@ void tst_posMap_1() {
  // pm.updateAvgPcts(true);
   TEST_ASSERT_EQUAL((11+12+13+14+15+16+17)/7, pm.getPct(g, 0));
 
-  int count_pcts = 0;
+  int count = 0;
   auto all = pm.getValidPcts();
   for(auto ia = all.begin(); ia; ++ia) {
     g = ia.getG();
     m = ia.getM();
 
-    ++count_pcts;
+    ++count;
   }
 
-  TEST_ASSERT_EQUAL(8, count_pcts);
+  TEST_ASSERT_EQUAL(8, count);
 
-  count_pcts = 0;
+  count = 0;
   Fer_GmSet each_m;
-  pm.fer_statPos_forEachPct([&count_pcts,&each_m](const Fer_GmSet &same_pct, uint8_t pct) {
-    ++count_pcts;
+  pm.fer_statPos_forEachPct([&count,&each_m](const Fer_GmSet &same_pct, uint8_t pct) {
+    ++count;
     each_m |= same_pct;
   });
-  TEST_ASSERT_EQUAL(7, count_pcts);
+  TEST_ASSERT_EQUAL(7, count);
 
-  count_pcts = 0;
+  count = 0;
   for(auto ia = each_m.begin(); ia; ++ia) {
     g = ia.getG();
     m = ia.getM();
 
-    ++count_pcts;
+    ++count;
   }
-  TEST_ASSERT_EQUAL(8, count_pcts);
+  TEST_ASSERT_EQUAL(8, count);
 }
 
 
