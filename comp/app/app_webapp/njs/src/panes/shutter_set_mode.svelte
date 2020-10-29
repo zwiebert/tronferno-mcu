@@ -34,8 +34,8 @@
     </p>
 
     {#if $SetModeDstRadio === 0}
-      <label>G: <input type="number" value="1" min="1" max="7" step="1" class="w-10" /></label>
-      <label>E: <input type="number" value="1" min="1" max="7" step="1" class="w-10" /></label>
+      <label>G: <input type="number" bind:value={$SetModeDstG} min="1" max="7" step="1" class="w-10" /></label>
+      <label>E: <input type="number" bind:value={$SetModeDstM} min="1" max="7" step="1" class="w-10" /></label>
       <button disabled={!$SetMode_isInSetMode} on:click={onClick_registerCu}>{$_('app.setMode.register_cu_bt')}</button>
     {:else if $SetModeDstRadio === 1}
       <label>{$_('app.setMode.sender_address')} <input bind:value={$SetModeDstAddress} class="w-24" type="text" /></label>
