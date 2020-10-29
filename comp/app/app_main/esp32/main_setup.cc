@@ -100,9 +100,7 @@ void main_setup_ip_dependent() {
 }
 
 void mcu_init() {
-#ifdef USE_EG
   loop_eventBits_setup();
-#endif
   kvs_setup();
   config_setup_txtio();
 

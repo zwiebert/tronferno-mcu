@@ -68,10 +68,6 @@ config APP_USE_TCPS_TASK
   bool "Activate TCPS_TASK"
   default y
 
-config APP_USE_EG
-  bool "Activate EG"
-  default y
-
 config APP_USE_SEP
   bool "Activate SEP"
   default y

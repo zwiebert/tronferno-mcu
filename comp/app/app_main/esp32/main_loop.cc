@@ -22,9 +22,6 @@
 EventGroupHandle_t loop_event_group;
 #define EVT_BITS  ((1 << lf_Len) - 1)
 
-#ifndef USE_EG
-volatile uint32_t loop_flags;
-#endif
 uint32_t loop_flags_periodic;
 
 typedef void (*lfa_funT)(void);
@@ -65,20 +62,7 @@ static const lfa_funT lfa_table[lf_Len] = {
     [] { mcu_delayedRestart(1500); }
 };
 
-#ifndef USE_EG
-void loop_checkFlags() {
-  u32 lf = loop_flags;
-  for (enum loop_flagbits i = 0; lf; ++i, (lf >>= 1)) {
-    if (!GET_BIT(lf, 0))
-      continue;
 
-    CLR_BIT(loop_flags, i);
-
-    if (lfa_table[i])
-      (lfa_table[i])();
-  }
-}
-#else
 void loop_eventBits_setup() {
   loop_event_group = xEventGroupCreate();
 }
@@ -98,7 +82,7 @@ void loop_eventBits_check() {
       (lfa_table[fb])();
   }
 }
-#endif
+
 
 #ifdef USE_WLAN_AP
 void tmr_checkNetwork_start() {
@@ -125,9 +109,5 @@ void tmr_loopPeriodic_start() {
 }
 
 void loop(void) {
-#ifdef USE_EG
   loop_eventBits_check();
-#else
-  loop_checkFlags();
-#endif
 }

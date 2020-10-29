@@ -16,14 +16,10 @@
 #include <string.h>
 
 #define KEY_BOOT_COUNTER "BOOT_CT"
-#ifdef USE_EG
 extern EventGroupHandle_t loop_event_group;
 #define lf_setBits(v) xEventGroupSetBits(loop_event_group, static_cast<EventBits_t>(v))
 void lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield);
-#else
-#define lf_setBits(v) (loop_flags |= (v))
-#define lf_setBits_ISR(v,y) lf_setBits((v))
-#endif
+
 
 extern volatile uint32_t loop_flags;
 extern uint32_t loop_flags_periodic;
