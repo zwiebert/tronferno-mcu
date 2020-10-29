@@ -3,7 +3,7 @@
   import ShutterSelectGM from "./components/shutter_select_gm.svelte";
   import { _ } from "./services/i18n";
   import { G, M0, Name } from "./store/curr_shutter.js";
-  import { SetMode_isInSetMode, SetModeSrcAddress, SetModeSrcRadio, SetModeSrcMotorCode } from "./store/shutter_set_mode.js";
+  import { SetMode_isInSetMode, SetModeSrcAddress, SetModeSrcRadio, SetModeSrcMotorCode, SetModeSrcProgress } from "./store/shutter_set_mode.js";
   import * as httpFetch from "./fetch.js";
 
   $: name = $Name || "";
@@ -23,20 +23,32 @@
     let tfmcu = { to: "tfmcu", cmd: { g: $G, m: $M0, c: "set" } };
     let url = "/cmd.json";
     httpFetch.http_postRequest(url, tfmcu);
-    $SetMode_isInSetMode = true;
+    enterSetMode();
   }
 
   function onClick_SetByAddr() {
     let tfmcu = { to: "tfmcu", cmd: { a: $SetModeSrcAddress, c: "set" } };
     let url = "/cmd.json";
     httpFetch.http_postRequest(url, tfmcu);
-    $SetMode_isInSetMode = true;
+    enterSetMode();
   }
   function onClick_SetByMotorCode() {
     let tfmcu = { to: "tfmcu", cmd: { a: "9"+$SetModeSrcMotorCode, c: "set" } };
     let url = "/cmd.json";
     httpFetch.http_postRequest(url, tfmcu);
+    enterSetMode();
+  }
+
+  function enterSetMode() {
     $SetMode_isInSetMode = true;
+    $SetModeSrcProgress = 60;
+    let iv = setInterval(()=>{
+      if (0 >= $SetModeSrcProgress--) {
+        $SetMode_isInSetMode = false;
+        clearInterval(iv);
+      }
+
+    },1000);
   }
 </script>
 
@@ -62,7 +74,11 @@
   <label>{$_('app.setMode.motor_code')} <input type="text" class="w-20" bind:value={$SetModeSrcMotorCode} on:change={hChange_Name} /> </label>
   <button on:click={onClick_SetByMotorCode}>{$_('app.setMode.set_mode')}</button>
   {:else if $SetModeSrcRadio === 3}
-  <button on:click={()=>{$SetMode_isInSetMode = true;}}>{$_('app.setMode.set_button')}</button>
+  <button on:click={enterSetMode}>{$_('app.setMode.set_button')}</button>
+{/if}
+
+{#if $SetMode_isInSetMode}
+  <progress value={$SetModeSrcProgress} max={60} />
 {/if}
 
 <div class="text-center"><br /></div>

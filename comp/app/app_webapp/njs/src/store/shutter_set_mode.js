@@ -5,6 +5,7 @@ import { writable } from 'svelte/store';
 export const SetModeSrcAddress = writable("101234");
 export const SetModeSrcMotorCode = writable("01234");
 export const SetModeSrcRadio = writable(0);
+export const SetModeSrcProgress = writable(0);
 
 export const SetMode_isInSetMode = writable(0);
 
