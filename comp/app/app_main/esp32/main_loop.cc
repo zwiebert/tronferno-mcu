@@ -7,6 +7,8 @@
 #include <freertos/timers.h>
 #include <cstdio>
 #include "utils_misc/int_types.h"
+#include "utils_time/run_time.h"
+#include "utils_time/ut_constants.hh"
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron/pos/positions_dynamic.h"
 #include "fernotron/pos/positions_static.h"
@@ -99,14 +101,27 @@ void tmr_checkNetwork_start() {
 #endif
 
 /**
- * \brief Interval to forward event bits every 100ms so we can have periodic events
+ * \brief Interval for periodic events. Will also restart MCU periodically to avoid memory fragmentation.
  * \param[in] loop_flags_periodic_100ms  global variable with loop_flagbits
  */
 void tmr_loopPeriodic100ms_start() {
   const int interval = pdMS_TO_TICKS(LOOP_PERIODIC_INTERVAL_MS);
   TimerHandle_t tmr = xTimerCreate("PerLoop100ms", interval, pdTRUE, nullptr, [](TimerHandle_t xTimer) {
+    static uint32_t count;
+    ++count;
     if (loop_flags_periodic_100ms)
       lf_setBits(loop_flags_periodic_100ms);
+
+    if (count & (BIT(9) - 1)) { // 51,2 secs
+      if (run_time_s() > SECS_PER_DAY) {
+        const time_t now = time(0);
+        struct tm tms;
+        if (auto tmp = localtime_r(&now, &tms)) {
+          if (tmp->tm_hour == 3 && tmp->tm_min >= 33)
+            lf_setBit(lf_mcuRestart);  // XXX: restart every >=24 hours at 03:33
+        }
+      }
+    }
   });
   if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("PerLoopTimer start error");
