@@ -259,21 +259,6 @@ constexpr bool use_TCPS_TASK = false;
 #define use_TCPS_TASK 0
 #endif
 #endif
-#ifdef CONFIG_APP_USE_EG
-#define  USE_EG
-#ifdef __cplusplus
-constexpr bool use_EG = true;
-#else
-#define use_EG 1
-#endif
-#else
-#define NO_USE_EG
-#ifdef __cplusplus
-constexpr bool use_EG = false;
-#else
-#define use_EG 0
-#endif
-#endif
 #ifdef CONFIG_APP_USE_SEP
 #define  USE_SEP
 #ifdef __cplusplus

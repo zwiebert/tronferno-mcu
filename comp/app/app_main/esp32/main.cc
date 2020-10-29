@@ -43,7 +43,7 @@ int timer_data_transition_fs_to_kvs();
 extern "C" void app_main(void) {
 
   mcu_init();
-  tmr_loopPeriodic_start();
+  tmr_loopPeriodic100ms_start();
 #ifdef TD_FS_TO_KVS
   timer_data_transition_fs_to_kvs();
 #endif

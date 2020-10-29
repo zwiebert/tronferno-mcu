@@ -22,7 +22,7 @@
 EventGroupHandle_t loop_event_group;
 #define EVT_BITS  ((1 << lf_Len) - 1)
 
-uint32_t loop_flags_periodic;
+uint32_t loop_flags_periodic_100ms;
 
 typedef void (*lfa_funT)(void);
 
@@ -98,10 +98,15 @@ void tmr_checkNetwork_start() {
 }
 #endif
 
-void tmr_loopPeriodic_start() {
+/**
+ * \brief Interval to forward event bits every 100ms so we can have periodic events
+ * \param[in] loop_flags_periodic_100ms  global variable with loop_flagbits
+ */
+void tmr_loopPeriodic100ms_start() {
   const int interval = pdMS_TO_TICKS(LOOP_PERIODIC_INTERVAL_MS);
-  TimerHandle_t tmr = xTimerCreate("PerLoopTimer", interval, pdTRUE, nullptr, [](TimerHandle_t xTimer) {
-    lf_setBits(loop_flags_periodic);
+  TimerHandle_t tmr = xTimerCreate("PerLoop100ms", interval, pdTRUE, nullptr, [](TimerHandle_t xTimer) {
+    if (loop_flags_periodic_100ms)
+      lf_setBits(loop_flags_periodic_100ms);
   });
   if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("PerLoopTimer start error");
