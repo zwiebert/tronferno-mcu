@@ -32,6 +32,12 @@
     httpFetch.http_postRequest(url, tfmcu);
     $SetMode_isInSetMode = true;
   }
+  function onClick_SetByMotorCode() {
+    let tfmcu = { to: "tfmcu", cmd: { a: "9"+$SetModeSrcMotorCode, c: "set" } };
+    let url = "/cmd.json";
+    httpFetch.http_postRequest(url, tfmcu);
+    $SetMode_isInSetMode = true;
+  }
 </script>
 
 <style type="text/scss">
@@ -54,7 +60,7 @@
   <button on:click={onClick_SetByAddr}>{$_('app.setMode.set_mode')}</button>
 {:else if $SetModeSrcRadio === 2}
   <label>{$_('app.setMode.motor_code')} <input type="text" class="w-20" bind:value={$SetModeSrcMotorCode} on:change={hChange_Name} /> </label>
-  <button on:click={onClick_SetByAddr}>{$_('app.setMode.set_mode')}</button>
+  <button on:click={onClick_SetByMotorCode}>{$_('app.setMode.set_mode')}</button>
   {:else if $SetModeSrcRadio === 3}
   <button on:click={()=>{$SetMode_isInSetMode = true;}}>{$_('app.setMode.set_button')}</button>
 {/if}
