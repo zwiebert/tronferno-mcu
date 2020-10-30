@@ -119,8 +119,10 @@ void AppNetMqtt::received(const char *topic, int topic_len, const char *data, in
   io_mqttApp_received(topic, topic_len, data, data_len, io_mqttApp_process_cmdline);
 }
 
+
+
 void io_mqttApp_received(const char *topic, int topic_len, const char *data, int data_len, proc_cmdline_funT proc_cmdline_fun) {
-  TargetDesc td { SO_TGT_MQTT };
+  TargetDesc td { SO_TGT_MQTT | SO_TGT_FLAG_JSON };
   if (!topic_startsWith(topic, topic_len, TOPIC_ROOT)) {
     return; // all topics start with this
   }
@@ -137,7 +139,7 @@ void io_mqttApp_received(const char *topic, int topic_len, const char *data, int
         return;
       int addr_len = addr_end - addr;
 
-      sprintf(line, "mcu gpio%.*s=%.*s", addr_len, addr, data_len, data);
+      sprintf(line, "{\"mcu\":{\"gpio%.*s\":%.*s}}", addr_len, addr, data_len, data);
 
       proc_cmdline_fun(line, td);
 
@@ -146,11 +148,11 @@ void io_mqttApp_received(const char *topic, int topic_len, const char *data, int
       int addr_len = topic_len - (strlen(TOPIC_ROOT) + (sizeof TOPIC_PCT_END - 1));
 
       if (addr_len == 2) {
-        sprintf(line, "cmd g=%c m=%c p=%.*s", addr[0], addr[1], data_len, data);
+        sprintf(line, "{\"cmd\":{\"g\":%c,\"m\":%c,\"p\":%.*s}}", addr[0], addr[1], data_len, data);
       } else if (addr_len == 6) {
-        sprintf(line, "cmd a=%.*s p=%.*s", 6, addr, data_len, data);
+        sprintf(line, "{\"cmd\":{\"a\":\"%.*s\",\"p\":%.*s}}", 6, addr, data_len, data);
       } else if (addr_len == 8) {
-        sprintf(line, "cmd a=%.*s g=%c m=%c p=%.*s", 6, addr, addr[6], addr[7], data_len, data);
+        sprintf(line, "{\"cmd\":{\"a\":\"%.*s\",\"g\":%c,\"m\":%c,\"p\":%.*s}}", 6, addr, addr[6], addr[7], data_len, data);
       } else {
        return;
         // wrong topic format in wildcard
@@ -162,11 +164,11 @@ void io_mqttApp_received(const char *topic, int topic_len, const char *data, int
       int addr_len = topic_len - (strlen(TOPIC_ROOT) + (sizeof TOPIC_CMD_END - 1));
 
       if (addr_len == 2) {
-        sprintf(line, "cmd g=%c m=%c c=%.*s", addr[0], addr[1], data_len, data);
+        sprintf(line, "{\"cmd\":{\"g\":%c,\"m\":%c,\"c\":\"%.*s\"}}", addr[0], addr[1], data_len, data);
       } else if (addr_len == 6) {
-        sprintf(line, "cmd a=%.*s c=%.*s", 6, addr, data_len, data);
+        sprintf(line, "{\"cmd\":{\"a\":\"%.*s\",\"c\":\"%.*s\"}}", 6, addr, data_len, data);
       } else if (addr_len == 8) {
-        sprintf(line, "cmd a=%.*s g=%c m=%c c=%.*s", 6, addr, addr[6], addr[7], data_len, data);
+        sprintf(line, "{\"cmd\":{\"a\":\"%.*s\",\"g\":%c,\"m\":%c,\"c\":\"%.*s\"}}", 6, addr, addr[6], addr[7], data_len, data);
       } else {
         return;
         // wrong topic format in wildcard

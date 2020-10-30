@@ -13,7 +13,7 @@ struct TargetDescTest final : public TargetDesc {
   typedef int (*writeReq_fnT)(void *req, const char *s, ssize_t len, bool final);
 
 public:
-  TargetDescTest(so_target_bits tgt = so_target_bits(SO_TGT_FLAG_TXT | SO_TGT_FLAG_JSON | SO_TGT_ANY)) :
+  TargetDescTest(so_target_bits tgt = (SO_TGT_FLAG_TXT | SO_TGT_FLAG_JSON | SO_TGT_ANY)) :
       TargetDesc(tgt) {
   }
 

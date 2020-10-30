@@ -136,12 +136,12 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 
     httpd_resp_set_type(req, "application/json") == ESP_OK || (result = ESP_FAIL);
 #if 0
-    TargetDesc td { req, static_cast<so_target_bits>(SO_TGT_HTTP | SO_TGT_FLAG_JSON), ht_write };
+    TargetDesc td { req, SO_TGT_HTTP | SO_TGT_FLAG_JSON, ht_write };
     cli_process_json(buf, td); // parse and process received command
     td.sj().write_json() >= 0 || (result = ESP_FAIL);
     httpd_resp_send_chunk(req, 0, 0);
 #else
-    TargetDesc td { static_cast<so_target_bits>(SO_TGT_HTTP | SO_TGT_FLAG_JSON)};
+    TargetDesc td { SO_TGT_HTTP | SO_TGT_FLAG_JSON};
     cli_process_json(buf, td); // parse and process received command
     httpd_resp_sendstr(req, td.sj().get_json()) == ESP_OK || (result = ESP_FAIL);
 #endif
@@ -257,7 +257,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
 
   {
     LockGuard lock(cli_mutex);
-    TargetDescWs td { req, static_cast<so_target_bits>(SO_TGT_WS | SO_TGT_FLAG_JSON), ws_write };
+    TargetDescWs td { req, SO_TGT_WS | SO_TGT_FLAG_JSON, ws_write };
     cli_process_json((char*)buf, td);// parse and process received command
   }
   return ret;
