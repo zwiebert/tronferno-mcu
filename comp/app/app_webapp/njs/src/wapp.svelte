@@ -25,7 +25,7 @@
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
     <NavTabs
-      nav_tabs={[$_('app.nav_main_move'), '2411', $_('app.nav_main_percent'), $_('app.nav_main_auto'), $_('app.nav_main_config'), ...(!misc.NODE_ENV_DEV ? [] : ['Test'])]}
+      nav_tabs={[$_('app.navTab.main.move'), '2411', $_('app.navTab.main.percent'), $_('app.navTab.main.auto'), $_('app.navTab.main.config'), ...(!misc.NODE_ENV_DEV ? [] : ['Test'])]}
       name="main" />
   </div>
   {#if !tabIdxMain}
@@ -39,7 +39,7 @@
   {:else if tabIdxMain === 4}
     <div class="navtab-sub">
       <NavTabs
-        nav_tabs={[$_('app.nav_cfg_mcu'), $_('app.nav_cfg_aliases'), $_('app.nav_cfg_durations'), $_('app.nav_cfg_name'), $_('app.nav_cfg_set_mode'), $_('app.nav_cfg_app'), $_('app.nav_main_firmware')]}
+        nav_tabs={[$_('app.navTab.cfg.mcu'), $_('app.navTab.cfg.aliases'), $_('app.navTab.cfg.durations'), $_('app.navTab.cfg.name'), $_('app.navTab.cfg.set_mode'), $_('app.navTab.cfg.app'), $_('app.navTab.main.firmware')]}
         name="settings" />
     </div>
     {#if !tabIdxSettings}

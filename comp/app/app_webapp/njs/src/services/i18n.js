@@ -7,17 +7,26 @@ const en = {
     restartMcu: "Restart MCU",
     save: "Save",
     hide: "Hide",
-    nav_main_move: "Move",
-    nav_main_percent: "Pct",
-    nav_main_auto: "Auto",
-    nav_main_config: "Settings",
-    nav_main_firmware: "Firmware",
-    nav_cfg_mcu: "MCU",
-    nav_cfg_aliases: "Aliases",
-    nav_cfg_durations: "Durations",
-    nav_cfg_name: "Name",
-    nav_cfg_set_mode: "Set",
-    nav_cfg_app: "App",
+
+    navTab:{
+        main:{
+            move: "Move",
+            percent: "Pct",
+            auto: "Auto",
+            config: "Settings",
+            firmware: "Firmware",
+        },
+        cfg:{
+            mcu: "MCU",
+            aliases: "Aliases",
+            durations: "Durations",
+            name: "Name",
+            set_mode: "Set",
+            app: "App",
+        },
+    },
+
+
     msg_waitForMcuRestart: "Wait for MCU to restart...",
     msg_firmwareIsUpdating: "Firmware is updating...",
     msg_enterNewName: "Enter new name:",
@@ -63,7 +72,27 @@ const de = {
     save: "Speichern",
     hide: "Verstecke",
 
-    nav_main_config: "Einstellungen",
+    navTab:{
+        main:{
+            move: "\u25b2\u25bc",
+            percent: "[%]",
+            auto: "Auto",
+            config: "\u2699",
+            firmware: "Firmware",
+        },
+        cfg:{
+            mcu: "MCU",
+            aliases: "Alias",
+            durations: "Laufzeit",
+            name: "Name",
+            set_mode: "Set",
+            app: "App",
+        },
+    },
+
+
+
+
     msg_waitForMcuRestart: "MCU wird neu gestartet...",
     direction: "Richtung",
     stopClock: "Stopp-Uhr",

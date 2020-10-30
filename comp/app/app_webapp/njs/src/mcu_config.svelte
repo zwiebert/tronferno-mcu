@@ -17,6 +17,7 @@
 
   let on_destroy = [];
   onMount(() => {
+    console.log("fetch_config")
     httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
   });
   onDestroy(() => {

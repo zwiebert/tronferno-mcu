@@ -19,7 +19,8 @@
 #include "app_uout/status_output.h"
 #include <fernotron_uout/fer_uo_publish.h>
 
-static char *io_mqtt_topic_root;
+char *io_mqtt_topic_root;
+AppNetMqtt MyMqtt;
 
 #define TOPIC_ROOT io_mqtt_topic_root
 #define TOPIC_PCT_END "/pct"
@@ -86,10 +87,7 @@ static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
       Net_Mqtt::publish("tfmcu/timer_out", json);
   }
 }
-
-static class AppNetMqtt final : public Net_Mqtt {
-public:
-virtual void connected () override {
+void AppNetMqtt::connected ()  {
   char topic[64];
   snprintf(topic, sizeof topic, "%scli", TOPIC_ROOT);
   subscribe(topic, 0);
@@ -113,11 +111,11 @@ virtual void connected () override {
   uoCb_subscribe(io_mqttApp_uoutPublish_cb, flags);
 }
 
-virtual void disconnected () override {
+void AppNetMqtt::disconnected ()  {
   uoCb_unsubscribe(io_mqttApp_uoutPublish_cb);
 }
 
-virtual void received(const char *topic, int topic_len, const char *data, int data_len) override {
+void AppNetMqtt::received(const char *topic, int topic_len, const char *data, int data_len)  {
   TargetDesc td { SO_TGT_MQTT };
   if (!topic_startsWith(topic, topic_len, TOPIC_ROOT)) {
     return; // all topics start with this
@@ -187,20 +185,6 @@ virtual void received(const char *topic, int topic_len, const char *data, int da
 
 
 
-} MyMqtt;
 
-
-void io_mqttApp_setup(const char *topic_root) {
-  if (topic_root && *topic_root && (!io_mqtt_topic_root || 0 != strcmp(io_mqtt_topic_root, topic_root))) {
-    char *tr = (char*)malloc(strlen(topic_root)+1);
-    if (tr) {
-      STRCPY (tr, topic_root);
-      free(io_mqtt_topic_root);
-      io_mqtt_topic_root = tr;
-    }
-  }
-
-  Net_Mqtt::setup(&MyMqtt);
-}
 
 

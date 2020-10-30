@@ -117,11 +117,17 @@ export function http_fetchByMask(mask, synchron) {
 
   let tfmcu = { to: "tfmcu" };
 
-  if (mask & FETCH_CONFIG) tfmcu.config = { all: "?" };
+  if (mask & FETCH_CONFIG) {
+    add_kv(tfmcu, "config", "all", "?");
+  }
 
-  if (mask & FETCH_GMU) tfmcu.config = { "gm-used": "?" };
+  if (mask & FETCH_GMU) {
+    add_kv(tfmcu, "config", "gm-used", "?");
+  }
 
-  if (mask & FETCH_BOOT_COUNT) add_kv(tfmcu, "mcu", "boot-count", "?");
+  if (mask & FETCH_BOOT_COUNT) {
+    add_kv(tfmcu, "mcu", "boot-count", "?");
+  }
 
   if (mask & FETCH_VERSION) {
     add_kv(tfmcu, "mcu", "version", "?");
