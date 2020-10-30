@@ -33,12 +33,6 @@ AppNetMqtt MyMqtt;
 
 #define TAG_CLI "cli "
 #define TAG_CLI_LEN (sizeof(TAG_CLI) - 1)
-#define TAG_SEND "send "
-#define TAG_SEND_LEN (sizeof(TAG_SEND) - 1)
-#define TAG_CONFIG "config "
-#define TAG_CONFIG_LEN (sizeof(TAG_CONFIG) - 1)
-#define TAG_TIMER "timer "
-#define TAG_TIMER_LEN (sizeof(TAG_TIMER) - 1)
 
 #define TOPIC_CLI_OUT_END "cli_out"
 #define TOPIC_CMD_OUT_END "cmd_out"
@@ -115,7 +109,17 @@ void AppNetMqtt::disconnected ()  {
   uoCb_unsubscribe(io_mqttApp_uoutPublish_cb);
 }
 
+typedef void (*proc_cmdline_fun)(char *line, const TargetDesc &td);
+
+void io_mqttApp_process_cmdline(char *line, const TargetDesc &td) {
+  cli_process_cmdline(line, td);
+}
+
 void AppNetMqtt::received(const char *topic, int topic_len, const char *data, int data_len)  {
+  io_mqttApp_received(topic, topic_len, data, data_len, io_mqttApp_process_cmdline);
+}
+
+void io_mqttApp_received(const char *topic, int topic_len, const char *data, int data_len, proc_cmdline_funT proc_cmdline_fun) {
   TargetDesc td { SO_TGT_MQTT };
   if (!topic_startsWith(topic, topic_len, TOPIC_ROOT)) {
     return; // all topics start with this
@@ -135,39 +139,39 @@ void AppNetMqtt::received(const char *topic, int topic_len, const char *data, in
 
       sprintf(line, "mcu gpio%.*s=%.*s", addr_len, addr, data_len, data);
 
-      cli_process_cmdline(line, td);
+      proc_cmdline_fun(line, td);
 
     } else if (topic_endsWith(topic, topic_len, TOPIC_PCT_END)) {
       const char *addr = topic + strlen(TOPIC_ROOT);
       int addr_len = topic_len - (strlen(TOPIC_ROOT) + (sizeof TOPIC_PCT_END - 1));
 
       if (addr_len == 2) {
-        sprintf(line, "send g=%c m=%c p=%.*s", addr[0], addr[1], data_len, data);
+        sprintf(line, "cmd g=%c m=%c p=%.*s", addr[0], addr[1], data_len, data);
       } else if (addr_len == 6) {
-        sprintf(line, "send a=%.*s p=%.*s", 6, addr, data_len, data);
+        sprintf(line, "cmd a=%.*s p=%.*s", 6, addr, data_len, data);
       } else if (addr_len == 8) {
-        sprintf(line, "send a=%.*s g=%c m=%c p=%.*s", 6, addr, addr[6], addr[7], data_len, data);
+        sprintf(line, "cmd a=%.*s g=%c m=%c p=%.*s", 6, addr, addr[6], addr[7], data_len, data);
       } else {
        return;
         // wrong topic format in wildcard
       }
-      cli_process_cmdline(line, td);
+      proc_cmdline_fun(line, td);
 
     } else if (topic_endsWith(topic, topic_len, TOPIC_CMD_END)) {
       const char *addr = topic + strlen(TOPIC_ROOT);
       int addr_len = topic_len - (strlen(TOPIC_ROOT) + (sizeof TOPIC_CMD_END - 1));
 
       if (addr_len == 2) {
-        sprintf(line, "send g=%c m=%c c=%.*s", addr[0], addr[1], data_len, data);
+        sprintf(line, "cmd g=%c m=%c c=%.*s", addr[0], addr[1], data_len, data);
       } else if (addr_len == 6) {
-        sprintf(line, "send a=%.*s c=%.*s", 6, addr, data_len, data);
+        sprintf(line, "cmd a=%.*s c=%.*s", 6, addr, data_len, data);
       } else if (addr_len == 8) {
-        sprintf(line, "send a=%.*s g=%c m=%c c=%.*s", 6, addr, addr[6], addr[7], data_len, data);
+        sprintf(line, "cmd a=%.*s g=%c m=%c c=%.*s", 6, addr, addr[6], addr[7], data_len, data);
       } else {
         return;
         // wrong topic format in wildcard
       }
-      cli_process_cmdline(line, td);
+      proc_cmdline_fun(line, td);
 
     } else if (topic_endsWith(topic, topic_len, TOPIC_CLI_END)) {
       if (data_len > TAG_CLI_LEN && strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
@@ -176,7 +180,7 @@ void AppNetMqtt::received(const char *topic, int topic_len, const char *data, in
       }
       memcpy(line, data, data_len);
       line[data_len] = '\0';
-      cli_process_cmdline(line, td);
+      proc_cmdline_fun(line, td);
       io_mqtt_publish_topic_end_get_json(td, TOPIC_CLI_OUT_END);
 
     }

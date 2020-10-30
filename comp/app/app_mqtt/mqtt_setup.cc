@@ -13,12 +13,8 @@
 
 void io_mqttApp_setup(const char *topic_root) {
   if (topic_root && *topic_root && (!io_mqtt_topic_root || 0 != strcmp(io_mqtt_topic_root, topic_root))) {
-    char *tr = (char*)malloc(strlen(topic_root)+1);
-    if (tr) {
-      STRCPY (tr, topic_root);
-      free(io_mqtt_topic_root);
-      io_mqtt_topic_root = tr;
-    }
+    free(io_mqtt_topic_root);
+    io_mqtt_topic_root = strdup(topic_root);
   }
 
   Net_Mqtt::setup(&MyMqtt);
