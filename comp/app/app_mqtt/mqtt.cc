@@ -48,7 +48,7 @@ static void io_mqtt_publish_topic_end(const char *topic_end, const char *json) {
 
 static void io_mqtt_publish_topic_end_get_json(const TargetDesc &td, const char *topic_end) {
   char *json = td.sj().get_json();
-  if (!json && !*json)
+  if (!json || !*json)
     return;
   io_mqtt_publish_topic_end(topic_end, json);
 }
