@@ -100,9 +100,7 @@ void main_setup_ip_dependent() {
 }
 
 void mcu_init() {
-#ifdef USE_EG
   loop_eventBits_setup();
-#endif
   kvs_setup();
   config_setup_txtio();
 
@@ -115,22 +113,22 @@ void mcu_init() {
 #ifdef USE_CLI_TASK
   cli_setup_task(true);
 #else
-  lfPer_setBit(lf_loopCli);
+  lfPer100ms_setBit(lf_loopCli);
 #endif
 #ifdef USE_TCPS
-  lfPer_setBit(lf_loopTcpServer);
+  lfPer100ms_setBit(lf_loopTcpServer);
 #endif
 #ifdef USE_TCPS_TASK
 #endif
   fer_am_updateTimerEvent();
-  lfPer_setBit(lf_loopFerTimerState);
+  lfPer100ms_setBit(lf_loopFerTimerState);
 
 
   fer_pos_POSITIONS_MOVE_cb = [](bool enable) {
-    lfPer_putBit(lf_loopPosCheckMoving, enable);
+    lfPer100ms_putBit(lf_loopPosCheckMoving, enable);
   };
   fer_pos_POSITIONS_SAVE_cb  = [](bool enable) {
-    lfPer_putBit(lf_loopPosAutoSave, enable);
+    lfPer100ms_putBit(lf_loopPosAutoSave, enable);
   };
   fer_tx_READY_TO_TRANSMIT_cb = loop_setBit_txLoop;
   fer_au_TIMER_DATA_CHANGE_cb = [] {
@@ -162,18 +160,18 @@ void mcu_init() {
   #endif
 #ifdef USE_SEP
   fer_sep_enable_disable_cb = [] (bool enable) {
-    lfPer_putBit(lf_loopFerSep, enable);
+    lfPer100ms_putBit(lf_loopFerSep, enable);
   };
 #endif
 #ifdef USE_PAIRINGS
   fer_alias_enable_disable_cb = [] (bool enable) {
-    lfPer_putBit(lf_checkPairingTimeout, enable);
+    lfPer100ms_putBit(lf_checkPairingTimeout, enable);
   };
 #endif
 #ifdef USE_CUAS
 #define CI(cb) static_cast<configItem>(cb)
   fer_cuas_enable_disable_cb = [] (bool enable, uint32_t cu) {
-    lfPer_putBit(lf_checkCuasTimeout, enable);
+    lfPer100ms_putBit(lf_checkCuasTimeout, enable);
     config_save_item_n_u32(CI(CB_CUID), cu);
     config_item_modified(CI(CB_CUID));
 };

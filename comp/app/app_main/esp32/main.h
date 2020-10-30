@@ -16,17 +16,14 @@
 #include <string.h>
 
 #define KEY_BOOT_COUNTER "BOOT_CT"
-#ifdef USE_EG
 extern EventGroupHandle_t loop_event_group;
-#define lf_setBits(v) xEventGroupSetBits(loop_event_group, static_cast<EventBits_t>(v))
+
+inline void lf_setBits(const EventBits_t uxBitsToSet) { xEventGroupSetBits(loop_event_group, uxBitsToSet); }
 void lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield);
-#else
-#define lf_setBits(v) (loop_flags |= (v))
-#define lf_setBits_ISR(v,y) lf_setBits((v))
-#endif
+
 
 extern volatile uint32_t loop_flags;
-extern uint32_t loop_flags_periodic;
+extern uint32_t loop_flags_periodic_100ms;
 extern i32 boot_counter;
 extern bool wifi_ap_active;
 
@@ -73,26 +70,26 @@ enum loop_flagbits {
 
 
 inline void lf_setBit(loop_flagbits v) {
-  lf_setBits(1 << static_cast<unsigned>(v));
+  lf_setBits(BIT(v));
 }
 inline void IRAM_ATTR lf_setBit_ISR(loop_flagbits v, bool yield) {
-  lf_setBits_ISR((1 << static_cast<unsigned>(v)), yield);
+  lf_setBits_ISR(BIT(v), yield);
 }
 
-#define lfPer_setBits(v) (loop_flags_periodic |= (v))
-#define lfPer_clrBits(v) (loop_flags_periodic &= ~(v))
+#define lfPer100ms_setBits(v) (loop_flags_periodic_100ms |= (v))
+#define lfPer100ms_clrBits(v) (loop_flags_periodic_100ms &= ~(v))
 
-inline void lfPer_setBit(loop_flagbits v) {
-  lfPer_setBits(1 << (v));
+inline void lfPer100ms_setBit(loop_flagbits v) {
+  lfPer100ms_setBits(BIT(v));
 }
-inline void lfPer_clrBit(loop_flagbits v) {
-  lfPer_clrBits(1 << (v));
+inline void lfPer100ms_clrBit(loop_flagbits v) {
+  lfPer100ms_clrBits(BIT(v));
 }
-inline void lfPer_putBit(loop_flagbits v, bool val) {
+inline void lfPer100ms_putBit(loop_flagbits v, bool val) {
   if (val)
-    lfPer_setBit(v);
+    lfPer100ms_setBit(v);
   else
-    lfPer_clrBit(v);
+    lfPer100ms_clrBit(v);
 }
 
 
@@ -101,7 +98,7 @@ void lfa_createWifiAp(void);
 
 void loop(void);
 void tmr_checkNetwork_start();
-void tmr_loopPeriodic_start();
+void tmr_loopPeriodic100ms_start();
 void tmr_pingLoop_start();
 void loop_eventBits_setup();
 u32 loop_eventBits_wait();

@@ -7,6 +7,8 @@
 #include <freertos/timers.h>
 #include <cstdio>
 #include "utils_misc/int_types.h"
+#include "utils_time/run_time.h"
+#include "utils_time/ut_constants.hh"
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron/pos/positions_dynamic.h"
 #include "fernotron/pos/positions_static.h"
@@ -22,10 +24,7 @@
 EventGroupHandle_t loop_event_group;
 #define EVT_BITS  ((1 << lf_Len) - 1)
 
-#ifndef USE_EG
-volatile uint32_t loop_flags;
-#endif
-uint32_t loop_flags_periodic;
+uint32_t loop_flags_periodic_100ms;
 
 typedef void (*lfa_funT)(void);
 
@@ -65,20 +64,7 @@ static const lfa_funT lfa_table[lf_Len] = {
     [] { mcu_delayedRestart(1500); }
 };
 
-#ifndef USE_EG
-void loop_checkFlags() {
-  u32 lf = loop_flags;
-  for (enum loop_flagbits i = 0; lf; ++i, (lf >>= 1)) {
-    if (!GET_BIT(lf, 0))
-      continue;
 
-    CLR_BIT(loop_flags, i);
-
-    if (lfa_table[i])
-      (lfa_table[i])();
-  }
-}
-#else
 void loop_eventBits_setup() {
   loop_event_group = xEventGroupCreate();
 }
@@ -98,7 +84,7 @@ void loop_eventBits_check() {
       (lfa_table[fb])();
   }
 }
-#endif
+
 
 #ifdef USE_WLAN_AP
 void tmr_checkNetwork_start() {
@@ -114,10 +100,28 @@ void tmr_checkNetwork_start() {
 }
 #endif
 
-void tmr_loopPeriodic_start() {
+/**
+ * \brief Interval for periodic events. Will also restart MCU periodically to avoid memory fragmentation.
+ * \param[in] loop_flags_periodic_100ms  global variable with loop_flagbits
+ */
+void tmr_loopPeriodic100ms_start() {
   const int interval = pdMS_TO_TICKS(LOOP_PERIODIC_INTERVAL_MS);
-  TimerHandle_t tmr = xTimerCreate("PerLoopTimer", interval, pdTRUE, nullptr, [](TimerHandle_t xTimer) {
-    lf_setBits(loop_flags_periodic);
+  TimerHandle_t tmr = xTimerCreate("PerLoop100ms", interval, pdTRUE, nullptr, [](TimerHandle_t xTimer) {
+    static uint32_t count;
+    ++count;
+    if (loop_flags_periodic_100ms)
+      lf_setBits(loop_flags_periodic_100ms);
+
+    if (count & (BIT(9) - 1)) { // 51,2 secs
+      if (run_time_s() > SECS_PER_DAY) {
+        const time_t now = time(0);
+        struct tm tms;
+        if (auto tmp = localtime_r(&now, &tms)) {
+          if (tmp->tm_hour == 3 && tmp->tm_min >= 33)
+            lf_setBit(lf_mcuRestart);  // XXX: restart every >=24 hours at 03:33
+        }
+      }
+    }
   });
   if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("PerLoopTimer start error");
@@ -125,9 +129,5 @@ void tmr_loopPeriodic_start() {
 }
 
 void loop(void) {
-#ifdef USE_EG
   loop_eventBits_check();
-#else
-  loop_checkFlags();
-#endif
 }

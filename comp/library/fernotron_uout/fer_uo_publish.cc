@@ -125,61 +125,77 @@ void uoApp_publish_timer_json(const char *json, bool fragment) {
   }
 }
 
+struct cmdInfo {
+  const char *cs = 0;
+  const char *fdt = 0;
+};
+static cmdInfo cmdString_fromPlainCmd(const Fer_MsgPlainCmd &m) {
+    struct cmdInfo r;
+
+  if ((FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_PlainSender) && (r.fdt = "plain")) || (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit) && (r.fdt = "central"))) {
+    switch (m.cmd) {
+    case fer_if_cmd_DOWN:
+      r.cs = "down";
+      break;
+    case fer_if_cmd_UP:
+      r.cs = "up";
+      break;
+    case fer_if_cmd_STOP:
+      r.cs = "stop";
+      break;
+    default:
+      r.cs = 0;
+      break;
+    }
+  } else if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_SunSensor) && (r.fdt = "sun")) {
+    switch (m.cmd) {
+    case fer_if_cmd_SunDOWN:
+      r.cs = "sun-down";
+      break;
+    case fer_if_cmd_SunUP:
+      r.cs = "sun-up";
+      break;
+    case fer_if_cmd_SunINST:
+      r.cs = "sun-pos";
+      break;
+    default:
+      r.cs = 0;
+      break;
+    }
+  }
+  return r;
+}
+
 void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
   uo_flagsT flags;
   flags.evt.rf_msg_received = true;
   flags.evt.gen_app_state_change = true;
 
   const Fer_MsgPlainCmd &m = *msg;
+  cmdInfo ci = cmdString_fromPlainCmd(m);
+  if (!ci.cs)
+    return; // unsupported command
 
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[64];
-
-    const char *cs = 0;
-    const char *fdt = 0;
-
-    if ((FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_PlainSender) && (fdt = "plain")) || (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit) && (fdt = "central"))) {
-      switch (m.cmd) {
-      case fer_if_cmd_DOWN:
-        cs = "down";
-        break;
-      case fer_if_cmd_UP:
-        cs = "up";
-        break;
-      case fer_if_cmd_STOP:
-        cs = "stop";
-        break;
-      default:
-        cs = 0;
-        break;
-      }
-    } else if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_SunSensor) && (fdt = "sun")) {
-      switch (m.cmd) {
-      case fer_if_cmd_SunDOWN:
-        cs = "sun-down";
-        break;
-      case fer_if_cmd_SunUP:
-        cs = "sun-up";
-        break;
-      case fer_if_cmd_SunINST:
-        cs = "sun-pos";
-        break;
-      default:
-        cs = 0;
-        break;
-      }
-    }
-
-    if (!cs)
-      return; // unsupported command
-
     if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit)) {
-      snprintf(buf, sizeof buf, "RC:type=central: a=%06x g=%d m=%d c=%s;\n", m.a, m.g, m.m, cs);
+      snprintf(buf, sizeof buf, "RC:type=central: a=%06x g=%d m=%d c=%s;\n", m.a, m.g, m.m, ci.cs);
     } else {
-      snprintf(buf, sizeof buf, "RC:type=%s: a=%06x g=%d m=%d c=%s;\n", fdt, m.a, m.g, m.m, cs);
+      snprintf(buf, sizeof buf, "RC:type=%s: a=%06x g=%d m=%d c=%s;\n", ci.fdt, m.a, m.g, m.m, ci.cs);
     }
+    uoCb_publish(idxs, buf, flags);
+  }
 
+  flags.fmt.txt = false;
+  flags.fmt.json = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[64];
+    if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit)) {
+      snprintf(buf, sizeof buf, "{\"rc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"%s\"}}", m.a, m.g, m.m, ci.cs);
+    } else {
+      snprintf(buf, sizeof buf, "{\"rc\":{\"type\":\"%s\",\"a\":\"%06x\",\"c\":\"%s\"}}", ci.fdt, m.a, ci.cs);
+    }
     uoCb_publish(idxs, buf, flags);
   }
 }

@@ -43,15 +43,12 @@ int timer_data_transition_fs_to_kvs();
 extern "C" void app_main(void) {
 
   mcu_init();
-  tmr_loopPeriodic_start();
+  tmr_loopPeriodic100ms_start();
 #ifdef TD_FS_TO_KVS
   timer_data_transition_fs_to_kvs();
 #endif
   while (1) {
     loop();
-#ifndef USE_EG
-    vTaskDelay(pdMS_TO_TICKS(LOOP_INTERVAL_MS));
-#endif
   }
 }
 
@@ -67,7 +64,7 @@ void mcu_restart() {
   lf_setBit(lf_mcuRestart);
 }
 
-#ifdef USE_EG
+
 void IRAM_ATTR lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield) {
   BaseType_t xHigherPriorityTaskWoken = pdFALSE, xResult;
 
@@ -81,4 +78,4 @@ void IRAM_ATTR lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield) {
     portYIELD_FROM_ISR();
   }
 }
-#endif
+

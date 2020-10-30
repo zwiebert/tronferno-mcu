@@ -58,7 +58,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   bool f_no_send = false;
   Fer_TimerData tdr;
   Fer_TimerData tda;
-  u8 rs = 0;
+  u8 rs = 0; // ==1: return timer data (like f=i).  ==2 return wildcard timer data (like f=)
 
   for (i = 1; i < len; ++i) {
     const char *key = p[i].key, *val = p[i].val;
@@ -257,13 +257,8 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
   if (rs) {
     if (int start = soMsg_timer_print_begin(td, p[0].key); start >= 0) {
-      print_timer(td, parm_g, parm_m, true);
+      print_timer(td, parm_g, parm_m, rs == 2);
       soMsg_timer_print_end(td);
-
-      if (need_save_td) {
-        const char *json = td.sj().get_json() + start;
-        uoApp_publish_timer_json(json);
-      }
     }
   }
 

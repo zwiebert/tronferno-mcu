@@ -14,6 +14,7 @@
   import PaneWappSettings from "./panes/wapp_settings.svelte";
   import PaneMcuSettings from "./panes/mcu_settings.svelte";
   import Pane2411 from "./panes/2411.svelte";
+  import PaneShutterSetMode from "./panes/shutter_set_mode.svelte";
 
   import PaneDeveloper from "./panes/developer.svelte";
 
@@ -38,7 +39,7 @@
   {:else if tabIdxMain === 4}
     <div class="navtab-sub">
       <NavTabs
-        nav_tabs={[$_('app.nav_cfg_mcu'), $_('app.nav_cfg_aliases'), $_('app.nav_cfg_durations'), $_('app.nav_cfg_name'), $_('app.nav_cfg_app'), $_('app.nav_main_firmware')]}
+        nav_tabs={[$_('app.nav_cfg_mcu'), $_('app.nav_cfg_aliases'), $_('app.nav_cfg_durations'), $_('app.nav_cfg_name'), $_('app.nav_cfg_set_mode'), $_('app.nav_cfg_app'), $_('app.nav_main_firmware')]}
         name="settings" />
     </div>
     {#if !tabIdxSettings}
@@ -50,8 +51,10 @@
     {:else if tabIdxSettings === 3}
       <PaneShutterName />
     {:else if tabIdxSettings === 4}
+      <PaneShutterSetMode />
+    {:else if tabIdxSettings === 5}
       <PaneWappSettings />
-      {:else if tabIdxSettings === 5}
+      {:else if tabIdxSettings === 6}
       <PaneFirmwareEsp32 />
     {/if}
   {:else if !misc.DISTRO && tabIdxMain === 5}
