@@ -129,6 +129,7 @@ enum astroCorrection config_read_astro_correction() {
 #include "app_mqtt/mqtt.h"
 void config_setup_mqttAppClient() {
   config_setup_mqttClient();
-  io_mqttApp_setup("tfmcu/");
+  char buf[32];
+  io_mqttApp_setup(config_read_mqtt_root_topic(buf, sizeof buf));
 }
 #endif

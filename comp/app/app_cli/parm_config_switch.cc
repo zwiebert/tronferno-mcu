@@ -101,6 +101,10 @@ bool process_parmKvsConfig(const struct TargetDesc &td, so_msg_t so_key, const c
     set_optStr(val, CB_MQTT_CLIENT_ID);
   }
     break;
+  case SO_CFG_MQTT_ROOT_TOPIC: {
+    set_optStr(val, CB_MQTT_ROOT_TOPIC);
+  }
+    break;
 #endif //USE_MQTT
 
 #ifdef USE_HTTP

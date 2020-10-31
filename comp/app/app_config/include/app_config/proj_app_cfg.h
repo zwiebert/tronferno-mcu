@@ -71,6 +71,9 @@ typedef int64_t i64;
 #define MDR_TIME
 #endif
 
+#define MY_MQTT_CLIENT_ID "tfmcu"
+#define MY_MQTT_ROOT_TOPIC "tfmcu"
+
 #ifdef __cplusplus
 #include <utils_misc/cstring_utils.hh>
 #define STRLCPY(dst,src,size) csu_copy((dst),(size),(src))

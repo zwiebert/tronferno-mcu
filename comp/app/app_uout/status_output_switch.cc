@@ -59,12 +59,16 @@ bool so_output_message2(const struct TargetDesc &td, so_msg_t mt, const void *ar
   case SO_CFG_MQTT_CLIENT_ID:
     td.so().print(gk(mt), config_read_mqtt_client_id(buf, sizeof buf));
     break;
+  case SO_CFG_MQTT_ROOT_TOPIC:
+    td.so().print(gk(mt), config_read_mqtt_root_topic(buf, sizeof buf));
+    break;
 #else
   case SO_CFG_MQTT_ENABLE:
   case SO_CFG_MQTT_URL:
   case SO_CFG_MQTT_USER:
   case SO_CFG_MQTT_PASSWORD:
   case SO_CFG_MQTT_CLIENT_ID:
+  case SO_CFG_MQTT_ROOT_TOPIC:
     break;
 #endif
 

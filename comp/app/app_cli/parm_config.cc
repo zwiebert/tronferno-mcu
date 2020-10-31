@@ -58,6 +58,7 @@ const char cli_help_parmConfig[]  =
     "mqtt-user=NAME     user name on server\n"
     "mqtt-password=PW   user password on server\n"
     "mqtt-client-id=ID  default: tfmcu\n"
+    "mqtt-root-topic=TOPIC default: tfmcu/\n"
 #endif
 #ifdef USE_HTTP
     "http-enable=(0|1)  enable HTTP\n"
