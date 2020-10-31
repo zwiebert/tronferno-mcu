@@ -96,7 +96,7 @@ constexpr uint8_t cb_types[CBA_size] = {
     CBT_str/* CB_WIFI_SSID */, CBT_str/* CB_WIFI_PASSWD */,
    #endif
    #ifdef USE_MQTT
-    CBT_str/* CB_MQTT_URL */, CBT_str/* CB_MQTT_USER */, CBT_str/* CB_MQTT_PASSWD */, CBT_str/* CB_MQTT_CLIENT_ID */, CBT_i8/* CB_MQTT_ENABLE */,
+    CBT_str/* CB_MQTT_URL */, CBT_str/* CB_MQTT_USER */, CBT_str/* CB_MQTT_PASSWD */, CBT_str/* CB_MQTT_CLIENT_ID */, CBT_str/* CB_MQTT_ROOT_TOPIC */, CBT_i8/* CB_MQTT_ENABLE */,
    #endif
    #ifdef USE_HTTP
     CBT_str/* CB_HTTP_USER */, CBT_str/* CB_HTTP_PASSWD */, CBT_i8/* CB_HTTP_ENABLE */,

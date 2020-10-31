@@ -5,6 +5,8 @@
 
 #include "app_config/proj_app_cfg.h"
 #include "app_settings/config.h"
+#include <config_kvs/config.h>
+
 #include "utils_misc/int_types.h"
 #include "utils_misc/itoa.h"
 #include <stdlib.h>
@@ -111,7 +113,9 @@ void test_config_keys()
   TEST_ASSERT_EQUAL_STRING("C_RFOUTP", config_get_kvs_key(CB_RFOUT_GPIO));
   TEST_ASSERT_EQUAL_STRING("C_CUID", config_get_kvs_key(CB_CUID));
   TEST_ASSERT_EQUAL_STRING("C_BAUD", config_get_kvs_key(CB_BAUD));
-
+#ifdef USE_MQTT
+  TEST_ASSERT_EQUAL_STRING("C_MQTT_RTOPIC", config_get_kvs_key(CB_MQTT_ROOT_TOPIC));
+#endif
 }
 
 TEST_CASE("test config keys", "[config]")
