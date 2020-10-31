@@ -18,6 +18,8 @@ extern const char cli_help_parmHelp[]; ///< help text for CLI command
 /// \brief provide a pointer to MCU restart function here
 extern void (*mcu_restart_cb)();
 
+
+
 /**
  * \brief setup this component
  */

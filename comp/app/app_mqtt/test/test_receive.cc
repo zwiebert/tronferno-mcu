@@ -70,8 +70,9 @@ void tst_receive_cli_xxx() {
 TEST_CASE("mqtt_receive", "[app_mqtt]")
 {
   tst_receive_cli_xxx();
-  tst_receive_GPO_21();
 
+#if 0 // pct,cmd,gpio topics no longer use CLI
+  tst_receive_GPO_21();
   tst_receive_pct_56();
   tst_receive_pct_56_a();
   tst_receive_pct_56_agm();
@@ -79,6 +80,7 @@ TEST_CASE("mqtt_receive", "[app_mqtt]")
   tst_receive_cmd_stop();
   tst_receive_cmd_stop_a();
   tst_receive_cmd_stop_agm();
+#endif
 }
 
 

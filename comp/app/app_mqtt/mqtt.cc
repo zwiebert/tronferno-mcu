@@ -17,7 +17,13 @@
 #include "cli/mutex.hh"
 #include "uout/status_json.hh"
 #include "app_uout/status_output.h"
+#include <gpio/pin.h>
 #include <fernotron_uout/fer_uo_publish.h>
+#include <fernotron/fer_main.h>
+#include <fernotron/pos/commands.h>
+
+#include <stdlib.h>
+#include <charconv>
 
 char *io_mqtt_topic_root;
 AppNetMqtt MyMqtt;
@@ -81,20 +87,25 @@ static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
       Net_Mqtt::publish("tfmcu/timer_out", json);
   }
 }
+
 void AppNetMqtt::connected ()  {
   char topic[64];
+
+  // subscribe topics on MQTT server
   snprintf(topic, sizeof topic, "%scli", TOPIC_ROOT);
   subscribe(topic, 0);
   snprintf(topic, sizeof topic, "%s+/pct", TOPIC_ROOT);
   subscribe(topic, 0);
   snprintf(topic, sizeof topic, "%s+/cmd", TOPIC_ROOT);
   subscribe(topic, 0);
-  snprintf(topic, sizeof topic, "%sstatus", TOPIC_ROOT);
-  publish(topic, "connected"); // for autocreate (ok???)
-
   snprintf(topic, sizeof topic, "%s%s+%s", TOPIC_ROOT, TOPIC_GPO_MID, TOPIC_GPO_END);
   subscribe(topic, 0);
 
+  // publish status change to MQTT server
+  snprintf(topic, sizeof topic, "%sstatus", TOPIC_ROOT);
+  publish(topic, "connected"); // for autocreate (ok???)
+
+  // subscribe to uout-component
   uo_flagsT flags {};
   flags.tgt.mqtt = true;
   flags.evt.pin_change = true;
@@ -106,6 +117,7 @@ void AppNetMqtt::connected ()  {
 }
 
 void AppNetMqtt::disconnected ()  {
+  // unsubscribe from uout-component
   uoCb_unsubscribe(io_mqttApp_uoutPublish_cb);
 }
 
@@ -120,6 +132,51 @@ void AppNetMqtt::received(const char *topic, int topic_len, const char *data, in
 }
 
 
+struct c_map {
+  const char *fs;
+  fer_if_cmd fc;
+};
+
+constexpr struct c_map const fc_map[] = { //
+    { "down", fer_if_cmd_DOWN }, //
+        { "up", fer_if_cmd_UP }, //
+        { "stop", fer_if_cmd_STOP }, //
+        { "sun-down", fer_if_cmd_SunDOWN }, //
+        { "sun-up", fer_if_cmd_SunUP }, //
+        { "sun-inst", fer_if_cmd_SunINST }, //
+        //{"sun-test", fer_if_cmd_Program},//
+        { "set", fer_if_cmd_SET },  //
+    };
+
+static fer_if_cmd parm_to_ferCMD(const char *token, size_t token_len) {
+  for (int i = 0; i < (sizeof(fc_map) / sizeof(fc_map[0])); ++i) {
+    if (strncmp(token, fc_map[i].fs, token_len) == 0) {
+      return fc_map[i].fc;
+    }
+  }
+  return fer_if_cmd_None;
+}
+
+static so_arg_agm_t topic_to_Agm(const char *addr, unsigned addr_len) {
+  so_arg_agm_t r{};
+  if (addr_len == 2) {
+    r.g = addr[0] - '0';
+    r.m = addr[1] - '0';
+  } else if (addr_len == 6) {
+    std::from_chars(addr, addr+6, r.a, 16);
+
+  } else if (addr_len == 8) {
+    std::from_chars(addr, addr+6, r.a, 16);
+    r.g = addr[6] - '0';
+    r.m = addr[7] - '0';
+  } else {
+    return r;
+  }
+  if (!r.a) {
+    r.a = fer_config.cu;
+  }
+    return r;
+}
 
 void io_mqttApp_received(const char *topic, int topic_len, const char *data, int data_len, proc_cmdline_funT proc_cmdline_fun) {
   TargetDesc td { SO_TGT_MQTT | SO_TGT_FLAG_JSON };
@@ -127,8 +184,10 @@ void io_mqttApp_received(const char *topic, int topic_len, const char *data, int
     return; // all topics start with this
   }
 
-  { LockGuard lock(cli_mutex); 
+  {
+    LockGuard lock(cli_mutex);
     char line[40 + data_len];
+
     if (topic_endsWith(topic, topic_len, TOPIC_GPO_END)) {
       const char *addr = strstr(topic, TOPIC_GPO_MID);
       if (!addr)
@@ -138,42 +197,50 @@ void io_mqttApp_received(const char *topic, int topic_len, const char *data, int
       if (!addr_end)
         return;
       int addr_len = addr_end - addr;
-
-      sprintf(line, "{\"mcu\":{\"gpio%.*s\":%.*s}}", addr_len, addr, data_len, data);
-
-      proc_cmdline_fun(line, td);
-
+#ifdef USE_GPIO_PINS
+      int gpio_number = -1;
+      std::from_chars(addr, addr + addr_len, gpio_number, 10);
+      if (*data == '?') {
+        mcu_pin_state result;
+        if (mcu_access_pin(gpio_number, &result, PIN_READ)) {
+          if (result == PIN_CLEAR || result == PIN_SET)
+            io_mqttApp_publishPinChange(gpio_number, result == PIN_SET);
+        }
+      } else {
+        mcu_pin_state ps = *data == '0' ? PIN_CLEAR : PIN_SET;
+        mcu_access_pin(gpio_number, NULL, ps);
+      }
+#endif
     } else if (topic_endsWith(topic, topic_len, TOPIC_PCT_END)) {
       const char *addr = topic + strlen(TOPIC_ROOT);
       int addr_len = topic_len - (strlen(TOPIC_ROOT) + (sizeof TOPIC_PCT_END - 1));
 
-      if (addr_len == 2) {
-        sprintf(line, "{\"cmd\":{\"g\":%c,\"m\":%c,\"p\":%.*s}}", addr[0], addr[1], data_len, data);
-      } else if (addr_len == 6) {
-        sprintf(line, "{\"cmd\":{\"a\":\"%.*s\",\"p\":%.*s}}", 6, addr, data_len, data);
-      } else if (addr_len == 8) {
-        sprintf(line, "{\"cmd\":{\"a\":\"%.*s\",\"g\":%c,\"m\":%c,\"p\":%.*s}}", 6, addr, addr[6], addr[7], data_len, data);
+      auto agm = topic_to_Agm(addr, addr_len);
+      if (!agm.a)
+        return;
+
+      if (strncmp("?", data, data_len) == 0) {
+        if (agm.a != fer_config.cu)
+          return;
+        if (Pct pos = fer_simPos_getPct_whileMoving(agm.g, agm.m)) {
+          io_mqtt_publish_gmp({agm.g, agm.m, pos});
+        }
       } else {
-       return;
-        // wrong topic format in wildcard
+        int pct = -1;
+        if (auto res = std::from_chars(data, data + data_len, pct, 10); res.ec == std::errc()) {
+           fer_cmd_moveShutterToPct(agm.a, agm.g, agm.m, pct, 2);
+        }
       }
-      proc_cmdline_fun(line, td);
 
     } else if (topic_endsWith(topic, topic_len, TOPIC_CMD_END)) {
       const char *addr = topic + strlen(TOPIC_ROOT);
       int addr_len = topic_len - (strlen(TOPIC_ROOT) + (sizeof TOPIC_CMD_END - 1));
 
-      if (addr_len == 2) {
-        sprintf(line, "{\"cmd\":{\"g\":%c,\"m\":%c,\"c\":\"%.*s\"}}", addr[0], addr[1], data_len, data);
-      } else if (addr_len == 6) {
-        sprintf(line, "{\"cmd\":{\"a\":\"%.*s\",\"c\":\"%.*s\"}}", 6, addr, data_len, data);
-      } else if (addr_len == 8) {
-        sprintf(line, "{\"cmd\":{\"a\":\"%.*s\",\"g\":%c,\"m\":%c,\"c\":\"%.*s\"}}", 6, addr, addr[6], addr[7], data_len, data);
-      } else {
-        return;
-        // wrong topic format in wildcard
+      if (auto agm = topic_to_Agm(addr, addr_len); agm.a) {
+        if (auto cmd = parm_to_ferCMD(data, data_len)) {
+          fer_cmd_sendShutterCommand(agm.a, agm.g, agm.m, cmd, 2);
+        }
       }
-      proc_cmdline_fun(line, td);
 
     } else if (topic_endsWith(topic, topic_len, TOPIC_CLI_END)) {
       if (data_len > TAG_CLI_LEN && strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {

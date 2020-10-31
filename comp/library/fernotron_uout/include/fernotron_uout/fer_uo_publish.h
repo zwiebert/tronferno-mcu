@@ -36,6 +36,11 @@ typedef struct {
 
 typedef struct {
   uint32_t a;
+  uint8_t g, m;
+} so_arg_agm_t;
+
+typedef struct {
+  uint32_t a;
   struct Fer_GmSet *mm;
 } so_arg_amm_t;
 
