@@ -126,31 +126,31 @@ function req_automatic() {
       <td><input id="tfti" style="width:5em;" type = "text" name = "g" value=""></td>
     </tr>
     <tr>
-      <td><label>daily</label></td>
+      <td><label>{$_('app.auto.daily')}</label></td>
       <td><input id="tdci" class="cb" type = "checkbox" value=""></td>
       <td> &#x25b2;<input id="tduti" type="time" value=""> &#x25bc;<input id="tddti" type="time" value=""></td>
     </tr>
     <tr>
-      <td><label>weekly</label></td>
+      <td><label>{$_('app.auto.weekly')}</label></td>
       <td><input id="twci" class="cb" type = "checkbox" value=""></td>
       <td><input id="twti" type = "text" name = "g" value=""></td>
     </tr>
     <tr>
-      <td><label>astro</label></td>
+      <td><label>{$_('app.auto.astro')}</label></td>
       <td><input id="taci" class="cb" type = "checkbox" value=""></td>
       <td><input id="tati" style="width:5em;" type = "number" min="-90" max="90" name = "g" value="">
         <label> </label><span id="id_astroTime"></span></td>
     </tr>
     <tr>
-      <td><label>random</label></td>
+      <td><label>{$_('app.auto.random')}</label></td>
       <td><input id="trci" class="cb" type = "checkbox" value=""></td>
     </tr>
     <tr>
-      <td><label>sun</label></td>
+      <td><label>{$_('app.auto.sun')}</label></td>
       <td><input id="tsci" class="cb" type = "checkbox" value=""></td>
     </tr>
     <tr>
-      <td><label>manual</label></td>
+      <td><label>{$_('app.auto.manual')}</label></td>
       <td><input id="tmci" class="cb" type = "checkbox" value=""></td>
     </tr>
   </table>

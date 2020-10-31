@@ -8,24 +8,37 @@ const en = {
     save: "Save",
     hide: "Hide",
 
+
     navTab:{
         main:{
-            move: "Move",
-            percent: "Pct",
+            move: "\u25b3\u25bd",
+            percent: "%%",
+            config: "\u2699",
             auto: "Auto",
-            config: "Settings",
             firmware: "Firmware",
         },
         cfg:{
             mcu: "MCU",
             aliases: "Aliases",
-            durations: "Durations",
+            durations: "\u23f1",
             name: "Name",
             set_mode: "Set",
             app: "App",
         },
     },
 
+    auto:{
+        daily:"Daily",
+        weekly:"Weekly",
+        astro:"Dusk",
+        random:"Random",
+        sun:"Sun",
+        manual:"Manual",
+      },
+
+    dur:{
+        h:"Duration of Shutter-Movements",
+    },
 
     msg_waitForMcuRestart: "Wait for MCU to restart...",
     msg_firmwareIsUpdating: "Firmware is updating...",
@@ -74,23 +87,31 @@ const de = {
 
     navTab:{
         main:{
-            move: "\u25b2\u25bc",
-            percent: "[%]",
             auto: "Auto",
-            config: "\u2699",
             firmware: "Firmware",
         },
         cfg:{
             mcu: "MCU",
             aliases: "Alias",
-            durations: "Laufzeit",
+            //durations: "Laufzeit",
             name: "Name",
             set_mode: "Set",
             app: "App",
         },
     },
 
+    auto:{
+        daily:"Täglich",
+        weekly:"Wochentage",
+        astro:"Dämmerung",
+        random:"Zufall",
+        sun:"Sonne",
+        manual:"Manuell",
+      },
 
+      dur:{
+        h:"Motor-Laufzeiten",
+    },
 
 
     msg_waitForMcuRestart: "MCU wird neu gestartet...",

@@ -3,7 +3,7 @@
   import ShutterSelectGM from "./components/shutter_select_gm.svelte";
   import { _ } from "./services/i18n";
   import { G, M0, Name } from "./store/curr_shutter.js";
-  import { SetMode_isInSetMode, SetModeSrcAddress, SetModeSrcRadio, SetModeSrcMotorCode, SetModeSrcProgress } from "./store/shutter_set_mode.js";
+  import { SetModeSrcAddress, SetModeSrcRadio, SetModeSrcMotorCode, SetModeSrcProgress } from "./store/shutter_set_mode.js";
   import * as httpFetch from "./fetch.js";
 
   $: name = $Name || "";
@@ -40,11 +40,9 @@
   }
 
   function enterSetMode() {
-    $SetMode_isInSetMode = true;
     $SetModeSrcProgress = 60;
     let iv = setInterval(()=>{
       if (0 >= $SetModeSrcProgress--) {
-        $SetMode_isInSetMode = false;
         clearInterval(iv);
       }
 
@@ -77,7 +75,7 @@
   <button on:click={enterSetMode}>{$_('app.setMode.set_button')}</button>
 {/if}
 
-{#if $SetMode_isInSetMode}
+{#if $SetModeSrcProgress > 0}
   <progress value={$SetModeSrcProgress} max={60} />
 {/if}
 
