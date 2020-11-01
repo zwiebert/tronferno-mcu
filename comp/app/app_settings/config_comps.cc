@@ -86,7 +86,7 @@ double tz2offset(const char *tz);
 struct cfg_astro* config_read_astro(struct cfg_astro *c) {
   kvshT h;
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
-//#define kvsR(DT, cb, val)  do { val = kvs_get_##DT(h, cfg_key(cb), val, 0); } while(0)
+//#define kvsR(DT, cb, val)  do { val = kvs_get_##DT(h, settings_get_kvsKey(cb), val, 0); } while(0)
 
     kvsRb(CB_LONGITUDE, c->geo_longitude);
     kvsRb(CB_LATITUDE, c->geo_latitude);

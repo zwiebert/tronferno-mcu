@@ -172,7 +172,7 @@ void mcu_init() {
 #ifdef USE_CUAS
   fer_cuas_enable_disable_cb = [] (bool enable, uint32_t cu) {
     lfPer100ms_putBit(lf_checkCuasTimeout, enable);
-    config_save_item_n_u32(cfg_key(CB_CUID), cu);
+    config_save_item_n_u32(settings_get_kvsKey(CB_CUID), cu);
     config_item_modified(CB_CUID);
 };
 #endif

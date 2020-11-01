@@ -102,11 +102,11 @@ const char *const *cfg_args[SO_CFG_size] = {
 
 
 #define isValid_optStr(cfg, new) true
-#define set_optStr(v, cb) config_save_item_s(cfg_key(cb), v)
-#define set_optBlob(v, cb) config_save_item_b(cfg_key(cb), &v, sizeof v)
+#define set_optStr(v, cb) config_save_item_s(settings_get_kvsKey(cb), v)
+#define set_optBlob(v, cb) config_save_item_b(settings_get_kvsKey(cb), &v, sizeof v)
 #define set_optStr_ifValid set_optStr
-#define set_opt(t, v, cb) (config_save_item_##t(cfg_key(cb),v) && config_item_modified((cb)))
-#define set_optN(t, v, cb) (config_save_item_n_##t(cfg_key(cb),v) && config_item_modified((cb)))
+#define set_opt(t, v, cb) (config_save_item_##t(settings_get_kvsKey(cb),v) && config_item_modified((cb)))
+#define set_optN(t, v, cb) (config_save_item_n_##t(settings_get_kvsKey(cb),v) && config_item_modified((cb)))
 
 #define has_changed() SET_BIT(*changed_mask, so_key)
 

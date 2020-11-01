@@ -109,9 +109,9 @@ constexpr AppSettings appSettings;
 
 void test_config_keys2()
 {
-  TEST_ASSERT_EQUAL_STRING("C_TZ", app_settings.get_kvsKey(CB_TZ));
-  TEST_ASSERT_EQUAL_STRING("C_VERBOSE", app_settings.get_kvsKey(CB_VERBOSE));
-  TEST_ASSERT_EQUAL(CBT_u32, app_settings.get_kvsType(CB_CUID));
+  TEST_ASSERT_EQUAL_STRING("C_TZ", settings_get_kvsKey(CB_TZ));
+  TEST_ASSERT_EQUAL_STRING("C_VERBOSE", settings_get_kvsKey(CB_VERBOSE));
+  TEST_ASSERT_EQUAL(CBT_u32, settings_get_kvsType(CB_CUID));
 
   u32 cu = config_read_item(CB_CUID, 0x80abcd);
 

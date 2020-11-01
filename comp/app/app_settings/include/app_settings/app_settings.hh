@@ -1,8 +1,13 @@
+/**
+ * \file app_settings/app_settings.hh
+ * \brief Settings for application components
+ */
 #pragma once
 #include "app_config/proj_app_cfg.h"
 #include <app_config/options.hh>
 #include "config.h"
 #include <config_kvs/comp_settings.hh>
+#include <config_kvs/settings.hh>
 #include <assert.h>
 
 enum configAppItem {
@@ -26,14 +31,8 @@ CB_TIZO,
   CBA_size
 };
 
-class AppSettings: CompSettings {
-
-  constexpr void initField(const configAppItem ai, const char *const kvsKey, const otok optKey, const KvsType kvsType) {
-    unsigned idx = ai - CB_size;
-    as_optKeys[idx] = optKey;
-    as_kvsKeys[idx] = kvsKey;
-    as_kvsTypes[idx] = kvsType;
-  }
+class AppSettings: public Settings<configAppItem, CBA_size - CB_size, CB_size> {
+  using Base = Settings<configAppItem, CBA_size - CB_size, CB_size>;
 public:
   constexpr AppSettings() {
     initField(CB_RECV, "C_RECEIVER", otok::k_receiver, CBT_i8);
@@ -59,76 +58,21 @@ public:
     initField(CB_SETBUTTON_GPIO, "C_SETBTNP", otok::k_set_button_pin, CBT_i8);
   }
 
-public:
-
-  constexpr const char* get_kvsKey(configAppItem idx) const {
-    return as_kvsKeys[idx - CB_size];
-  }
-  constexpr KvsType get_kvsType(configAppItem idx) const {
-    return as_kvsTypes[idx - CB_size];
-  }
-
-  constexpr otok get_optKey(configAppItem idx) const {
-    return as_optKeys[idx - CB_size];
-  }
-  constexpr const char* get_optKeyStr(configAppItem idx) const {
-    return otok_strings[static_cast<otokBaseT>(as_optKeys[idx - CB_size])];
-  }
-
-public:
-
-  constexpr const char* get_kvsKey(configItem idx) const {
-    return CompSettings::get_kvsKey(idx);
-  }
-  constexpr KvsType get_kvsType(configItem idx) const {
-    return CompSettings::get_kvsType(idx);
-  }
-
-  constexpr otok get_optKey(configItem idx) const {
-    return CompSettings::get_optKey(idx);
-  }
-  constexpr const char* get_optKeyStr(configItem idx) const {
-    return CompSettings::get_optKeyStr(idx);
-  }
-
-public:
-  const char *as_kvsKeys[CBA_size - CB_size] { };
-  otok as_optKeys[CBA_size - CB_size] { };
-  KvsType as_kvsTypes[CBA_size - CB_size] { };
 };
 
 constexpr AppSettings app_settings;
 
-template<typename Kvs_Type>
-constexpr Kvs_Type config_read_item(const configAppItem item, Kvs_Type def) {
-  switch (app_settings.get_kvsType(item)) {
-  case CBT_u32:
-    return static_cast<Kvs_Type>(config_read_item_u32(app_settings.get_kvsKey(item), (u32) def));
-  case CBT_i8:
-    return static_cast<Kvs_Type>(config_read_item_i8(app_settings.get_kvsKey(item), (i8) def));
-  case CBT_f:
-    return static_cast<Kvs_Type>(config_read_item_f(app_settings.get_kvsKey(item), (float) def));
-  default:
-    assert(!"unhandled type");
-  }
-  return def;
-}
-
-template<typename Kvs_Type>
-constexpr const Kvs_Type* config_read_item(configAppItem item, Kvs_Type *d, size_t d_size, const Kvs_Type *def) {
-  switch (app_settings.get_kvsType(item)) {
-  case CBT_str:
-    return config_read_item_s(app_settings.get_kvsKey(item), d, d_size, (const char*) def);
-  default:
-    assert(!"unhandled type");
-  }
-  return def;
-}
-
-inline const char* cfg_key(configAppItem item) {
+constexpr const char* settings_get_kvsKey(configAppItem item) {
   return app_settings.get_kvsKey(item);
 }
-inline const char* cfg_optStr(configAppItem item) {
+constexpr KvsType settings_get_kvsType(configAppItem item) {
+  return app_settings.get_kvsType(item);
+}
+constexpr otok settings_get_optKey(configAppItem item) {
+  return app_settings.get_optKey(item);
+}
+constexpr const char* settings_get_optKeyStr(configAppItem item) {
   return app_settings.get_optKeyStr(item);
 }
+
 bool config_item_modified(enum configAppItem item);

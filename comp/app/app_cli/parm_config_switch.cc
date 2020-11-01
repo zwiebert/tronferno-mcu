@@ -15,10 +15,10 @@
 #include <iterator>
 
 #define isValid_optStr(cfg, new) true
-#define set_optStr(v, cb) if (config_save_item_s(cfg_key(cb), v)) has_changed(cb)
-#define set_optBlob(v, cb) if (config_save_item_b(cfg_key(cb), &v, sizeof v)) has_changed(cb)
-#define set_opt(t, v, cb) if (config_save_item_##t(cfg_key(cb),v)) has_changed(cb)
-#define set_optN(t, v, cb) if (config_save_item_n_##t(cfg_key(cb),v)) has_changed(cb)
+#define set_optStr(v, cb) if (config_save_item_s(settings_get_kvsKey(cb), v)) has_changed(cb)
+#define set_optBlob(v, cb) if (config_save_item_b(settings_get_kvsKey(cb), &v, sizeof v)) has_changed(cb)
+#define set_opt(t, v, cb) if (config_save_item_##t(settings_get_kvsKey(cb),v)) has_changed(cb)
+#define set_optN(t, v, cb) if (config_save_item_n_##t(settings_get_kvsKey(cb),v)) has_changed(cb)
 
 #define has_changed(cb) SET_BIT(*changed_mask, cb)
 
