@@ -1,5 +1,6 @@
 #include "app_config/proj_app_cfg.h"
 #include "config_kvs/config.h"
+#include "app_settings/app_settings.hh"
 #include "cli_imp.h"
 #include "cli_config.h"
 #include "cli/cli.h"
@@ -14,10 +15,10 @@
 #include <iterator>
 
 #define isValid_optStr(cfg, new) true
-#define set_optStr(v, cb) if (config_save_item_s(cb, v)) has_changed(cb)
-#define set_optBlob(v, cb) if (config_save_item_b(cb, &v, sizeof v)) has_changed(cb)
-#define set_opt(t, v, cb) if (config_save_item_##t(cb,v)) has_changed(cb)
-#define set_optN(t, v, cb) if (config_save_item_n_##t(cb,v)) has_changed(cb)
+#define set_optStr(v, cb) if (config_save_item_s(cfg_key(cb), v)) has_changed(cb)
+#define set_optBlob(v, cb) if (config_save_item_b(cfg_key(cb), &v, sizeof v)) has_changed(cb)
+#define set_opt(t, v, cb) if (config_save_item_##t(cfg_key(cb),v)) has_changed(cb)
+#define set_optN(t, v, cb) if (config_save_item_n_##t(cfg_key(cb),v)) has_changed(cb)
 
 #define has_changed(cb) SET_BIT(*changed_mask, cb)
 

@@ -9,15 +9,13 @@
 
 #include "app_config/proj_app_cfg.h"
 #include "app_settings/config.h"
+#include "app_settings/app_settings.hh"
 
 #ifndef CFG_NAMESPACE
 #define CFG_NAMESPACE "config"
 #endif
 
 #if 1
-#define cfg_key(cb) config_get_kvs_key(cb)
-
-
 
 unsigned nvsStr(void *handle, const char *key, void *dst, size_t dst_len, bool save);
 unsigned nvsBlob(void *handle, const char *key, void *dst, size_t dst_len, bool save);

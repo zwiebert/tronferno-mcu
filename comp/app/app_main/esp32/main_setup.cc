@@ -8,6 +8,7 @@
 #include "utils_misc/int_types.h"
 #include "app_misc/timer.h"
 #include "app_settings/config.h"
+#include "app_settings/app_settings.hh"
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/cuas/cuid_auto_set.h"
@@ -169,11 +170,10 @@ void mcu_init() {
   };
 #endif
 #ifdef USE_CUAS
-#define CI(cb) static_cast<configItem>(cb)
   fer_cuas_enable_disable_cb = [] (bool enable, uint32_t cu) {
     lfPer100ms_putBit(lf_checkCuasTimeout, enable);
-    config_save_item_n_u32(CI(CB_CUID), cu);
-    config_item_modified(CI(CB_CUID));
+    config_save_item_n_u32(cfg_key(CB_CUID), cu);
+    config_item_modified(CB_CUID);
 };
 #endif
 

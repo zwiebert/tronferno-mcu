@@ -8,6 +8,7 @@
 #include "app_config/proj_app_cfg.h"
 #include <string.h>
 #include "app_settings/config.h"
+#include "app_settings/app_settings.hh"
 #include "utils_misc/bcd.h"
 #include "cli_imp.h"
 #include "app_cli/cli_app.h"
@@ -61,7 +62,7 @@ bool  config_receiver(const char *val) {
   } else {
     return false;
   }
-  config_save_item_n_i8(CI(CB_RECV), C.app_recv);
+  config_save_item_n_i8(cfg_key(CB_RECV), C.app_recv);
   return true;
 }
 
@@ -74,7 +75,7 @@ config_transmitter(const char *val) {
   } else {
     return false;
   }
-  config_save_item_n_i8(CI(CB_TRANSM), C.app_transm);
+  config_save_item_n_i8(cfg_key(CB_TRANSM), C.app_transm);
   return true;
 }
 

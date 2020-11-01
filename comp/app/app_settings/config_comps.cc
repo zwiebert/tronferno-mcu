@@ -6,6 +6,7 @@
  */
 
 #include "app_settings/config.h"
+#include "app_settings/app_settings.hh"
 #include "app_settings/config_defaults.h"
 #include "config_kvs.h"
 #include <fernotron_trx/fer_trx_api.hh>
@@ -40,26 +41,25 @@ void config_setup_gpio() {
 }
 
 int8_t config_read_rfout_gpio() {
-  return config_read_item_i8(CI(CB_RFOUT_GPIO), MY_RFOUT_GPIO);
+  return config_read_item((CB_RFOUT_GPIO), MY_RFOUT_GPIO);
 }
 int8_t config_read_rfin_gpio() {
-  return config_read_item_i8(CI(CB_RFIN_GPIO), MY_RFIN_GPIO);
+  return config_read_item((CB_RFIN_GPIO), MY_RFIN_GPIO);
 }
 int8_t config_read_setbutton_gpio() {
-  return config_read_item_i8(CI(CB_SETBUTTON_GPIO), MY_SETBUTTON_GPIO);
+  return config_read_item((CB_SETBUTTON_GPIO), MY_SETBUTTON_GPIO);
 }
 
 
 #if 1
 void config_setup_global() {
   kvshT h;
-  C = config { .fer_centralUnitID = MY_FER_CENTRAL_UNIT_ID,
+  C = config {
     .mcu_serialBaud = MY_MCU_UART_BAUD_RATE,
     .app_rtcAdjust = 0,
     .app_recv = recvTick,
     .app_transm = transmTick,
     .app_rtc = rtcAvrTime,
-    .fer_usedMembers = MY_FER_GM_USE,
     .app_configPassword = {0},
     .app_expertPassword = {0},
 };
@@ -69,14 +69,12 @@ void config_setup_global() {
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
 
   //XXX-ignore kvsR(i8, CB_TRANSM, C.app_transm);
-    kvsR(u32, CB_CUID, C.fer_centralUnitID);
-    kvsR(u32, CB_USED_MEMBERS, C.fer_usedMembers);
     kvsR(u32, CB_BAUD, C.mcu_serialBaud);
     kvs_close(h);
   }
 }
 uint32_t config_read_used_members() {
-  return  config_read_item_u32(CI(CB_USED_MEMBERS), MY_FER_GM_USE);
+  return  config_read_item(CB_USED_MEMBERS, MY_FER_GM_USE);
 }
 
 #endif
@@ -115,13 +113,13 @@ void config_setup_astro() {
   Fer_Trx_API::setup_astro(&c);
 }
 float config_read_longitude() {
-  return config_read_item_f(CI(CB_LONGITUDE), MY_GEO_LONGITUDE);
+  return config_read_item((CB_LONGITUDE), MY_GEO_LONGITUDE);
 }
 float config_read_latitude() {
-  return config_read_item_f(CI(CB_LATITUDE), MY_GEO_LATITUDE);
+  return config_read_item((CB_LATITUDE), MY_GEO_LATITUDE);
 }
 enum astroCorrection config_read_astro_correction() {
-  return static_cast<astroCorrection>(config_read_item_i8(CI(CB_ASTRO_CORRECTION), acAverage));
+  return config_read_item((CB_ASTRO_CORRECTION), acAverage);
 }
 #endif
 

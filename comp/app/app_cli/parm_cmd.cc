@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include "fernotron/sep/set_endpos.h"
+#include "fernotron/fer_main.h"
 #include "fernotron/pos/commands.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "txtio/inout.h"
@@ -37,7 +38,7 @@ int
 process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
 
-  u32 addr = cfg_getCuId();
+  u32 addr = fer_config.cu;
   u8 g = 0, m = 0;
   fer_if_cmd cmd = fer_if_cmd_None;
   int set_end_pos = -1;
@@ -125,7 +126,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
   }
 
   if (has_requested_position) {
-    if (addr != cfg_getCuId()) {
+    if (addr != fer_config.cu) {
       return cli_replyFailure(td);
     } else if (g != 0) {
       if (Pct pos = fer_simPos_getPct_whileMoving(g, m)) {

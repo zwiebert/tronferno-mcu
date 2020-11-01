@@ -9,10 +9,12 @@
 #include "so_out.h"
 #include "so_print.h"
 #include "fernotron_uout/fer_uo_publish.h"
+#include "fernotron/fer_main.h"
 #include "utils_misc/int_types.h"
 #include "app_misc/firmware.h"
 #include "app_misc/rtc.h"
 #include "app_settings/config.h"
+#include "app_settings/app_settings.hh"
 #include "net/ipnet.h"
 #include "txtio/inout.h"
 #include "uout/status_json.hh"
@@ -33,45 +35,45 @@ bool so_output_message2(const struct TargetDesc &td, so_msg_t mt, const void *ar
 
 void soCfg_BAUD(const struct TargetDesc &td) {
 #ifndef MCU_ESP32
-  td.so().print(gk(SO_CFG_BAUD), config_read_baud());
+  td.so().print(cfg_optStr(CB_BAUD), config_read_baud());
 #endif
 }
 
 void soCfg_RTC(const struct TargetDesc &td) {
   char buf[64];
   if (rtc_get_by_string(buf)) {
-    td.so().print(gk(SO_CFG_RTC), buf);
+    td.so().print(otok_strings[(int)otok::k_rtc], buf);
   }
 }
 
 void soCfg_CU(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_CU), cfg_getCuId(), 16);
+  td.so().print(cfg_optStr(CB_CUID), fer_config.cu, 16);
 }
 
 void soCfg_NETWORK(const struct TargetDesc &td) {
 #ifdef USE_NETWORK
-  td.so().print(gk(SO_CFG_NETWORK),cfg_args_network[config_read_network_connection()]);
+  td.so().print(cfg_optStr(CB_NETWORK_CONNECTION),cfg_args_network[config_read_network_connection()]);
 #endif
 }
 
 void soCfg_TZ(const struct TargetDesc &td) {
 #ifdef USE_POSIX_TIME
   char buf[64];
-  td.so().print(gk(SO_CFG_TZ),config_read_tz(buf, sizeof buf));
+  td.so().print(cfg_optStr(CB_TZ),config_read_tz(buf, sizeof buf));
 #endif
 }
 
 void soCfg_LONGITUDE(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_LONGITUDE), config_read_longitude(), 5);
+  td.so().print(cfg_optStr(CB_LONGITUDE), config_read_longitude(), 5);
 }
 
 void soCfg_LATITUDE(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_LATITUDE), config_read_latitude(), 5);
+  td.so().print(cfg_optStr(CB_LATITUDE), config_read_latitude(), 5);
 }
 
 void soCfg_TIMEZONE(const struct TargetDesc &td) {
 #ifndef USE_POSIX_TIME
-  td.so().print(gk(SO_CFG_TIMEZONE), config_read_timezone(), 5);
+  td.so().print(cfg_optStr(CB_TIMEZONE), config_read_timezone(), 5);
 #endif
 }
 
@@ -80,25 +82,25 @@ void soCfg_DST(const struct TargetDesc &td) {
   {
     enum dst geo_dst = config_read_dst();
     const char *dst = (geo_dst == dstEU ? "eu" : (geo_dst == dstNone ? "0" : "1"));
-    td.so().print(gk(SO_CFG_DST), dst);
+    td.so().print(cfg_optStr(CB_DST), dst);
   }
 #endif
 }
 
 void soCfg_GM_USED(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_GM_USED),config_read_used_members(), 16);
+  td.so().print(cfg_optStr(CB_USED_MEMBERS),config_read_used_members(), 16);
 }
 
 void soCfg_GPIO_RFOUT(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_GPIO_RFOUT),config_read_rfout_gpio());
+  td.so().print(cfg_optStr(CB_RFOUT_GPIO),config_read_rfout_gpio());
 }
 
 void soCfg_GPIO_RFIN(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_GPIO_RFIN),config_read_rfin_gpio());
+  td.so().print(cfg_optStr(CB_RFIN_GPIO),config_read_rfin_gpio());
 }
 
 void soCfg_GPIO_SETBUTTON(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_GPIO_SETBUTTON),config_read_setbutton_gpio());
+  td.so().print(cfg_optStr(CB_SETBUTTON_GPIO),config_read_setbutton_gpio());
 }
 
 void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
@@ -162,7 +164,7 @@ void soCfg_GPIO_MODES_AS_STRING(const struct TargetDesc &td) {
 }
 
 void soCfg_ASTRO_CORRECTION(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_ASTRO_CORRECTION),config_read_astro_correction());
+  td.so().print(cfg_optStr(CB_ASTRO_CORRECTION),config_read_astro_correction());
 }
 
 void soCfg_begin(const struct TargetDesc &td) {

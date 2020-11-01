@@ -9,6 +9,7 @@
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "app_config/proj_app_cfg.h"
 #include "app_settings/config.h"
+#include "app_settings/app_settings.hh"
 #include "app_misc/rtc.h"
 #include "utils_misc/bcd.h"
 #include "cli_imp.h"
@@ -99,14 +100,13 @@ void (*mcu_restart_cb)();
 const char *const *cfg_args[SO_CFG_size] = {
 };
 
-#define CI(cb) static_cast<configItem>(cb)
 
 #define isValid_optStr(cfg, new) true
-#define set_optStr(v, cb) config_save_item_s(CI(cb), v)
-#define set_optBlob(v, cb) config_save_item_b(cb, &v, sizeof v)
+#define set_optStr(v, cb) config_save_item_s(cfg_key(cb), v)
+#define set_optBlob(v, cb) config_save_item_b(cfg_key(cb), &v, sizeof v)
 #define set_optStr_ifValid set_optStr
-#define set_opt(t, v, cb) (config_save_item_##t(CI(cb),v) && config_item_modified(CI(cb)))
-#define set_optN(t, v, cb) (config_save_item_n_##t(CI(cb),v) && config_item_modified(CI(cb)))
+#define set_opt(t, v, cb) (config_save_item_##t(cfg_key(cb),v) && config_item_modified((cb)))
+#define set_optN(t, v, cb) (config_save_item_n_##t(cfg_key(cb),v) && config_item_modified((cb)))
 
 #define has_changed() SET_BIT(*changed_mask, so_key)
 

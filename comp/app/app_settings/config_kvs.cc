@@ -8,6 +8,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "fernotron/fer_main.h"
 #include "app_settings/config.h"
+#include "app_settings/app_settings.hh"
 #include "config_kvs.h"
 #include <app_settings/config.h>
 #include "app_settings/config_defaults.h"
@@ -22,32 +23,14 @@
 
 #define CFG_KEY "global.C"
 #ifdef CONFIG_DICT
-extern const char * const config_keys[];
-const char * const config_keys[] = {
-  "C_RECEIVER", "C_TRANSM", "C_CUID", "C_GMU", "C_BAUD", "C_GPIO",
-  "C_CFG_PASSWD", "C_LONGITUDE", "C_LATITUDE",
-#ifndef USE_POSIX_TIME
-"C_TIZO",
-#else
-  "C_TZ",
-#endif
-#ifdef MDR_TIME
-  "C_DST",
-#endif
-  "C_AST_COR",
-#ifdef USE_NETWORK
-  "C_NW_CONN",
-#endif
-  "C_RFOUTP", "C_RFINP", "C_SETBTNP",
-};
 
-bool config_item_modified(enum configItem item) {
+bool config_item_modified(enum configAppItem item) {
   kvshT h;
   bool ferCfg_isModified = false;
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
     switch ((int)item) {
     case CB_CUID:
-      kvsR(u32, item, C.fer_centralUnitID);
+    case CB_USED_MEMBERS:
       ferCfg_isModified = true;
       break;
     case CB_BAUD:
@@ -58,10 +41,6 @@ bool config_item_modified(enum configItem item) {
       kvsR(u32, item, C.geo_dST);
       break;
 #endif
-    case CB_USED_MEMBERS:
-      ferCfg_isModified = true;
-      kvsR(u32, item, C.fer_usedMembers);
-      break;
     case CB_VERBOSE:
       config_setup_txtio();
       break;
@@ -72,7 +51,7 @@ bool config_item_modified(enum configItem item) {
     kvs_close(h);
   }
   if (ferCfg_isModified)
-     fer_main_setup({C.fer_centralUnitID,  C.fer_usedMembers}, true);
+     fer_main_setup({ config_read_item(CB_CUID, MY_FER_CENTRAL_UNIT_ID), config_read_item(CB_USED_MEMBERS, MY_FER_GM_USE)}, true);
 
   return true;
 }

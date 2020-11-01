@@ -5,6 +5,7 @@
 
 #include "app_config/proj_app_cfg.h"
 #include "app_settings/config.h"
+#include "app_settings/app_settings.hh"
 #include <config_kvs/config.h>
 
 #include "utils_misc/int_types.h"
@@ -104,21 +105,21 @@ TEST_CASE("test config save_restore", "[config]")
 #endif
 
 
-void test_config_keys()
+constexpr AppSettings appSettings;
+
+void test_config_keys2()
 {
+  TEST_ASSERT_EQUAL_STRING("C_TZ", app_settings.get_kvsKey(CB_TZ));
+  TEST_ASSERT_EQUAL_STRING("C_VERBOSE", app_settings.get_kvsKey(CB_VERBOSE));
+  TEST_ASSERT_EQUAL(CBT_u32, app_settings.get_kvsType(CB_CUID));
 
+  u32 cu = config_read_item(CB_CUID, 0x80abcd);
 
-
-  TEST_ASSERT_EQUAL_STRING("C_TZ", config_get_kvs_key(CB_TZ));
-  TEST_ASSERT_EQUAL_STRING("C_RFOUTP", config_get_kvs_key(CB_RFOUT_GPIO));
-  TEST_ASSERT_EQUAL_STRING("C_CUID", config_get_kvs_key(CB_CUID));
-  TEST_ASSERT_EQUAL_STRING("C_BAUD", config_get_kvs_key(CB_BAUD));
-#ifdef USE_MQTT
-  TEST_ASSERT_EQUAL_STRING("C_MQTT_RTOPIC", config_get_kvs_key(CB_MQTT_ROOT_TOPIC));
-#endif
 }
+
 
 TEST_CASE("test config keys", "[config]")
 {
-  test_config_keys();
+  test_config_keys2();
+
 }

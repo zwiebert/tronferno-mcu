@@ -8,6 +8,7 @@
 #include "uout/status_json.hh"
 #include "app_config/proj_app_cfg.h"
 #include "fernotron/auto/fau_tminutes.h"
+#include "fernotron/fer_main.h"
 #include "app_misc/rtc.h"
 #include "utils_misc/bcd.h"
 #include "cli_imp.h"
@@ -50,7 +51,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   bool f_disableWeekly = false, f_disableDaily = false, f_disableAstro = false, f_disableManu = false;
   bool f_enableManu = false;
   u8 parm_g = 0, parm_m = 0;
-  u32 addr = cfg_getCuId();
+  u32 addr = fer_config.cu;
   bool has_parm_Random = false, has_parm_SunAuto = false;
   i8 flag_rtc_only = FLAG_NONE;
   time_t timer = time(NULL);

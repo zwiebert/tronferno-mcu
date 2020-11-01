@@ -142,7 +142,6 @@ TEST_CASE("dynamic_positions", "[fernotron/pos]") {
 
 
 #ifdef TEST_HOST
-u32 cfg_getCuId() { return 0x801234; }
 
 void setUp() {
   fer_main_setup({0x801234, ~0U});
