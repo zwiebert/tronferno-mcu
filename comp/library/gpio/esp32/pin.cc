@@ -36,8 +36,8 @@ static struct cfg_gpio *gpio_cfg;
 #define RESERVED_GPIO_SPI (B64(6)|B64(7)|B64(8)|B64(9)|B64(10)|B64(11))
 
 #define gpioUsable  \
-  (0x00000000ffffffff & ~(B64(0)|B64(1)|B64(2)|B64(12)|B64(20)|B64(24)|B64(28)|B64(29)|B64(30)|B64(31)|RESERVED_GPIO_SPI|RESERVED_GPIO_APP)) \
-  & (0x00000000ffffffff | (B64(GPIO_NUM_32-32)|B64(GPIO_NUM_33-32)))
+  ((0x00000000ffffffff & ~(B64(0)|B64(1)|B64(2)|B64(20)|B64(24)|B64(28)|B64(29)|B64(30)|B64(31)|RESERVED_GPIO_SPI|RESERVED_GPIO_APP)) \
+  | (B64(32)|B64(33)|B64(34)|B64(35)|B64(36)|B64(37)|B64(38)|B64(39)))
 
 uint64_t inputGpioUsable;
 uint64_t outputGpioUsable;
@@ -78,12 +78,17 @@ bool is_gpio_number_usable(int gpio_number, bool cli) {
   return  (gpioUsable & (1ULL<<gpio_number)) != 0;
 }
 
-void IRAM_ATTR mcu_put_txPin(u8 dat) {
-  GPIO_OUTPUT_SET(RFOUT_GPIO, dat);
+void IRAM_ATTR mcu_put_txPin(u8 level) {
+  if (const auto pin = RFOUT_GPIO; pin >= 0) {
+    GPIO_OUTPUT_SET(pin, level);
+  }
 }
 
 u8 IRAM_ATTR mcu_get_rxPin() {
-    return GPIO_INPUT_GET(RFIN_GPIO);
+  if (const auto pin = RFIN_GPIO; pin >= 0) {
+    return GPIO_INPUT_GET(pin);
+  }
+  return 0;
 }
 
 
@@ -178,7 +183,7 @@ const char* pin_set_mode_int(int ngpio_number, mcu_pin_mode mode, mcu_pin_level 
     if (mode > PIN_INPUT || level != PIN_FLOATING)
       return "GPIOs 34..39 can only used for input (w/o pull)";
 
-    pin_set_mode(gpio_number, mode, level);
+    pin_set_gpio_mode(gpio_number, mode, level);
     break;
 
   default:
@@ -256,7 +261,7 @@ void pin_notify_input_change() {
 
 void pin_input_isr_handler(void *args) {
   gpio_num_t gpio_num = static_cast<gpio_num_t>(reinterpret_cast<size_t>(args));
-  SET_BIT(pin_int_mask, gpio_num);
+  pin_int_mask |= B64(gpio_num);
   if (gpio_INPUT_PIN_CHANGED_ISR_cb)
     gpio_INPUT_PIN_CHANGED_ISR_cb();
 

@@ -18,7 +18,7 @@
   let on_destroy = [];
   onMount(() => {
     console.log("fetch_config")
-    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
+    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG | httpFetch.FETCH_CONFIG_GPIO_STRING);
   });
   onDestroy(() => {
     for (const fn of on_destroy) {
@@ -29,12 +29,14 @@
   $: mcuConfigKeys = $McuConfigKeys;
   $: mcuConfig = $McuConfig;
   $: gmu = $Gmu;
+  $: gpios = $McuConfig["gpio"] || "..........................................";
 
   export function reload_config() {
     // eslint-disable-next-line no-unused-vars
     Object.keys($McuConfig).forEach(function (key, idx) {
       let el = document.getElementById("cfg_" + key);
-
+      if (!el)
+        return;
       switch (el.type) {
         case "checkbox":
           el.checked = $McuConfig[key] !== 0;
@@ -77,6 +79,9 @@
     Object.keys(cfg).forEach(function (key, idx) {
       let new_val = 0;
       let el = document.getElementById("cfg_" + key);
+      if (!el) {
+         return;
+      }
       appDebug.dbLog("key: " + key);
 
       switch (el.type) {
@@ -136,6 +141,7 @@
     wiz_gpio_status = "";
     setTimeout(() => {
       httpFetch.http_postRequest("/cmd.json", {config:{gpio:"?"}});
+      httpFetch.http_postRequest("/cmd.json", {config:{gpio:"$"}});
       setTimeout(() => {
         wiz_gpio_status = $McuConfig[gpioKey] ? '<span class="bg-green-500">ok</span>' : '<span class="bg-red-500">error</span>';
       }, 200);
@@ -149,6 +155,7 @@
     McuConfig.remove(gpioKey);
     setTimeout(() => {
       httpFetch.http_postRequest("/cmd.json", {config:{gpio:"?"}});
+      httpFetch.http_postRequest("/cmd.json", {config:{gpio:"$"}});
     }, 500);
   }
   /////////////////////////////////////////////
@@ -229,7 +236,7 @@
               <option value="2">not too early or bright</option>
             </select>
           </td>
-        {:else if name.startsWith('gpio')}
+        {:else if name.startsWith('gpio') }
           <td>
             <McuConfigGpio {name} value={mcuConfig[name]} />
           </td>
@@ -309,8 +316,8 @@
       <input bind:value={wiz_gpio} type="number" min="-1" max="39" class="w-10" />
       <button type="button" on:click={wiz_addGpio}>+</button>
       <button type="button" on:click={wiz_rmGpio} >-</button>
-      {#if 6 <= wiz_gpio && wiz_gpio <= 11}
-        <span class="bg-red-500">invalid</span>
+      {#if gpios.charAt(wiz_gpio) == 'x'}
+        <span class="bg-red-500">in use</span>
       {/if}
       {@html wiz_gpio_status}
       </label>

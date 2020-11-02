@@ -18,6 +18,7 @@ export const FETCH_GIT_TAGS = 1 << b++;
 export const FETCH_SHUTTER_NAME = 1 << b++;
 export const FETCH_ALL_POS = 1 << b++;
 export const FETCH_BOOT_COUNT = 1 << b++;
+export const FETCH_CONFIG_GPIO_STRING = 1 << b++;
 
 const FETCHES_REPLY_BY_WS = 0;
 
@@ -119,6 +120,10 @@ export function http_fetchByMask(mask, synchron) {
 
   if (mask & FETCH_CONFIG) {
     add_kv(tfmcu, "config", "all", "?");
+  }
+
+  if (mask & FETCH_CONFIG_GPIO_STRING) {
+    add_kv(tfmcu, "config", "gpio", "$");
   }
 
   if (mask & FETCH_GMU) {

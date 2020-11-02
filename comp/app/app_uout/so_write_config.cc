@@ -207,8 +207,8 @@ void soCfg_all_gpio(const struct TargetDesc &td) {
   soCfg_GPIO_RFOUT(td);
   soCfg_GPIO_RFIN(td);
   soCfg_GPIO_SETBUTTON(td);
-  soCfg_GPIO_MODES(td); // ???
-  //soCfg_GPIO_MODES_AS_STRING(td);  //XXX ???
+  soCfg_GPIO_MODES(td);
+  soCfg_GPIO_MODES_AS_STRING(td);
 }
 
 void soCfg_all_fer(const struct TargetDesc &td) {
