@@ -10,7 +10,11 @@ export function OptionStore() {
 			return Object.assign(old, obj);
 		}),
 		set: (value) => set(value),
-		reset: () => set({})
+		reset: () => set({}),
+		remove: el => update(old => {
+			delete old[el];
+			return old; 
+		})
 	};
 }
 
@@ -43,7 +47,12 @@ export function PersistentOptionStore(name) {
 			return new_obj;
 		}),
 		set: my_set,
-		reset: () => my_set({})
+		reset: () => my_set({}),
+		remove: el => update(old => {
+			delete old[el];
+			save_storage_obj(name, old);
+			return old; 
+		})
 	};
 
 	return result;

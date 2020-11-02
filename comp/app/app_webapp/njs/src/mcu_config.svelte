@@ -121,6 +121,31 @@
 
     document.getElementById("cfg_gm-used").value = val;
   }
+
+
+  ///////////////// wizard ////////////////////
+  $: wiz_gpio = -1;
+
+  function wiz_addGpio() {
+    let cmd = {to:"tfmcu", "config":{}};
+    cmd.config["gpio"+wiz_gpio] = "i";
+    httpFetch.http_postRequest("/cmd.json", cmd);
+
+    setTimeout(() => {
+      httpFetch.http_postRequest("/cmd.json", {config:{gpio:"?"}});
+    }, 500);
+  }
+  function wiz_rmGpio() {
+    let cmd = {to:"tfmcu", "config":{}};
+    const gpioKey = "gpio"+wiz_gpio;
+    cmd.config[gpioKey] = "d";
+    httpFetch.http_postRequest("/cmd.json", cmd);
+    McuConfig.remove(gpioKey);
+    setTimeout(() => {
+      httpFetch.http_postRequest("/cmd.json", {config:{gpio:"?"}});
+    }, 500);
+  }
+  /////////////////////////////////////////////
 </script>
 
 <style type="text/scss">
@@ -274,10 +299,20 @@
   <h4>Configuration-Wizards</h4>
   <ul>
     <li>
+      <label>GPIO add/rm: 
+      <input bind:value={wiz_gpio} type="number" min="-1" max="36" class="w-10" />
+      <button type="button" on:click={wiz_addGpio}>+</button>
+      <button type="button" on:click={wiz_rmGpio} >-</button>
+      </label>
+    </li>
+
+    <li>
       <button id="id_cuasb" type="button" on:click={hClick_ScanCU}>
         {$_('app.wizard_cuas')}
       </button>
       <span id="id_cuasStatus" />
     </li>
+
+
   </ul>
 </section>
