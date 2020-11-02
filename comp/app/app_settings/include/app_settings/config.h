@@ -13,6 +13,11 @@
 #include "gpio/pin.h"
 #include "stdbool.h"
 
+
+
+extern bool app_safe_mode;
+int app_safeMode_increment(bool reset = false);
+
 enum dst {
   dstNone, dstEU, dstUS, dstAlways,
 };

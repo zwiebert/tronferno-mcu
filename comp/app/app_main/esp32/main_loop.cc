@@ -6,6 +6,7 @@
 #include <freertos/projdefs.h>
 #include <freertos/timers.h>
 #include <cstdio>
+#include <app_settings/config.h>
 #include "utils_misc/int_types.h"
 #include "utils_time/run_time.h"
 #include "utils_time/ut_constants.hh"
@@ -112,7 +113,11 @@ void tmr_loopPeriodic100ms_start() {
     if (loop_flags_periodic_100ms)
       lf_setBits(loop_flags_periodic_100ms);
 
-    if (count & (BIT(9) - 1)) { // 51,2 secs
+    if ((count & (BIT(7) - 1)) == 0) { // 12,8 secs
+      app_safeMode_increment(true);
+    }
+
+    if ((count & (BIT(9) - 1)) == 0) { // 51,2 secs
       if (run_time_s() > SECS_PER_DAY) {
         const time_t now = time(0);
         struct tm tms;

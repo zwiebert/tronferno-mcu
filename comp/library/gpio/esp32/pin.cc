@@ -29,11 +29,16 @@
 
 static struct cfg_gpio *gpio_cfg;
 
+#define B64(b) (1ULL << (b))
 
-#define RESERVED_GPIO (1ULL<<RFOUT_GPIO|1ULL<<RFIN_GPIO|1ULL<<BUTTON_GPIO)
 
-#define gpioUsable  (0xffffffff & ~(1ULL<<0|1ULL<<1|1ULL<<2|1ULL<<20|1ULL<<24|1ULL<<28|1ULL<<29|1ULL<<30|1ULL<<31|RESERVED_GPIO)) \
-  & (0xffffffff | (1ULL<<(GPIO_NUM_32-32)|1ULL<<(GPIO_NUM_33-32)))
+#define RESERVED_GPIO_APP (1ULL<<RFOUT_GPIO|1ULL<<RFIN_GPIO|1ULL<<BUTTON_GPIO)
+#define RESERVED_GPIO_SPI (B64(6)|B64(7)|B64(8)|B64(9)|B64(10)|B64(11))
+
+#define gpioUsable  \
+  (0x00000000ffffffff & ~(B64(0)|B64(1)|B64(2)|B64(12)|B64(20)|B64(24)|B64(28)|B64(29)|B64(30)|B64(31)|RESERVED_GPIO_SPI|RESERVED_GPIO_APP)) \
+  & (0x00000000ffffffff | (B64(GPIO_NUM_32-32)|B64(GPIO_NUM_33-32)))
+
 uint64_t inputGpioUsable;
 uint64_t outputGpioUsable;
 static u64 pins_in_use, pins_not_cli;
@@ -60,7 +65,7 @@ void gpio_get_levels(uint64_t gpio_mask, char *buf, int buf_size) {
   buf[buf_len] = '\0';
 
   for (i=0; i < buf_len; ++i) {
-    if (1ULL<<i & gpioUsable) {
+    if (B64(i) & gpioUsable) {
       buf[i] = gpio_get_level(static_cast<gpio_num_t>(i)) ? '1' : '0';
     } else {
       buf[i] = 'x';

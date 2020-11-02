@@ -18,7 +18,6 @@
 
 #define CI(cb) static_cast<configItem>(cb)
 
-
 #include "gpio/pin.h"
 struct cfg_gpio* config_read_gpio(struct cfg_gpio *c) {
   kvshT h;
@@ -34,9 +33,39 @@ struct cfg_gpio* config_read_gpio(struct cfg_gpio *c) {
   return c;
 }
 
+bool app_safe_mode;
+
+int app_safeMode_increment(bool reset) {
+  static bool once;
+  if (reset && once)
+    return 0;
+
+  constexpr const char *SM_CT = "sm_counter";
+  if (kvshT h = kvs_open("misc", kvs_READ_WRITE)) {
+    if (reset) {
+      kvs_set_i8(h, SM_CT, 1);
+      kvs_commit(h);
+      app_safe_mode = false;
+      once = true;
+      return 0;
+    }
+
+    auto smCt = kvs_get_i8(h, SM_CT, 0, 0) + 1;
+    kvs_set_i8(h, SM_CT, smCt);
+    kvs_commit(h);
+    kvs_close(h);
+    return smCt;
+  }
+
+  return -1;
+}
+
 void config_setup_gpio() {
   struct cfg_gpio c = { .out_rf = MY_RFOUT_GPIO, .in_rf = MY_RFIN_GPIO, .in_setButton = MY_SETBUTTON_GPIO };
-  config_read_gpio(&c);
+
+  if (!app_safe_mode)
+    config_read_gpio(&c);
+
   setup_pin(&c);
 }
 
@@ -50,35 +79,26 @@ int8_t config_read_setbutton_gpio() {
   return config_read_item((CB_SETBUTTON_GPIO), MY_SETBUTTON_GPIO);
 }
 
-
 #if 1
 void config_setup_global() {
   kvshT h;
-  C = config {
-    .mcu_serialBaud = MY_MCU_UART_BAUD_RATE,
-    .app_rtcAdjust = 0,
-    .app_recv = recvTick,
-    .app_transm = transmTick,
-    .app_rtc = rtcAvrTime,
-    .app_configPassword = {0},
-    .app_expertPassword = {0},
-};
+  C = config { .mcu_serialBaud = MY_MCU_UART_BAUD_RATE, .app_rtcAdjust = 0, .app_recv = recvTick, .app_transm = transmTick, .app_rtc = rtcAvrTime,
+      .app_configPassword = { 0 }, .app_expertPassword = { 0 }, };
   STRLCPY(C.app_configPassword, MY_APP_CONFIG_PASSWORD, sizeof C.app_configPassword);
   STRLCPY(C.app_expertPassword, MY_APP_EXPERT_PASSWORD, sizeof C.app_expertPassword);
 
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
 
-  //XXX-ignore kvsR(i8, CB_TRANSM, C.app_transm);
+    //XXX-ignore kvsR(i8, CB_TRANSM, C.app_transm);
     kvsR(u32, CB_BAUD, C.mcu_serialBaud);
     kvs_close(h);
   }
 }
 uint32_t config_read_used_members() {
-  return  config_read_item(CB_USED_MEMBERS, MY_FER_GM_USE);
+  return config_read_item(CB_USED_MEMBERS, MY_FER_GM_USE);
 }
 
 #endif
-
 
 #if 1
 #include "fernotron_trx/astro.h"

@@ -125,14 +125,20 @@
 
   ///////////////// wizard ////////////////////
   $: wiz_gpio = -1;
+  $: wiz_gpio_status = "";
 
   function wiz_addGpio() {
     let cmd = {to:"tfmcu", "config":{}};
-    cmd.config["gpio"+wiz_gpio] = "i";
-    httpFetch.http_postRequest("/cmd.json", cmd);
+    const gpioKey = "gpio"+wiz_gpio;
+    cmd.config[gpioKey] = "i";
 
+    httpFetch.http_postRequest("/cmd.json", cmd);
+    wiz_gpio_status = "";
     setTimeout(() => {
       httpFetch.http_postRequest("/cmd.json", {config:{gpio:"?"}});
+      setTimeout(() => {
+        wiz_gpio_status = $McuConfig[gpioKey] ? '<span class="bg-green-500">ok</span>' : '<span class="bg-red-500">error</span>';
+      }, 200);
     }, 500);
   }
   function wiz_rmGpio() {
@@ -300,9 +306,13 @@
   <ul>
     <li>
       <label>GPIO add/rm: 
-      <input bind:value={wiz_gpio} type="number" min="-1" max="36" class="w-10" />
+      <input bind:value={wiz_gpio} type="number" min="-1" max="39" class="w-10" />
       <button type="button" on:click={wiz_addGpio}>+</button>
       <button type="button" on:click={wiz_rmGpio} >-</button>
+      {#if 6 <= wiz_gpio && wiz_gpio <= 11}
+        <span class="bg-red-500">invalid</span>
+      {/if}
+      {@html wiz_gpio_status}
       </label>
     </li>
 

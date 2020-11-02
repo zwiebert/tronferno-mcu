@@ -218,6 +218,11 @@ void mcu_init() {
 #endif
 #endif
 
+   if (auto smCt = app_safeMode_increment(); smCt > 6) {
+     app_safe_mode = true;
+   }
+
+
   config_setup_gpio();
 
 #ifdef USE_AP_FALLBACK
@@ -232,6 +237,7 @@ void mcu_init() {
   if ((h = kvs_open("misc", kvs_READ_WRITE))) {
     boot_counter = kvs_get_i32(h, "boot_ct", 0, 0) + 1;
     kvs_set_i32(h, "boot_ct", boot_counter);
+    kvs_commit(h);
     kvs_close(h);
   }
 }
