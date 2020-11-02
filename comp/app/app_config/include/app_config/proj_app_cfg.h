@@ -64,9 +64,6 @@ typedef int64_t i64;
 #ifdef USE_SEP
 #define ENABLE_SET_ENDPOS 1
 #endif
-#ifdef USE_GPIO_PINS
-#define ACCESS_GPIO
-#endif
 #ifdef USE_MDR_TIME
 #define MDR_TIME
 #endif

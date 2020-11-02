@@ -135,7 +135,7 @@ void mcu_init() {
   fer_au_TIMER_DATA_CHANGE_cb = [] {
       lf_setBit(lf_loopFauTimerDataHasChanged);
     };
-#ifdef ACCESS_GPIO
+#ifdef USE_GPIO_PINS
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
     struct pin_change_cb {static void IRAM_ATTR cb() {
       lf_setBit_ISR(lf_gpio_input_intr, true);}

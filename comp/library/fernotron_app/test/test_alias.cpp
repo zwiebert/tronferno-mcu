@@ -71,7 +71,5 @@ TEST_CASE("pair multiple members", "[fernotron/alias]")
 
 #ifdef TEST_HOST
 typedef int so_msg_t;
-void  so_output_message(so_msg_t mt, void *arg) {}
-void so_output_message(so_msg_t mt, const void *arg) {}
 #endif
 

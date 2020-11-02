@@ -14,6 +14,7 @@
 #include "utils_misc/bcd.h"
 #include "cli_imp.h"
 #include "utils_misc/stof.h"
+#include "utils_misc/cstring_utils.h"
 #ifdef USE_MQTT
 #include "app_mqtt/mqtt.h"
 #endif
@@ -31,17 +32,17 @@
 #include "gpio/pin.h"
 #include <utils_misc/mutex.hh>
 
-
 #include <stdlib.h>
+#include <iterator>
+#include <algorithm>
 
 #define ENABLE_RESTART 1 // allow software reset
 
-const char cli_help_parmConfig[]  =
-    "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
+const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
     "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID\n"
     "rtc=(ISO_TIME|?)   set local time if NTP not working\n"
 #ifndef MCU_ESP32
-    "baud=(N|?)         serial baud rate\n"
+                                   "baud=(N|?)         serial baud rate\n"
 #endif
 #ifdef USE_WLAN
     "wlan-ssid=(SSID|?)\n"
@@ -68,9 +69,9 @@ const char cli_help_parmConfig[]  =
 #endif
     "longitude=(DEG|?)\n"
     "latitude=(DEG|?)\n"
- #ifdef MDR_TIME
-    "time-zone=(N|?)    time zone hour offset\n"
-    "dst=(eu|0|1|?)     daylight saving time\n"
+#ifdef MDR_TIME
+                                   "time-zone=(N|?)    time zone hour offset\n"
+                                   "dst=(eu|0|1|?)     daylight saving time\n"
 #endif
 #ifdef USE_POSIX_TIME
     "tz=(POSIX_TZ|?)    time zone for RTC/NTP\n"
@@ -82,12 +83,12 @@ const char cli_help_parmConfig[]  =
 #if ENABLE_RESTART
     "restart            restart MCU\n"
 #endif
-#ifdef ACCESS_GPIO
-    "gpioN=(d|i|o|O|q|Q|?)(h|l|m) Set gpio as pin for input (i) output (O), open drain output (o) or input/output (q,Q).\n"
-    "                   Add suffix to input to enable pull up (h), pull down (l), pull up/down (m)\n"
-    "                   Add suffix (h|l) to output to set the initial level high or low at restart\n"
-    "                   Disable gpio (d)\n"
-    "                   Example: config gpio19=ol gpio18=ih gpio20=qh gpio21=d;\n"
+#ifdef USE_GPIO_PINS
+                                   "gpioN=(d|i|o|O|q|Q|?)(h|l|m) Set gpio as pin for input (i) output (O), open drain output (o) or input/output (q,Q).\n"
+                                   "                   Add suffix to input to enable pull up (h), pull down (l), pull up/down (m)\n"
+                                   "                   Add suffix (h|l) to output to set the initial level high or low at restart\n"
+                                   "                   Disable gpio (d)\n"
+                                   "                   Example: config gpio19=ol gpio18=ih gpio20=qh gpio21=d;\n"
 #endif
     "rf-tx-pin=N        RF output GPIO pin\n"
     "rf-rx-pin=N        RF input GPIO pin\n"
@@ -97,16 +98,14 @@ const char cli_help_parmConfig[]  =
 
 void (*mcu_restart_cb)();
 
-const char *const *cfg_args[SO_CFG_size] = {
-};
-
+const char *const*cfg_args[SO_CFG_size] = { };
 
 #define isValid_optStr(cfg, new) true
 #define set_optStr(v, cb) config_save_item_s(settings_get_kvsKey(cb), v)
 #define set_optBlob(v, cb) config_save_item_b(settings_get_kvsKey(cb), &v, sizeof v)
 #define set_optStr_ifValid set_optStr
-#define set_opt(t, v, cb) (config_save_item_##t(settings_get_kvsKey(cb),v) && config_item_modified((cb)))
-#define set_optN(t, v, cb) (config_save_item_n_##t(settings_get_kvsKey(cb),v) && config_item_modified((cb)))
+#define set_opt(t, v, cb) (config_save_item_##t(settings_get_kvsKey(cb), v) && config_item_modified((cb)))
+#define set_optN(t, v, cb) (config_save_item_n_##t(settings_get_kvsKey(cb), v) && config_item_modified((cb)))
 
 #define has_changed() SET_BIT(*changed_mask, so_key)
 
@@ -116,290 +115,424 @@ const char *const *cfg_args[SO_CFG_size] = {
 
 bool process_parmKvsConfig(const struct TargetDesc &td, so_msg_t so_key, const char *val, u32 *changed_mask);
 
-
 static so_msg_t so_soMsg_from_otok(otok kt) {
   so_msg_t result = static_cast<so_msg_t>(SO_CFG_begin + 1 + static_cast<otokBaseT>(kt));
-  if (result >= SO_CFG_last)
+  if (result >= SO_CFG_last || result == SO_CFG_GPIO_MODES)
     return SO_NONE;
   return result;
 }
 
-int 
-process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
- // static RecMutex settings_mutex;
- // std::lock_guard<RecMutex> lock(settings_mutex);
+int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
+  // static RecMutex settings_mutex;
+  // std::lock_guard<RecMutex> lock(settings_mutex);
 
   int arg_idx;
   int errors = 0;
-  so_msg_t so_key = SO_NONE;
   u32 changed_mask = 0;
   bool flag_isValid = 0;
 #ifdef USE_LAN
-#define hasChanged_ethernet (changed_mask & (BIT(CB_LAN_PHY)|BIT(CB_LAN_PWR_GPIO)))
+#define hasChanged_ethernet (changed_mask & (BIT(CB_LAN_PHY) | BIT(CB_LAN_PWR_GPIO)))
 #endif
-#define hasChanged_mqttClient (changed_mask & (BIT(CB_MQTT_ENABLE)|BIT(CB_MQTT_PASSWD)|\
-    BIT(CB_MQTT_USER)|BIT(CB_MQTT_URL)|BIT(CB_MQTT_CLIENT_ID)))
-#define hasChanged_httpServer (changed_mask & (BIT(CB_HTTP_ENABLE)|BIT(CB_HTTP_PASSWD)|BIT(CB_HTTP_USER)))
+#define hasChanged_mqttClient (changed_mask & (BIT(CB_MQTT_ENABLE) | BIT(CB_MQTT_PASSWD) | \
+                                               BIT(CB_MQTT_USER) | BIT(CB_MQTT_URL) | BIT(CB_MQTT_CLIENT_ID)))
+#define hasChanged_httpServer (changed_mask & (BIT(CB_HTTP_ENABLE) | BIT(CB_HTTP_PASSWD) | BIT(CB_HTTP_USER)))
 #define hasChanged_txtio (changed_mask & (BIT(CB_VERBOSE)))
 
   bool hasChanged_geo = false, hasChanged_gpio = false;
   {
-  so_object<void> cfgObj(soCfg_begin, soCfg_end, td);
+    so_object<void> cfgObj(soCfg_begin, soCfg_end, td);
 
-  for (arg_idx = 1; arg_idx < len; ++arg_idx) {
-    const char *key = p[arg_idx].key, *val = p[arg_idx].val;
+    for (arg_idx = 1; arg_idx < len; ++arg_idx) {
+      const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
-    otok kt = optMap_findToken(key);
+      if (key == NULL || val == NULL) { // don't allow any default values in config
+        return cli_replyFailure(td);
+      }
 
-    if (key == NULL || val == NULL) {  // don't allow any default values in config
-      return cli_replyFailure(td);
+      otok kt = optMap_findToken(key);
+
+      if (csu_endsWith(val, "?")) {
+
+        switch (kt) {
+
+        case otok::k_all: {
+          if (is_val("?")) {
+            soCfg_all(td);
+          } else if (is_val("net?")) {
+            soCfg_all_net(td);
+          } else if (is_val("gpio?")) {
+            soCfg_all_gpio(td);
+          }
+        }
+          continue;
+
+        case otok::NONE:
+          break;
+
+        case otok::k_rtc:
+          soCfg_RTC(td);
+          continue;
+
+        case otok::k_cuas:
+          soMsg_cuas_state(td, fer_cuas_getState());
+          continue;
+
+        default: {
+          if (auto so_key = so_soMsg_from_otok(kt); so_key != SO_NONE) {
+            if (auto fun = settings_get_soCfgFun(kt)) {
+              fun(td);
+              continue;
+            }
+          }
+          break;
+        }
+        }
+      }
+
+      switch (kt) {
 #if ENABLE_RESTART
-    } else if (is_kt(restart)) {
-      if (mcu_restart_cb)
-        mcu_restart_cb();
+      case otok::k_restart:
+        if (mcu_restart_cb)
+          mcu_restart_cb();
+        break;
 #endif
 
-    } else if (is_kt(all)) {
-      if (is_val("?")) {
-        so_output_message(td, SO_CFG_all, "cj");
+        ////////////////////////////////////////////////////////////
+      case otok::k_verbose: {
+        NODEFAULT();
+        set_opt(i8, val, CB_VERBOSE);
       }
-    } else if (SO_NONE != (so_key = so_soMsg_from_otok(kt))) {
-      if (is_val("?")) {
-        so_output_message(td, so_key, NULL);
-      } else if (process_parmKvsConfig(td, so_key, val, &changed_mask)) {
+        break;
+#ifdef USE_WLAN
+      case otok::k_wlan_ssid: {
+        set_optStr(val, CB_WIFI_SSID);
 
-      } else switch (so_key) {
-       case SO_CFG_RTC: {
-          cli_replyResult(td, val ? rtc_set_by_string(val) : false);
+        if (!flag_isValid)
+          cli_replyFailure(td);
+      }
+        break;
+
+      case otok::k_wlan_password: {
+        set_optStr(val, CB_WIFI_PASSWD);
+
+        if (!flag_isValid)
+          cli_replyFailure(td);
+      }
+        break;
+#endif // USE_WLAN
+#ifdef USE_LAN
+      case otok::k_lan_phy: {
+        NODEFAULT();
+        if (auto it = std::find(std::begin(cfg_args_lanPhy), std::end(cfg_args_lanPhy), val); it != std::end(cfg_args_lanPhy)) {
+          int idx = std::distance(std::begin(cfg_args_lanPhy), it);
+          set_optN(i8, idx, CB_LAN_PHY);
         }
-          break;
+      }
+        break;
+      case otok::k_lan_pwr_gpio: {
+        NODEFAULT();
+        set_opt(i8, val, CB_LAN_PWR_GPIO);
+      }
+        break;
+#endif // USE_LAN
 
-        case SO_CFG_CU: {
-          if (is_val("auto")) {
-            fer_cuas_set(cli_msgid, 60);
-            cli_replySuccess(td);
-          } else {
-            u32 cu = strtoul(val, NULL, 16);
+#ifdef USE_NTP
+      case otok::k_ntp_server:
+        set_optStr(val, CB_NTP_SERVER);
+        break;
+#endif
+#ifdef USE_MQTT
+      case otok::k_mqtt_enable:
+        set_optN(i8, (*val == '1'), CB_MQTT_ENABLE);
+        break;
 
-            if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
-              return cli_replyFailure(td);
-            }
-            (void)set_optN(u32, cu, CB_CUID);
+      case otok::k_mqtt_password:
+        set_optStr(val, CB_MQTT_PASSWD);
+        break;
+
+      case otok::k_mqtt_user:
+        set_optStr(val, CB_MQTT_USER);
+        break;
+
+      case otok::k_mqtt_url:
+        set_optStr(val, CB_MQTT_URL);
+        break;
+
+      case otok::k_mqtt_client_id:
+        set_optStr(val, CB_MQTT_CLIENT_ID);
+        break;
+
+      case otok::k_mqtt_root_topic:
+        set_optStr(val, CB_MQTT_ROOT_TOPIC);
+        break;
+#endif //USE_MQTT
+#ifdef USE_HTTP
+      case otok::k_http_enable:
+        set_optN(i8, (*val == '1'), CB_HTTP_ENABLE);
+        break;
+
+      case otok::k_http_password:
+        set_optStr(val, CB_HTTP_PASSWD);
+        break;
+
+      case otok::k_http_user:
+        set_optStr(val, CB_HTTP_USER);
+        break;
+#endif
+        ////////////////////////////////////////////////////////////////
+
+      case otok::k_rtc: {
+        cli_replyResult(td, val ? rtc_set_by_string(val) : false);
+      }
+        break;
+
+      case otok::k_cu: {
+        if (is_val("auto")) {
+          fer_cuas_set(cli_msgid, 60);
+          cli_replySuccess(td);
+        } else {
+          u32 cu = strtoul(val, NULL, 16);
+
+          if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
+            return cli_replyFailure(td);
           }
+          (void) set_optN(u32, cu, CB_CUID);
+        }
+      }
+        break;
 
-        }
-          break;
-        case SO_CFG_BAUD: {
-          (void)set_opt(u32, val, CB_BAUD);
-        }
-          break;
+      case otok::k_baud:
+        (void) set_opt(u32, val, CB_BAUD);
+        break;
 
 #ifdef USE_NETWORK
-        case SO_CFG_NETWORK: {
-          int i;
-          NODEFAULT();
-          bool success = false;
-          for (i=0; i < nwLEN; ++i) {
+      case otok::k_network: {
+        int i;
+        NODEFAULT();
+        bool success = false;
+        for (i = 0; i < nwLEN; ++i) {
 #ifndef USE_LAN
-            if (i == nwLan)  {
-              continue;
-            }
+          if (i == nwLan)
+          {
+            continue;
+          }
 #endif
 #ifndef USE_WLAN
-            if (i == nwWlanSta || i == nwWlanAp)  {
-              continue;
-            }
-#endif
-            if (is_val(cfg_args_network[i])) {
-              (void)(set_optN(i8, i, CB_NETWORK_CONNECTION));
-              success = true;
-              break;
-            }
-          }
-          if (!success)
-            cli_replyFailure(td);
-        }
-        break;
-#endif
-
-
-        case SO_CFG_LONGITUDE: {
-          if (set_opt(f, val, CB_LONGITUDE))
-            hasChanged_geo = true;
-        }
-        break;
-
-        case SO_CFG_LATITUDE: {
-          if (set_opt(f, val, CB_LATITUDE))
-            hasChanged_geo = true;
-        }
-        break;
-
-        case SO_CFG_TIMEZONE: {
-#ifndef USE_POSIX_TIME
-          if (set_opt(f, val, CB_TIZO)) {
-            hasChanged_geo = true;
-            rtc_setup();
+          if (i == nwWlanSta || i == nwWlanAp)
+          {
+            continue;
           }
 #endif
-        }
-        break;
-
-        case SO_CFG_TZ: {
-#ifdef USE_POSIX_TIME
-          if (set_optStr_ifValid(val, CB_TZ)) {
-            rtc_setup();
-          }
-
-          if (!flag_isValid)
-            cli_replyFailure(td);
-#endif
-        }
-        break;
-
-        case SO_CFG_DST: {
-#ifdef MDR_TIME
-          i8 v = 0;
-          if (is_val("eu")) {
-           v= dstEU;
-          } else if (is_val("0")) {
-            v = dstNone;
-          } else if (is_val("1")) {
-            v = dstAlways;
-          } else {
-            cli_warning_optionUnknown(td, key);
-          }
-          rtc_setup();
-          (void)set_optN(i8, v, CB_DST);
-#endif
-        }
-        break;
-
-
-        case SO_CFG_GM_USED: {
-          u32 gmu = strtoul(val, NULL, 16);
-          (void)set_optN(u32, gmu, CB_USED_MEMBERS);
-        }
-        break;
-
-        case SO_CFG_ASTRO_CORRECTION: {
-          NODEFAULT();
-          auto ac = static_cast<astroCorrection>(atoi(val));
-          if (set_optN(i8, ac, CB_ASTRO_CORRECTION))
-            hasChanged_geo = true;
-        }
-
-        break;
-
-        case SO_CFG_GPIO_RFIN: {
-          if (set_opt(i8, val, CB_RFIN_GPIO))
-            hasChanged_gpio = true;
-        }
-          break;
-        case SO_CFG_GPIO_RFOUT: {
-          if (set_opt(i8, val, CB_RFOUT_GPIO))
-            hasChanged_gpio = true;
-        }
-          break;
-        case SO_CFG_GPIO_SETBUTTON: {
-          if (set_opt(i8, val, CB_SETBUTTON_GPIO))
-            hasChanged_gpio = true;
-        }
-          break;
-
-        default:
-        break;
-      }
-
-    } else if (is_kt(cuas)) {
-      if (is_val("?")) {
-        soMsg_cuas_state(td, fer_cuas_getState());
-      }
-
-
-
-
-#ifdef ACCESS_GPIO
-    } else if (is_kt(gpio)) {
-      if (is_val("?")) {
-        soCfg_GPIO_MODES(td);
-      } else if (*val == '$') {
-        soCfg_GPIO_MODES_AS_STRING(td);
-      }
-    } else if (strncmp(key, "gpio", 4) == 0) {
-      int gpio_number = atoi(key + 4);
-
-      if (is_val("?")) {
-        soCfg_GPIO_PIN(td, gpio_number);
-      } else if (!is_gpio_number_usable(gpio_number, true)) {
-        reply_message(td, "gpio:error", "gpio number cannot be used");
-        ++errors;
-      } else {
-        const char *error = "unknown gpio config";
-
-        for (int i = 0; pin_mode_args[i]; ++i) {
-          auto ps = static_cast<mcu_pin_mode>(i);
-          if (pin_mode_args[ps] == *val) {
-            mcu_pin_level pl = val[1] == 'h' ? PIN_HIGH : val[1] == 'l' ? PIN_LOW : val[1] == 'm' ? PIN_HIGH_LOW : PIN_FLOATING;
-            error = pin_set_mode(gpio_number, ps, pl);
-            config_gpio_setPinMode(gpio_number, ps, pl);
-            hasChanged_gpio = true;
+          if (is_val(cfg_args_network[i])) {
+            (void) (set_optN(i8, i, CB_NETWORK_CONNECTION));
+            success = true;
             break;
           }
         }
-        if (error) {
-          ++errors;
-          reply_message(td, "gpio:failure", error);
-        }
+        if (!success)
+          cli_replyFailure(td);
       }
+        break;
 #endif
 
-    } else if (is_kt(set_pw)) {
-      if (set_optStr_ifValid(val, CB_CFG_PASSWD)){}
+      case otok::k_longitude: {
+        if (set_opt(f, val, CB_LONGITUDE))
+          hasChanged_geo = true;
+      }
+        break;
 
-      if (!flag_isValid)
-        cli_replyFailure(td);
+      case otok::k_latitude: {
+        if (set_opt(f, val, CB_LATITUDE))
+          hasChanged_geo = true;
+      }
+        break;
 
-    } else if (is_kt(receiver)) {
-      cli_replyResult(td, config_receiver(val));
+      case otok::k_timezone: {
+#ifndef USE_POSIX_TIME
+        if (set_opt(f, val, CB_TIZO))
+        {
+          hasChanged_geo = true;
+          rtc_setup();
+        }
+#endif
+      }
+        break;
 
-    } else if (is_kt(transmitter)) {
-      cli_replyResult(td, config_transmitter(val));
+      case otok::k_tz: {
+#ifdef USE_POSIX_TIME
+        if (set_optStr_ifValid(val, CB_TZ)) {
+          rtc_setup();
+        }
 
-    } else {
-      ++errors;
-      cli_warning_optionUnknown(td, key);
+        if (!flag_isValid)
+          cli_replyFailure(td);
+#endif
+      }
+        break;
+
+      case otok::k_dst: {
+#ifdef MDR_TIME
+        i8 v = 0;
+        if (is_val("eu"))
+        {
+          v = dstEU;
+        }
+        else if (is_val("0"))
+        {
+          v = dstNone;
+        }
+        else if (is_val("1"))
+        {
+          v = dstAlways;
+        }
+        else
+        {
+          cli_warning_optionUnknown(td, key);
+        }
+        rtc_setup();
+        (void)set_optN(i8, v, CB_DST);
+#endif
+      }
+        break;
+
+      case otok::k_gm_used: {
+        u32 gmu = strtoul(val, NULL, 16);
+        (void) set_optN(u32, gmu, CB_USED_MEMBERS);
+      }
+        break;
+
+      case otok::k_astro_correction: {
+        NODEFAULT();
+        auto ac = static_cast<astroCorrection>(atoi(val));
+        if (set_optN(i8, ac, CB_ASTRO_CORRECTION))
+          hasChanged_geo = true;
+      }
+
+        break;
+
+      case otok::k_rf_rx_pin: {
+        if (set_opt(i8, val, CB_RFIN_GPIO))
+          hasChanged_gpio = true;
+      }
+        break;
+      case otok::k_rf_tx_pin: {
+        if (set_opt(i8, val, CB_RFOUT_GPIO))
+          hasChanged_gpio = true;
+      }
+        break;
+      case otok::k_set_button_pin: {
+        if (set_opt(i8, val, CB_SETBUTTON_GPIO))
+          hasChanged_gpio = true;
+      }
+        break;
+
+      case otok::k_set_pw: {
+        if (set_optStr_ifValid(val, CB_CFG_PASSWD)) {
+        }
+
+        if (!flag_isValid)
+          cli_replyFailure(td);
+      }
+        break;
+
+      case otok::k_receiver:
+        cli_replyResult(td, config_receiver(val));
+        break;
+
+      case otok::k_transmitter:
+        cli_replyResult(td, config_transmitter(val));
+        break;
+
+#ifdef USE_GPIO_PINS
+      case otok::k_gpio:
+      {
+        if (is_val("?"))
+        {
+          soCfg_GPIO_MODES(td);
+        }
+        else if (*val == '$')
+        {
+          soCfg_GPIO_MODES_AS_STRING(td);
+        }
+      }
+      break;
+#endif
+
+      case otok::NONE:
+#ifdef USE_GPIO_PINS
+        if (strncmp(key, "gpio", 4) == 0)
+        {
+          int gpio_number = atoi(key + 4);
+
+          if (is_val("?"))
+          {
+            soCfg_GPIO_PIN(td, gpio_number);
+          }
+          else if (!is_gpio_number_usable(gpio_number, true))
+          {
+            reply_message(td, "gpio:error", "gpio number cannot be used");
+            ++errors;
+          }
+          else
+          {
+            const char *error = "unknown gpio config";
+
+            for (int i = 0; pin_mode_args[i]; ++i)
+            {
+              auto ps = static_cast<mcu_pin_mode>(i);
+              if (pin_mode_args[ps] == *val)
+              {
+                mcu_pin_level pl = val[1] == 'h' ? PIN_HIGH : val[1] == 'l' ? PIN_LOW : val[1] == 'm' ? PIN_HIGH_LOW : PIN_FLOATING;
+                error = pin_set_mode(gpio_number, ps, pl);
+                config_gpio_setPinMode(gpio_number, ps, pl);
+                hasChanged_gpio = true;
+                break;
+              }
+            }
+            if (error)
+            {
+              ++errors;
+              reply_message(td, "gpio:failure", error);
+            }
+          }
+          break;
+        }
+#endif
+
+      default:
+        ++errors;
+        cli_warning_optionUnknown(td, key);
+        break;
+      }
+    }
+
+    if (hasChanged_gpio) {
+      config_setup_gpio();
+    }
+
+    if (hasChanged_geo) {
+      config_setup_astro();
+    }
+#ifdef USE_LAN
+    if (hasChanged_ethernet) {
+      config_setup_ethernet();
+    }
+#endif
+#ifdef USE_MQTT
+    if (hasChanged_mqttClient) {
+      config_setup_mqttAppClient();
+    }
+#endif
+#ifdef USE_HTTP
+    if (hasChanged_httpServer) {
+      config_setup_httpServer();
+    }
+#endif
+    if (hasChanged_txtio) {
+      config_setup_txtio();
     }
   }
 
-
-  if (hasChanged_gpio) {
-    config_setup_gpio();
-  }
-
-  if (hasChanged_geo) {
-    config_setup_astro();
-  }
-#ifdef USE_LAN
-  if (hasChanged_ethernet) {
-    config_setup_ethernet();
-  }
-#endif
-#ifdef USE_MQTT
-  if (hasChanged_mqttClient) {
-    config_setup_mqttAppClient();
-  }
-#endif
-#ifdef USE_HTTP
-  if (hasChanged_httpServer) {
-    config_setup_httpServer();
-  }
-#endif
-  if (hasChanged_txtio) {
-    config_setup_txtio();
-  }
-
-  }
-  cli_replyResult(td, errors==0);
+  cli_replyResult(td, errors == 0);
   return 0;
 }

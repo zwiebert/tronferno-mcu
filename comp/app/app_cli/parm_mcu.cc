@@ -201,7 +201,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 #endif
 
     default:
-#ifdef ACCESS_GPIO
+#ifdef USE_GPIO_PINS
     if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
 
@@ -257,7 +257,6 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       break;
     } // switch
   } // for
-  //so_output_message(error_count ? SO_STATUS_ERROR : SO_STATUS_OK, 0);
 
   return 0;
 }

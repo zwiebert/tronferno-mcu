@@ -9,7 +9,7 @@
 
 typedef const char *const_cstringT;
 
-#ifdef ACCESS_GPIO
+#ifdef USE_GPIO_PINS
 constexpr const_cstringT pin_mode_args = "diqQoO";
 constexpr const_cstringT pin_level_args = "lh";
 constexpr const_cstringT pin_state_args = "?01t";

@@ -26,7 +26,7 @@ struct cfg_gpio* config_read_gpio(struct cfg_gpio *c) {
     kvsR(i8, CB_RFOUT_GPIO, c->out_rf);
     kvsR(i8, CB_RFIN_GPIO, c->in_rf);
     kvsR(i8, CB_SETBUTTON_GPIO, c->in_setButton);
-#ifdef ACCESS_GPIO
+#ifdef USE_GPIO_PINS
     kvsRb(CB_GPIO, c->gpio);
 #endif
     kvs_close(h);

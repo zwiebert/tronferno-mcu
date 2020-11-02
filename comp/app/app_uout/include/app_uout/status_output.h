@@ -1,8 +1,6 @@
-/*
- * status_output.h
+/**
+ * \file app_uout/status_output.h
  *
- *  Created on: 13.03.2019
- *      Author: bertw
  */
 
 #pragma once
@@ -16,15 +14,6 @@
 
 
 #define SO_CFG_size (SO_CFG_end - SO_CFG_begin - 1)
-
-
-
-void so_broadcast_message(so_msg_t mt, void *arg);
-void so_output_message(const struct TargetDesc &td, so_msg_t mt, const void *arg);
-void so_output_message_tgt(so_msg_t mt, void *arg, so_target_bits tgt);
-
-so_msg_t so_parse_config_key(const char *k);
-
 
 #ifdef __cplusplus
 

@@ -104,7 +104,7 @@ void soCfg_GPIO_SETBUTTON(const struct TargetDesc &td) {
 }
 
 void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
-#ifdef ACCESS_GPIO
+#ifdef USE_GPIO_PINS
   {
     char buf[64];
     char key[10] = "gpio";
@@ -120,7 +120,7 @@ void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
 }
 
 void soCfg_GPIO_MODES(const struct TargetDesc &td) {
-#ifdef ACCESS_GPIO
+#ifdef USE_GPIO_PINS
   {
     char buf[64];
     int gpio_number;
@@ -145,7 +145,7 @@ void soCfg_GPIO_MODES(const struct TargetDesc &td) {
 }
 
 void soCfg_GPIO_MODES_AS_STRING(const struct TargetDesc &td) {
-#ifdef ACCESS_GPIO
+#ifdef USE_GPIO_PINS
   {
     int gpio_number;
     char val[CONFIG_GPIO_SIZE + 1];
@@ -175,87 +175,68 @@ void soCfg_end(const struct TargetDesc &td) {
   td.so().x_close();
 }
 
-void so_output_message(const struct TargetDesc &td, so_msg_t mt, const void *arg) {
-
-  if (so_output_message2(td, mt, arg))
-    return;
-
-  switch (mt) {
-
-  /////////////////////////////////////////////////////////////////////////////////
-  case SO_CFG_all: {
-    for (int i = SO_CFG_begin + 1; i < SO_CFG_end; ++i) {
-      so_output_message(td, static_cast<so_msg_t>(i), NULL);
-    }
-  }
-    break;
-  case SO_CFG_begin:
-    soCfg_begin(td);
-    break;
-  case SO_CFG_CU:
-    soCfg_CU(td);
-    break;
-  case SO_CFG_BAUD:
-    soCfg_BAUD(td);
-    break;
-  case SO_CFG_RTC:
-    soCfg_RTC(td);
-    break;
-  case SO_CFG_NETWORK:
-    soCfg_NETWORK(td);
-    break;
-  case SO_CFG_TZ:
-    soCfg_TZ(td);
-    break;
-  case SO_CFG_LONGITUDE:
-    soCfg_LONGITUDE(td);
-    break;
-  case SO_CFG_LATITUDE:
-    soCfg_LATITUDE(td);
-    break;
-  case SO_CFG_TIMEZONE:
-    soCfg_TIMEZONE(td);
-    break;
-  case SO_CFG_DST:
-    soCfg_DST(td);
-    break;
-  case SO_CFG_GM_USED:
-    soCfg_GM_USED(td);
-    break;
-  case SO_CFG_GPIO_RFOUT:
-    soCfg_GPIO_RFOUT(td);
-    break;
-  case SO_CFG_GPIO_RFIN:
-    soCfg_GPIO_RFIN(td);
-    break;
-  case SO_CFG_GPIO_SETBUTTON:
-    soCfg_GPIO_SETBUTTON(td);
-    break;
-  case SO_CFG_GPIO_PIN:
-    soCfg_GPIO_PIN(td, *(int*) arg);
-    break;
-  case SO_CFG_GPIO_MODES:
-    soCfg_GPIO_MODES(td);
-    break;
-  case SO_CFG_GPIO_MODES_AS_STRING:
-    soCfg_GPIO_MODES_AS_STRING(td);
-    break;
-  case SO_CFG_ASTRO_CORRECTION:
-    soCfg_ASTRO_CORRECTION(td);
-    break;
-  case SO_CFG_end:
-    soCfg_end(td);
-    break;
-
-  default:
-#ifndef DISTRIBUTION
-    char buf[64];
-    if (int n = snprintf(buf, sizeof buf, "internal_error:so_output_message() unhandled message: %d;\n", mt); n > 0 && n < sizeof buf) {
-      td.write(buf, n);
-    }
+void soCfg_all_net(const struct TargetDesc &td) {
+  soCfg_NETWORK(td);
+#ifdef USE_WLAN
+  soCfg_WLAN_SSID(td);
+  soCfg_WLAN_PASSWORD(td);
 #endif
-    break;
-  }
+#ifdef USE_NTP
+  soCfg_NTP_SERVER(td);
+#endif
+#ifdef USE_LAN
+  soCfg_LAN_PHY(td);
+  soCfg_LAN_PWR_GPIO(td);
+#endif
+#ifdef USE_MQTT
+  soCfg_MQTT_ENABLE(td);
+  soCfg_MQTT_URL(td);
+  soCfg_MQTT_USER(td);
+  soCfg_MQTT_PASSWORD(td);
+  soCfg_MQTT_CLIENT_ID(td);
+  soCfg_MQTT_ROOT_TOPIC(td);
+#endif
+#ifdef USE_HTTP
+  soCfg_HTTP_ENABLE(td);
+  soCfg_HTTP_USER(td);
+  soCfg_HTTP_PASSWORD(td);
+#endif
 }
-///////////////////////////////////////////////////////////////
 
+void soCfg_all_gpio(const struct TargetDesc &td) {
+  soCfg_GPIO_RFOUT(td);
+  soCfg_GPIO_RFIN(td);
+  soCfg_GPIO_SETBUTTON(td);
+  soCfg_GPIO_MODES(td); // ???
+  //soCfg_GPIO_MODES_AS_STRING(td);  //XXX ???
+}
+
+void soCfg_all_fer(const struct TargetDesc &td) {
+  soCfg_CU(td);
+  soCfg_GM_USED(td);
+  soCfg_LONGITUDE(td);
+  soCfg_LATITUDE(td);
+  soCfg_ASTRO_CORRECTION(td);
+}
+
+void soCfg_all_time(const struct TargetDesc &td) {
+  soCfg_RTC(td);
+#ifdef USE_POSIX_TIME
+  soCfg_TZ(td);
+#else
+  soCfg_TIMEZONE(td);
+  soCfg_DST(td);
+#endif
+}
+void soCfg_all(const struct TargetDesc &td) {
+
+  soCfg_BAUD(td);
+  soCfg_VERBOSE(td);
+
+  soCfg_all_fer(td);
+  soCfg_all_time(td);
+  soCfg_all_net(td);
+
+  soCfg_all_gpio(td);
+
+}

@@ -27,7 +27,7 @@ const struct cfg_gpio *gpio_cfg;
 #define BUTTON_GPIO gpio_cfg->in_setButton
 
 
-#ifdef ACCESS_GPIO
+#ifdef USE_GPIO_PINS
 enum mcu_pin_mode pin_getPinMode(unsigned gpio_number) {
   if (gpio_number >= sizeof gpio_cfg->gpio)
     return -1;
@@ -253,7 +253,7 @@ setup_pin(const struct cfg_gpio *c) {
   pin_set_mode_int(BUTTON_GPIO, PIN_INPUT, PIN_HIGH);
   pins_not_cli = pins_in_use;
 
-#ifdef ACCESS_GPIO
+#ifdef USE_GPIO_PINS
   int i;
   for (i = 0; i < CONFIG_GPIO_SIZE; ++i) {
       if (gpioCfg_getPinMode(gpio_cfg, i) == PIN_DEFAULT)
