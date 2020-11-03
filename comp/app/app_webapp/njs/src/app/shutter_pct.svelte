@@ -5,7 +5,9 @@
   import { onMount, onDestroy } from "svelte";
 
   let on_destroy = [];
-  onMount(() => {});
+  onMount(() => {
+    httpFetch.http_fetchByMask(httpFetch.FETCH_ALL_POS); // XXX: Need only one position to fetch
+  });
   onDestroy(() => {
     for (const fn of on_destroy) {
       fn();
