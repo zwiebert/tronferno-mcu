@@ -6,21 +6,21 @@
 </script>
 
 <select class="config-input" id="cfg_{name}" {value}>
-  <option value="i">Input (Pull.FLoating)</option>
+  <option value="i">In, FloatingGate</option>
   {#if gpio_number < 34}
-    <option value="ih">Input (Pull.Up)</option>
-    <option value="il">Input (Pull.Down)</option>
-    <option value="O">Output</option>
-    <option value="Ol">Output (Level.Low)</option>
-    <option value="Oh">Output (Level.High)</option>
-    <option value="o">Output (OpenDrain)</option>
-    <option value="ol">Output (OpenDrain + Level.Low)</option>
-    <option value="oh">Output (OpenDrain + Level.High)</option>
-    <option value="Q">Input/Output</option>
-    <option value="Ql">Input/Output (Level.Low)</option>
-    <option value="Qh">Input/Output (Level.High)</option>
-    <option value="q">Input/Output (OpenDrain)</option>
-    <option value="ql">Input/Output (OpenDrain + Level.Low)</option>
-    <option value="qh">Input/Output (OpenDrain + Level.High)</option>
+    <option value="ih">In, PullUp)</option>
+    <option value="il">In, PullDown</option>
+    <option value="O">Out</option>
+    <option value="Ol">Out, InitLevelLow</option>
+    <option value="Oh">Out, InitLevelHigh</option>
+    <option value="o">Out, OpenDrain</option>
+    <option value="ol">Out, OD, Low</option>
+    <option value="oh">Out, OD, High</option>
+    <option value="Q">In, Out</option>
+    <option value="Ql">In, Out, Low</option>
+    <option value="Qh">In, Out, High</option>
+    <option value="q">In, Out, OD</option>
+    <option value="ql">In, Out, OD, Low</option>
+    <option value="qh">In, Out, OD, High</option>
   {/if}
 </select>
