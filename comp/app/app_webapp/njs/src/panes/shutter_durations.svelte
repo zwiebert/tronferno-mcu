@@ -1,6 +1,6 @@
 <script>
   "use strict";
-  import { _ } from "../services/i18n";
+  import { _ } from "services/i18n";
   import ShutterGM from "../shutter_gm.svelte";
   import * as httpFetch from "../fetch.js";
   import ShutterPrefs from "../shutter_prefs.svelte";

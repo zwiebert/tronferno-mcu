@@ -1,6 +1,6 @@
 'use strict';
 
-import { ReloadProgress } from './store/app_state.js';
+import { ReloadProgress } from 'stores/app_state.js';
 
 import * as httpFetch from './fetch.js';
 

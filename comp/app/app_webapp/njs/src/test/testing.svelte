@@ -1,7 +1,7 @@
 <script>
   "use strict";
   import * as httpFetch from "../fetch.js";
-  import { G, M } from "../store/curr_shutter.js";
+  import { G, M } from "stores/curr_shutter.js";
   import { onMount, onDestroy } from "svelte";
 
   let on_destroy = [];

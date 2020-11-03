@@ -1,11 +1,11 @@
 <script>
   "use strict";
-  import { _ } from './services/i18n';
+  import { _ } from "services/i18n";
   import * as httpFetch from "./fetch.js";
-  import { G, M0, GM } from "./store/curr_shutter.js";
-  import { Gmu, GmuMaxM } from "./store/mcu_config.js";
-  import { Aliases } from "./store/shutters.js";
-  import { ShowHelp } from "./store/app_state.js";
+  import { G, M0, GM } from "stores/curr_shutter.js";
+  import { Gmu, GmuMaxM } from "stores/mcu_config.js";
+  import { Aliases } from "stores/shutters.js";
+  import { ShowHelp } from "stores/app_state.js";
 
   import { onMount, onDestroy } from "svelte";
 

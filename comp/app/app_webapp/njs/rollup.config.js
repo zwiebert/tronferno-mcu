@@ -6,9 +6,27 @@ import { eslint } from "rollup-plugin-eslint";
 import svelte from 'rollup-plugin-svelte';
 import resolve from '@rollup/plugin-node-resolve';
 import sveltePreprocess from 'svelte-preprocess';
+import alias from '@rollup/plugin-alias';
+
 
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDistro = process.env.DISTRO === "yes";
+
+let wdir = __dirname+"/";
+
+const aliases = alias({
+  resolve: ['.svelte', '.js'], //optional, by default this will just look for .js files or folders
+  entries: [
+    { find: 'components', replacement: wdir+'src/components' },
+    { find: 'services', replacement: wdir+'src/services' },
+    { find: 'stores', replacement: wdir+'src/store' },
+    { find: 'panes', replacement: wdir+'src/panes' },
+
+   // { find: 'metadata', replacement: 'src/metadata' },
+   // { find: 'util', replacement: 'src/util' },
+  ]
+});
+
 
 export default {
   onwarn(warning, rollupWarn) {
@@ -60,6 +78,7 @@ export default {
     }
   },
   plugins: [
+    aliases,
     json(),
     ...isProduction ? [
       strip({
@@ -97,7 +116,7 @@ export default {
     // https://github.com/rollup/plugins/tree/master/packages/commonjs
     resolve({
       browser: true,
-      dedupe: ['svelte']
+      dedupe: ['svelte'],
     })
   ],
 

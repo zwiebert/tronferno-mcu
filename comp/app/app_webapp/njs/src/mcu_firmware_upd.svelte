@@ -1,5 +1,5 @@
 <script>
-  import { _ } from "./services/i18n";
+  import { _ } from "services/i18n";
   import * as appDebug from "./app_debug.js";
   import * as httpFetch from "./fetch.js";
   import * as misc from "./misc.js";
@@ -8,10 +8,10 @@
     McuFirmwareUpdState,
     McuFirmwareUpdChip,
     McuGitTagNames,
-  } from "./store/mcu_firmware";
+  } from "stores/mcu_firmware";
 
   "use strict";
-  import { ReloadProgress } from "./store/app_state.js";
+  import { ReloadProgress } from "stores/app_state.js";
 
   export let fwbtns = [];
   export let McuFwGitTags;

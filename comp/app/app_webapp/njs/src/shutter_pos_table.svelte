@@ -1,6 +1,6 @@
 <script>
   import * as httpFetch from "./fetch.js";
-  import { Gmu } from "./store/mcu_config.js";
+  import { Gmu } from "stores/mcu_config.js";
   import ShutterPosTableRow from "./shutter_pos_table_row.svelte";
   import { onMount, onDestroy } from "svelte";
 

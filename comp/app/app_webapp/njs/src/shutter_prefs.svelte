@@ -2,8 +2,8 @@
 'use strict';
 import { _ } from './services/i18n';
 import * as httpFetch from './fetch.js';
-import {G,M, GM,PrefMvut,PrefMvdt,PrefMvspdt} from './store/curr_shutter.js';
-import { ShowHelp } from "./store/app_state.js";
+import {G,M, GM,PrefMvut,PrefMvdt,PrefMvspdt} from 'stores/curr_shutter.js';
+import { ShowHelp } from "stores/app_state.js";
 import { onMount, onDestroy } from 'svelte';
 
 

@@ -1,7 +1,7 @@
 "use strict";
 import * as appDebug from "./app_debug.js";
 import * as httpResp from "./http_resp.js";
-import { G, M0 } from "./store/curr_shutter.js";
+import { G, M0 } from "stores/curr_shutter.js";
 import { ws_isOpen } from "./net/conn_ws";
 
 let b = 0;
