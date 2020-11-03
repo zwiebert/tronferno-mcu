@@ -142,7 +142,6 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
   int errors = 0;
   u32 changed_mask = 0;
-  bool flag_isValid = 0;
 
 #define hasChanged_ethernet (changed_mask & CMB_lan)
 #define hasChanged_mqttClient (changed_mask & CBM_mqttClient)

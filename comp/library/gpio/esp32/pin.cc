@@ -18,6 +18,7 @@
 #include "esp_event.h"
 #include "esp_event.h"
 #include "driver/gpio.h"
+#include <hal/gpio_types.h>
 #include "string.h"
 
 
@@ -29,15 +30,12 @@
 
 static struct cfg_gpio *gpio_cfg;
 
-#define B64(b) (1ULL << (b))
-
 
 #define RESERVED_GPIO_APP (1ULL<<RFOUT_GPIO|1ULL<<RFIN_GPIO|1ULL<<BUTTON_GPIO)
-#define RESERVED_GPIO_SPI (B64(6)|B64(7)|B64(8)|B64(9)|B64(10)|B64(11))
+#define RESERVED_GPIO_SPI (BIT64(6)|BIT64(7)|BIT64(8)|BIT64(9)|BIT64(10)|BIT64(11))
 
-#define gpioUsable  \
-  ((0x00000000ffffffff & ~(B64(0)|B64(1)|B64(2)|B64(20)|B64(24)|B64(28)|B64(29)|B64(30)|B64(31)|RESERVED_GPIO_SPI|RESERVED_GPIO_APP)) \
-  | (B64(32)|B64(33)|B64(34)|B64(35)|B64(36)|B64(37)|B64(38)|B64(39)))
+#define gpioUnUsuable (BIT64(0)|BIT64(1)|BIT64(2)|BIT64(20)|BIT64(24)|BIT64(28)|BIT64(29)|BIT64(30)|BIT64(31)|RESERVED_GPIO_SPI|RESERVED_GPIO_APP)
+#define gpioUsable ((BIT64(GPIO_NUM_MAX)-1) & ~gpioUnUsuable)
 
 uint64_t inputGpioUsable;
 uint64_t outputGpioUsable;
@@ -65,7 +63,7 @@ void gpio_get_levels(uint64_t gpio_mask, char *buf, int buf_size) {
   buf[buf_len] = '\0';
 
   for (i=0; i < buf_len; ++i) {
-    if (B64(i) & gpioUsable) {
+    if (BIT64(i) & gpioUsable) {
       buf[i] = gpio_get_level(static_cast<gpio_num_t>(i)) ? '1' : '0';
     } else {
       buf[i] = 'x';
@@ -134,10 +132,10 @@ const char* pin_set_mode_int(int ngpio_number, mcu_pin_mode mode, mcu_pin_level 
 
   if (gpio_number == GPIO_NUM_NC)
     return 0;
-  if (mode != PIN_DEFAULT && GET_BIT(pins_in_use, gpio_number))
+  if (mode != PIN_DEFAULT && GET_BIT64(pins_in_use, gpio_number))
     return "Pin is already in use";
 
-  PUT_BIT(pins_in_use, gpio_number, mode != PIN_DEFAULT);
+  PUT_BIT64(pins_in_use, gpio_number, mode != PIN_DEFAULT);
 
   switch (gpio_number) {
   case GPIO_NUM_2:
@@ -194,7 +192,7 @@ const char* pin_set_mode_int(int ngpio_number, mcu_pin_mode mode, mcu_pin_level 
 
 const char* pin_set_mode(int ngpio_number, mcu_pin_mode mode, mcu_pin_level level) {
   auto gpio_number = static_cast<gpio_num_t>(ngpio_number);
-  if (GET_BIT(pins_not_cli, gpio_number))
+  if (GET_BIT64(pins_not_cli, gpio_number))
     return "this gpio cannot be set from CLI";
   return pin_set_mode_int(gpio_number, mode, level);
 }
@@ -225,7 +223,7 @@ static const char* mcu_access_pin2(gpio_num_t gpio_number, mcu_pin_state *result
 
 const char *mcu_access_pin(int ngpio_number, mcu_pin_state *result, mcu_pin_state state) {
   auto gpio_number = static_cast<gpio_num_t>(ngpio_number);
-  if (state != PIN_READ && GET_BIT(pins_not_cli, gpio_number))
+  if (state != PIN_READ && GET_BIT64(pins_not_cli, gpio_number))
     return "this gpio cannot be set from CLI";
 #ifdef DISTRIBUTION
   if (state != PIN_READ)
@@ -261,7 +259,7 @@ void pin_notify_input_change() {
 
 void pin_input_isr_handler(void *args) {
   gpio_num_t gpio_num = static_cast<gpio_num_t>(reinterpret_cast<size_t>(args));
-  pin_int_mask |= B64(gpio_num);
+  SET_BIT64(pin_int_mask, gpio_num);
   if (gpio_INPUT_PIN_CHANGED_ISR_cb)
     gpio_INPUT_PIN_CHANGED_ISR_cb();
 
