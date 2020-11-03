@@ -1,7 +1,7 @@
 <script>
   "use strict";
   import { GM, Auto } from "stores/curr_shutter.js";
-  import * as httpFetch from "./fetch.js";
+  import * as httpFetch from "app/fetch.js";
 
   $: {
     $GM;

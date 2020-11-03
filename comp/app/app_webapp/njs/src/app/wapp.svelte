@@ -1,7 +1,7 @@
 <script>
   import { _ } from "services/i18n";
-  import * as misc from "./misc.js";
-  import NavTabs from "./nav_tabs.svelte";
+  import * as misc from "app/misc.js";
+  import NavTabs from "app/nav_tabs.svelte";
   import { TabIdx } from "stores/app_state.js";
 
   import PaneShutterControl from "panes/shutter_control.svelte";

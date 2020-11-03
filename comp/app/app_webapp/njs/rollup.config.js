@@ -15,12 +15,14 @@ export const isDistro = process.env.DISTRO === "yes";
 let wdir = __dirname+"/";
 
 const aliases = alias({
-  resolve: ['.svelte', '.js'], //optional, by default this will just look for .js files or folders
+  resolve: ['.svelte', '.js', '.scss'], //optional, by default this will just look for .js files or folders
   entries: [
     { find: 'components', replacement: wdir+'src/components' },
     { find: 'services', replacement: wdir+'src/services' },
     { find: 'stores', replacement: wdir+'src/store' },
     { find: 'panes', replacement: wdir+'src/panes' },
+    { find: 'app', replacement: wdir+'src/app' },
+    { find: 'main', replacement: wdir+'src' },
 
    // { find: 'metadata', replacement: 'src/metadata' },
    // { find: 'util', replacement: 'src/util' },
@@ -94,6 +96,9 @@ export default {
       onwarn: (warning, handler) => {
         // e.g. don't warn on <marquee> elements, cos they're cool
         if (warning.code === 'a11y-no-onchange') return;
+        if (/A11y:/.test(warning.message)) {
+          return;
+        }
 
         // let Rollup handle all other warnings normally
         handler(warning);

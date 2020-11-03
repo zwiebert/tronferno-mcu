@@ -1,6 +1,6 @@
 'use strict';
-import { writable, derived } from 'svelte/store';
-import { PersistentOptionStore, PersistentValStore } from './custom_stores.js';
+import { writable, derived } from "svelte/store";
+import { PersistentOptionStore, PersistentValStore } from "./custom_stores.js";
 
 export const TabIdx = PersistentOptionStore("TabIdx");
 

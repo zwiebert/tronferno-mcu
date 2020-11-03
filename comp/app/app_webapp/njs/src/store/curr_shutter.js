@@ -1,8 +1,8 @@
 'use strict';
-import { derived } from 'svelte/store';
-import { Gmu } from './mcu_config.js';
-import { Autos, Pcts, Prefs, Names } from './shutters.js';
-import { PersistentIntStore } from './custom_stores.js';
+import { derived } from "svelte/store";
+import { Gmu } from "./mcu_config.js";
+import { Autos, Pcts, Prefs, Names } from "./shutters.js";
+import { PersistentIntStore } from "./custom_stores.js";
 
 export const G = PersistentIntStore("group");
 export const M = PersistentIntStore("member");

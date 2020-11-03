@@ -2,8 +2,8 @@
   "use strict";
   import { G, M, M0, GM, Pct, Name } from "stores/curr_shutter.js";
   import { Gmu } from "stores/mcu_config.js";
-  import * as httpFetch from "./fetch.js";
-  import DisplayIcons from "./display_icons.svelte";
+  import * as httpFetch from "app/fetch.js";
+  import DisplayIcons from "app/display_icons.svelte";
 
 
 

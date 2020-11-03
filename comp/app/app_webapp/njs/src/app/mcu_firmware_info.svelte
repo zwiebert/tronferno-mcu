@@ -6,7 +6,7 @@
     McuChipId,
     McuFirmwareVersion,
   } from "stores/mcu_firmware.js";
-  import * as httpFetch from "./fetch.js";
+  import * as httpFetch from "app/fetch.js";
   import { onMount } from "svelte";
 
   onMount(() => {

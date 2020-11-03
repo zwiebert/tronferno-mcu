@@ -1,11 +1,11 @@
 <script>
 'use strict';
-import { _ } from './services/i18n';
-import * as appDebug from './app_debug.js';
-import * as httpFetch from './fetch.js';
-import {Auto,G,M,GM} from 'stores/curr_shutter.js';
-import { onMount,onDestroy } from 'svelte';
-import {Autos} from 'stores/shutters.js';
+import { _ } from "services/i18n";
+import * as appDebug from "app/app_debug.js";
+import * as httpFetch from "app/fetch.js";
+import {Auto,G,M,GM} from "stores/curr_shutter.js";
+import { onMount,onDestroy } from "svelte";
+import {Autos} from "stores/shutters.js";
 
 let on_destroy = [];
 onMount(() => {

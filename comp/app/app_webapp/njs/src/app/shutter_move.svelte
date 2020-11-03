@@ -1,7 +1,7 @@
 <script>
   "use strict";
   import { G, M0, Name } from "stores/curr_shutter.js";
-  import * as httpFetch from "./fetch.js";
+  import * as httpFetch from "app/fetch.js";
   import { onMount, onDestroy } from "svelte";
 
   let on_destroy = [];
@@ -31,7 +31,7 @@
 </script>
 
 <style type="text/scss">
-@import "./styles/app.scss";
+@import "../styles/app.scss";
 
 </style>
 

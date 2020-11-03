@@ -1,8 +1,8 @@
 <script>
-  import McuFirmwareUpd from "../mcu_firmware_upd.svelte";
-  import McuFirmwareInfo from "../mcu_firmware_info.svelte";
-  import McuFwGitTags from "../mcu_firmware_git_tags.svelte";
-  import * as misc from "../misc.js";
+  import McuFirmwareUpd from "app/mcu_firmware_upd.svelte";
+  import McuFirmwareInfo from "app/mcu_firmware_info.svelte";
+  import McuFwGitTags from "app/mcu_firmware_git_tags.svelte";
+  import * as misc from "app/misc.js";
 
   let fwbtns = [
     { name: "latest master firmware", ota_name: "github-master" },

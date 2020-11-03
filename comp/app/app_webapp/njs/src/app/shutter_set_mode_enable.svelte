@@ -4,7 +4,7 @@
   import { _ } from "services/i18n";
   import { G, M0, Name } from "stores/curr_shutter.js";
   import { SetModeSrcAddress, SetModeSrcRadio, SetModeSrcMotorCode, SetModeSrcProgress } from "stores/shutter_set_mode.js";
-  import * as httpFetch from "./fetch.js";
+  import * as httpFetch from "app/fetch.js";
 
   $: name = $Name || "";
 

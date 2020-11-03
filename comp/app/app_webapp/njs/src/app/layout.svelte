@@ -6,7 +6,7 @@
   @tailwind base;
   @tailwind components;
   @tailwind utilities;
-  @import "./styles/app.scss";
+  @import "../styles/app.scss";
 
   button,input,select {
     @apply rounded;

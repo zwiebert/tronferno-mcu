@@ -1,5 +1,5 @@
 "use strict";
-import * as appDebug from "./app_debug.js";
+import * as appDebug from "app/app_debug.js";
 import {
   McuBootCount,
   McuGitTagNames,
@@ -9,7 +9,7 @@ import {
   McuFirmwareUpdProgress,
   McuFirmwareUpdState,
 } from "stores/mcu_firmware.js";
-import * as cuas from "./cuas.js";
+import * as cuas from "app/cuas.js";
 import { McuConfig, Gmu } from "stores/mcu_config.js";
 import { Pcts, Prefs, Aliases, Autos, Names } from "stores/shutters.js";
 import { McuDocs } from "stores/mcu_docs.js";

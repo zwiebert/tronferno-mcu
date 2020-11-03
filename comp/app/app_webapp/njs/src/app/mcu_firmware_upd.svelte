@@ -1,8 +1,8 @@
 <script>
   import { _ } from "services/i18n";
-  import * as appDebug from "./app_debug.js";
-  import * as httpFetch from "./fetch.js";
-  import * as misc from "./misc.js";
+  import * as appDebug from "app/app_debug.js";
+  import * as httpFetch from "app/fetch.js";
+  import * as misc from "app/misc.js";
   import {
     McuFirmwareUpdProgress,
     McuFirmwareUpdState,
@@ -79,7 +79,7 @@
 </script>
 
 <style type="text/scss">
-@import "./styles/app.scss";
+@import "../styles/app.scss";
 table, th, td {
   border-color: $color_border_main_area;
   border-style:solid;

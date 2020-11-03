@@ -1,5 +1,5 @@
 <script>
-  import Pane2411 from "../ui2411.svelte";
+  import Pane2411 from "app/ui2411.svelte";
 </script>
 
 <style>

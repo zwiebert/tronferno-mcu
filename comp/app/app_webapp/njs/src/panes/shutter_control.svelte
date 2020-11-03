@@ -1,10 +1,10 @@
 <script>
   "use strict";
-  import ShutterGM from "../shutter_gm.svelte";
-  import ShutterMove from "../shutter_move.svelte";
-  import ShutterSun from "../shutter_sun.svelte";
-  import ShutterPct from "../shutter_pct.svelte";
-  import * as httpFetch from "../fetch.js";
+  import ShutterGM from "app/shutter_gm.svelte";
+  import ShutterMove from "app/shutter_move.svelte";
+  import ShutterSun from "app/shutter_sun.svelte";
+  import ShutterPct from "app/shutter_pct.svelte";
+  import * as httpFetch from "app/fetch.js";
 </script>
 
 <div class="main-area">

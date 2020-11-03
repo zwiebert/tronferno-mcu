@@ -1,8 +1,8 @@
 'use strict';
 
-import { ReloadProgress } from 'stores/app_state.js';
+import { ReloadProgress } from "stores/app_state.js";
 
-import * as httpFetch from './fetch.js';
+import * as httpFetch from "app/fetch.js";
 
 export const NODE_ENV_DEV = true;
 export const PROD = false;

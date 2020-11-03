@@ -1,7 +1,7 @@
 <script>
   "use strict";
   import { _ } from "services/i18n";
-  import * as httpFetch from "./fetch.js";
+  import * as httpFetch from "app/fetch.js";
   import { G, M0, GM } from "stores/curr_shutter.js";
   import { Gmu, GmuMaxM } from "stores/mcu_config.js";
   import { Aliases } from "stores/shutters.js";

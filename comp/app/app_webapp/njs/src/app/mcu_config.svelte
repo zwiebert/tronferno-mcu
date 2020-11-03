@@ -2,10 +2,10 @@
   "use strict";
   import { _ } from "services/i18n";
   import { McuConfig, McuConfigKeys, Gmu } from "stores/mcu_config.js";
-  import * as appDebug from "./app_debug.js";
-  import * as httpFetch from "./fetch.js";
-  import * as cuas from "./cuas.js";
-  import * as misc from "./misc.js";
+  import * as appDebug from "app/app_debug.js";
+  import * as httpFetch from "app/fetch.js";
+  import * as cuas from "app/cuas.js";
+  import * as misc from "app/misc.js";
   import { onMount, onDestroy } from "svelte";
   import { ReloadProgress } from "stores/app_state.js";
 
@@ -30,7 +30,7 @@
   $: mcuConfig = $McuConfig;
   $: gmu = $Gmu;
   $: gpios = $McuConfig["gpio"] || "..........................................";
-
+  
   export function reload_config() {
     // eslint-disable-next-line no-unused-vars
     Object.keys($McuConfig).forEach(function (key, idx) {
@@ -162,7 +162,7 @@
 </script>
 
 <style type="text/scss">
-  @import "./styles/app.scss";
+  @import "../styles/app.scss";
   .row1 {
     background-color: darken($color_bg_area, 10%);
   }
