@@ -128,7 +128,9 @@ function req_automatic() {
     <tr>
       <td><label>{$_('app.auto.daily')}</label></td>
       <td><input id="tdci" class="cb" type = "checkbox" value=""></td>
-      <td> &#x25b2;<input id="tduti" type="time" value=""> &#x25bc;<input id="tddti" type="time" value=""></td>
+      <td> <label><input id="tduti" type="time" value=""> &#x25b3;</label><br>
+           <label><input id="tddti" type="time" value=""> &#x25bd;</label>
+      </td>
     </tr>
     <tr>
       <td><label>{$_('app.auto.weekly')}</label></td>
