@@ -21,7 +21,7 @@ static void hostTest_mqtt_publish(const char *topic, const char *data) {
 void tst_publish_pinChange() {
   io_mqttApp_publishPinChange(21, 1);
   TEST_ASSERT_EQUAL_STRING("tfmcu/gpi/21/level", Topic);
-  TEST_ASSERT_EQUAL_STRING("H", Data);
+  TEST_ASSERT_EQUAL_STRING("1", Data);
 }
 
 void tst_publish_Pct() {

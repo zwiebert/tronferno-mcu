@@ -70,7 +70,7 @@ void io_mqtt_publish_gmp(const so_arg_gmp_t gmp) {
 
 void io_mqttApp_publishPinChange(int gpio_num, bool level) {
   char topic[64];
-  const char *data = level ? "H" : "L";
+  const char *data = level ? "1" : "0";
   snprintf(topic, 64, "%sgpi/%d/level", TOPIC_ROOT, gpio_num);
   Net_Mqtt::publish(topic, data);
 }

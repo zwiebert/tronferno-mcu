@@ -77,7 +77,7 @@
 
 * tfmcu/+/pct_out - current shutter position in percent (+ stands for shutter ID)
 
-* tfmc/gpi/+/level - change of level (H,L) on input pin (must have been set as input pin in config)
+* tfmc/gpi/+/level - change of level (0,1) on input pin (must have been set as input pin in config)
 
 
 #### Examples
