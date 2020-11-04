@@ -44,13 +44,13 @@
 
 <table id="gmu-table">
   <tr>
-    <td><label class="config-label">Groups</label></td>
+    <td></td>
     {#each { length: 7 } as _, i}
       <td><label>{i + 1}</label></td>
     {/each}
   </tr>
   <tr>
-    <td><label class="{changed ? 'font-bold' : ''}">Members</label></td>
+    <td><label class="{changed ? 'font-bold' : ''}">{name}</label></td>
     {#each gmu as n, i}
       {#if i > 0}
         <td><input bind:value={gmu[i]} id="gmu{i}" style="width:2em;" type="number" min="0" max="7" /></td>
