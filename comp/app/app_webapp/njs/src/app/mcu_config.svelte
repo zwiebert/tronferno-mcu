@@ -1,7 +1,7 @@
 <script>
   "use strict";
   import { _ } from "services/i18n";
-  import { McuConfig, McuConfigKeys, Gmu } from "stores/mcu_config.js";
+  import { McuConfig, McuConfigKeys, Gmu, McuGpiosFree } from "stores/mcu_config.js";
   import * as appDebug from "app/app_debug.js";
   import * as httpFetch from "app/fetch.js";
   import * as cuas from "app/cuas.js";
@@ -10,6 +10,7 @@
   import { ReloadProgress } from "stores/app_state.js";
 
   import McuConfigGpio from "components/mcu_config/gpio.svelte";
+  import McuConfigGpioSelect from "components/mcu_config/gpio_select.svelte";
   import McuConfigNetwork from "components/mcu_config/network.svelte";
   import McuConfigLanPhy from "components/mcu_config/lan_phy.svelte";
   import McuConfigNumber from "components/mcu_config/number.svelte";
@@ -92,6 +93,13 @@
     let cfg_mod = mcuConfig_getCfgMod();
     if (cfg_mod === null) return;
 
+    Object.keys(cfg_mod).forEach(function (key, idx) {
+      if (key.startsWith("gpio") && key !== "gpio") {
+        console.log("remove key: ", key);
+        McuConfig.remove(key);
+      }
+    });
+
     cfg_mod.all = "?";
     let url = "/cmd.json";
     httpFetch.http_postRequest(url, { config: cfg_mod });
@@ -102,10 +110,13 @@
   $: wiz_gpio_status = "";
 
   function wiz_addGpio() {
+    if (wiz_gpio === -1)
+       return;
     let cmd = { to: "tfmcu", config: {} };
     const gpioKey = "gpio" + wiz_gpio;
     cmd.config[gpioKey] = "i";
-
+    wiz_gpio = -1;
+    
     httpFetch.http_postRequest("/cmd.json", cmd);
     wiz_gpio_status = "";
     setTimeout(() => {
@@ -116,17 +127,7 @@
       }, 200);
     }, 500);
   }
-  function wiz_rmGpio() {
-    let cmd = { to: "tfmcu", config: {} };
-    const gpioKey = "gpio" + wiz_gpio;
-    cmd.config[gpioKey] = "d";
-    httpFetch.http_postRequest("/cmd.json", cmd);
-    McuConfig.remove(gpioKey);
-    setTimeout(() => {
-      httpFetch.http_postRequest("/cmd.json", { config: { gpio: "?" } });
-      httpFetch.http_postRequest("/cmd.json", { config: { gpio: "$" } });
-    }, 500);
-  }
+
   /////////////////////////////////////////////
 </script>
 
@@ -143,7 +144,7 @@
 <div class="config" id="config-div">
   <table id="cfg_table_id" class="conf-table top_table">
     {#each mcuConfigKeys as name, i}
-      <tr class="{i % 2 ? 'row1' : 'row2'}">
+      <tr class={i % 2 ? 'row1' : 'row2'}>
         {#if name !== 'gm-used'}
           <td><label class="config-label {mcuConfig[name] != $McuConfig[name] ? 'font-bold' : ''}" for="cfg_{name}">{name}</label></td>
         {/if}
@@ -162,11 +163,11 @@
           </td>
         {:else if name === 'rf-rx-pin' || name === 'set-button-pin'}
           <td>
-            <McuConfigNumber {name} bind:value={mcuConfig[name]} min="-1" max="39" />
+            <McuConfigGpioSelect {name} bind:value={mcuConfig[name]} />
           </td>
         {:else if name === 'rf-tx-pin'}
           <td>
-            <McuConfigNumber {name} bind:value={mcuConfig[name]} min="-1" max="33" />
+            <McuConfigGpioSelect {name} bind:value={mcuConfig[name]} max="36"/>
           </td>
         {:else if name === 'verbose'}
           <td>
@@ -182,7 +183,7 @@
           </td>
         {:else if name === 'lan-pwr-gpio'}
           <td>
-            <McuConfigNumber {name} bind:value={mcuConfig[name]} min="-1" max="36" />
+            <McuConfigGpioSelect {name} bind:value={mcuConfig[name]} max="36"/>
           </td>
         {:else if name === 'astro-correction'}
           <td>
@@ -201,7 +202,7 @@
 </div>
 
 {#if 'gm-used' in mcuConfig}
-  <McuConfigUsedMembers name='gm-used' bind:value={mcuConfig['gm-used']} changed={mcuConfig['gm-used'] !== $McuConfig['gm-used']} />
+  <McuConfigUsedMembers name="gm-used" bind:value={mcuConfig['gm-used']} changed={mcuConfig['gm-used'] !== $McuConfig['gm-used']} />
 {/if}
 <button type="button" on:click={hClick_Reload}>{$_('app.reload')}</button>
 <button type="button" on:click={hClick_Save}>{$_('app.save')}</button>
@@ -218,11 +219,9 @@
   <h4>Configuration-Wizards</h4>
   <ul>
     <li>
-      <label>GPIO add/rm:
-        <input bind:value={wiz_gpio} type="number" min="-1" max="39" class="w-10" />
-        <button type="button" on:click={wiz_addGpio}>+</button>
-        <button type="button" on:click={wiz_rmGpio}>-</button>
-        {#if gpios.charAt(wiz_gpio) == 'x'}<span class="bg-red-500">in use</span>{/if}
+      <label>GPIO add: 
+        <McuConfigGpioSelect name="wizard_gpio" bind:value={wiz_gpio} show_value={false}/>
+        <button type="button" on:click={wiz_addGpio}>Add</button>
         {@html wiz_gpio_status}
       </label>
     </li>

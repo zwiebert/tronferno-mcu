@@ -6,6 +6,7 @@
 </script>
 
 <select class="config-input" id="cfg_{name}" bind:value={value}>
+  <option value="d">Remove GPIO</option>
   <option value="i">In, FloatingGate</option>
   {#if gpio_number < 34}
     <option value="ih">In, PullUp</option>
@@ -22,5 +23,6 @@
     <option value="q">In, Out, OD</option>
     <option value="ql">In, Out, OD, Low</option>
     <option value="qh">In, Out, OD, High</option>
+
   {/if}
 </select>
