@@ -3,7 +3,7 @@
   export let value;
 </script>
 
-<select class="config-input" id="cfg_{name}" {value}>
+<select class="config-input" id="cfg_{name}" bind:value={value}>
   <option value="none">No Network</option>
   <option value="wlan">Existing WLAN</option>
   <option value="ap">WLAN Accesspoint</option>

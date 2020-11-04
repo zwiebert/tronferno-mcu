@@ -5,10 +5,10 @@
   let gpio_number = parseInt(name.substring(4), 10);
 </script>
 
-<select class="config-input" id="cfg_{name}" {value}>
+<select class="config-input" id="cfg_{name}" bind:value={value}>
   <option value="i">In, FloatingGate</option>
   {#if gpio_number < 34}
-    <option value="ih">In, PullUp)</option>
+    <option value="ih">In, PullUp</option>
     <option value="il">In, PullDown</option>
     <option value="O">Out</option>
     <option value="Ol">Out, InitLevelLow</option>

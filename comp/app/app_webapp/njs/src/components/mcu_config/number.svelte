@@ -11,7 +11,7 @@
   type="number"
   id="cfg_{name}"
   {name}
-  {value}
+  bind:value={value}
   {min}
   {max}
   {step} />
