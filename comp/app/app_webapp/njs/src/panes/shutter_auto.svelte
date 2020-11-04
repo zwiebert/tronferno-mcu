@@ -1,8 +1,8 @@
 <script>
   "use strict";
-  import ShutterGM from "../shutter_gm.svelte";
-  import * as httpFetch from "../fetch.js";
-  import ShutterAuto from "../shutter_auto.svelte";
+  import ShutterGM from "app/shutter_gm.svelte";
+  import * as httpFetch from "app/fetch.js";
+  import ShutterAuto from "app/shutter_auto.svelte";
 </script>
 
 <div class="main-area">

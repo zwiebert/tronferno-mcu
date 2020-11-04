@@ -1,11 +1,13 @@
 <script>
   "use strict";
-  import { G, M,  Pct } from "./store/curr_shutter.js";
-  import * as httpFetch from "./fetch.js";
+  import { G, M,  Pct } from "stores/curr_shutter.js";
+  import * as httpFetch from "app/fetch.js";
   import { onMount, onDestroy } from "svelte";
 
   let on_destroy = [];
-  onMount(() => {});
+  onMount(() => {
+    httpFetch.http_fetchByMask(httpFetch.FETCH_ALL_POS); // XXX: Need only one position to fetch
+  });
   onDestroy(() => {
     for (const fn of on_destroy) {
       fn();

@@ -1,5 +1,7 @@
 <script>
-  import Pane2411 from "../ui2411.svelte";
+  import Pane2411 from "app/ui2411.svelte";
+  import { MenuCount } from "stores/ui2411.js";
+  import ShutterAuto from "app/shutter_auto.svelte";
 </script>
 
 <style>
@@ -17,3 +19,12 @@
     <Pane2411 />
   </div>
 </div>
+
+
+{#if $MenuCount === 1}
+<div class="area">
+  <div class="bg-white">
+  <ShutterAuto />
+</div>
+</div>
+{/if}

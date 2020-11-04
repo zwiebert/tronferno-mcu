@@ -1,5 +1,5 @@
 <script>
-  import McuConfig from "../mcu_config.svelte";
+  import McuConfig from "app/mcu_config.svelte";
 </script>
 
 <div class="area">

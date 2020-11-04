@@ -1,9 +1,10 @@
 <script>
   "use strict";
-  import { G, M, M0, GM, Pct, Name } from "./store/curr_shutter.js";
-  import { Gmu } from "./store/mcu_config.js";
-  import * as httpFetch from "./fetch.js";
-  import DisplayIcons from "./display_icons.svelte";
+  import { G, M, M0, GM, Pct, Name } from "stores/curr_shutter.js";
+  import { Gmu } from "stores/mcu_config.js";
+  import { MenuCount, MenuCountMax } from "stores/ui2411.js";
+  import * as httpFetch from "app/fetch.js";
+  import DisplayIcons from "app/display_icons.svelte";
 
 
 
@@ -67,6 +68,19 @@
 
   function hChange_Pos() {
     onPos(document.getElementById("spr").value);
+  }
+
+ 
+
+  function hClick_Menu() {
+    if ($MenuCount === $MenuCountMax)
+     $MenuCount = 0;
+     else
+     $MenuCount += 1;
+  }
+
+  function hClick_OK() {
+    $MenuCount = 0;
   }
 
   function onPos(pct) {
@@ -146,7 +160,8 @@
 <div class="flex flex-row content-between items-center">
     <button
       class="h-24 w-8 m-2 mr-6 ft2411-mbt"
-      type="button">
+      type="button"
+      on:click={hClick_Menu}>
       M
     </button>
 
@@ -160,7 +175,7 @@
     <button
       class="h-24 w-8 m-2 ml-6 ft2411-mbt"
       type="button"
-      >
+      on:click={hClick_OK}>
       OK
     </button>
 

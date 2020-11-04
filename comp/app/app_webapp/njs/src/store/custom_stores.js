@@ -1,5 +1,5 @@
 'use strict';
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
 export function OptionStore() {
 	const { subscribe, set, update } = writable({});

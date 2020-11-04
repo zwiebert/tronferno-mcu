@@ -1,9 +1,9 @@
 <script>
-  import * as httpFetch from "./fetch.js";
-  import { Gmu } from "./store/mcu_config.js";
-  import { Names } from "./store/shutters.js";
-  import { G, M } from "./store/curr_shutter.js";
-  import ShutterPosView from "./shutter_pos_view.svelte";
+  import * as httpFetch from "app/fetch.js";
+  import { Gmu } from "stores/mcu_config.js";
+  import { Names } from "stores/shutters.js";
+  import { G, M } from "stores/curr_shutter.js";
+  import ShutterPosView from "app/shutter_pos_view.svelte";
   import { onMount, onDestroy } from "svelte";
 
   let on_destroy = [];

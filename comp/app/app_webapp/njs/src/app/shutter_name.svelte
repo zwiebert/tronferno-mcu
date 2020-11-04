@@ -1,8 +1,8 @@
 <script>
   "use strict";
-  import { _ } from './services/i18n';
-  import { G, M0, Name } from "./store/curr_shutter.js";
-  import * as httpFetch from "./fetch.js";
+  import { _ } from "services/i18n";
+  import { G, M0, Name } from "stores/curr_shutter.js";
+  import * as httpFetch from "app/fetch.js";
 
   $: name = $Name || "";
 

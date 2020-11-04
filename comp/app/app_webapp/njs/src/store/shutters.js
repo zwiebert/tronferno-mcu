@@ -1,5 +1,5 @@
 //import { writable } from 'svelte/store';
-import { OptionStore, PersistentOptionStore} from './custom_stores.js';
+import { OptionStore, PersistentOptionStore} from "./custom_stores.js";
 
 
 export const Pcts = OptionStore();

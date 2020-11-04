@@ -1,9 +1,9 @@
 'use strict';
 // src/main.js
 
-import App from './main.svelte';
-import * as appState from './app_state.svelte';
-import * as connWs from './net/conn_ws.js';
+import App from "app/main.svelte";
+import * as appState from "app/app_state.svelte";
+import * as connWs from "main/net/conn_ws.js";
 
 export default function () {
   // testing.testing_init();

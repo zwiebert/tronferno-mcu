@@ -1,5 +1,5 @@
 "use strict";
-import * as appDebug from "./app_debug.js";
+import * as appDebug from "app/app_debug.js";
 import {
   McuBootCount,
   McuGitTagNames,
@@ -8,11 +8,11 @@ import {
   McuFirmwareVersion,
   McuFirmwareUpdProgress,
   McuFirmwareUpdState,
-} from "./store/mcu_firmware.js";
-import * as cuas from "./cuas.js";
-import { McuConfig, Gmu } from "./store/mcu_config.js";
-import { Pcts, Prefs, Aliases, Autos, Names } from "./store/shutters.js";
-import { McuDocs } from "./store/mcu_docs.js";
+} from "stores/mcu_firmware.js";
+import * as cuas from "app/cuas.js";
+import { McuConfig, Gmu } from "stores/mcu_config.js";
+import { Pcts, Prefs, Aliases, Autos, Names } from "stores/shutters.js";
+import { McuDocs } from "stores/mcu_docs.js";
 
 function parse_gmu(s) {
   let sa = s ? s.split("").reverse() : [];

@@ -1,9 +1,9 @@
 <script>
   "use strict";
-  import { _ } from "../services/i18n";
-  import { SetModeSrcProgress, SetModeDstAddress, SetModeDstG, SetModeDstM, SetModeDstRadio } from "../store/shutter_set_mode.js";
-  import ShutterSetModeEnable from "../shutter_set_mode_enable.svelte";
-  import * as httpFetch from "../fetch.js";
+  import { _ } from "services/i18n";
+  import { SetModeSrcProgress, SetModeDstAddress, SetModeDstG, SetModeDstM, SetModeDstRadio } from "stores/shutter_set_mode.js";
+  import ShutterSetModeEnable from "app/shutter_set_mode_enable.svelte";
+  import * as httpFetch from "app/fetch.js";
 
   $: SetModeAutoProgress = 0;
 

@@ -1,9 +1,9 @@
 <script>
   "use strict";
-  import { G, M, M0, GM, Name } from "../store/curr_shutter.js";
-  import { Names } from "../store/shutters.js";
-  import { Gmu } from "../store/mcu_config.js";
-  import * as httpFetch from "../fetch.js";
+  import { G, M, M0, GM, Name } from "stores/curr_shutter.js";
+  import { Names } from "stores/shutters.js";
+  import { Gmu } from "stores/mcu_config.js";
+  import * as httpFetch from "app/fetch.js";
 
   export let hideGroups = false;
 

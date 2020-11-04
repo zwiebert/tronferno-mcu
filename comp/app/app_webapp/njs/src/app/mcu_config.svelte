@@ -1,19 +1,19 @@
 <script>
   "use strict";
-  import { _ } from "./services/i18n";
-  import { McuConfig, McuConfigKeys, Gmu } from "./store/mcu_config.js";
-  import * as appDebug from "./app_debug.js";
-  import * as httpFetch from "./fetch.js";
-  import * as cuas from "./cuas.js";
-  import * as misc from "./misc.js";
+  import { _ } from "services/i18n";
+  import { McuConfig, McuConfigKeys, Gmu } from "stores/mcu_config.js";
+  import * as appDebug from "app/app_debug.js";
+  import * as httpFetch from "app/fetch.js";
+  import * as cuas from "app/cuas.js";
+  import * as misc from "app/misc.js";
   import { onMount, onDestroy } from "svelte";
-  import { ReloadProgress } from "./store/app_state.js";
+  import { ReloadProgress } from "stores/app_state.js";
 
-  import McuConfigGpio from "./components/mcu_config/gpio.svelte";
-  import McuConfigNetwork from "./components/mcu_config/network.svelte";
-  import McuConfigLanPhy from "./components/mcu_config/lan_phy.svelte";
-  import McuConfigNumber from "./components/mcu_config/number.svelte";
-  import McuConfigEnable from "./components/mcu_config/enable.svelte";
+  import McuConfigGpio from "components/mcu_config/gpio.svelte";
+  import McuConfigNetwork from "components/mcu_config/network.svelte";
+  import McuConfigLanPhy from "components/mcu_config/lan_phy.svelte";
+  import McuConfigNumber from "components/mcu_config/number.svelte";
+  import McuConfigEnable from "components/mcu_config/enable.svelte";
 
   let on_destroy = [];
   onMount(() => {
@@ -30,7 +30,7 @@
   $: mcuConfig = $McuConfig;
   $: gmu = $Gmu;
   $: gpios = $McuConfig["gpio"] || "..........................................";
-
+  
   export function reload_config() {
     // eslint-disable-next-line no-unused-vars
     Object.keys($McuConfig).forEach(function (key, idx) {
@@ -162,7 +162,7 @@
 </script>
 
 <style type="text/scss">
-  @import "./styles/app.scss";
+  @import "../styles/app.scss";
   .row1 {
     background-color: darken($color_bg_area, 10%);
   }

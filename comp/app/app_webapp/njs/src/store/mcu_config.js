@@ -1,6 +1,6 @@
 'use strict';
-import {  derived } from 'svelte/store';
-import { OptionStore, PersistentValStore} from './custom_stores.js';
+import {  derived } from "svelte/store";
+import { OptionStore, PersistentValStore} from "./custom_stores.js";
 
 
 export const Pcts = OptionStore();

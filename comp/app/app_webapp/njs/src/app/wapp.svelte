@@ -1,22 +1,22 @@
 <script>
-  import { _ } from "./services/i18n";
-  import * as misc from "./misc.js";
-  import NavTabs from "./nav_tabs.svelte";
-  import { TabIdx } from "./store/app_state.js";
+  import { _ } from "services/i18n";
+  import * as misc from "app/misc.js";
+  import NavTabs from "app/nav_tabs.svelte";
+  import { TabIdx } from "stores/app_state.js";
 
-  import PaneShutterControl from "./panes/shutter_control.svelte";
-  import PaneShuttersPct from "./panes/shutters_pct.svelte";
-  import PaneShutterAuto from "./panes/shutter_auto.svelte";
-  import PaneShutterAlias from "./panes/shutter_alias.svelte";
-  import PaneShutterDurations from "./panes/shutter_durations.svelte";
-  import PaneShutterName from "./panes/shutter_name.svelte";
-  import PaneFirmwareEsp32 from "./panes/firmware_esp32.svelte";
-  import PaneWappSettings from "./panes/wapp_settings.svelte";
-  import PaneMcuSettings from "./panes/mcu_settings.svelte";
-  import Pane2411 from "./panes/2411.svelte";
-  import PaneShutterSetMode from "./panes/shutter_set_mode.svelte";
+  import PaneShutterControl from "panes/shutter_control.svelte";
+  import PaneShuttersPct from "panes/shutters_pct.svelte";
+  import PaneShutterAuto from "panes/shutter_auto.svelte";
+  import PaneShutterAlias from "panes/shutter_alias.svelte";
+  import PaneShutterDurations from "panes/shutter_durations.svelte";
+  import PaneShutterName from "panes/shutter_name.svelte";
+  import PaneFirmwareEsp32 from "panes/firmware_esp32.svelte";
+  import PaneWappSettings from "panes/wapp_settings.svelte";
+  import PaneMcuSettings from "panes/mcu_settings.svelte";
+  import Pane2411 from "panes/2411.svelte";
+  import PaneShutterSetMode from "panes/shutter_set_mode.svelte";
 
-  import PaneDeveloper from "./panes/developer.svelte";
+  import PaneDeveloper from "panes/developer.svelte";
 
   $: tabIdxMain = $TabIdx["main"] || 0;
   $: tabIdxSettings = $TabIdx["settings"] || 0;

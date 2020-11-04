@@ -6,9 +6,29 @@ import { eslint } from "rollup-plugin-eslint";
 import svelte from 'rollup-plugin-svelte';
 import resolve from '@rollup/plugin-node-resolve';
 import sveltePreprocess from 'svelte-preprocess';
+import alias from '@rollup/plugin-alias';
+
 
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDistro = process.env.DISTRO === "yes";
+
+let wdir = __dirname+"/";
+
+const aliases = alias({
+  resolve: ['.svelte', '.js', '.scss'], //optional, by default this will just look for .js files or folders
+  entries: [
+    { find: 'components', replacement: wdir+'src/components' },
+    { find: 'services', replacement: wdir+'src/services' },
+    { find: 'stores', replacement: wdir+'src/store' },
+    { find: 'panes', replacement: wdir+'src/panes' },
+    { find: 'app', replacement: wdir+'src/app' },
+    { find: 'main', replacement: wdir+'src' },
+
+   // { find: 'metadata', replacement: 'src/metadata' },
+   // { find: 'util', replacement: 'src/util' },
+  ]
+});
+
 
 export default {
   onwarn(warning, rollupWarn) {
@@ -60,6 +80,7 @@ export default {
     }
   },
   plugins: [
+    aliases,
     json(),
     ...isProduction ? [
       strip({
@@ -75,6 +96,9 @@ export default {
       onwarn: (warning, handler) => {
         // e.g. don't warn on <marquee> elements, cos they're cool
         if (warning.code === 'a11y-no-onchange') return;
+        if (/A11y:/.test(warning.message)) {
+          return;
+        }
 
         // let Rollup handle all other warnings normally
         handler(warning);
@@ -97,7 +121,7 @@ export default {
     // https://github.com/rollup/plugins/tree/master/packages/commonjs
     resolve({
       browser: true,
-      dedupe: ['svelte']
+      dedupe: ['svelte'],
     })
   ],
 

@@ -1,7 +1,7 @@
 <script>
-  import { Pcts, Names } from "./store/shutters.js";
-  import { G, M0, M, GM } from "./store/curr_shutter.js";
-  import * as httpFetch from "./fetch.js";
+  import { Pcts, Names } from "stores/shutters.js";
+  import { G, M0, M, GM } from "stores/curr_shutter.js";
+  import * as httpFetch from "app/fetch.js";
 
   export let g;
   export let m;

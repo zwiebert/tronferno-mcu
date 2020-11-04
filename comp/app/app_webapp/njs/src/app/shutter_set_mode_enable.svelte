@@ -1,10 +1,10 @@
 <script>
   "use strict";
-  import ShutterSelectGM from "./components/shutter_select_gm.svelte";
-  import { _ } from "./services/i18n";
-  import { G, M0, Name } from "./store/curr_shutter.js";
-  import { SetModeSrcAddress, SetModeSrcRadio, SetModeSrcMotorCode, SetModeSrcProgress } from "./store/shutter_set_mode.js";
-  import * as httpFetch from "./fetch.js";
+  import ShutterSelectGM from "components/shutter_select_gm.svelte";
+  import { _ } from "services/i18n";
+  import { G, M0, Name } from "stores/curr_shutter.js";
+  import { SetModeSrcAddress, SetModeSrcRadio, SetModeSrcMotorCode, SetModeSrcProgress } from "stores/shutter_set_mode.js";
+  import * as httpFetch from "app/fetch.js";
 
   $: name = $Name || "";
 

@@ -1,6 +1,6 @@
 <script>
   "use strict";
-  import * as httpFetch from "./fetch.js";
+  import * as httpFetch from "app/fetch.js";
   import { onMount, onDestroy } from "svelte";
 
   let on_destroy = [];

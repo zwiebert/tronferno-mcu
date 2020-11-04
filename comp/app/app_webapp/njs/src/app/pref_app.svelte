@@ -1,6 +1,6 @@
 <script>
   "use strict";
-  import { Verbose, TabIdx } from "./store/app_state.js";
+  import { Verbose, TabIdx } from "stores/app_state.js";
 
 </script>
 

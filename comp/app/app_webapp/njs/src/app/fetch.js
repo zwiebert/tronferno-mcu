@@ -1,8 +1,8 @@
 "use strict";
-import * as appDebug from "./app_debug.js";
-import * as httpResp from "./http_resp.js";
-import { G, M0 } from "./store/curr_shutter.js";
-import { ws_isOpen } from "./net/conn_ws";
+import * as appDebug from "app/app_debug.js";
+import * as httpResp from "app/http_resp.js";
+import { G, M0 } from "stores/curr_shutter.js";
+import { ws_isOpen } from "main/net/conn_ws";
 
 let b = 0;
 export const FETCH_CONFIG = 1 << b++;

@@ -1,7 +1,7 @@
 "use strict";
-import * as appDebug from "../app_debug.js";
-import * as httpResp from "../http_resp.js";
-import { McuWebsocket } from "../store/app_state.js";
+import * as appDebug from "app/app_debug.js";
+import * as httpResp from "app/http_resp.js";
+import { McuWebsocket } from "stores/app_state.js";
 
 let isOpen = false;
 
