@@ -33,6 +33,7 @@
 
 bool so_output_message2(const struct TargetDesc &td, so_msg_t mt, const void *arg);
 
+
 void soCfg_BAUD(const struct TargetDesc &td) {
 #ifndef MCU_ESP32
   td.so().print(settings_get_optKeyStr(CB_BAUD), config_read_baud());
@@ -64,11 +65,11 @@ void soCfg_TZ(const struct TargetDesc &td) {
 }
 
 void soCfg_LONGITUDE(const struct TargetDesc &td) {
-  td.so().print(settings_get_optKeyStr(CB_LONGITUDE), config_read_longitude(), 5);
+  td.so().print(settings_get_optKeyStr(CB_LONGITUDE), config_read_longitude(), 2);
 }
 
 void soCfg_LATITUDE(const struct TargetDesc &td) {
-  td.so().print(settings_get_optKeyStr(CB_LATITUDE), config_read_latitude(), 5);
+  td.so().print(settings_get_optKeyStr(CB_LATITUDE), config_read_latitude(), 2);
 }
 
 void soCfg_TIMEZONE(const struct TargetDesc &td) {
