@@ -13,6 +13,7 @@ import * as cuas from "app/cuas.js";
 import { McuConfig, Gmu } from "stores/mcu_config.js";
 import { Pcts, Prefs, Aliases, Autos, Names } from "stores/shutters.js";
 import { McuDocs } from "stores/mcu_docs.js";
+import { Gpios } from "../store/gpio";
 
 function parse_gmu(s) {
   let sa = s ? s.split("").reverse() : [];
@@ -96,6 +97,14 @@ export function http_handleResponses(obj) {
 
       McuFirmwareUpdState.set(Number.parseInt(ota_state));
       handleOtaState(ota_state);
+    }
+
+    for (const key in obj.mcu) {
+      if (key.startsWith("gpio")) {
+        let gpio = {};
+        gpio[key] = obj.mcu[key];
+        Gpios.update(gpio);
+      }
     }
   }
 

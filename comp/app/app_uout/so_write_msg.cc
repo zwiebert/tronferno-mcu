@@ -394,15 +394,9 @@ void soMsg_inet_print_address(const struct TargetDesc &td) {
 #endif
 void soMsg_gpio_pin(const struct TargetDesc &td, const so_arg_pch_t a, bool broadcast) {
 
-  if (so_cco) {
-    io_printf("tf:reply: mcu gpio%d=%d;\n", (int)a.gpio_num, (int)a.level);
-  }
-
-  if (so_jco) {
-    char buf[64];
-    snprintf(buf, sizeof buf, "gpio%d", (int)a.gpio_num);
-    td.sj().add_key_value_pair_d(buf, (int)a.level);
-  }
+  char buf[64];
+  snprintf(buf, sizeof buf, "gpio%d", (int) a.gpio_num);
+  td.so().print(buf, (int)a.level_int);
 
   if (broadcast)
     uoCb_publish_pinChange(a);

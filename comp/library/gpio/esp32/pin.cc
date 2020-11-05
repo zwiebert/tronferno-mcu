@@ -21,7 +21,6 @@
 #include <hal/gpio_types.h>
 #include "string.h"
 
-
 #define printf ets_uart_printf
 
 #define RFOUT_GPIO static_cast<gpio_num_t>(gpio_cfg->out_rf)
@@ -29,7 +28,6 @@
 #define BUTTON_GPIO static_cast<gpio_num_t>(gpio_cfg->in_setButton)
 
 static struct cfg_gpio *gpio_cfg;
-
 
 #define RESERVED_GPIO_APP (1ULL<<RFOUT_GPIO|1ULL<<RFIN_GPIO|1ULL<<BUTTON_GPIO)
 #define RESERVED_GPIO_SPI (BIT64(6)|BIT64(7)|BIT64(8)|BIT64(9)|BIT64(10)|BIT64(11))
@@ -62,7 +60,7 @@ void gpio_get_levels(uint64_t gpio_mask, char *buf, int buf_size) {
   int buf_len = (buf_size > 40 ? 39 : buf_size - 1);
   buf[buf_len] = '\0';
 
-  for (i=0; i < buf_len; ++i) {
+  for (i = 0; i < buf_len; ++i) {
     if (BIT64(i) & gpioUsable) {
       buf[i] = gpio_get_level(static_cast<gpio_num_t>(i)) ? '1' : '0';
     } else {
@@ -73,7 +71,7 @@ void gpio_get_levels(uint64_t gpio_mask, char *buf, int buf_size) {
 }
 
 bool is_gpio_number_usable(int gpio_number, bool cli) {
-  return  (gpioUsable & (1ULL<<gpio_number)) != 0;
+  return (gpioUsable & (1ULL << gpio_number)) != 0;
 }
 
 void IRAM_ATTR mcu_put_txPin(u8 level) {
@@ -89,7 +87,6 @@ u8 IRAM_ATTR mcu_get_rxPin() {
   return 0;
 }
 
-
 bool mcu_get_buttonUpPin(void) {
   return false;
 }
@@ -103,11 +100,8 @@ bool mcu_get_buttonPin(void) {
   return val == 0;  // 0 means pressed
 }
 
-static const gpio_mode_t pin_mode_table[] = {
-    GPIO_MODE_DISABLE,
-    GPIO_MODE_INPUT,
-    GPIO_MODE_INPUT_OUTPUT_OD, GPIO_MODE_INPUT_OUTPUT,
-    GPIO_MODE_OUTPUT_OD, GPIO_MODE_OUTPUT,
+static const gpio_mode_t pin_mode_table[] = { GPIO_MODE_DISABLE, GPIO_MODE_INPUT, GPIO_MODE_INPUT_OUTPUT_OD, GPIO_MODE_INPUT_OUTPUT, GPIO_MODE_OUTPUT_OD,
+    GPIO_MODE_OUTPUT,
 
 };
 
@@ -118,9 +112,10 @@ static bool pin_set_gpio_mode(gpio_num_t gpio_number, mcu_pin_mode mode, mcu_pin
     gpio_pad_select_gpio(gpio_number);
   if (ESP_OK == gpio_set_direction(gpio_number, gpio_mode)) {
     if (gpio_mode == GPIO_MODE_INPUT) {
-      gpio_pull_mode_t pm = level == PIN_LOW ? GPIO_PULLDOWN_ONLY : level == PIN_HIGH ? GPIO_PULLUP_ONLY : level == PIN_HIGH_LOW ? GPIO_PULLUP_PULLDOWN : GPIO_FLOATING;
+      gpio_pull_mode_t pm = level == PIN_LOW ? GPIO_PULLDOWN_ONLY : level == PIN_HIGH ? GPIO_PULLUP_ONLY :
+                            level == PIN_HIGH_LOW ? GPIO_PULLUP_PULLDOWN : GPIO_FLOATING;
       gpio_set_pull_mode(gpio_number, pm);
-    } else if (gpio_mode != GPIO_MODE_DISABLE){
+    } else if (gpio_mode != GPIO_MODE_DISABLE) {
       gpio_set_level(gpio_number, level == PIN_HIGH);
     }
   }
@@ -221,25 +216,12 @@ static const char* mcu_access_pin2(gpio_num_t gpio_number, mcu_pin_state *result
 
 }
 
-const char *mcu_access_pin(int ngpio_number, mcu_pin_state *result, mcu_pin_state state) {
+const char* mcu_access_pin(int ngpio_number, mcu_pin_state *result, mcu_pin_state state) {
   auto gpio_number = static_cast<gpio_num_t>(ngpio_number);
   if (state != PIN_READ && GET_BIT64(pins_not_cli, gpio_number))
     return "this gpio cannot be set from CLI";
-#ifdef DISTRIBUTION
-  if (state != PIN_READ)
-    switch (gpio_number) {
-   case 12:
-   case 13:
-   case 14:
-   case 15:
-     break;
 
-   default:
-     return "gpio number not writable (use 12, 13, 14, 15)";  // FIXME:
-   }
-#endif
-
-    return mcu_access_pin2(gpio_number, result, state);
+  return mcu_access_pin2(gpio_number, result, state);
 }
 
 void (*gpio_INPUT_PIN_CHANGED_ISR_cb)();
@@ -255,7 +237,6 @@ void pin_notify_input_change() {
     uoCb_publish_pinChange(a);
   }
 }
-
 
 void pin_input_isr_handler(void *args) {
   gpio_num_t gpio_num = static_cast<gpio_num_t>(reinterpret_cast<size_t>(args));
@@ -306,12 +287,12 @@ void setup_pin(const struct cfg_gpio *c) {
     if (gpioCfg_getPinMode(gpio_cfg, i) == PIN_DEFAULT)
       continue;
     pin_set_mode(i, gpioCfg_getPinMode(gpio_cfg, i), gpioCfg_getPinLevel(gpio_cfg, i));
-    if (gpioCfg_getPinMode(gpio_cfg, i) == PIN_INPUT) {
+    if (auto pm = gpioCfg_getPinMode(gpio_cfg, i); pm == PIN_INPUT || pm == PIN_INPUT_OUTPUT || pm == PIN_INPUT_OUTPUT_OD) {
       pin_setup_input_handler(static_cast<gpio_num_t>(i));
     }
 
   }
 #endif
 
-}
+      }
 

@@ -218,7 +218,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
             break;
           }
         }
-        mcu_pin_state ps = (mcu_pin_state)psi, ps_result = PIN_READ;
+        mcu_pin_state ps = (mcu_pin_state)psi, ps_result = PIN_STATE_none;
         switch (ps) {
 
           case PIN_CLEAR:
@@ -227,10 +227,11 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
           error = mcu_access_pin(gpio_number, NULL, ps);
           break;
 
-          case PIN_READ:
+          case PIN_READ: {
           error = mcu_access_pin(gpio_number, &ps_result, ps);
-          if (!error) {
-            soMsg_gpio_pin(td, so_arg_pch_t {u8(gpio_number), ps_result});
+          i8 level = (ps_result == PIN_STATE_none) ? -1 :
+                     (ps_result == PIN_CLEAR) ? 0 : 1;
+          soMsg_gpio_pin(td, so_arg_pch_t {u8(gpio_number), level != 0, level});
           }
           break;
 

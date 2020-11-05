@@ -18,6 +18,8 @@
   import McuConfigAstroCorrection from "components/mcu_config/astro_correction.svelte";
   import McuConfigUsedMembers from "components/mcu_config/used_members.svelte";
 
+  import GpioLevel from "components/gpio_level.svelte"
+
   let on_destroy = [];
   onMount(() => {
     console.log("fetch_config");
@@ -94,7 +96,7 @@
     if (cfg_mod === null) return;
 
     Object.keys(cfg_mod).forEach(function (key, idx) {
-      if (key.startsWith("gpio") && key !== "gpio") {
+      if (key.startsWith("gpio") && key !== "gpio" && cfg_mod[key] === "d") {
         console.log("remove key: ", key);
         McuConfig.remove(key);
       }
@@ -116,7 +118,7 @@
     const gpioKey = "gpio" + wiz_gpio;
     cmd.config[gpioKey] = "i";
     wiz_gpio = -1;
-    
+
     httpFetch.http_postRequest("/cmd.json", cmd);
     wiz_gpio_status = "";
     setTimeout(() => {
@@ -191,7 +193,7 @@
           </td>
         {:else if name.startsWith('gpio')}
           <td>
-            <McuConfigGpio {name} bind:value={mcuConfig[name]} />
+            <McuConfigGpio {name} bind:value={mcuConfig[name]} /> <GpioLevel {name} />
           </td>
         {:else if name !== 'gm-used'}
           <td><input class="config-input text" type="text" id="cfg_{name}" {name} bind:value={mcuConfig[name]} /></td>
