@@ -23,11 +23,6 @@ enum fer_error {
   fer_BAD_CHECKSUM ///< Error: One or more of the embedded checksums are wrong
 } ;
 
-
-// like FER_SB_ but works on array instead of struct
-#define FER_RB_ADDR_IS_CENTRAL(data)  (((data)[fer_dat_ADDR_2] & 0xf0)  == FER_ADDR_TYPE_CentralUnit)
-#define FER_RB_GET_FPR0_IS_RTC_ONLY(data) (((data)[fpr0_RTC_wday] & 0x80) != 0) //TODO:move
-
 #ifndef DISTRIBUTION
 //#define FTRX_TEST_LOOP_BACK
 #endif
@@ -71,7 +66,6 @@ void fer_rx_getQuality(struct fer_rx_quality *dst) {
 // bit is 0, if data edge comes after sample position  (/..LONG..\short/)
 #define SAMPLE_BIT ((pTicks < US2TCK(FER_BIT_SAMP_POS_US)))
 #define veryLongPauseLow_Len (2 * US2TCK(FER_STP_WIDTH_MAX_US))
-#define MAX_PRG_TICK_COUNT (US2TCK(FER_PRG_FRAME_WIDTH_US) * 2) // FIXME
 #define rxbuf_current_byte() (&fer_rx_msg->cmd.bd[0] + (frxCount.Words / 2))
 #define ct_incr(ct, limit) (!((++ct >= limit) ? (ct = 0) : 1))
 #define ct_incrementP(ctp, limit) ((++*ctp, *ctp %= limit) == 0)
@@ -202,7 +196,7 @@ static void IRAM_ATTR fer_rx_tick_receive_message() {
       break;
     }
 
-    if (fer_rx_msg->cmd.sd.cmd.cmd == fer_cmd_Program && FER_RB_ADDR_IS_CENTRAL(fer_rx_msg->cmd.bd)) {
+    if (fer_rx_msg->cmd.sd.cmd.cmd == fer_cmd_Program && FER_CMD_ADDR_IS_CENTRAL(&fer_rx_msg->cmd.sd.cmd)) {
       wordsToReceive = WORDS_MSG_RTC; // continue
     } else {
       fer_rx_messageReceived = MSG_TYPE_PLAIN; // done
@@ -215,7 +209,7 @@ static void IRAM_ATTR fer_rx_tick_receive_message() {
       break;
     }
 
-    if (FER_RB_GET_FPR0_IS_RTC_ONLY(fer_rx_msg->rtc.bd)) {
+    if (fer_rx_msg->rtc.sd.wd2.sd.rtc_only) {
       fer_rx_messageReceived = MSG_TYPE_RTC;  // done
     } else {
       wordsToReceive = WORDS_MSG_TIMER; // continue

@@ -243,8 +243,6 @@ void pin_input_isr_handler(void *args) {
   SET_BIT64(pin_int_mask, gpio_num);
   if (gpio_INPUT_PIN_CHANGED_ISR_cb)
     gpio_INPUT_PIN_CHANGED_ISR_cb();
-
-  //TODO: implement me
 }
 
 void pin_setup_input_handler(gpio_num_t gpio_num) {

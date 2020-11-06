@@ -4,7 +4,7 @@
  * Created: 14.08.2017 17:32:28
  *  Author: bertw
  */
-
+#include <fernotron_trx/raw/fer_rawmsg_build.h>
 #include <fernotron_trx/raw/fer_msg_plain.h>
 #include "fernotron_trx/astro.h"
 #include <string.h>
@@ -153,21 +153,24 @@ static void  write_dtimer(u8 d[FER_FPR_TIMER_STAMP_WIDTH], const u8 *dtimer_data
     memcpy(d, dtimer_data, FER_FPR_TIMER_STAMP_WIDTH);
 }
 
+static inline fer_rtc_wday getFerRtcWday(const struct tm *t) {
+  return static_cast<fer_rtc_wday>(t->tm_wday == 0 ? 7 : t->tm_wday);
+}
 
+void fer_msg_rtc_from_time(fer_rtc_sd *msgPtr, time_t now, bool rtc_only) {
+  struct tm *t = localtime(&now);
 
-static void  write_rtc(union fer_rtc *rd, time_t rtc, bool rtc_only) {
-	//time_t timer = time(NULL);
-	struct tm *t = localtime(&rtc);
-	u8 *d = rd->bd;
+  auto &msg = *msgPtr;
+  msg.secs = dec2bcd(t->tm_sec);
+  msg.mint = dec2bcd(t->tm_min);
+  msg.hour = dec2bcd(t->tm_hour);
+  msg.mday = dec2bcd(t->tm_mday);
+  msg.mont = dec2bcd(t->tm_mon + 1);
+  msg.wd2.sd.wday = getFerRtcWday(t);
+  msg.wd2.sd.rtc_only = rtc_only;
 
-	d[fpr0_RTC_secs] = dec2bcd(t->tm_sec);
-	d[fpr0_RTC_mint] = dec2bcd(t->tm_min);
-	d[fpr0_RTC_hour] = dec2bcd(t->tm_hour);
-	d[fpr0_RTC_days] = dec2bcd(t->tm_mday);
-	d[fpr0_RTC_mont] = dec2bcd(t->tm_mon + 1);
-	d[fpr0_RTC_wday] = (rtc_only ? 0x80 : 0x00) | (t->tm_wday == 0 ? 7 : t->tm_wday); // monday==1 ... sunday==7
-	d[fpr0_RTC_wdayMask] = (1 << t->tm_wday);
-	PUT_BIT(d[fpr0_FlagBits], flag_DST, t->tm_isdst);
+  msg.wDayMask = BIT(t->tm_wday);
+  msg.flags.bits.dst = t->tm_isdst;
 }
 
 static void  write_flags(u8 *dst, u8 flags, u8 mask) {
@@ -186,12 +189,12 @@ static void  write_lastline(u32 a, u8 d[FER_PRG_BYTE_CT]) {
   d[8] = 0x05;
 }
 
-void  fer_msg_raw_init(struct fer_raw_msg *m) {
-	memset(&m->rtc, 0, sizeof (m->rtc));
-	disable_timer(m->wdtimer.bd, FER_FPR_TIMER_HEIGHT + FER_FPR_ASTRO_HEIGHT);
-}
-void  fer_msg_raw_from_rtc(fer_rawMsg *msg, time_t rtc, bool rtc_only) {
-   write_rtc(&msg->rtc, rtc, rtc_only);
+void fer_msg_raw_init(struct fer_raw_msg *m, fer_msg_type t) {
+  memset(&m->cmd, 0, sizeof(m->cmd));
+  if (t == MSG_TYPE_RTC || t == MSG_TYPE_TIMER)
+    memset(&m->rtc, 0, sizeof(m->rtc));
+  if (t == MSG_TYPE_TIMER)
+    disable_timer(m->wdtimer.bd, FER_FPR_TIMER_HEIGHT + FER_FPR_ASTRO_HEIGHT);
 }
 void  fer_msg_raw_from_flags(fer_rawMsg *msg, u8 flags, u8 mask) {
   write_flags(&msg->rtc.sd.flags.bd, flags, mask);

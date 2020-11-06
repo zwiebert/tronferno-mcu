@@ -59,9 +59,7 @@ public:
   /// get data from current received message. Use it in event functions.
   MsgKind get_msgKind() const;
   /// get data from current received message. Use it in event functions.
-  const void * get_raw() const; //XXX transitional code?
-  /// get data from current received message. Use it in event functions.
-  const void * get_fsb() const; //XXX transitional code!
+  const void * get_raw() const;
   /// get data from current received message. Use it in event functions.
   bool is_centralUnit() const;
 

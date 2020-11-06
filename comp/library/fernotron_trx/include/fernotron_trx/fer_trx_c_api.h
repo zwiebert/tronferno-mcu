@@ -28,9 +28,12 @@ inline bool FER_U32_TEST_TYPE(uint32_t a, unsigned t) {
   return (a >> 16) == t;
 }
 
-
 /// \brief Fernotron command codes.
-typedef enum : u8 { //XXX: C++ only
+typedef enum
+#ifdef __cplusplus
+: u8
+#endif
+  {
   fer_if_cmd_None,
   fer_if_cmd_1,
   fer_if_cmd_2,

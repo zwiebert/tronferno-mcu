@@ -67,9 +67,8 @@ public:
 public:
 
   virtual void event_first_message_will_be_sent() { // no repeats
-    const fer_sbT *fsb = static_cast<const fer_sbT*>(get_fsb());
-    if (FER_SB_GET_DEVID(fsb) == fer_config.cu) {
-      fer_simPos_registerMovingShutter(FER_SB_GET_DEVID(fsb), FER_SB_GET_GRP(fsb), FER_SB_GET_MEMB(fsb) == 0 ? 0 : FER_SB_GET_MEMB(fsb) - 7, (fer_if_cmd)FER_SB_GET_CMD(fsb));
+    if (get_a() == fer_config.cu) {
+      fer_simPos_registerMovingShutter(get_a(), get_g(), get_m(), get_cmd());
     }
   }
 

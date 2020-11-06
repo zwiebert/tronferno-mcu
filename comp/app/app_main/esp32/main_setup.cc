@@ -233,8 +233,7 @@ void mcu_init() {
   stor_setup();
   main_setup();
 
-  kvshT h;
-  if ((h = kvs_open("misc", kvs_READ_WRITE))) {
+  if (kvshT h = kvs_open("misc", kvs_READ_WRITE)) {
     boot_counter = kvs_get_i32(h, "boot_ct", 0, 0) + 1;
     kvs_set_i32(h, "boot_ct", boot_counter);
     kvs_commit(h);

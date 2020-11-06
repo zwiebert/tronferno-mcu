@@ -68,10 +68,30 @@ struct __attribute__((__packed__)) fer_rtc_sd {
   uint8_t secs; ///< seconds
   uint8_t mint; ///< minutes
   uint8_t hour; ///< hour
-  uint8_t wDayMask; ///< week-day bit-mask Bits defined in: \link fer_rtc_wdayMaskBits \endlink
-  uint8_t days; ///<day of month 1..31
+  union {
+    uint8_t wDayMask; ///< week-day bit-mask Bits defined in: \link fer_rtc_wdayMaskBits \endlink
+    struct {
+      bool sun:1;
+      bool mon:1;
+      bool tue:1;
+      bool wed:1;
+      bool thu:1;
+      bool fri:1;
+      bool sat:1;
+    } wDayBits;
+  };
+  uint8_t mday; ///<day of month 1..31
   uint8_t mont; ///< month of year 1..12
-  uint8_t wday; ///< week-day. Number defined in: \link fer_rtc_wday \endlink (XXX: separate low and high nibble)
+  union {
+    uint8_t bd;  ///<  Weekday and flag-bits as byte value
+    struct __attribute__((__packed__)) {
+      enum fer_rtc_wday wday :4;
+      bool bit4 :1;
+      bool bit5 :1;
+      bool bit6 :1;
+      bool rtc_only :1;  ///< true, if no full timer message (its just fer_cmd+fer_rtc only)
+    } sd;
+  } wd2;
   union {
     uint8_t bd; ///<  Flag-bits as byte value
     struct {
@@ -83,8 +103,8 @@ struct __attribute__((__packed__)) fer_rtc_sd {
       uint8_t unused_5 :1; ///<
       uint8_t unused_6 :1; ///<
       uint8_t sunAuto :1; ///<  Enable sun-automatic (sun-sensor)
-    }  bits; ///< Flag-bits as bitfield
-  }  flags; ///< Flags (\link fer_fpr00_FlagBitsValues \endlink)
+    } bits; ///< Flag-bits as bitfield
+  } flags; ///< Flags (\link fer_fpr00_FlagBitsValues \endlink)
   uint8_t checkSum; ///< Sum of all previous bytes in message
 };
 

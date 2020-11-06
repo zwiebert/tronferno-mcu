@@ -26,18 +26,29 @@ void fer_msg_raw_checksumsCreate(fer_rawMsg *m, fer_msg_type t);
 bool fer_msg_raw_checksumsVerify(const fer_rawMsg *m, fer_msg_type t);
 
 /**
- * \brief     Initialize an empty message (XXX: of the biggest type)
- * \param msg Message pointer to a buffer with MSG_TYPE_TIMER (XXX)
+ * \brief     Initialize an empty message
+ * \param msg Message pointer to a buffer with type T
+ * \param t   Message type
  */
-void fer_msg_raw_init(fer_rawMsg *msg);
+void fer_msg_raw_init(fer_rawMsg *msg, fer_msg_type t);
 
 /**
  * \brief          Build the RTC part of message
  * \param msg      Message pointer to a buffer with MSG_TYPE_RTC or MSG_TYPE_TIMER
- * \param rtc      Current time to set the internal RTC of a device
+ * \param now      Current time to set the internal RTC of a device
  * \param rtc_only True if MSG_TYPE_RTC (XXX)
  */
-void fer_msg_raw_from_rtc(fer_rawMsg *msg, time_t rtc, bool rtc_only);
+void fer_msg_rtc_from_time(fer_rtc_sd *msg, time_t now, bool rtc_only);
+
+/**
+ * \brief          Build the RTC part of message
+ * \param msg      Message pointer to a buffer with MSG_TYPE_RTC or MSG_TYPE_TIMER
+ * \param now      Current time to set the internal RTC of a device
+ * \param rtc_only True if MSG_TYPE_RTC (XXX)
+ */
+inline void fer_msg_raw_from_rtc(fer_rawMsg *msg, time_t now, bool rtc_only) {
+  fer_msg_rtc_from_time(&msg->rtc.sd, now, rtc_only);
+}
 
 /**
  * \brief          Set/Clear options in message

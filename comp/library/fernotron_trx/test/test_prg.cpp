@@ -7,6 +7,7 @@
 #include <unity.h>
 #ifdef TEST_HOST
 #include <test_runner.h>
+#include <sys/random.h>
 #endif
 
 #include <fernotron_trx/raw/fer_msg_plain.h>
@@ -20,6 +21,43 @@
 #include "utils_misc/bcd.h"
 
 
+ void tst_ferMsg_writeRtc_andVerify_random() {
+#ifdef TEST_HOST
+   time_t tim = random();
+   setenv("TZ", "UTC+0", 1);
+   struct tm *tm = localtime(&tim);
+   struct fer_rtc_sd rtc{};
+   fer_msg_rtc_from_time(&rtc, tim, true);
+   TEST_ASSERT_EQUAL(tm->tm_mon+1, bcd2dec(rtc.mont));
+   TEST_ASSERT_EQUAL(tm->tm_mday, bcd2dec(rtc.mday));
+   TEST_ASSERT_EQUAL(tm->tm_hour, bcd2dec(rtc.hour));
+   TEST_ASSERT_EQUAL(tm->tm_min, bcd2dec(rtc.mint));
+   TEST_ASSERT_EQUAL(tm->tm_sec, bcd2dec(rtc.secs));
+   TEST_ASSERT_TRUE(rtc.wd2.sd.rtc_only);
+   TEST_ASSERT_EQUAL(tm->tm_wday == 0 ? 7 : tm->tm_wday, rtc.wd2.sd.wday);
+   //TEST_ASSERT_EQUAL((0x80|wd2_WED),rtc.wd2.bd);
+   TEST_ASSERT_FALSE(rtc.flags.bits.dst);
+   //TEST_ASSERT_TRUE(rtc.wDayBits.wed);
+#endif
+ }
+
+
+ void tst_ferMsg_writeRtc_andVerify() {
+   time_t tim = 1593605594; //2020-07-01T12:13:14+00:00 (Wednesday)
+   setenv("TZ", "CET-1CEST-2,M3.5.0,M10.5.0", 1);
+   struct fer_rtc_sd rtc{};
+   fer_msg_rtc_from_time(&rtc, tim, true);
+   TEST_ASSERT_EQUAL(7, bcd2dec(rtc.mont));
+   TEST_ASSERT_EQUAL(1, bcd2dec(rtc.mday));
+   TEST_ASSERT_EQUAL(14, bcd2dec(rtc.hour));
+   TEST_ASSERT_EQUAL(13, bcd2dec(rtc.mint));
+   TEST_ASSERT_EQUAL(14, bcd2dec(rtc.secs));
+   TEST_ASSERT_TRUE(rtc.wd2.sd.rtc_only);
+   TEST_ASSERT_EQUAL(wd2_WED, rtc.wd2.sd.wday);
+   TEST_ASSERT_EQUAL((0x80|wd2_WED),rtc.wd2.bd);
+   TEST_ASSERT_TRUE(rtc.flags.bits.dst);
+   TEST_ASSERT_TRUE(rtc.wDayBits.wed);
+ }
 
 static struct fer_raw_msg  test_msg = {
     .cmd = { .bd = { 0x80, 0x49, 0x5d, 0x68, 0x2f, 0xbd, }},
@@ -84,7 +122,7 @@ static void test_ferMsg_writeChecksums() {
 }
 
 static void test_ferMsg_writeData() {
-  fer_msg_raw_from_rtc(&test_msg, time(NULL), false);
+  fer_msg_rtc_from_time(&test_msg.rtc.sd, time(NULL), false);
   fer_msg_raw_from_weeklyTimer(&test_msg, testdat_wtimer);
   fer_msg_raw_from_dailyTimer(&test_msg, testdat_wtimer);
   fer_astro_write_data(test_msg.astro, 0);
@@ -155,6 +193,14 @@ TEST_CASE("fer_msg modify data and verify checksums", "[fernotron]")
 {
   test_ferMsg_modData_andVerifyCS();
 }
+
+TEST_CASE("fer_msg write/verify rtc_msg", "[fernotron]")
+{
+  tst_ferMsg_writeRtc_andVerify();
+  for (int i=0; i < 100; ++i)
+    tst_ferMsg_writeRtc_andVerify_random();
+}
+
 
 #ifdef TEST_HOST
 static struct cfg_astro cfg_astro =

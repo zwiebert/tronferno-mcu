@@ -73,7 +73,11 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       if (is_val("?")) {
         soMsg_mcu_boot_count(td);
       } else if (strcmp("0", val) == 0) {
-        // TODO: reset boot counter
+        if (kvshT h = kvs_open("misc", kvs_WRITE)) {
+          kvs_erase_key(h, "boot_ct");
+          kvs_commit(h);
+          kvs_close(h);
+        }
       }
     }
       break;

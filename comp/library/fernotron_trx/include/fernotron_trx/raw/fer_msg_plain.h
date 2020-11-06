@@ -67,3 +67,7 @@ inline bool FER_U32_TEST_TYPE(uint32_t a, Fer_DevType t) {
   return (a >> 16) == t;
 }
 
+/// \brief Test if address matches a central unit
+inline bool FER_CMD_ADDR_IS_CENTRAL(const Fer_Cmd *cmd) {
+  return ((cmd->addr[fer_dat_ADDR_2] & 0xf0) == (uint8_t)FER_CentralUnit);
+}

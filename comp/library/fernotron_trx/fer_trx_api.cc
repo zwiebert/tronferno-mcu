@@ -18,10 +18,6 @@ const void *Fer_Trx_API::get_raw() const {
   return myEvt->raw;
 }
 
-const void *Fer_Trx_API::get_fsb() const {
-  return &myEvt->fsb;
-}
-
 Fer_Trx_API::MsgKind Fer_Trx_API::get_msgKind() const {
   return static_cast<MsgKind>(myEvt->kind);
 }
