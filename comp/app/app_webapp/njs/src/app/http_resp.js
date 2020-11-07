@@ -13,7 +13,8 @@ import * as cuas from "app/cuas.js";
 import { McuConfig, Gmu } from "stores/mcu_config.js";
 import { Pcts, Prefs, Aliases, Autos, Names } from "stores/shutters.js";
 import { McuDocs } from "stores/mcu_docs.js";
-import { Gpios } from "../store/gpio";
+import { Gpios } from "stores/gpio.js";
+import {AppLog} from "stores/app_log.js";
 
 function parse_gmu(s) {
   let sa = s ? s.split("").reverse() : [];
@@ -29,6 +30,13 @@ function parse_gmu(s) {
 
 export function http_handleResponses(obj) {
   appDebug.dbLog("reply-json: " + JSON.stringify(obj));
+
+  if ("log" in obj) {
+    AppLog.update(old => {
+      old.push(obj.log);
+      return old;
+    });
+  }
 
   if ("config" in obj) {
     let config = obj.config;

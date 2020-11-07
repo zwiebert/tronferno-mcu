@@ -15,6 +15,7 @@
   import PaneMcuSettings from "panes/mcu_settings.svelte";
   import Pane2411 from "panes/2411.svelte";
   import PaneShutterSetMode from "panes/shutter_set_mode.svelte";
+  import PaneAppLog from "panes/app_log.svelte";
 
   import PaneDeveloper from "panes/developer.svelte";
 
@@ -39,7 +40,7 @@
   {:else if tabIdxMain === 4}
     <div class="navtab-sub">
       <NavTabs
-        nav_tabs={[$_('app.navTab.cfg.mcu'), $_('app.navTab.cfg.aliases'), $_('app.navTab.cfg.durations'), $_('app.navTab.cfg.name'), $_('app.navTab.cfg.set_mode'), $_('app.navTab.cfg.app'), $_('app.navTab.main.firmware')]}
+        nav_tabs={[$_('app.navTab.cfg.mcu'), $_('app.navTab.cfg.aliases'), $_('app.navTab.cfg.durations'), $_('app.navTab.cfg.name'), $_('app.navTab.cfg.set_mode'), $_('app.navTab.cfg.app'), $_('app.navTab.main.firmware'), 'Log']}
         name="settings" />
     </div>
     {#if !tabIdxSettings}
@@ -54,13 +55,14 @@
       <PaneShutterSetMode />
     {:else if tabIdxSettings === 5}
       <PaneWappSettings />
-      {:else if tabIdxSettings === 6}
+    {:else if tabIdxSettings === 6}
       <PaneFirmwareEsp32 />
+    {:else if tabIdxSettings === 7}
+      <PaneAppLog />
     {/if}
   {:else if !misc.DISTRO && tabIdxMain === 5}
     <PaneDeveloper />
   {/if}
 </div>
-
 
 <p class="help-text-v1 help-text-v0">no_purge_css</p>
