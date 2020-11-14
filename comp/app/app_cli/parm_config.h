@@ -22,8 +22,6 @@ extern void (*mcu_restart_cb)();
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
-so_msg_t so_soMsg_from_otok(otok kt);
-
 struct SettData {
   const char *kvsKey;
   KvsType kvsType;

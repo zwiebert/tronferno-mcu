@@ -31,9 +31,6 @@
 
 #define D(x)
 
-bool so_output_message2(const struct TargetDesc &td, so_msg_t mt, const void *arg);
-
-
 void soCfg_BAUD(const struct TargetDesc &td) {
 #ifndef MCU_ESP32
   td.so().print(settings_get_optKeyStr(CB_BAUD), config_read_baud());
@@ -43,7 +40,7 @@ void soCfg_BAUD(const struct TargetDesc &td) {
 void soCfg_RTC(const struct TargetDesc &td) {
   char buf[64];
   if (rtc_get_by_string(buf)) {
-    td.so().print(otok_strings[(int)otok::k_rtc], buf);
+    td.so().print(otok_strings[(int) otok::k_rtc], buf);
   }
 }
 
@@ -53,14 +50,14 @@ void soCfg_CU(const struct TargetDesc &td) {
 
 void soCfg_NETWORK(const struct TargetDesc &td) {
 #ifdef USE_NETWORK
-  td.so().print(settings_get_optKeyStr(CB_NETWORK_CONNECTION),cfg_args_network[config_read_network_connection()]);
+  td.so().print(settings_get_optKeyStr(CB_NETWORK_CONNECTION), cfg_args_network[config_read_network_connection()]);
 #endif
 }
 
 void soCfg_TZ(const struct TargetDesc &td) {
 #ifdef USE_POSIX_TIME
   char buf[64];
-  td.so().print(settings_get_optKeyStr(CB_TZ),config_read_tz(buf, sizeof buf));
+  td.so().print(settings_get_optKeyStr(CB_TZ), config_read_tz(buf, sizeof buf));
 #endif
 }
 
@@ -89,19 +86,19 @@ void soCfg_DST(const struct TargetDesc &td) {
 }
 
 void soCfg_GM_USED(const struct TargetDesc &td) {
-  td.so().print(settings_get_optKeyStr(CB_USED_MEMBERS),config_read_used_members(), 16);
+  td.so().print(settings_get_optKeyStr(CB_USED_MEMBERS), config_read_used_members(), 16);
 }
 
 void soCfg_GPIO_RFOUT(const struct TargetDesc &td) {
-  td.so().print(settings_get_optKeyStr(CB_RFOUT_GPIO),config_read_rfout_gpio());
+  td.so().print(settings_get_optKeyStr(CB_RFOUT_GPIO), config_read_rfout_gpio());
 }
 
 void soCfg_GPIO_RFIN(const struct TargetDesc &td) {
-  td.so().print(settings_get_optKeyStr(CB_RFIN_GPIO),config_read_rfin_gpio());
+  td.so().print(settings_get_optKeyStr(CB_RFIN_GPIO), config_read_rfin_gpio());
 }
 
 void soCfg_GPIO_SETBUTTON(const struct TargetDesc &td) {
-  td.so().print(settings_get_optKeyStr(CB_SETBUTTON_GPIO),config_read_setbutton_gpio());
+  td.so().print(settings_get_optKeyStr(CB_SETBUTTON_GPIO), config_read_setbutton_gpio());
 }
 
 void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
@@ -165,7 +162,7 @@ void soCfg_GPIO_MODES_AS_STRING(const struct TargetDesc &td) {
 }
 
 void soCfg_ASTRO_CORRECTION(const struct TargetDesc &td) {
-  td.so().print(settings_get_optKeyStr(CB_ASTRO_CORRECTION),config_read_astro_correction());
+  td.so().print(settings_get_optKeyStr(CB_ASTRO_CORRECTION), config_read_astro_correction());
 }
 
 void soCfg_begin(const struct TargetDesc &td) {

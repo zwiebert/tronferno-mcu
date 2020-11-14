@@ -32,13 +32,6 @@
 
 void (*mcu_restart_cb)();
 
-so_msg_t so_soMsg_from_otok(otok kt) {
-  so_msg_t result = static_cast<so_msg_t>(SO_CFG_begin + 1 + static_cast<otokBaseT>(kt));
-  if (result >= SO_CFG_last || result == SO_CFG_GPIO_MODES)
-    return SO_NONE;
-  return result;
-}
-
 bool process_parmConfig_get_comp(otok kt, const char *val, const struct TargetDesc &td) {
   switch (kt) {
 
@@ -58,12 +51,11 @@ bool process_parmConfig_get_comp(otok kt, const char *val, const struct TargetDe
     return true;
 
   default: {
-    if (auto so_key = so_soMsg_from_otok(kt); so_key != SO_NONE) {
-      if (auto fun = settings_get_soCfgFun(kt)) {
-        fun(td);
-        return true;
-      }
+    if (auto fun = settings_get_soCfgFun(kt)) {
+      fun(td);
+      return true;
     }
+
     return false;
   }
   }
