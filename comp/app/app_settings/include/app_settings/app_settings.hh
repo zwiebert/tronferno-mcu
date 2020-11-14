@@ -34,7 +34,7 @@ CB_TIZO,
   CBA_size
 };
 
-constexpr u32 CBM_gpio = BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO) | BIT(CB_SETBUTTON_GPIO);
+constexpr u32 CBM_gpio = BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO) | BIT(CB_SETBUTTON_GPIO) | BIT(CB_GPIO);
 constexpr u32 CBM_geo = BIT(CB_LONGITUDE) | BIT(CB_LATITUDE) | BIT(CB_TZ) | BIT(CB_ASTRO_CORRECTION);
 
 class AppSettings: public Settings<configAppItem, CBA_size - CB_size, CB_size> {
