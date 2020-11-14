@@ -25,11 +25,9 @@ void lfa_createWifiAp() {
     wifi_ap_active = true;
     wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
 
+#ifdef USE_TCPS_TASK
     struct cfg_tcps cfg_tcps = { .enable = true }; // XXX: user-flags not set
-#ifdef USE_TCPS
- tcpCli_setup(&cfg_tcps);
-#elif defined USE_TCPS_TASK
- tcpCli_setup_task(&cfg_tcps);
+    tcpCli_setup_task(&cfg_tcps);
 #endif
 
     struct cfg_http cfg_http = { .enable = true };

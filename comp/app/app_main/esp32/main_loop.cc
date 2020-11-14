@@ -40,9 +40,6 @@ static const lfa_funT lfa_table[lf_Len] = {
 #if defined USE_AP_FALLBACK || defined USE_WLAN_AP
     lfa_createWifiAp,
 #endif
-#ifdef USE_TCPS
-    tcpCli_loop,
-#endif
     cli_loop,
 #ifdef FER_TRANSMITTER
     fer_tx_loop,

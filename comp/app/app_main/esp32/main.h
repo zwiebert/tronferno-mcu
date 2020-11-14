@@ -38,9 +38,6 @@ enum loop_flagbits {
 #if defined USE_AP_FALLBACK || defined USE_WLAN_AP
   lf_createWifiAp,
 #endif
-#ifdef USE_TCPS
-  lf_loopTcpServer,
-#endif
   lf_loopCli,
 #ifdef FER_TRANSMITTER
   lf_loopFerTx,

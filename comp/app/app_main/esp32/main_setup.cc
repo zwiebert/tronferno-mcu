@@ -90,7 +90,7 @@ void main_setup_ip_dependent() {
 #ifdef USE_MQTT
     config_setup_mqttAppClient();
 #endif
-#if defined USE_TCPS || defined USE_TCPS_TASK
+#ifdef USE_TCPS_TASK
     config_setup_cliTcpServer();
 #endif
 #ifdef USE_HTTP
@@ -115,11 +115,6 @@ void mcu_init() {
   cli_setup_task(true);
 #else
   lfPer100ms_setBit(lf_loopCli);
-#endif
-#ifdef USE_TCPS
-  lfPer100ms_setBit(lf_loopTcpServer);
-#endif
-#ifdef USE_TCPS_TASK
 #endif
   fer_am_updateTimerEvent();
   lfPer100ms_setBit(lf_loopFerTimerState);
