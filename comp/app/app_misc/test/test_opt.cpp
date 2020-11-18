@@ -14,10 +14,6 @@ static void testOptMap1() {
   TEST_ASSERT_EQUAL(otok::NONE, optMap_findToken("ABCDEFG"));
   TEST_ASSERT_EQUAL(otok::NONE, optMap_findToken(""));
 
-  // check if settings related enumerations are in right order and positions
-  TEST_ASSERT_EQUAL(otok::k_cu, SO_CFG_CU - SO_CFG_begin - 1);
-  TEST_ASSERT_EQUAL(otok::k_gpio, SO_CFG_GPIO_MODES - SO_CFG_begin - 1);
-
 }
 
 TEST_CASE("","") {
