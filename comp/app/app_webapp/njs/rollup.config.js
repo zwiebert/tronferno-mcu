@@ -1,13 +1,13 @@
 // rollup.config.js
 import json from "@rollup/plugin-json";
-import { terser } from "rollup-plugin-terser";
 import strip from "@rollup/plugin-strip";
-import { eslint } from "rollup-plugin-eslint";
-import svelte from "rollup-plugin-svelte";
 import resolve from "@rollup/plugin-node-resolve";
-import commonjs from '@rollup/plugin-commonjs'
-import sveltePreprocess from "svelte-preprocess";
+import commonjs from '@rollup/plugin-commonjs';
 import alias from "@rollup/plugin-alias";
+import svelte from "rollup-plugin-svelte";
+import sveltePreprocess from "svelte-preprocess";
+import { eslint } from "rollup-plugin-eslint";
+import { terser } from "rollup-plugin-terser";
 
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDistro = process.env.DISTRO === "yes";
