@@ -4,7 +4,6 @@
   import ShutterMove from "app/shutter_move.svelte";
   import ShutterSun from "app/shutter_sun.svelte";
   import ShutterPct from "app/shutter_pct.svelte";
-  import * as httpFetch from "app/fetch.js";
 </script>
 
 <div class="main-area">

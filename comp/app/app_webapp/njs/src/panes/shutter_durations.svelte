@@ -2,7 +2,6 @@
   "use strict";
   import { _ } from "services/i18n";
   import ShutterGM from "app/shutter_gm.svelte";
-  import * as httpFetch from "app/fetch.js";
   import ShutterPrefs from "app/shutter_prefs.svelte";
 </script>
 

@@ -2,7 +2,7 @@
 import json from "@rollup/plugin-json";
 import strip from "@rollup/plugin-strip";
 import resolve from "@rollup/plugin-node-resolve";
-import commonjs from '@rollup/plugin-commonjs';
+import commonjs from "@rollup/plugin-commonjs";
 import alias from "@rollup/plugin-alias";
 import svelte from "rollup-plugin-svelte";
 import sveltePreprocess from "svelte-preprocess";
@@ -92,23 +92,9 @@ export default {
           }),
         ]
       : []),
-    eslint(),
+    //  eslint(),
     svelte({
       dev: !isProduction,
-      //emitCss: true,
-      css: (css) => {
-        css.write(isProduction ? "build/wapp.css" : "build_dev/wapp.css");
-      },
-      onwarn: (warning, handler) => {
-        // e.g. don't warn on <marquee> elements, cos they're cool
-        if (warning.code === "a11y-no-onchange") return;
-        if (/A11y:/.test(warning.message)) {
-          return;
-        }
-
-        // let Rollup handle all other warnings normally
-        handler(warning);
-      },
       preprocess: sveltePreprocess({
         postcss: true,
         replace: [
@@ -118,7 +104,23 @@ export default {
           ["//NODE_ENV_DEV", isProduction ? "if(false)" : "if(true)"],
         ],
       }),
+      //emitCss: true,
+      css: (css) => {
+        css.write("wapp.css");
+      },
+
+      onwarn: (warning, handler) => {
+        if (warning.code === "a11y-no-onchange") return;
+        if (warning.code === "css-unused-selector") return;
+        if (/A11y:/.test(warning.message)) return;
+
+       // console.log("wc", warning.code);
+
+        // let Rollup handle all other warnings normally
+        handler(warning);
+      },
     }),
+
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In
     // some cases you'll need additional configuration -
@@ -129,6 +131,5 @@ export default {
       dedupe: ["svelte"],
     }),
     commonjs(),
-    
   ],
 };

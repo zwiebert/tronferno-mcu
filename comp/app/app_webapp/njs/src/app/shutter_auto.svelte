@@ -82,7 +82,7 @@
 <div id="autodiv" class="auto">
   <table class="top_table">
     <tr>
-      <td><label>{$_('app.auto.daily')}</label></td>
+      <td>{$_('app.auto.daily')}</td>
       <td><input class="cb" type="checkbox" bind:checked={autoData.hasDaily} /></td>
       <td>
         <label><input type="time" disabled={!autoData.hasDaily} bind:value={autoData.dailyUp} /> &#x25b3;</label><br />
@@ -90,29 +90,28 @@
       </td>
     </tr>
     <tr>
-      <td><label>{$_('app.auto.weekly')}</label></td>
+      <td>{$_('app.auto.weekly')}</td>
       <td><input class="cb" type="checkbox" bind:checked={autoData.hasWeekly} /></td>
       <td><input id="twti" type="text" bind:value={autoData.weekly} /></td>
     </tr>
     <tr>
-      <td><label>{$_('app.auto.astro')}</label></td>
+      <td>{$_('app.auto.astro')}</td>
       <td><input class="cb" type="checkbox" bind:checked={autoData.hasAstro} /></td>
       <td>
         <input style="width:5em;" type="number" min="-90" max="90" disabled={!autoData.hasAstro} bind:value={autoData.astro} />
         {autoData.astroToday}
-        <label /><span id="id_astroTime" />
       </td>
     </tr>
     <tr>
-      <td><label>{$_('app.auto.random')}</label></td>
+      <td>{$_('app.auto.random')}</td>
       <td><input class="cb" type="checkbox" bind:checked={autoData.isRandom} /></td>
     </tr>
     <tr>
-      <td><label>{$_('app.auto.sun')}</label></td>
+      <td>{$_('app.auto.sun')}</td>
       <td><input class="cb" type="checkbox" bind:checked={autoData.isSun} /></td>
     </tr>
     <tr>
-      <td><label>{$_('app.auto.manual')}</label></td>
+      <td>{$_('app.auto.manual')}</td>
       <td><input class="cb" type="checkbox" bind:checked={autoData.isManual} /></td>
     </tr>
   </table>

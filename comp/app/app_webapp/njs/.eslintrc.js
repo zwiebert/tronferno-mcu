@@ -17,6 +17,7 @@ module.exports = {
     }
   ],
   rules: {
+    "css-unused-selector":"off",
     "a11y-no-onchange":"off",
     "no-var": "error",
     "semi": "error",

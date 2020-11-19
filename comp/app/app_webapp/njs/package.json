@@ -24,7 +24,7 @@
 		"svelte": "^3.29.7",
 		"svelte-i18n": "^3.2.5",
 		"svelte-preprocess": "^4.5.2",
-		"tailwindcss": "^1.9.6"
+		"tailwindcss": "^2.0.1"
 	},
 	"jshintConfig": {
 		"esversion": 6,
@@ -45,6 +45,7 @@
 		}
 	},
 	"dependencies": {
+		"autoprefixer": "^10.0.2",
 		"svelte-icons": "^2.1.0"
 	}
 }
