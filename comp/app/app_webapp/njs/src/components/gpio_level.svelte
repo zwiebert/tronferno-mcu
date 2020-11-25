@@ -1,6 +1,6 @@
 <script>
   import { Gpios } from "../store/gpio";
-  import { McuConfig, McuConfigKeys, Gmu, McuGpiosFree } from "stores/mcu_config.js";
+  import { McuConfig } from "stores/mcu_config.js";
   import * as httpFetch from "app/fetch.js";
   export let name;
   //export let value;
