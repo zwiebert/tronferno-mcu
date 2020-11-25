@@ -36,7 +36,7 @@ const char cli_help_parmShpref[] = ""
 #define PARM_OPT_TAG_PREFIX PARM_OPT_TAG "."
 static const char *const opts_kvd[] = {"mvut", "mvdt", "mvspdt"};
 #define OPTS_KVD_SIZE (sizeof opts_kvd / sizeof opts_kvd[0])
-#define OPTS_CLEAR_KEY() (*p[arg_idx].key = '\0')
+#define OPTS_CLEAR_KEY() (p[arg_idx].key = "")
 
 static void output_message_kvs(const struct TargetDesc &td, const char *tag, const char *val) {
   size_t key_size = strlen(tag) + sizeof PARM_OPT_TAG_PREFIX;
@@ -116,7 +116,9 @@ int process_parmShpref(clpar p[], int len, const struct TargetDesc &td) {
       fer_shPref_strByM_forEach(td, "", g, m, output_message_kvs);
 
     } else if (strncmp(key, PARM_OPT_TAG_PREFIX, strlen(PARM_OPT_TAG_PREFIX)) == 0) {
-      char *tag = p[arg_idx].key + strlen(PARM_OPT_TAG_PREFIX);
+      const unsigned tag_len = strlen(p[arg_idx].key) - strlen(PARM_OPT_TAG_PREFIX);
+      char tag[tag_len+1];
+      csu_copy((char *)tag, tag_len + 1, p[arg_idx].key + strlen(PARM_OPT_TAG_PREFIX));
       bool wildcard = false;
       if (*tag && tag[strlen(tag) - 1] == '*') {
         tag[strlen(tag) - 1] = '\0';

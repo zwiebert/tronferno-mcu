@@ -118,13 +118,16 @@ void soMsg_mcu_ota_state(const struct TargetDesc &td) {
   td.so().print("ota-state", ota_getState());
 #endif
 }
-#ifndef TEST_HOST
+
 void soMsg_mcu_boot_count(const struct TargetDesc &td) {
+#ifndef TEST_HOST
   extern i32 boot_counter;
   td.so().print("boot-count", boot_counter);
-
-}
+#else
+  td.so().print("boot-count", 0);
 #endif
+}
+
 void soMsg_mcu_end(const struct TargetDesc &td) {
   td.so().x_close();
 }
