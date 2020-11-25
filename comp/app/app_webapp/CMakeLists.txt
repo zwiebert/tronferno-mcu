@@ -4,7 +4,7 @@ set(srcs    "${COMPONENT_DIR}/build/wapp.html.gz.c"
             "${COMPONENT_DIR}/build/wapp.js.gz.c"
             "${COMPONENT_DIR}/build/wapp.css.gz.c"
             "${COMPONENT_DIR}/build/wapp.js.map.gz.c" "${COMPONENT_DIR}/build/wapp.js.map.br.c"
-            "${COMPONENT_DIR}/build/wapp.css.map.gz.c" "${COMPONENT_DIR}/build/wapp.css.map.br.c"
+ #           "${COMPONENT_DIR}/build/wapp.css.map.gz.c" "${COMPONENT_DIR}/build/wapp.css.map.br.c"
 )
             
  idf_component_register(
