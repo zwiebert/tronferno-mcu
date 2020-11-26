@@ -10,7 +10,9 @@ import { terser } from "rollup-plugin-terser";
 import css from "rollup-plugin-css-only";
 
 export const isProduction = process.env.NODE_ENV === "production";
-export const isDistro = process.env.DISTRO === "yes";
+export const isDistro = process.env.DISTRO === "1";
+
+console.log("isProduction:", isProduction, "isDistro:", isDistro);
 
 let wdir = __dirname + "/";
 
