@@ -14,7 +14,6 @@
   import { ReloadProgress } from "stores/app_state.js";
 
   export let fwbtns = [];
-  export let McuFwGitTags;
   export let chip = "";
   export let updSecs = 30;
 
@@ -132,13 +131,6 @@ table, th, td {
         <td><button id="gitTag_netota" type="button" on:click={gitTags_netota}>Update</button></td>
       </tr>
     </table>
-
-    <div id="gitTags_div" />
-
-    {#if McuFwGitTags}
-      <!-- svelte-ignore reactive-component -->
-      <svelte:component this={McuFwGitTags} />
-    {/if}
   {/if}
 
   {#if $McuFirmwareUpdChip === chip}

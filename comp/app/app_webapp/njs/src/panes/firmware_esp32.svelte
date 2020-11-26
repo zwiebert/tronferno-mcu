@@ -1,7 +1,6 @@
 <script>
   import McuFirmwareUpd from "app/mcu_firmware_upd.svelte";
   import McuFirmwareInfo from "app/mcu_firmware_info.svelte";
-  import McuFwGitTags from "app/mcu_firmware_git_tags.svelte";
   import * as misc from "app/misc.js";
 
   let fwbtns = [
@@ -20,6 +19,6 @@
 </script>
 
 <div class="area">
-  <McuFirmwareUpd {fwbtns} {McuFwGitTags} chip="" updSecs="15" />
+  <McuFirmwareUpd {fwbtns} chip="" updSecs="15" />
   <McuFirmwareInfo />
 </div>
