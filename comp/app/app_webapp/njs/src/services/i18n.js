@@ -69,6 +69,12 @@ const en = {
       h_register_sender_to_smr: "Register a Sender to Receiver in Set-Mode",
     },
   },
+  firmware: {
+    latest_master: "Latest Release",
+    latest_beta: "Latest Beta",
+    version: "Version-Number",
+    url: "URL",
+  },
   help: {
     hint_durStopClock:
       "To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.",
@@ -136,6 +142,11 @@ const de = {
       h_register_receiver_as_gm: "Melde Zentrale an Empfänger-im-Set-Modus an",
       h_register_sender_to_smr: "Melde Sender an Empfänger-im-Set-Modus an",
     },
+  },
+  firmware: {
+    latest_master: "Letzte Release",
+    latest_beta: "Letzte Beta",
+    version: "Versions-Nummer",
   },
   help: {
     hint_durStopClock:

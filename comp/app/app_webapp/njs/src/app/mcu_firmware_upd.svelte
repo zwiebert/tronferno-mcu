@@ -3,14 +3,9 @@
   import * as appDebug from "app/app_debug.js";
   import * as httpFetch from "app/fetch.js";
   import * as misc from "app/misc.js";
-  import {
-    McuFirmwareUpdProgress,
-    McuFirmwareUpdState,
-    McuFirmwareUpdChip,
-    McuGitTagNames,
-  } from "stores/mcu_firmware";
+  import { McuFirmwareUpdProgress, McuFirmwareUpdState, McuFirmwareUpdChip } from "stores/mcu_firmware";
 
-  "use strict";
+  ("use strict");
   import { ReloadProgress } from "stores/app_state.js";
 
   export let fwbtns = [];
@@ -69,99 +64,61 @@
       }
     }
   }
-
-  function gitTags_netota() {
-    const git_tag = document.getElementById("gitTags_select").value;
-    netFirmwareOTA("tag:" + git_tag);
-  }
-
 </script>
 
 <style type="text/scss">
-@import "../styles/app.scss";
-table, th, td {
-  border-color: $color_border_main_area;
-  border-style:solid;
-  margin:0rem;
-  padding:0rem;
-  border-gap:0;
-}
+  @import "../styles/app.scss";
+  table,
+  th,
+  td {
+    border-color: $color_border_main_area;
+    border-style: solid;
+    margin: 0rem;
+    padding: 0rem;
+    border-gap: 0;
+  }
 </style>
 
 <div id="id-fwDiv">
-
   {#if $McuFirmwareUpdState !== 1}
     <table class="border-solid border-collapse">
       <th>Firmware</th>
       <th>Action</th>
       {#each fwbtns as bt}
         <tr>
-          {#if !bt.input}
-            <td class="text-center">{bt.name}</td>
+          {#if bt.input === 'none'}
+            <td class="text-center">{bt.name} {bt.version}</td>
+          {:else if bt.input === 'select'}
             <td>
-              <button
-                type="button"
-                on:click={() => netFirmwareOTA(bt.ota_name)}>
-                Update
-              </button>
+              {bt.name}
+              <select bind:value={bt.value}>
+                {#each bt.values as name}
+                  <option value={name}>{name}</option>
+                {/each}
+              </select>
             </td>
           {:else if bt.input === 'input'}
-            <td class="text-center">
-              URL:
-              <input type="text" id={bt.ota_name} bind:value={bt.input_value} />
-            </td>
-            <td>
-              <button
-                type="button"
-                on:click={() => netFirmwareOTA(document.getElementById(bt.ota_name).value)}>
-                Update
-              </button>
-            </td>
+            <td class="text-center">URL: <input type="text" id={bt.ota_name} bind:value={bt.value} /></td>
           {/if}
+          <td><button type="button" on:click={() => netFirmwareOTA(bt.get_ota_name())}> Update </button></td>
         </tr>
       {/each}
-      <tr>
-        <td>Version: 
-          <select id="gitTags_select">
-            {#each $McuGitTagNames as name}
-              <option value={name}>{name}</option>
-            {/each}
-          </select>
-        </td>
-        <td><button id="gitTag_netota" type="button" on:click={gitTags_netota}>Update</button></td>
-      </tr>
     </table>
   {/if}
 
   {#if $McuFirmwareUpdChip === chip}
     {#if $McuFirmwareUpdState === 2}
       <br />
-      <strong>
-        Update failed
-        <br />
-        <br />
-      </strong>
+      <strong> Update failed <br /> <br /> </strong>
     {:else if $McuFirmwareUpdState === 3}
       <br />
-      <strong>
-        Update succeeded
-        <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}>
-          {$_('app.restartMcu')}
-        </button>
-        <br />
-        <br />
-      </strong>
+      <strong> Update succeeded <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}> {$_('app.restartMcu')} </button> <br /> <br /> </strong>
     {:else if $McuFirmwareUpdState === 1}
       <strong>{$_('app.msg_firmwareIsUpdating')}</strong>
       <br />
       <br />
       <progress value={$McuFirmwareUpdProgress} max={updSecs} />
     {/if}
-    {#if $ReloadProgress > 0}
-      <strong>{$_('app.msg_waitForMcuRestart')}</strong>
-      <br />
-      <progress value={$ReloadProgress} max="100" />
-    {/if}
+    {#if $ReloadProgress > 0}<strong>{$_('app.msg_waitForMcuRestart')}</strong> <br /> <progress value={$ReloadProgress} max="100" />{/if}
   {/if}
-
 </div>
