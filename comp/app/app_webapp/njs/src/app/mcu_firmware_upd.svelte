@@ -53,7 +53,6 @@
 
   $: {
     if (netota_isInProgress) {
-      console.log("progress trace", $McuFirmwareUpdState);
       if ($McuFirmwareUpdState === 0) {
         //
       } else if ($McuFirmwareUpdState === 1) {
@@ -73,15 +72,19 @@
   td {
     border-color: $color_border_main_area;
     border-style: solid;
+    border-width: 1px;
+    border-radius: .75rem;
+    overflow: hidden;
+    border-collapse: collapse;
     margin: 0rem;
-    padding: 0rem;
+    padding: 0rem .25rem;
     border-gap: 0;
   }
 </style>
 
 <div id="id-fwDiv">
   {#if $McuFirmwareUpdState !== 1}
-    <table class="border-solid border-collapse">
+    <table class="border-solid border-collapse rounded-xl overflow-hidden">
       <th>Firmware</th>
       <th>Action</th>
       {#each fwbtns as bt}

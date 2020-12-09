@@ -11,7 +11,6 @@
   }
   $: {
     dummy_fun($AppLog);
-    console.log("scroll");
     let elem = document.getElementById('app_log_div');
     if (elem)
        elem.scrollTop = elem.scrollHeight;

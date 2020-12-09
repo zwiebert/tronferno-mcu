@@ -97,9 +97,19 @@
 </script>
 
 <style type="text/scss">
+  $color_bg: white;
+  $color_fg: black;
+  $color_border: grey;
+
   button {
-    background-color: white;
-    border: thin solid grey;
+    background-color: $color_bg;
+    border: thin solid $color_border;
+    color: $color_fg;
+  }
+
+  button:active {
+  background-color: darken($color_bg, 5%);
+  color: lighten($color_fg, 5%);
   }
 
   .ft2411-sbt {
@@ -122,7 +132,7 @@
 </style>
 
 <div id="sdi" class="inline-block">
-  <div class="text-gray-800 bg-gray-400 p-1 font-mono text-lg">
+  <div class="text-gray-800 bg-gray-400 p-1 font-mono text-lg rounded-sm">
 
     <div class="h-6 text-center">{name}</div>
 
@@ -137,14 +147,14 @@
   <div class="flex justify-between">
     <button
       class="text-lg  pt-1 pb-2 pl-2 pr-4"
-      style="border-radius: 40%;"
+      style="border-bottom-right-radius: 100%;"
       type="button"
       on:click={hClick_G}>
       G
     </button>
     <button
       class="text-lg pt-1 pb-2  pl-4 pr-2"
-      style="border-radius: 40%;"
+      style="border-bottom-left-radius: 100%;"
       type="button"
       on:click={hClick_M}>
       E

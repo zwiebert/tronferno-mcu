@@ -163,6 +163,17 @@ button {
   margin: .5rem;
 }
 
+button:active {
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+}
+
+button:active {
+  background-color: darken($color_bg, 25%);
+  color: lighten($color_fg, 25%);
+}
+
+
 input {
   background-color: white;
 }

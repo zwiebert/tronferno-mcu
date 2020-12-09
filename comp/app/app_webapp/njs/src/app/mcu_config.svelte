@@ -22,7 +22,6 @@
 
   let on_destroy = [];
   onMount(() => {
-    console.log("fetch_config");
     httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG | httpFetch.FETCH_CONFIG_GPIO_STRING);
   });
   onDestroy(() => {
@@ -36,7 +35,6 @@
   let mcuConfig = {};
   function updateMcuConfig(obj) {
     mcuConfig = { ...obj };
-    console.log("mcuConfig: ", mcuConfig);
   }
 
   $: {
@@ -97,7 +95,6 @@
 
     Object.keys(cfg_mod).forEach(function (key, idx) {
       if (key.startsWith("gpio") && key !== "gpio" && cfg_mod[key] === "d") {
-        console.log("remove key: ", key);
         McuConfig.remove(key);
       }
     });
@@ -144,9 +141,9 @@
 </style>
 
 <div class="config" id="config-div">
-  <table id="cfg_table_id" class="conf-table top_table">
+  <table id="cfg_table_id" class="conf-table top_table rounded-xl overflow-hidden">
     {#each mcuConfigKeys as name, i}
-      <tr class={i % 2 ? 'row1' : 'row2'}>
+      <tr class="{i % 2 ? 'row1' : 'row2'}">
         {#if name !== 'gm-used'}
           <td><label class="config-label {mcuConfig[name] != $McuConfig[name] ? 'font-bold' : ''}" for="cfg_{name}">{name}</label></td>
         {/if}

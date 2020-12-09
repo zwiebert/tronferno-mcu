@@ -19,6 +19,8 @@ bundle_c = build/wapp.html.gz.c build/wapp.js.gz.c build/wapp.js.map.gz.c build/
 .PHONY: bundle
 all: $(bundle_c)
 
+dist = 
+
 $(addprefix njs/build_dev/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
 	cd njs && env NODE_ENV=development npm run build
 $(addprefix njs/build/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules

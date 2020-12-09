@@ -7,6 +7,7 @@
 <style>
   .div-2411 {
     border: thin solid grey;
+    border-radius: 1rem 1rem 10rem 10rem;
   }
   button {
     background-color: white;
@@ -23,7 +24,7 @@
 
 {#if $MenuCount === 1}
 <div class="area">
-  <div class="bg-white">
+  <div class="bg-white rounded-xl">
   <ShutterAuto />
 </div>
 </div>

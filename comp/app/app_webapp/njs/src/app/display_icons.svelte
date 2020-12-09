@@ -48,12 +48,12 @@
       <FaRegCalendarAlt />
     {/if}
   </div>
-  <div class="h-4 w-4 text-yellow-700">
+  <div class="h-4 w-4 text-gray-800">
     {#if hasSun}
       <FaSun />
     {/if}
   </div>
-  <div class="h-4 w-4 text-yellow-700">
+  <div class="h-4 w-4 text-gray-800">
     {#if hasAstro}
       <FaMoon />
     {/if}

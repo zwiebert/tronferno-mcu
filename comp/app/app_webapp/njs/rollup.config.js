@@ -88,9 +88,10 @@ export default {
     ...(isProduction
       ? [
           strip({
-            functions: ["testing.*", "testing_*", "appDebug.*", "console.*", "assert.*"],
-            labels: ["testing"],
-            sourceMap: true,
+           //include: "src/**/*.(js)",
+           functions: ["testing.*", "testing_*", "appDebug.*", "console.*", "assert.*"],
+           labels: ["testing"],
+           sourceMap: true,
           }),
         ]
       : []),
@@ -102,6 +103,8 @@ export default {
           ["misc.PROD", isProduction ? "true" : "false"],
           ["misc.DISTRO", isDistro ? "true" : "false"],
           ["//NODE_ENV_DEV", isProduction ? "if(false)" : "if(true)"],
+          ...(isProduction ? [
+          ] : []),
         ],
       }),
       compilerOptions: {
@@ -110,11 +113,7 @@ export default {
       onwarn: (warning, handler) => {
         if (warning.code === "a11y-no-onchange") return;
         if (warning.code === "css-unused-selector") return;
-        if (/A11y:/.test(warning.message)) return;
-
-        // console.log("wc", warning.code);
-
-        // let Rollup handle all other warnings normally
+        if (warning.code.startsWith("a11y-")) return;
         handler(warning);
       },
     }),

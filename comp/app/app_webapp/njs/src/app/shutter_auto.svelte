@@ -17,11 +17,6 @@
 
   $: transmitCountDown = 0;
 
-  $: {
-    console.log("AutoData:", $AutoData);
-    console.log("autoData:", autoData);
-  }
-
   function hClick_Reload() {
     httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
   }

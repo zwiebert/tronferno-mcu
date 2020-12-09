@@ -180,7 +180,6 @@
         if (hex.length < 2) val = "0" + val;
       }
     }
-    //console.log("at_fromHtml", key, val);
     return val;
   }
 

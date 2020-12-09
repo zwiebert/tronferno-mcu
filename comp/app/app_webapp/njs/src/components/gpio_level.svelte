@@ -18,7 +18,6 @@
     } else {
       output_only = true;
     }
-    console.log("cfg changed", output_only, cfg, name);
 }
 
 
