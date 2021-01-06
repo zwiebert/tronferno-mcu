@@ -1,4 +1,5 @@
 "use strict";
+import { _ } from "services/i18n";
 import { derived } from "svelte/store";
 import { OptionStore, PersistentValStore } from "./custom_stores.js";
 
@@ -25,6 +26,15 @@ export const McuGpiosFree = derived(McuConfig, (cfg) => {
   for (let i = 0; i < gpios.length; ++i) {
     if (gpios.charAt(i) !== "d") continue;
     result.push(i);
+  }
+  return result;
+});
+
+
+export const McuConfigNames = derived(McuConfigKeys, (keys) => {
+  let result = {};
+  for (let key of keys) {
+     result[key] = _("mcuConfigNames."+key) || key;
   }
   return result;
 });

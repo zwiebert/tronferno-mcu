@@ -81,6 +81,44 @@ const en = {
     hint_shutterAlias:
       "To register position changes made by commands sent from plain controllers and sun-sensors, these controllers have to be registered here. Select G/E above and pair the controller here by start pairing and pressing STOP on the controller.",
   },
+  mcuConfigNames: {
+    "verbose": "CLI Verbosity",
+    "cu": "Central-Unit-ID",
+    "astro-correction": "Astro Correction",
+    "rtc": "Date/Time",
+    "tz": "Timezone (Posix)",
+    "wlan-ssid": "SSID",
+    "wlan-password": "Password",
+    "ntp-server": "NTP-Server",
+    "mqtt-enable": "On/Off",
+    "mqtt-url": "Server-URL",
+    "mqtt-user": "Login-Name",
+    "mqtt-password": "Login-Password",
+    "mqtt-client-id": "Client-ID",
+    "mqtt-root-topic": "Root-Topic",
+    "http-enable": "On/Off",
+    "http-user": "Auth-Name",
+    "http-password": "Auth-Password",
+    "longitude": "Longitude",
+    "latitude": "Latitude",
+    "network": "Chose Connection",
+    "rf-tx-pin": "RF-Sender",
+    "rf-rx-pin": "RF-Receiver",
+    "set-button-pin": "Set-Button",
+    "gm-used": "Receivers",
+  },
+
+  mcuConfig: {
+    "wlan_station": "WLAN Station",
+    "network": "Network-Connection and -Services",
+    "misc": "Other Settings",
+    "ntp_client": "NTP Client",
+    "mqtt_client": "MQTT Client",
+    "http_server": "Webserver",
+    "pin_gpio": "Elektrical In-/Outputs",
+    "config_wizards": "Configurations-Wizards",
+    "gm_used": "Number of Receivers per Group",
+  },
 };
 
 const de = {
@@ -154,6 +192,45 @@ const de = {
     hint_shutterAlias:
       "Zum Zuordnen von Bewegungen durch Kommandos von Handsendern und Sonnensensoren müssen diese registriert werden. Bitte G/E auswählen und Pair oder Unpair starten, dann STOP am Handsender drücken.",
   },
+  mcuConfigNames: {
+    "verbose": "CLI Verbose Level",
+    "cu": "Zentrale ID",
+    "astro-correction": "Astro Korrektur",
+    "rtc": "Datum/Uhrzeit",
+    "tz": "Zeitzone (Posix)",
+    "wlan-ssid": "SSID",
+    "wlan-password": "Passwort",
+    "ntp-server": "Server-URL",
+    "mqtt-enable": "Ein/Aus",
+    "mqtt-url": "Server-URL",
+    "mqtt-user": "Login-Name",
+    "mqtt-password": "Login-Passwort",
+    "mqtt-client-id": "Klient-ID",
+    "mqtt-root-topic": "Root-Topic",
+    "http-enable": "Ein/Aus",
+    "http-user": "Auth-Name",
+    "http-password": "Auth-Passwort",
+    "longitude": "Längengrad",
+    "latitude": "Breitengrad",
+    "network": "Wähle Verbindung",
+    "rf-tx-pin": "Funk-Sender",
+    "rf-rx-pin": "Funk-Empfänger",
+    "set-button-pin": "Setz-Knopf",
+    "gm-used": "Empfänger",
+  },
+
+  mcuConfig: {
+    "wlan_station": "WLAN Station",
+    "network": "Netwerkverbindung und -dienste",
+    "misc": "Sonstige Einstellungen",
+    "ntp_client": "NTP Klient",
+    "mqtt_client": "MQTT Klient",
+    "http_server": "Webserver",
+    "pin_gpio": "Elektrische Ein- und Ausgänge",
+    "config_wizards": "Konfigurations-Assistenten",
+    "gm_used": "Anzahl Empfänger je Gruppe",
+
+  }
 };
 
 function setupI18n({ withLocale: _locale } = { withLocale: "en" }) {

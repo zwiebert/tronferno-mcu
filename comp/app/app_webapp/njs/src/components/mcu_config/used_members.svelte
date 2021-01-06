@@ -1,6 +1,7 @@
 <script>
   import { Gmu } from "stores/mcu_config.js";
 
+  export let caption;
   export let name;
   export let value;
   export let changed;
@@ -42,15 +43,14 @@
 
 </script>
 
-<table id="gmu-table">
+<table id="gmu-table" class="border-black border-2">
+  <caption  class="{changed ? 'font-bold' : 'font-normal'}">{caption}</caption>
   <tr>
-    <td></td>
     {#each { length: 7 } as _, i}
-      <td><label>{i + 1}</label></td>
+      <td><label>G{i + 1}</label></td>
     {/each}
   </tr>
   <tr>
-    <td><label class="{changed ? 'font-bold' : ''}">{name}</label></td>
     {#each gmu as n, i}
       {#if i > 0}
         <td><input bind:value={gmu[i]} id="gmu{i}" style="width:2em;" type="number" min="0" max="7" /></td>

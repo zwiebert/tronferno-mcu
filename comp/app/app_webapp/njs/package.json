@@ -8,16 +8,16 @@
 	},
 	"devDependencies": {
 		"@rollup/plugin-alias": "^3.1.1",
-		"@rollup/plugin-commonjs": "^16.0.0",
+		"@rollup/plugin-commonjs": "^17.0.0",
 		"@rollup/plugin-json": "^4.1.0",
-		"@rollup/plugin-node-resolve": "^10.0.0",
+		"@rollup/plugin-node-resolve": "^11.0.1",
 		"@rollup/plugin-strip": "^2.0.0",
-		"eslint-plugin-svelte3": "^2.7.3",
+		"eslint-plugin-svelte3": "^3.0.0",
 		"node-sass": "^5.0.0",
-		"postcss": "^8.2.1",
+		"postcss": "^8.2.2",
 		"postcss-load-config": "^3.0.0",
-		"rollup": "^2.34.2",
-		"rollup-plugin-css-only": "^3.0.0",
+		"rollup": "^2.35.1",
+		"rollup-plugin-css-only": "^3.1.0",
 		"rollup-plugin-eslint": "^7.0.0",
 		"rollup-plugin-livereload": "^2.0.0",
 		"rollup-plugin-svelte": "^7.0.0",
@@ -25,7 +25,7 @@
 		"svelte": "^3.31.0",
 		"svelte-i18n": "^3.3.0",
 		"svelte-preprocess": "^4.6.1",
-		"tailwindcss": "^2.0.1"
+		"tailwindcss": "^2.0.2"
 	},
 	"jshintConfig": {
 		"esversion": 6,

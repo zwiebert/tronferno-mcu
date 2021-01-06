@@ -18,7 +18,7 @@
   import McuConfigAstroCorrection from "components/mcu_config/astro_correction.svelte";
   import McuConfigUsedMembers from "components/mcu_config/used_members.svelte";
 
-  import GpioLevel from "components/gpio_level.svelte"
+  import GpioLevel from "components/gpio_level.svelte";
 
   let on_destroy = [];
   onMount(() => {
@@ -30,7 +30,34 @@
     }
   });
 
-  $: mcuConfigKeys = $McuConfigKeys;
+  $: mcuConfigNames = {}; // localized GUI labels
+  $: {
+    for (let key of $McuConfigKeys) {
+      mcuConfigNames[key] = $_({ id: "mcuConfigNames." + key, default: key });
+    }
+  }
+
+  $: mcuConfigKeysNetwork = $McuConfigKeys.filter((val) => val === "network");
+  $: mcuConfigKeysMQTT = $McuConfigKeys.filter((val) => val.startsWith("mqtt-"));
+  $: mcuConfigKeysHTTP = $McuConfigKeys.filter((val) => val.startsWith("http-"));
+  $: mcuConfigKeysWLAN = $McuConfigKeys.filter((val) => val.startsWith("wlan-"));
+  $: mcuConfigKeysLAN = $McuConfigKeys.filter((val) => val.startsWith("lan-"));
+  $: mcuConfigKeysNTP = $McuConfigKeys.filter((val) => val.startsWith("ntp-"));
+  $: mcuConfigKeysPin = $McuConfigKeys.filter((val) => val.endsWith("-pin") || val.startsWith("gpio"));
+
+  $: mcuConfigKeysMisc = $McuConfigKeys.filter(
+    (val) =>
+      !(
+        val === "gm-used" ||
+        mcuConfigKeysNetwork.includes(val) ||
+        mcuConfigKeysMQTT.includes(val) ||
+        mcuConfigKeysHTTP.includes(val) ||
+        mcuConfigKeysWLAN.includes(val) ||
+        mcuConfigKeysLAN.includes(val) ||
+        mcuConfigKeysNTP.includes(val) ||
+        mcuConfigKeysPin.includes(val)
+      )
+  );
 
   let mcuConfig = {};
   function updateMcuConfig(obj) {
@@ -104,13 +131,18 @@
     httpFetch.http_postRequest(url, { config: cfg_mod });
   }
 
+  function cfg_by_name(name) {
+    let res = {};
+    res.name = name;
+    return res;
+  }
+
   ///////////////// wizard ////////////////////
   $: wiz_gpio = -1;
   $: wiz_gpio_status = "";
 
   function wiz_addGpio() {
-    if (wiz_gpio === -1)
-       return;
+    if (wiz_gpio === -1) return;
     let cmd = { to: "tfmcu", config: {} };
     const gpioKey = "gpio" + wiz_gpio;
     cmd.config[gpioKey] = "i";
@@ -138,74 +170,229 @@
   .row2 {
     background-color: lighten($color_bg_area, 10%);
   }
+  .network {
+    background-color: darken($color_bg_area, 5%);
+  }
 </style>
 
-<div class="config" id="config-div">
-  <table id="cfg_table_id" class="conf-table top_table rounded-xl overflow-hidden">
-    {#each mcuConfigKeys as name, i}
-      <tr class="{i % 2 ? 'row1' : 'row2'}">
-        {#if name !== 'gm-used'}
-          <td><label class="config-label {mcuConfig[name] != $McuConfig[name] ? 'font-bold' : ''}" for="cfg_{name}">{name}</label></td>
-        {/if}
+{#if mcuConfigKeysNetwork.length > 0}
+  <div class="area network">
+    <h4>{$_('mcuConfig.network')}</h4>
+    <table class="conf-table top_table rounded-xl overflow-hidden">
+      {#each mcuConfigKeysNetwork as key, i}
+        <tr>
+          <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+          {#if key.endsWith('-enable')}
+            <td>
+              <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+            </td>
+          {:else if key === 'network'}
+            <td>
+              <McuConfigNetwork name={key} bind:value={mcuConfig[key]} has_lan={mcuConfigKeysLAN.length > 0 || mcuConfig.network === 'lan'} />
+            </td>
+          {:else}
+            <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+          {/if}
+        </tr>
+      {/each}
+    </table>
 
-        {#if name.endsWith('-enable')}
-          <td>
-            <McuConfigEnable {name} bind:value={mcuConfig[name]} />
-          </td>
-        {:else if name === 'latitude'}
-          <td>
-            <McuConfigNumber {name} bind:value={mcuConfig[name]} min="-90" max="90" step="0.01" />
-          </td>
-        {:else if name === 'longitude'}
-          <td>
-            <McuConfigNumber {name} bind:value={mcuConfig[name]} min="-180" max="180" step="0.01" />
-          </td>
-        {:else if name === 'rf-rx-pin' || name === 'set-button-pin'}
-          <td>
-            <McuConfigGpioSelect {name} bind:value={mcuConfig[name]} />
-          </td>
-        {:else if name === 'rf-tx-pin'}
-          <td>
-            <McuConfigGpioSelect {name} bind:value={mcuConfig[name]} max="36"/>
-          </td>
-        {:else if name === 'verbose'}
-          <td>
-            <McuConfigNumber {name} bind:value={mcuConfig[name]} min="0" max="5" />
-          </td>
-        {:else if name === 'network'}
-          <td>
-            <McuConfigNetwork {name} bind:value={mcuConfig[name]} />
-          </td>
-        {:else if name === 'lan-phy'}
-          <td>
-            <McuConfigLanPhy {name} bind:value={mcuConfig[name]} />
-          </td>
-        {:else if name === 'lan-pwr-gpio'}
-          <td>
-            <McuConfigGpioSelect {name} bind:value={mcuConfig[name]} max="36"/>
-          </td>
-        {:else if name === 'astro-correction'}
-          <td>
-            <McuConfigAstroCorrection {name} bind:value={mcuConfig[name]} />
-          </td>
-        {:else if name.startsWith('gpio')}
-          <td>
-            <McuConfigGpio {name} bind:value={mcuConfig[name]} /> <GpioLevel {name} />
-          </td>
-        {:else if name !== 'gm-used'}
-          <td><input class="config-input text" type="text" id="cfg_{name}" {name} bind:value={mcuConfig[name]} /></td>
-        {/if}
-      </tr>
-    {/each}
-  </table>
-</div>
+    {#if mcuConfig.network !== 'none'}
+      {#if mcuConfigKeysWLAN.length > 0 && mcuConfig.network === 'wlan'}
+        <div class="area">
+          <table class="conf-table top_table rounded-xl overflow-hidden">
+            <caption>{$_('mcuConfig.wlan_station')}</caption>
+            {#each mcuConfigKeysWLAN as key, i}
+              <tr>
+                <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                {#if key.endsWith('-enable')}
+                  <td>
+                    <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                  </td>
+                {:else}
+                  <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                {/if}
+              </tr>
+            {/each}
+          </table>
+        </div>
+      {/if}
 
-{#if 'gm-used' in mcuConfig}
-  <McuConfigUsedMembers name="gm-used" bind:value={mcuConfig['gm-used']} changed={mcuConfig['gm-used'] !== $McuConfig['gm-used']} />
+      {#if mcuConfigKeysLAN.length > 0 && mcuConfig.network === 'lan'}
+        <div class="area">
+          <table class="conf-table top_table rounded-xl overflow-hidden">
+            <caption>{$_('mcuConfig.ethernet')}</caption>
+            {#each mcuConfigKeysLAN as key, i}
+              <tr>
+                <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                {#if key.endsWith('-enable')}
+                  <td>
+                    <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                  </td>
+                {:else if key === 'lan-phy'}
+                  <td>
+                    <McuConfigLanPhy name={key} bind:value={mcuConfig[key]} />
+                  </td>
+                {:else if key === 'lan-pwr-gpio'}
+                  <td>
+                    <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="36" />
+                  </td>
+                {:else}
+                  <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                {/if}
+              </tr>
+            {/each}
+          </table>
+        </div>
+      {/if}
+
+      {#if mcuConfigKeysNTP.length > 0}
+        <div class="area">
+          <table class="conf-table top_table rounded-xl overflow-hidden">
+            <caption>{$_('mcuConfig.ntp_client')}</caption>
+            {#each mcuConfigKeysNTP as key, i}
+              <tr>
+                <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                {#if key.endsWith('-enable')}
+                  <td>
+                    <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                  </td>
+                {:else}
+                  <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                {/if}
+              </tr>
+            {/each}
+          </table>
+        </div>
+      {/if}
+
+      {#if mcuConfigKeysMQTT.length > 0}
+        <div class="area">
+          <table class="conf-table top_table rounded-xl overflow-hidden">
+            <caption>{$_('mcuConfig.mqtt_client')}</caption>
+            {#each mcuConfigKeysMQTT as key, i}
+              <tr>
+                <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+
+                {#if key.endsWith('-enable')}
+                  <td>
+                    <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                  </td>
+                {:else}
+                  <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                {/if}
+              </tr>
+            {/each}
+          </table>
+        </div>
+      {/if}
+
+      {#if mcuConfigKeysHTTP.length > 0}
+        <div class="area">
+          <table class="conf-table top_table rounded-xl overflow-hidden">
+            <caption>{$_('mcuConfig.http_server')}</caption>
+            {#each mcuConfigKeysHTTP as key, i}
+              <tr>
+                <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+
+                {#if key.endsWith('-enable')}
+                  <td>
+                    <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                  </td>
+                {:else}
+                  <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                {/if}
+              </tr>
+            {/each}
+          </table>
+        </div>
+      {/if}
+    {/if}
+  </div>
 {/if}
+
 <button type="button" on:click={hClick_Reload}>{$_('app.reload')}</button>
 <button type="button" on:click={hClick_Save}>{$_('app.save')}</button>
-<button type="button" on:click={hClick_RestartMcu}> {$_('app.restartMcu')} </button>
+<button type="button" on:click={hClick_RestartMcu}> {$_('app.restartMcu')}</button>
+
+<div class="area network">
+  <h4>{$_('mcuConfig.misc')}</h4>
+  <div class="config" id="config-div">
+    <table id="cfg_table_id" class="conf-table top_table rounded-xl overflow-hidden">
+      {#each mcuConfigKeysMisc as key, i}
+        <tr class={i % 2 ? 'row1' : 'row2'}>
+          <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+          {#if key.endsWith('-enable')}
+            <td>
+              <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+            </td>
+          {:else if key === 'latitude'}
+            <td>
+              <McuConfigNumber name={key} bind:value={mcuConfig[key]} min="-90" max="90" step="0.01" />
+            </td>
+          {:else if key === 'longitude'}
+            <td>
+              <McuConfigNumber name={key} bind:value={mcuConfig[key]} min="-180" max="180" step="0.01" />
+            </td>
+          {:else if key === 'verbose'}
+            <td>
+              <McuConfigNumber name={key} bind:value={mcuConfig[key]} min="0" max="5" />
+            </td>
+          {:else if key === 'astro-correction'}
+            <td>
+              <McuConfigAstroCorrection name={key} bind:value={mcuConfig[key]} />
+            </td>
+          {:else}
+            <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+          {/if}
+        </tr>
+      {/each}
+    </table>
+  </div>
+
+  {#if 'gm-used' in mcuConfig}
+    <div class="area">
+      <McuConfigUsedMembers
+        caption={$_('mcuConfig.gm_used')}
+        name={mcuConfigNames['gm-used']}
+        bind:value={mcuConfig['gm-used']}
+        changed={mcuConfig['gm-used'] !== $McuConfig['gm-used']} />
+    </div>
+  {/if}
+
+  {#if mcuConfigKeysPin.length > 0}
+    <div class="area">
+      <table class="conf-table top_table rounded-xl overflow-hidden">
+        <caption>{$_('mcuConfig.pin_gpio')}</caption>
+        {#each mcuConfigKeysPin as key, i}
+          <tr>
+            <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+            {#if key.endsWith('-enable')}
+              <td>
+                <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+              </td>
+            {:else if key === 'rf-rx-pin' || key === 'set-button-pin'}
+              <td>
+                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
+              </td>
+            {:else if key === 'rf-tx-pin'}
+              <td>
+                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="36" />
+              </td>
+            {:else if key.startsWith('gpio')}
+              <td>
+                <McuConfigGpio name={key} bind:value={mcuConfig[key]} />
+                <GpioLevel name={key} />
+              </td>
+            {:else}
+              <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+            {/if}
+          </tr>
+        {/each}
+      </table>
+    </div>
+  {/if}
+</div>
 
 {#if $ReloadProgress > 0}
   <br />
@@ -214,17 +401,15 @@
   <progress id="reload_progress_bar" value={$ReloadProgress} max="100" />
 {/if}
 
-<section>
-  <h4>Configuration-Wizards</h4>
-  <ul>
-    <li>
-      <label>GPIO add: 
-        <McuConfigGpioSelect name="wizard_gpio" bind:value={wiz_gpio} show_value={false}/>
-        <button type="button" on:click={wiz_addGpio}>Add</button>
-        {@html wiz_gpio_status}
-      </label>
-    </li>
+<section class="area network">
+  <h4>{$_('mcuConfig.config_wizards')}</h4>
+  <div class="area">
+    <label>GPIO add:
+      <McuConfigGpioSelect name="wizard_gpio" bind:value={wiz_gpio} show_value={false} />
+      <button type="button" on:click={wiz_addGpio}>Add</button>
+      {@html wiz_gpio_status}
+    </label>
+  </div>
 
-    <li><button id="id_cuasb" type="button" on:click={hClick_ScanCU}> {$_('app.wizard_cuas')} </button> <span id="id_cuasStatus" /></li>
-  </ul>
+  <div class="area"><button id="id_cuasb" type="button" on:click={hClick_ScanCU}> {$_('app.wizard_cuas')} </button> <span id="id_cuasStatus" /></div>
 </section>

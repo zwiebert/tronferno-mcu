@@ -1,7 +1,6 @@
 <script>
   "use strict";
   import ShutterGM from "app/shutter_gm.svelte";
-  import * as httpFetch from "app/fetch.js";
   import ShutterAlias from "app/shutter_alias.svelte";
 </script>
 
