@@ -4,18 +4,17 @@
 
   export let name = "nav_tab";
   export let nav_tabs = [];
+  export let vertical = false;
 
   function setTabIdx(idx) {
     let obj = {};
     obj[name] = idx;
     TabIdx.update(obj);
   }
-
 </script>
 
 <style type="text/scss">
   /* Style the buttons that are used to open the tab content */
-
 </style>
 
 <div id="tabBar" class="overflow-hidden">
@@ -26,5 +25,6 @@
       on:click={() => setTabIdx(i)}>
       {tab}
     </button>
+    {#if vertical}<br />{/if}
   {/each}
 </div>
