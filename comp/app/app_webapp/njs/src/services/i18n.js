@@ -221,7 +221,7 @@ const de = {
 
   mcuConfig: {
     "wlan_station": "WLAN Station",
-    "network": "Netwerkverbindung und -dienste",
+    "network": "Netzwerkverbindung und -dienste",
     "misc": "Sonstige Einstellungen",
     "ntp_client": "NTP Klient",
     "mqtt_client": "MQTT Klient",
