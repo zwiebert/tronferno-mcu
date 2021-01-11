@@ -1,4 +1,5 @@
 "use strict";
+import * as httpFetch from "app/fetch.js";
 import * as appDebug from "app/app_debug.js";
 import {
   McuBootCount,
@@ -66,6 +67,13 @@ export function http_handleResponses(obj) {
       let all = {};
       all[key] = val;
       Aliases.update(all);
+    }
+  }
+
+  if ("pras" in obj) {
+    let pras = obj.pras;
+    if (pras.success) {
+      httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
     }
   }
 

@@ -3,6 +3,7 @@
 #include "fernotron/alias/pairings.h"
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "app_uout/status_output.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
@@ -23,7 +24,9 @@
 
 #define CFG_NAMESPACE "Tronferno"
 #define CFG_PARTNAME "nvs"
-#define KEY_PREFIX "cpair_"
+#define CPAIR_KEY_PREFIX "cpair_"
+#define CPAIR_KEY_PREFIX_LEN (sizeof CPAIR_KEY_PREFIX - 1)
+#define CPAIR_KEY_LEN (CPAIR_KEY_PREFIX_LEN + 6)
 
 
   
@@ -46,7 +49,7 @@ static bool read_controller(Fer_GmSet *gm, const char *key) {
   bool success = false;
   kvshT handle = kvs_open(CFG_NAMESPACE, kvs_READ);
   if (handle) {
-    success = kvs_rw_blob(handle, key, gm, sizeof *gm, false);
+    success = kvs_rw_blob(handle, key, gm, sizeof *gm, false) == sizeof *gm;
     kvs_close(handle);
   }
   return success;
@@ -95,9 +98,7 @@ add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
   return result;
 }
 
-#define a2key(a)     char key[] = KEY_PREFIX "10abcd"; itoa(a, &key[sizeof(KEY_PREFIX) - 1], 16);
-
-
+#define a2key(a)     char key[] = CPAIR_KEY_PREFIX "10abcd"; itoa(a, &key[sizeof(CPAIR_KEY_PREFIX) - 1], 16);
 
 
 bool fer_alias_setControllerPairings(uint32_t controller, Fer_GmSet *mm) {
@@ -106,7 +107,11 @@ bool fer_alias_setControllerPairings(uint32_t controller, Fer_GmSet *mm) {
 
   kvshT handle = kvs_open(CFG_NAMESPACE, kvs_WRITE);
   if (handle) {
-    success = kvs_rw_blob(handle, key, mm, sizeof *mm, true) && kvs_commit(handle);
+    if (mm->isAllClear()) {
+      success = kvs_erase_key(handle, key) && kvs_commit(handle);
+    } else {
+      success = kvs_rw_blob(handle, key, mm, sizeof *mm, true) == sizeof *mm && kvs_commit(handle);
+    }
     kvs_close(handle);
 #ifdef NVS_BUG_WA
     if (success) {
@@ -161,14 +166,39 @@ bool fer_alias_getControllerPairings(u32 a, Fer_GmSet *gm) {
   return success;
 }
 
-static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
-    auto td = static_cast<struct TargetDesc *>(args);
-    so_arg_kmm_t arg;
-    Fer_GmSet gm;
-    arg.mm = &gm;
+static bool cpairKey_isValid(const char *key) {
+  if (strlen(key) != CPAIR_KEY_LEN)
+    return false;
 
-    arg.key = &key[sizeof(KEY_PREFIX) - 1];
-    read_controller(&gm, key);
+  if (strncmp(key, CPAIR_KEY_PREFIX, CPAIR_KEY_PREFIX_LEN) != 0)
+    return false;
+
+  key += CPAIR_KEY_PREFIX_LEN;
+  for (int i=0; i < 6; ++i) {
+    if (!isxdigit(key[i]))
+      return false;
+  }
+  return true;
+}
+
+static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
+  if (!cpairKey_isValid(key)) {
+    //TODO: delete this invalid key from kvs
+    D(ets_printf("%s: key=<%s>, type=%d\n", __func__, key, (int)type));
+    return kvsCb_noMatch;
+  }
+
+    auto td = static_cast<struct TargetDesc *>(args);
+    Fer_GmSet gm {};
+    so_arg_kmm_t arg { .key =  key + CPAIR_KEY_PREFIX_LEN, .mm = &gm };
+
+    if (!read_controller(&gm, key))
+      return kvsCb_noMatch;
+
+    if (gm.isAllClear()) {
+      //TODO: delete this enmpty value from kvs
+      return kvsCb_noMatch;
+    }
 
     D(printf("key '%s', type '%d' a=%x \n", info.key, info.type, arg.a));
     soMsg_pair_print_kmm(*td, arg);
@@ -179,7 +209,7 @@ bool fer_alias_so_output_all_pairings(const struct TargetDesc &td) {
 
   soMsg_pair_all_begin(td);
 
-  kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, KEY_PREFIX, kvs_foreach_cb, (void*)&td);
+  kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, CPAIR_KEY_PREFIX, kvs_foreach_cb, (void*)&td);
 
   soMsg_pair_all_end(td);
   return true;

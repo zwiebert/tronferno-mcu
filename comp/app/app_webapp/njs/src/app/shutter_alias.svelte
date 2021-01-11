@@ -11,8 +11,6 @@
 
   let on_destroy = [];
   onMount(() => {
-    on_destroy.push(GM.subscribe(() => gmChanged()));
-    on_destroy.push(Aliases.subscribe(() => aliasControllers_updHtml()));
     httpFetch.http_fetchByMask(httpFetch.FETCH_GMU | httpFetch.FETCH_ALIASES);
   });
   onDestroy(() => {
@@ -21,8 +19,11 @@
     }
   });
 
-  function gmChanged() {
-    aliasPaired_updHtml();
+  $: AliasesAllKeys = Object.keys($Aliases);
+  $: AliasesPairedKeys = AliasesAllKeys.filter((key) => alias_isKeyPairedToM(key, $G, $M0));
+  $: AliasSelectedKey = 0;
+  $: {
+    aliasTable_updHtml(AliasSelectedKey);
   }
 
   function hClick_Pair() {
@@ -31,30 +32,6 @@
 
   function hClick_UnPair() {
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_UNPAIRING);
-  }
-
-  function aliasControllers_updHtml() {
-    const pad = $Aliases;
-    const pas = document.getElementById("aliases");
-    const pas_sel = pas.selectedIndex;
-    for (const key in pad) {
-      let exist = false;
-      for (let opt of pas.options) {
-        if (opt.text === key) {
-          exist = true;
-        }
-      }
-      if (!exist) {
-        let option = document.createElement("option");
-        option.text = key;
-        pas.add(option);
-      }
-    }
-    if (pas.options.length > 0) {
-      pas.selectedIndex = pas_sel && pas_sel > 0 ? pas_sel : "0";
-      onAliasesChanged();
-    }
-    aliasPaired_updHtml();
   }
 
   function aliasControllers_fromHtml() {
@@ -66,24 +43,6 @@
     for (let opt of pas.options) {
       const key = opt.text;
       aliasTable_fromHtml(key);
-    }
-  }
-
-  function onAliasesChanged() {
-    const pas = document.getElementById("aliases");
-    if (pas.selectedIndex >= 0) {
-      const key = pas.options[pas.selectedIndex].text;
-      document.getElementById("paired").value = key;
-      aliasTable_updHtml(key);
-    }
-  }
-
-  function onPairedChanged() {
-    let pas = document.getElementById("paired");
-    if (pas.selectedIndex >= 0) {
-      const key = pas.options[pas.selectedIndex].text;
-      document.getElementById("aliases").value = key;
-      aliasTable_updHtml(key);
     }
   }
 
@@ -116,21 +75,10 @@
     return (b & (1 << m)) !== 0;
   }
 
-  function aliasPaired_updHtml() {
-    const pas = document.getElementById("paired");
-
-    for (let i = pas.options.length - 1; i >= 0; --i) pas.remove(i);
-    for (let key in $Aliases) {
-      if (!alias_isKeyPairedToM(key, $G, $M0)) continue;
-
-      let option = document.createElement("option");
-      option.text = key;
-      pas.add(option);
-    }
-  }
   function aliasTable_updHtml(key) {
     const val = $Aliases[key];
-
+    if (!val)
+     return;
     let chunks = [];
 
     for (let i = 0, charsLength = val.length; i < charsLength; i += 2) {
@@ -153,7 +101,6 @@
       }
     }
   }
-
   function aliasTable_fromHtml(key) {
     let val = "00";
     let null_run = 0;
@@ -161,9 +108,7 @@
     for (let g = 1; g <= 7; ++g) {
       let gn = 0;
       for (let m = 1; m <= 7; ++m) {
-        let cb = document.getElementById(
-          "cbAlias_" + g.toString() + m.toString()
-        );
+        let cb = document.getElementById("cbAlias_" + g.toString() + m.toString());
         const isAliased = cb && cb.checked;
         if (isAliased) {
           gn |= 1 << m;
@@ -190,6 +135,7 @@
 
     let url = "/cmd.json";
     httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
   }
 </script>
 
@@ -212,17 +158,10 @@
 </style>
 
 <div id="aliasdiv">
-    <p class="{$ShowHelp}">
-      {$_('help.hint_shutterAlias')}
-      <br />
-    </p>
+  <p class={$ShowHelp}>{$_('help.hint_shutterAlias')} <br /></p>
   <span id="aliasPairUnpair">
-    <button id="alias_pair" type="button" on:click={hClick_Pair}>
-      Start Pairing
-    </button>
-    <button id="alias_unpair" type="button" on:click={hClick_UnPair}>
-      Start Un-Pairing
-    </button>
+    <button id="alias_pair" type="button" on:click={hClick_Pair}> Start Pairing </button>
+    <button id="alias_unpair" type="button" on:click={hClick_UnPair}> Start Un-Pairing </button>
   </span>
   <br />
   <table class="top_table">
@@ -232,20 +171,18 @@
     </tr>
     <tr>
       <td>
-        <select
-          id="aliases"
-          size="5"
-          on:click={onAliasesChanged}
-          on:change={onAliasesChanged}
-          on:blur={onAliasesChanged} />
+        <select id="aliases" size="5" bind:value={AliasSelectedKey}>
+          {#each AliasesAllKeys as key}
+            <option>{key}</option>
+          {/each}
+        </select>
       </td>
       <td>
-        <select
-          id="paired"
-          size="5"
-          on:click={onPairedChanged}
-          on:change={onPairedChanged}
-          on:blur={onPairedChanged} />
+        <select id="paired" size="5" disabled={true}>
+          {#each AliasesPairedKeys as key}
+            <option>{key}</option>
+          {/each}
+        </select>
       </td>
     </tr>
   </table>
@@ -266,9 +203,7 @@
             <th>g{g}</th>
             {#each [1, 2, 3, 4, 5, 6, 7] as m}
               {#if m <= $Gmu[g]}
-                <td>
-                  <input id="cbAlias_{g}{m}" type="checkbox" />
-                </td>
+                <td><input id="cbAlias_{g}{m}" type="checkbox" /></td>
               {/if}
             {/each}
           </tr>
@@ -278,11 +213,7 @@
   </div>
 
   <span id="aliasSaveReload">
-    <button id="alias_reload" type="button" on:click={onAliasesReload}>
-      {$_('app.reload')}
-    </button>
-    <button id="alias_save" type="button" on:click={onAliasesApply}>
-      {$_('app.save')}
-    </button>
+    <button id="alias_reload" type="button" on:click={onAliasesReload}> {$_('app.reload')} </button>
+    <button id="alias_save" type="button" on:click={onAliasesApply}> {$_('app.save')} </button>
   </span>
 </div>
