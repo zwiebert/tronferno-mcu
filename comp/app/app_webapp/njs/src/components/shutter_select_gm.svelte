@@ -13,6 +13,7 @@
   $: name = $Name || "";
   $: vm = $G ? ($M0 ? $M0 : "A") : "";
   $: vg = $G ? $G : "A";
+  $: a = "A " + $Names["00"] || '';
 
   $: {
     $GM;
@@ -34,7 +35,7 @@
 </style>
 
 <select id="smn" class="text-center" bind:value={gm} on:change={hChange_Name} on:blur={hChange_Name}>
-  <option value="00" disabled={hideGroups}>A</option>
+  <option value="00" disabled={hideGroups}>{a}</option>
   {#each [1, 2, 3, 4, 5, 6, 7] as g}
     {#if $Gmu[g]}
       {#each { length: $Gmu[g] + 1 } as _, m}
