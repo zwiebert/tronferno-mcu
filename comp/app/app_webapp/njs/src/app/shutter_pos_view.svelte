@@ -10,7 +10,7 @@
   let pct = 50;
 
   $: pct = $Pcts[gm] || 0;
-  $: name = $Names[gm] || gm;
+  $: name = gm + ($Names[gm] ? " " + $Names[gm] : "");
   $: selected = $G === 0 || ($G === g && ($M0 === m || $M0 === 0));
 
 </script>
@@ -39,4 +39,4 @@
   <div class="pvbar" id="pv{gm}" style="height:{100 - pct}%" />
 </div>
 <br />
-<label class="{selected ? "pvname-sel" : "pvname-unsel"}">{name}</label>
+<span class="{selected ? "pvname-sel" : "pvname-unsel"}">{name}</label>

@@ -9,7 +9,7 @@
   const gm = g.toString() + m.toString();
 
   $: pct = $Pcts[gm] || 0;
-  $: name = $Names[gm] || gm;
+  $: name = gm + ($Names[gm] ? " " + $Names[gm] : "");
   $: selected = $G === 0 || ($G === g && ($M0 === m || $M0 === 0));
 
   let sliderElement;
