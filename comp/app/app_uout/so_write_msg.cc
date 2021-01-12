@@ -221,11 +221,11 @@ void soMsg_astro_minutes_print(const struct TargetDesc &td, const int am) {
 /////////////////////////////////////////////////////////////////////////////////
 
 void soMsg_shpref_obj_begin(const struct TargetDesc &td) {
-  td.sj().add_object("shs");
+  td.so().x_open("shs");
 }
 
 void soMsg_shpref_obj_end(const struct TargetDesc &td) {
-  td.sj().close_object();
+  td.so().x_close();
 }
 
 void soMsg_shpref_obj_gm_begin(const struct TargetDesc &td, const so_arg_gm_t a) {
