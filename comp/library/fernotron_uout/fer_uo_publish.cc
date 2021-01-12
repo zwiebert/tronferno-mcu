@@ -60,7 +60,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
     char buf[64];
     for (auto k = 0; k < len; ++k) {
       snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;\n", a[k].g, a[k].m, a[k].p);  //XXX: Is inner or outer loop better?
-      uoCb_publish(idxs, &a[k], flags);
+      uoCb_publish(idxs, buf, flags);
     }
   }
 }
