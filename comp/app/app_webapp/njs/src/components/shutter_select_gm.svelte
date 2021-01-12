@@ -26,14 +26,6 @@
   }
 </script>
 
-<style type="text/scss">
-  #sgb,
-  #smb {
-    width: 3rem;
-    height: 2rem;
-  }
-</style>
-
 <select id="smn" class="text-center" bind:value={gm} on:change={hChange_Name} on:blur={hChange_Name}>
   <option value="00" disabled={hideGroups}>{a}</option>
   {#each [1, 2, 3, 4, 5, 6, 7] as g}

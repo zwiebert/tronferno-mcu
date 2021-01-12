@@ -142,6 +142,12 @@ public:
     result |= rhs;
     return result;
   }
+  const Fer_GmSet& operator~() {
+    for (auto i = 0; i < 8; ++i) {
+      mBm[i] = ~mBm[i];
+    }
+    return *this;
+  }
 public:
   /**
    * \brief  Set/clear M0 according to M1..M7

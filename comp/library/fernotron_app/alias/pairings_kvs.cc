@@ -56,6 +56,49 @@ static bool read_controller(Fer_GmSet *gm, const char *key) {
 }
 
 static bool
+add_rm_controller(const char *key, Fer_GmSet mm, bool remove) {
+  bool success;
+  kvshT handle;
+  bool result = false;
+
+  handle = kvs_open(CFG_NAMESPACE, kvs_READ_WRITE);
+  if (handle) {
+    Fer_GmSet gm;
+    if (!kvs_rw_blob(handle, key, &gm, sizeof gm, false)) {
+      gm.clear();
+    }
+
+    if (remove)
+      gm &= ~mm;
+    else
+      gm |= mm;
+
+    bool not_empty = !gm.isAllClear();
+
+    if (not_empty) {
+      success = kvs_rw_blob(handle, key, &gm, sizeof gm, true);
+    } else {
+      success = kvs_erase_key(handle, key);
+    }
+
+    if (success) {
+      result = true;
+      kvs_commit(handle);
+    }
+
+    kvs_close(handle);
+#ifdef NVS_BUG_WA
+    if (not_empty && result) {
+      fixController(key, &gm);
+    }
+#endif
+  }
+
+
+  return result;
+}
+
+static bool
 add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
   bool success;
   kvshT handle;
@@ -137,16 +180,30 @@ bool fer_alias_rmController(uint32_t a) {
   return success;
 }
 
-bool
-fer_alias_controller(u32 controller, u8 g, u8 m, bool unpair) {
+
+bool fer_alias_controller(u32 controller, u8 g, u8 m, bool unpair) {
   D(ets_printf("%s: g=%d, m=%d, unpair=%d\n", __func__, (int)g, (int)m, (int)unpair));
-  precond ((controller & 0xff000000) == 0);
-  precond (1 <= g && g <= 7 && 1 <= m && m <= 7);
+  precond((controller & 0xff000000) == 0);
+  precond(g <= 7 && m <= 7);
 
   char key[] = "cpair_10abcd";
-  itoa(controller, key+6, 16);
+  itoa(controller, key + 6, 16);
 
-  bool success = add_rm_controller(key, g, m, unpair);
+  Fer_GmSet gm { };
+  if (g && m) {
+    gm.setMember(g, m);
+  } else if (g == 0) {
+    for (int gi = 1; gi <= 7; ++gi) {
+      for (int mi = 1; mi <= 7; ++mi) {
+        gm.setMember(gi, mi);
+      }
+    }
+  } else {
+    for (int mi = 1; mi <= 7; ++mi) {
+      gm.setMember(g, mi);
+    }
+  }
+  bool success = add_rm_controller(key, gm, unpair);
   return success;
 }
 
