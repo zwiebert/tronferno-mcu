@@ -54,6 +54,7 @@
     }
   }
   function onAliasesReload() {
+    aliasTable_updHtml(AliasSelectedKey);
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
   }
 
