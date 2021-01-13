@@ -3,7 +3,11 @@
   import * as appDebug from "app/app_debug.js";
   import * as httpFetch from "app/fetch.js";
   import * as misc from "app/misc.js";
-  import { McuFirmwareUpdProgress, McuFirmwareUpdState, McuFirmwareUpdChip } from "stores/mcu_firmware";
+  import {
+    McuFirmwareUpdProgress,
+    McuFirmwareUpdState,
+    McuFirmwareUpdChip,
+  } from "stores/mcu_firmware";
 
   ("use strict");
   import { ReloadProgress } from "stores/app_state.js";
@@ -73,11 +77,11 @@
     border-color: $color_border_main_area;
     border-style: solid;
     border-width: 1px;
-    border-radius: .75rem;
+    border-radius: 0.75rem;
     overflow: hidden;
     border-collapse: collapse;
     margin: 0rem;
-    padding: 0rem .25rem;
+    padding: 0rem 0.25rem;
     border-gap: 0;
   }
 </style>
@@ -101,9 +105,18 @@
               </select>
             </td>
           {:else if bt.input === 'input'}
-            <td class="text-center">URL: <input type="text" id={bt.ota_name} bind:value={bt.value} /></td>
+            <td class="text-center">
+              URL:
+              <input type="text" id={bt.ota_name} bind:value={bt.value} />
+            </td>
           {/if}
-          <td><button type="button" on:click={() => netFirmwareOTA(bt.get_ota_name())}> Update </button></td>
+          <td>
+            <button
+              type="button"
+              on:click={() => netFirmwareOTA(bt.get_ota_name())}>
+              Update
+            </button>
+          </td>
         </tr>
       {/each}
     </table>
@@ -115,13 +128,24 @@
       <strong> Update failed <br /> <br /> </strong>
     {:else if $McuFirmwareUpdState === 3}
       <br />
-      <strong> Update succeeded <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}> {$_('app.restartMcu')} </button> <br /> <br /> </strong>
+      <strong>
+        Update succeeded
+        <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}>
+          {$_('app.restartMcu')}
+        </button>
+        <br />
+        <br />
+      </strong>
     {:else if $McuFirmwareUpdState === 1}
       <strong>{$_('app.msg_firmwareIsUpdating')}</strong>
       <br />
       <br />
       <progress value={$McuFirmwareUpdProgress} max={updSecs} />
     {/if}
-    {#if $ReloadProgress > 0}<strong>{$_('app.msg_waitForMcuRestart')}</strong> <br /> <progress value={$ReloadProgress} max="100" />{/if}
+    {#if $ReloadProgress > 0}
+      <strong>{$_('app.msg_waitForMcuRestart')}</strong>
+      <br />
+      <progress value={$ReloadProgress} max="100" />
+    {/if}
   {/if}
 </div>
