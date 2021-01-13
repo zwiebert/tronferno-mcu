@@ -23,8 +23,8 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
   flags.fmt.raw = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     {
-      for (auto k = 0; k < len; ++k) {
-        uoCb_publish(idxs, &a[k], flags);
+      for (auto i = 0; i < len; ++i) {
+        uoCb_publish(idxs, &a[i], flags);
       }
     }
   }
@@ -37,7 +37,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
 
     if (sj.open_root_object("tfmcu")) {
       sj.add_object("pct");
-      for (int i = 0; a[i].g <= 7; ++i) {
+      for (int i = 0; i < len; ++i) {
         char buf[] = "00";
         buf[0] += a[i].g;
         buf[1] += a[i].m;
@@ -58,8 +58,8 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[64];
-    for (auto k = 0; k < len; ++k) {
-      snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;\n", a[k].g, a[k].m, a[k].p);  //XXX: Is inner or outer loop better?
+    for (auto i = 0; i < len; ++i) {
+      snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;\n", a[i].g, a[i].m, a[i].p);
       uoCb_publish(idxs, buf, flags);
     }
   }

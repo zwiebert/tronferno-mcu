@@ -95,7 +95,7 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
   if (pct <= 100) {
     if (a == 0 || a == fer_config.cu) {
 
-      so_arg_gmp_t gmp[3] = { { g, m, pct }, { g, 0, (u8) pos_map.getPct(g, 0) }, { 0xff, 0xff, 0xff } };
+      so_arg_gmp_t gmp[2] = { { g, m, pct }, { g, 0, (u8) pos_map.getPct(g, 0) } };
       uoApp_publish_pctChange_gmp(gmp, 2);
     }
   }

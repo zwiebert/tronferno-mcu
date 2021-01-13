@@ -142,11 +142,12 @@ public:
     result |= rhs;
     return result;
   }
-  const Fer_GmSet& operator~() {
+  Fer_GmSet operator~() const {
+    Fer_GmSet result {};
     for (auto i = 0; i < 8; ++i) {
-      mBm[i] = ~mBm[i];
+      result[i] = ~mBm[i];
     }
-    return *this;
+    return result;
   }
 public:
   /**
