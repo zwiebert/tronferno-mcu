@@ -2,6 +2,8 @@
 import * as appDebug from "app/app_debug.js";
 import * as httpResp from "app/http_resp.js";
 import { G, M0 } from "stores/curr_shutter.js";
+import { Gmu } from "stores/mcu_config.js";
+import { get } from "svelte/store";
 import { ws_isOpen } from "main/net/conn_ws";
 
 let b = 0;
@@ -16,6 +18,7 @@ export const FETCH_SHUTTER_PREFS = 1 << b++;
 export const FETCH_GMU = 1 << b++;
 export const FETCH_GIT_TAGS = 1 << b++;
 export const FETCH_SHUTTER_NAME = 1 << b++;
+export const FETCH_SHUTTER_NAMES = 1 << b++;
 export const FETCH_ALL_POS = 1 << b++;
 export const FETCH_BOOT_COUNT = 1 << b++;
 export const FETCH_CONFIG_GPIO_STRING = 1 << b++;
@@ -106,6 +109,8 @@ function async_fetchByMask() {
 }
 
 export function http_fetchByMask(mask, synchron) {
+  const url = "/cmd.json";
+
   if (!mask) {
     return;
   }
@@ -181,7 +186,19 @@ export function http_fetchByMask(mask, synchron) {
     add_kv(tfmcu, "shpref", "tag.NAME", "?");
   }
 
-  let url = "/cmd.json";
+  if (mask & FETCH_SHUTTER_NAMES) {
+    let n = 0;
+    for (let g = 0; g <= 7; ++g) {
+      if (get(Gmu)[g] === 0) continue;
+      for (let m = 0; m <= get(Gmu)[g]; ++m) {
+        let c = { shpref: { g: g, m: m, "tag.NAME": "?" } };
+        setTimeout(() => {
+          http_postRequest(url, c);
+        }, 1000 * ++n);
+      }
+    }
+  }
+
   http_postRequest(url, tfmcu);
 
   if (mask & FETCH_GIT_TAGS) gitTags_fetch();

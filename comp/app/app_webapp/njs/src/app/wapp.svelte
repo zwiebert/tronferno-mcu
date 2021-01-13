@@ -16,8 +16,19 @@
   import Pane2411 from "panes/2411.svelte";
   import PaneShutterSetMode from "panes/shutter_set_mode.svelte";
   import PaneAppLog from "panes/app_log.svelte";
-
   import PaneDeveloper from "panes/developer.svelte";
+  import * as httpFetch from "app/fetch.js";
+  import { onMount, onDestroy } from "svelte";
+
+  let on_destroy = [];
+  onMount(() => {
+    httpFetch.http_fetchByMask(httpFetch.FETCH_SHUTTER_NAMES);
+  });
+  onDestroy(() => {
+    for (const fn of on_destroy) {
+      fn();
+    }
+  });
 
   $: tabIdxMain = $TabIdx["main"] || 0;
   $: tabIdxSettings = $TabIdx["settings"] || 0;
