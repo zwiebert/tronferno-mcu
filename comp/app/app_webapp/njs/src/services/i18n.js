@@ -20,7 +20,7 @@ const en = {
         cfg:{
             mcu: "MCU",
             aliases: "Aliases",
-            durations: "\u23f1",
+            durations: "Duration",
             name: "Name",
             set_mode: "Set",
             app: "App",
@@ -137,7 +137,7 @@ const de = {
         cfg:{
             mcu: "MCU",
             aliases: "Alias",
-            //durations: "Laufzeit",
+            durations: "Laufzeit",
             name: "Name",
             set_mode: "Set",
             app: "App",

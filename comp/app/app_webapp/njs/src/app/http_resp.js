@@ -83,7 +83,7 @@ export function http_handleResponses(obj) {
     let names = {};
     let names_ct = 0;
     for (const key in shs) {
-      if (key.startsWith("shs")) {
+      if (key.startsWith("shs") && "tag.NAME" in shs[key]) {
         names[key.substr(3)] = shs[key]["tag.NAME"];
         ++names_ct;
       }
