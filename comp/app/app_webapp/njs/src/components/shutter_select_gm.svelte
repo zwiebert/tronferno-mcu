@@ -5,8 +5,6 @@
   import { Gmu } from "stores/mcu_config.js";
   import * as httpFetch from "app/fetch.js";
 
-  export let hideGroups = false;
-
   $: gm = $GM;
   $: names = Object.values($Names);
   $: a = "A " + $Names["00"] || "";
@@ -19,13 +17,11 @@
 </script>
 
 <select bind:value={gm}>
-  <option value="00" disabled={hideGroups}>{a}</option>
+  <option value="00">{a}</option>
   {#each [1, 2, 3, 4, 5, 6, 7] as g}
     {#if $Gmu[g]}
       {#each { length: $Gmu[g] + 1 } as _, m}
-        <option
-          value={g.toString() + m.toString()}
-          disabled={m === 0 && hideGroups}>
+        <option value={g.toString() + m.toString()}>
           {g}{m || 'A'}
           {$Names[g.toString() + m.toString()] || ''}
         </option>

@@ -129,7 +129,7 @@
     {:else if $McuFirmwareUpdState === 3}
       <br />
       <strong>
-        Update succeeded
+      {$_('app.msg_firmwareUpdSuccess')}
         <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}>
           {$_('app.restartMcu')}
         </button>

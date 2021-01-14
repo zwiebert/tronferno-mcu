@@ -42,6 +42,7 @@ const en = {
 
     msg_waitForMcuRestart: "Wait for MCU to restart...",
     msg_firmwareIsUpdating: "Firmware is updating...",
+    msg_firmwareUpdSuccess: "Update succeeded",
     msg_enterNewName: "Enter new name:",
     config_wizards: "Configuration-Wizards",
     wizard_cuas: "Scan Central-Unit-ID",
@@ -159,6 +160,8 @@ const de = {
 
 
     msg_waitForMcuRestart: "MCU wird neu gestartet...",
+    msg_firmwareIsUpdating: "Firmware wird akualisiert...",
+    msg_firmwareUpdSuccess: "Akualisierung erfolgreich",
     direction: "Richtung",
     stopClock: "Stopp-Uhr",
     msg_enterNewName: "Neuer Name:",

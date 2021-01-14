@@ -6,7 +6,7 @@
 
 <div class="main-area">
   <div class="mt-4 p-2">
-    <ShutterGM hideGroups="true" />
+    <ShutterGM />
   </div>
   <div class="area">
     <ShutterAlias />

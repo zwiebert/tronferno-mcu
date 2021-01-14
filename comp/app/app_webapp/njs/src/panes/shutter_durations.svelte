@@ -7,7 +7,7 @@
 
 <div class="main-area">
   <div class="mt-4 p-2">
-    <ShutterGM hideGroups="true" />
+    <ShutterGM />
   </div>
   <h4>{$_('app.dur.h')}</h4>
   <div class="area">
