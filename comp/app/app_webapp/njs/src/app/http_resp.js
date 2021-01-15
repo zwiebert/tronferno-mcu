@@ -34,10 +34,18 @@ export function http_handleResponses(obj) {
 
   if ("log" in obj) {
     AppLog.update(old => {
-      old.push(obj.log);
+      old.push({log : obj.log });
       return old;
     });
   }
+
+  if ("rc" in obj) {
+    AppLog.update(old => {
+      old.push({rc : obj.rc});
+      return old;
+    });
+  }
+
 
   if ("config" in obj) {
     let config = obj.config;
