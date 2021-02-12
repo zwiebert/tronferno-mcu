@@ -46,6 +46,12 @@ export function http_handleResponses(obj) {
     });
   }
 
+  if ("sc" in obj) {
+    AppLog.update(old => {
+      old.push({sc : obj.sc});
+      return old;
+    });
+  }
 
   if ("config" in obj) {
     let config = obj.config;

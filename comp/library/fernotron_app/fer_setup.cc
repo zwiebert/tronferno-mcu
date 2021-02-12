@@ -67,6 +67,8 @@ public:
 public:
 
   virtual void event_first_message_will_be_sent() { // no repeats
+    Fer_MsgPlainCmd msg = get_msg();
+    uoApp_publish_fer_msgSent(&msg);
     if (get_a() == fer_config.cu) {
       fer_simPos_registerMovingShutter(get_a(), get_g(), get_m(), get_cmd());
     }

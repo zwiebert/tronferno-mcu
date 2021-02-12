@@ -11,6 +11,8 @@ export const AppLogTxt = derived(AppLog, (appLog) => {
       r += msg.log.tag + ": " + msg.log.txt + "\n";
     } else if ("rc" in msg) {
         r += JSON.stringify(msg) + "\n";
+    } else if ("sc" in msg) {
+        r += JSON.stringify(msg) + "\n";
     }
   }
   return r;

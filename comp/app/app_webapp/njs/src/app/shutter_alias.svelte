@@ -179,7 +179,7 @@
         </select>
       </td>
       <td>
-        <select id="paired" size="5" disabled={true}>
+        <select id="paired" size="5" >
           {#each AliasesPairedKeys as key}
             <option>{key}</option>
           {/each}
