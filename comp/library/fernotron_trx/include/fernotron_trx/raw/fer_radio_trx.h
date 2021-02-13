@@ -28,7 +28,7 @@ extern volatile bool fer_tx_messageToSend_isReady;
 #define fer_rx_hasNewMsg() (!!fer_rx_messageReceived)
 #define fer_tx_isTransmitterBusy() (!!fer_tx_messageToSend_isReady)
 
-#ifdef DISTRIBUTION
+#if 0 //def DISTRIBUTION  /// XXX: enable receiving messages sent by ourself (to diagnose bad transmitter modules. IMPROVE THIS CODE)
 #define fer_rx_isReceiverBlocked() (fer_rx_messageReceived || fer_tx_messageToSend_isReady)
 #else
 #define fer_rx_isReceiverBlocked() (fer_rx_messageReceived)
