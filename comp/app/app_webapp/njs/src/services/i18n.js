@@ -161,7 +161,7 @@ const de = {
 
     msg_waitForMcuRestart: "MCU wird neu gestartet...",
     msg_firmwareIsUpdating: "Firmware wird akualisiert...",
-    msg_firmwareUpdSuccess: "Akualisierung erfolgreich",
+    msg_firmwareUpdSuccess: "Aktualisierung erfolgreich",
     direction: "Richtung",
     stopClock: "Stopp-Uhr",
     msg_enterNewName: "Neuer Name:",
