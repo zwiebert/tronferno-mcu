@@ -1,6 +1,7 @@
 import { getLocaleFromNavigator, init, addMessages, _ } from "svelte-i18n";
 
 const en = {
+  weekdays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
   app: {
     run: "Run",
     reload: "Reload",
@@ -8,36 +9,35 @@ const en = {
     save: "Save",
     hide: "Hide",
 
-
-    navTab:{
-        main:{
-            move: "\u25b3\u25bd",
-            percent: "%%",
-            config: "\u2699",
-            auto: "Auto",
-            firmware: "Firmware",
-        },
-        cfg:{
-            mcu: "MCU",
-            aliases: "Aliases",
-            durations: "Duration",
-            name: "Name",
-            set_mode: "Set",
-            app: "App",
-        },
+    navTab: {
+      main: {
+        move: "\u25b3\u25bd",
+        percent: "%%",
+        config: "\u2699",
+        auto: "Auto",
+        firmware: "Firmware",
+      },
+      cfg: {
+        mcu: "MCU",
+        aliases: "Aliases",
+        durations: "Duration",
+        name: "Name",
+        set_mode: "Set",
+        app: "App",
+      },
     },
 
-    auto:{
-        daily:"Daily",
-        weekly:"Weekly",
-        astro:"Dusk",
-        random:"Random",
-        sun:"Sun",
-        manual:"Manual",
-      },
+    auto: {
+      daily: "Daily",
+      weekly: "Weekly",
+      astro: "Dusk",
+      random: "Random",
+      sun: "Sun",
+      manual: "Manual",
+    },
 
-    dur:{
-        h:"Duration of Shutter-Movements",
+    dur: {
+      h: "Duration of Shutter-Movements",
     },
 
     msg_waitForMcuRestart: "Wait for MCU to restart...",
@@ -56,7 +56,7 @@ const en = {
       set_button: "Press Set-Button on Receiver first. Then click here.",
       set_button_radio: "Button",
       register_unregister: "Register/Unregister",
-      register_cu_bt:"Register central-unit/G/E to Receiver",
+      register_cu_bt: "Register central-unit/G/E to Receiver",
       register_cu: "Central-Unit",
       register_sender: "Sender",
       set_mode: "Enable Set-Mode",
@@ -83,11 +83,11 @@ const en = {
       "To register position changes made by commands sent from plain controllers and sun-sensors, these controllers have to be registered here. Select G/E above and pair the controller here by start pairing and pressing STOP on the controller.",
   },
   mcuConfigNames: {
-    "verbose": "CLI Verbosity",
-    "cu": "Central-Unit-ID",
+    verbose: "CLI Verbosity",
+    cu: "Central-Unit-ID",
     "astro-correction": "Astro Correction",
-    "rtc": "Date/Time",
-    "tz": "Timezone (Posix)",
+    rtc: "Date/Time",
+    tz: "Timezone (Posix)",
     "wlan-ssid": "SSID",
     "wlan-password": "Password",
     "ntp-server": "NTP-Server",
@@ -100,9 +100,9 @@ const en = {
     "http-enable": "On/Off",
     "http-user": "Auth-Name",
     "http-password": "Auth-Password",
-    "longitude": "Longitude",
-    "latitude": "Latitude",
-    "network": "Chose Connection",
+    longitude: "Longitude",
+    latitude: "Latitude",
+    network: "Chose Connection",
     "rf-tx-pin": "RF-Sender",
     "rf-rx-pin": "RF-Receiver",
     "set-button-pin": "Set-Button",
@@ -110,19 +110,20 @@ const en = {
   },
 
   mcuConfig: {
-    "wlan_station": "WLAN Station",
-    "network": "Network-Connection and -Services",
-    "misc": "Other Settings",
-    "ntp_client": "NTP Client",
-    "mqtt_client": "MQTT Client",
-    "http_server": "Webserver",
-    "pin_gpio": "Elektrical In-/Outputs",
-    "config_wizards": "Configurations-Wizards",
-    "gm_used": "Number of Receivers per Group",
+    wlan_station: "WLAN Station",
+    network: "Network-Connection and -Services",
+    misc: "Other Settings",
+    ntp_client: "NTP Client",
+    mqtt_client: "MQTT Client",
+    http_server: "Webserver",
+    pin_gpio: "Elektrical In-/Outputs",
+    config_wizards: "Configurations-Wizards",
+    gm_used: "Number of Receivers per Group",
   },
 };
 
 const de = {
+  weekdays: ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"],
   app: {
     duration: "Dauer (sek)",
     reload: "Neu Laden",
@@ -130,34 +131,33 @@ const de = {
     save: "Speichern",
     hide: "Verstecke",
 
-    navTab:{
-        main:{
-            auto: "Auto",
-            firmware: "Firmware",
-        },
-        cfg:{
-            mcu: "MCU",
-            aliases: "Alias",
-            durations: "Laufzeit",
-            name: "Name",
-            set_mode: "Set",
-            app: "App",
-        },
-    },
-
-    auto:{
-        daily:"Täglich",
-        weekly:"Wochentage",
-        astro:"Dämmerung",
-        random:"Zufall",
-        sun:"Sonne",
-        manual:"Manuell",
+    navTab: {
+      main: {
+        auto: "Auto",
+        firmware: "Firmware",
       },
-
-      dur:{
-        h:"Motor-Laufzeiten",
+      cfg: {
+        mcu: "MCU",
+        aliases: "Alias",
+        durations: "Laufzeit",
+        name: "Name",
+        set_mode: "Set",
+        app: "App",
+      },
     },
 
+    auto: {
+      daily: "Täglich",
+      weekly: "Wochentage",
+      astro: "Dämmerung",
+      random: "Zufall",
+      sun: "Sonne",
+      manual: "Manuell",
+    },
+
+    dur: {
+      h: "Motor-Laufzeiten",
+    },
 
     msg_waitForMcuRestart: "MCU wird neu gestartet...",
     msg_firmwareIsUpdating: "Firmware wird akualisiert...",
@@ -173,7 +173,7 @@ const de = {
       set_button_radio: "Taster",
       register_unregister: "An- oder Abmelden an Empfänger im Eingabe-Modus",
       register_cu: "Zentrale",
-      register_cu_bt:"Melde Zentrale/G/E beim Empfänger an",
+      register_cu_bt: "Melde Zentrale/G/E beim Empfänger an",
       set_mode: "Aktiviere Set-Modus",
       dev_address: "Geräte Adresse",
       receiver_address: "Empfänger Adresse",
@@ -196,11 +196,11 @@ const de = {
       "Zum Zuordnen von Bewegungen durch Kommandos von Handsendern und Sonnensensoren müssen diese registriert werden. Bitte G/E auswählen und Pair oder Unpair starten, dann STOP am Handsender drücken.",
   },
   mcuConfigNames: {
-    "verbose": "CLI Verbose Level",
-    "cu": "Zentrale ID",
+    verbose: "CLI Verbose Level",
+    cu: "Zentrale ID",
     "astro-correction": "Astro Korrektur",
-    "rtc": "Datum/Uhrzeit",
-    "tz": "Zeitzone (Posix)",
+    rtc: "Datum/Uhrzeit",
+    tz: "Zeitzone (Posix)",
     "wlan-ssid": "SSID",
     "wlan-password": "Passwort",
     "ntp-server": "Server-URL",
@@ -213,9 +213,9 @@ const de = {
     "http-enable": "Ein/Aus",
     "http-user": "Auth-Name",
     "http-password": "Auth-Passwort",
-    "longitude": "Längengrad",
-    "latitude": "Breitengrad",
-    "network": "Wähle Verbindung",
+    longitude: "Längengrad",
+    latitude: "Breitengrad",
+    network: "Wähle Verbindung",
     "rf-tx-pin": "Funk-Sender",
     "rf-rx-pin": "Funk-Empfänger",
     "set-button-pin": "Setz-Knopf",
@@ -223,17 +223,16 @@ const de = {
   },
 
   mcuConfig: {
-    "wlan_station": "WLAN Station",
-    "network": "Netzwerkverbindung und -dienste",
-    "misc": "Sonstige Einstellungen",
-    "ntp_client": "NTP Klient",
-    "mqtt_client": "MQTT Klient",
-    "http_server": "Webserver",
-    "pin_gpio": "Elektrische Ein- und Ausgänge",
-    "config_wizards": "Konfigurations-Assistenten",
-    "gm_used": "Anzahl Empfänger je Gruppe",
-
-  }
+    wlan_station: "WLAN Station",
+    network: "Netzwerkverbindung und -dienste",
+    misc: "Sonstige Einstellungen",
+    ntp_client: "NTP Klient",
+    mqtt_client: "MQTT Klient",
+    http_server: "Webserver",
+    pin_gpio: "Elektrische Ein- und Ausgänge",
+    config_wizards: "Konfigurations-Assistenten",
+    gm_used: "Anzahl Empfänger je Gruppe",
+  },
 };
 
 function setupI18n({ withLocale: _locale } = { withLocale: "en" }) {
