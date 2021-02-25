@@ -419,7 +419,7 @@
               </td>
             {:else if key === 'rf-tx-pin'}
               <td>
-                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="36" />
+                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="33" />
               </td>
             {:else if key.startsWith('gpio')}
               <td>
