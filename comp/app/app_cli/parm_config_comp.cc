@@ -96,6 +96,15 @@ int process_parmConfig_assign(KvsType kvsType, const char *kvsKey, StoreFun stor
     default:
       break;
     }
+  } else if (storeFun == STF_direct_bool) {
+    switch (kvsType) {
+    case CBT_i8:
+      if (!config_save_item_n_i8(kvsKey, *val == '1'))
+        return -1;
+      return 1;
+    default:
+      break;
+    }
   }
   return 0;
 }
@@ -138,16 +147,6 @@ bool process_parmConfig_comp(otok kt, const char *key, const char *val, const st
     break;
 #endif // USE_LAN
 
-#ifdef USE_MQTT
-  case otok::k_mqtt_enable:
-    set_optN(i8, (*val == '1'), CB_MQTT_ENABLE);
-    break;
-#endif //USE_MQTT
-#ifdef USE_HTTP
-  case otok::k_http_enable:
-    set_optN(i8, (*val == '1'), CB_HTTP_ENABLE);
-    break;
-#endif
     ////////////////////////////////////////////////////////////////
 
   case otok::k_rtc: {
