@@ -85,6 +85,16 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, const str
   case otok::k_transmitter:
     cli_replyResult(td, config_transmitter(val));
     break;
+  case otok::k_rf_trx: {
+    NODEFAULT();
+    if (auto it = std::find_if(std::begin(cfg_args_rfTrx), std::end(cfg_args_rfTrx), [&val](const char *cs) {
+      return strcmp(val, cs) == 0;
+    }); it != std::end(cfg_args_rfTrx)) {
+      int idx = std::distance(std::begin(cfg_args_rfTrx), it);
+      set_optN(i8, idx, CB_RF_TRX);
+    }
+  }
+    break;
 
 #ifdef USE_GPIO_PINS
 case otok::k_gpio:
@@ -155,5 +165,8 @@ void parmConfig_reconfig_app(uint32_t changed_mask) {
   }
   if (changed_mask & CBM_gpio) {
     config_setup_gpio();
+  }
+  if (changed_mask & CBM_cc1101) {
+    config_setup_cc1101();
   }
 }

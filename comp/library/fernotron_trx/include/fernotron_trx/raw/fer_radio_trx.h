@@ -16,6 +16,11 @@
   extern "C" {
 #endif
 
+  /// \brief Kinds of supported RF hardware.
+  enum rfTrx {
+    rfTrxNone, rfTrxRxTx, rfTrxRxItx, rfTrxCc1101,
+  };
+
 /**
  * \brief  Kind of received Message
  */

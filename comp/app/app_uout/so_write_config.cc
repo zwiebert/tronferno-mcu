@@ -101,6 +101,26 @@ void soCfg_GPIO_SETBUTTON(const struct TargetDesc &td) {
   td.so().print(settings_get_optKeyStr(CB_SETBUTTON_GPIO), config_read_setbutton_gpio());
 }
 
+void soCfg_RF_TRX(const struct TargetDesc &td) {
+  td.so().print(settings_get_optKeyStr(CB_RF_TRX), cfg_args_rfTrx[config_read_rf_trx()]);
+}
+
+void soCfg_GPIO_RFSCK(const struct TargetDesc &td) {
+  td.so().print(settings_get_optKeyStr(CB_RFSCK_GPIO), config_read_rfsck_gpio());
+}
+
+void soCfg_GPIO_RFMISO(const struct TargetDesc &td) {
+  td.so().print(settings_get_optKeyStr(CB_RFMISO_GPIO), config_read_rfmiso_gpio());
+}
+
+void soCfg_GPIO_RFMOSI(const struct TargetDesc &td) {
+  td.so().print(settings_get_optKeyStr(CB_RFMOSI_GPIO), config_read_rfmosi_gpio());
+}
+
+void soCfg_GPIO_RFSS(const struct TargetDesc &td) {
+  td.so().print(settings_get_optKeyStr(CB_RFSS_GPIO), config_read_rfss_gpio());
+}
+
 void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
 #ifdef USE_GPIO_PINS
   {
@@ -205,6 +225,10 @@ void soCfg_all_gpio(const struct TargetDesc &td) {
   soCfg_GPIO_RFOUT(td);
   soCfg_GPIO_RFIN(td);
   soCfg_GPIO_SETBUTTON(td);
+  soCfg_GPIO_RFMISO(td);
+  soCfg_GPIO_RFMOSI(td);
+  soCfg_GPIO_RFSCK(td);
+  soCfg_GPIO_RFSS(td);
   soCfg_GPIO_MODES(td);
   soCfg_GPIO_MODES_AS_STRING(td);
 }
@@ -236,5 +260,5 @@ void soCfg_all(const struct TargetDesc &td) {
   soCfg_all_net(td);
 
   soCfg_all_gpio(td);
-
+  soCfg_RF_TRX(td);
 }

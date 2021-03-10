@@ -6,8 +6,8 @@ set(srcs   astro.cc fer_api.cc fer_msg_basic.cc fer_msg_rx.cc fer_msg_tx.cc fer_
 idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS "./include" 
-    REQUIRES utils_misc utils_debug
-    PRIV_REQUIRES app_config  utils_time utils_misc    
+    REQUIRES utils_misc utils_debug 
+    PRIV_REQUIRES app_config  utils_time utils_misc cc1101_ook 
      )
 
 component_compile_options(${comp_compile_opts})

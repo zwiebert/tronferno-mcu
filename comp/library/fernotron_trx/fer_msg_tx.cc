@@ -13,6 +13,7 @@
 #include "fer_trx_incoming_event.hh"
 #include "fer_trx_impl.hh"
 #include "utils_time/run_time.h"
+#include "cc1101_ook/trx.hh"
 
 
 
@@ -103,6 +104,11 @@ fer_sbT fer_construct_fsb(u32 a, u8 g, u8 m, fer_cmd cmd) {
   return fsb;
 }
 
+void fer_trx_direction(bool tx) {
+  io_printf("trx direction: %s\n", tx ? "tx" : "rx");
+  cc1101_ook_setDirection(tx);
+}
+
 void fer_tx_loop() {
   if (fer_tx_isTransmitterBusy())
     return;
@@ -110,9 +116,14 @@ void fer_tx_loop() {
   struct sf *msg = fer_tx_nextMsg();
 
   if (msg && msg->when_to_transmit_ts <= get_now_time_ts()) {
+    // enable transmitter
+    fer_trx_direction(true);
     if (fer_send_queued_msg(msg)) {
       fer_tx_popMsg();
     }
+  } else {
+    // enable receiver
+    fer_trx_direction(false);
   }
 
   fer_send_checkQuedState();

@@ -134,7 +134,9 @@ bool process_parmConfig_comp(otok kt, const char *key, const char *val, const st
 #ifdef USE_LAN
   case otok::k_lan_phy: {
     NODEFAULT();
-    if (auto it = std::find(std::begin(cfg_args_lanPhy), std::end(cfg_args_lanPhy), val); it != std::end(cfg_args_lanPhy)) {
+    if (auto it = std::find_if(std::begin(cfg_args_lanPhy), std::end(cfg_args_lanPhy), [&val](const char *cs) {
+      return strcmp(val, cs) == 0;
+    }); it != std::end(cfg_args_lanPhy)) {
       int idx = std::distance(std::begin(cfg_args_lanPhy), it);
       set_optN(i8, idx, CB_LAN_PHY);
     }

@@ -13,5 +13,6 @@ void main_setup() {
   TargetDescCon td { SO_TGT_CLI };
   soMsg_fw_start_msg_print(td);
 
+  config_setup_cc1101();
   fer_main_setup({ config_read_item(CB_CUID, MY_FER_CENTRAL_UNIT_ID), config_read_item(CB_USED_MEMBERS, MY_FER_GM_USE)});
 }

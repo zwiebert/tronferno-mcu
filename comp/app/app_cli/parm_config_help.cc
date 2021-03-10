@@ -57,5 +57,10 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
     "rf-tx-pin=N        RF output GPIO pin\n"
     "rf-rx-pin=N        RF input GPIO pin\n"
     "set-button-pin     Set-button input GPIO pin\n"
+    "cc1101-enable      Enable CC1101 RF transceiver\n"
+    "rf-sclk-pin        CC1101 SPI clock GPIO pin\n"
+    "rf-ss-pin          CC1101 SPI chip-select GPIO pin\n"
+    "rf-mosi-pin        CC1101 SPI MOSI GPIO pin\n"
+    "rf-miso-pin        CC1101 SPI MISO GPI pin\n"
 //  "set-expert-password=\n"
 ;

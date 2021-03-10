@@ -76,6 +76,7 @@ bool is_gpio_number_usable(int gpio_number, bool cli) {
 
 void IRAM_ATTR mcu_put_txPin(u8 level) {
   if (const auto pin = RFOUT_GPIO; pin >= 0) {
+    level = !!level == !gpio_cfg->out_rf_inv;
     GPIO_OUTPUT_SET(pin, level);
   }
 }
@@ -264,7 +265,7 @@ void setup_pin(const struct cfg_gpio *c) {
   if (!gpio_cfg) {
     gpio_cfg = static_cast<cfg_gpio*>(calloc(1, sizeof *gpio_cfg));
   } else {
-    pin_set_mode_int(RFOUT_GPIO, PIN_DEFAULT, PIN_LOW);
+    pin_set_mode_int(RFOUT_GPIO, PIN_DEFAULT, gpio_cfg->out_rf_inv ? PIN_HIGH : PIN_LOW);
     pin_set_mode_int(RFIN_GPIO, PIN_DEFAULT, PIN_FLOATING);
     pin_set_mode_int(BUTTON_GPIO, PIN_DEFAULT, PIN_HIGH);
     pins_in_use = 0;
@@ -275,7 +276,7 @@ void setup_pin(const struct cfg_gpio *c) {
   inputGpioUsable = gpioUsable;
   outputGpioUsable = gpioUsable;
 
-  pin_set_mode_int(RFOUT_GPIO, PIN_OUTPUT, PIN_LOW);
+  pin_set_mode_int(RFOUT_GPIO, PIN_OUTPUT, gpio_cfg->out_rf_inv ? PIN_HIGH : PIN_LOW);
   pin_set_mode_int(RFIN_GPIO, PIN_INPUT, PIN_FLOATING);
   pin_set_mode_int(BUTTON_GPIO, PIN_INPUT, PIN_HIGH);
   pins_not_cli = pins_in_use;

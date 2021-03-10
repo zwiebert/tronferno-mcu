@@ -10,9 +10,11 @@
 #include "app_settings/config_defaults.h"
 #include "config_kvs.h"
 #include <fernotron_trx/fer_trx_api.hh>
+#include <fernotron_trx/raw/fer_radio_trx.h>
 #include "utils_misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
+#include "cc1101_ook/spi.hh"
 
 #include <string.h>
 
@@ -29,6 +31,9 @@ struct cfg_gpio* config_read_gpio(struct cfg_gpio *c) {
     kvsRb(CB_GPIO, c->gpio);
 #endif
     kvs_close(h);
+
+    const i8 rfTrx = config_read_rf_trx();
+    c->out_rf_inv = rfTrx == rfTrxCc1101 || rfTrx == rfTrxRxItx;
   }
   return c;
 }
@@ -77,6 +82,23 @@ int8_t config_read_rfin_gpio() {
 }
 int8_t config_read_setbutton_gpio() {
   return config_read_item((CB_SETBUTTON_GPIO), MY_SETBUTTON_GPIO);
+}
+
+int8_t config_read_rf_trx() {
+  return config_read_item(CB_RF_TRX, MY_RF_TRX);
+}
+
+int8_t config_read_rfsck_gpio() {
+  return config_read_item((CB_RFSCK_GPIO), -1);
+}
+int8_t config_read_rfmosi_gpio() {
+  return config_read_item((CB_RFMOSI_GPIO), -1);
+}
+int8_t config_read_rfmiso_gpio() {
+  return config_read_item((CB_RFMISO_GPIO), -1);
+}
+int8_t config_read_rfss_gpio() {
+  return config_read_item((CB_RFSS_GPIO), -1);
 }
 
 #if 1
@@ -151,3 +173,24 @@ void config_setup_mqttAppClient() {
   io_mqttApp_setup(config_read_mqtt_root_topic(buf, sizeof buf));
 }
 #endif
+
+struct cc1101_settings* config_read_cc1101(struct cc1101_settings *c) {
+  kvshT h;
+  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
+
+    kvsRead(i8, i8, CB_RFSCK_GPIO, c->sclk);
+    kvsRead(i8, i8, CB_RFSS_GPIO, c->ss);
+    kvsRead(i8, i8, CB_RFMISO_GPIO, c->miso);
+    kvsRead(i8, i8, CB_RFMOSI_GPIO, c->mosi);
+    kvs_close(h);
+    c->enable = config_read_rf_trx() == rfTrxCc1101;
+    return c;
+  }
+  return 0;
+}
+
+void config_setup_cc1101() {
+  struct cc1101_settings c = { .sclk = -1, .ss = -1, .miso = -1, .mosi = -1 };
+  config_read_cc1101(&c);
+  cc1101_ook_spi_setup(&c);
+}

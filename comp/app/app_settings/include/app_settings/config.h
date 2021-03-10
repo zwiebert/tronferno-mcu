@@ -73,6 +73,11 @@ struct cfg_gpio* config_read_gpio(struct cfg_gpio *c);
 int8_t config_read_rfout_gpio();
 int8_t config_read_rfin_gpio();
 int8_t config_read_setbutton_gpio();
+int8_t config_read_rf_trx();
+int8_t config_read_rfsck_gpio();
+int8_t config_read_rfmosi_gpio();
+int8_t config_read_rfmiso_gpio();
+int8_t config_read_rfss_gpio();
 
 void config_setup_global();
 uint32_t config_read_used_members();
@@ -88,6 +93,8 @@ void config_setup_astro();
 struct cfg_astro* config_read_astro(struct cfg_astro *c);
 float config_read_longitude();
 float config_read_latitude();
+void config_setup_cc1101();
+struct cc1101_settings* config_read_cc1101(struct cc1101_settings *c);
 
 void config_setup_mqttAppClient();
 

@@ -56,10 +56,6 @@
 #define app_main APP_MAIN
 #endif
 
-#ifndef FLAVOR_LAN
-#undef CONFIG_APP_USE_LAN
-#endif
-
 //////////////////////////////////////////////////////
 
 //extern const char *const build_date;

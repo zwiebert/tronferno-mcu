@@ -106,7 +106,19 @@ const en = {
     "rf-tx-pin": "RF-Sender",
     "rf-rx-pin": "RF-Receiver",
     "set-button-pin": "Set-Button",
+    "rf-sclk-pin": "CC1101 SCLK",
+    "rf-miso-pin": "CC1101 SO",
+    "rf-mosi-pin": "CC1101 SI",
+    "rf-ss-pin": "CC1101 CS0",
     "gm-used": "Receivers",
+    cc1101: {
+      "rf-sclk-pin": "CC1101 SCLK",
+      "rf-miso-pin": "CC1101 SO",
+      "rf-mosi-pin": "CC1101 SI",
+      "rf-ss-pin": "CC1101 CS0",
+      "rf-tx-pin": "CC1101 GD0 (TX)",
+      "rf-rx-pin": "CC1101 GD2 (RX)",
+    },
   },
 
   mcuConfig: {
@@ -119,6 +131,14 @@ const en = {
     pin_gpio: "Elektrical In-/Outputs",
     config_wizards: "Configurations-Wizards",
     gm_used: "Number of Receivers per Group",
+  },
+
+  notifyUser: {
+    caption: "Important firmware changes",
+    messages: [
+      { date: "2021-03", text: "Configuration: Default values for GPIOP-pings removed. Used to be (tx=22, rx=17 (rx=16 for LAN). Please configure manually!" },
+      { date: "2021-03", text: "Hardware added: Ethern/LAN. CC1101 RF transceiver module." },
+    ],
   },
 };
 
@@ -219,6 +239,7 @@ const de = {
     "rf-tx-pin": "Funk-Sender",
     "rf-rx-pin": "Funk-Empfänger",
     "set-button-pin": "Setz-Knopf",
+    "cc1101-enable": "Verwende CC1101",
     "gm-used": "Empfänger",
   },
 
@@ -233,6 +254,15 @@ const de = {
     config_wizards: "Konfigurations-Assistenten",
     gm_used: "Anzahl Empfänger je Gruppe",
   },
+
+  notifyUser: {
+    caption: "Wichtige Firmware-Änderungen",
+    messages: [
+      { date: "2021-03", text: "Konfiguration: Alle Defaultwerte für GPIO-Pins wurden entfernt. War Senden=22, Empfangen=17 (16 bei LAN-FW). Bitte manuell konfigurieren!" },
+      { date: "2021-03", text: "Neue Hardware: Ethernet/LAN, CC1101-Funkmodul" },
+    ],
+  },
+
 };
 
 function setupI18n({ withLocale: _locale } = { withLocale: "en" }) {

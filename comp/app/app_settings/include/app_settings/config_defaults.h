@@ -104,7 +104,7 @@
 #ifndef USE_LAN
 #define MY_RFOUT_GPIO 22
 #else
-#define MY_RFOUT_GPIO 16
+#define MY_RFOUT_GPIO -1
 #endif
 #elif defined MCU_ESP8266
 #define MY_RFOUT_GPIO 4
@@ -116,7 +116,7 @@
 #ifndef USE_LAN
 #define MY_RFIN_GPIO 17
 #else
-#define MY_RFIN_GPIO 15 //XXX: GPIO15 is used by JTAG
+#define MY_RFIN_GPIO -1 //XXX: GPIO15 is used by JTAG
 #endif
 #elif defined MCU_ESP8266
 #define MY_RFIN_GPIO 5
@@ -130,6 +130,9 @@
 #define MY_SETBUTTON_GPIO 0
 #endif
 #endif
+
+
+#define MY_RF_TRX rfTrxRxTx
 
 /*
  esp-idf: kconfig does not support float numbers...

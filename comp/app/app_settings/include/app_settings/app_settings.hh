@@ -16,6 +16,7 @@ enum configAppItem : i8 {
   CBA_NONE = -1,
   CBA_start = CB_size - 1, //
   CB_RECV, CB_TRANSM, CB_CUID, CB_USED_MEMBERS, CB_BAUD, CB_GPIO, CB_CFG_PASSWD, CB_LONGITUDE, CB_LATITUDE,
+  CB_RF_TRX,
 #ifndef USE_POSIX_TIME
 CB_TIZO,
 #else
@@ -29,13 +30,15 @@ CB_TIZO,
   CB_NETWORK_CONNECTION,
 #endif
   CB_RFOUT_GPIO, CB_RFIN_GPIO, CB_SETBUTTON_GPIO,
-
+  CB_RFMISO_GPIO, CB_RFMOSI_GPIO, CB_RFSCK_GPIO, CB_RFSS_GPIO,
 //-----------
   CBA_size
 };
 
-constexpr u32 CBM_gpio = BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO) | BIT(CB_SETBUTTON_GPIO) | BIT(CB_GPIO);
+constexpr u32 CBM_gpio = BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO) | BIT(CB_SETBUTTON_GPIO) | BIT(CB_GPIO) | BIT(CB_RF_TRX);
 constexpr u32 CBM_geo = BIT(CB_LONGITUDE) | BIT(CB_LATITUDE) | BIT(CB_TZ) | BIT(CB_ASTRO_CORRECTION);
+constexpr u64 CBM_cc1101 = BIT64(CB_RF_TRX) | BIT64(CB_RFSCK_GPIO) | BIT64(CB_RFMISO_GPIO) | BIT64(CB_RFMOSI_GPIO) | BIT64(CB_RFSS_GPIO);
+
 
 class AppSettings: public Settings<configAppItem, CBA_size - CB_size, CB_size> {
 public:
@@ -46,6 +49,7 @@ public:
   constexpr AppSettings() {
     initField(CB_RECV, "C_RECEIVER", otok::k_receiver, CBT_i8);
     initField(CB_TRANSM, "C_TRANSM", otok::k_transmitter, CBT_i8);
+    initField(CB_RF_TRX, "C_RF_TRX", otok::k_rf_trx, CBT_i8, soCfg_RF_TRX);
     initField(CB_CUID, "C_CUID", otok::k_cu, CBT_u32, soCfg_CU);
     initField(CB_USED_MEMBERS, "C_GMU", otok::k_gm_used, CBT_u32, soCfg_GM_USED, STF_direct_hex);
     initField(CB_BAUD, "C_BAUD", otok::k_baud, CBT_u32, soCfg_BAUD, STF_direct);
@@ -65,6 +69,10 @@ public:
     initField(CB_RFOUT_GPIO, "C_RFOUTP", otok::k_rf_tx_pin, CBT_i8, soCfg_GPIO_RFOUT, STF_direct);
     initField(CB_RFIN_GPIO, "C_RFINP", otok::k_rf_rx_pin, CBT_i8, soCfg_GPIO_RFIN, STF_direct);
     initField(CB_SETBUTTON_GPIO, "C_SETBTNP", otok::k_set_button_pin, CBT_i8, soCfg_GPIO_SETBUTTON, STF_direct);
+    initField(CB_RFSCK_GPIO, "C_SETRFSCK", otok::k_rf_sclk_pin, CBT_i8, soCfg_GPIO_RFSCK, STF_direct);
+    initField(CB_RFMISO_GPIO, "C_SETRFMISO", otok::k_rf_miso_pin, CBT_i8, soCfg_GPIO_RFMISO, STF_direct);
+    initField(CB_RFMOSI_GPIO, "C_SETRFMOSI", otok::k_rf_mosi_pin, CBT_i8, soCfg_GPIO_RFMOSI, STF_direct);
+    initField(CB_RFSS_GPIO, "C_SETRFSS", otok::k_rf_ss_pin, CBT_i8, soCfg_GPIO_RFSS, STF_direct);
   }
 
 };

@@ -45,6 +45,7 @@ receiver
 restart
 rf-rx-pin
 rf-tx-pin
+rf-trx
 rtc
 rtc-only
 set-button-pin

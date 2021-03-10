@@ -25,6 +25,8 @@ using cfg_args_lanPhyT = const char *[4];
 constexpr cfg_args_lanPhyT cfg_args_lanPhy = { "none", "lan8270", "rtl8201", "ip101", };
 #endif
 
+using cfg_args_rfTrxT = const char *[4];
+constexpr cfg_args_rfTrxT cfg_args_rfTrx = { "none", "rx-tx", "rx-itx", "cc1101", };
 
 typedef int8_t otokBaseT;
 #if 1
@@ -40,10 +42,11 @@ enum class otok : otokBaseT  {
       k_gm_used, //
       k_astro_correction, //
       k_rf_tx_pin, k_rf_rx_pin, k_set_button_pin, k_gpio, //
+      k_rf_miso_pin, k_rf_mosi_pin, k_rf_sclk_pin, k_rf_ss_pin, // CC1101 SPI
       ///////////// end of config keys /////////////////
 
   k_a, k_g, k_m, k_mm, k_c, //
-  k_restart, k_all, k_cuas, k_set_pw, k_receiver, k_transmitter, // config
+  k_restart, k_all, k_cuas, k_set_pw, k_receiver, k_transmitter, k_rf_trx, // config
   k_r, k_p, k_SEP, // cmd
   k_boot_count, k_print, k_kvs_pk, k_tm, k_am, k_stack, k_te, k_dbp, k_cs, k_up_time, k_version, k_ota, // mcu
 
@@ -64,9 +67,10 @@ constexpr const_cstringT otok_strings[] = {
     "gm-used", //
     "astro-correction", //
     "rf-tx-pin", "rf-rx-pin", "set-button-pin", "gpio", //
+    "rf-miso-pin", "rf-mosi-pin", "rf-sclk-pin", "rf-ss-pin", //CC1101 SPI
     ///////////// end of config keys /////////////////
     "a", "g", "m", "mm", "c",  //
-    "restart", "all", "cuas", "set-pw", "receiver", "transmitter", // config
+    "restart", "all", "cuas", "set-pw", "receiver", "transmitter", "rf-trx", // config
     "r", "p", "SEP", // cmd
     "boot-count", "print", "kvs-pk", "tm", "am", "stack", "te", "dbp", "cs", "up-time", "version", "ota", // mcu
 
