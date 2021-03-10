@@ -30,7 +30,7 @@
 #include <algorithm>
 
 
-void (*mcu_restart_cb)();
+void (*cli_run_mainLoop_cb)(enum mainLoop req);
 
 bool process_parmConfig_get_comp(otok kt, const char *val, const struct TargetDesc &td) {
   switch (kt) {
@@ -125,8 +125,8 @@ bool process_parmConfig_comp(otok kt, const char *key, const char *val, const st
   switch (kt) {
 #if ENABLE_RESTART
   case otok::k_restart:
-    if (mcu_restart_cb)
-      mcu_restart_cb();
+    if (cli_run_mainLoop_cb)
+      cli_run_mainLoop_cb(mainLoop_mcuRestart);
     break;
 #endif
 
@@ -200,20 +200,20 @@ void parmConfig_reconfig_comp(uint32_t changed_mask) {
 
 #ifdef USE_LAN
   if (changed_mask & CMB_lan) {
-    config_setup_ethernet();
+    cli_run_main_loop(mainLoop_configEthernet);
   }
 #endif
 #ifdef USE_MQTT
   if (changed_mask & CBM_mqttClient) {
-    config_setup_mqttAppClient();
+    cli_run_main_loop(mainLoop_configMqttAppClient);
   }
 #endif
 #ifdef USE_HTTP
   if (changed_mask & CBM_httpServer) {
-    config_setup_httpServer();
+    cli_run_main_loop(mainLoop_configHttpServer);
   }
 #endif
   if (changed_mask & CBM_txtio) {
-    config_setup_txtio();
+    cli_run_main_loop(mainLoop_configTxtio);
   }
 }

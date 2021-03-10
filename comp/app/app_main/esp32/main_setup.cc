@@ -137,7 +137,8 @@ void mcu_init() {
     };
     gpio_INPUT_PIN_CHANGED_ISR_cb = pin_change_cb::cb;
 #endif
-    mcu_restart_cb = mcu_restart;
+
+    cli_run_mainLoop_cb = cli_run_mainLoop;
 
   #ifdef FER_RECEIVER
     //  No lambda here, because section attributes (IRAM_ATTR) do not work on it

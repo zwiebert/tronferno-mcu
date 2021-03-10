@@ -62,6 +62,21 @@ enum loop_flagbits {
   lf_mcuRestart,
 
   //-------------
+  lf_configGpio,
+  lf_configCc1101,
+  lf_configAstro,
+#ifdef USE_LAN
+    lf_configEthernet,
+#endif
+#ifdef USE_MQTT
+    lf_configMqttAppClient,
+#endif
+#ifdef USE_HTTP
+    lf_configHttpServer,
+#endif
+    lf_configTxtio,
+
+  //-------------
   lf_Len
 };
 

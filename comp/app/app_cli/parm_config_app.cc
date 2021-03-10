@@ -161,12 +161,12 @@ break;
 
 void parmConfig_reconfig_app(uint32_t changed_mask) {
   if (changed_mask & CBM_geo) {
-    config_setup_astro();
+    cli_run_main_loop(mainLoop_configAstro);
   }
   if (changed_mask & CBM_gpio) {
-    config_setup_gpio();
+    cli_run_main_loop(mainLoop_configGPIO);
   }
   if (changed_mask & CBM_cc1101) {
-    config_setup_cc1101();
+    cli_run_main_loop(mainLoop_configCC1101);
   }
 }

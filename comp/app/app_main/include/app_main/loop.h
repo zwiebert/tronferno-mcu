@@ -17,3 +17,5 @@ void loop_setBit_rxLoop_fromISR(); ///< request to run RX worker function (calle
 void loop_setBit_pinNotifyInputChange_fromISR(); ///< request to run GPIO worker thread (called from ISR)
 
 void loop_setBit_mcuRestart();  ///< request main thread to do a MCU restart
+
+void loop_setBit_config_setup_gpio();

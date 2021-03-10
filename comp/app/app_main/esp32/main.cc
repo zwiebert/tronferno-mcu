@@ -62,6 +62,39 @@ void mcu_restart() {
   lf_setBit(lf_mcuRestart);
 }
 
+void cli_run_mainLoop(enum mainLoop req) {
+  switch (req) {
+  case mainLoop_mcuRestart:
+    lf_setBit(lf_mcuRestart);
+    return;
+  case mainLoop_configAstro:
+    lf_setBit(lf_configAstro);
+    return;
+  case mainLoop_configGPIO:
+    lf_setBit(lf_configGpio);
+    return;
+  case mainLoop_configCC1101:
+    lf_setBit(lf_configCc1101);
+    return;
+
+  case mainLoop_configEthernet:
+    lf_setBit(lf_configEthernet);
+    return;
+
+  case mainLoop_configMqttAppClient:
+    lf_setBit(lf_configMqttAppClient);
+    return;
+
+  case mainLoop_configHttpServer:
+    lf_setBit(lf_configHttpServer);
+    return;
+
+  case mainLoop_configTxtio:
+    lf_setBit(lf_configTxtio);
+    return;
+  }
+
+}
 
 void IRAM_ATTR lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield) {
   BaseType_t xHigherPriorityTaskWoken = pdFALSE, xResult;

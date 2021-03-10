@@ -59,7 +59,20 @@ static const lfa_funT lfa_table[lf_Len] = {
 #endif
     fer_statPos_loopAutoSave, fer_pos_loopCheckMoving,
     pin_notify_input_change,
-    [] { mcu_delayedRestart(1500); }
+    [] { mcu_delayedRestart(1500); },
+    config_setup_gpio,
+    config_setup_cc1101,
+    config_setup_astro,
+#ifdef USE_LAN
+    config_setup_ethernet,
+#endif
+#ifdef USE_MQTT
+    config_setup_mqttAppClient,
+#endif
+#ifdef USE_HTTP
+    config_setup_httpServer,
+#endif
+    config_setup_txtio,
 };
 
 
