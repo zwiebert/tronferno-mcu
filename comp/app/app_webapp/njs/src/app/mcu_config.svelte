@@ -77,7 +77,6 @@
   let mcuConfig = {};
   function updateMcuConfig(obj) {
     mcuConfig = { ...obj };
-    console.log("cc1101: ", mcuConfigKeysCc1101);
   }
 
   $: {
