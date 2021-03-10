@@ -88,6 +88,8 @@ const en = {
     "astro-correction": "Astro Correction",
     rtc: "Date/Time",
     tz: "Timezone (Posix)",
+    "lan-phy": "PHY-Chip",
+    "lan-pwr-gpio": "Power-ON/OFF GPIO",
     "wlan-ssid": "SSID",
     "wlan-password": "Password",
     "ntp-server": "NTP-Server",
@@ -123,6 +125,7 @@ const en = {
   },
 
   mcuConfig: {
+    ethernet: "LAN/Ethernet",
     wlan_station: "WLAN Station",
     network: "Network-Connection and -Services",
     misc: "Other Settings",

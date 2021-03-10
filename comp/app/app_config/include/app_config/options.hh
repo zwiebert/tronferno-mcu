@@ -22,7 +22,7 @@ constexpr cfg_args_networkT cfg_args_network = { "none", "wlan", "ap", "lan" };
 
 #ifdef USE_LAN
 using cfg_args_lanPhyT = const char *[4];
-constexpr cfg_args_lanPhyT cfg_args_lanPhy = { "none", "lan8270", "rtl8201", "ip101", };
+constexpr cfg_args_lanPhyT cfg_args_lanPhy = { "none", "lan8720", "rtl8201", "ip101", };
 #endif
 
 using cfg_args_rfTrxT = const char *[4];
