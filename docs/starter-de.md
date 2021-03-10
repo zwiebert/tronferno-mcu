@@ -5,6 +5,7 @@
 
 Die Hardware kann leicht selber zusammen gebaut werden, und besteht aus einem ESP32-Board und einem CC1101 Transceiver (oder alternativ einem Sendemodul und einem (optionalen) Empfängermodul). Die Funkfrequenz ist 433.92 MHz. Beim Kauf eines CC1101 Moduls ist der Beschreibung zu entnehmen, ob dieses für Funkfrequenz im 43x MHz Bereich gedacht ist, und nicht etwa für den 86x MHz Bereich.
 
+* [Hardware](hardware-de.md)
 * [Schaltbild](schematic.pdf)
 
 #### Installation der Firmware

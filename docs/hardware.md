@@ -8,12 +8,6 @@
        * Olimex ESP32-Gateway Rev. E
   * SDK/toolchain: esp-idf / xtensa-esp32-elf
 
-##### AVR ATMEGA328P (on "Nano" board)
-  * only basic functionality
-  * firmware compiles (but too big to load) with: git checkout 80043d2e0bd5bd94be9053207e2fcf5aea391c71
-  * firware compiles and runs fine with: git checkout e29af9767c6492f66b1fe99637737d14fd82d5b9
-  * SDK/toolchain: avr-libc, avr-gcc, avrispII programmer hardware with avrdude
-
 #### Additional Hardware
 
   * 433 MHz RF transmitter (like FS1000A) to send commands. Data pin connected to GPIO of MCU
