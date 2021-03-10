@@ -103,6 +103,7 @@ const en = {
     longitude: "Longitude",
     latitude: "Latitude",
     network: "Chose Connection",
+    "rf-trx": "RF-modules",
     "rf-tx-pin": "RF-Sender",
     "rf-rx-pin": "RF-Receiver",
     "set-button-pin": "Set-Button",
@@ -136,7 +137,7 @@ const en = {
   notifyUser: {
     caption: "Important firmware changes",
     messages: [
-      { date: "2021-03", text: "Configuration: Default values for GPIOP-pings removed. Used to be (tx=22, rx=17 (rx=16 for LAN). Please configure manually!" },
+      { date: "2021-03", text: "Configuration: Default values for GPIOP-pings removed. Used to be (tx=22, rx=17 (tx=15, rx=16 for LAN version). Please configure manually!" },
       { date: "2021-03", text: "Hardware added: Ethern/LAN. CC1101 RF transceiver module." },
     ],
   },
@@ -236,6 +237,7 @@ const de = {
     longitude: "Längengrad",
     latitude: "Breitengrad",
     network: "Wähle Verbindung",
+    "rf-trx": "Funkmodule",
     "rf-tx-pin": "Funk-Sender",
     "rf-rx-pin": "Funk-Empfänger",
     "set-button-pin": "Setz-Knopf",
@@ -258,7 +260,7 @@ const de = {
   notifyUser: {
     caption: "Wichtige Firmware-Änderungen",
     messages: [
-      { date: "2021-03", text: "Konfiguration: Alle Defaultwerte für GPIO-Pins wurden entfernt. War Senden=22, Empfangen=17 (16 bei LAN-FW). Bitte manuell konfigurieren!" },
+      { date: "2021-03", text: "Konfiguration: Alle Defaultwerte für GPIO-Pins wurden entfernt. War Senden=22, Empfangen=17 (tx=15 und rx=16 bei LAN-Version). Bitte manuell konfigurieren!" },
       { date: "2021-03", text: "Neue Hardware: Ethernet/LAN, CC1101-Funkmodul" },
     ],
   },
