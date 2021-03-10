@@ -5,7 +5,7 @@
 
 Die Hardware kann leicht selber zusammen gebaut werden, und besteht aus einem ESP32-Board und einem CC1101 Transceiver (oder alternativ einem Sendemodul und einem (optionalen) Empfängermodul). Die Funkfrequenz ist 433.92 MHz. Beim Kauf eines CC1101 Moduls ist der Beschreibung zu entnehmen, ob dieses für Funkfrequenz im 43x MHz Bereich gedacht ist, und nicht etwa für den 86x MHz Bereich.
 
-* [Schaltbild](schematic-1.png)
+* [Schaltbild](schematic.pdf)
 
 #### Installation der Firmware
 Die Tronferno-Firmware wird erstmalig via USB auf das ESP32-Board installiert. Spätere Updates können bequem online durchgeführt werden (Updates liegen auf dem GitHUB-Server).  Das Flashen kann mit dem menutool Programm erfolgen.
@@ -18,7 +18,7 @@ Die erstmalige Konfiguration kann über einen WLAN-Accesspoint durchgeführt wer
 
 #### Weboberfläche öffnen
 
- Zum Aufruf der Weboberfläche wird die vom Router vergebene IP-Adresse benötigt. In der Fritz-Box-Oberfläche findet sich  diese unter Heimnetzwerk und dem Gerätenamen "espressif".
+ Zum Aufruf der Weboberfläche wird die vom Router vergebene IP-Adresse benötigt. In der Fritz-Box-Oberfläche findet sich  diese unter Heimnetzwerk und dem Gerätenamen "espressif".  Wenn über USB mit einem FHEM-Server verbunden, taucht die IP Adresse außerdem als Reading im Modul TronfernoMCU auf.
  
 Das Webinterface erlaubt Konfiguration des Tronferno-Controllers und die Steuerung und Programmierung der Rollladenmotore.
 
@@ -39,27 +39,9 @@ Für den FHEM-Homeserver existiert ein spezilelles Tronferno-Modul. Andere Homes
 
 
 ------------------
-
-#### Funkmodule
-
-Fernotron sendet und empfängt auf 434 MHz (433,92 MHz exakt).
-
-Siehe: [hardware](hardware.md)
-        
   
-#### Benutzerschnittstellen
-  
-  
-##### Web-Browser
-* [network](network.md)
-* [HTTP](http.md)
-* [webserver](webserver.md)
-        
-     
-
-     
 ##### Homeserver die MQTT unterstützen (OpenHAB, FHEM, ...)
-* MQTT muss dazu (z.B. mit dem menutool) aktiviert und konfiguriert werden
+* MQTT muss dazu (z.B. mit dem menutool oder der Weboberfläche) aktiviert und konfiguriert werden
 * [weitere Infos](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md)
      
 ##### Android-App Tronferno
@@ -74,5 +56,8 @@ Siehe: [hardware](hardware.md)
   * [hardware](hardware.md)
   * [configuration](mcu_config.md)
   * [CLI](cli.md)
+  * [network](network.md)
+  * [HTTP](http.md)
+  * [webserver](webserver.md)
   
 
