@@ -141,9 +141,13 @@
       }
     });
 
-    cfg_mod.all = "?";
     let url = "/cmd.json";
     httpFetch.http_postRequest(url, { config: cfg_mod });
+
+    setTimeout(() => {
+      httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG, true);
+      }, 200);
+
   }
 
   function cfg_by_name(name) {
