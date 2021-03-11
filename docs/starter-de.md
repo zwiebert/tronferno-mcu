@@ -7,6 +7,7 @@ Die Hardware kann leicht selber zusammen gebaut werden, und besteht aus einem ES
 
 * [Hardware](hardware-de.md)
 * [Schaltbild](schematic.pdf)
+* [Bauanleitung Olimex-ESP32-Gateway und Neuftech-CC1101](esp32gw_cc1101-de.md)
 
 #### Installation der Firmware
 Die Tronferno-Firmware wird erstmalig via USB auf das ESP32-Board installiert. Spätere Updates können bequem online durchgeführt werden (Updates liegen auf dem GitHUB-Server).  Das Flashen kann mit dem menutool Programm erfolgen.
