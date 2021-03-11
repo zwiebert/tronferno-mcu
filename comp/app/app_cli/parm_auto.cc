@@ -59,7 +59,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   bool f_no_send = false;
   Fer_TimerData tdr;
   Fer_TimerData tda;
-  u8 rs = 0; // ==1: return timer data (like f=i).  ==2 return wildcard timer data (like f=)
+  u8 rs = 0; // ==1: return timer data (like f=i).  ==2 return wildcard timer data (like f=I)
 
   for (i = 1; i < len; ++i) {
     const char *key = p[i].key, *val = p[i].val;

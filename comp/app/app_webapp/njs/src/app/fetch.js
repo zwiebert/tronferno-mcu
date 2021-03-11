@@ -147,7 +147,7 @@ export function http_fetchByMask(mask, synchron) {
     tfmcu.auto = {
       g: g,
       m: m,
-      f: "uki",
+      f: "ukI",
     };
 
   if (mask & FETCH_POS)
