@@ -1,7 +1,7 @@
-###  Olimex-ESP32-Gateway + Neuftech CC1101
+##  Baunaleitung: Tronferno mit Olimex-ESP32-Gateway + Neuftech CC1101
 
 
-#### Das ESP32 Board
+#### 1. Das ESP32 Mikrocontroller Board
 
 ##### Die ESP32-Gateway Revisionen
 
@@ -30,10 +30,10 @@ Im Webinterface ist folgende Konfiguration einzustellen:
  
 ##### Die ESP_EN Problematik
 
-Um das Board immer problemlos über USB flashen zu können, sollte ein Elektrolytkondensator (2 ... 10 uF) am ESP32-Gateway-Erweiterunsport zwischen Anschluss 2 (ESP_EN) und Anschluss 3 (GND) gelötet werden. Der Minuspol des Kondensators an GND. 
+Um das Board immer problemlos über USB flashen zu können, sollte ein Elektrolytkondensator (ca. 10 uF) am ESP32-Gateway-Erweiterunsport zwischen Anschluss 2 (ESP_EN) und Anschluss 3 (GND) gelötet werden. Der Minuspol des Kondensators an GND. 
 
 
-#### Das CC1101 Funkmodul
+#### 2. Das CC1101 Funkmodul
 
 Es sollte jedes Modul funktionieren welches für 433 MHz gedacht ist. 866 MHz Module sind ungeignet. Ich verwende hier ein CC1101 Modul der "Marke" Neuftech für ca 7 EUR bei Amazon.
 
@@ -47,3 +47,36 @@ Die Masse und Versorgungsspannung (3.3V) wird vom ESP32-Gateway-Erweiterungsport
   
 Bei Revision "E" kann diese auch zusammen mit den SPI-GPIOs mit vom SD-Kartenslot entnommen werden. Die 3.3V von dort sind bereits entkoppelt mit Drossel und Kondensator.
 
+#### 3. Der Taster
+
+Der Taster dient zum Einstellen der Endpunkte eines Rollladenmotors.
+Es ist ein Schließer-Taster ("NO") zwischen Masse und einem beliebigen GPI-Pin.  Der GPI-Pin wird in der Weboberfläche konfiguriert.
+
+
+#### 4. Zusammenfassung der von mir benutzen GPIOs und Anschlüsse
+
+Für Gateway bis Revision E:
+   1. CC1101-SO: GW-SD-Card-Pin-1 (GPIO12)
+   1. CC1101-SI: GW-SD-Card-Pin-2 (GPIO13)
+   1. CC1101-SCK: GW-SD-Card-Pin-5 (GPIO14)
+   1. CC1101-CSN: GW-SD-Card-Pin-3 (GPIO15)
+   1. CC1101-VCC: GW-SD-Card-Pin-4  oder GW-Pin-1 (3.3V)
+   1. CC1101-GND: GW-SD-Card-Pin-6  oder GW-Pin-2 (GND)
+   1. CC1101-GO0: GW-Pin-10 (GPIO16)
+   1. CC1101-GO2: GW-Pin-18 (GPI39)
+   1. Taster: GW-Pin-17 (GPI36) und GW-Pin-2 (GND)
+   1. 10uF Elektrolytkondensator: (-) an GW-Pin-2 (GND) und (+) an GW-Pin-3 (ESP_EN)
+
+Für Gateway ab Revision F:
+   1. CC1101-SO: GW-Pin-7 (GPIO12)
+   1. CC1101-SI: GW-Pin-8 (GPIO13)
+   1. CC1101-SCK: GW-Pin-9 (GPIO14)
+   1. CC1101-CSN: GW-Pin-10 (GPIO15)
+   1. CC1101-VCC: GW-Pin-1 (3.3V)
+   1. CC1101-GND: GW-Pin-2 (GND)
+   1. CC1101-GO0: GW-Pin-10 (GPIO16)
+   1. CC1101-GO2: GW-Pin-18 (GPI39)
+   1. Taster: GW-Pin-17 (GPI36) und GW-Pin-2 (GND)
+   1. 10uF Elektrolytkondensator: (-) an GW-Pin-2 (GND) und (+) an GW-Pin-3 (ESP_EN)
+
+ 
