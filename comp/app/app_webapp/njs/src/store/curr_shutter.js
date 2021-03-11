@@ -33,6 +33,9 @@ export const AutoData = derived([GM, Autos], ([gm, autos]) => {
   const src = autos["auto" + gm];
   if (!src) return dst;
 
+  if ("astro" in src)
+     dst.astro = src.astro;
+
   let f = ("f" in src) ? src.f : "";
   dst.hasDaily = f.indexOf("D") >= 0;
   dst.hasWeekly = f.indexOf("W") >= 0;
