@@ -78,5 +78,21 @@ Für Gateway ab Revision F:
    1. CC1101-GO2: GW-Pin-18 (GPI39)
    1. Taster: GW-Pin-17 (GPI36) und GW-Pin-2 (GND)
    1. 10uF Elektrolytkondensator: (-) an GW-Pin-2 (GND) und (+) an GW-Pin-3 (ESP_EN)
+   
+   
+#### 5. Debugging für Entwickler
 
- 
+Zum Debuggen des ESP32-Boards benötigt man die GPIOs 12,13,14,15. Es bietet sich an diese am CC1101 mittels IDC-Buchse lösbar zu verbinden. Zum Debuggen kann man dann den Stecker abziehen und die FT2232 debug probe anschlußdrähte dort in die IDC-Buchse einstecken. In der Weboberfläche sollte dazu der CC1101 deaktiviert werden.
+
+
+#### 6. Bilder
+
+![Vorderseite](img/gwcc/tfmcu2_front.jpg)
+
+![Rückseite](img/gwcc/tfmcu2_back.jpg)
+
+![Innen](img/gwcc/tfmcu_inside.jpg)
+
+![Gehäuse innen](img/gwcc/tfmcu_case_inside.jpg)
+
+![Gehäuse](img/gwcc/tfmcu_case.jpg)
