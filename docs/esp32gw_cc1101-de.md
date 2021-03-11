@@ -64,7 +64,7 @@ Für Gateway bis Revision E:
    1. CC1101-GND: GW-SD-Card-Pin-6  oder GW-Pin-2 (GND)
    1. CC1101-GO0: GW-Pin-10 (GPIO16)
    1. CC1101-GO2: GW-Pin-18 (GPI39)
-   1. Taster: GW-Pin-17 (GPI36) und GW-Pin-2 (GND)
+   1. Taster: GW-Pin-15 (GPI34) und GW-Pin-2 (GND)
    1. 10uF Elektrolytkondensator: (-) an GW-Pin-2 (GND) und (+) an GW-Pin-3 (ESP_EN)
 
 Für Gateway ab Revision F:
@@ -76,7 +76,7 @@ Für Gateway ab Revision F:
    1. CC1101-GND: GW-Pin-2 (GND)
    1. CC1101-GO0: GW-Pin-10 (GPIO16)
    1. CC1101-GO2: GW-Pin-18 (GPI39)
-   1. Taster: GW-Pin-17 (GPI36) und GW-Pin-2 (GND)
+   1. Taster: GW-Pin-15 (GPI34) und GW-Pin-2 (GND)
    1. 10uF Elektrolytkondensator: (-) an GW-Pin-2 (GND) und (+) an GW-Pin-3 (ESP_EN)
    
    
