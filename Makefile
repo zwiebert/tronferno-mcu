@@ -1,38 +1,23 @@
 .PHONY: clean all test rebuild http_data print-help
 
-mcus := esp32 esp8266
-tgts := all
+flavors = esp32 esp32wlan esp32lan
+
+flavor ?= esp32
 
 default: print-help
 
 clean : esp32-test-clean esp32-fullclean esp8266-clean http_clean
 	make -C test/esp32 clean
 
+
 print-help:
 	@cat docs/make_help.txt
-
-
-define GEN_RULE
-.PHONY: $(1)
-$(1): $$(addsuffix -$(1),$(mcus))
-endef
-$(foreach tgt,$(tgts),$(eval $(call GEN_RULE,$(tgt))))
 
 .PHONY: http_proxy http_clean
 http_proxy:
 	cd comp/app/app_webapp && make proxy
 http_clean:
 	cd comp/app/app_webapp && make clean
-
-esp8266_build_cmd := make -C src/esp8266
-esp8266_tgts_auto := all clean flash app-flash flashinit flasherase spiffs
-
-define GEN_RULE
-.PHONY: esp8266-$(1)
-esp8266-$(1):
-	$(esp8266_build_cmd) $(1)
-endef
-$(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
 ####### ESP32 build command ############
@@ -44,9 +29,9 @@ esp32_build_opts += -v
 endif
 
 THIS_ROOT := $(realpath .)
-BUILD_BASE ?= $(THIS_ROOT)/build/esp32
+BUILD_BASE ?= $(THIS_ROOT)/build/$(flavor)
 esp32_build_dir := $(BUILD_BASE)
-esp32_src_dir := $(THIS_ROOT)/src/esp32
+esp32_src_dir := $(THIS_ROOT)/src/$(flavor)
 
 esp32_build_cmd := idf.py -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
 esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
@@ -55,23 +40,30 @@ esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
 esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui
 
 .PHONY: esp32-all-force esp32-rebuild
-.PHONY: esp32-all esp32-lan esp32-flash esp32-flash-ocd
+.PHONY: esp32-all esp32-flash esp32-flash-ocd
 .PHONY: esp32-dot
 .PHONY: FORCE
 
 
 define GEN_RULE
-.PHONY: esp32-$(1)
-esp32-$(1):
-	$(esp32_build_cmd) $(1)
+.PHONY: $(2)-$(1)
+$(2)-$(1):
+	idf.py -G Ninja -C $(THIS_ROOT)/src/$(2) -B $(THIS_ROOT)/build/$(2)  -p $(PORT)  $(esp32_build_opts) $(1) 
 endef
-$(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
+$(foreach f,$(flavors),$(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt),$(f)))))
+
+define GEN_RULE
+.PHONY: all-$(1)
+all-$(1):
+	$(foreach f,$(flavors),make $(1) flavor=$(f);)
+endef
+$(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,esp32-$(tgt))))
+
+
 
 
 esp32-all:
 	$(esp32_build_cmd) reconfigure all
-esp32-lan:
-	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
 	
 esp32-png: $(esp32_build_dir)/tfmcu.png
 esp32-dot: $(esp32_build_dir)/tfmcu.dot
@@ -185,3 +177,16 @@ IPADDR ?= 192.168.1.65
 tcpterm:
 	socat -d -d -v pty,link=/tmp/ttyVirtual0,raw,echo=0,unlink-close,waitslave tcp:$(IPADDR):7777,forever,reuseaddr&
 	gtkterm -p /tmp/ttyVirtual0 -c tcpterm
+
+	
+	####### ESP8266 ######################
+esp8266_build_cmd := make -C src/esp8266
+esp8266_tgts_auto := all clean flash app-flash flashinit flasherase spiffs
+
+define GEN_RULE
+.PHONY: esp8266-$(1)
+esp8266-$(1):
+	$(esp8266_build_cmd) $(1)
+endef
+$(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
+	

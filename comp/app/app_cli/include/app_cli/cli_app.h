@@ -5,6 +5,7 @@
 
 
 #pragma once
+#include "app_config/proj_app_cfg.h"
 #include "cli/cli.h"
 
 extern const char cli_help_parmSend[]; ///< help text for CLI command
@@ -20,7 +21,9 @@ enum mainLoop {
   mainLoop_configGPIO,
   mainLoop_configCC1101,
   mainLoop_configAstro,
+#ifdef USE_LAN
   mainLoop_configEthernet,
+#endif
   mainLoop_configMqttAppClient,
   mainLoop_configHttpServer,
   mainLoop_configTxtio,
