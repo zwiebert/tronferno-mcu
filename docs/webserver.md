@@ -1,6 +1,8 @@
 * Configuration
 
-![ScreenShot](img/tfmcu_config.png)
+![ScreenShot](img/tfmcu_settings_net.png)
+<br>
+![ScreenShot](img/tfmcu_settings_misc.png)
 <br>
 See [configuration](mcu_config.md)
 <hr>
@@ -14,11 +16,15 @@ See [configuration](mcu_config.md)
 
 ![ScreenShot](img/tfmcu_auto.png)
 <hr>
+* Mimicking 2411 
+
+![ScreenShot](img/tfmcu_wapp_2411.png)
+<hr>
 * Update Firmware per OTA
 
 ![ScreenShot](img/tfmcu_fw.png)
 <hr>
-* Configure Timings for Shutter Movement and pair Controllers to a Shutter  
+* View state of shutters
 
 ![ScreenShot](img/tfmcu_pos.png)
 <hr>

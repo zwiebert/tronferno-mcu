@@ -25,3 +25,6 @@
 #### More Info
   * [MCU configuration](mcu_config.md)
   
+------------
+
+![ScreenShot](img/tfmcu_settings_net.png)
