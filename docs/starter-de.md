@@ -1,55 +1,49 @@
 # Tronferno Schnellstart-Anleitung
 
 
-#### Controller
+#### Aufbau der Hardware
 
-Ein ESP32 Board wird benötigt. Die Firmware kann mittels Linux- oder Windows-PC oder auch mittels FHEM-Server installiert werden:
-  
-##### Linux-PC
-1. python und pyserial müssen auf dem Linux-PC installiert sein
-2. Download und Entpacken des [Firmware-Binary-Archivs](https://codeload.github.com/zwiebert/tronferno-mcu-bin/zip/master) auf den PC 
-3. ESP32 Board per USB mit dem PC verbinden
-4. Flashen und Konfigurieren mit dem Programm menutool.sh (Anleitung im dazugehörigen [README.md](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md))
-   
-##### Windows-PC
-1. Download und Entpacken des Firmware-Binary-Archivs auf den PC (es wird keine weitere Software benötigt)
-2. ESP32 Board per USB mit dem PC verbinden
-3. Windows sollte einen COM-Port für den ESP32 anlegen. Falls nicht, muss erst noch der passende [USB-Treiber](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/establish-serial-connection.html) installiert werden 
-4. Flashen und Konfigurieren mit dem Programm menutool.cmd (Anleitung im dazugehörigen [README.md](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md))
-        
-##### FHEM-Server
-1. python und pyserial müssen auf dem FHEM-Server installiert sein
-3. ESP32 Board per USB mit dem FHEM-ServerServer verbinden
-3. Installieren und Definieren des [TronfernoMCU-Moduls](https://github.com/zwiebert/tronferno-fhem/blob/master/README-de.md) auf dem FHEM Server, durch Eingabe unten stehender Befehle in FHEMWEB (der FHEM Weboberfläche)
-4. In FHEMWEB das tfmcu Gerät öffnen und den Set-Menüpunkt "mcu-firmware.esp32" öffnen. Dort "upgrade" auswählen und abschließend auf "set" klicken.
+Die Hardware kann leicht selber zusammen gebaut werden, und besteht aus einem ESP32-Board und einem CC1101 Transceiver (oder alternativ einem Sendemodul und einem (optionalen) Empfängermodul). Die Funkfrequenz ist 433.92 MHz. Beim Kauf eines CC1101 Moduls ist der Beschreibung zu entnehmen, ob dieses für Funkfrequenz im 43x MHz Bereich gedacht ist, und nicht etwa für den 86x MHz Bereich.
 
-           update all https://raw.githubusercontent.com/zwiebert/tronferno-fhem/master/modules/tronferno/controls_tronferno.txt
-          ...warten...
-          shutdown restart
-          define tfmcu TronfernoMCU /dev/ttyUSBx 
-          set tfmcu mcu-firmware.esp32 upgrade
+* [Hardware](hardware-de.md)
+* [Schaltbild](schematic.pdf)
+* [Bauanleitung Olimex-ESP32-Gateway und Neuftech-CC1101](esp32gw_cc1101-de.md)
 
-#### Funkmodule
+#### Installation der Firmware
+Die Tronferno-Firmware wird erstmalig via USB auf das ESP32-Board installiert. Spätere Updates können bequem online durchgeführt werden (Updates liegen auf dem GitHUB-Server).  Das Flashen kann mit dem menutool Programm erfolgen.
 
-Fernotron sendet und empfängt auf 434 MHz (433,92 MHz exakt).
+* [Tronferno-Firmware flashen](starter_flash-de.md)
 
-Siehe: [hardware](hardware.md)
-        
-  
-#### Benutzerschnittstellen
-  
-  
-##### Web-Browser
-* [network](network.md)
-* [HTTP](http.md)
+#### Netzwerkzugang und Webinterface konfigurieren
+
+Die erstmalige Konfiguration kann über einen WLAN-Accesspoint durchgeführt werden (oder auch mit dem menutool Programm, direkt nach dem Flashen).  Dabei sollten die WLAN Zugangsdaten eingerichtet werden. Wenn das Board LAN unterstützt, kann dieses anstelle von WLAN benutzt werden.  Die weitere Konfiguration sollte dann nach und nach über diesen Webserver durchgeführt werden.  Außerdem sollte der integrierte Webserver aktiviert werden und bei Bedarf Benutzername und Passwort um den Zugriff auf die Weboberfläche einzuschränken.
+
+#### Weboberfläche öffnen
+
+ Zum Aufruf der Weboberfläche wird die vom Router vergebene IP-Adresse benötigt. In der Fritz-Box-Oberfläche findet sich  diese unter Heimnetzwerk und dem Gerätenamen "espressif".  Wenn über USB mit einem FHEM-Server verbunden, taucht die IP Adresse außerdem als Reading im Modul TronfernoMCU auf.
+ 
+Das Webinterface erlaubt Konfiguration des Tronferno-Controllers und die Steuerung und Programmierung der Rollladenmotore.
+
 * [webserver](webserver.md)
-        
-     
-##### FHEM-Homeserver Modul (USB oder TCP/IP)
-* GitHub: [tronferno-fhem](https://github.com/zwiebert/tronferno-fhem)
-     
+
+#### Weitere Konfiguration über die Weboberfläche
+
+* Festlegen der GPIO-Pins an welchen die Funksender/Empfänger angeschlossen wurden.
+* ID der originalen 2411 Zentrale eintragen (Zettel im Batteriefach hinter den Batterien).  Diese ID kann auch automatisch konfiguriert werden (Knopf unter dem Text-Eingabefeld drücken und dann STOP auf der 2411 Zentrale drücken).
+* Einstellen der Anzahl Rolläden pro Gruppe, so dass unbenutzte Gruppen und Empfänger nicht die Weboberfläche zumüllen und unnütze Datenabfragen zu nicht existierenden Rolläden vermieden werden können.
+
+
+#### Homeserver-Integration
+
+Für den FHEM-Homeserver existiert ein spezilelles Tronferno-Modul. Andere Homeserver (aber auch FHEM, falls man das Modul nicht benutzen möchte) können via MQTT mit Tronferno kommunizieren.
+
+* [FHEM-Homeserver Modul (USB oder TCP/IP)](https://github.com/zwiebert/tronferno-fhem)
+
+
+------------------
+  
 ##### Homeserver die MQTT unterstützen (OpenHAB, FHEM, ...)
-* MQTT muss dazu (z.B. mit dem menutool) aktiviert und konfiguriert werden
+* MQTT muss dazu (z.B. mit dem menutool oder der Weboberfläche) aktiviert und konfiguriert werden
 * [weitere Infos](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md)
      
 ##### Android-App Tronferno
@@ -64,5 +58,8 @@ Siehe: [hardware](hardware.md)
   * [hardware](hardware.md)
   * [configuration](mcu_config.md)
   * [CLI](cli.md)
+  * [network](network.md)
+  * [HTTP](http.md)
+  * [webserver](webserver.md)
   
 

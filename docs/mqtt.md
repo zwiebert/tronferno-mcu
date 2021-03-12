@@ -19,18 +19,19 @@
 ```
 
 
-* tfmcu/+/pct - percentages 100 for open, 0 for close
+* tfmcu/+/pct - percentages 100 for open, 0 for close,  ? for query
 
      * the plus sign means the same as in tfmcu/+/cmd above
 
      * percentages other than 100 and 0 only work for group/members of the configured central unit.
+     
 
 
 ```
     Example:
       topic: tfmcu/15/pct data: 33   # set member 5 of group 1 to 33%
+      topic: tfmcu/15/pct data: ?    # Current percentage will be published at topic tfmcu/15/pct_out
 ```
-
 
 
 * tfmcu/cli  - Any [CLI](CLI.md) command can be send here
@@ -61,11 +62,12 @@
 ```
 
 
- * tfmcu/gpo/+/level - send 0 or 1 to change level of output  pin
+ * tfmcu/gpo/+/level - send 0 or 1 to change level of output pin.  ? for query
 
 ```
     Example:
-      topic: tfmcu/gpo/22/level data: 1
+      topic: tfmcu/gpo/22/level data: 1   # Set pin to level 1 (High)
+      topic: tfmcu/gpo/22/level data: ?   # Current pin-level will be published at topic tfmcu/gpi/22/level
 ```
 
 
@@ -75,7 +77,7 @@
 
 * tfmcu/+/pct_out - current shutter position in percent (+ stands for shutter ID)
 
-* tfmc/gpi/+/level - change of level (H,L) on input pin (must have been set as input pin in config)
+* tfmc/gpi/+/level - change of level (0,1) on input pin (must have been set as input pin in config)
 
 
 #### Examples

@@ -9,8 +9,9 @@ endif
 EXTRA_INCDIR   += $(EXTRA_BASE)/include
 
 # compiler flags using during compilation of source files
-CFLAGS          =  -std=gnu90 -Wpointer-arith -Wundef -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -mno-serialize-volatile -D__ets__ -DICACHE_FLASH
-CXXFLAGS        = -Os -g -O2  -Wpointer-arith -Wundef -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -mno-serialize-volatile -D__ets__ -DICACHE_FLASH -fno-rtti -fno-exceptions
+CFLAGS          =  -std=c99 -Wpointer-arith -Wundef -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -mno-serialize-volatile -D__ets__ -DICACHE_FLASH
+CXXFLAGS        = -Os -g -O2  -Wpointer-arith -Wundef -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -mno-serialize-volatile -D__ets__ -DICACHE_FLASH \
+                  -fno-rtti -fno-exceptions -fpermissive
 
 # linker flags used to generate the main object file
 
@@ -33,7 +34,7 @@ SDK_INCDIR      = include include/json
 
 # select which tools to use as compiler, librarian and linker
 CC      := xtensa-lx106-elf-gcc
-CXX     := xtensa-lx106-elf-g++
+CXX     := xtensa-lx106-elf-g++ -std=gnu++14
 AR      := xtensa-lx106-elf-ar
 LD      := xtensa-lx106-elf-gcc
 OBJCOPY := xtensa-lx106-elf-objcopy
@@ -48,12 +49,12 @@ SDK_INCDIR      := $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
 C_VERSION_SRC := $(SRC_BASE)/src/build_date.c
 C_SRC   := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
-CXX_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
+CXX_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp $(sdir)/*.cc))
 ASM_SRC := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
 
 C_VERSION_OBJ := $(patsubst %.c,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(C_VERSION_SRC)))
 C_OBJ         := $(patsubst %.c,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(C_SRC)))
-CXX_OBJ       := $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(CXX_SRC)))
+CXX_OBJ       := $(patsubst %.cc,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(CXX_SRC)))
 ASM_OBJ       := $(patsubst %.S,$(BUILD_BASE)/%.o,$(subst $(SRC_BASE)/,,$(ASM_SRC)))
 
 SRC       := $(C_SRC) $(CXX_SRC) $(ASM_SRC)
@@ -103,7 +104,7 @@ $(1)%.o: $(2)%.c
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CFLAGS) -c $$< -MT $$@ -MM > $$(patsubst %.o,%.d,$(DEP_DIR)/$$(subst /,-,$$@))
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CFLAGS)  -c $$< -o $$@
-$(1)%.o: $(2)%.cpp
+$(1)%.o: $(2)%.cc
 	$(vecho) "C+ $$<"
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CXXFLAGS) -c $$< -MT $$@ -MM > $$(patsubst %.o,%.d,$(DEP_DIR)/$$(subst /,-,$$@))
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CPPFLAGS) $(CXXFLAGS)  -c $$< -o $$@
@@ -128,7 +129,7 @@ $(TARGET_OUT): $(APP_AR_IROM) $(GEN_LIBS)
 	$(vecho) "Run gen_appbin"
 	#$(NM) --print-size --size-sort --radix=d $@
 	$(SIZE) -A -d $@
-	$(Q) python $(SDK_TOOLS)/gen_appbin.py $@ 0 $(mode) $(freqdiv) $(size_map) $(app)
+	$(Q) python2 $(SDK_TOOLS)/gen_appbin.py $@ 0 $(mode) $(freqdiv) $(size_map) $(app)
 	$(Q) mv eagle.app.flash.bin $(FW_BASE)/eagle.flash.bin
 	$(Q) mv eagle.app.v6.irom0text.bin $(FW_BASE)/eagle.irom0text.bin
 	$(Q) rm eagle.app.v6.*

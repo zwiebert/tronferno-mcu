@@ -16,6 +16,8 @@
      * mqtt-enable: enable built-in MQTT client
      * mqtt-url: mqtt server address in the form of a URL
      * mqtt-user, mqtt-password: credentials for the MQTT server
+     * mqtt-client-id: There cannot be more than one identical client-ID logged into a server. (default: tfmcu)
+     * mqtt-root-topic: All topics will be prefixed by this (default: tfmcu)
      * http-enable: enable built-in HTTP webserver
      * http-user, http-password: optional. if set the webserver requires authentication to be accessed
      * astro-correction: workaround for fernotron astro table problem: 0: use average civil dusk time, 1: never too late, 2: never too early
@@ -51,6 +53,7 @@ mqtt-url=URL       broker/server URL (e.g. mqtt://192.168.1.42:7777)
 mqtt-user=NAME     user name on server
 mqtt-password=PW   user password on server
 mqtt-client-id=ID  default: tfmcu
+mqtt-root-topic=TOPIC default: tfmcu
 http-enable=(0|1)  enable HTTP
 http-user=NAME     user name on server
 http-password=PW   user password on server

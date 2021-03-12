@@ -1,0 +1,192 @@
+$color_a: hsl(70, 30%, 80%);
+$color_b: hsl(100, 50%, 50%);
+
+$color_bg_select: $color_b;
+$color_fg_select: lighten($color_a, 30%);
+$color_bg: lighten($color_a, 50%);
+$color_fg: hsl(0, 0%, 0%); // #278727;
+
+
+
+$color_bg_nav: $color_a;
+$color_bg_nav_select: $color_b;
+$color_bg_nav1: darken($color_bg_nav, 5%);
+$color_bg_nav1_select: darken($color_bg_nav_select, 5%);
+$color_bg_nav2: darken($color_bg_nav1, 5%);
+$color_bg_nav2_select: darken($color_bg_nav1_select, 5%);
+
+$color_bg_main_area: darken($color_bg_nav1, 5%);
+$color_border_main_area: darken($color_bg_main_area, 20%);
+
+$color_bg_area: lighten($color_bg_main_area, 2.5%);
+$color_border_area: darken($color_bg_area, 20%);
+
+$color_border: darken($color_b, 5%);
+
+.bg-selected {
+  background-color: $color_bg_select;
+}
+
+.fg-selected {
+  color: $color_fg_select;
+}
+
+.bg-area {
+  background-color: $color_bg_area;
+}
+
+.tabbt.is-selected {
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+}
+
+.is-active {
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+}
+
+.navtab-main {
+  border-radius: .5rem;
+  padding: 0;
+  background-color: $color_bg_nav;
+  border: thin dotted $color_border;
+
+  .tabbt.is-selected {
+    background-color: $color_bg_nav_select;
+    color: $color_fg_select;
+  }
+}
+
+.navtab-sub {
+  border-radius: .5rem;
+  padding: 0;
+  background-color: $color_bg_nav1;
+  border: thin dotted $color_border;
+
+  .tabbt.is-selected {
+    background-color: $color_bg_nav1_select;
+    color: $color_fg_select;
+  }
+}
+
+.main-area {
+  border-radius: .75rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: $color_bg_main_area;
+  border: thin solid $color_border_main_area;
+}
+
+.area {
+  border-radius: .75rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: $color_bg_area;
+  border: thin solid $color_border_area;
+}
+
+html {
+  font-size: 100%;
+  background-color: $color_bg;
+  color: $color_fg;
+}
+
+.help-text-v0 {
+  display: none;
+}
+
+.help-text-v1 {
+  font-size: 90%;
+}
+
+.cb {
+  width: 1em;
+  height: 1em;
+}
+
+h3 {
+  text-align: center;
+  margin-top: 0px;
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+  grid-area: header;
+  justify-self: stretch;
+  align-self: start;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  50.01% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@media only screen and (max-device-width: 360px) {
+  .full-width {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+
+  .top_table {
+    width: inherit;
+    //@extend .full-width; 
+  }
+}
+
+
+select,
+button,
+input {
+  background-color: $color_bg;
+  border: thin solid darken($color_bg_area, 5%);
+  ;
+}
+
+button {
+  background-color: lighten($color_bg_area, 10%);
+  padding: .5rem;
+  margin: .5rem;
+}
+
+button:active {
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+}
+
+button:active {
+  background-color: darken($color_bg, 25%);
+  color: lighten($color_fg, 25%);
+}
+
+
+input {
+  background-color: white;
+}
+
+.conf-table label {
+  padding: 2px;
+  margin-right: 3px;
+}
+
+.config-input.text {
+  width: inherit;
+}
+
+.config-input.number {
+  width: 5rem;
+}
