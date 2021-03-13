@@ -1,6 +1,8 @@
 ##### Configuration using built-in [web-server](webserver.md)
 
-![ScreenShot](img/tfmcu_config.png)
+![ScreenShot](img/tfmcu_settings_net.png)
+<br>
+![ScreenShot](img/tfmcu_settings_misc.png)
 
 * First read about [network](network.md) to learn how to access the built-in webserver
 

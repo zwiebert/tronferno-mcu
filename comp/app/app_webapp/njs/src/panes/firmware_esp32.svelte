@@ -36,8 +36,12 @@
     fw_master.version = $McuGitTagNameLatestMaster;
     fw_beta.version = $McuGitTagNameLatestBeta;
     fw_version.values = $McuGitTagNames;
-    fw_version.value = $McuGitTagNames[0];
-    fwbtns = fwbtns;
+    fwbtns = fwbtns;    
+  }
+
+  $: fw_version_value0 = $McuGitTagNames[0];
+  $: {
+    fw_version.value = fw_version_value0;
   }
 
   if (!misc.DISTRO) {
