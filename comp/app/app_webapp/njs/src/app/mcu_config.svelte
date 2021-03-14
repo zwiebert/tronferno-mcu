@@ -41,6 +41,16 @@
     }
   }
 
+  let mcuConfig = {};
+  function updateMcuConfig(obj) {
+    mcuConfig = { ...obj };
+  }
+
+  $: {
+    updateMcuConfig($McuConfig);
+  }
+
+
   $: mcuConfigKeysNetwork = $McuConfigKeys.filter((val) => val === "network");
   $: mcuConfigKeysMQTT = $McuConfigKeys.filter((val) => val.startsWith("mqtt-"));
   $: mcuConfigKeysHTTP = $McuConfigKeys.filter((val) => val.startsWith("http-"));
@@ -54,6 +64,12 @@
   $: mcuConfigKeysAstro = $McuConfigKeys.filter((val) => val === "longitude" || val === "latitude" || val.startsWith("astro-"));
   $: mcuConfigKeysTime = $McuConfigKeys.filter((val) => val === "rtc" || val === "tz");
   $: mcuConfigKeysCc1101 = mcuConfig["rf-trx"] === "cc1101" ? $McuConfigKeys.filter((val) => val.startsWith("rf-") && val.endsWith("-pin")) : [];
+
+  $: {
+    console.log("mcuConfigKeysCc1101: ", mcuConfigKeysCc1101);
+    console.log("rf-trx: ", mcuConfig["rf-trx"]);
+    console.log("mcuConfig: ", mcuConfig);
+  }
 
   $: mcuConfigKeysMisc = $McuConfigKeys.filter(
     (val) =>
@@ -74,14 +90,6 @@
       )
   );
 
-  let mcuConfig = {};
-  function updateMcuConfig(obj) {
-    mcuConfig = { ...obj };
-  }
-
-  $: {
-    updateMcuConfig($McuConfig);
-  }
 
   $: gmu = $Gmu;
   $: gpios = $McuConfig["gpio"] || "..........................................";
