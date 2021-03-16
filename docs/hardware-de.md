@@ -32,7 +32,7 @@
 
       
   * Reines Empfangsmodul   
-     * RB6X: getestet und funktioniert.
+     * RXB6: getestet und funktioniert.
         * Es kann mit 5V gespeist werden, welche das ESP32 Board bereitstellt
         * Es wird dafür ein GPI-Pin benötigt der in der Weboberfläche ausgewählt werden kann.  
      * RX470C-V01: getestet und funktioniert.

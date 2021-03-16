@@ -23,3 +23,9 @@
           shutdown restart
           define tfmcu TronfernoMCU /dev/ttyUSBx 
           set tfmcu mcu-firmware.esp32 upgrade
+
+
+
+
+
+
