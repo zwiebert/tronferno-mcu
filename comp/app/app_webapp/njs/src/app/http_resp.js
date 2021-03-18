@@ -3,6 +3,7 @@ import * as httpFetch from "app/fetch.js";
 import * as appDebug from "app/app_debug.js";
 import {
   McuBootCount,
+  McuErrorMask,
   McuGitTagNames,
   McuFirmwareBuildDate,
   McuChipId,
@@ -121,6 +122,9 @@ export function http_handleResponses(obj) {
     }
     if ("boot-count" in mcu) {
       McuBootCount.set(mcu["boot-count"]);
+    }
+    if ("error-mask" in mcu) {
+      McuErrorMask.set(Number.parseInt(mcu["error-mask"], 16));
     }
     if ("ota-state" in mcu) {
       let ota_state = mcu["ota-state"];

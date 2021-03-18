@@ -17,6 +17,7 @@
 #include "app_misc/rtc.h"
 #include "cli_imp.h"
 #include "app_misc/opt_map.hh"
+#include <app_settings/config.h>
 
 #include "debug/dbg.h"
 
@@ -255,6 +256,11 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 
     if (strcmp(key, "kvs-pk") == 0) {
       kvs_print_keys(val);
+      break;
+    }
+
+    if (strcmp(key, "error-mask") == 0) {
+      td.so().print("error-mask", tfmcu_error_mask, 16);
       break;
     }
 

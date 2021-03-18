@@ -9,10 +9,11 @@
 #include "cc1101_ook/spi.hh"
 #include "cc1101_ook/trx.hh"
 
+#include "cc1101.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 
 #include "utils_misc/int_macros.h"
 
@@ -32,19 +33,14 @@ static bool rx_mode;
 static bool tx_mode;
 volatile int marcstate;
 
-static void ms_delay(unsigned ms) {
+static bool ms_delay(unsigned ms) {
   vTaskDelay(ms / portTICK_PERIOD_MS);
+  return true;
 }
-
 
 static int Write_CC_CmdStrobe(uint8_t cmd) {
 
-  struct spi_transaction_t ta = {
-      .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA,
-      .length = 8,
-      .rxlength = 8,
-      .tx_data = { cmd, },
-  };
+  struct spi_transaction_t ta = { .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA, .length = 8, .rxlength = 8, .tx_data = { cmd, }, };
 
   if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
     ESP_ERROR_CHECK_WITHOUT_ABORT(res);
@@ -54,56 +50,48 @@ static int Write_CC_CmdStrobe(uint8_t cmd) {
   return ta.rx_data[0];
 }
 
-
 static int Write_CC_Config(uint8_t addr, uint8_t data) {
 
-  struct spi_transaction_t ta = {
-      .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA,
-      .length = 16,
-      .rxlength = 16,
-      .tx_data = { addr, data, },
-  };
+  struct spi_transaction_t ta = { .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA, .length = 16, .rxlength = 16, .tx_data = { addr, data, }, };
 
   if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
     ESP_ERROR_CHECK_WITHOUT_ABORT(res);
     return -1;
   }
 
+  return ta.rx_data[1];
+}
+
+#define readReg(ra, rt) Read_CC_Register((ra)|(rt))
+
+static int Read_CC_Register(uint8_t addr) {
+
+  struct spi_transaction_t ta = { .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA, .length = 16, .rxlength = 16, .tx_data = { (uint8_t) (addr) }, };
+
+  if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
+    ESP_ERROR_CHECK_WITHOUT_ABORT(res);
+    return -1;
+  }
 
   return ta.rx_data[1];
 }
 
 static int Read_CC_Config(uint8_t addr) {
+  return Read_CC_Register(addr | CC1101_CONFIG_REGISTER);
+}
 
-  struct spi_transaction_t ta = {
-      .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA,
-      .length = 16,
-      .rxlength = 16,
-      .tx_data = { (uint8_t)(addr | 0x80) },
-  };
-
-  if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
-    ESP_ERROR_CHECK_WITHOUT_ABORT(res);
-    return -1;
-  }
-
-
-  return ta.rx_data[1];
+static int Read_CC_Status(uint8_t addr) {
+  return Read_CC_Register(addr | CC1101_STATUS_REGISTER);
 }
 
 void Write_CC_Burst(const void *data, size_t len) {
 
-  struct spi_transaction_t ta = {
-      .flags = 0,
-      .length = len * 8,
-      .tx_buffer = data,
-  };
+  struct spi_transaction_t ta = { .flags = 0, .length = len * 8, .tx_buffer = data, };
 
   if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
     ESP_ERROR_CHECK_WITHOUT_ABORT(res);
     return;
   }
-
 
   return;
 }
@@ -112,17 +100,12 @@ static bool setup_CC_TX() {
   if (tx_mode)
     return true;
   rx_mode = false;
-  //Write_CC_CmdStrobe(0x33);
-  //marcstate = Read_CC_Config(0xF5);
 
-  //Write_CC_Config(0x10, 0xF5);                   //MDMCFG4
-  //Write_CC_Config(0x11, 0x93);                   //MDMCFG3
-
-  Write_CC_CmdStrobe(0x35); // STX - Transmit mode
+  Write_CC_CmdStrobe(CC1101_STX); // STX - Transmit mode
 
   for (int i = 0; i < 10; ++i) {
     ms_delay(10);
-    if (Read_CC_Config(0xF5) == 0x13) {
+    if (Read_CC_Status(CC1101_MARCSTATE) == 0x13) {
       tx_mode = true;
       return true;
     }
@@ -135,19 +118,12 @@ static bool setup_CC_RX() {
   if (rx_mode)
     return true;
   tx_mode = false;
-  //Write_CC_CmdStrobe(0x33);
-  //marcstate = Read_CC_Config(0xF5);
 
-  ////////////////////////////////////////////////////////////////////////
-
-  //Write_CC_Config(0x10, 0xF7);                   //MDMCFG4
-  //Write_CC_Config(0x11, 0x83);                   //MDMCFG3
-
-  Write_CC_CmdStrobe(0x34);  // SRX  - Receive Mode
+  Write_CC_CmdStrobe(CC1101_SRX);  // SRX  - Receive Mode
 
   for (int i = 0; i < 10; ++i) {
     ms_delay(10);
-    if (Read_CC_Config(0xF5) == 0x0d) {
+    if (Read_CC_Status(CC1101_MARCSTATE) == 0x0d) {
       rx_mode = true;
       return true;
     }
@@ -156,57 +132,53 @@ static bool setup_CC_RX() {
 
 }
 
-
 const uint8_t cc1101_config[] = {
-
-0x00, 0x0D,                   //IOCFG2
-    0x02, 0x0C,                   //IOCFG0
+//
+    CC1101_IOCFG2, 0x0D,
+    CC1101_IOCFG0, 0x0C,
 #if 1
     // AGC Adjust for OKK
-    0x1B, 0x04,                   //AGCCTRL2                              eventuell Anpassen
-    0x1C, 0x00,                   //AGCCTRL1
-    0x1D, 0x90,                   //AGCCTRL0
+    CC1101_AGCCTRL2, 0x04,
+    CC1101_AGCCTRL1, 0x00,
+    CC1101_AGCCTRL0, 0x90,
 #endif
 
-    0x03, 0x47,                   //FIFOTHR
-    //0x06, 0x3E,                   //PKTLEN
-    0x08, 0x32,                   //PKTCTRL0
-    // 0x09, 0xFF,                   //ADDR
-    0x0B, 0x06,                   //FSCTRL1
+    CC1101_FIFOTHR, 0x47,
+    //CC1101_PKTLEN, 0x3E,
+    CC1101_PKTCTRL0, 0x32,
+    // CC1101_ADDR, 0xFF,
+    CC1101_FSCTRL1, 0x06,
 
     // Set frequency to 433.92 MHz
-    0x0D, 0x10,                   //FREQ2
-    0x0E, 0xB0,                   //FREQ1
-    0x0F, 0x71,                   //FREQ0
+    CC1101_FREQ2, 0x10,
+    CC1101_FREQ1, 0xB0,
+    CC1101_FREQ0, 0x71,
 
-    0x10, 0xF7,                   //MDMCFG4
-    0x11, 0x93,                   //MDMCFG3
-    0x12, 0x30,                   //MDMCFG2
+    CC1101_MDMCFG4, 0xF7,
+    CC1101_MDMCFG3, 0x93,
+    CC1101_MDMCFG2, 0x30,
 
-    0x18, 0x18,                   //MCSM0
-    0x19, 0x16,                   //FOCCFG
-    0x20, 0xFB,                   //WORCTRL
+    CC1101_MCSM0, 0x18,
+    CC1101_FOCCFG, 0x16,
+    CC1101_WORCTRL, 0xFB,
 
-    //0x21, 0x56,                   //FREND1
-    0x22, 0x11,                   //FREND0
+    //CC1101_FREND1, 0x56,
+    CC1101_FREND0, 0x11,
 
-    0x23, 0xE9,                   //FSCAL3
-    0x24, 0x2A,                   //FSCAL2
-    0x25, 0x00,                   //FSCAL1
-    0x26, 0x1F,                   //FSCAL0
+    CC1101_FSCAL3, 0xE9,
+    CC1101_FSCAL2, 0x2A,
+    CC1101_FSCAL1, 0x00,
+    CC1101_FSCAL0, 0x1F,
 
-    0x2C, 0x81,                   //TEST2
-    0x2D, 0x35,                   //TEST1
-    0x2E, 0x09,                   //TEST0
-
-    //0x41, 0x04,                   //PA_TABLE0
-    0x41, 0xC0,                   //PA_TABLE0  // XXX: +10dBm may be too much
+    CC1101_TEST2, 0x81,
+    CC1101_TEST1, 0x35,
+    CC1101_TEST0, 0x09,
 
     0xff, 0xff // terminator
     };
 
 static bool cc1101_init() {
-  Write_CC_CmdStrobe(0x30);  // SRES - Reset chip
+  Write_CC_CmdStrobe(CC1101_SRES);  // SRES - Reset chip
   rx_mode = tx_mode = false;
   ms_delay(100);
 
@@ -214,10 +186,10 @@ static bool cc1101_init() {
     Write_CC_Config(cc1101_config[i], cc1101_config[i + 1]);
   }
 
-  Write_CC_CmdStrobe(0x36);  // SIDLE  - Idle state
+  Write_CC_CmdStrobe(CC1101_SIDLE);  // SIDLE  - Idle state
   for (int i = 0; i < 10; ++i) {
     ms_delay(10);
-    if (Read_CC_Config(0xF5) == 0x01) {
+    if (Read_CC_Status(CC1101_MARCSTATE) == 0x01) {
       return true;
     }
   }
@@ -238,12 +210,10 @@ static bool enable_cc1101(struct cc1101_settings *cfg) {
   // .max_transfer_sz=PARALLEL_LINES*320*2+8
       };
   spi_device_interface_config_t devcfg = { //
-      .command_bits = 0,
-      .address_bits = 0,
-      .mode = 0,                                //SPI mode 0
-      .clock_speed_hz = APB_CLK_FREQ/20,           //Clock out at 4 MHz
-      .spics_io_num = cfg->ss,               //CS pin
-      .queue_size = 7,                          //We want to be able to queue 7 transactions at a time
+      .command_bits = 0, .address_bits = 0, .mode = 0,                                //SPI mode 0
+          .clock_speed_hz = APB_CLK_FREQ / 20,           //Clock out at 4 MHz
+          .spics_io_num = cfg->ss,               //CS pin
+          .queue_size = 7,                          //We want to be able to queue 7 transactions at a time
       // .pre_cb = lcd_spi_pre_transfer_callback,  //Specify pre-transfer callback to handle D/C line
       };
 
@@ -271,15 +241,14 @@ bool cc1101_ook_setDirection(bool tx) {
   if (rx_mode && !tx)
     return true;
 
-  Write_CC_CmdStrobe(0x36);
+  Write_CC_CmdStrobe(CC1101_SIDLE);
   for (int i = 0; i < 10; ++i) {
     ms_delay(10);
-    if (Read_CC_Config(0xF5) == 0x01) {
+    if (Read_CC_Status(CC1101_MARCSTATE) == 0x01) {
       tx_mode = rx_mode = false;
       break;
     }
   }
-
 
   if (tx)
     for (int i = 0; i < 10; ++i) {
@@ -296,6 +265,45 @@ bool cc1101_ook_setDirection(bool tx) {
 }
 
 
+bool cc1101_ook_gdo_invert(int numb, bool inverted_output) {
+  switch (numb) {
+  case 2:
+    return -1 != Write_CC_Config(CC1101_IOCFG2, 0x0D | (inverted_output ? 0x40 : 0x00));
+    break;
+  default:
+    return false;
+  }
+  return true;
+}
+
+bool cc1101_ook_gdo_hw(int gdo_num, bool high) {
+  switch (gdo_num) {
+  case 0:
+  case 1:
+  case 2:
+    return -1 != Write_CC_Config(CC1101_IOCFG0 - gdo_num, 0x2f | (high ? 0x40 : 0x00));
+  default:
+    break;
+  }
+  return false;
+}
+
+
+bool cc1101_ook_gdo_isConnected(int gdo_num, int gpio_num) {
+  bool result = false;
+  switch (gdo_num) {
+  case 2: {
+    result = cc1101_ook_gdo_hw(2, false) && ms_delay(2) && gpio_get_level((gpio_num_t)gpio_num) == 0 && cc1101_ook_gdo_hw(2, true) && ms_delay(2)
+        && gpio_get_level((gpio_num_t)gpio_num) == 1;
+    cc1101_ook_gdo_invert(2, false);
+  }
+    break;
+  default:
+    break;
+  }
+  return result;
+}
+
 void cc1101_ook_spi_setup(struct cc1101_settings *cfg) {
   disable_cc1101();
   if (!cfg->enable) {
@@ -308,9 +316,9 @@ void cc1101_ook_spi_setup(struct cc1101_settings *cfg) {
 
   cc1101_init();
   ms_delay(10);
-  for (int i=0; i < 10; ++i) {
-   if (setup_CC_RX())
-     break;
+  for (int i = 0; i < 10; ++i) {
+    if (setup_CC_RX())
+      break;
   }
 }
 
@@ -319,8 +327,16 @@ void cc1101_ook_spi_setup(struct cc1101_settings *cfg) {
 bool cc1101_ook_setDirection(bool tx) {
   return false;
 }
-void cc1101_ook_spi_setup(struct cc1101_settings *cfg) {
 
+bool cc1101_ook_gdo_invert(int numb, bool inverted_output) {
+  return false;
+}
+
+bool cc1101_ook_gdo_isConnected(int gdo_num, int gpio_num) {
+  return false;
+}
+
+void cc1101_ook_spi_setup(struct cc1101_settings *cfg) {
 }
 
 #endif

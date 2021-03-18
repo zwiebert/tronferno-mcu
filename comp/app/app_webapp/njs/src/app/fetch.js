@@ -22,6 +22,7 @@ export const FETCH_SHUTTER_NAMES = 1 << b++;
 export const FETCH_ALL_POS = 1 << b++;
 export const FETCH_BOOT_COUNT = 1 << b++;
 export const FETCH_CONFIG_GPIO_STRING = 1 << b++;
+export const FETCH_ERROR_MASK = 1 << b++;
 
 const FETCHES_REPLY_BY_WS = 0;
 
@@ -137,6 +138,10 @@ export function http_fetchByMask(mask, synchron) {
 
   if (mask & FETCH_BOOT_COUNT) {
     add_kv(tfmcu, "mcu", "boot-count", "?");
+  }
+
+  if (mask & FETCH_ERROR_MASK) {
+    add_kv(tfmcu, "mcu", "error-mask", "?");
   }
 
   if (mask & FETCH_VERSION) {

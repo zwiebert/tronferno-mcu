@@ -10,6 +10,7 @@
   import { ReloadProgress } from "stores/app_state.js";
   import NavTabs from "app/nav_tabs.svelte";
   import { TabIdx } from "stores/app_state.js";
+  import { McuErrorMask } from "stores/mcu_firmware.js";
 
   import McuConfigGpio from "components/mcu_config/gpio.svelte";
   import McuConfigGpioSelect from "components/mcu_config/gpio_select.svelte";
@@ -23,8 +24,10 @@
   import GpioLevel from "components/gpio_level.svelte";
 
   let on_destroy = [];
+  const HTTP_FETCH_MASK = httpFetch.FETCH_CONFIG | httpFetch.FETCH_CONFIG_GPIO_STRING | httpFetch.FETCH_ERROR_MASK;
+
   onMount(() => {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG | httpFetch.FETCH_CONFIG_GPIO_STRING);
+    httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
   });
   onDestroy(() => {
     for (const fn of on_destroy) {
@@ -50,6 +53,7 @@
     updateMcuConfig($McuConfig);
   }
 
+  $: errorBit_cc1101_gpio_rfin = ($McuErrorMask & 0x01) !== 0;
 
   $: mcuConfigKeysNetwork = $McuConfigKeys.filter((val) => val === "network");
   $: mcuConfigKeysMQTT = $McuConfigKeys.filter((val) => val.startsWith("mqtt-"));
@@ -90,7 +94,6 @@
       )
   );
 
-
   $: gmu = $Gmu;
   $: gpios = $McuConfig["gpio"] || "..........................................";
 
@@ -104,7 +107,7 @@
 
   function hClick_Reload() {
     reload_config();
-    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
+    httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
   }
 
   function hClick_Save() {
@@ -153,9 +156,12 @@
     httpFetch.http_postRequest(url, { config: cfg_mod });
 
     setTimeout(() => {
-      httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG, true);
-      }, 200);
+      httpFetch.http_fetchByMask(HTTP_FETCH_MASK, true);
+    }, 500);
 
+    setTimeout(() => {
+      httpFetch.http_fetchByMask(HTTP_FETCH_MASK, true);
+    }, 2500);
   }
 
   function cfg_by_name(name) {
@@ -419,7 +425,14 @@
               ><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{$_("mcuConfigNames.cc1101." + key)}</label
               ></td
             >
-            {#if key === "rf-rx-pin" || key === "set-button-pin" || key === "rf-miso-pin"}
+            {#if key === "rf-rx-pin"}
+              <td>
+                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
+                {#if errorBit_cc1101_gpio_rfin}
+                  <span class="bg-red-400">(wire not connected)</span>
+                {/if}
+              </td>
+            {:else if key === "set-button-pin" || key === "rf-miso-pin"}
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
               </td>

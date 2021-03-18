@@ -15,8 +15,14 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
 #include "cc1101_ook/spi.hh"
+#include "cc1101_ook/trx.hh"
 
 #include <string.h>
+
+unsigned tfmcu_error_mask;
+void tfmcu_put_error(tfmcu_errorT error_code, bool value) {
+   PUT_BIT(tfmcu_error_mask, error_code, value);
+}
 
 #define CI(cb) static_cast<configItem>(cb)
 
@@ -189,8 +195,14 @@ struct cc1101_settings* config_read_cc1101(struct cc1101_settings *c) {
   return 0;
 }
 
+
+
+
 void config_setup_cc1101() {
   struct cc1101_settings c = { .sclk = -1, .ss = -1, .miso = -1, .mosi = -1 };
   config_read_cc1101(&c);
   cc1101_ook_spi_setup(&c);
+
+  auto rfin_gpio = config_read_rfin_gpio();
+  tfmcu_put_error(TFMCU_ERR_CC1101_RFIN_NOT_CONNECTED, rfin_gpio >= 0 && !cc1101_ook_gdo_isConnected(2, rfin_gpio));
 }

@@ -2,6 +2,7 @@
 import { writable, derived } from "svelte/store";
 
 export const McuBootCount = writable(0);
+export const McuErrorMask = writable(0);
 export const McuGitTagNames = writable([]);
 export const McuFirmwareVersion = writable("");
 export const McuChipId = writable("");
