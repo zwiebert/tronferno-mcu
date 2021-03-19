@@ -181,9 +181,9 @@ const uint8_t cc1101_config[] = {
 
     // AGC Adjust for OKK
 #if E1
-    CC1101_AGCCTRL2, 0x04,
-#else
     CC1101_AGCCTRL2, 0x87,
+#else
+    CC1101_AGCCTRL2, 0x04,
 #endif
     CC1101_AGCCTRL1, 0x00,
     CC1101_AGCCTRL0, 0x92,
