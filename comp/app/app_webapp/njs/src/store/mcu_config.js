@@ -1,6 +1,6 @@
 "use strict";
 import { _ } from "services/i18n";
-import { derived } from "svelte/store";
+import { writable, derived } from "svelte/store";
 import { OptionStore, PersistentValStore } from "./custom_stores.js";
 
 export const Pcts = OptionStore();
@@ -38,3 +38,7 @@ export const McuConfigNames = derived(McuConfigKeys, (keys) => {
   }
   return result;
 });
+
+
+
+export const Cc1101Config = writable("");

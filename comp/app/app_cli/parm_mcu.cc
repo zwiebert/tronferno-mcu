@@ -18,9 +18,8 @@
 #include "cli_imp.h"
 #include "app_misc/opt_map.hh"
 #include <app_settings/config.h>
-
+#include <cc1101_ook/trx.hh>
 #include "debug/dbg.h"
-
 
 #ifdef USE_FREERTOS
 #include "freertos/FreeRTOS.h"
@@ -46,8 +45,8 @@ const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #ifdef CONFIG_GPIO_SIZE
     "gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N\n"
 #endif
-    "up-time=?\n"
-    "version=full\n";
+        "up-time=?\n"
+        "version=full\n";
 
 static void kvs_print_keys(const char *name_space);
 
@@ -132,11 +131,11 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       break;
 
 #ifdef USE_FREERTOS
-   case otok::k_stack: {
+    case otok::k_stack: {
       int words = uxTaskGetStackHighWaterMark(NULL);
       ets_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
-   }
-   break;
+    }
+      break;
 #endif
 
     case otok::k_te: {
@@ -157,7 +156,8 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 #ifdef USE_PAIRINGS
     case otok::k_dbp: {
       fer_alias_so_output_all_pairings(td);
-    } break;
+    }
+      break;
 #endif
     case otok::k_cs: {
       fer_statPos_printAllPcts(td);
@@ -202,7 +202,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 #endif
       }
     }
-       break;
+      break;
 #endif
 
     default:
@@ -254,15 +254,54 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
     }
 #endif
 
-    if (strcmp(key, "kvs-pk") == 0) {
-      kvs_print_keys(val);
-      break;
-    }
+      if (strcmp(key, "kvs-pk") == 0) {
+        kvs_print_keys(val);
+        break;
+      }
 
-    if (strcmp(key, "error-mask") == 0) {
-      td.so().print("error-mask", tfmcu_error_mask, 16);
-      break;
-    }
+      if (strcmp(key, "error-mask") == 0) {
+        td.so().print("error-mask", tfmcu_error_mask, 16);
+        break;
+      }
+
+      if (strcmp(key, "cc1101-config") == 0) {
+        if (*val == '?') {
+          uint8_t regFile[48];
+          size_t regFileSize = sizeof regFile;
+          if (cc1101_ook_dump_config(regFile, &regFileSize)) {
+            char rs[regFileSize * 2 + 1];
+            for (int i = 0; i < regFileSize; ++i) {
+              sprintf(&rs[i * 2], "%02x", regFile[i]);
+            }
+            td.so().print("cc1101-config", rs);
+          }
+
+        } else {
+          const char *rs = val;
+          const size_t rs_len = strlen(rs);
+          uint8_t regFile[85];
+          if (rs_len + 1 > 2 * sizeof regFile) {
+            return -1;
+          }
+          int k = 0;
+          for (int i = 0; i < rs_len; (i += 2)) {
+            if (rs[i] == '_') {
+              continue;
+            }
+
+            char rvs[3];
+            rvs[0] = rs[i];
+            rvs[1] = rs[i + 1];
+            rvs[2] = '\0';
+
+            regFile[k++] = i / 2;
+            regFile[k++] = static_cast<uint8_t>(strtol(rvs, nullptr, 16));
+          }
+          regFile[k] = 0xff;
+          cc1101_ook_upd_regfile(regFile);
+        }
+        break;
+      }
 
       cli_warning_optionUnknown(td, key);
       break;

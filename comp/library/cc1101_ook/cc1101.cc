@@ -76,6 +76,32 @@ static int Read_CC_Register(uint8_t addr) {
   return ta.rx_data[1];
 }
 
+#if 1
+bool Read_CC_Burst(uint8_t addr, void *data, size_t len) {
+  uint8_t *dst = (uint8_t*) data;
+  for (int i = 0; i < len; ++i) {
+    if (int rv = Read_CC_Register(addr + i); rv >= 0) {
+      dst[i] = rv;
+    } else {
+      return false;
+    }
+  }
+  return true;
+}
+#else
+bool Read_CC_Burst(uint8_t addr, void *data, size_t len) {
+
+  struct spi_transaction_t ta = { .flags = SPI_TRANS_USE_TXDATA, .length = len * 8, .rxlength = len * 8, .tx_data = { (uint8_t) (addr) } , .rx_buffer = data};
+
+  if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
+    ESP_ERROR_CHECK_WITHOUT_ABORT(res);
+    return;
+  }
+
+  return;
+}
+#endif
+
 static int Read_CC_Config(uint8_t addr) {
   return Read_CC_Register(addr | CC1101_CONFIG_REGISTER);
 }
@@ -94,6 +120,20 @@ void Write_CC_Burst(const void *data, size_t len) {
   }
 
   return;
+}
+
+static bool setup_CC_Idle() {
+  Write_CC_CmdStrobe(CC1101_SIDLE);
+
+  for (int i = 0; i < 10; ++i) {
+    ms_delay(10);
+    if (Read_CC_Status(CC1101_MARCSTATE) == 0x01) {
+      rx_mode = tx_mode = false;
+      return true;
+    }
+  }
+
+  return false;
 }
 
 static bool setup_CC_TX() {
@@ -132,16 +172,22 @@ static bool setup_CC_RX() {
 
 }
 
+#define E1 1
+
 const uint8_t cc1101_config[] = {
 //
     CC1101_IOCFG2, 0x0D,
     CC1101_IOCFG0, 0x0C,
-#if 1
+
     // AGC Adjust for OKK
+#if E1
     CC1101_AGCCTRL2, 0x04,
-    CC1101_AGCCTRL1, 0x00,
-    CC1101_AGCCTRL0, 0x90,
+#else
+    CC1101_AGCCTRL2, 0x87,
 #endif
+    CC1101_AGCCTRL1, 0x00,
+    CC1101_AGCCTRL0, 0x92,
+
 
     CC1101_FIFOTHR, 0x47,
     //CC1101_PKTLEN, 0x3E,
@@ -154,8 +200,13 @@ const uint8_t cc1101_config[] = {
     CC1101_FREQ1, 0xB0,
     CC1101_FREQ0, 0x71,
 
-    CC1101_MDMCFG4, 0xF7,
-    CC1101_MDMCFG3, 0x93,
+#if E1
+    CC1101_MDMCFG4, 0x06,
+#else
+    CC1101_MDMCFG4, 0xF6,
+#endif
+
+    CC1101_MDMCFG3, 0xA3,
     CC1101_MDMCFG2, 0x30,
 
     CC1101_MCSM0, 0x18,
@@ -177,14 +228,53 @@ const uint8_t cc1101_config[] = {
     0xff, 0xff // terminator
     };
 
+bool cc1101_ook_get_regfile(uint8_t *dst, size_t *dst_size) {
+  const size_t src_size = sizeof cc1101_config;
+  if (src_size > *dst_size) {
+    *dst_size = src_size;
+    return false;
+  }
+  *dst_size = src_size;
+  memcpy(dst, cc1101_config, src_size);
+  return true;
+}
+
+static bool cc1101_write_regs(const uint8_t *src) {
+  for (int i = 0; src[i] != 0xff; i += 2) {
+    Write_CC_Config(src[i], src[i + 1]);
+  }
+  return true;
+}
+
+bool cc1101_ook_upd_regfile(const uint8_t *src) {
+  if (!setup_CC_Idle())
+    return false;
+
+  cc1101_write_regs(src);
+
+  if (!setup_CC_RX())
+    return false;
+
+  return true;
+}
+
+bool cc1101_ook_dump_config(uint8_t *buf, size_t *length) {
+  if (*length < 48)
+    return false;
+
+  if (!Read_CC_Burst(0x00 | READ_BURST, buf, 48))
+    return false;
+
+  *length = 48;
+  return true;
+}
+
 static bool cc1101_init() {
   Write_CC_CmdStrobe(CC1101_SRES);  // SRES - Reset chip
   rx_mode = tx_mode = false;
   ms_delay(100);
 
-  for (int i = 0; cc1101_config[i] != 0xff; i += 2) {
-    Write_CC_Config(cc1101_config[i], cc1101_config[i + 1]);
-  }
+  cc1101_write_regs(cc1101_config);
 
   Write_CC_CmdStrobe(CC1101_SIDLE);  // SIDLE  - Idle state
   for (int i = 0; i < 10; ++i) {
@@ -322,8 +412,15 @@ void cc1101_ook_spi_setup(struct cc1101_settings *cfg) {
   }
 }
 
+
 #else
 
+bool cc1101_ook_dump_config(uint8_t *buf, size_t *length) {
+  return false;
+}
+bool cc1101_ook_upd_regfile(const uint8_t *src) {
+  return false;
+}
 bool cc1101_ook_setDirection(bool tx) {
   return false;
 }

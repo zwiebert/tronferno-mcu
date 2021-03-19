@@ -3,7 +3,7 @@
   import * as httpFetch from "app/fetch.js";
   import { G, M } from "stores/curr_shutter.js";
   import { onMount, onDestroy } from "svelte";
-
+ 
   let on_destroy = [];
   onMount(() => {});
   onDestroy(() => {

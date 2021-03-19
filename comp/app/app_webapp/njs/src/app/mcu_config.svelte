@@ -22,6 +22,7 @@
   import McuConfigUsedMembers from "components/mcu_config/used_members.svelte";
   import McuRfTrx from "components/mcu_config/rf_trx.svelte";
   import GpioLevel from "components/gpio_level.svelte";
+  import CC1101 from "panes/cc1101.svelte";
 
   let on_destroy = [];
   const HTTP_FETCH_MASK = httpFetch.FETCH_CONFIG | httpFetch.FETCH_CONFIG_GPIO_STRING | httpFetch.FETCH_ERROR_MASK;
@@ -52,6 +53,8 @@
   $: {
     updateMcuConfig($McuConfig);
   }
+
+  $: hasCc1101 = mcuConfig["rf-trx"] === "cc1101";
 
   $: errorBit_cc1101_gpio_rfin = ($McuErrorMask & 0x01) !== 0;
 
@@ -96,6 +99,8 @@
 
   $: gmu = $Gmu;
   $: gpios = $McuConfig["gpio"] || "..........................................";
+
+
 
   export function reload_config() {
     updateMcuConfig($McuConfig);
@@ -195,7 +200,7 @@
   /////////////////////////////////////////////
 </script>
 
-<NavTabs nav_tabs={[$_("mcuConfig.network"), $_("mcuConfig.misc")]} name="mcc" vertical={true} />
+<NavTabs nav_tabs={[$_("mcuConfig.network"), $_("mcuConfig.misc"), ... hasCc1101 ? ["CC1101"] : []]} name="mcc" vertical={true} />
 
 {#if tabIdxMcc === 0}
   {#if mcuConfigKeysNetwork.length > 0}
@@ -515,10 +520,14 @@
       </table>
     </div>
   </div>
+  {:else if tabIdxMcc === 2}
+  <CC1101 />
 {/if}
 
+{#if tabIdxMcc == 0 || tabIdxMcc === 1}
 <button type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
 <button type="button" on:click={hClick_Save}>{$_("app.save")}</button>
+{/if}
 <button type="button" on:click={hClick_RestartMcu}> {$_("app.restartMcu")}</button>
 
 {#if $ReloadProgress > 0}
