@@ -26,10 +26,15 @@
   import AppLog from "panes/app_log.svelte";
 
   let on_destroy = [];
-  const HTTP_FETCH_MASK = httpFetch.FETCH_CONFIG | httpFetch.FETCH_CONFIG_GPIO_STRING | httpFetch.FETCH_ERROR_MASK;
+
+
+  function fetch_one_after_another() {
+    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG, true);
+    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG_GPIO_STRING | httpFetch.FETCH_ERROR_MASK);
+  }
 
   onMount(() => {
-    httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
+    fetch_one_after_another();
   });
   onDestroy(() => {
     for (const fn of on_destroy) {
@@ -111,7 +116,7 @@
 
   function hClick_Reload() {
     reload_config();
-    httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
+    fetch_one_after_another();
   }
 
   function hClick_Save() {
@@ -160,11 +165,11 @@
     httpFetch.http_postRequest(url, { config: cfg_mod });
 
     setTimeout(() => {
-      httpFetch.http_fetchByMask(HTTP_FETCH_MASK, true);
+      fetch_one_after_another();
     }, 500);
 
     setTimeout(() => {
-      httpFetch.http_fetchByMask(HTTP_FETCH_MASK, true);
+      fetch_one_after_another();
     }, 2500);
   }
 

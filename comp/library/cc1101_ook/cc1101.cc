@@ -24,6 +24,11 @@
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
 
+#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
+#include "esp_log.h"
+
+static const char* TAG = "cc1101";
+
 #define LCD_HOST    SPI2_HOST
 #define SPI_HANDLE spi
 #define SPI_HANDLE_ADDR (&spi)
@@ -244,18 +249,24 @@ static bool cc1101_write_regs(const uint8_t *src) {
 }
 
 bool cc1101_ook_upd_regfile(const uint8_t *src) {
+  if (!SPI_HANDLE)
+    return false;
+
   if (!setup_CC_Idle())
     return false;
 
   cc1101_write_regs(src);
 
-  if (!setup_CC_RX())
+  if (!cc1101_ook_setDirection(false))
     return false;
 
   return true;
 }
 
 bool cc1101_ook_dump_config(uint8_t *buf, size_t *length) {
+  if (!SPI_HANDLE)
+    return false;
+
   if (*length < 48)
     return false;
 
@@ -267,6 +278,9 @@ bool cc1101_ook_dump_config(uint8_t *buf, size_t *length) {
 }
 
 bool cc1101_ook_dump_status(uint8_t *buf, size_t *length) {
+  if (!SPI_HANDLE)
+    return false;
+
   if (*length < 14)
     return false;
 
@@ -278,13 +292,13 @@ bool cc1101_ook_dump_status(uint8_t *buf, size_t *length) {
 }
 
 static bool cc1101_init() {
-  Write_CC_CmdStrobe(CC1101_SRES);  // SRES - Reset chip
+  if (-1 == Write_CC_CmdStrobe(CC1101_SRES)) {
+    return false;
+  }
+
   rx_mode = tx_mode = false;
   ms_delay(100);
-
   cc1101_write_regs(cc1101_config);
-
-  setup_CC_TX();
   return setup_CC_Idle();
 }
 
@@ -356,19 +370,10 @@ bool cc1101_ook_setDirection(bool tx) {
   return false;
 }
 
-
-bool cc1101_ook_gdo_invert(int numb, bool inverted_output) {
-  switch (numb) {
-  case 2:
-    return -1 != Write_CC_Config(CC1101_IOCFG2, 0x0D | (inverted_output ? 0x40 : 0x00));
-    break;
-  default:
-    return false;
-  }
-  return true;
-}
-
 bool cc1101_ook_gdo_hw(int gdo_num, bool high) {
+  if (!SPI_HANDLE)
+    return false;
+
   switch (gdo_num) {
   case 0:
   case 1:
@@ -382,12 +387,18 @@ bool cc1101_ook_gdo_hw(int gdo_num, bool high) {
 
 
 bool cc1101_ook_gdo_isConnected(int gdo_num, int gpio_num) {
+  if (!SPI_HANDLE)
+    return false;
+
   bool result = false;
   switch (gdo_num) {
   case 2: {
-    result = cc1101_ook_gdo_hw(2, false) && ms_delay(2) && gpio_get_level((gpio_num_t)gpio_num) == 0 && cc1101_ook_gdo_hw(2, true) && ms_delay(2)
-        && gpio_get_level((gpio_num_t)gpio_num) == 1;
-    cc1101_ook_gdo_invert(2, false);
+    if (int origState = Read_CC_Register(CC1101_IOCFG2); origState != -1) {
+
+      result = cc1101_ook_gdo_hw(2, false) && ms_delay(2) && gpio_get_level((gpio_num_t) gpio_num) == 0 && cc1101_ook_gdo_hw(2, true) && ms_delay(2)
+          && gpio_get_level((gpio_num_t) gpio_num) == 1;
+      Write_CC_Config(CC1101_IOCFG2, origState);
+    }
   }
     break;
   default:
@@ -403,17 +414,24 @@ void cc1101_ook_spi_setup(struct cc1101_settings *cfg) {
   }
 
   if (!enable_cc1101(cfg)) {
+    ESP_LOGE(TAG, "enabling SPI failed");
     return;
   }
 
-  cc1101_init();
-  ms_delay(10);
-  for (int i = 0; i < 10; ++i) {
-    if (setup_CC_RX())
-      break;
+  if (!cc1101_init()) {
+    ESP_LOGE(TAG, "init failed");
+    return;
+  }
+
+  if (!cc1101_ook_setDirection(false)) {
+    ESP_LOGE(TAG, "enter RX state failed");
+    return;
   }
 }
 
+void cc1101_ook_spi_disable() {
+  disable_cc1101();
+}
 
 #else
 
@@ -430,15 +448,13 @@ bool cc1101_ook_setDirection(bool tx) {
   return false;
 }
 
-bool cc1101_ook_gdo_invert(int numb, bool inverted_output) {
-  return false;
-}
-
 bool cc1101_ook_gdo_isConnected(int gdo_num, int gpio_num) {
   return false;
 }
 
 void cc1101_ook_spi_setup(struct cc1101_settings *cfg) {
+}
+void cc1101_ook_spi_disable() {
 }
 
 #endif

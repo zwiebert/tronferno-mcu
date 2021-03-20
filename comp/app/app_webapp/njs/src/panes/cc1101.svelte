@@ -65,10 +65,6 @@
   $: cc1101Config = $Cc1101Config;
   $: cc1101ConfigArr = parse_regString($Cc1101Config);
 
-  $: {
-    console.log("carr: ", cc1101Config, cc1101ConfigArr);
-  }
-
   $: agcctrl2 = cc1101ConfigArr[CC1101_AGCCTRL2] || 0;
   $: agcctrl2_max_dvga_gain = 0;
   $: agcctrl2_max_lna_gain = 0;
@@ -127,7 +123,6 @@
     let tfmcu = { to: "tfmcu", mcu: { "cc1101-status": "?" } };
     let url = "/cmd.json";
     httpFetch.http_postRequest(url, tfmcu);
-    console.log("CCSTATUS: ", $Cc1101Status);
   }
   let fetchStatusTimer = null;
 
@@ -173,7 +168,6 @@
   }
 
   function set_reg_value(regAddr, regVal) {
-    console.log("set_reg_val:", regAddr.toString(16), regVal.toString(16));
     switch (regAddr) {
       case CC1101_AGCCTRL2:
         agcctrl2_max_dvga_gain = 0b11 & (regVal >> 6);
@@ -214,14 +208,6 @@
     return res;
   }
 
-  function print_reg() {
-    console.log("CC1101_AGCCTRL2: ", get_reg_value(CC1101_AGCCTRL2).toString(2), get_reg_value(CC1101_AGCCTRL2).toString(16));
-    console.log("CC1101_AGCCTRL1: ", get_reg_value(CC1101_AGCCTRL1).toString(2), get_reg_value(CC1101_AGCCTRL1).toString(16));
-    console.log("CC1101_AGCCTRL0: ", get_reg_value(CC1101_AGCCTRL0).toString(2), get_reg_value(CC1101_AGCCTRL0).toString(16));
-
-    console.log("regArr: ", create_regArr(), create_regString(create_regArr()));
-  }
-
   function parse_regString(rs) {
     if (!rs) return [];
 
@@ -230,7 +216,6 @@
       const rv = Number.parseInt(rs.substr(i, 2), 16);
       res.push(rv);
     }
-    console.log("res: ", res);
     return res;
   }
 

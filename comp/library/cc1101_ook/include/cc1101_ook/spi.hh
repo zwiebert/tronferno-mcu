@@ -15,3 +15,4 @@ struct cc1101_settings {
 };
 
 void cc1101_ook_spi_setup(struct cc1101_settings *cfg);
+void cc1101_ook_spi_disable();
