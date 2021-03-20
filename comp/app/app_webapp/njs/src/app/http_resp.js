@@ -12,7 +12,7 @@ import {
   McuFirmwareUpdState,
 } from "stores/mcu_firmware.js";
 import * as cuas from "app/cuas.js";
-import { McuConfig, Gmu, Cc1101Config } from "stores/mcu_config.js";
+import { McuConfig, Gmu, Cc1101Config, Cc1101Status } from "stores/mcu_config.js";
 import { Pcts, Prefs, Aliases, Autos, Names } from "stores/shutters.js";
 import { McuDocs } from "stores/mcu_docs.js";
 import { Gpios } from "stores/gpio.js";
@@ -129,7 +129,11 @@ export function http_handleResponses(obj) {
     if ("cc1101-config" in mcu) {
       Cc1101Config.set(mcu["cc1101-config"]);
     }
+    if ("cc1101-status" in mcu) {
+      Cc1101Status.set(mcu["cc1101-status"]);
+    }
     
+
     if ("ota-state" in mcu) {
       let ota_state = mcu["ota-state"];
 

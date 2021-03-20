@@ -66,7 +66,12 @@ static int Write_CC_Config(uint8_t addr, uint8_t data) {
 
 static int Read_CC_Register(uint8_t addr) {
 
-  struct spi_transaction_t ta = { .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA, .length = 16, .rxlength = 16, .tx_data = { (uint8_t) (addr) }, };
+  if (addr >= 0x30)
+    addr |= READ_BURST;
+  else
+    addr |= READ_SINGLE;
+
+  struct spi_transaction_t ta = { .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA, .length = 16, .rxlength = 16, .tx_data = { addr }, };
 
   if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
     ESP_ERROR_CHECK_WITHOUT_ABORT(res);
@@ -102,14 +107,6 @@ bool Read_CC_Burst(uint8_t addr, void *data, size_t len) {
 }
 #endif
 
-static int Read_CC_Config(uint8_t addr) {
-  return Read_CC_Register(addr | CC1101_CONFIG_REGISTER);
-}
-
-static int Read_CC_Status(uint8_t addr) {
-  return Read_CC_Register(addr | CC1101_STATUS_REGISTER);
-}
-
 void Write_CC_Burst(const void *data, size_t len) {
 
   struct spi_transaction_t ta = { .flags = 0, .length = len * 8, .tx_buffer = data, };
@@ -127,7 +124,7 @@ static bool setup_CC_Idle() {
 
   for (int i = 0; i < 10; ++i) {
     ms_delay(10);
-    if (Read_CC_Status(CC1101_MARCSTATE) == 0x01) {
+    if (Read_CC_Register(CC1101_MARCSTATE) == 0x01) {
       rx_mode = tx_mode = false;
       return true;
     }
@@ -145,7 +142,7 @@ static bool setup_CC_TX() {
 
   for (int i = 0; i < 10; ++i) {
     ms_delay(10);
-    if (Read_CC_Status(CC1101_MARCSTATE) == 0x13) {
+    if (Read_CC_Register(CC1101_MARCSTATE) == 0x13) {
       tx_mode = true;
       return true;
     }
@@ -163,7 +160,7 @@ static bool setup_CC_RX() {
 
   for (int i = 0; i < 10; ++i) {
     ms_delay(10);
-    if (Read_CC_Status(CC1101_MARCSTATE) == 0x0d) {
+    if (Read_CC_Register(CC1101_MARCSTATE) == 0x0d) {
       rx_mode = true;
       return true;
     }
@@ -181,12 +178,20 @@ const uint8_t cc1101_config[] = {
 
     // AGC Adjust for OKK
 #if E1
-    CC1101_AGCCTRL2, 0x87,
+    CC1101_AGCCTRL2, 0x07,
+    CC1101_AGCCTRL1, 0x00,
+    CC1101_AGCCTRL0, 0x90,
+    CC1101_MDMCFG4, 0x56,
 #else
     CC1101_AGCCTRL2, 0x04,
-#endif
     CC1101_AGCCTRL1, 0x00,
     CC1101_AGCCTRL0, 0x92,
+    CC1101_MDMCFG4, 0xF6,
+#endif
+
+
+    CC1101_MDMCFG3, 0xA3,
+    CC1101_MDMCFG2, 0x30,
 
 
     CC1101_FIFOTHR, 0x47,
@@ -200,14 +205,6 @@ const uint8_t cc1101_config[] = {
     CC1101_FREQ1, 0xB0,
     CC1101_FREQ0, 0x71,
 
-#if E1
-    CC1101_MDMCFG4, 0x06,
-#else
-    CC1101_MDMCFG4, 0xF6,
-#endif
-
-    CC1101_MDMCFG3, 0xA3,
-    CC1101_MDMCFG2, 0x30,
 
     CC1101_MCSM0, 0x18,
     CC1101_FOCCFG, 0x16,
@@ -262,10 +259,21 @@ bool cc1101_ook_dump_config(uint8_t *buf, size_t *length) {
   if (*length < 48)
     return false;
 
-  if (!Read_CC_Burst(0x00 | READ_BURST, buf, 48))
+  if (!Read_CC_Burst(0x00, buf, 48))
     return false;
 
   *length = 48;
+  return true;
+}
+
+bool cc1101_ook_dump_status(uint8_t *buf, size_t *length) {
+  if (*length < 14)
+    return false;
+
+  if (!Read_CC_Burst(0x30, buf, 14))
+    return false;
+
+  *length = 14;
   return true;
 }
 
@@ -276,14 +284,8 @@ static bool cc1101_init() {
 
   cc1101_write_regs(cc1101_config);
 
-  Write_CC_CmdStrobe(CC1101_SIDLE);  // SIDLE  - Idle state
-  for (int i = 0; i < 10; ++i) {
-    ms_delay(10);
-    if (Read_CC_Status(CC1101_MARCSTATE) == 0x01) {
-      return true;
-    }
-  }
-  return false;
+  setup_CC_TX();
+  return setup_CC_Idle();
 }
 
 static void disable_cc1101() {
@@ -334,7 +336,7 @@ bool cc1101_ook_setDirection(bool tx) {
   Write_CC_CmdStrobe(CC1101_SIDLE);
   for (int i = 0; i < 10; ++i) {
     ms_delay(10);
-    if (Read_CC_Status(CC1101_MARCSTATE) == 0x01) {
+    if (Read_CC_Register(CC1101_MARCSTATE) == 0x01) {
       tx_mode = rx_mode = false;
       break;
     }
@@ -416,6 +418,9 @@ void cc1101_ook_spi_setup(struct cc1101_settings *cfg) {
 #else
 
 bool cc1101_ook_dump_config(uint8_t *buf, size_t *length) {
+  return false;
+}
+bool cc1101_ook_dump_status(uint8_t *buf, size_t *length) {
   return false;
 }
 bool cc1101_ook_upd_regfile(const uint8_t *src) {

@@ -2,7 +2,7 @@
   "use strict";
   import { _ } from "services/i18n";
   import * as httpFetch from "app/fetch.js";
-  import { Cc1101Config } from "stores/mcu_config.js";
+  import { Cc1101Config, Cc1101Status } from "stores/mcu_config.js";
   import { onMount } from "svelte";
 
   const HTTP_FETCH_MASK = httpFetch.FETCH_CC1101_CONFIG;
@@ -59,6 +59,9 @@
   const CC1101_TEST1 = 0x2d; // Various Test Settings
   const CC1101_TEST0 = 0x2e; // Various Test Settings
 
+  $: cc1101Status = $Cc1101Status || "0000000000000000000000000000";
+  $: rssiDbm = get_rssi_dbm(cc1101Status);
+
   $: cc1101Config = $Cc1101Config;
   $: cc1101ConfigArr = parse_regString($Cc1101Config);
 
@@ -114,6 +117,20 @@
   $: {
     cc1101ConfigArr = parse_regString($Cc1101Config);
   }
+
+  function get_rssi_dbm(statusString) {
+    const RSSI_offset = 74;
+    const RSSI_dec = Number.parseInt(statusString.substr(2 * (0x34 - 0x30), 2), 16);
+    return RSSI_dec >= 128 ? (RSSI_dec - 256) / 2 - RSSI_offset : RSSI_dec / 2 - RSSI_offset;
+  }
+  function fetch_status() {
+    let tfmcu = { to: "tfmcu", mcu: { "cc1101-status": "?" } };
+    let url = "/cmd.json";
+    httpFetch.http_postRequest(url, tfmcu);
+    console.log("CCSTATUS: ", $Cc1101Status);
+  }
+  let fetchStatusTimer = null;
+
   function upd_reg_value(regAddr) {
     const res = get_reg_value(regAddr);
     if (res === -1) return;
@@ -418,6 +435,28 @@
   </div>
 </div>
 
+<div class="area">
+  <table>
+    <tr><td>Status-Regs</td><td>{cc1101Status}</td></tr>
+    <tr><td>RSSI (in dBm)</td><td>{rssiDbm}</td></tr>
+  </table>
+
+  <button
+    class={fetchStatusTimer === null ? "" : "text-red-800"}
+    type="button"
+    on:click={() => {
+      if (fetchStatusTimer === null) {
+        fetchStatusTimer = setInterval(() => {
+          fetch_status();
+        }, 750);
+      } else {
+        clearInterval(fetchStatusTimer);
+        fetchStatusTimer = null;
+      }
+    }}>Fetch Status Periodically</button
+  >
+</div>
+
 <button
   type="button"
   on:click={() => {
@@ -451,4 +490,3 @@
     border-gap: 0;
   }
 </style>
-

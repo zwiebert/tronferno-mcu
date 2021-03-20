@@ -48,7 +48,7 @@
     let fw_url = {
       name: $_('firmware.url'),
       input: "input",
-      value: "http://192.168.1.70:3000/tronferno-mcu.bin",
+      value: "http://192.168.1.76:3005/tronferno-mcu.bin",
       get_ota_name: () => {
         return fw_url.value;
       },

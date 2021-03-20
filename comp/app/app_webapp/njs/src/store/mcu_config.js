@@ -42,3 +42,5 @@ export const McuConfigNames = derived(McuConfigKeys, (keys) => {
 
 
 export const Cc1101Config = writable("");
+export const Cc1101Status = writable("");
+

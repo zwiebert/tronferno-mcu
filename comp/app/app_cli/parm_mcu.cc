@@ -303,6 +303,22 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
         break;
       }
 
+      if (strcmp(key, "cc1101-status") == 0) {
+        if (*val == '?') {
+          uint8_t regFile[14];
+          size_t regFileSize = sizeof regFile;
+          if (cc1101_ook_dump_status(regFile, &regFileSize)) {
+            char rs[regFileSize * 2 + 1];
+            for (int i = 0; i < regFileSize; ++i) {
+              sprintf(&rs[i * 2], "%02x", regFile[i]);
+            }
+            td.so().print("cc1101-status", rs);
+          }
+
+        }
+        break;
+      }
+
       cli_warning_optionUnknown(td, key);
       break;
     } // switch
