@@ -169,7 +169,11 @@ void  fer_msg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fer_msg_k
       break;
     case fer_if_cmd_SunINST:
       cs = "sun-pos";
-      break;    default:
+      break;
+    case fer_if_cmd_Program:
+      cs = "sun-test";
+      break;
+    default:
       cs = 0;
       break;
     }

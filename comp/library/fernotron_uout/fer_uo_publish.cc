@@ -158,6 +158,9 @@ static cmdInfo cmdString_fromPlainCmd(const Fer_MsgPlainCmd &m) {
     case fer_if_cmd_SunINST:
       r.cs = "sun-pos";
       break;
+    case fer_if_cmd_Program:
+      r.cs = "sun-test";
+      break;
     default:
       r.cs = 0;
       break;

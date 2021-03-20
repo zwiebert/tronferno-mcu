@@ -16,6 +16,7 @@ openocd -f ~/esp/ft2232.cfg -f /usr/local/share/openocd/scripts/board/esp-wroom-
 
 flash_app() {
 openocd -f ~/esp/ft2232.cfg -f /usr/local/share/openocd/scripts/board/esp-wroom-32.cfg \
+        -c "program_esp  ota_data_initial.bin $part_ota_init" \
         -c "program_esp  tronferno-mcu.bin  $part_ota0 verify reset exit"
 
 }

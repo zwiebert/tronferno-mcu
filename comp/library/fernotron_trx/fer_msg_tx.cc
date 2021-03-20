@@ -105,7 +105,6 @@ fer_sbT fer_construct_fsb(u32 a, u8 g, u8 m, fer_cmd cmd) {
 }
 
 void fer_trx_direction(bool tx) {
-  io_printf("trx direction: %s\n", tx ? "tx" : "rx");
   cc1101_ook_setDirection(tx);
 }
 

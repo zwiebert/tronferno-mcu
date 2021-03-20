@@ -1,9 +1,11 @@
 <script>
   import { AppLog } from "stores/app_log.js";
 
-  $: showMqtt = true;
+  export let rxonly = false;
+
+  $: showMqtt = !rxonly;
   $: showRc = true;
-  $: showSc = true;
+  $: showSc = !rxonly;
 
   $: {
     $AppLog;
