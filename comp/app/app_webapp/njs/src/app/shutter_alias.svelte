@@ -145,8 +145,8 @@
 <div id="aliasdiv">
   <p class={$ShowHelp}>{$_("help.hint_shutterAlias")} <br /></p>
   <div class="area text-center" id="aliasPairUnpair">
-    <button id="alias_pair" type="button" on:click={hClick_Pair}> Start Pairing </button>
-    <button id="alias_unpair" type="button" on:click={hClick_UnPair}> Start Un-Pairing </button>
+    <button id="alias_pair" type="button" on:click={hClick_Pair}> Scan for ID to pair to {$GM} </button>
+    <button id="alias_unpair" type="button" on:click={hClick_UnPair}> Scan for ID to unpair from {$GM}  </button>
     {#if $Pras}
       <br />
       {#if $Pras.scanning}
@@ -164,7 +164,7 @@
   <table class="top_table">
     <tr>
       <td>All</td>
-      <td>G/E</td>
+      <td>{$GM}</td>
       <td>RX</td>
     </tr>
     <tr>
@@ -198,7 +198,7 @@
         <th />
         {#each [1, 2, 3, 4, 5, 6, 7] as m}
           {#if m <= $GmuMaxM}
-            <th>m{m}</th>
+            <th>{m}</th>
           {/if}
         {/each}
       </tr>
@@ -222,33 +222,53 @@
     <button id="alias_save" type="button" on:click={onAliasesApply}> {$_("app.save")} </button>
   </span>
 
-  <div class="area">
-    Selected ID: {selectedId}<br />
+  {#if  AliasesAllKeys.length || [...$ReceivedAddresses].length}
+    <div class="area">
+      Selected ID: {selectedId || "none (click in lists above)"}<br />
 
-    <button
-      type="button"
-      disabled={!selectedId.toString().startsWith("20")}
-      on:click={() => {
-        httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-test" } });
-      }}>Send Sun-Test</button
-    >
+      <button
+        type="button"
+        disabled={!selectedId.toString().startsWith("20")}
+        on:click={() => {
+          httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-test" } });
+        }}>Send Sun-Test</button
+      >
 
-    <button
-      type="button"
-      disabled={!selectedId.toString().startsWith("20")}
-      on:click={() => {
-        httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-inst" } });
-      }}>Send Sun-Pos/Inst</button
-    >
+      <button
+        type="button"
+        disabled={!selectedId.toString().startsWith("20")}
+        on:click={() => {
+          httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-inst" } });
+        }}>Send Sun-Pos/Inst</button
+      >
 
-    <button
-      type="button"
-      disabled={!selectedId.toString().startsWith("10")}
-      on:click={() => {
-        httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "stop" } });
-      }}>Send STOP</button
-    >
-  </div>
+      <button
+        type="button"
+        disabled={!selectedId.toString().startsWith("10")}
+        on:click={() => {
+          httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "stop" } });
+        }}>Send STOP</button
+      >
+
+      <br />
+
+      <button
+        type="button"
+        disabled={!(selectedId.toString().startsWith("10") || selectedId.toString().startsWith("20"))}
+        on:click={() => {
+          httpFetch.http_postRequest("/cmd.json", { pair: { a: selectedId, g: $G, m: $M0, c: "pair" } });
+        }}>Pair to {$GM}</button
+      >
+
+      <button
+        type="button"
+        disabled={!(selectedId.toString().startsWith("10") || selectedId.toString().startsWith("20"))}
+        on:click={() => {
+          httpFetch.http_postRequest("/cmd.json", { pair: { a: selectedId, g: $G, m: $M0, c: "unpair" } });
+        }}>UnPair from to {$GM}</button
+      >
+    </div>
+  {/if}
 </div>
 
 <style type="text/scss">
