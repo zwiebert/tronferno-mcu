@@ -1,4 +1,5 @@
 // rollup.config.js
+import replace from "@rollup/plugin-replace";
 import json from "@rollup/plugin-json";
 import strip from "@rollup/plugin-strip";
 import resolve from "@rollup/plugin-node-resolve";
@@ -83,6 +84,12 @@ export default {
     }
   },
   plugins: [
+    replace({
+      // workaround the way sveltejs-tippy imports tippy: https://github.com/mdauner/sveltejs-tippy/issues/117
+      "process.env.NODE_ENV": JSON.stringify(
+        isProduction ? "production" : "development"
+      ),
+    }),
     aliases,
     json(),
     ...(isProduction
@@ -98,7 +105,7 @@ export default {
     svelte({
       preprocess: sveltePreprocess({
         postcss: true,
-        replace: [
+        replace: [          
           ["misc.NODE_ENV_DEV", isProduction ? "false" : "true"],
           ["misc.PROD", isProduction ? "true" : "false"],
           ["misc.DISTRO", isDistro ? "true" : "false"],

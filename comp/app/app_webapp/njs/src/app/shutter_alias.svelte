@@ -8,6 +8,7 @@
   import { ShowHelp } from "stores/app_state.js";
   import { Pras, ReceivedAddresses } from "stores/alias.js";
   import { onMount, onDestroy } from "svelte";
+  import tippy from "sveltejs-tippy";
 
   let on_destroy = [];
   onMount(() => {
@@ -146,7 +147,7 @@
   <p class={$ShowHelp}>{$_("help.hint_shutterAlias")} <br /></p>
   <div class="area text-center" id="aliasPairUnpair">
     <button id="alias_pair" type="button" on:click={hClick_Pair}> Scan for ID to pair to {$GM} </button>
-    <button id="alias_unpair" type="button" on:click={hClick_UnPair}> Scan for ID to unpair from {$GM}  </button>
+    <button id="alias_unpair" type="button" on:click={hClick_UnPair}> Scan for ID to unpair from {$GM} </button>
     {#if $Pras}
       <br />
       {#if $Pras.scanning}
@@ -163,9 +164,9 @@
   <br />
   <table class="top_table">
     <tr>
-      <td>All</td>
-      <td>{$GM}</td>
-      <td>RX</td>
+      <td use:tippy={{ content: "All IDs paired" }}>All</td>
+      <td use:tippy={{ content: "IDs paired to this motor" }}>{$GM}</td>
+      <td use:tippy={{ content: "Any received ID" }}>RX</td>
     </tr>
     <tr>
       <td>
@@ -222,7 +223,7 @@
     <button id="alias_save" type="button" on:click={onAliasesApply}> {$_("app.save")} </button>
   </span>
 
-  {#if  AliasesAllKeys.length || [...$ReceivedAddresses].length}
+  {#if AliasesAllKeys.length || [...$ReceivedAddresses].length}
     <div class="area">
       Selected ID: {selectedId || "none (click in lists above)"}<br />
 
