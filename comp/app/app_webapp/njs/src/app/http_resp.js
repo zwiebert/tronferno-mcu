@@ -17,6 +17,7 @@ import { Pcts, Prefs, Aliases, Autos, Names } from "stores/shutters.js";
 import { McuDocs } from "stores/mcu_docs.js";
 import { Gpios } from "stores/gpio.js";
 import {AppLog} from "stores/app_log.js";
+import { Pras, ReceivedAddresses } from "stores/alias.js";
 
 function parse_gmu(s) {
   let sa = s ? s.split("").reverse() : [];
@@ -43,6 +44,10 @@ export function http_handleResponses(obj) {
   if ("rc" in obj) {
     AppLog.update(old => {
       old.push({rc : obj.rc});
+      return old;
+    });
+    ReceivedAddresses.update(old => {
+      old.add(obj.rc.a);
       return old;
     });
   }
@@ -87,6 +92,7 @@ export function http_handleResponses(obj) {
 
   if ("pras" in obj) {
     let pras = obj.pras;
+    Pras.set(pras);
     if (pras.success) {
       httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
     }

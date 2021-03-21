@@ -6,7 +6,7 @@
   import { Gmu, GmuMaxM } from "stores/mcu_config.js";
   import { Aliases } from "stores/shutters.js";
   import { ShowHelp } from "stores/app_state.js";
-
+  import { Pras, ReceivedAddresses } from "stores/alias.js";
   import { onMount, onDestroy } from "svelte";
 
   let on_destroy = [];
@@ -25,6 +25,11 @@
   $: {
     aliasTable_updHtml(AliasSelectedKey);
   }
+
+  $: selectedId = 0;
+
+  let selectedReceivedAddress = 0;
+  let selectedThisPairings = 0;
 
   function hClick_Pair() {
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_PAIRING);
@@ -78,8 +83,7 @@
 
   function aliasTable_updHtml(key) {
     const val = $Aliases[key];
-    if (!val)
-     return;
+    if (!val) return;
     let chunks = [];
 
     for (let i = 0, charsLength = val.length; i < charsLength; i += 2) {
@@ -93,9 +97,7 @@
 
       for (let m = 1; m <= 7; ++m) {
         const isAliased = (gn & (1 << m)) !== 0;
-        let cb = document.getElementById(
-          "cbAlias_" + g.toString() + m.toString()
-        );
+        let cb = document.getElementById("cbAlias_" + g.toString() + m.toString());
         if (cb) {
           cb.checked = isAliased;
         }
@@ -140,47 +142,49 @@
   }
 </script>
 
-<style type="text/scss">
-  #aliasHeader {
-    grid-area: ah;
-  }
-  #aliases {
-    grid-area: as;
-  }
-  #divPairAll {
-    grid-area: at;
-  }
-  #aliasSaveReload {
-    grid-area: ar;
-  }
-  #aliasPairUnpair {
-    grid-area: ap;
-  }
-</style>
-
 <div id="aliasdiv">
-  <p class={$ShowHelp}>{$_('help.hint_shutterAlias')} <br /></p>
-  <span id="aliasPairUnpair">
+  <p class={$ShowHelp}>{$_("help.hint_shutterAlias")} <br /></p>
+  <div class="area text-center" id="aliasPairUnpair">
     <button id="alias_pair" type="button" on:click={hClick_Pair}> Start Pairing </button>
     <button id="alias_unpair" type="button" on:click={hClick_UnPair}> Start Un-Pairing </button>
-  </span>
+    {#if $Pras}
+      <br />
+      {#if $Pras.scanning}
+        <span class="bg-blue-400">Scanning to {$Pras.pairing ? "pair" : "unpair"}</span>
+      {:else if $Pras.timeout}
+        <span class="bg-red-400">Timeout</span>
+      {:else if $Pras.success}
+        <span class="bg-green-400">Found: {$Pras.a}</span>
+      {:else}
+        Nothing to do for: {$Pras.a}
+      {/if}
+    {/if}
+  </div>
   <br />
   <table class="top_table">
     <tr>
-      <th>All</th>
-      <th>This G/E</th>
+      <td>All</td>
+      <td>G/E</td>
+      <td>RX</td>
     </tr>
     <tr>
       <td>
-        <select id="aliases" size="5" bind:value={AliasSelectedKey}>
+        <select id="aliases" size="5" bind:value={AliasSelectedKey} on:click={() => (selectedId = AliasSelectedKey)}>
           {#each AliasesAllKeys as key}
             <option>{key}</option>
           {/each}
         </select>
       </td>
       <td>
-        <select id="paired" size="5" >
+        <select id="paired" size="5" bind:value={selectedThisPairings} on:click={() => (selectedId = AliasSelectedKey = selectedThisPairings)}>
           {#each AliasesPairedKeys as key}
+            <option>{key}</option>
+          {/each}
+        </select>
+      </td>
+      <td>
+        <select size="5" bind:value={selectedReceivedAddress} on:click={() => (selectedId = AliasSelectedKey = selectedReceivedAddress)}>
+          {#each [...$ReceivedAddresses] as key}
             <option>{key}</option>
           {/each}
         </select>
@@ -214,7 +218,68 @@
   </div>
 
   <span id="aliasSaveReload">
-    <button id="alias_reload" type="button" on:click={onAliasesReload}> {$_('app.reload')} </button>
-    <button id="alias_save" type="button" on:click={onAliasesApply}> {$_('app.save')} </button>
+    <button id="alias_reload" type="button" on:click={onAliasesReload}> {$_("app.reload")} </button>
+    <button id="alias_save" type="button" on:click={onAliasesApply}> {$_("app.save")} </button>
   </span>
+
+  <div class="area">
+    Selected ID: {selectedId}<br />
+
+    <button
+      type="button"
+      disabled={!selectedId.toString().startsWith("20")}
+      on:click={() => {
+        httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-test" } });
+      }}>Send Sun-Test</button
+    >
+
+    <button
+      type="button"
+      disabled={!selectedId.toString().startsWith("20")}
+      on:click={() => {
+        httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-inst" } });
+      }}>Send Sun-Pos/Inst</button
+    >
+
+    <button
+      type="button"
+      disabled={!selectedId.toString().startsWith("10")}
+      on:click={() => {
+        httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "stop" } });
+      }}>Send STOP</button
+    >
+  </div>
 </div>
+
+<style type="text/scss">
+  @import "../styles/app.scss";
+  #aliasHeader {
+    grid-area: ah;
+  }
+  #aliases {
+    grid-area: as;
+  }
+  #divPairAll {
+    grid-area: at;
+  }
+  #aliasSaveReload {
+    grid-area: ar;
+  }
+  #aliasPairUnpair {
+    grid-area: ap;
+  }
+
+  table,
+  td,
+  tr {
+    border-color: $color_border_main_area;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border-collapse: collapse;
+    margin: 0rem;
+    padding: 0rem 0.25rem;
+    border-gap: 0;
+  }
+</style>
