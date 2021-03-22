@@ -251,11 +251,21 @@
     class="sb"
     type="button"
     on:click={hClick_Reload}>{$_('app.reload')}</button>
+
   <button
     id="asvb"
     class="sb"
     type="button"
     disabled={transmitCountDown > 0}
     on:click={hClick_Save}>{transmitCountDown > 0 ? transmitCountDown : $_('app.save')}</button>
+
+    <button
+    class="sb"
+    type="button"
+    on:click={() => {
+      httpFetch.http_postRequest("/cmd.json", { auto: {  g: $G, m: $M, "rtc-only": 1 } });
+    }}
+    >{$_('app.auto.sendRtc')}</button>
+
   <br />
 </div>

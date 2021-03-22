@@ -18,7 +18,7 @@
 #define FER_RTC_PACK_CT          1   ///< 1 line per rtc-frame
 
 #define FER_BYTES_MSG_PLAIN  sizeof (fer_cmd_bd)
-#define FER_BYTES_MSG_RTC    FER_BYTES_MSG_PLAIN + sizeof (fer_rtc_bd)
+#define FER_BYTES_MSG_RTC    (FER_BYTES_MSG_PLAIN + sizeof (fer_rtc_bd))
 #define FER_BYTES_MSG_TIMER  sizeof (fer_rawMsg)
 
 // weekday by number in prg[0][fpr0_RTC_wday]
