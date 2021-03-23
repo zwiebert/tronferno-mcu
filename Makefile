@@ -1,6 +1,6 @@
 .PHONY: clean all test rebuild http_data print-help
 
-flavors = esp32 esp32wlan esp32lan
+flavors = esp32 esp32wlan esp32lan esp32test
 
 flavor ?= esp32
 
