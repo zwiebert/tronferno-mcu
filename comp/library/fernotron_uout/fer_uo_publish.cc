@@ -143,6 +143,15 @@ static cmdInfo cmdString_fromPlainCmd(const Fer_MsgPlainCmd &m) {
     case fer_if_cmd_STOP:
       r.cs = "stop";
       break;
+    case fer_if_cmd_SunDOWN:
+      r.cs = "sun-down";
+      break;
+    case fer_if_cmd_SunUP:
+      r.cs = "sun-up";
+      break;
+    case fer_if_cmd_SunINST:
+      r.cs = "sun-pos";
+      break;
     default:
       r.cs = 0;
       break;

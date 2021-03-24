@@ -10,9 +10,7 @@
 
   $: {
     $GM;
-    httpFetch.http_fetchByMask(
-      httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME
-    );
+    httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME);
   }
 
   $: autoData = $AutoData;
@@ -39,10 +37,8 @@
       } else {
         let tdu = o.up;
         let tdd = o.down;
-        let td =
-          tdu.length !== 5 ? "-" : tdu.substring(0, 2) + tdu.substring(3, 5);
-        td +=
-          tdd.length !== 5 ? "-" : tdd.substring(0, 2) + tdd.substring(3, 5);
+        let td = tdu.length !== 5 ? "-" : tdu.substring(0, 2) + tdu.substring(3, 5);
+        td += tdd.length !== 5 ? "-" : tdd.substring(0, 2) + tdd.substring(3, 5);
 
         res += td;
       }
@@ -140,8 +136,7 @@
     if (ad.hasDaily) {
       let tdu = ad.dailyUp;
       let tdd = ad.dailyDown;
-      let td =
-        tdu.length !== 5 ? "-" : tdu.substring(0, 2) + tdu.substring(3, 5);
+      let td = tdu.length !== 5 ? "-" : tdu.substring(0, 2) + tdu.substring(3, 5);
       td += tdd.length !== 5 ? "-" : tdd.substring(0, 2) + tdd.substring(3, 5);
       auto.daily = td;
     }
@@ -151,37 +146,29 @@
   }
 </script>
 
-<style type="text/scss">
-  @media only screen and (min-device-width: 361px) {
-    #twti {
-      width: 30em;
-    }
-  }
-</style>
 
-<div id="autodiv" class="auto">
+
+<div id="autodiv" class="auto area">
   <table class="top_table">
     <tr>
-      <td>{$_('app.auto.daily')}</td>
+      <td>{$_("app.auto.daily")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.hasDaily} />
       </td>
       <td>
-        <label><input
-            type="time"
-            disabled={!autoData.hasDaily}
-            bind:value={autoData.dailyUp} />
-          &#x25b3;</label><br />
-        <label><input
-            type="time"
-            disabled={!autoData.hasDaily}
-            bind:value={autoData.dailyDown} />
-          &#x25bd;</label>
+        <label
+          ><input type="time" disabled={!autoData.hasDaily} bind:value={autoData.dailyUp} />
+          &#x25b3;</label
+        ><br />
+        <label
+          ><input type="time" disabled={!autoData.hasDaily} bind:value={autoData.dailyDown} />
+          &#x25bd;</label
+        >
       </td>
     </tr>
     {#if true}
       <tr>
-        <td>{$_('app.auto.weekly')}</td>
+        <td>{$_("app.auto.weekly")}</td>
         <td>
           <input class="cb" type="checkbox" bind:checked={autoData.hasWeekly} />
         </td>
@@ -191,7 +178,7 @@
     {#if autoData.hasWeekly}
       {#each weekly_objArr as day, i}
         <tr>
-          <td>{$_('weekdays')[i]}</td>
+          <td>{$_("weekdays")[i]}</td>
           <td>
             {#if i > 0}
               <label><input type="checkbox" bind:checked={day.enabled} /></label>
@@ -199,46 +186,44 @@
           </td>
           <td>
             {#if day.enabled}
-              <label><input type="time" bind:value={day.up} />
-                &#x25b3;</label><br />
-              <label><input type="time" bind:value={day.down} />
-                &#x25bd;</label>
-            {:else}= {$_('weekdays')[i - 1]}{/if}
+              <label
+                ><input type="time" bind:value={day.up} />
+                &#x25b3;</label
+              ><br />
+              <label
+                ><input type="time" bind:value={day.down} />
+                &#x25bd;</label
+              >
+            {:else}= {$_("weekdays")[i - 1]}{/if}
           </td>
         </tr>
       {/each}
     {/if}
 
     <tr>
-      <td>{$_('app.auto.astro')}</td>
+      <td>{$_("app.auto.astro")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.hasAstro} />
       </td>
       <td>
-        <input
-          style="width:5em;"
-          type="number"
-          min="-90"
-          max="90"
-          disabled={!autoData.hasAstro}
-          bind:value={autoData.astro} />
+        <input style="width:5em;" type="number" min="-90" max="90" disabled={!autoData.hasAstro} bind:value={autoData.astro} />
         {autoData.astroToday}
       </td>
     </tr>
     <tr>
-      <td>{$_('app.auto.random')}</td>
+      <td>{$_("app.auto.random")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.isRandom} />
       </td>
     </tr>
     <tr>
-      <td>{$_('app.auto.sun')}</td>
+      <td>{$_("app.auto.sun")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.isSun} />
       </td>
     </tr>
     <tr>
-      <td>{$_('app.auto.manual')}</td>
+      <td>{$_("app.auto.manual")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.isManual} />
       </td>
@@ -246,26 +231,35 @@
   </table>
 
   <br />
-  <button
-    id="arlb"
-    class="sb"
-    type="button"
-    on:click={hClick_Reload}>{$_('app.reload')}</button>
+  <button id="arlb" class="sb" type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
 
-  <button
-    id="asvb"
-    class="sb"
-    type="button"
-    disabled={transmitCountDown > 0}
-    on:click={hClick_Save}>{transmitCountDown > 0 ? transmitCountDown : $_('app.save')}</button>
-
-    <button
-    class="sb"
-    type="button"
-    on:click={() => {
-      httpFetch.http_postRequest("/cmd.json", { auto: {  g: $G, m: $M, "rtc-only": 1 } });
-    }}
-    >{$_('app.auto.sendRtc')}</button>
-
-  <br />
+  <button id="asvb" class="sb" type="button" disabled={transmitCountDown > 0} on:click={hClick_Save}
+    >{transmitCountDown > 0 ? transmitCountDown : $_("app.save")}</button
+  >
 </div>
+
+<div class="area">
+  <button
+  class="sb"
+  type="button"
+  on:click={() => {
+    httpFetch.http_postRequest("/cmd.json", { auto: { g: $G, m: $M, "rtc-only": 1 } });
+  }}>{$_("app.auto.sendRtc")} {$GM}</button
+>
+
+<button
+class="sb"
+type="button"
+on:click={() => {
+  httpFetch.http_postRequest("/cmd.json", { auto: { "rtc-only": 1 } });
+}}>{$_("app.auto.sendRtc")} A</button
+>
+</div>
+
+<style type="text/scss">
+  @media only screen and (min-device-width: 361px) {
+    #twti {
+      width: 30em;
+    }
+  }
+</style>

@@ -63,14 +63,27 @@ constexpr unsigned FER_BIT_SHORT_US = 400; ///< \brief short duration until nega
 constexpr unsigned FER_BIT_LONG_US = 800; ///< \brief long duration until negative edge of word-bit
 
 constexpr unsigned FER_INIT_WIDTH_MIN_US = 80 * 200;
+
 constexpr unsigned FER_STP_WIDTH_MIN_US = 15 * 200;
 constexpr unsigned FER_STP_WIDTH_MAX_US = 30 * 200;
 constexpr unsigned FER_STP_NEDGE_MIN_US = 1 * 200;
 constexpr unsigned FER_STP_NEDGE_MAX_US = 6 * 200;
-constexpr unsigned FER_PRE_WIDTH_MAX_US = 6 * 200;
-constexpr unsigned FER_PRE_WIDTH_MIN_US = 3 * 200;
-constexpr unsigned FER_PRE_NEDGE_MIN_US = 1 * 200;
-constexpr unsigned FER_PRE_NEDGE_MAX_US = 4 * 200;
+
+#define E1 1 // XXX:experimental: 0=normal, 1=timings for sun-sensors preamble
+//central: n-edge: 440us period: 800us
+//sun: n-edge: 940, period: 1700us
+#if E1 == 1
+constexpr unsigned FER_PRE_WIDTH_MIN_US = 3 * 200; // 600us
+constexpr unsigned FER_PRE_WIDTH_MAX_US = 10 * 200; // 2000us
+constexpr unsigned FER_PRE_NEDGE_MIN_US = 1 * 200; // 200us
+constexpr unsigned FER_PRE_NEDGE_MAX_US = 6 * 200; // 1200us
+#else
+constexpr unsigned FER_PRE_WIDTH_MIN_US = 3 * 200; // 600us
+constexpr unsigned FER_PRE_WIDTH_MAX_US = 6 * 200; // 1200us
+constexpr unsigned FER_PRE_NEDGE_MIN_US = 1 * 200; // 200us
+constexpr unsigned FER_PRE_NEDGE_MAX_US = 4 * 200; // 800us
+#endif
+
 constexpr unsigned FER_BIT_SAMP_POS_US = 3 * 200; ///< for receiving: look if negative edge lies before or after
 
 

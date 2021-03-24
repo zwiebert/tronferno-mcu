@@ -174,7 +174,7 @@ static bool setup_CC_RX() {
 
 }
 
-#define E1 1
+#define E1 2 // 0: normal, 1: try-and-error  2: enlarged preamble-timings (according to LA scan of sun sensor)
 
 const uint8_t cc1101_config[] = {
 //
@@ -182,7 +182,12 @@ const uint8_t cc1101_config[] = {
     CC1101_IOCFG0, 0x0C,
 
     // AGC Adjust for OKK
-#if E1
+#if E2
+    CC1101_AGCCTRL2, 0x07,
+    CC1101_AGCCTRL1, 0x00,
+    CC1101_AGCCTRL0, 0x92,
+    CC1101_MDMCFG4, 0x56,
+#elif E1
     CC1101_AGCCTRL2, 0x07,
     CC1101_AGCCTRL1, 0x00,
     CC1101_AGCCTRL0, 0x90,

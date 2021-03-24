@@ -34,7 +34,7 @@ const en = {
       random: "Random",
       sun: "Sun",
       manual: "Manual",
-      sendRtc: "Set Wall Time",
+      sendRtc: "Send wall time to:",
     },
 
     dur: {
@@ -179,7 +179,7 @@ const de = {
       sun: "Sonne",
       manual: "Manuell",
       manual: "Manual",
-      sendRtc: "Uhrzeit senden",
+      sendRtc: "Uhrzeit senden an:",
     },
 
     dur: {
