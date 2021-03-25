@@ -61,6 +61,8 @@ constexpr unsigned FER_STP_NEDGE_US = 400; ///< \brief duration until negative e
 constexpr unsigned FER_BIT_WIDTH_US = 1200; ///< \brief duration of word-bit
 constexpr unsigned FER_BIT_SHORT_US = 400; ///< \brief short duration until negative edge of word-bit
 constexpr unsigned FER_BIT_LONG_US = 800; ///< \brief long duration until negative edge of word-bit
+constexpr unsigned FER_BIT_WIDTH_MIN_US = 1400; ///< \brief duration of word-bit
+constexpr unsigned FER_BIT_WIDTH_MAX_US = 1000; ///< \brief duration of word-bit
 
 constexpr unsigned FER_INIT_WIDTH_MIN_US = 80 * 200;
 

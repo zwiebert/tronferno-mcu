@@ -16,3 +16,4 @@ bool cc1101_ook_get_regfile(uint8_t *dst, size_t *dst_size);
 bool cc1101_ook_dump_config(uint8_t *dst, size_t *dst_size);
 bool cc1101_ook_dump_status(uint8_t *buf, size_t *length);
 bool cc1101_ook_upd_regfile(const uint8_t *src);
+int cc1101_ook_get_rssi();

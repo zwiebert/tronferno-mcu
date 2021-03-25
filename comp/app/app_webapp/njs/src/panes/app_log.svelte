@@ -34,7 +34,7 @@
       <span class="text-red-300">{msg.log.tag + ': ' + msg.log.txt}<br /></span>
     {:else if showRc && 'rc' in msg}
       <span
-        class="text-green-300">{'rc: ' + msg.rc.type + ': ' + msg.rc.a + (msg.rc.type === 'central' ? '-' + msg.rc.g + msg.rc.m : '') + '-' + msg.rc.c}<br /></span>
+        class="text-green-300">{'rc: ' + msg.rc.type + ': ' + msg.rc.a + (msg.rc.type === 'central' ? '-' + msg.rc.g + msg.rc.m : '') + '-' + msg.rc.c + (msg.rc.rssi ? (':rssi=' + msg.rc.rssi) : '')}<br /></span>
     {:else if showSc && 'sc' in msg}
       <span
         class="text-blue-300">{'sc: ' + msg.sc.type + ': ' + msg.sc.a + (msg.sc.type === 'central' ? '-' + msg.sc.g + msg.sc.m : '') + '-' + msg.sc.c}<br /></span>

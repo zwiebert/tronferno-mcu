@@ -296,6 +296,15 @@ bool cc1101_ook_dump_status(uint8_t *buf, size_t *length) {
   return true;
 }
 
+int cc1101_ook_get_rssi() {
+  if (!SPI_HANDLE)
+    return 0;
+
+  const int RSSI_offset = 74;
+  const int RSSI_dec = Read_CC_Register(CC1101_RSSI);
+  return RSSI_dec >= 128 ? (RSSI_dec - 256) / 2 - RSSI_offset : RSSI_dec / 2 - RSSI_offset;
+}
+
 static bool cc1101_init() {
   if (-1 == Write_CC_CmdStrobe(CC1101_SRES)) {
     return false;
@@ -460,6 +469,10 @@ bool cc1101_ook_gdo_isConnected(int gdo_num, int gpio_num) {
 void cc1101_ook_spi_setup(struct cc1101_settings *cfg) {
 }
 void cc1101_ook_spi_disable() {
+}
+
+int cc1101_ook_get_rssi() {
+  return 0;
 }
 
 #endif

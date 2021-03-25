@@ -189,6 +189,8 @@ void IRAM_ATTR fer_tx_dck(void) {
 bool IRAM_ATTR ftrx_testLoopBack_getRxPin() {
   return output_level;
 }
-
+void IRAM_ATTR ftrx_testSetOutputLevel(bool level) {
+  output_level = level;
+}
 #endif
 
