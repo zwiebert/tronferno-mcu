@@ -146,9 +146,7 @@
   }
 </script>
 
-
-
-<div id="autodiv" class="auto area">
+<div id="autodiv" class="auto">
   <table class="top_table">
     <tr>
       <td>{$_("app.auto.daily")}</td>
@@ -236,24 +234,24 @@
   <button id="asvb" class="sb" type="button" disabled={transmitCountDown > 0} on:click={hClick_Save}
     >{transmitCountDown > 0 ? transmitCountDown : $_("app.save")}</button
   >
-</div>
+  <hr />
+  <div class="text-center">
+    <button
+      class="sb"
+      type="button"
+      on:click={() => {
+        httpFetch.http_postRequest("/cmd.json", { auto: { g: $G, m: $M, "rtc-only": 1 } });
+      }}>{$_("app.auto.sendRtc")} {$GM}</button
+    >
 
-<div class="area">
-  <button
-  class="sb"
-  type="button"
-  on:click={() => {
-    httpFetch.http_postRequest("/cmd.json", { auto: { g: $G, m: $M, "rtc-only": 1 } });
-  }}>{$_("app.auto.sendRtc")} {$GM}</button
->
-
-<button
-class="sb"
-type="button"
-on:click={() => {
-  httpFetch.http_postRequest("/cmd.json", { auto: { "rtc-only": 1 } });
-}}>{$_("app.auto.sendRtc")} A</button
->
+    <button
+      class="sb"
+      type="button"
+      on:click={() => {
+        httpFetch.http_postRequest("/cmd.json", { auto: { "rtc-only": 1 } });
+      }}>{$_("app.auto.sendRtc")} A</button
+    >
+  </div>
 </div>
 
 <style type="text/scss">
