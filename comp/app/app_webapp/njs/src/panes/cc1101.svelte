@@ -4,6 +4,7 @@
   import * as httpFetch from "app/fetch.js";
   import { Cc1101Config, Cc1101Status } from "stores/mcu_config.js";
   import { onMount } from "svelte";
+  import tippy from "sveltejs-tippy";
 
   const HTTP_FETCH_MASK = httpFetch.FETCH_CC1101_CONFIG;
 
@@ -246,7 +247,7 @@
     <table>
       <tr> <td>AGCCTRL2</td><td>{(cc1101ConfigArr[CC1101_AGCCTRL2] || 0).toString(16)}</td></tr>
       <tr>
-        <td>MAX_DVGA_GAIN</td>
+        <td use:tippy={{ content: "Reduces the maximum allowable DVGA gain." }}>MAX_DVGA_GAIN</td>
         <td>
           <select bind:value={agcctrl2_max_dvga_gain}>
             <option value={0}>All gain can be used</option>
@@ -257,7 +258,7 @@
         </td>
       </tr>
       <tr>
-        <td>MAX_LNA_GAIN</td>
+        <td use:tippy={{ content: "Sets the maximum allowable LNA + LNA 2 gain relative to the maximum possible gain." }}>MAX_LNA_GAIN</td>
         <td>
           <select bind:value={agcctrl2_max_lna_gain}>
             <option value={0}>Maximum possible LNA + LNA 2 gain</option>
@@ -273,7 +274,7 @@
       </tr>
 
       <tr>
-        <td>MAGN_TARGET</td>
+        <td use:tippy={{ content: "These bits set the target value for the averaged amplitude from the digital channel filter (1 LSB = 0 dB)." }}>MAGN_TARGET</td>
         <td>
           <select bind:value={agcctrl2_magn_target}>
             <option value={0}>24 dB</option>
@@ -292,7 +293,7 @@
     <table>
       <tr> <td>AGCCTRL1</td><td>{(cc1101ConfigArr[CC1101_AGCCTRL1] || 0).toString(16)}</td></tr>
       <tr>
-        <td>AGC_LNA_PRIORITY</td>
+        <td use:tippy={{ content: "Selects between two different strategies for LNA and LNA 2 gain adjustment. When 1, the LNA gain is decreased first. When 0, the LNA 2 gain is decreased to minimum before decreasing LNA gain." }}>AGC_LNA_PRIORITY</td>
         <td>
           <select bind:value={agcctrl1_agc_lna_priority}>
             <option value={0}>LNA2 gain decreased first</option>
@@ -302,7 +303,7 @@
       </tr>
 
       <tr>
-        <td>CARRIER_SENSE_REL_THR</td>
+        <td use:tippy={{ content: "Sets the relative change threshold for asserting carrier sense" }}>CARRIER_SENSE_REL_THR</td>
         <td>
           <select bind:value={agcctrl1_carrier_sense_rel_thr}>
             <option value={0}>Relative carrier sense threshold disabled</option>
@@ -314,7 +315,7 @@
       </tr>
 
       <tr>
-        <td>CARRIER_SENSE_ABS_THR</td>
+        <td use:tippy={{ content: "Sets the absolute RSSI threshold for asserting carrier sense. The 2-complement signed threshold is programmed in steps of 1 dB and is relative to the MAGN_TARGET setting." }}>CARRIER_SENSE_ABS_THR</td>
         <td>
           <select bind:value={agcctrl1_carrier_sense_abs_thr}>
             <option value={-8}>Absolute carrier sense threshold disabled</option>
@@ -341,7 +342,7 @@
     <table>
       <tr> <td>AGCCTRL0</td><td>{(cc1101ConfigArr[CC1101_AGCCTRL0] || 0).toString(16)}</td></tr>
       <tr>
-        <td>HYST_LEVEL</td>
+        <td use:tippy={{ content: "Sets the level of hysteresis on the magnitude deviation (internal AGC signal that determine gain changes)." }}>HYST_LEVEL</td>
         <td>
           <select bind:value={agcctrl0_hyst_level}>
             <option value={0}>No hysteresis, small symmetric dead zone, high gain</option>
@@ -353,7 +354,7 @@
       </tr>
 
       <tr>
-        <td>WAIT_TIME</td>
+        <td use:tippy={{ content: "Sets the number of channel filter samples from a gain adjustment has been made until the AGC algorithm starts accumulating new samples." }}>WAIT_TIME</td>
         <td>
           <select bind:value={agcctrl0_wait_time}>
             <option value={0}>8</option>
@@ -365,7 +366,7 @@
       </tr>
 
       <tr>
-        <td>AGC_FREEZE</td>
+        <td use:tippy={{ content: "Control when the AGC gain should be frozen." }}>AGC_FREEZE</td>
         <td>
           <select bind:value={agcctrl0_agc_freeze}>
             <option value={0}>Normal operation. Always adjust gain when required.</option>
@@ -377,7 +378,7 @@
       </tr>
 
       <tr>
-        <td>FILTER_LENGTH</td>
+        <td use:tippy={{ content: "Sets the OOK/ASK decision boundary for OOK/ASK reception." }}>FILTER_LENTGTH</td>
         <td>
           <select bind:value={agcctrl0_filter_length}>
             <option value={0}>4 dB OOK/ASK decision boundary</option>
@@ -394,7 +395,7 @@
     <table>
       <tr> <td>MODEMCFG4</td><td>{(cc1101ConfigArr[CC1101_MDMCFG4] || 0).toString(16)}</td></tr>
       <tr>
-        <td>CHANBW</td>
+        <td use:tippy={{ content: "Sets the decimation ratio for the delta-sigma ADC input stream and thus the channel bandwidth." }}>CHANBW</td>
         <td>
           <select bind:value={modemcfg4_chanbw_em}>
             <option value={0b1111}>58 kHz</option>
