@@ -111,6 +111,12 @@
     cc1101ConfigArr[CC1101_MDMCFG4] = get_reg_value(CC1101_MDMCFG4);
   }
 
+  $: fsctrl1_freq_if = 0;
+  $: {
+    fsctrl1_freq_if;
+    cc1101ConfigArr[CC1101_FSCTRL1] = get_reg_value(CC1101_FSCTRL1);
+  }
+
   $: {
     cc1101ConfigArr = parse_regString($Cc1101Config);
   }
@@ -160,6 +166,10 @@
         result |= modemcfg4_drate_e << 0;
         break;
 
+      case CC1101_FSCTRL1:
+        result |= fsctrl1_freq_if << 0;
+        break;
+
       default:
         return -1;
         break;
@@ -192,6 +202,10 @@
       case CC1101_MDMCFG4:
         modemcfg4_chanbw_em = 0b1111 & (regVal >> 4);
         modemcfg4_drate_e = 0b1111 & (regVal >> 0);
+        break;
+
+      case CC1101_FSCTRL1:
+        fsctrl1_freq_if = 0b1111 & (regVal >> 0);
         break;
 
       default:
@@ -274,7 +288,9 @@
       </tr>
 
       <tr>
-        <td use:tippy={{ content: "These bits set the target value for the averaged amplitude from the digital channel filter (1 LSB = 0 dB)." }}>MAGN_TARGET</td>
+        <td use:tippy={{ content: "These bits set the target value for the averaged amplitude from the digital channel filter (1 LSB = 0 dB)." }}
+          >MAGN_TARGET</td
+        >
         <td>
           <select bind:value={agcctrl2_magn_target}>
             <option value={0}>24 dB</option>
@@ -293,7 +309,12 @@
     <table>
       <tr> <td>AGCCTRL1</td><td>{(cc1101ConfigArr[CC1101_AGCCTRL1] || 0).toString(16)}</td></tr>
       <tr>
-        <td use:tippy={{ content: "Selects between two different strategies for LNA and LNA 2 gain adjustment. When 1, the LNA gain is decreased first. When 0, the LNA 2 gain is decreased to minimum before decreasing LNA gain." }}>AGC_LNA_PRIORITY</td>
+        <td
+          use:tippy={{
+            content:
+              "Selects between two different strategies for LNA and LNA 2 gain adjustment. When 1, the LNA gain is decreased first. When 0, the LNA 2 gain is decreased to minimum before decreasing LNA gain.",
+          }}>AGC_LNA_PRIORITY</td
+        >
         <td>
           <select bind:value={agcctrl1_agc_lna_priority}>
             <option value={0}>LNA2 gain decreased first</option>
@@ -315,7 +336,12 @@
       </tr>
 
       <tr>
-        <td use:tippy={{ content: "Sets the absolute RSSI threshold for asserting carrier sense. The 2-complement signed threshold is programmed in steps of 1 dB and is relative to the MAGN_TARGET setting." }}>CARRIER_SENSE_ABS_THR</td>
+        <td
+          use:tippy={{
+            content:
+              "Sets the absolute RSSI threshold for asserting carrier sense. The 2-complement signed threshold is programmed in steps of 1 dB and is relative to the MAGN_TARGET setting.",
+          }}>CARRIER_SENSE_ABS_THR</td
+        >
         <td>
           <select bind:value={agcctrl1_carrier_sense_abs_thr}>
             <option value={-8}>Absolute carrier sense threshold disabled</option>
@@ -342,7 +368,8 @@
     <table>
       <tr> <td>AGCCTRL0</td><td>{(cc1101ConfigArr[CC1101_AGCCTRL0] || 0).toString(16)}</td></tr>
       <tr>
-        <td use:tippy={{ content: "Sets the level of hysteresis on the magnitude deviation (internal AGC signal that determine gain changes)." }}>HYST_LEVEL</td>
+        <td use:tippy={{ content: "Sets the level of hysteresis on the magnitude deviation (internal AGC signal that determine gain changes)." }}>HYST_LEVEL</td
+        >
         <td>
           <select bind:value={agcctrl0_hyst_level}>
             <option value={0}>No hysteresis, small symmetric dead zone, high gain</option>
@@ -354,7 +381,11 @@
       </tr>
 
       <tr>
-        <td use:tippy={{ content: "Sets the number of channel filter samples from a gain adjustment has been made until the AGC algorithm starts accumulating new samples." }}>WAIT_TIME</td>
+        <td
+          use:tippy={{
+            content: "Sets the number of channel filter samples from a gain adjustment has been made until the AGC algorithm starts accumulating new samples.",
+          }}>WAIT_TIME</td
+        >
         <td>
           <select bind:value={agcctrl0_wait_time}>
             <option value={0}>8</option>
@@ -415,6 +446,35 @@
             <option value={0b0001}>650 kHz</option>
             <option value={0b0000}>812 kHz</option>
           </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="area">
+    <h4>FSCTRL</h4>
+    <table>
+      <tr> <td>FSCTRL1</td><td>{(cc1101ConfigArr[CC1101_FSCTRL1] || 0).toString(16)}</td></tr>
+      <tr>
+        <td use:tippy={{ content: "The desired IF frequency to employ in RX. Subtracted from FS base frequency in RX and controls the digital complex mixer in the demodulator. (See datasheet for equation). The default value gives an IF frequency of 381kHz, assuming a 26.0 MHz crystal." }}>FREQ_IF</td>
+        <td>
+          <select bind:value={fsctrl1_freq_if}>
+          <option value={1}>25.39 kHz</option>
+          <option value={2}>50.78 kHz</option>
+          <option value={3}>76.17 kHz</option>
+          <option value={4}>101.56 kHz</option>
+          <option value={5}>126.95 kHz</option>
+          <option value={6}>152.34 kHz</option>
+          <option value={7}>177.73 kHz</option>
+          <option value={8}>203.12 kHz</option>
+          <option value={9}>228.515 kHz</option>
+          <option value={10}>253.91 kHz</option>
+          <option value={11}>279.3 kHz</option>
+          <option value={12}>304.69 kHz</option>
+          <option value={13}>330.08 kHz</option>
+          <option value={14}>355.47 kHz</option>
+          <option value={15}>380.86 kHz</option>
+        </select>
         </td>
       </tr>
     </table>
