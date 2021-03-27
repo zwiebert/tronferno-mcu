@@ -36,14 +36,14 @@ export function http_handleResponses(obj) {
 
   if ("log" in obj) {
     AppLog.update(old => {
-      old.push({log : obj.log });
+      old.push({log : obj.log, date: new Date()});
       return old;
     });
   }
 
   if ("rc" in obj) {
     AppLog.update(old => {
-      old.push({rc : obj.rc});
+      old.push({rc : obj.rc, date: new Date()});
       return old;
     });
     ReceivedAddresses.update(old => {
@@ -54,7 +54,7 @@ export function http_handleResponses(obj) {
 
   if ("sc" in obj) {
     AppLog.update(old => {
-      old.push({sc : obj.sc});
+      old.push({sc : obj.sc, date: new Date()});
       return old;
     });
   }
