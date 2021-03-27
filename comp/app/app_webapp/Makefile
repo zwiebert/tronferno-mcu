@@ -52,5 +52,7 @@ clean:
 
 proxy:
 	while true; do ./proxy.js; done
+proxy2:
+	while true; do ./proxy2.js; done
 build:
 	mkdir -p build
