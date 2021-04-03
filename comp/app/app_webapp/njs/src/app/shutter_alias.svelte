@@ -35,9 +35,8 @@
   let selectedThisPairings = 0;
 
   function id_isValid(id) {
-    const ids = id;
-
-    return ids.length === 6 && (ids.startsWith("10") || ids.startsWith("20"));
+    const re = /[12]0[0-9A-Fa-f]{4}/g;
+    return re.test(id);
   }
 
   function hClick_Pair() {
@@ -278,7 +277,7 @@
       <button
         type="button"
         use:tippy={{ content: "Identify motor(s) paired with this ID by moving them" }}
-        disabled={!(selectedId.toString().startsWith("10") || selectedId.toString().startsWith("20"))}
+        disabled={!selectedId_isValid}
         on:click={() => {
           httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-test" } });
         }}>Test</button
@@ -286,7 +285,7 @@
 
       <button
         type="button"
-        disabled={!selectedId.toString().startsWith("20")}
+        disabled={!(selectedId_isValid && selectedId.startsWith("20"))}
         on:click={() => {
           httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-inst" } });
         }}>Sun-Pos/Inst</button
@@ -294,7 +293,7 @@
 
       <button
         type="button"
-        disabled={!selectedId.toString().startsWith("10")}
+        disabled={!(selectedId_isValid && selectedId.startsWith("10"))}
         on:click={() => {
           httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "stop" } });
         }}>STOP</button
@@ -305,7 +304,7 @@
       <h5>Alias {selectedId} -> {$GMH}</h5>
       <button
         type="button"
-        disabled={!(selectedId.toString().startsWith("10") || selectedId.toString().startsWith("20"))}
+        disabled={!selectedId_isValid}
         on:click={() => {
           httpFetch.http_postRequest("/cmd.json", { pair: { a: selectedId, g: $G, m: $M0, c: "pair" } });
         }}>Add</button
@@ -313,7 +312,7 @@
 
       <button
         type="button"
-        disabled={!(selectedId.toString().startsWith("10") || selectedId.toString().startsWith("20"))}
+        disabled={!selectedId_isValid}
         on:click={() => {
           httpFetch.http_postRequest("/cmd.json", { pair: { a: selectedId, g: $G, m: $M0, c: "unpair" } });
         }}>Remove</button
