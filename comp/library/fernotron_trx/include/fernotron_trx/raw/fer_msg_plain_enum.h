@@ -31,7 +31,7 @@ enum fer_cmd {
   fer_cmd_SunINST,  ///< set current position as sun position
   fer_cmd_EndPosUP, ///< move motor 'up' until 'stop' is sent (the position at stop is saved as end position)
   fer_cmd_EndPosDOWN, ///< move motor 'down' until 'stop' is sent (the position at 'stop' is saved as end position)
-  fer_cmd_ChangeRotationDirection, ///< toggles motor rotation direction (used to match up/down commands with real shutter movement)
+  fer_cmd_ToggleRotationDirection, ///< toggles motor rotation direction (used to match up/down commands with real shutter movement)
   fer_cmd_xC, ///< ?
   fer_cmd_SET,   ///< activates set function to add or remove a controller
   fer_cmd_xE, ///< ?

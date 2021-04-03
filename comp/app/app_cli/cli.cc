@@ -39,6 +39,7 @@ struct c_map const fc_map[] = { //
     { "sun-pos", fer_if_cmd_SunINST }, //
     {"sun-test", fer_if_cmd_Program},//
     { "set", fer_if_cmd_SET },  //
+    { "rot-dir", fer_if_cmd_ToggleRotationDirection },  //
     };
 
 bool 
