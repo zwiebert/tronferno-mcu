@@ -3,7 +3,7 @@
   import { _ } from "services/i18n";
   import * as appDebug from "app/app_debug.js";
   import * as httpFetch from "app/fetch.js";
-  import { AutoData, G, M, GM } from "stores/curr_shutter.js";
+  import { AutoData, G, M, GM, GMH } from "stores/curr_shutter.js";
   import { onMount } from "svelte";
 
   onMount(() => {});
@@ -241,7 +241,7 @@
       type="button"
       on:click={() => {
         httpFetch.http_postRequest("/cmd.json", { auto: { g: $G, m: $M, "rtc-only": 1 } });
-      }}>{$_("app.auto.sendRtc")} {$GM}</button
+      }}>{$_("app.auto.sendRtc")} {$GMH}</button
     >
 
     <button

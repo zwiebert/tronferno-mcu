@@ -2,7 +2,7 @@
   "use strict";
   import { _ } from "services/i18n";
   import * as httpFetch from "app/fetch.js";
-  import { G, M0, GM } from "stores/curr_shutter.js";
+  import { G, M0, GM, GMH } from "stores/curr_shutter.js";
   import { Gmu, GmuMaxM } from "stores/mcu_config.js";
   import { Aliases } from "stores/shutters.js";
   import { ShowHelp } from "stores/app_state.js";
@@ -23,15 +23,22 @@
   $: AliasesAllKeys = Object.keys($Aliases);
   $: AliasesPairedKeys = AliasesAllKeys.filter((key) => alias_isKeyPairedToM(key, $G, $M0));
   $: AliasSelectedKey = 0;
-  $: {
-    aliasTable_updHtml(AliasSelectedKey);
-  }
-
   $: selectedId = 0;
   $: enteredId = 0;
+  $: selectedId_isValid = id_isValid(selectedId);
+
+  $: {
+    aliasTable_updHtml(selectedId);
+  }
 
   let selectedReceivedAddress = 0;
   let selectedThisPairings = 0;
+
+  function id_isValid(id) {
+    const ids = id;
+
+    return ids.length === 6 && (ids.startsWith("10") || ids.startsWith("20"));
+  }
 
   function hClick_Pair() {
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_PAIRING);
@@ -54,14 +61,12 @@
   }
 
   function onAliasesApply() {
-    const pas = document.getElementById("aliases");
-    if (pas.selectedIndex >= 0) {
-      const key = pas.options[pas.selectedIndex].text;
-      aliasTable_fromHtml_toMcu(key);
+    if (selectedId_isValid) {
+      aliasTable_fromHtml_toMcu(selectedId);
     }
   }
   function onAliasesReload() {
-    aliasTable_updHtml(AliasSelectedKey);
+    aliasTable_updHtml(selectedId);
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
   }
 
@@ -85,7 +90,17 @@
 
   function aliasTable_updHtml(key) {
     const val = $Aliases[key];
-    if (!val) return;
+    if (!val) {
+      for (let g = 1; g <= 7; ++g) {
+        for (let m = 1; m <= 7; ++m) {
+          let cb = document.getElementById("cbAlias_" + g.toString() + m.toString());
+          if (cb) {
+            cb.checked = false;
+          }
+        }
+      }
+      return;
+    }
     let chunks = [];
 
     for (let i = 0, charsLength = val.length; i < charsLength; i += 2) {
@@ -147,8 +162,8 @@
 <div id="aliasdiv">
   <p class={$ShowHelp}>{$_("help.hint_shutterAlias")} <br /></p>
   <div class="area text-center" id="aliasPairUnpair">
-    <button id="alias_pair" type="button" on:click={hClick_Pair}> Scan for ID to alias it to {$GM} </button>
-    <button id="alias_unpair" type="button" on:click={hClick_UnPair}> Scan for ID to unalias it from {$GM} </button>
+    <button id="alias_pair" type="button" on:click={hClick_Pair}> Scan for ID to alias it to {$GMH} </button>
+    <button id="alias_unpair" type="button" on:click={hClick_UnPair}> Scan for ID to unalias it from {$GMH} </button>
     {#if $Pras}
       <br />
       {#if $Pras.scanning}
@@ -171,133 +186,140 @@
     {/if}
   </div>
   <br />
-  <table class="top_table">
-    <tr>
-      <td use:tippy={{ content: "All aliased IDs" }}>All</td>
-      <td use:tippy={{ content: "IDs aliased to this number" }}>{$GM}</td>
-      <td use:tippy={{ content: "Any received IDs" }}>RX</td>
-    </tr>
-    <tr>
-      <td>
-        <select
-          id="aliases"
-          size="5"
-          bind:value={AliasSelectedKey}
-          on:click={() => (selectedId = selectedReceivedAddress = selectedThisPairings = AliasSelectedKey)}
-        >
-          {#each AliasesAllKeys.sort() as key}
-            <option>{key}</option>
-          {/each}
-        </select>
-      </td>
-      <td>
-        <select
-          id="paired"
-          size="5"
-          bind:value={selectedThisPairings}
-          on:click={() => (selectedId = selectedReceivedAddress = AliasSelectedKey = selectedThisPairings)}
-        >
-          {#each AliasesPairedKeys.sort() as key}
-            <option>{key}</option>
-          {/each}
-        </select>
-      </td>
-      <td>
-        <select size="5" bind:value={selectedReceivedAddress} on:click={() => (selectedId = selectedThisPairings = AliasSelectedKey = selectedReceivedAddress)}>
-          {#each [...$ReceivedAddresses].sort() as key}
-            <option>{key}</option>
-          {/each}
-        </select>
-      </td>
-    </tr>
-  </table>
 
-  <div id="divPairAll">
-    <table id="aliasTable">
+  <div class="area text-center">
+    <h5>Select or Enter an ID</h5>
+    <table class="top_table">
       <tr>
-        <th />
-        {#each [1, 2, 3, 4, 5, 6, 7] as m}
-          {#if m <= $GmuMaxM}
-            <th>{m}</th>
+        <td use:tippy={{ content: "All aliased IDs" }}>All</td>
+        <td use:tippy={{ content: "IDs aliased to this number" }}>{$GM}</td>
+        <td use:tippy={{ content: "Any received IDs" }}>RX</td>
+        <td use:tippy={{ content: "Enter an ID by hand" }}>Enter</td>
+      </tr>
+      <tr>
+        <td>
+          <select
+            id="aliases"
+            size="5"
+            bind:value={AliasSelectedKey}
+            on:click={() => (selectedId = selectedReceivedAddress = selectedThisPairings = AliasSelectedKey)}
+          >
+            {#each AliasesAllKeys.sort() as key}
+              <option>{key}</option>
+            {/each}
+          </select>
+        </td>
+        <td>
+          <select
+            id="paired"
+            size="5"
+            bind:value={selectedThisPairings}
+            on:click={() => (selectedId = selectedReceivedAddress = AliasSelectedKey = selectedThisPairings)}
+          >
+            {#each AliasesPairedKeys.sort() as key}
+              <option>{key}</option>
+            {/each}
+          </select>
+        </td>
+        <td>
+          <select
+            size="5"
+            bind:value={selectedReceivedAddress}
+            on:click={() => (selectedId = selectedThisPairings = AliasSelectedKey = selectedReceivedAddress)}
+          >
+            {#each [...$ReceivedAddresses].sort() as key}
+              <option>{key}</option>
+            {/each}
+          </select>
+        </td>
+        <td>
+          <label use:tippy={{ content: "Enter ID or select one in list above" }}
+            >ID:
+            <input class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}" type="text" bind:value={selectedId} maxlength="6"/>
+          </label>
+        </td>
+      </tr>
+    </table>
+
+    <br />
+
+    <div class="area" id="divPairAll">
+      <h5>ID {selectedId} is aliased to:</h5>
+      <table id="aliasTable">
+        <tr>
+          <th />
+          {#each [1, 2, 3, 4, 5, 6, 7] as m}
+            {#if m <= $GmuMaxM}
+              <th>{m}</th>
+            {/if}
+          {/each}
+        </tr>
+        {#each [1, 2, 3, 4, 5, 6, 7] as g}
+          {#if $Gmu[g] > 0}
+            <tr>
+              <th>g{g}</th>
+              {#each [1, 2, 3, 4, 5, 6, 7] as m}
+                {#if m <= $Gmu[g]}
+                  <td><input id="cbAlias_{g}{m}" type="checkbox" disabled={!selectedId_isValid} /></td>
+                {/if}
+              {/each}
+            </tr>
           {/if}
         {/each}
-      </tr>
-      {#each [1, 2, 3, 4, 5, 6, 7] as g}
-        {#if $Gmu[g] > 0}
-          <tr>
-            <th>g{g}</th>
-            {#each [1, 2, 3, 4, 5, 6, 7] as m}
-              {#if m <= $Gmu[g]}
-                <td><input id="cbAlias_{g}{m}" type="checkbox" /></td>
-              {/if}
-            {/each}
-          </tr>
-        {/if}
-      {/each}
-    </table>
-  </div>
-
-  <span id="aliasSaveReload">
-    <button id="alias_reload" type="button" on:click={onAliasesReload}> {$_("app.reload")} </button>
-    <button id="alias_save" type="button" on:click={onAliasesApply}> {$_("app.save")} </button>
-  </span>
-
-  {#if AliasesAllKeys.length || [...$ReceivedAddresses].length}
-    <div class="area text-center">
-      <label use:tippy={{ content: "Enter ID or select one in list above" }}
-        >ID:
-        <input class="w-16" type="text" bind:value={selectedId} /></label
-      >
-      <br />
-
-      <div class="area text-center">
-        <h5>Send Commands to {selectedId}</h5>
-        <button
-          type="button"
-          use:tippy={{ content: "Identify motor(s) paired with this ID by moving them" }}
-          disabled={!(selectedId.toString().startsWith("10") || selectedId.toString().startsWith("20"))}
-          on:click={() => {
-            httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-test" } });
-          }}>Test</button
-        >
-
-        <button
-          type="button"
-          disabled={!selectedId.toString().startsWith("20")}
-          on:click={() => {
-            httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-inst" } });
-          }}>Sun-Pos/Inst</button
-        >
-
-        <button
-          type="button"
-          disabled={!selectedId.toString().startsWith("10")}
-          on:click={() => {
-            httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "stop" } });
-          }}>STOP</button
-        >
-      </div>
-
-      <div class="area">
-        <h5>Alias {selectedId} -> {$GM}</h5>
-        <button
-          type="button"
-          disabled={!(selectedId.toString().startsWith("10") || selectedId.toString().startsWith("20"))}
-          on:click={() => {
-            httpFetch.http_postRequest("/cmd.json", { pair: { a: selectedId, g: $G, m: $M0, c: "pair" } });
-          }}>Add</button
-        >
-
-        <button
-          type="button"
-          disabled={!(selectedId.toString().startsWith("10") || selectedId.toString().startsWith("20"))}
-          on:click={() => {
-            httpFetch.http_postRequest("/cmd.json", { pair: { a: selectedId, g: $G, m: $M0, c: "unpair" } });
-          }}>Remove</button
-        >
-      </div>
+      </table>
+      <span id="aliasSaveReload">
+        <button id="alias_reload" type="button" on:click={onAliasesReload}> {$_("app.reload")} </button>
+        <button id="alias_save" type="button" on:click={onAliasesApply}> {$_("app.save")} </button>
+      </span>
     </div>
-  {/if}
+
+    <div class="area text-center">
+      <h5>Send Commands as {selectedId}</h5>
+      <button
+        type="button"
+        use:tippy={{ content: "Identify motor(s) paired with this ID by moving them" }}
+        disabled={!(selectedId.toString().startsWith("10") || selectedId.toString().startsWith("20"))}
+        on:click={() => {
+          httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-test" } });
+        }}>Test</button
+      >
+
+      <button
+        type="button"
+        disabled={!selectedId.toString().startsWith("20")}
+        on:click={() => {
+          httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-inst" } });
+        }}>Sun-Pos/Inst</button
+      >
+
+      <button
+        type="button"
+        disabled={!selectedId.toString().startsWith("10")}
+        on:click={() => {
+          httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "stop" } });
+        }}>STOP</button
+      >
+    </div>
+
+    <div class="area">
+      <h5>Alias {selectedId} -> {$GMH}</h5>
+      <button
+        type="button"
+        disabled={!(selectedId.toString().startsWith("10") || selectedId.toString().startsWith("20"))}
+        on:click={() => {
+          httpFetch.http_postRequest("/cmd.json", { pair: { a: selectedId, g: $G, m: $M0, c: "pair" } });
+        }}>Add</button
+      >
+
+      <button
+        type="button"
+        disabled={!(selectedId.toString().startsWith("10") || selectedId.toString().startsWith("20"))}
+        on:click={() => {
+          httpFetch.http_postRequest("/cmd.json", { pair: { a: selectedId, g: $G, m: $M0, c: "unpair" } });
+        }}>Remove</button
+      >
+    </div>
+  </div>
 </div>
 
 <style type="text/scss">
