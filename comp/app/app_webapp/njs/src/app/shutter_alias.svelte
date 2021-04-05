@@ -30,7 +30,7 @@
   }
 
   function id_isValid(id) {
-    const re = /[12]0[0-9A-Fa-f]{4}/g;
+    const re = /^[12]0[0-9A-Fa-f]{4}$/;
     return re.test(id);
   }
 
@@ -167,7 +167,6 @@
 </script>
 
 <div id="aliasdiv text-center">
-  <h4 class="text-center" use:tippy={{ content: $_("help.hint_shutterAlias") }}>Alias</h4>
   <div class="area text-center" id="aliasPairUnpair">
     <button id="alias_pair" type="button" on:click={hClick_Pair}> Scan for ID to alias it to {$GMH} </button>
     <button id="alias_unpair" type="button" on:click={hClick_UnPair}> Scan for ID to unalias it from {$GMH} </button>
@@ -196,7 +195,7 @@
     <table class="top_table">
       <tr>
         <td use:tippy={{ content: "All aliased IDs" }}>All</td>
-        <td use:tippy={{ content: "IDs aliased to this number" }}>{$GM}</td>
+        <td use:tippy={{ content: "IDs aliased to this number" }}>{$GMH}</td>
         <td use:tippy={{ content: "Any received IDs" }}>RX</td>
         <td use:tippy={{ content: "Enter an ID by hand" }}>Enter</td>
       </tr>

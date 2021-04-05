@@ -23,7 +23,5 @@
 </style>
 
 <div class="text-center">
-  {$_('app.msg_enterNewName')}
-  <br />
   <input type="text" name="name" bind:value={name} on:change={hChange_Name} />
 </div>

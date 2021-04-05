@@ -21,7 +21,7 @@ const en = {
         mcu: "MCU",
         aliases: "Aliases",
         durations: "Duration",
-        name: "Name",
+        name: "Misc",
         set_mode: "Set",
         app: "App",
       },
@@ -44,7 +44,8 @@ const en = {
     msg_waitForMcuRestart: "Wait for MCU to restart...",
     msg_firmwareIsUpdating: "Firmware is updating...",
     msg_firmwareUpdSuccess: "Update succeeded",
-    msg_enterNewName: "Enter new name:",
+    msg_enterNewName: "Shutter-Name",
+    hdr_motorRotDir: "Motor Rotation Direction",
     config_wizards: "Configuration-Wizards",
     wizard_cuas: "Scan Central-Unit-ID",
     direction: "Direction",
@@ -78,6 +79,10 @@ const en = {
     url: "URL",
   },
   help: {
+    hint_shutterMisc:
+    "Miscelleanous settings per shutter",
+    hint_shutterDurations:
+      "Configute here the durations for the shutter to move from open to close and from open to sup-position. This is needed to calculate the current in-between shutter position and to reach a requested in-between position.",
     hint_durStopClock:
       "To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.",
     hint_shutterAlias:
@@ -165,7 +170,7 @@ const de = {
         mcu: "MCU",
         aliases: "Alias",
         durations: "Laufzeit",
-        name: "Name",
+        name: "Sonstiges",
         set_mode: "Set",
         app: "App",
       },
@@ -191,7 +196,8 @@ const de = {
     msg_firmwareUpdSuccess: "Aktualisierung erfolgreich",
     direction: "Richtung",
     stopClock: "Stopp-Uhr",
-    msg_enterNewName: "Neuer Name:",
+    msg_enterNewName: "Rollladen-Name",
+    hdr_motorRotDir: "Motor Drehrichtung",
     downToZero: "Abwärts bis 0%",
     downSunPos: "Abwärts bis Sonnenposition",
     upTo100: "Aufwärts bis 100%",
@@ -217,6 +223,10 @@ const de = {
     version: "Versions-Nummer",
   },
   help: {
+    hint_shutterMisc:
+    "Sonstinge Einstellungen je Rollladen",
+    hint_shutterDurations:
+    "Konfiguration der Rollladen-Laufzeiten von Offen bis Geschlossen und von Offen bis Sonnenposition. Diese Werte sind nötig zum berechnen der aktuellen Position und um eine geforderte Position zu finden.",
     hint_durStopClock:
       "Zum Messen der Dauer der Rollandenbewegungen. Drücke Start/Stop zum gleichzeitigen Starten von Bewegung und Stoppuhr. Sobald der Rollladen stoppt, Start/Stop erneut drücken um die Stoppuhr anzuhalten.",
     hint_shutterAlias:
