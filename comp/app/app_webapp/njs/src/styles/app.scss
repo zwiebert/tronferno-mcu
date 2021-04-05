@@ -19,6 +19,7 @@ $color_bg_main_area: darken($color_bg_nav1, 5%);
 $color_border_main_area: darken($color_bg_main_area, 20%);
 
 $color_bg_area: lighten($color_bg_main_area, 2.5%);
+$color_bg_weekday: darken($color_bg_area, 5%);
 $color_border_area: darken($color_bg_area, 20%);
 
 $color_border: darken($color_b, 5%);
@@ -189,4 +190,8 @@ input {
 
 .config-input.number {
   width: 5rem;
+}
+
+.auto-weekday {
+  background-color: $color_bg_weekday;
 }

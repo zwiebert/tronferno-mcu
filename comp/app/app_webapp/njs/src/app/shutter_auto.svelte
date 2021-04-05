@@ -50,12 +50,12 @@
   function weekly_autoData2objArr(ws) {
     let res = [
       { up: "", down: "", enabled: true },
-      { up: "", down: "", enabled: true },
-      { up: "", down: "", enabled: true },
-      { up: "", down: "", enabled: true },
-      { up: "", down: "", enabled: true },
-      { up: "", down: "", enabled: true },
-      { up: "", down: "", enabled: true },
+      { up: "", down: "", enabled: false },
+      { up: "", down: "", enabled: false },
+      { up: "", down: "", enabled: false },
+      { up: "", down: "", enabled: false },
+      { up: "", down: "", enabled: false },
+      { up: "", down: "", enabled: false },
     ];
 
     if (!ws) return res;
@@ -68,6 +68,7 @@
           crs += 1;
           break;
         } else if (ws[crs] === "-") {
+          res[wd].enabled = true;
           crs += 1;
           if (dir === 0) {
             res[wd].up = "";
@@ -75,6 +76,7 @@
             res[wd].down = "";
           }
         } else {
+          res[wd].enabled = true;
           let ts = ws.substr(crs, 2) + ":" + ws.substr(crs + 2, 2);
           console.log("ts: ", ts);
           crs += 4;
@@ -101,7 +103,13 @@
   function hClick_Save() {
     console.log("weekly_objArr: ", weekly_objArr);
     autoData.weekly = weekly_objArr2autoData(weekly_objArr);
-    console.log("autoData.weekly: ", autoData.weekly);
+    console.log("autoData.weekly1: ", autoData.weekly);
+    const reWeekly = /.*[0-9].*/g;
+    if (!reWeekly.test(autoData.weekly)) {
+       delete(autoData.weekly);
+       autoData.hasWeekly = false;
+    }
+    console.log("autoData.weekly2: ", autoData.weekly);
     // disable button for 5 seconds while data is being sent to shutter
     // motor by RF
     transmitCountDown = 5;
@@ -164,37 +172,37 @@
         >
       </td>
     </tr>
-      <tr>
-        <td>{$_("app.auto.weekly")}</td>
-        <td>
-          <input class="cb" type="checkbox" bind:checked={autoData.hasWeekly} />
-        </td>
-        <td></td>
-      </tr>
+    <tr>
+      <td>{$_("app.auto.weekly")}</td>
+      <td>
+        <input class="cb" type="checkbox" bind:checked={autoData.hasWeekly} />
+      </td>
+      <td />
+    </tr>
 
     {#if autoData.hasWeekly}
-        {#each weekly_objArr as day, i}
-          <tr>
-            <td>{$_("weekdays")[i]}</td>
-            <td>
-              {#if i > 0}
-                <label><input type="checkbox" bind:checked={day.enabled} /></label>
-              {/if}
-            </td>
-            <td>
-              {#if day.enabled}
-                <label
-                  ><input type="time" bind:value={day.up} />
-                  &#x25b3;</label
-                ><br />
-                <label
-                  ><input type="time" bind:value={day.down} />
-                  &#x25bd;</label
-                >
-              {:else}= {$_("weekdays")[i - 1]}{/if}
-            </td>
-          </tr>
-        {/each}
+      {#each weekly_objArr as day, i}
+        <tr class="auto-weekday">
+          <td class="auto-weekday text-sm text-right">{$_("weekdays")[i]}</td>
+          <td class="auto-weekday text-sm">
+            {#if i > 0}
+              <label><input type="checkbox" bind:checked={day.enabled} /></label>
+            {/if}
+          </td>
+          <td class="auto-weekday text-sm">
+            {#if day.enabled}
+              <label
+                ><input type="time" bind:value={day.up} />
+                &#x25b3;</label
+              ><br />
+              <label
+                ><input type="time" bind:value={day.down} />
+                &#x25bd;</label
+              >
+            {:else}= {$_("weekdays")[i - 1]}{/if}
+          </td>
+        </tr>
+      {/each}
     {/if}
 
     <tr>
@@ -252,4 +260,3 @@
     >
   </div>
 </div>
-
