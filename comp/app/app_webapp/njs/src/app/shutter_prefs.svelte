@@ -2,16 +2,10 @@
   "use strict";
   import { _ } from "services/i18n";
   import * as httpFetch from "app/fetch.js";
-  import {
-    G,
-    M,
-    GM,
-    PrefMvut,
-    PrefMvdt,
-    PrefMvspdt,
-  } from "stores/curr_shutter.js";
+  import { G, M, GM, PrefMvut, PrefMvdt, PrefMvspdt } from "stores/curr_shutter.js";
   import { ShowHelp } from "stores/app_state.js";
   import { onMount, onDestroy } from "svelte";
+  import tippy from "sveltejs-tippy";
 
   export const UP = 0;
   export const DOWN = 1;
@@ -133,58 +127,35 @@
   }
 </script>
 
-<style type="text/scss">
-</style>
-
 <div id="shprefdiv">
-  <p class={$ShowHelp}>{$_('help.hint_durStopClock')}<br /></p>
-
   <table class="dur_table top_table p-2">
     <tr>
-      <th>{$_('app.direction')}</th>
-      <th>{$_('app.duration')}</th>
-      <th>{$_('app.stopClock')}</th>
+      <th>{$_("app.direction")}</th>
+      <th>{$_("app.duration")}</th>
+      <th use:tippy={{ content: $_("help.hint_durStopClock") }}>{$_("app.stopClock")}</th>
     </tr>
     <tr>
-      <td>{$_('app.upTo100')}</td>
+      <td>{$_("app.upTo100")}</td>
       <td>
-        <input
-          class="w-20"
-          id="shpMvut"
-          type="number"
-          min="0"
-          bind:value={mvut}
-          step="0.1" />
+        <input class="w-20" id="shpMvut" type="number" min="0" bind:value={mvut} step="0.1" />
       </td>
       <td>
         <button id="shp_MvutButton" on:click={hClick_Up}>Start/Stop</button>
       </td>
     </tr>
     <tr>
-      <td>{$_('app.downToZero')}</td>
+      <td>{$_("app.downToZero")}</td>
       <td>
-        <input
-          class="w-20"
-          id="shpMvdt"
-          type="number"
-          min="0"
-          bind:value={mvdt}
-          step="0.1" />
+        <input class="w-20" id="shpMvdt" type="number" min="0" bind:value={mvdt} step="0.1" />
       </td>
       <td>
         <button id="shp_MvdtButton" on:click={hClick_Down}>Start/Stop</button>
       </td>
     </tr>
     <tr>
-      <td>{$_('app.downSunPos')}</td>
+      <td>{$_("app.downSunPos")}</td>
       <td>
-        <input
-          class="w-20"
-          id="shpSpMvdt"
-          type="number"
-          min="0"
-          bind:value={mvspdt}
-          step="0.1" />
+        <input class="w-20" id="shpSpMvdt" type="number" min="0" bind:value={mvspdt} step="0.1" />
       </td>
       <td>
         <button id="shp_SpMvdtButton" on:click={hClick_Sun}>Start/Stop</button>
@@ -192,12 +163,9 @@
     </tr>
   </table>
 
-  <button
-    id="shp_reload"
-    type="button"
-    on:click={hClick_Reload}>{$_('app.reload')}</button>
-  <button
-    id="shp_save"
-    type="button"
-    on:click={hClick_Save}>{$_('app.save')}</button>
+  <button id="shp_reload" type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
+  <button id="shp_save" type="button" on:click={hClick_Save}>{$_("app.save")}</button>
 </div>
+
+<style type="text/scss">
+</style>

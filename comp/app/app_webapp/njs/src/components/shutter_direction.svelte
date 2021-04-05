@@ -1,6 +1,7 @@
 <script>
   "use strict";
   import * as httpFetch from "app/fetch.js";
+  import tippy from "sveltejs-tippy";
 
   function hClick_RotDir() {
     httpFetch.http_postShutterCommand("rot-dir");

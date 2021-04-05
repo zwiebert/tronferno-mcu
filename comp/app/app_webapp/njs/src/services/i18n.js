@@ -81,7 +81,7 @@ const en = {
     hint_durStopClock:
       "To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.",
     hint_shutterAlias:
-      "To register position changes made by commands sent from plain controllers and sun-sensors, these controllers have to be registered here. Select G/E above and pair the controller here by start pairing and pressing STOP on the controller.",
+      "To register position changes caused by plain controllers and sun-sensors, these controllers have to be registered here.",
   },
   mcuConfigNames: {
     verbose: "CLI Verbosity",
@@ -220,7 +220,7 @@ const de = {
     hint_durStopClock:
       "Zum Messen der Dauer der Rollandenbewegungen. Drücke Start/Stop zum gleichzeitigen Starten von Bewegung und Stoppuhr. Sobald der Rollladen stoppt, Start/Stop erneut drücken um die Stoppuhr anzuhalten.",
     hint_shutterAlias:
-      "Zum Zuordnen von Bewegungen durch Kommandos von Handsendern und Sonnensensoren müssen diese registriert werden. Bitte G/E auswählen und Pair oder Unpair starten, dann STOP am Handsender drücken.",
+      "Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren müssen diese hier registriert werden.",
   },
   mcuConfigNames: {
     verbose: "CLI Verbose Level",

@@ -166,8 +166,8 @@
   }
 </script>
 
-<div id="aliasdiv">
-  <p class={$ShowHelp}>{$_("help.hint_shutterAlias")} <br /></p>
+<div id="aliasdiv text-center">
+  <h4 class="text-center" use:tippy={{ content: $_("help.hint_shutterAlias") }}>Alias</h4>
   <div class="area text-center" id="aliasPairUnpair">
     <button id="alias_pair" type="button" on:click={hClick_Pair}> Scan for ID to alias it to {$GMH} </button>
     <button id="alias_unpair" type="button" on:click={hClick_UnPair}> Scan for ID to unalias it from {$GMH} </button>
