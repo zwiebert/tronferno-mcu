@@ -164,38 +164,37 @@
         >
       </td>
     </tr>
-    {#if true}
       <tr>
         <td>{$_("app.auto.weekly")}</td>
         <td>
           <input class="cb" type="checkbox" bind:checked={autoData.hasWeekly} />
         </td>
-        <td><input id="twti" type="text" bind:value={autoData.weekly} /></td>
+        <td></td>
       </tr>
-    {/if}
+
     {#if autoData.hasWeekly}
-      {#each weekly_objArr as day, i}
-        <tr>
-          <td>{$_("weekdays")[i]}</td>
-          <td>
-            {#if i > 0}
-              <label><input type="checkbox" bind:checked={day.enabled} /></label>
-            {/if}
-          </td>
-          <td>
-            {#if day.enabled}
-              <label
-                ><input type="time" bind:value={day.up} />
-                &#x25b3;</label
-              ><br />
-              <label
-                ><input type="time" bind:value={day.down} />
-                &#x25bd;</label
-              >
-            {:else}= {$_("weekdays")[i - 1]}{/if}
-          </td>
-        </tr>
-      {/each}
+        {#each weekly_objArr as day, i}
+          <tr>
+            <td>{$_("weekdays")[i]}</td>
+            <td>
+              {#if i > 0}
+                <label><input type="checkbox" bind:checked={day.enabled} /></label>
+              {/if}
+            </td>
+            <td>
+              {#if day.enabled}
+                <label
+                  ><input type="time" bind:value={day.up} />
+                  &#x25b3;</label
+                ><br />
+                <label
+                  ><input type="time" bind:value={day.down} />
+                  &#x25bd;</label
+                >
+              {:else}= {$_("weekdays")[i - 1]}{/if}
+            </td>
+          </tr>
+        {/each}
     {/if}
 
     <tr>
@@ -254,10 +253,3 @@
   </div>
 </div>
 
-<style type="text/scss">
-  @media only screen and (min-device-width: 361px) {
-    #twti {
-      width: 30em;
-    }
-  }
-</style>
