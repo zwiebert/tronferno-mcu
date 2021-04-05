@@ -22,21 +22,29 @@
 
   $: AliasesAllKeys = Object.keys($Aliases);
   $: AliasesPairedKeys = AliasesAllKeys.filter((key) => alias_isKeyPairedToM(key, $G, $M0));
-  $: AliasSelectedKey = 0;
   $: selectedId = 0;
-  $: enteredId = 0;
   $: selectedId_isValid = id_isValid(selectedId);
 
   $: {
     aliasTable_updHtml(selectedId);
   }
 
-  let selectedReceivedAddress = 0;
-  let selectedThisPairings = 0;
-
   function id_isValid(id) {
     const re = /[12]0[0-9A-Fa-f]{4}/g;
     return re.test(id);
+  }
+
+  let select_id_in_progress = false;
+  function select_id(id) {
+    console.log("id,entered", id, entered);
+    if (select_id_in_progress) return;
+    select_id_in_progress = true;
+
+    for (let eid of ["paired", "aliases", "received", "entered"]) {
+      document.getElementById(eid).value = id;
+    }
+    selectedId = id;
+    select_id_in_progress = false;
   }
 
   function hClick_Pair() {
@@ -171,14 +179,11 @@
         <span class="bg-red-400">Timeout</span>
       {:else if $Pras.success}
         <label class="bg-green-400"
-          >Found: <button type="button" on:click={() => (selectedId = selectedReceivedAddress = AliasSelectedKey = selectedThisPairings = $Pras.a)}
-            >{$Pras.a}</button
-          ></label
+          >Found: <button type="button" on:click={() => select_id($Pras.a)}>{$Pras.a}</button></label
         >
       {:else}
         <label class="bg-gray-300"
-          >Nothing to do for: <button type="button" on:click={() => (selectedId = selectedReceivedAddress = AliasSelectedKey = selectedThisPairings = $Pras.a)}
-            >{$Pras.a}</button
+          >Nothing to do for: <button type="button" on:click={() => select_id($Pras.a)}>{$Pras.a}</button
           ></label
         >
       {/if}
@@ -197,44 +202,36 @@
       </tr>
       <tr>
         <td>
-          <select
-            id="aliases"
-            size="5"
-            bind:value={AliasSelectedKey}
-            on:click={() => (selectedId = selectedReceivedAddress = selectedThisPairings = AliasSelectedKey)}
-          >
+          <select id="aliases" size="5" on:change={() => select_id(document.getElementById("aliases").value)}>
             {#each AliasesAllKeys.sort() as key}
               <option>{key}</option>
             {/each}
           </select>
         </td>
         <td>
-          <select
-            id="paired"
-            size="5"
-            bind:value={selectedThisPairings}
-            on:click={() => (selectedId = selectedReceivedAddress = AliasSelectedKey = selectedThisPairings)}
-          >
+          <select id="paired" size="5" on:change={() => select_id(document.getElementById("paired").value)}>
             {#each AliasesPairedKeys.sort() as key}
               <option>{key}</option>
             {/each}
           </select>
         </td>
         <td>
-          <select
-            size="5"
-            bind:value={selectedReceivedAddress}
-            on:click={() => (selectedId = selectedThisPairings = AliasSelectedKey = selectedReceivedAddress)}
-          >
+          <select id="received" size="5" on:change={() => select_id(document.getElementById("received").value)}>
             {#each [...$ReceivedAddresses].sort() as key}
               <option>{key}</option>
             {/each}
           </select>
         </td>
         <td>
-          <label use:tippy={{ content: "Enter ID or select one in list above" }}
-            >ID:
-            <input class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}" type="text" bind:value={selectedId} maxlength="6"/>
+          <label use:tippy={{ content: "Enter an ID or select one from a list" }}
+            >
+            <input
+              id="entered"
+              class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}"
+              type="text"
+              on:input={() => select_id(document.getElementById("entered").value)}
+              maxlength="6"
+            />
           </label>
         </td>
       </tr>
