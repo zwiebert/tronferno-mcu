@@ -4,6 +4,10 @@
 
 // app
 #include <fernotron_trx/fer_trx_api.hh>
+#include <fernotron_trx/timer_data.h>
+#include <fernotron/fer_main.h>
+#include <fernotron/auto/fau_tminutes.h>
+#include <app_uout/so_msg.h>
 
 // shared
 #include <utils_misc/int_macros.h>
@@ -124,6 +128,60 @@ void uoApp_publish_timer_json(const char *json, bool fragment) {
     }
   }
 }
+
+static void timer_json(TargetDesc &td, uint8_t g, uint8_t m, struct Fer_TimerData &tdr) {
+  soMsg_timer_begin(td, so_arg_gm_t { g, m });
+
+  {
+    bool f_manual = manual_bits.getMember(g, m);
+    char flags[10], *p = flags;
+    *p++ = f_manual ? 'M' : 'm';
+    *p++ = tdr.getRandom() ? 'R' : 'r';
+    *p++ = tdr.getSunAuto() ? 'S' : 's';
+    *p++ = tdr.hasAstro() ? 'A' : 'a';
+    *p++ = tdr.hasDaily() ? 'D' : 'd';
+    *p++ = tdr.hasWeekly() ? 'W' : 'w';
+    *p++ = '\0';
+    soMsg_kv(td, "f", flags);
+  }
+
+  if (tdr.hasDaily()) {
+    soMsg_kv(td, "daily", tdr.getDaily());
+  }
+
+  if (tdr.hasWeekly()) {
+    soMsg_kv(td, "weekly", tdr.getWeekly());
+  }
+
+  if (tdr.hasAstro()) {
+    soMsg_kv(td, "astro", tdr.getAstro());
+
+    Fer_TimerMinutes tmi;
+    fer_au_get_timer_minutes_from_timer_data_tm(&tmi, &tdr);
+    soMsg_kv(td, "asmin", tmi.minutes[FER_MINTS_ASTRO]);
+  }
+
+  soMsg_timer_end(td);
+}
+
+void uoApp_publish_timer_json(uint8_t g, uint8_t m, struct Fer_TimerData *tda) {
+  uo_flagsT flags;
+  flags.evt.timer_change = true;
+  flags.evt.gen_app_state_change = true;
+
+  flags.fmt.json = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    TargetDesc td { SO_TGT_HTTP | SO_TGT_FLAG_JSON };
+    td.sj().open_root_object("tfmcu.publish");
+    td.sj().add_object("auto");
+    timer_json(td, g, m, *tda);
+    td.sj().close_object();
+    td.sj().close_root_object();
+
+    uoCb_publish(idxs, td.sj().get_json(), flags);
+  }
+}
+
 
 struct cmdInfo {
   const char *cs = 0;

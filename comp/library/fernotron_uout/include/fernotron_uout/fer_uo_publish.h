@@ -70,6 +70,8 @@ typedef struct {
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags = {});
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT tgtFlags = {});
 void uoApp_publish_timer_json(const char *json, bool fragment = true);
+struct Fer_TimerData;
+void uoApp_publish_timer_json(uint8_t g, uint8_t m, struct Fer_TimerData *tda);
 void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg);
 void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg);
 void uoApp_publish_fer_prasState(const so_arg_pras_t args);
