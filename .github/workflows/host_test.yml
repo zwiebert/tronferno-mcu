@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
      
     steps:
+      - name: Install cmake
+        run: sudo apt install cmake
+        
       - uses: actions/checkout@v2
         with:
           submodules: recursive
