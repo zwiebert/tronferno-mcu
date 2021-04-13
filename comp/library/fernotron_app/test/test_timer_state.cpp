@@ -355,7 +355,7 @@ TEST_CASE("calculate timer minutes", "[fernotron/auto]") {
 }
 
 TEST_CASE("timer next event", "[fernotron/auto]") {
-
+  setenv("TZ", "CET-1CEST-2,M3.5.0,M10.5.0", 1);
   test_timer_event();
   test_timer_event2();
   test_timer_event3();
