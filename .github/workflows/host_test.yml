@@ -8,7 +8,10 @@ jobs:
     runs-on: ubuntu-latest
      
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+         
        
       #Run perl5 script to verify file sizies in controls_xxx.txt files      
       #Compile
