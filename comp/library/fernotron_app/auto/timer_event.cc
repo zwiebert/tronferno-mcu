@@ -26,26 +26,35 @@ fer_au_minutesT fer_au_mintsNow() {
   return fer_au_mintsFromTm(tm);
 }
 
+
+time_t fer_au_timeFromMints(const time_t *now_time, int mints) {
+  struct tm *tm = localtime(now_time);
+  tm->tm_sec = 0;
+  tm->tm_min = mints % 60;
+  tm->tm_hour = mints / 60;
+  return mktime(tm);
+}
+
 fer_au_minutesT fer_au_mintsFromTime(const time_t *timer) {
-  struct tm *tm = localtime(timer);
+  const struct tm *tm = localtime(timer);
   return fer_au_mintsFromTm(tm);
 }
 
 static void fer_am_updateTimerEventTime(const time_t *now_time) {
-  fer_au_minutesT next_min = next_event_te.next_event;
-  fer_au_minutesT now_min = fer_au_mintsFromTime(now_time);
-  time_t midnight = ((60 * 24) - now_min) * 60 + *now_time;
+  const fer_au_minutesT next_min = next_event_te.next_event;
+  const fer_au_minutesT now_min = fer_au_mintsFromTime(now_time);
+  const time_t midnight = ((60 * 24) - now_min) * 60 + *now_time;
 
   if (next_min == MINUTES_DISABLED) {
     next_event_time = midnight;
   } else {
-    next_event_time = (next_min - now_min) * 60 + *now_time;
+    next_event_time = fer_au_timeFromMints(now_time, next_min);
   }
 }
 
 void fer_am_updateTimerEvent() {
-  time_t now_time = time(NULL);
-  time_t now_time_next = now_time + 60; // XXX: make sure we don't get the current event again
+  const time_t now_time = time(NULL);
+  const time_t now_time_next = now_time + 60; // XXX: make sure we don't get the current event again
   fer_am_get_next_timer_event(&next_event_te, &now_time_next);
   fer_am_updateTimerEventTime(&now_time);
 }
@@ -58,6 +67,9 @@ void fer_am_loop(void) {
     return;
   if (time(NULL) < next_event_time)
     return;
+  if (time(NULL) > next_event_time) {
+    fer_am_updateTimerEvent();
+  }
   if (te->next_event != fer_au_mintsNow())
     return;
 
