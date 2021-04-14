@@ -4,6 +4,7 @@
   import * as httpFetch from "app/fetch.js";
   import { Cc1101Config, Cc1101Status } from "stores/mcu_config.js";
   import { onMount } from "svelte";
+  import { AppLogCountRx } from "stores/app_log.js";
   import tippy from "sveltejs-tippy";
 
   const HTTP_FETCH_MASK = httpFetch.FETCH_CC1101_CONFIG;
@@ -124,6 +125,10 @@
   $: {
     cc1101ConfigArr = parse_regString($Cc1101Config);
   }
+
+  $: min_rx = 0;
+  $: max_rx = 0;
+  $: freq_scan_inProgress = false;
 
   function get_rssi_dbm(statusString) {
     const RSSI_offset = 74;
@@ -271,7 +276,7 @@
   }
 
   function freq_updMhz() {
-    freq_mhz = (fosc_mhz / 2**16) * freq;
+    freq_mhz = (fosc_mhz / 2 ** 16) * freq;
   }
 
   $: {
@@ -280,8 +285,58 @@
       for (let i = 0; i < ra.length; ++i) {
         set_reg_value(i, ra[i]);
       }
-     freq_updMhz();
+      freq_updMhz();
     }
+  }
+
+  function save_changes() {
+    const rs = create_regString(create_regArr());
+    let tfmcu = { to: "tfmcu", mcu: { "cc1101-config": rs } };
+    let url = "/cmd.json";
+    httpFetch.http_postRequest(url, tfmcu);
+  }
+
+  function freq_scan(min_mhz, max_mhz, step_mhz, step_ms) {
+    if (freq_scan_inProgress) return;
+    freq_scan_inProgress = true;
+    const saved_mhz = freq_mhz;
+    const saved_chanbw = modemcfg4_chanbw_em;
+
+    modemcfg4_chanbw_em = 0b1111; // select smallest bandwith
+    min_rx = 0;
+    max_rx = 0;
+
+    let current_mhz = min_mhz;
+    const start_rx_count = $AppLogCountRx;
+    let rx_count = $AppLogCountRx;
+
+    let fun = () => {
+      freq_mhz = current_mhz;
+      if (min_rx === 0 && $AppLogCountRx > start_rx_count) {
+        min_rx = current_mhz;
+      }
+
+      if (rx_count < $AppLogCountRx) {
+        max_rx = current_mhz;
+      }
+      rx_count = $AppLogCountRx;
+      current_mhz += step_mhz;
+      save_changes();
+
+      if (current_mhz > max_mhz) {
+        freq_mhz = saved_mhz;
+        if (min_rx && max_rx) {
+          freq_mhz = (min_rx + max_rx) / 2;
+        }
+        modemcfg4_chanbw_em = saved_chanbw;
+        save_changes();
+        freq_scan_inProgress = false;
+      } else {
+        setTimeout(fun, step_ms);
+      }
+    };
+
+    fun();
   }
 </script>
 
@@ -524,8 +579,20 @@
       <td>MHz</td>
       <td><input type="number" min="430" max="440" step="0.0001" bind:value={freq_mhz} /></td>
     </tr>
+    <tr><td>Min</td><td>{min_rx}</td></tr>
+    <tr><td>Max</td><td>{max_rx}</td></tr>
+    <tr><td>Middle</td><td>{(min_rx + max_rx) / 2}</td></tr>
   </table>
-  
+
+  <button
+    type="button" use:tippy={{ content: "Scan frequency of original 2411 and use that frequency as CC1101 carrier frequency. Hold the STOP button on your 2411 during the entire scan!" }}
+    on:click={() => {
+      freq_scan(433.91, 433.986, 0.005, 2000);
+    }}>scan</button
+  >
+  {#if freq_scan_inProgress}
+    <h5>Hold STOP button on 2411 central unit</h5>
+  {/if}
 </div>
 
 <div class="area">
@@ -557,15 +624,7 @@
     httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
   }}>{$_("app.reload")}</button
 >
-<button
-  type="button"
-  on:click={() => {
-    const rs = create_regString(create_regArr());
-    let tfmcu = { to: "tfmcu", mcu: { "cc1101-config": rs } };
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
-  }}>{$_("app.save")}</button
->
+<button type="button" on:click={save_changes}>{$_("app.save")}</button>
 
 <style type="text/scss">
   @import "../styles/app.scss";
