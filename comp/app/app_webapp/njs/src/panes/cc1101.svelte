@@ -117,6 +117,10 @@
     cc1101ConfigArr[CC1101_FSCTRL1] = get_reg_value(CC1101_FSCTRL1);
   }
 
+  const fosc_mhz = 26.0;
+  $: freq_mhz = 0;
+  $: freq = 0; //(freq_mhz / fosc_mhz) * 2 ** 16;
+
   $: {
     cc1101ConfigArr = parse_regString($Cc1101Config);
   }
@@ -170,6 +174,16 @@
         result |= fsctrl1_freq_if << 0;
         break;
 
+      case CC1101_FREQ2:
+        result = (freq >> 16) & 0xff;
+        break;
+      case CC1101_FREQ1:
+        result = (freq >> 8) & 0xff;
+        break;
+      case CC1101_FREQ0:
+        result = freq & 0xff;
+        break;
+
       default:
         return -1;
         break;
@@ -208,6 +222,16 @@
         fsctrl1_freq_if = 0b1111 & (regVal >> 0);
         break;
 
+      case CC1101_FREQ2:
+        freq = (regVal << 16) | (freq & 0x00ffff);
+        break;
+      case CC1101_FREQ1:
+        freq = (regVal << 8) | (freq & 0xff00ff);
+        break;
+      case CC1101_FREQ0:
+        freq = regVal | (freq & 0xffff00);
+        break;
+
       default:
         return;
     }
@@ -216,6 +240,8 @@
 
   function create_regArr() {
     let res = [];
+    freq = (freq_mhz / fosc_mhz) * 2 ** 16;
+    freq_updMhz();
     for (let i = 0; i < 48; ++i) {
       const rv = get_reg_value(i);
       res.push(rv === -1 ? null : rv);
@@ -244,12 +270,17 @@
     return res;
   }
 
+  function freq_updMhz() {
+    freq_mhz = (fosc_mhz / 2**16) * freq;
+  }
+
   $: {
     if (cc1101Config) {
       const ra = parse_regString(cc1101Config);
       for (let i = 0; i < ra.length; ++i) {
         set_reg_value(i, ra[i]);
       }
+     freq_updMhz();
     }
   }
 </script>
@@ -456,29 +487,45 @@
     <table>
       <tr> <td>FSCTRL1</td><td>{(cc1101ConfigArr[CC1101_FSCTRL1] || 0).toString(16)}</td></tr>
       <tr>
-        <td use:tippy={{ content: "The desired IF frequency to employ in RX. Subtracted from FS base frequency in RX and controls the digital complex mixer in the demodulator. (See datasheet for equation). The default value gives an IF frequency of 381kHz, assuming a 26.0 MHz crystal." }}>FREQ_IF</td>
+        <td
+          use:tippy={{
+            content:
+              "The desired IF frequency to employ in RX. Subtracted from FS base frequency in RX and controls the digital complex mixer in the demodulator. (See datasheet for equation). The default value gives an IF frequency of 381kHz, assuming a 26.0 MHz crystal.",
+          }}>FREQ_IF</td
+        >
         <td>
           <select bind:value={fsctrl1_freq_if}>
-          <option value={1}>25.39 kHz</option>
-          <option value={2}>50.78 kHz</option>
-          <option value={3}>76.17 kHz</option>
-          <option value={4}>101.56 kHz</option>
-          <option value={5}>126.95 kHz</option>
-          <option value={6}>152.34 kHz</option>
-          <option value={7}>177.73 kHz</option>
-          <option value={8}>203.12 kHz</option>
-          <option value={9}>228.515 kHz</option>
-          <option value={10}>253.91 kHz</option>
-          <option value={11}>279.3 kHz</option>
-          <option value={12}>304.69 kHz</option>
-          <option value={13}>330.08 kHz</option>
-          <option value={14}>355.47 kHz</option>
-          <option value={15}>380.86 kHz</option>
-        </select>
+            <option value={1}>25.39 kHz</option>
+            <option value={2}>50.78 kHz</option>
+            <option value={3}>76.17 kHz</option>
+            <option value={4}>101.56 kHz</option>
+            <option value={5}>126.95 kHz</option>
+            <option value={6}>152.34 kHz</option>
+            <option value={7}>177.73 kHz</option>
+            <option value={8}>203.12 kHz</option>
+            <option value={9}>228.515 kHz</option>
+            <option value={10}>253.91 kHz</option>
+            <option value={11}>279.3 kHz</option>
+            <option value={12}>304.69 kHz</option>
+            <option value={13}>330.08 kHz</option>
+            <option value={14}>355.47 kHz</option>
+            <option value={15}>380.86 kHz</option>
+          </select>
         </td>
       </tr>
     </table>
   </div>
+</div>
+
+<div class="area">
+  <h4>Carrier Frequency</h4>
+  <table>
+    <tr>
+      <td>MHz</td>
+      <td><input type="number" min="430" max="440" step="0.0001" bind:value={freq_mhz} /></td>
+    </tr>
+  </table>
+  
 </div>
 
 <div class="area">
