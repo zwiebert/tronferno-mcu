@@ -355,7 +355,6 @@ TEST_CASE("calculate timer minutes", "[fernotron/auto]") {
 }
 
 TEST_CASE("timer next event", "[fernotron/auto]") {
-  setenv("TZ", "CET-1CEST-2,M3.5.0,M10.5.0", 1);
   test_timer_event();
   test_timer_event2();
   test_timer_event3();
@@ -368,6 +367,7 @@ TEST_CASE("timer next event", "[fernotron/auto]") {
 static struct cfg_astro cfg_astro =
     { .astroCorrection = acAverage, .geo_longitude = 13.38, .geo_latitude = 52.5, .geo_timezone = 1,  };
 void setUp() {
+  setenv("TZ", "CET-1CEST-2,M3.5.0,M10.5.0", 1);
   fer_main_setup({0x801234, ~0U});
   Fer_Trx_API::setup_astro(&cfg_astro);
 }
