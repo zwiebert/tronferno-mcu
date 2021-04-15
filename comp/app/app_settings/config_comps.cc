@@ -205,4 +205,11 @@ void config_setup_cc1101() {
 
   auto rfin_gpio = config_read_rfin_gpio();
   tfmcu_put_error(TFMCU_ERR_CC1101_RFIN_NOT_CONNECTED, rfin_gpio >= 0 && !cc1101_ook_gdo_isConnected(2, rfin_gpio));
+
+  if (c.enable) {
+    char cc1101_config[97];
+    if (const char *item = config_read_item(CB_CC1101_CONFIG, cc1101_config, sizeof cc1101_config, ""); *item && strlen(item) == 96) {
+        cc1101_ook_updConfig_fromSparse(item);
+    }
+  }
 }

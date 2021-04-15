@@ -26,6 +26,7 @@ void soCfg_GPIO_RFSCK(const TargetDesc &td);
 void soCfg_GPIO_RFMOSI(const TargetDesc &td);
 void soCfg_GPIO_RFMISO(const TargetDesc &td);
 void soCfg_GPIO_RFSS(const TargetDesc &td);
+void soCfg_CC1101_CONFIG(const struct TargetDesc &td);
 
 void soCfg_GPIO_PIN(const TargetDesc &td, int gpio_number);
 void soCfg_GPIO_MODES(const TargetDesc &td);

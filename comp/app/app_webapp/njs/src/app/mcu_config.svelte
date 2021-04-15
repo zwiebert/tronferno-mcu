@@ -27,7 +27,6 @@
 
   let on_destroy = [];
 
-
   function fetch_one_after_another() {
     httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG, true);
     httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG_GPIO_STRING | httpFetch.FETCH_ERROR_MASK);
@@ -70,19 +69,15 @@
   $: mcuConfigKeysWLAN = $McuConfigKeys.filter((val) => val.startsWith("wlan-"));
   $: mcuConfigKeysLAN = $McuConfigKeys.filter((val) => val.startsWith("lan-"));
   $: mcuConfigKeysNTP = $McuConfigKeys.filter((val) => val.startsWith("ntp-"));
+  $: mcuConfigKeysCC1101 = $McuConfigKeys.filter((val) => val.startsWith("cc1101-"));
+
   $: mcuConfigKeysPin = $McuConfigKeys.filter(
     (val) => val.startsWith("gpio") || val === "set-button-pin" || (mcuConfig["rf-trx"] !== "cc1101" && (val === "rf-rx-pin" || val === "rf-tx-pin"))
   );
   $: mcuConfigKeysCU = $McuConfigKeys.filter((val) => val === "cu");
   $: mcuConfigKeysAstro = $McuConfigKeys.filter((val) => val === "longitude" || val === "latitude" || val.startsWith("astro-"));
   $: mcuConfigKeysTime = $McuConfigKeys.filter((val) => val === "rtc" || val === "tz");
-  $: mcuConfigKeysCc1101 = mcuConfig["rf-trx"] === "cc1101" ? $McuConfigKeys.filter((val) => val.startsWith("rf-") && val.endsWith("-pin")) : [];
-
-  $: {
-    console.log("mcuConfigKeysCc1101: ", mcuConfigKeysCc1101);
-    console.log("rf-trx: ", mcuConfig["rf-trx"]);
-    console.log("mcuConfig: ", mcuConfig);
-  }
+  $: mcuConfigKeysCc1101Pin = mcuConfig["rf-trx"] === "cc1101" ? $McuConfigKeys.filter((val) => val.startsWith("rf-") && val.endsWith("-pin")) : [];
 
   $: mcuConfigKeysMisc = $McuConfigKeys.filter(
     (val) =>
@@ -94,24 +89,29 @@
         mcuConfigKeysWLAN.includes(val) ||
         mcuConfigKeysLAN.includes(val) ||
         mcuConfigKeysNTP.includes(val) ||
+        mcuConfigKeysCC1101.includes(val) ||
         mcuConfigKeysCU.includes(val) ||
         mcuConfigKeysAstro.includes(val) ||
         mcuConfigKeysTime.includes(val) ||
-        mcuConfigKeysCc1101.includes(val) ||
+        mcuConfigKeysCc1101Pin.includes(val) ||
         val.endsWith("-pin") ||
         mcuConfigKeysPin.includes(val)
       )
   );
+
+  $: {
+    console.log("mcuConfigKeysCc1101Pin: ", mcuConfigKeysCc1101Pin);
+    console.log("mcuConfigKeysMisc: ", mcuConfigKeysMisc);
+    console.log("$McuConfigKeys: ", $McuConfigKeys);
+    console.log("rf-trx: ", mcuConfig["rf-trx"]);
+    console.log("mcuConfig: ", mcuConfig);
+  }
 
   $: gmu = $Gmu;
   $: gpios = $McuConfig["gpio"] || "..........................................";
 
   export function reload_config() {
     updateMcuConfig($McuConfig);
-
-    for (let i = 1; i <= 7; ++i) {
-      document.getElementById("gmu" + i.toString()).value = $Gmu[i];
-    }
   }
 
   function hClick_Reload() {
@@ -428,7 +428,7 @@
       <table class="conf-table top_table rounded-xl overflow-hidden">
         <caption>{$_("mcuConfig.pin_gpio")}</caption>
 
-        {#each mcuConfigKeysCc1101 as key, i}
+        {#each mcuConfigKeysCc1101Pin as key, i}
           <tr>
             <td
               ><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{$_("mcuConfigNames.cc1101." + key)}</label
@@ -525,14 +525,32 @@
     </div>
   </div>
 {:else if tabIdxMcc === 2}
-  <CC1101 />
+  {#if mcuConfigKeysCC1101.length}
+    <div class="area">
+      {#each mcuConfigKeysCC1101 as key, i}
+        <tr>
+          <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+          {#if key.endsWith("-enable")}
+            <td>
+              <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+            </td>
+          {:else}
+            <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+          {/if}
+        </tr>
+      {/each}
+    </div>
+  {/if}
 {/if}
 
-{#if tabIdxMcc == 0 || tabIdxMcc === 1}
-  <button type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
-  <button type="button" on:click={hClick_Save}>{$_("app.save")}</button>
-{/if}
+<button type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
+<button type="button" on:click={hClick_Save}>{$_("app.save")}</button>
 <button type="button" on:click={hClick_RestartMcu}> {$_("app.restartMcu")}</button>
+
+{#if tabIdxMcc === 2}
+  <hr />
+  <CC1101 />
+{/if}
 
 {#if $ReloadProgress > 0}
   <br />

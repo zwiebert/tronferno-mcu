@@ -146,6 +146,7 @@ export function http_fetchByMask(mask, synchron) {
   }
 
   if (mask & FETCH_CC1101_CONFIG) {
+    add_kv(tfmcu, "config", "cc1101-config", "?");
     add_kv(tfmcu, "mcu", "cc1101-config", "?");
   }
 

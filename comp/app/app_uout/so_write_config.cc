@@ -21,6 +21,7 @@
 #include "app_uout/status_output.h"
 #include "fernotron_trx/astro.h"
 #include <app_uout/so_config.h>
+#include <cc1101_ook/trx.hh>
 
 //#include "utils_misc/int_macros.h"
 
@@ -120,6 +121,20 @@ void soCfg_GPIO_RFMOSI(const struct TargetDesc &td) {
 void soCfg_GPIO_RFSS(const struct TargetDesc &td) {
   td.so().print(settings_get_optKeyStr(CB_RFSS_GPIO), config_read_rfss_gpio());
 }
+
+
+void soCfg_CC1101_CONFIG(const struct TargetDesc &td) {
+  uint8_t regFile[48];
+  size_t regFileSize = sizeof regFile;
+  if (cc1101_ook_dump_config(regFile, &regFileSize)) {
+    char rs[regFileSize * 2 + 1];
+    for (int i = 0; i < regFileSize; ++i) {
+      sprintf(&rs[i * 2], "%02x", regFile[i]);
+    }
+    td.so().print("cc1101-config", rs);
+  }
+}
+
 
 void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
 #ifdef USE_GPIO_PINS

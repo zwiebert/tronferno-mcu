@@ -49,6 +49,7 @@ const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
         "version=full\n";
 
 static void kvs_print_keys(const char *name_space);
+void cc1101_printCfg_asString(const struct TargetDesc &td);
 
 #define is_kt(k) (kt == otok::k_##k)
 #define is_key(k) (strcmp(key, k) == 0)
@@ -266,39 +267,10 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 
       if (strcmp(key, "cc1101-config") == 0) {
         if (*val == '?') {
-          uint8_t regFile[48];
-          size_t regFileSize = sizeof regFile;
-          if (cc1101_ook_dump_config(regFile, &regFileSize)) {
-            char rs[regFileSize * 2 + 1];
-            for (int i = 0; i < regFileSize; ++i) {
-              sprintf(&rs[i * 2], "%02x", regFile[i]);
-            }
-            td.so().print("cc1101-config", rs);
-          }
-
+          soCfg_CC1101_CONFIG(td);
         } else {
-          const char *rs = val;
-          const size_t rs_len = strlen(rs);
-          uint8_t regFile[85];
-          if (rs_len + 1 > 2 * sizeof regFile) {
+          if (!cc1101_ook_updConfig_fromSparse(val))
             return -1;
-          }
-          int k = 0;
-          for (int i = 0; i < rs_len; (i += 2)) {
-            if (rs[i] == '_') {
-              continue;
-            }
-
-            char rvs[3];
-            rvs[0] = rs[i];
-            rvs[1] = rs[i + 1];
-            rvs[2] = '\0';
-
-            regFile[k++] = i / 2;
-            regFile[k++] = static_cast<uint8_t>(strtol(rvs, nullptr, 16));
-          }
-          regFile[k] = 0xff;
-          cc1101_ook_upd_regfile(regFile);
         }
         break;
       }
@@ -335,4 +307,3 @@ static kvs_cbrT kvs_print_keys_cb(const char *key, kvs_type_t type, void *args) 
 static void kvs_print_keys(const char *name_space) {
   kvs_foreach(name_space, KVS_TYPE_ANY, 0, kvs_print_keys_cb, 0);
 }
-

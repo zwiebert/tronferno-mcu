@@ -253,7 +253,7 @@ static bool cc1101_write_regs(const uint8_t *src) {
   return true;
 }
 
-bool cc1101_ook_upd_regfile(const uint8_t *src) {
+bool cc1101_ook_updConfig_fromPairs(const uint8_t *src) {
   if (!SPI_HANDLE)
     return false;
 
@@ -267,6 +267,38 @@ bool cc1101_ook_upd_regfile(const uint8_t *src) {
 
   return true;
 }
+
+bool cc1101_ook_updConfig_fromSparse(const char *rs) {
+  if (!SPI_HANDLE)
+    return false;
+
+  if (!setup_CC_Idle())
+    return false;
+
+  const size_t rs_len = strlen(rs);
+  if (rs_len != 96)
+    return false;
+
+  for (int i = 0; i < rs_len; (i += 2)) {
+    if (rs[i] == '_') {
+      continue;
+    }
+
+    char rvs[3];
+    rvs[0] = rs[i];
+    rvs[1] = rs[i + 1];
+    rvs[2] = '\0';
+
+    u8 rv = static_cast<uint8_t>(strtol(rvs, nullptr, 16));
+    Write_CC_Config(i / 2, rv);
+  }
+
+  if (!cc1101_ook_setDirection(false))
+    return false;
+
+  return true;
+}
+
 
 bool cc1101_ook_dump_config(uint8_t *buf, size_t *length) {
   if (!SPI_HANDLE)
@@ -324,7 +356,7 @@ static void disable_cc1101() {
   }
 }
 
-static bool enable_cc1101(struct cc1101_settings *cfg) {
+static bool enable_cc1101(const struct cc1101_settings *cfg) {
   spi_bus_config_t buscfg = { .mosi_io_num = cfg->mosi, .miso_io_num = cfg->miso, .sclk_io_num = cfg->sclk, //
       .quadwp_io_num = -1, .quadhd_io_num = -1,
   // .max_transfer_sz=PARALLEL_LINES*320*2+8
@@ -421,8 +453,14 @@ bool cc1101_ook_gdo_isConnected(int gdo_num, int gpio_num) {
   return result;
 }
 
-void cc1101_ook_spi_setup(struct cc1101_settings *cfg) {
-  disable_cc1101();
+void cc1101_ook_spi_setup(const struct cc1101_settings *cfg) {
+  if (SPI_HANDLE) {
+    Write_CC_CmdStrobe(CC1101_SRES);
+    ms_delay(50);
+    disable_cc1101();
+    ms_delay(50);
+  }
+
   if (!cfg->enable) {
     return;
   }
@@ -447,6 +485,8 @@ void cc1101_ook_spi_disable() {
   disable_cc1101();
 }
 
+
+
 #else
 
 bool cc1101_ook_dump_config(uint8_t *buf, size_t *length) {
@@ -455,7 +495,7 @@ bool cc1101_ook_dump_config(uint8_t *buf, size_t *length) {
 bool cc1101_ook_dump_status(uint8_t *buf, size_t *length) {
   return false;
 }
-bool cc1101_ook_upd_regfile(const uint8_t *src) {
+bool cc1101_ook_updConfig_fromPairs(const uint8_t *src) {
   return false;
 }
 bool cc1101_ook_setDirection(bool tx) {
@@ -473,6 +513,10 @@ void cc1101_ook_spi_disable() {
 
 int cc1101_ook_get_rssi() {
   return 0;
+}
+
+bool cc1101_ook_updConfig_fromSparse(const char *rs) {
+  return false;
 }
 
 #endif

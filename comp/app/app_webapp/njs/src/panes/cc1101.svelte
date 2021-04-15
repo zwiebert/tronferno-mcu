@@ -279,6 +279,16 @@
     freq_mhz = (fosc_mhz / 2 ** 16) * freq;
   }
 
+  function revert_gui() {
+    if (cc1101Config) {
+      const ra = parse_regString(cc1101Config);
+      for (let i = 0; i < ra.length; ++i) {
+        set_reg_value(i, ra[i]);
+      }
+      freq_updMhz();
+    }
+  }
+
   $: {
     if (cc1101Config) {
       const ra = parse_regString(cc1101Config);
@@ -291,13 +301,47 @@
 
   function save_changes() {
     const rs = create_regString(create_regArr());
-    let tfmcu = { to: "tfmcu", mcu: { "cc1101-config": rs } };
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_postRequest("/cmd.json", { to: "tfmcu", config: { "cc1101-config": rs } });
+    setTimeout(() => {
+      httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
+    }, 500);
   }
 
+  function reset_to_defaults() {;
+    httpFetch.http_postRequest("/cmd.json",  { to: "tfmcu", config: { "cc1101-config": "" }});
+    setTimeout(() => {
+      httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
+    }, 500);
+  }
+
+  function apply_changes() {
+    const rs = create_regString(create_regArr());
+    httpFetch.http_postRequest("/cmd.json", { to: "tfmcu", mcu: { "cc1101-config": rs } });
+    setTimeout(() => {
+      httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
+    }, 500);
+   
+  }
+
+  function reload() {
+    cc1101ConfigArr = parse_regString($Cc1101Config);
+    revert_gui();
+    httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
+    httpFetch.http_postRequest("/cmd.json", { to: "tfmcu", mcu: { "cc1101-config": "?" }});
+  }
+  
+  /**
+   * \brief   scan for reception while changing carrier frequency
+   * \param   min_mhz  start the scan at this frequency
+   * \param   max_mhz  stop the scan at this frequency
+   * \param   step_mhz increment frequency by this amount at each step
+   * \param   step_ms  increment frequency after this timeout
+  */
   function freq_scan(min_mhz, max_mhz, step_mhz, step_ms) {
-    if (freq_scan_inProgress) return;
+    if (freq_scan_inProgress) {
+      freq_scan_inProgress = false;
+      return;
+    }
     freq_scan_inProgress = true;
     const saved_mhz = freq_mhz;
     const saved_chanbw = modemcfg4_chanbw_em;
@@ -311,8 +355,14 @@
     let rx_count = $AppLogCountRx;
 
     let fun = () => {
+      if (!freq_scan_inProgress) {
+        freq_mhz = saved_mhz;
+        modemcfg4_chanbw_em = saved_chanbw;
+        apply_changes();
+        return;
+      }
       freq_mhz = current_mhz;
-      if (min_rx === 0 && $AppLogCountRx > start_rx_count) {
+      if (min_rx === 0 && $AppLogCountRx > (start_rx_count + 1)) {
         min_rx = current_mhz;
       }
 
@@ -321,7 +371,7 @@
       }
       rx_count = $AppLogCountRx;
       current_mhz += step_mhz;
-      save_changes();
+      apply_changes();
 
       if (current_mhz > max_mhz) {
         freq_mhz = saved_mhz;
@@ -340,7 +390,7 @@
   }
 </script>
 
-<span class="bg-green-200">Experimental. Changes here are applied but not saved. Reboot MCU to restore original settings.</span>
+<span class="bg-green-200">Experimental.</span>
 <div class="flex flex-col content-center justify-center">
   <div class="area">
     <h4>AGC_Control</h4>
@@ -585,9 +635,12 @@
   </table>
 
   <button
-    type="button" use:tippy={{ content: "Scan frequency of original 2411 and use that frequency as CC1101 carrier frequency. Hold the STOP button on your 2411 during the entire scan!" }}
+    type="button"
+    use:tippy={{
+      content: "Scan frequency of original 2411 and use that frequency as CC1101 carrier frequency. Hold the STOP button on your 2411 during the entire scan!",
+    }}
     on:click={() => {
-      freq_scan(433.91, 433.986, 0.005, 2000);
+      freq_scan(433.85, 433.99, 0.005, 750);
     }}>scan</button
   >
   {#if freq_scan_inProgress}
@@ -619,12 +672,19 @@
 
 <button
   type="button"
-  on:click={() => {
-    cc1101ConfigArr = parse_regString($Cc1101Config);
-    httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
-  }}>{$_("app.reload")}</button
+  use:tippy={{ content: "Modify CC1101 config registers, but don't save them permanently (These changes will be lost after MCU Restart)" }}
+  on:click={apply_changes}>Apply Changes</button
 >
-<button type="button" on:click={save_changes}>{$_("app.save")}</button>
+<br />
+<button
+  type="button"
+  use:tippy={{ content: "Get current CC1101 Config Registers from MCU" }}
+  on:click={reload}>{$_("app.reload")}</button
+>
+<button type="button" use:tippy={{ content: "Save CC1101 config registers to MCU permanently" }} on:click={save_changes}>{$_("app.save")}</button>
+
+<button type="button" use:tippy={{ content: "Erase saved CC1101 configuration registers on MCU" }} on:click={reset_to_defaults}>Reset to Defaults</button>
+<br />
 
 <style type="text/scss">
   @import "../styles/app.scss";

@@ -132,13 +132,12 @@ export function http_handleResponses(obj) {
     if ("error-mask" in mcu) {
       McuErrorMask.set(Number.parseInt(mcu["error-mask"], 16));
     }
-    if ("cc1101-config" in mcu) {
-      Cc1101Config.set(mcu["cc1101-config"]);
-    }
     if ("cc1101-status" in mcu) {
       Cc1101Status.set(mcu["cc1101-status"]);
     }
-    
+    if ("cc1101-config" in mcu) {
+      Cc1101Config.set(mcu["cc1101-config"]);
+    } 
 
     if ("ota-state" in mcu) {
       let ota_state = mcu["ota-state"];
