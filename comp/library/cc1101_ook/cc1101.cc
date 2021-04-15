@@ -506,7 +506,7 @@ bool cc1101_ook_gdo_isConnected(int gdo_num, int gpio_num) {
   return false;
 }
 
-void cc1101_ook_spi_setup(struct cc1101_settings *cfg) {
+void cc1101_ook_spi_setup(const struct cc1101_settings *cfg) {
 }
 void cc1101_ook_spi_disable() {
 }
