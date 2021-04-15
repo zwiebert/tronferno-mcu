@@ -63,7 +63,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[64];
     for (auto i = 0; i < len; ++i) {
-      snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;\n", a[i].g, a[i].m, a[i].p);
+      snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;", a[i].g, a[i].m, a[i].p);
       uoCb_publish(idxs, buf, flags);
     }
   }
@@ -102,7 +102,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[64];
-    snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;\n", a.g, a.m, a.p);
+    snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;", a.g, a.m, a.p);
     uoCb_publish(idxs, buf, flags);
   }
 }
@@ -250,9 +250,9 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[64];
     if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit)) {
-      snprintf(buf, sizeof buf, "SC:type=central: a=%06x g=%d m=%d c=%s;\n", m.a, m.g, m.m, ci.cs);
+      snprintf(buf, sizeof buf, "SC:type=central: a=%06x g=%d m=%d c=%s;", m.a, m.g, m.m, ci.cs);
     } else {
-      snprintf(buf, sizeof buf, "SC:type=%s: a=%06x g=%d m=%d c=%s;\n", ci.fdt, m.a, m.g, m.m, ci.cs);
+      snprintf(buf, sizeof buf, "SC:type=%s: a=%06x g=%d m=%d c=%s;", ci.fdt, m.a, m.g, m.m, ci.cs);
     }
     uoCb_publish(idxs, buf, flags);
   }
@@ -286,9 +286,9 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[64];
     if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit)) {
-      snprintf(buf, sizeof buf, "RC:type=central: a=%06x g=%d m=%d c=%s rssi=%d;\n", m.a, m.g, m.m, ci.cs, rssi);
+      snprintf(buf, sizeof buf, "RC:type=central: a=%06x g=%d m=%d c=%s rssi=%d;", m.a, m.g, m.m, ci.cs, rssi);
     } else {
-      snprintf(buf, sizeof buf, "RC:type=%s: a=%06x g=%d m=%d c=%s rssi=%d;\n", ci.fdt, m.a, m.g, m.m, ci.cs, rssi);
+      snprintf(buf, sizeof buf, "RC:type=%s: a=%06x g=%d m=%d c=%s rssi=%d;", ci.fdt, m.a, m.g, m.m, ci.cs, rssi);
     }
     uoCb_publish(idxs, buf, flags);
   }
@@ -382,7 +382,7 @@ void uoApp_publish_fer_cuasState(const so_arg_cuas_t args) {
   flags.fmt.json = false;
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    const char *msg = args.success ? "tf:event:cuas=ok:;\n" : args.timeout ? "tf:event:cuas=time-out:;\n" : "tf:event:cuas=scanning:;\n";
+    const char *msg = args.success ? "tf:event:cuas=ok:;" : args.timeout ? "tf:event:cuas=time-out:;" : "tf:event:cuas=scanning:;";
 
     uoCb_publish(idxs, msg, flags);
   }
