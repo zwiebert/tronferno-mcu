@@ -28,6 +28,7 @@
 #endif
 #include "fernotron_trx/astro.h"
 #include <fernotron_trx/fer_trx_c_api.h>
+#include <cc1101_ook/trx.hh>
 
 #include "utils_misc/int_types.h"
 #include "utils_misc/int_types.h"
@@ -61,7 +62,7 @@ bool process_parmConfig_get_app(otok kt, const char *val, const struct TargetDes
   }
 }
 
-bool process_parmConfig_app(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u32 &changed_mask) {
+bool process_parmConfig_app(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u64 &changed_mask) {
   switch (kt) {
 
   case otok::k_cu: {
@@ -138,7 +139,7 @@ break;
           mcu_pin_level pl = val[1] == 'h' ? PIN_HIGH : val[1] == 'l' ? PIN_LOW : val[1] == 'm' ? PIN_HIGH_LOW : PIN_FLOATING;
           error = pin_set_mode(gpio_number, ps, pl);
           config_gpio_setPinMode(gpio_number, ps, pl);
-          SET_BIT(changed_mask, CB_GPIO);
+          SET_BIT64(changed_mask, CB_GPIO);
           break;
         }
       }
@@ -159,7 +160,7 @@ break;
 }
 
 
-void parmConfig_reconfig_app(uint32_t changed_mask) {
+void parmConfig_reconfig_app(uint64_t changed_mask) {
   if (changed_mask & CBM_geo) {
     cli_run_main_loop(mainLoop_configAstro);
   }
