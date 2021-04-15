@@ -49,3 +49,7 @@
   {/each}
 </table>
 {/if}
+
+<hr>
+<a href="https://github.com/zwiebert/tronferno-mcu/commits/develop">develop-branch commit log on GitHub </a><br>
+<a href="https://github.com/zwiebert/tronferno-mcu/commits/master">master-branch commit log on GitHub</a>
