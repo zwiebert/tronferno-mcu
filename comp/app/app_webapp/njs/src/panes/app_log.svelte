@@ -29,7 +29,7 @@
   class="w-11/12 h-full border-black border-2 bg-gray-800 overflow-auto text-xs">
   <!-- {@html htmlEntities($AppLogTxt)} -->
 
-  {#each $AppLog.reverse() as msg}
+  {#each $AppLog as msg}
     {#if showMqtt && 'log' in msg && 'mqtt_client' === msg.log.tag}
       <span class="text-red-300">{msg.date.toLocaleTimeString() + ': ' + msg.log.tag + ': ' + msg.log.txt}<br /></span>
     {:else if showRc && 'rc' in msg}
