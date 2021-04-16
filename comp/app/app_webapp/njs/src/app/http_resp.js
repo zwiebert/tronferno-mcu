@@ -173,6 +173,7 @@ export function http_handleResponses(obj) {
 }
 
 export function http_handleDocResponses(name, text) {
+  console.log("http_handleDocResponses:", name, text);
   let obj = {};
   obj[name] = { text: text };
   McuDocs.update(obj);
