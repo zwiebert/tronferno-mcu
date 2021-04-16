@@ -4,7 +4,7 @@ import * as httpResp from "app/http_resp.js";
 import { G, M0 } from "stores/curr_shutter.js";
 import { Gmu } from "stores/mcu_config.js";
 import { get } from "svelte/store";
-import { ws_isOpen } from "main/net/conn_ws";
+import { ws_isOpen, ws_sendObject } from "main/net/conn_ws";
 
 let b = 0;
 export const FETCH_CONFIG = 1 << b++;
@@ -33,12 +33,18 @@ const FETCHES_REPLY_BY_WS = 0;
 
 const MAX_RETRY_COUNT = 3;
 
+const CMD_URL = "/cmd.json";
+
 let g;
 G.subscribe((value) => (g = value));
 let m;
 M0.subscribe((value) => (m = value));
 
 export function http_postRequest(url = "", data = {}, state = { retry_count: 0 }) {
+  if (url === CMD_URL) {
+   if (ws_sendObject(data))
+   return;
+  }
   appDebug.dbLog("post-json: " + JSON.stringify(data));
 
   const fetch_data = {
@@ -115,8 +121,6 @@ function async_fetchByMask() {
 }
 
 export function http_fetchByMask(mask, synchron) {
-  const url = "/cmd.json";
-
   if (!mask) {
     return;
   }
@@ -220,13 +224,15 @@ export function http_fetchByMask(mask, synchron) {
       for (let m = 0; m <= get(Gmu)[g]; ++m) {
         let c = { shpref: { g: g, m: m, "tag.NAME": "?" } };
         setTimeout(() => {
-          http_postRequest(url, c);
+          http_postRequest(CMD_URL, c);
         }, 1000 * ++n);
       }
     }
   }
 
-  http_postRequest(url, tfmcu);
+
+  http_postRequest(CMD_URL, tfmcu);
+  
 
   if (mask & FETCH_GIT_TAGS) gitTags_fetch();
 }
