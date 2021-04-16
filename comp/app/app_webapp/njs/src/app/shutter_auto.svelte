@@ -1,6 +1,7 @@
 <script>
   "use strict";
   import { _ } from "services/i18n";
+  import tippy from "sveltejs-tippy";
   import * as appDebug from "app/app_debug.js";
   import * as httpFetch from "app/fetch.js";
   import { AutoData, G, M, GM, GMH } from "stores/curr_shutter.js";
@@ -12,6 +13,9 @@
     $GM;
     httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME);
   }
+
+  $: providTimeString = false;
+  $: isoTimeString = new Date().toISOString().substr(0, 19);
 
   $: autoData = $AutoData;
 
@@ -106,8 +110,8 @@
     console.log("autoData.weekly1: ", autoData.weekly);
     const reWeekly = /.*[0-9].*/g;
     if (!reWeekly.test(autoData.weekly)) {
-       delete(autoData.weekly);
-       autoData.hasWeekly = false;
+      delete autoData.weekly;
+      autoData.hasWeekly = false;
     }
     console.log("autoData.weekly2: ", autoData.weekly);
     // disable button for 5 seconds while data is being sent to shutter
@@ -129,6 +133,8 @@
     const ad = autoData;
     auto.g = $G;
     auto.m = $M;
+
+    if (providTimeString) auto.rtc = isoTimeString;
 
     let f = "i";
     f += ad.isManual ? "M" : "m";
@@ -247,7 +253,9 @@
       class="sb"
       type="button"
       on:click={() => {
-        httpFetch.http_postRequest("/cmd.json", { auto: { g: $G, m: $M, "rtc-only": 1 } });
+        let a = { auto: { g: $G, m: $M, "rtc-only": 1 } };
+        if (providTimeString) a.rtc = isoTimeString;
+        httpFetch.http_postRequest("/cmd.json", a);
       }}>{$_("app.auto.sendRtc")} {$GMH}</button
     >
 
@@ -255,8 +263,17 @@
       class="sb"
       type="button"
       on:click={() => {
-        httpFetch.http_postRequest("/cmd.json", { auto: { "rtc-only": 1 } });
+        let a = { auto: { "rtc-only": 1 } };
+        if (providTimeString) a.rtc = isoTimeString;
+        httpFetch.http_postRequest("/cmd.json", a);
       }}>{$_("app.auto.sendRtc")} A</button
+    >
+
+    <hr />
+    <label use:tippy={{ content: "Provide your own ISO-Time-string time to send to the shutter" }}
+      >ISO-Time
+      <input type="checkbox" bind:checked={providTimeString} />
+      <input type="text" bind:value={isoTimeString} disabled={!providTimeString} /></label
     >
   </div>
 </div>

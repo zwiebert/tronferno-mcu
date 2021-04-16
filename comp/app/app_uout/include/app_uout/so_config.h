@@ -3,6 +3,7 @@
 struct TargetDesc;
 
 void soCfg_all(const struct TargetDesc &td);
+void soCfg_all_part(const struct TargetDesc &td, int part_num, int part_size);
 void soCfg_all_net(const struct TargetDesc &td);
 void soCfg_all_gpio(const struct TargetDesc &td);
 void soCfg_all_fer(const struct TargetDesc &td);

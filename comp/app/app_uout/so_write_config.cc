@@ -236,6 +236,13 @@ void soCfg_all_net(const struct TargetDesc &td) {
 #endif
 }
 
+void soCfg_all_misc(const struct TargetDesc &td) {
+  soCfg_BAUD(td);
+  soCfg_VERBOSE(td);
+  soCfg_RF_TRX(td);
+  soCfg_CC1101_CONFIG(td);
+}
+
 void soCfg_all_gpio(const struct TargetDesc &td) {
   soCfg_GPIO_RFOUT(td);
   soCfg_GPIO_RFIN(td);
@@ -265,6 +272,19 @@ void soCfg_all_time(const struct TargetDesc &td) {
   soCfg_DST(td);
 #endif
 }
+
+typedef void (*soCfg_fnT)(const struct TargetDesc &td);
+
+const soCfg_fnT soCfg_fns[] = {
+  soCfg_all_time,
+  soCfg_all_fer,
+  soCfg_all_gpio,
+  soCfg_all_misc,
+  soCfg_all_net,
+};
+
+constexpr size_t soCfg_fnsCt = sizeof soCfg_fns / sizeof soCfg_fns[0];
+
 void soCfg_all(const struct TargetDesc &td) {
 
   soCfg_BAUD(td);
@@ -276,4 +296,14 @@ void soCfg_all(const struct TargetDesc &td) {
 
   soCfg_all_gpio(td);
   soCfg_RF_TRX(td);
+}
+
+void soCfg_all_part(const struct TargetDesc &td, int part_num, int part_size) {
+  const int start_idx = part_num * part_size;
+  const int end_idx = MIN(start_idx + part_size, soCfg_fnsCt);
+
+  for (int i = start_idx; i < end_idx; ++i) {
+    if (auto fn = soCfg_fns[i]; fn)
+      fn(td);
+  }
 }

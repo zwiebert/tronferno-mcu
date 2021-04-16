@@ -30,9 +30,25 @@
   let on_destroy = [];
 
   function fetch_one_after_another() {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG, true);
-    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG_GPIO_STRING | httpFetch.FETCH_ERROR_MASK);
-    httpFetch.getFile("/f/cli/help/config");
+    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG_P0, true);
+    const timeout = 250;
+    setTimeout(() => {
+      httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG_P1, true);
+      setTimeout(() => {
+        httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG_P2, true);
+        setTimeout(() => {
+          httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG_P3 | httpFetch.FETCH_ERROR_MASK, true);
+        }, timeout);
+        setTimeout(() => {
+          httpFetch.getFile("/f/cli/help/config");
+        }, timeout);
+      }, timeout);
+    }, timeout);
+    
+
+
+
+  
   }
 
   onMount(() => {

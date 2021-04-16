@@ -28,7 +28,7 @@ export function cuas_handle_cuasState(config) {
     case 1: s = '<strong style="animation: blink .75s linear 4;"> ...Scanning...(press STOP on Central Unit) </strong>'; break;
     case 2: s = '<strong style="background-color:red;">Time-Out! (no STOP-command received)</strong>'; break;
     case 3: s = '<strong style="background-color:green;">Success (cu-id has been saved)</strong>';
-      httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
+      httpFetch.http_postRequest('/cmd.json', { to: "tfmcu", config:{ cu: "?" }});
       break;
   }
 

@@ -42,6 +42,13 @@ bool process_parmConfig_get_comp(otok kt, const char *val, const struct TargetDe
     } else if (is_val("net?")) {
       soCfg_all_net(td);
       return true;
+    } else if (strlen(val) == 5 && val[0] == 'p' && val[2] == 's' && val[4] == '?') {
+      const int part_num = val[1] - '0';
+      const int part_size = val[3] - '0';
+      if (IS_IN_RANGE(0, part_num, 9) && IS_IN_RANGE(1, part_size, 9)) {
+        soCfg_all_part(td, part_num, part_size);
+        return true;
+      }
     }
   }
     return false;
