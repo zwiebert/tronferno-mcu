@@ -60,19 +60,19 @@ void tst_dynamicPos() {
     std::cout << '\r' << i << "pct: " << (int) pct << " run_time_ts: " << run_time_ts() << std::flush;
     fer_pos_loop();
 
-    if (IS_IN_RANGE(0, i, 11)) {
+    if (IS_IN_RANGE(1, i, 10)) {
       TEST_ASSERT_TRUE(Is_Moving);
     }
 
-    if (IS_IN_RANGE(4, i, 10)) {
+    if (IS_IN_RANGE(5, i, 9)) {
       TEST_ASSERT_NOT_EQUAL(50, pct);
     }
 
-    if (IS_IN_RANGE(0, i, 10)) {
+    if (IS_IN_RANGE(1, i, 9)) {
       TEST_ASSERT_EQUAL(pcts[i + 1], pct);
     }
 
-    if (IS_IN_RANGE(13, i, 15)) {
+    if (IS_IN_RANGE(14, i, 14)) {
       TEST_ASSERT_FALSE(Is_Moving);
     }
 
@@ -106,16 +106,16 @@ void tst_dynamicPos_stop() {
 
 
 
-    if (IS_IN_RANGE(0, i, 7)) {
+    if (IS_IN_RANGE(1, i, 6)) {
       TEST_ASSERT_TRUE(Is_Moving);
       TEST_ASSERT_EQUAL(pcts[i + 1], pct);
     }
 
-    if (IS_IN_RANGE(4, i, 10)) {
+    if (IS_IN_RANGE(5, i, 9)) {
       TEST_ASSERT_NOT_EQUAL(50, pct);
     }
 
-    if (IS_IN_RANGE(8, i, 10)) {
+    if (IS_IN_RANGE(9, i, 9)) {
      TEST_ASSERT_FALSE(Is_Moving);
      TEST_ASSERT_EQUAL(pcts[7+1], pct);
     }
