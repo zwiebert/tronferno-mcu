@@ -24,7 +24,7 @@
     if (!mc) return;
 
     let req = { cmd: { a: mc, c: cmd } };
-    httpFetch.http_postRequest("/cmd.json", req);
+    httpFetch.http_postCommand(req);
   }
   function hClick_RotDir() {
     postShutterCommand("rot-dir");

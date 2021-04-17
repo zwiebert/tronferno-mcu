@@ -58,7 +58,6 @@
   }
 
   function shp_fromHtml_toMcu() {
-    const url = "/cmd.json";
     let tfmcu = { to: "tfmcu", shpref: { g: $G, m: $M, c: "store" } };
     let pref = tfmcu.shpref;
 
@@ -66,7 +65,7 @@
     pref.mvdt = Math.floor(parseFloat(mvdt) * 10).toString();
     pref.mvspdt = Math.floor(parseFloat(mvspdt) * 10).toString();
 
-    httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_postCommand(tfmcu);
   }
 
   let stopClock = {

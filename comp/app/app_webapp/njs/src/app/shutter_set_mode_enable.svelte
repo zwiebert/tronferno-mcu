@@ -10,9 +10,7 @@
 
   function shn_fromHtml_toMcu(val) {
     let tfmcu = { to: "tfmcu", shpref: { g: $G, m: $M0, "tag.NAME": val } };
-
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_postCommand(tfmcu);
   }
 
   function hChange_Name() {
@@ -21,21 +19,18 @@
 
   function onClick_SetByGM() {
     let tfmcu = { to: "tfmcu", cmd: { g: $G, m: $M0, c: "set" } };
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_postCommand(tfmcu);
     enterSetMode();
   }
 
   function onClick_SetByAddr() {
     let tfmcu = { to: "tfmcu", cmd: { a: $SetModeSrcAddress, c: "set" } };
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_postCommand(tfmcu);
     enterSetMode();
   }
   function onClick_SetByMotorCode() {
     let tfmcu = { to: "tfmcu", cmd: { a: "9"+$SetModeSrcMotorCode, c: "set" } };
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_postCommand(tfmcu);
     enterSetMode();
   }
 

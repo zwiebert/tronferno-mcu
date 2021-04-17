@@ -137,8 +137,7 @@
   }
   function fetch_status() {
     let tfmcu = { to: "tfmcu", mcu: { "cc1101-status": "?" } };
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_postCommand(tfmcu);
   }
   let fetchStatusTimer = null;
 
@@ -301,14 +300,14 @@
 
   function save_changes() {
     const rs = create_regString(create_regArr());
-    httpFetch.http_postRequest("/cmd.json", { to: "tfmcu", config: { "cc1101-config": rs } });
+    httpFetch.http_postCommand({ to: "tfmcu", config: { "cc1101-config": rs } });
     setTimeout(() => {
       httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
     }, 500);
   }
 
   function reset_to_defaults() {;
-    httpFetch.http_postRequest("/cmd.json",  { to: "tfmcu", config: { "cc1101-config": "" }});
+    httpFetch.http_postCommand( { to: "tfmcu", config: { "cc1101-config": "" }});
     setTimeout(() => {
       httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
     }, 500);
@@ -316,7 +315,7 @@
 
   function apply_changes() {
     const rs = create_regString(create_regArr());
-    httpFetch.http_postRequest("/cmd.json", { to: "tfmcu", mcu: { "cc1101-config": rs } });
+    httpFetch.http_postCommand({ to: "tfmcu", mcu: { "cc1101-config": rs } });
     setTimeout(() => {
       httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
     }, 500);
@@ -327,7 +326,7 @@
     cc1101ConfigArr = parse_regString($Cc1101Config);
     revert_gui();
     httpFetch.http_fetchByMask(HTTP_FETCH_MASK);
-    httpFetch.http_postRequest("/cmd.json", { to: "tfmcu", mcu: { "cc1101-config": "?" }});
+    httpFetch.http_postCommand({ to: "tfmcu", mcu: { "cc1101-config": "?" }});
   }
   
   /**

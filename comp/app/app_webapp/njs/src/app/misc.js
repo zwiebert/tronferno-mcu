@@ -34,8 +34,7 @@ function req_reloadStart() {
 
 export function req_mcuRestart() {
   let json = { to: "tfmcu", config: { restart: "1" } };
-  let url = '/cmd.json';
-  httpFetch.http_postRequest(url, json);
+  httpFetch.http_postCommand(json);
   req_reloadStart();
   //setTimeout(function(){ location.reload(); }, 10000);
 }

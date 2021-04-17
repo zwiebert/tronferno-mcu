@@ -127,7 +127,6 @@
   // -------------  auto div -------------------------------
 
   function req_automatic() {
-    let url = "/cmd.json";
     let tfmcu = { to: "tfmcu", auto: {} };
     let auto = tfmcu.auto;
     const ad = autoData;
@@ -156,7 +155,7 @@
     }
 
     appDebug.dbLog(JSON.stringify(tfmcu));
-    httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_postCommand(tfmcu);
   }
 </script>
 
@@ -255,7 +254,7 @@
       on:click={() => {
         let a = { auto: { g: $G, m: $M, "rtc-only": 1 } };
         if (providTimeString) a.rtc = isoTimeString;
-        httpFetch.http_postRequest("/cmd.json", a);
+        httpFetch.http_postCommand(a);
       }}>{$_("app.auto.sendRtc")} {$GMH}</button
     >
 
@@ -265,7 +264,7 @@
       on:click={() => {
         let a = { auto: { "rtc-only": 1 } };
         if (providTimeString) a.rtc = isoTimeString;
-        httpFetch.http_postRequest("/cmd.json", a);
+        httpFetch.http_postCommand(a);
       }}>{$_("app.auto.sendRtc")} A</button
     >
 

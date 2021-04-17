@@ -36,10 +36,12 @@ export function websocket() {
 
 export function ws_isOpen() { return isOpen; }
 export function ws_sendObject(obj) {
-  if (!isOpen || !ws)
+  if (!isOpen || !ws) {
     return false;
+  }
 
-  console.log("ws.send: ", obj);
-  ws.send(JSON.stringify(obj));
+  const json = JSON.stringify(obj);
+  console.log("ws.send: ", json);
+  ws.send(json);
   return true;
 }

@@ -33,12 +33,17 @@ const FETCHES_REPLY_BY_WS = 0;
 
 const MAX_RETRY_COUNT = 3;
 
-const CMD_URL = "/cmd.json";
+export const CMD_URL = "/cmd.json";
 
 let g;
 G.subscribe((value) => (g = value));
 let m;
 M0.subscribe((value) => (m = value));
+
+
+export function http_postCommand(data, state = { retry_count: 0 }) {
+  http_postRequest(CMD_URL, data, state);
+}
 
 export function http_postRequest(url = "", data = {}, state = { retry_count: 0 }) {
   if (url === CMD_URL) {

@@ -183,8 +183,7 @@
       }
     });
 
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, { config: cfg_mod });
+    httpFetch.http_postCommand({ config: cfg_mod });
 
     setTimeout(() => {
       fetch_one_after_another();
@@ -212,11 +211,11 @@
     cmd.config[gpioKey] = "i";
     wiz_gpio = -1;
 
-    httpFetch.http_postRequest("/cmd.json", cmd);
+    httpFetch.http_postCommand(cmd);
     wiz_gpio_status = "";
     setTimeout(() => {
-      httpFetch.http_postRequest("/cmd.json", { config: { gpio: "?" } });
-      httpFetch.http_postRequest("/cmd.json", { config: { gpio: "$" } });
+      httpFetch.http_postCommand({ config: { gpio: "?" } });
+      httpFetch.http_postCommand({ config: { gpio: "$" } });
       setTimeout(() => {
         wiz_gpio_status = $McuConfig[gpioKey] ? '<span class="bg-green-500">ok</span>' : '<span class="bg-red-500">error</span>';
       }, 200);

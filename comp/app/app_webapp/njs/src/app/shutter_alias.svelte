@@ -160,8 +160,7 @@
 
     let tfmcu = { to: "tfmcu", pair: { a: key, mm: val, c: "store" } };
 
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_postCommand(tfmcu);
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
   }
 </script>
@@ -275,7 +274,7 @@
         use:tippy={{ content: "Identify motor(s) paired with this ID by moving them" }}
         disabled={!selectedId_isValid}
         on:click={() => {
-          httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-test" } });
+          httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-test" } });
         }}>Test</button
       >
 
@@ -283,7 +282,7 @@
         type="button"
         disabled={!(selectedId_isValid && selectedId.startsWith("20"))}
         on:click={() => {
-          httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "sun-inst" } });
+          httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-inst" } });
         }}>Sun-Pos/Inst</button
       >
 
@@ -291,7 +290,7 @@
         type="button"
         disabled={!(selectedId_isValid && selectedId.startsWith("10"))}
         on:click={() => {
-          httpFetch.http_postRequest("/cmd.json", { cmd: { a: selectedId, c: "stop" } });
+          httpFetch.http_postCommand({ cmd: { a: selectedId, c: "stop" } });
         }}>STOP</button
       >
     </div>
@@ -302,7 +301,7 @@
         type="button"
         disabled={!selectedId_isValid}
         on:click={() => {
-          httpFetch.http_postRequest("/cmd.json", { pair: { a: selectedId, g: $G, m: $M0, c: "pair" } });
+          httpFetch.http_postCommand({ pair: { a: selectedId, g: $G, m: $M0, c: "pair" } });
         }}>Add</button
       >
 
@@ -310,7 +309,7 @@
         type="button"
         disabled={!selectedId_isValid}
         on:click={() => {
-          httpFetch.http_postRequest("/cmd.json", { pair: { a: selectedId, g: $G, m: $M0, c: "unpair" } });
+          httpFetch.http_postCommand({ pair: { a: selectedId, g: $G, m: $M0, c: "unpair" } });
         }}>Remove</button
       >
     </div>
