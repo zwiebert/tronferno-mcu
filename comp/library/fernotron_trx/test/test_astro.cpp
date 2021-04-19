@@ -21,42 +21,48 @@
 #include "app_settings/config.h"
 #include <fernotron_trx/fer_trx_api.hh>
 
-#if 0
-static u8 data[FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT];
 
-void
+int astroTableIndex_from_tm_OLD(const struct tm *tm);
+
+#if 0
+static void
 test_astro()  // FIXME: this does not really tests anything
 {
-  double rise, set;
-  u16 doy = 172;
-  sun_calculateDuskDawn(&rise, &set, C.astro.geo_timezone, doy, C.astro.geo_longitude, C.astro.geo_latitude, CIVIL_TWILIGHT_RAD);
+  struct tm tm = {};
+  for (int m = 0; m < 12; ++m) {
+    for (int d = 1; d <= 30; ++d) {
+      if (m == 1 && d == 29)
+        break;
+      tm.tm_mon = m;
+      tm.tm_mday = d;
 
-  astro_write_data(data, 0);
-  ets_printf("test calc_minutes\n");
-  int ct=0;
-  struct tm tm;
-  for(tm.tm_mon=0; tm.tm_mon < 12; ++tm.tm_mon)
-    for (tm.tm_mday=1; tm.tm_mday <= 30; ++tm.tm_mday) {
-      u16 min = astro_calc_minutes(&tm);
-      ets_printf("%02d:%02d, %s", min / 60, min %60, (ct++ % 16? "": "\n"));
+      int i1 = astroTableIndex_from_tm_OLD(&tm);
+      int i2 = astroTableIndex_from_tm(&tm);
+      if (i1 != i2) {
+        TEST_ASSERT_EQUAL(i1, i2);
+      }
     }
-  ets_printf("\n------------------------\n");
-  ct = 0; int ct2 = 0;
-  for(tm.tm_mon=0; tm.tm_mon < 12; ++tm.tm_mon)
-    for (tm.tm_mday=1; tm.tm_mday <= 30; ++tm.tm_mday) {
-      u16 min = astro_calc_minutes(&tm);
-      if (!(ct2++ % 4))
-        ets_printf("%02d:%02d, %s", min / 60, min %60, (++ct % 4? "": "\n"));
-    }
+  }
+}
+#endif
 
-  TEST_ASSERT_NOT_EQUAL(rise, set); // XXX
+static int  test_get_index(int mon, int mday) {
+  struct tm tm = {.tm_mday = mday,  .tm_mon = mon - 1};
+  return astroTableIndex_from_tm(&tm);
+
 }
 
+static void test_indexes() {
+  TEST_ASSERT_EQUAL(26, test_get_index(4, 5));
+  TEST_ASSERT_EQUAL(26, test_get_index(4, 6));
+  TEST_ASSERT_EQUAL(29, test_get_index(4, 17));
+}
 
 TEST_CASE("astro", "[app]")
 {
-     config_setup_astro();
-     test_astro();
+  struct cfg_astro  cfg = { acAverage, 13.38, 52.52, +1.0 };
+  fer_astro_init_and_reinit(&cfg);
+  //test_astro();
+  test_indexes();
 }
-#endif
 

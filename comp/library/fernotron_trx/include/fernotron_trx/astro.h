@@ -26,6 +26,13 @@ struct cfg_astro {
 uint16_t fer_astro_calc_minutes(const struct tm *tm);
 
 /**
+ * \brief    Get astro table index from calendar date
+ * \param tm Calender date. Only tm_mon and tm_mday are used, the rest of TM will be ignored
+ * \return table_index
+ */
+int astroTableIndex_from_tm(const struct tm *tm);
+
+/**
  * \brief            Create the global astro table
  * \param cfg_astro  configuration data
  */

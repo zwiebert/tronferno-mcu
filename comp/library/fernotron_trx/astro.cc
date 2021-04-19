@@ -22,6 +22,10 @@
 
 #include <string.h>
 
+
+#define E1  // XXX: correct astro table index (off by one sometimes)
+
+
 static struct cfg_astro astro_config;
 #define astro_cfg (&astro_config)
 
@@ -56,17 +60,36 @@ time_to_bcd(u8 *bcdMinutes, u8 *bcdHours, double time, bool force_even_minutes) 
 
 static u16 astro_minutes[48];
 
-static int astroTableIndex_from_tm(const struct tm *tm) {
-  int m = tm->tm_mon + 1;
-  int d = tm->tm_mday;
+int astroTableIndex_from_tm_OLD(const struct tm *tm) {
+  const int m = tm->tm_mon;
+  const int d = tm->tm_mday;
+  int feb = m > 1 ? -2 : 0; // february has only 28 days
 
-  int feb = m > 2 ? -2 : 0; // february has only 28 days
+  int idx = (m * 30 + feb + d + 2) / 4 + 2;
 
-  int idx = ((m - 1) * 30 + feb + d + 2) / 4 + 2;
   if (idx < 0 || idx > 47)
-    idx = ((6 - (m - 1)) * 30 - d + 1) / 4 + 48 - 5;
-  if (idx < 0)
-    idx = idx * -1;
+    idx = abs(((6 - m) * 30 - d + 1) / 4 + 48 - 5);
+
+  return idx;
+}
+
+
+int astroTableIndex_from_tm(const struct tm *tm) {
+  const int m = tm->tm_mon;
+  const int d = tm->tm_mday;
+
+  int feb = m > 1 ? -2 : 0; // february has only 28 days
+#ifndef E1
+  int idx = (m * 30 + feb + d + 2) / 4 + 2;
+
+  if (idx < 0 || idx > 47)
+    idx = abs(((6 - m) * 30 - d + 1) / 4 + 48 - 5);
+#else
+  int idx = (m * 30 + feb + d + 3) / 4 + 2;
+
+  if (idx < 0 || idx > 47)
+    idx = abs(((6 - m) * 30 - d + 1) / 4 + 48 - 5);
+#endif
   return idx;
 }
 
