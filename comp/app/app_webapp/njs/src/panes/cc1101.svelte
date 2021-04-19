@@ -398,7 +398,7 @@
       <tr>
         <td use:tippy={{ content: "Reduces the maximum allowable DVGA gain." }}>MAX_DVGA_GAIN</td>
         <td>
-          <select bind:value={agcctrl2_max_dvga_gain}>
+          <select class="w-44" bind:value={agcctrl2_max_dvga_gain}>
             <option value={0}>All gain can be used</option>
             <option value={1}>The highest gain setting can not be used</option>
             <option value={2}>The 2 highest gain setting can not be used</option>
@@ -409,7 +409,7 @@
       <tr>
         <td use:tippy={{ content: "Sets the maximum allowable LNA + LNA 2 gain relative to the maximum possible gain." }}>MAX_LNA_GAIN</td>
         <td>
-          <select bind:value={agcctrl2_max_lna_gain}>
+          <select class="w-44" bind:value={agcctrl2_max_lna_gain}>
             <option value={0}>Maximum possible LNA + LNA 2 gain</option>
             <option value={1}>Approx. 2.6 dB below maximal possible gain</option>
             <option value={2}>Approx. 6.1 dB below maximal possible gain</option>
@@ -451,7 +451,7 @@
           }}>AGC_LNA_PRIORITY</td
         >
         <td>
-          <select bind:value={agcctrl1_agc_lna_priority}>
+          <select class="w-36" bind:value={agcctrl1_agc_lna_priority}>
             <option value={0}>LNA2 gain decreased first</option>
             <option value={1}>LNA gain decreased first</option>
           </select>
@@ -459,9 +459,9 @@
       </tr>
 
       <tr>
-        <td use:tippy={{ content: "Sets the relative change threshold for asserting carrier sense" }}>CARRIER_SENSE_REL_THR</td>
+        <td use:tippy={{ content: "Sets the relative change threshold for asserting carrier sense" }}>CARRSENS_REL_THR</td>
         <td>
-          <select bind:value={agcctrl1_carrier_sense_rel_thr}>
+          <select class="w-36" bind:value={agcctrl1_carrier_sense_rel_thr}>
             <option value={0}>Relative carrier sense threshold disabled</option>
             <option value={1}>6 db increase in RSSI value</option>
             <option value={2}>10 db increase in RSSI value</option>
@@ -475,10 +475,10 @@
           use:tippy={{
             content:
               "Sets the absolute RSSI threshold for asserting carrier sense. The 2-complement signed threshold is programmed in steps of 1 dB and is relative to the MAGN_TARGET setting.",
-          }}>CARRIER_SENSE_ABS_THR</td
+          }}>CARRSENS_ABS_THR</td
         >
         <td>
-          <select bind:value={agcctrl1_carrier_sense_abs_thr}>
+          <select class="w-36" bind:value={agcctrl1_carrier_sense_abs_thr}>
             <option value={-8}>Absolute carrier sense threshold disabled</option>
             <option value={-7}>7 dB below MAGN_TARGET setting</option>
             <option value={-6}>6 dB below MAGN_TARGET setting</option>
@@ -506,7 +506,7 @@
         <td use:tippy={{ content: "Sets the level of hysteresis on the magnitude deviation (internal AGC signal that determine gain changes)." }}>HYST_LEVEL</td
         >
         <td>
-          <select bind:value={agcctrl0_hyst_level}>
+          <select class="w-44" bind:value={agcctrl0_hyst_level}>
             <option value={0}>No hysteresis, small symmetric dead zone, high gain</option>
             <option value={1}>Low hysteresis, small symmetric dead zone, medium gain</option>
             <option value={2}>Medium hysteresis, medium symmetric dead zone, medium gain</option>
@@ -522,7 +522,7 @@
           }}>WAIT_TIME</td
         >
         <td>
-          <select bind:value={agcctrl0_wait_time}>
+          <select class="w-44" bind:value={agcctrl0_wait_time}>
             <option value={0}>8</option>
             <option value={1}>16</option>
             <option value={2}>24</option>
@@ -534,7 +534,7 @@
       <tr>
         <td use:tippy={{ content: "Control when the AGC gain should be frozen." }}>AGC_FREEZE</td>
         <td>
-          <select bind:value={agcctrl0_agc_freeze}>
+          <select class="w-44" bind:value={agcctrl0_agc_freeze}>
             <option value={0}>Normal operation. Always adjust gain when required.</option>
             <option value={1}>The gain setting is frozen when a sync word has been found.</option>
             <option value={2}>Manually freeze the analogue gain setting and continue to adjust the digital gain.</option>
@@ -546,7 +546,7 @@
       <tr>
         <td use:tippy={{ content: "Sets the OOK/ASK decision boundary for OOK/ASK reception." }}>FILTER_LENTGTH</td>
         <td>
-          <select bind:value={agcctrl0_filter_length}>
+          <select class="w-44" bind:value={agcctrl0_filter_length}>
             <option value={0}>4 dB OOK/ASK decision boundary</option>
             <option value={1}>8 dB OOK/ASK decision boundary</option>
             <option value={2}>12 dB OOK/ASK decision boundary</option>
@@ -649,7 +649,7 @@
 
 <div class="area">
   <table>
-    <tr><td>Status-Regs</td><td>{cc1101Status}</td></tr>
+    <tr><td>StatusRegs</td><td class="text-sm font-mono">{cc1101Status}</td></tr>
     <tr><td>RSSI (in dBm)</td><td>{rssiDbm}</td></tr>
   </table>
 
