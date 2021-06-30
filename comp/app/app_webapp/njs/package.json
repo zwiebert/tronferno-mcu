@@ -8,24 +8,24 @@
 	},
 	"devDependencies": {
 		"@rollup/plugin-alias": "^3.1.2",
-		"@rollup/plugin-commonjs": "^18.0.0",
+		"@rollup/plugin-commonjs": "^19.0.0",
 		"@rollup/plugin-json": "^4.1.0",
-		"@rollup/plugin-node-resolve": "^11.2.1",
-		"@rollup/plugin-strip": "^2.0.0",
-		"eslint-plugin-svelte3": "^3.1.2",
-		"node-sass": "^5.0.0",
-		"postcss": "^8.2.10",
-		"postcss-load-config": "^3.0.1",
-		"rollup": "^2.45.2",
+		"@rollup/plugin-node-resolve": "^13.0.0",
+		"@rollup/plugin-strip": "^2.0.1",
+		"eslint-plugin-svelte3": "^3.2.0",
+		"node-sass": "^6.0.1",
+		"postcss": "^8.3.5",
+		"postcss-load-config": "^3.1.0",
+		"rollup": "^2.52.4",
 		"rollup-plugin-css-only": "^3.1.0",
 		"rollup-plugin-eslint": "^7.0.0",
-		"rollup-plugin-livereload": "^2.0.0",
+		"rollup-plugin-livereload": "^2.0.5",
 		"rollup-plugin-svelte": "^7.1.0",
 		"rollup-plugin-terser": "^7.0.2",
-		"svelte": "^3.37.0",
+		"svelte": "^3.38.3",
 		"svelte-i18n": "^3.3.9",
-		"svelte-preprocess": "^4.7.0",
-		"tailwindcss": "^2.1.1"
+		"svelte-preprocess": "^4.7.3",
+		"tailwindcss": "^2.2.4"
 	},
 	"jshintConfig": {
 		"esversion": 6,
@@ -47,7 +47,7 @@
 	},
 	"dependencies": {
 		"@rollup/plugin-replace": "^2.4.2",
-		"autoprefixer": "^10.2.5",
+		"autoprefixer": "^10.2.6",
 		"svelte-icons": "^2.1.0",
 		"sveltejs-tippy": "^3.0.0"
 	}
