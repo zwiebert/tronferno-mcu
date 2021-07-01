@@ -42,6 +42,13 @@ bool process_parmConfig_get_comp(otok kt, const char *val, const struct TargetDe
     } else if (is_val("net?")) {
       soCfg_all_net(td);
       return true;
+    } else if (strlen(val) == 5 && val[0] == 'p' && val[2] == 's' && val[4] == '?') {
+      const int part_num = val[1] - '0';
+      const int part_size = val[3] - '0';
+      if (IS_IN_RANGE(0, part_num, 9) && IS_IN_RANGE(1, part_size, 9)) {
+        soCfg_all_part(td, part_num, part_size);
+        return true;
+      }
     }
   }
     return false;
@@ -109,19 +116,19 @@ int process_parmConfig_assign(KvsType kvsType, const char *kvsKey, StoreFun stor
   return 0;
 }
 
-SettData get_settingsData(otok kt, u32 &changed_mask) {
+SettData get_settingsData(otok kt, u64 &changed_mask) {
   SettData settData { };
   if (auto item = comp_settings.get_item(kt); item != CBC_NONE) {
     settData = settings_getData(comp_settings, item);
-    SET_BIT(changed_mask, item);
+    SET_BIT64(changed_mask, item);
   } else if (auto appItem = app_settings.get_item(kt); appItem != CBA_NONE) {
     settData = settings_getData(app_settings, appItem);
-    SET_BIT(changed_mask, appItem);
+    SET_BIT64(changed_mask, appItem);
   }
   return settData;
 }
 
-bool process_parmConfig_comp(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u32 &changed_mask) {
+bool process_parmConfig_comp(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u64 &changed_mask) {
   switch (kt) {
 #if ENABLE_RESTART
   case otok::k_restart:
@@ -193,7 +200,7 @@ bool process_parmConfig_comp(otok kt, const char *key, const char *val, const st
   return true;
 }
 
-void parmConfig_reconfig_comp(uint32_t changed_mask) {
+void parmConfig_reconfig_comp(u64 changed_mask) {
   if (changed_mask & BIT(CB_TZ)) {
     rtc_setup();
   }

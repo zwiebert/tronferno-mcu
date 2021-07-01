@@ -43,8 +43,8 @@ static inline void fer_rx_msg_received_isr_cb() {
 
 
 struct fer_rx_counter {
-  u16 Words;
-  u8 Bits, preBits, stopBits;
+  u16 Words, stopBits;
+  u8 Bits, preBits;
   u8 errors; u8 recovered;
 };
 static bool input_level, input_edge_pos, input_edge_neg;
@@ -136,7 +136,55 @@ static bool  IRAM_ATTR fer_rx_is_pre_bit(unsigned len, unsigned nedge) {
   return ((US2TCK(FER_PRE_WIDTH_MIN_US) <= len && len <= US2TCK(FER_PRE_WIDTH_MAX_US)) && (US2TCK(FER_PRE_NEDGE_MIN_US) <= nedge && nedge <= US2TCK(FER_PRE_NEDGE_MAX_US)));
 }
 
+static bool  IRAM_ATTR fer_rx_is_dataBitOne(unsigned len, unsigned nedge) {
+  return len > (2 * nedge);
+}
 
+
+static bool  IRAM_ATTR fer_rx_is_dataBitZero(unsigned len, unsigned nedge) {
+  return len < (2 * nedge);
+}
+
+static bool  IRAM_ATTR fer_rx_is_dataBit(unsigned len, unsigned nedge) {
+  return FER_BIT_WIDTH_MIN_US <= len && len <= FER_BIT_WIDTH_MAX_US;
+}
+
+
+#define E1 1 // if 1 use experimental receiver code
+#define E2 0 // if 1 use tx-output-pin to signal frxCount.stopBits > 0
+
+
+#if E1 == 1
+static bool IRAM_ATTR fer_rx_wait_and_sample(void) {
+  if (!input_edge_pos)
+    return false;
+
+  const bool isStopBit = fer_rx_is_stopBit(aTicks, pTicks);
+  const bool isDataBit = fer_rx_is_dataBit(aTicks, pTicks);
+  const bool isDataBitOne = fer_rx_is_dataBitOne(aTicks, pTicks);
+  const bool isDataBitZero = fer_rx_is_dataBitZero(aTicks, pTicks);
+
+  if (isStopBit) {
+    if (frxCount.stopBits == 0) {
+      fer_rx_clear();
+    }
+    frxCount.Words = frxCount.stopBits;
+    ++frxCount.stopBits;
+    return false;
+  }
+
+  if (frxCount.stopBits == 0)
+    return false;
+
+  if (!isDataBit && !(isDataBitOne || isDataBitZero)) {
+    fer_rx_clear();
+    return false;
+  }
+
+  PUT_BIT(word_pair_buffer[frxCount.Words & 1], frxCount.Bits, isDataBitOne);
+  return true;
+}
+#else
 static bool IRAM_ATTR fer_rx_wait_and_sample(void) {
   if (!input_edge_pos)
     return false;
@@ -161,22 +209,26 @@ static bool IRAM_ATTR fer_rx_wait_and_sample(void) {
   PUT_BIT(word_pair_buffer[frxCount.Words & 1], frxCount.Bits, pTicks < nTicks);
   return true;
 }
-
+#endif
 
 static int IRAM_ATTR fer_rx_receive_message(void) {
 
   if (fer_rx_wait_and_sample()) {
     if (ct_incr(frxCount.Bits, FER_CMD_BIT_CT)) {
-      frxCount.stopBits = 0;
       // word complete
       if ((frxCount.Words & 1) == 1) {
         // word pair complete
         fer_rx_recv_decodeByte(rxbuf_current_byte());
       }
-      return ++frxCount.Words;
+      frxCount.Words = frxCount.stopBits;
+
+      return frxCount.Words;
     }
   }
-
+#if E2 == 1
+  void ftrx_testSetOutputLevel(bool level);
+  ftrx_testSetOutputLevel(frxCount.stopBits > 0);
+#endif
   return 0;  // continue
 }
 

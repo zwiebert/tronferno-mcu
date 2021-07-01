@@ -4,10 +4,14 @@ import * as httpResp from "app/http_resp.js";
 import { G, M0 } from "stores/curr_shutter.js";
 import { Gmu } from "stores/mcu_config.js";
 import { get } from "svelte/store";
-import { ws_isOpen } from "main/net/conn_ws";
+import { ws_isOpen, ws_sendObject } from "main/net/conn_ws";
 
 let b = 0;
 export const FETCH_CONFIG = 1 << b++;
+export const FETCH_CONFIG_P0 = 1 << b++;
+export const FETCH_CONFIG_P1 = 1 << b++;
+export const FETCH_CONFIG_P2 = 1 << b++;
+export const FETCH_CONFIG_P3 = 1 << b++;
 export const FETCH_AUTO = 1 << b++;
 export const FETCH_POS = 1 << b++;
 export const FETCH_VERSION = 1 << b++;
@@ -22,17 +26,30 @@ export const FETCH_SHUTTER_NAMES = 1 << b++;
 export const FETCH_ALL_POS = 1 << b++;
 export const FETCH_BOOT_COUNT = 1 << b++;
 export const FETCH_CONFIG_GPIO_STRING = 1 << b++;
+export const FETCH_ERROR_MASK = 1 << b++;
+export const FETCH_CC1101_CONFIG = 1 << b++;
 
 const FETCHES_REPLY_BY_WS = 0;
 
 const MAX_RETRY_COUNT = 3;
+
+export const CMD_URL = "/cmd.json";
 
 let g;
 G.subscribe((value) => (g = value));
 let m;
 M0.subscribe((value) => (m = value));
 
+
+export function http_postCommand(data, state = { retry_count: 0 }) {
+  http_postRequest(CMD_URL, data, state);
+}
+
 export function http_postRequest(url = "", data = {}, state = { retry_count: 0 }) {
+  if (url === CMD_URL) {
+   if (ws_sendObject(data))
+   return;
+  }
   appDebug.dbLog("post-json: " + JSON.stringify(data));
 
   const fetch_data = {
@@ -109,8 +126,6 @@ function async_fetchByMask() {
 }
 
 export function http_fetchByMask(mask, synchron) {
-  const url = "/cmd.json";
-
   if (!mask) {
     return;
   }
@@ -126,6 +141,18 @@ export function http_fetchByMask(mask, synchron) {
   if (mask & FETCH_CONFIG) {
     add_kv(tfmcu, "config", "all", "?");
   }
+  if (mask & FETCH_CONFIG_P0) {
+    add_kv(tfmcu, "config", "all", "p0s2?");
+  }
+  if (mask & FETCH_CONFIG_P1) {
+    add_kv(tfmcu, "config", "all", "p1s2?");
+  }
+  if (mask & FETCH_CONFIG_P2) {
+    add_kv(tfmcu, "config", "all", "p2s2?");
+  }
+  if (mask & FETCH_CONFIG_P3) {
+    add_kv(tfmcu, "config", "all", "p3s2?");
+  }
 
   if (mask & FETCH_CONFIG_GPIO_STRING) {
     add_kv(tfmcu, "config", "gpio", "$");
@@ -137,6 +164,15 @@ export function http_fetchByMask(mask, synchron) {
 
   if (mask & FETCH_BOOT_COUNT) {
     add_kv(tfmcu, "mcu", "boot-count", "?");
+  }
+
+  if (mask & FETCH_ERROR_MASK) {
+    add_kv(tfmcu, "mcu", "error-mask", "?");
+  }
+
+  if (mask & FETCH_CC1101_CONFIG) {
+    add_kv(tfmcu, "config", "cc1101-config", "?");
+    add_kv(tfmcu, "mcu", "cc1101-config", "?");
   }
 
   if (mask & FETCH_VERSION) {
@@ -193,13 +229,15 @@ export function http_fetchByMask(mask, synchron) {
       for (let m = 0; m <= get(Gmu)[g]; ++m) {
         let c = { shpref: { g: g, m: m, "tag.NAME": "?" } };
         setTimeout(() => {
-          http_postRequest(url, c);
+          http_postRequest(CMD_URL, c);
         }, 1000 * ++n);
       }
     }
   }
 
-  http_postRequest(url, tfmcu);
+
+  http_postRequest(CMD_URL, tfmcu);
+  
 
   if (mask & FETCH_GIT_TAGS) gitTags_fetch();
 }

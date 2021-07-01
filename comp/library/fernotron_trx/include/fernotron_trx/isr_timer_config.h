@@ -37,5 +37,5 @@ constexpr unsigned FER_ISR_US_TO_TCK(unsigned us)  { return ((us) / FER_ISR_TICK
 
 
 static_assert(2 == FER_TX_US_TO_TCK(400));
-static_assert(8 == FER_RX_US_TO_TCK(400));
-static_assert(8 == FER_ISR_US_TO_TCK(400));
+static_assert(2 * FER_RX_FMULT  == FER_RX_US_TO_TCK(400));
+static_assert(2 * FER_RX_FMULT == FER_ISR_US_TO_TCK(400));

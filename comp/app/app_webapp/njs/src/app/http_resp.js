@@ -3,6 +3,7 @@ import * as httpFetch from "app/fetch.js";
 import * as appDebug from "app/app_debug.js";
 import {
   McuBootCount,
+  McuErrorMask,
   McuGitTagNames,
   McuFirmwareBuildDate,
   McuChipId,
@@ -11,11 +12,12 @@ import {
   McuFirmwareUpdState,
 } from "stores/mcu_firmware.js";
 import * as cuas from "app/cuas.js";
-import { McuConfig, Gmu } from "stores/mcu_config.js";
+import { McuConfig, Gmu, Cc1101Config, Cc1101Status } from "stores/mcu_config.js";
 import { Pcts, Prefs, Aliases, Autos, Names } from "stores/shutters.js";
 import { McuDocs } from "stores/mcu_docs.js";
 import { Gpios } from "stores/gpio.js";
 import {AppLog} from "stores/app_log.js";
+import { Pras, ReceivedAddresses } from "stores/alias.js";
 
 function parse_gmu(s) {
   let sa = s ? s.split("").reverse() : [];
@@ -34,21 +36,25 @@ export function http_handleResponses(obj) {
 
   if ("log" in obj) {
     AppLog.update(old => {
-      old.push({log : obj.log });
+      old.unshift({log : obj.log, date: new Date()});
       return old;
     });
   }
 
   if ("rc" in obj) {
     AppLog.update(old => {
-      old.push({rc : obj.rc});
+      old.unshift({rc : obj.rc, date: new Date()});
+      return old;
+    });
+    ReceivedAddresses.update(old => {
+      old.add(obj.rc.a);
       return old;
     });
   }
 
   if ("sc" in obj) {
     AppLog.update(old => {
-      old.push({sc : obj.sc});
+      old.unshift({sc : obj.sc, date: new Date()});
       return old;
     });
   }
@@ -86,6 +92,7 @@ export function http_handleResponses(obj) {
 
   if ("pras" in obj) {
     let pras = obj.pras;
+    Pras.set(pras);
     if (pras.success) {
       httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
     }
@@ -122,6 +129,16 @@ export function http_handleResponses(obj) {
     if ("boot-count" in mcu) {
       McuBootCount.set(mcu["boot-count"]);
     }
+    if ("error-mask" in mcu) {
+      McuErrorMask.set(Number.parseInt(mcu["error-mask"], 16));
+    }
+    if ("cc1101-status" in mcu) {
+      Cc1101Status.set(mcu["cc1101-status"]);
+    }
+    if ("cc1101-config" in mcu) {
+      Cc1101Config.set(mcu["cc1101-config"]);
+    } 
+
     if ("ota-state" in mcu) {
       let ota_state = mcu["ota-state"];
 
@@ -156,6 +173,7 @@ export function http_handleResponses(obj) {
 }
 
 export function http_handleDocResponses(name, text) {
+  //console.log("http_handleDocResponses:", name, text);
   let obj = {};
   obj[name] = { text: text };
   McuDocs.update(obj);

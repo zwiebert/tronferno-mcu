@@ -176,43 +176,46 @@ void mcu_init() {
 #ifdef USE_NETWORK
   ipnet_CONNECTED_cb = main_setup_ip_dependent;
   enum nwConnection network = config_read_network_connection();
+
 #ifdef USE_AP_FALLBACK
-  esp_netif_init();
-#else
   if (network != nwNone)
+#endif
+      {
     esp_netif_init();
-#endif
-
-  ipnet_gotIpAddr_cb = [] {
-    lf_setBit(lf_gotIpAddr);
-  };
-  ipnet_lostIpAddr_cb = [] {
-    lf_setBit(lf_lostIpAddr);
-  };
-
-  switch (network) {
-#ifdef USE_WLAN
-  case nwWlanSta:
-    config_setup_wifiStation();
-    break;
-#endif
-#ifdef USE_WLAN_AP
-  case nwWlanAp:
-    lfa_createWifiAp(); // XXX: Create the fall-back AP. Should we have a regular configured AP also?
-    break;
-#endif
-#ifdef USE_LAN
-  case nwLan:
-    config_setup_ethernet();
-#endif
-    break;
-  default:
-    break;
-  }
 #ifdef USE_HTTP
     hts_setup_content();
 #endif
+
+    ipnet_gotIpAddr_cb = [] {
+      lf_setBit(lf_gotIpAddr);
+    };
+    ipnet_lostIpAddr_cb = [] {
+      lf_setBit(lf_lostIpAddr);
+    };
+
+    switch (network) {
+#ifdef USE_WLAN
+    case nwWlanSta:
+      config_setup_wifiStation();
+      break;
 #endif
+#ifdef USE_WLAN_AP
+    case nwWlanAp:
+      lfa_createWifiAp(); // XXX: Create the fall-back AP. Should we have a regular configured AP also?
+      break;
+#endif
+#ifdef USE_LAN
+    case nwLan:
+      config_setup_ethernet();
+#endif
+      break;
+    default:
+      break;
+    }
+
+  }
+
+#endif // USE_NETWORK
 
    if (auto smCt = app_safeMode_increment(); smCt > 6) {
      app_safe_mode = true;
@@ -222,7 +225,8 @@ void mcu_init() {
   config_setup_gpio();
 
 #ifdef USE_AP_FALLBACK
-  if (network != nwWlanAp)
+  //if (network != nwWlanAp) //XXX this crashes TODO FIXME
+  if (network == nwLan || network == nwWlanSta)
     tmr_checkNetwork_start();
 #endif
   app_timerISR_setup();

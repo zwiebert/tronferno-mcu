@@ -1,25 +1,47 @@
 ## Tronferno-Firmware installieren
   
-##### Linux-PC
-1. python und pyserial müssen auf dem Linux-PC installiert sein
-2. Download und Entpacken des [Firmware-Binary-Archivs](https://codeload.github.com/zwiebert/tronferno-mcu-bin/zip/master) auf den PC 
-3. ESP32 Board per USB mit dem PC verbinden
-4. Flashen und Konfigurieren mit dem Programm menutool.sh (Anleitung im dazugehörigen [README.md](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md))
+### Linux-PC
+
+Voraussetzung: python und pyserial müssen auf dem Linux-PC installiert sein
+
+1. Download und Entpacken des [Firmware-Binary-Archivs](https://codeload.github.com/zwiebert/tronferno-mcu-bin/zip/master) auf den PC 1
+1. ESP32 Board per USB mit dem PC verbinden
+1. Flashen und Konfigurieren mit dem Programm menutool.sh (Anleitung im dazugehörigen [README.md](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md))
    
-##### Windows-PC
+### Windows-PC
 1. Download und Entpacken des Firmware-Binary-Archivs auf den PC (es wird keine weitere Software benötigt)
-2. ESP32 Board per USB mit dem PC verbinden
-3. Windows sollte einen COM-Port für den ESP32 anlegen. Falls nicht, muss erst noch der passende [USB-Treiber](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/establish-serial-connection.html) installiert werden 
-4. Flashen und Konfigurieren mit dem Programm menutool.cmd (Anleitung im dazugehörigen [README.md](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md))
+1. ESP32 Board per USB mit dem PC verbinden
+1. Windows sollte einen COM-Port für den ESP32 anlegen. Falls nicht, muss erst noch der passende [USB-Treiber](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/establish-serial-connection.html) installiert werden 
+1. Flashen und Konfigurieren mit dem Programm menutool.cmd (Anleitung im dazugehörigen [README.md](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md))
         
-##### FHEM-Server
-1. python und pyserial müssen auf dem FHEM-Server installiert sein
-3. ESP32 Board per USB mit dem FHEM-ServerServer verbinden
-3. Installieren und Definieren des [TronfernoMCU-Moduls](https://github.com/zwiebert/tronferno-fhem/blob/master/README-de.md) auf dem FHEM Server, durch Eingabe unten stehender Befehle in FHEMWEB (der FHEM Weboberfläche)
-4. In FHEMWEB das tfmcu Gerät öffnen und den Set-Menüpunkt "mcu-firmware.esp32" öffnen. Dort "upgrade" auswählen und abschließend auf "set" klicken.
+### FHEM-Server
+
+Voraussetzung: python und pyserial müssen auf dem FHEM-Server installiert sein
+
+##### FHEM Module installieren
+
+1. ESP32 Board per USB mit dem FHEM-ServerServer verbinden
+2. Installieren und Definieren des [TronfernoMCU-Moduls](https://github.com/zwiebert/tronferno-fhem/blob/master/README-de.md) auf dem FHEM Server, durch Eingabe unten stehender Befehle in FHEMWEB (der FHEM Weboberfläche)
 
            update all https://raw.githubusercontent.com/zwiebert/tronferno-fhem/master/modules/tronferno/controls_tronferno.txt
-          ...warten...
+          [...warten...]
           shutdown restart
-          define tfmcu TronfernoMCU /dev/ttyUSBx 
+          define tfmcu TronfernoMCU /dev/ttyUSBx
+          
+          
+##### Firmware flashen
+
+In FHEMWEB das tfmcu Gerät öffnen und den Set-Menüpunkt "mcu-firmware.esp32" öffnen. Dort "upgrade" auswählen und abschließend auf "set" klicken.
+
+###### Master Version flashen (möglicherweise veraltet):
+
           set tfmcu mcu-firmware.esp32 upgrade
+
+###### Letzte Beta Version (möglicherweise unstabil):
+
+          set tfmcu mcu-firmware.esp32 upgrade-beta-version
+
+
+
+
+

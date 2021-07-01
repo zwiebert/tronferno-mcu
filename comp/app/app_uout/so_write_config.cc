@@ -21,6 +21,7 @@
 #include "app_uout/status_output.h"
 #include "fernotron_trx/astro.h"
 #include <app_uout/so_config.h>
+#include <cc1101_ook/trx.hh>
 
 //#include "utils_misc/int_macros.h"
 
@@ -120,6 +121,20 @@ void soCfg_GPIO_RFMOSI(const struct TargetDesc &td) {
 void soCfg_GPIO_RFSS(const struct TargetDesc &td) {
   td.so().print(settings_get_optKeyStr(CB_RFSS_GPIO), config_read_rfss_gpio());
 }
+
+
+void soCfg_CC1101_CONFIG(const struct TargetDesc &td) {
+  uint8_t regFile[48];
+  size_t regFileSize = sizeof regFile;
+  if (cc1101_ook_dump_config(regFile, &regFileSize)) {
+    char rs[regFileSize * 2 + 1];
+    for (int i = 0; i < regFileSize; ++i) {
+      sprintf(&rs[i * 2], "%02x", regFile[i]);
+    }
+    td.so().print("cc1101-config", rs);
+  }
+}
+
 
 void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
 #ifdef USE_GPIO_PINS
@@ -221,6 +236,13 @@ void soCfg_all_net(const struct TargetDesc &td) {
 #endif
 }
 
+void soCfg_all_misc(const struct TargetDesc &td) {
+  soCfg_BAUD(td);
+  soCfg_VERBOSE(td);
+  soCfg_RF_TRX(td);
+  soCfg_CC1101_CONFIG(td);
+}
+
 void soCfg_all_gpio(const struct TargetDesc &td) {
   soCfg_GPIO_RFOUT(td);
   soCfg_GPIO_RFIN(td);
@@ -250,6 +272,19 @@ void soCfg_all_time(const struct TargetDesc &td) {
   soCfg_DST(td);
 #endif
 }
+
+typedef void (*soCfg_fnT)(const struct TargetDesc &td);
+
+const soCfg_fnT soCfg_fns[] = {
+  soCfg_all_time,
+  soCfg_all_fer,
+  soCfg_all_gpio,
+  soCfg_all_misc,
+  soCfg_all_net,
+};
+
+constexpr size_t soCfg_fnsCt = sizeof soCfg_fns / sizeof soCfg_fns[0];
+
 void soCfg_all(const struct TargetDesc &td) {
 
   soCfg_BAUD(td);
@@ -261,4 +296,14 @@ void soCfg_all(const struct TargetDesc &td) {
 
   soCfg_all_gpio(td);
   soCfg_RF_TRX(td);
+}
+
+void soCfg_all_part(const struct TargetDesc &td, int part_num, int part_size) {
+  const int start_idx = part_num * part_size;
+  const int end_idx = MIN(start_idx + part_size, soCfg_fnsCt);
+
+  for (int i = start_idx; i < end_idx; ++i) {
+    if (auto fn = soCfg_fns[i]; fn)
+      fn(td);
+  }
 }

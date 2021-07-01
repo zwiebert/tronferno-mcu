@@ -23,7 +23,7 @@ const char cli_help_parmSend[]  =
     "a=(0|ID)  0  hex ID of sender or receiver.\n"
     "g=[0-7]   0  group number\n"
     "m=[0-7]   0  group member number\n"
-    "c=(up|down|stop|sun-down|sun-inst|set|?)\n"
+    "c=(up|down|stop|sun-down|sun-inst|sun-pos|sun-test|set|rot-dir|?)\n"
     "p=?          get current position\n"
     "r=N       2  repeat command 1+N times\n"
     "SEP[=0|1]    Enter end-position adjustment mode (needs hardware button)"
@@ -146,7 +146,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
     } else if (has_pct) {
       cli_replyResult(td, fer_cmd_moveShutterToPct(addr, g, m, pct, repeats));
     } else if (has_cmd) {
-      cli_replyResult(td, fer_cmd_sendShutterCommand(addr, g, m, cmd, repeats));
+      cli_replyResult(td, fer_cmd_sendShutterCommand(addr, g, m, cmd, cmd == fer_if_cmd_ToggleRotationDirection ? 0 : repeats));
     } else {
       cli_replyFailure(td);
     }

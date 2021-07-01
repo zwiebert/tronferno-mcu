@@ -19,6 +19,7 @@
 #include "esp_sleep.h"
 #include "esp_timer.h"
 #include "esp_types.h"
+#include "esp_intr_alloc.h"
 #include "hal/timer_types.h"
 #include "utils_misc/int_types.h"
 #include "sdkconfig.h"
@@ -32,6 +33,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+
+
+#define E1 0 // experimental: 2=enable pulse on TX-GPIO to show interrupt duration, 1=toggle tx each call of interrupt (useless)
 
 constexpr unsigned TIMER_DIVIDER = 16; ///<   Hardware timer clock divider
 constexpr unsigned TIMER_SCALE = (TIMER_BASE_CLK / TIMER_DIVIDER); ///<  convert counter value to seconds
@@ -47,7 +51,15 @@ static void IRAM_ATTR intTimer_isr(void *args) {
   int timer_idx = (int) args;
 
 #ifdef FER_TRANSMITTER
+#if E1 == 1
+  static bool e_tx_level;
+  mcu_put_txPin (e_tx_level);
+  e_tx_level = !e_tx_level;
+#elif E1 == 2
+  mcu_put_txPin(true);
+#else
   mcu_put_txPin(Fer_Trx_API::isr_get_tx_level());
+#endif
 #endif
 #ifdef FER_RECEIVER
   Fer_Trx_API::isr_sample_rx_pin(mcu_get_rxPin());
@@ -95,6 +107,9 @@ static void IRAM_ATTR intTimer_isr(void *args) {
   }
 #endif
 
+#if E1 == 2
+  mcu_put_txPin(false);
+#endif
 }
 
 static void intTimer_init(timer_group_t timer_group, timer_idx_t timer_idx, timer_autoreload_t auto_reload, unsigned interval_us) {
@@ -106,7 +121,7 @@ static void intTimer_init(timer_group_t timer_group, timer_idx_t timer_idx, time
   timer_set_counter_value(timer_group, timer_idx, (1ULL * interval_us * TIMER_SCALE_US));
   timer_set_alarm_value(timer_group, timer_idx, 0);
   timer_enable_intr(timer_group, timer_idx);
-  timer_isr_register(timer_group, timer_idx, intTimer_isr, (void*) timer_idx, ESP_INTR_FLAG_IRAM, NULL);
+  timer_isr_register(timer_group, timer_idx, intTimer_isr, (void*) timer_idx, ESP_INTR_FLAG_IRAM | ESP_INTR_FLAG_LEVEL3, NULL);
   timer_start(timer_group, timer_idx);
 }
 

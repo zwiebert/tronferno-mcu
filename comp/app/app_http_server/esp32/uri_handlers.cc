@@ -239,7 +239,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   FD_SET(fd, &ws_fds);
   if (ws_nfds <= fd)
     ws_nfds = 1 + fd;
-  uint8_t buf[128] = { 0 };
+  uint8_t buf[256] = { 0 };
 
   httpd_ws_frame_t ws_pkt = {.payload = buf };
   esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, (sizeof buf)-1);

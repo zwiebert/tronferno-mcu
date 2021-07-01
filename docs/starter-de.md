@@ -3,16 +3,15 @@
 
 #### Aufbau der Hardware
 
-Die Hardware kann leicht selber zusammen gebaut werden, und besteht aus einem ESP32-Board und einem CC1101 Transceiver (oder alternativ einem Sendemodul und einem (optionalen) Empfängermodul). Die Funkfrequenz ist 433.92 MHz. Beim Kauf eines CC1101 Moduls ist der Beschreibung zu entnehmen, ob dieses für Funkfrequenz im 43x MHz Bereich gedacht ist, und nicht etwa für den 86x MHz Bereich.
+Die [Hardware](hardware-de.md) kann leicht selber zusammen gebaut werden, und besteht aus einem ESP32-Board und einem oder zwei Funkmodulen für die Funkfrequenz von 433.92 MHz.
 
-* [Hardware](hardware-de.md)
-* [Schaltbild](schematic.pdf)
-* [Bauanleitung Olimex-ESP32-Gateway und Neuftech-CC1101](esp32gw_cc1101-de.md)
+* [Benötigte Hardware](hardware-de.md)
+* [Bauanleitung mit Olimex-ESP32-Gateway und Neuftech-CC1101](esp32gw_cc1101-de.md)
+* [Schaltbild Tronferno-MCU mit einem ESP32-Board und zwei Funkmodulen](schematic.pdf)
 
 #### Installation der Firmware
-Die Tronferno-Firmware wird erstmalig via USB auf das ESP32-Board installiert. Spätere Updates können bequem online durchgeführt werden (Updates liegen auf dem GitHUB-Server).  Das Flashen kann mit dem menutool Programm erfolgen.
-
-* [Tronferno-Firmware flashen](starter_flash-de.md)
+Die Tronferno-Firmware wird erstmalig via USB auf das ESP32-Board installiert. Spätere Updates können bequem online durchgeführt werden (Updates liegen auf dem GitHUB-Server).
+* [Tronferno-Firmware erstmalig flashen](starter_flash-de.md)
 
 #### Netzwerkzugang und Webinterface konfigurieren
 
@@ -38,6 +37,12 @@ Das Webinterface erlaubt Konfiguration des Tronferno-Controllers und die Steueru
 Für den FHEM-Homeserver existiert ein spezilelles Tronferno-Modul. Andere Homeserver (aber auch FHEM, falls man das Modul nicht benutzen möchte) können via MQTT mit Tronferno kommunizieren.
 
 * [FHEM-Homeserver Modul (USB oder TCP/IP)](https://github.com/zwiebert/tronferno-fhem)
+
+
+#### Mehr Information
+
+* [Oft gestellte Fragen (FAQ)](starter_faq-de.md)
+
 
 
 ------------------

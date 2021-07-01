@@ -250,6 +250,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   if (need_save_td) {
     if (fer_stor_timerData_save(&tda, parm_g, parm_m)) {
       reply_message(td, "rs", "saved");
+      uoApp_publish_timer_json(parm_g, parm_m, &tda);
     } else {
       reply_message(td, "bug", "rs not saved");
       print_enr(td);

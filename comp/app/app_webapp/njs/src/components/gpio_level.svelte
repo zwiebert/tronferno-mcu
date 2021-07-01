@@ -13,7 +13,7 @@
     if (/[Qiq]/.test(cfg)) {
       let cmd = { mcu: { } };
       cmd.mcu[name] = "?";
-      httpFetch.http_postRequest("/cmd.json", cmd);
+      httpFetch.http_postCommand(cmd);
       output_only = false;
     } else {
       output_only = true;

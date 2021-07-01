@@ -14,6 +14,12 @@
 #include "stdbool.h"
 
 
+enum tfmcu_errorT {
+  TFMCU_ERR_CC1101_RFIN_NOT_CONNECTED,
+};
+extern unsigned tfmcu_error_mask;
+void tfmcu_put_error(tfmcu_errorT error_code, bool value);
+
 
 extern bool app_safe_mode;
 int app_safeMode_increment(bool reset = false);

@@ -37,15 +37,15 @@ SettData settings_getData(const Sett &settings, CfgItem item) {
   return res;
 }
 
-SettData get_settingsData(otok kt, u32 &changed_mask);
+SettData get_settingsData(otok kt, u64 &changed_mask);
 
 bool process_parmConfig_get_app(otok kt, const char *val, const struct TargetDesc &td);
 bool process_parmConfig_get_comp(otok kt, const char *val, const struct TargetDesc &td);
 
 int process_parmConfig_assign(KvsType kvsType, const char *kvsKey, StoreFun storeFun, const char *val);
 
-bool process_parmConfig_comp(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u32 &changed_mask);
-bool process_parmConfig_app(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u32 &changed_mask);
+bool process_parmConfig_comp(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u64 &changed_mask);
+bool process_parmConfig_app(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u64 &changed_mask);
 
-void parmConfig_reconfig_comp(uint32_t changed_mask);
-void parmConfig_reconfig_app(uint32_t changed_mask);
+void parmConfig_reconfig_comp(u64 changed_mask);
+void parmConfig_reconfig_app(u64 changed_mask);

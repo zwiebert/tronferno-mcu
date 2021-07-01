@@ -1,0 +1,21 @@
+name: Host tests
+
+on: [push]
+
+jobs:
+  build:
+  
+    runs-on: ubuntu-latest
+     
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+         
+       
+      #Run perl5 script to verify file sizies in controls_xxx.txt files      
+      #Compile
+      - name: compile and run all host tests
+        run:
+          make host-test-all  
+

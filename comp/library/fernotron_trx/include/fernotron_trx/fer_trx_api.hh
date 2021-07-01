@@ -63,6 +63,8 @@ public:
   /// get data from current received message. Use it in event functions.
   bool is_centralUnit() const;
 
+  static int get_rssi();
+
 public:
   ////////////////////////////////////////////////////////////////
   ///////// get notified if a message was received ///////////////

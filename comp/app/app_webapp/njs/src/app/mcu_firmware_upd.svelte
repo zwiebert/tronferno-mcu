@@ -35,9 +35,7 @@
     let netmcu = { to: "tfmcu" };
     netmcu.mcu = {};
     netmcu.mcu[$McuFirmwareUpdChip + "ota"] = "?";
-    let url = "/cmd.json";
-    appDebug.dbLog("url: " + url);
-    httpFetch.http_postRequest(url, netmcu);
+    httpFetch.http_postCommand(netmcu);
   }
 
   function netFirmwareOTA(ota_name) {
@@ -47,9 +45,7 @@
     let netmcu = { to: "tfmcu" };
     netmcu.mcu = {};
     netmcu.mcu[$McuFirmwareUpdChip + "ota"] = ota_name;
-    let url = "/cmd.json";
-    appDebug.dbLog("url: " + url);
-    httpFetch.http_postRequest(url, netmcu);
+    httpFetch.http_postCommand(netmcu);
     McuFirmwareUpdProgress.set(1);
     netota_intervalID = setInterval(netota_FetchFeedback, 1000);
     netota_isInProgress = true;

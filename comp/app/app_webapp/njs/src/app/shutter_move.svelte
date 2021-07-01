@@ -1,20 +1,6 @@
 <script>
   "use strict";
-  import { G, M0, Name } from "stores/curr_shutter.js";
   import * as httpFetch from "app/fetch.js";
-  import { onMount, onDestroy } from "svelte";
-
-  let on_destroy = [];
-  onMount(() => {});
-  onDestroy(() => {
-    for (const fn of on_destroy) {
-      fn();
-    }
-  });
-
-  $: name = $Name || "";
-  $: vm = $G ? ($M0 ? $M0 : "A") : "";
-  $: vg = $G ? $G : "A";
 
   function hClick_Stop() {
     httpFetch.http_postShutterCommand("stop");

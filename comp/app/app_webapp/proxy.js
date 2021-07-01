@@ -8,9 +8,9 @@ const httpProxy = require('http-proxy');
 var expressWs = require('express-ws')
 
 
-let proj_dir=path.dirname(path.dirname(path.dirname(path.dirname(__dirname))));
+let proj_dir=path.dirname(path.dirname(path.dirname(__dirname)));
 let tff_dir=path.dirname(proj_dir)+"/tronferno-fhem";
-let build_dir=proj_dir+"/src/esp32/build";
+let build_dir=proj_dir+"/build/esp32";
 let cont_dir=__dirname
 let mcu = 'http://192.168.1.69:80';
 let mcu_ws = 'ws://192.168.1.69:80';

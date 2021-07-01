@@ -19,8 +19,7 @@
 
   function onClick_registerCu() {
     let tfmcu = { to: "tfmcu", auto: { g: $SetModeDstG, m: $SetModeDstM, f: "k" } };
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_postCommand(tfmcu);
     startAutoProgress();
 
     setTimeout(() => { 
@@ -31,8 +30,7 @@
 
   function onClick_registerSender() {
     let tfmcu = { to: "tfmcu", cmd: { a: $SetModeDstAddress, c: "stop" } };
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_postCommand(tfmcu);
     $SetModeSrcProgress = 0;
   }
 </script>

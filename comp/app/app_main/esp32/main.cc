@@ -8,6 +8,7 @@
 #include "net_http_server/http_server_setup.h"
 #include "net/tcp_cli_server_setup.hh"
 #include "../app_private.h"
+#include "cc1101_ook/spi.hh"
 
 #include <esp_attr.h>
 #include <esp32/rom/ets_sys.h>
@@ -52,6 +53,7 @@ extern "C" void app_main(void) {
 
 void  mcu_delayedRestart(unsigned delay_ms) {
   printf("mcu_restart()\n");
+  cc1101_ook_spi_disable();
   vTaskDelay(pdMS_TO_TICKS(delay_ms));
   esp_restart();
   for (;;) {

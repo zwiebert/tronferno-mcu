@@ -1,6 +1,6 @@
 .PHONY: clean all test rebuild http_data print-help
 
-flavors = esp32 esp32wlan esp32lan
+flavors = esp32 esp32wlan esp32lan esp32test
 
 flavor ?= esp32
 
@@ -16,6 +16,8 @@ print-help:
 .PHONY: http_proxy http_clean
 http_proxy:
 	cd comp/app/app_webapp && make proxy
+http_proxy2:
+	cd comp/app/app_webapp && make proxy2
 http_clean:
 	cd comp/app/app_webapp && make clean
 

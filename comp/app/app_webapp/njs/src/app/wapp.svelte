@@ -51,7 +51,7 @@
   {:else if tabIdxMain === 4}
     <div class="navtab-sub">
       <NavTabs
-        nav_tabs={[$_('app.navTab.cfg.mcu'), $_('app.navTab.cfg.aliases'), $_('app.navTab.cfg.durations'), $_('app.navTab.cfg.name'), $_('app.navTab.cfg.set_mode'), $_('app.navTab.cfg.app'), $_('app.navTab.main.firmware'), 'Log']}
+        nav_tabs={[$_('app.navTab.cfg.mcu'), $_('app.navTab.cfg.aliases'), $_('app.navTab.cfg.durations'), $_('app.navTab.cfg.name'), $_('app.navTab.cfg.set_mode'), $_('app.navTab.main.firmware'), 'Log']}
         name="settings" />
     </div>
     {#if !tabIdxSettings}
@@ -65,10 +65,8 @@
     {:else if tabIdxSettings === 4}
       <PaneShutterSetMode />
     {:else if tabIdxSettings === 5}
-      <PaneWappSettings />
-    {:else if tabIdxSettings === 6}
       <PaneFirmwareEsp32 />
-    {:else if tabIdxSettings === 7}
+    {:else if tabIdxSettings === 6}
       <PaneAppLog />
     {/if}
   {:else if !misc.DISTRO && tabIdxMain === 5}

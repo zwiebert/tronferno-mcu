@@ -15,8 +15,8 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
 
   int arg_idx;
   int errors = 0;
-  u32 changed_mask = 0;
-  u32 processed_keys_mask = 0;
+  u64 changed_mask = 0;
+  u64 processed_keys_mask = 0;
   {
     so_object<void> cfgObj(soCfg_begin, soCfg_end, td);
 
@@ -28,7 +28,7 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
           return cli_replyFailure(td);
         }
 
-        if (GET_BIT(processed_keys_mask, arg_idx))
+        if (GET_BIT64(processed_keys_mask, arg_idx))
           continue;
 
         bool endsWithQuestionMark = csu_endsWith(val, "?");
@@ -58,7 +58,7 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
           }
         }
 
-        SET_BIT(processed_keys_mask, arg_idx);
+        SET_BIT64(processed_keys_mask, arg_idx);
 
         if (process_parmConfig_comp(kt, key, val, td, errors, changed_mask))
           continue;

@@ -4,6 +4,8 @@ import { PersistentOptionStore, PersistentValStore } from "./custom_stores.js";
 
 export const AppLog = writable([]);
 
+
+
 export const AppLogTxt = derived(AppLog, (appLog) => {
   let r = "";
   for (let msg of appLog) {
@@ -16,4 +18,14 @@ export const AppLogTxt = derived(AppLog, (appLog) => {
     }
   }
   return r;
+});
+
+export const AppLogCountRx = derived(AppLog, (appLog) => {
+  let count = 0;
+  for (let msg of appLog) {
+      if ("rc" in msg) {
+        ++count;
+    }
+  }
+  return count;
 });

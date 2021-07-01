@@ -17,9 +17,9 @@
 #include "app_misc/rtc.h"
 #include "cli_imp.h"
 #include "app_misc/opt_map.hh"
-
+#include <app_settings/config.h>
+#include <cc1101_ook/trx.hh>
 #include "debug/dbg.h"
-
 
 #ifdef USE_FREERTOS
 #include "freertos/FreeRTOS.h"
@@ -45,10 +45,11 @@ const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #ifdef CONFIG_GPIO_SIZE
     "gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N\n"
 #endif
-    "up-time=?\n"
-    "version=full\n";
+        "up-time=?\n"
+        "version=full\n";
 
 static void kvs_print_keys(const char *name_space);
+void cc1101_printCfg_asString(const struct TargetDesc &td);
 
 #define is_kt(k) (kt == otok::k_##k)
 #define is_key(k) (strcmp(key, k) == 0)
@@ -131,11 +132,11 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       break;
 
 #ifdef USE_FREERTOS
-   case otok::k_stack: {
+    case otok::k_stack: {
       int words = uxTaskGetStackHighWaterMark(NULL);
       ets_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
-   }
-   break;
+    }
+      break;
 #endif
 
     case otok::k_te: {
@@ -156,7 +157,8 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 #ifdef USE_PAIRINGS
     case otok::k_dbp: {
       fer_alias_so_output_all_pairings(td);
-    } break;
+    }
+      break;
 #endif
     case otok::k_cs: {
       fer_statPos_printAllPcts(td);
@@ -201,7 +203,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 #endif
       }
     }
-       break;
+      break;
 #endif
 
     default:
@@ -253,10 +255,41 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
     }
 #endif
 
-    if (strcmp(key, "kvs-pk") == 0) {
-      kvs_print_keys(val);
-      break;
-    }
+      if (strcmp(key, "kvs-pk") == 0) {
+        kvs_print_keys(val);
+        break;
+      }
+
+      if (strcmp(key, "error-mask") == 0) {
+        td.so().print("error-mask", tfmcu_error_mask, 16);
+        break;
+      }
+
+      if (strcmp(key, "cc1101-config") == 0) {
+        if (*val == '?') {
+          soCfg_CC1101_CONFIG(td);
+        } else {
+          if (!cc1101_ook_updConfig_fromSparse(val))
+            return -1;
+        }
+        break;
+      }
+
+      if (strcmp(key, "cc1101-status") == 0) {
+        if (*val == '?') {
+          uint8_t regFile[14];
+          size_t regFileSize = sizeof regFile;
+          if (cc1101_ook_dump_status(regFile, &regFileSize)) {
+            char rs[regFileSize * 2 + 1];
+            for (int i = 0; i < regFileSize; ++i) {
+              sprintf(&rs[i * 2], "%02x", regFile[i]);
+            }
+            td.so().print("cc1101-status", rs);
+          }
+
+        }
+        break;
+      }
 
       cli_warning_optionUnknown(td, key);
       break;
@@ -274,4 +307,3 @@ static kvs_cbrT kvs_print_keys_cb(const char *key, kvs_type_t type, void *args) 
 static void kvs_print_keys(const char *name_space) {
   kvs_foreach(name_space, KVS_TYPE_ANY, 0, kvs_print_keys_cb, 0);
 }
-

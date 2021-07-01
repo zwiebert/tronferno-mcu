@@ -89,6 +89,11 @@ void Fer_Trx_API::push_event(struct Fer_Trx_IncomingEvent *evt) {
 }
 
 
+#include <cc1101_ook/trx.hh>
+int Fer_Trx_API::get_rssi() {
+  return cc1101_ook_get_rssi();
+}
+
 
 
 

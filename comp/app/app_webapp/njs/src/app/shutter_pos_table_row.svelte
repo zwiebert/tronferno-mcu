@@ -22,8 +22,7 @@
       p: pct,
     };
 
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, tfmcu);
+    httpFetch.http_postCommand(tfmcu);
   }
 
   function hChange_Pos() {

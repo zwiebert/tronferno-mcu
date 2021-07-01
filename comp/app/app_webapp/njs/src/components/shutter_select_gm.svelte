@@ -7,7 +7,7 @@
 
   $: gm = $GM;
   $: names = Object.values($Names);
-  $: a = "A " + $Names["00"] || "";
+  $: a = "A " + ($Names["00"] || "");
 
   $: {
     $G = Number.parseInt(gm.substr(0, 1));

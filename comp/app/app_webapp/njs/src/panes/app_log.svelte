@@ -1,9 +1,11 @@
 <script>
   import { AppLog } from "stores/app_log.js";
 
-  $: showMqtt = true;
+  export let rxonly = false;
+
+  $: showMqtt = !rxonly;
   $: showRc = true;
-  $: showSc = true;
+  $: showSc = !rxonly;
 
   $: {
     $AppLog;
@@ -24,18 +26,18 @@
 
 <div
   id="app_log_div"
-  class="w-11/12 h-full border-black border-2 bg-gray-800 overflow-auto">
+  class="w-11/12 h-full border-black border-2 bg-gray-800 overflow-auto text-xs">
   <!-- {@html htmlEntities($AppLogTxt)} -->
 
   {#each $AppLog as msg}
     {#if showMqtt && 'log' in msg && 'mqtt_client' === msg.log.tag}
-      <span class="text-red-300">{msg.log.tag + ': ' + msg.log.txt}<br /></span>
+      <span class="text-red-300">{msg.date.toLocaleTimeString() + ': ' + msg.log.tag + ': ' + msg.log.txt}<br /></span>
     {:else if showRc && 'rc' in msg}
       <span
-        class="text-green-300">{'rc: ' + msg.rc.type + ': ' + msg.rc.a + (msg.rc.type === 'central' ? '-' + msg.rc.g + msg.rc.m : '') + '-' + msg.rc.c}<br /></span>
+        class="text-green-300">{msg.date.toLocaleTimeString() + ': ' + 'rc: ' + msg.rc.type + ': ' + msg.rc.a + (msg.rc.type === 'central' ? '-' + msg.rc.g + msg.rc.m : '') + '-' + msg.rc.c + (msg.rc.rssi ? (':rssi=' + msg.rc.rssi) : '')}<br /></span>
     {:else if showSc && 'sc' in msg}
       <span
-        class="text-blue-300">{'sc: ' + msg.sc.type + ': ' + msg.sc.a + (msg.sc.type === 'central' ? '-' + msg.sc.g + msg.sc.m : '') + '-' + msg.sc.c}<br /></span>
+        class="text-blue-300">{msg.date.toLocaleTimeString() + ': ' + 'sc: ' + msg.sc.type + ': ' + msg.sc.a + (msg.sc.type === 'central' ? '-' + msg.sc.g + msg.sc.m : '') + '-' + msg.sc.c}<br /></span>
     {/if}
   {/each}
 </div>

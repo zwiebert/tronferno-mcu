@@ -1,7 +1,9 @@
 <script>
   "use strict";
   import { _ } from "services/i18n";
+  import tippy from "sveltejs-tippy";
   import { McuConfig, McuConfigKeys, Gmu, McuGpiosFree } from "stores/mcu_config.js";
+  import { McuDocs, McuDocs_cliHelpConfig } from "stores/mcu_docs.js";
   import * as appDebug from "app/app_debug.js";
   import * as httpFetch from "app/fetch.js";
   import * as cuas from "app/cuas.js";
@@ -10,6 +12,7 @@
   import { ReloadProgress } from "stores/app_state.js";
   import NavTabs from "app/nav_tabs.svelte";
   import { TabIdx } from "stores/app_state.js";
+  import { McuErrorMask } from "stores/mcu_firmware.js";
 
   import McuConfigGpio from "components/mcu_config/gpio.svelte";
   import McuConfigGpioSelect from "components/mcu_config/gpio_select.svelte";
@@ -21,10 +24,35 @@
   import McuConfigUsedMembers from "components/mcu_config/used_members.svelte";
   import McuRfTrx from "components/mcu_config/rf_trx.svelte";
   import GpioLevel from "components/gpio_level.svelte";
+  import CC1101 from "panes/cc1101.svelte";
+  import AppLog from "panes/app_log.svelte";
 
   let on_destroy = [];
+
+  function fetch_one_after_another() {
+    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG_P0, true);
+    const timeout = 250;
+    setTimeout(() => {
+      httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG_P1, true);
+      setTimeout(() => {
+        httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG_P2, true);
+        setTimeout(() => {
+          httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG_P3 | httpFetch.FETCH_ERROR_MASK, true);
+        }, timeout);
+        setTimeout(() => {
+          httpFetch.getFile("/f/cli/help/config");
+        }, timeout);
+      }, timeout);
+    }, timeout);
+    
+
+
+
+  
+  }
+
   onMount(() => {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG | httpFetch.FETCH_CONFIG_GPIO_STRING);
+    fetch_one_after_another();
   });
   onDestroy(() => {
     for (const fn of on_destroy) {
@@ -32,6 +60,9 @@
     }
   });
 
+  $: {
+    console.log("McuDocs_cliHelpConfig", $McuDocs_cliHelpConfig, $McuDocs_cliHelpConfig["network"]);
+  }
   $: tabIdxMcc = $TabIdx["mcc"] || 0;
 
   $: mcuConfigNames = {}; // localized GUI labels
@@ -41,19 +72,34 @@
     }
   }
 
+  let mcuConfig = {};
+  function updateMcuConfig(obj) {
+    mcuConfig = { ...obj };
+  }
+
+  $: {
+    updateMcuConfig($McuConfig);
+  }
+
+  $: hasCc1101 = mcuConfig["rf-trx"] === "cc1101";
+
+  $: errorBit_cc1101_gpio_rfin = ($McuErrorMask & 0x01) !== 0;
+
   $: mcuConfigKeysNetwork = $McuConfigKeys.filter((val) => val === "network");
   $: mcuConfigKeysMQTT = $McuConfigKeys.filter((val) => val.startsWith("mqtt-"));
   $: mcuConfigKeysHTTP = $McuConfigKeys.filter((val) => val.startsWith("http-"));
   $: mcuConfigKeysWLAN = $McuConfigKeys.filter((val) => val.startsWith("wlan-"));
   $: mcuConfigKeysLAN = $McuConfigKeys.filter((val) => val.startsWith("lan-"));
   $: mcuConfigKeysNTP = $McuConfigKeys.filter((val) => val.startsWith("ntp-"));
+  $: mcuConfigKeysCC1101 = $McuConfigKeys.filter((val) => val.startsWith("cc1101-"));
+
   $: mcuConfigKeysPin = $McuConfigKeys.filter(
     (val) => val.startsWith("gpio") || val === "set-button-pin" || (mcuConfig["rf-trx"] !== "cc1101" && (val === "rf-rx-pin" || val === "rf-tx-pin"))
   );
   $: mcuConfigKeysCU = $McuConfigKeys.filter((val) => val === "cu");
   $: mcuConfigKeysAstro = $McuConfigKeys.filter((val) => val === "longitude" || val === "latitude" || val.startsWith("astro-"));
   $: mcuConfigKeysTime = $McuConfigKeys.filter((val) => val === "rtc" || val === "tz");
-  $: mcuConfigKeysCc1101 = mcuConfig["rf-trx"] === "cc1101" ? $McuConfigKeys.filter((val) => val.startsWith("rf-") && val.endsWith("-pin")) : [];
+  $: mcuConfigKeysCc1101Pin = mcuConfig["rf-trx"] === "cc1101" ? $McuConfigKeys.filter((val) => val.startsWith("rf-") && val.endsWith("-pin")) : [];
 
   $: mcuConfigKeysMisc = $McuConfigKeys.filter(
     (val) =>
@@ -65,22 +111,22 @@
         mcuConfigKeysWLAN.includes(val) ||
         mcuConfigKeysLAN.includes(val) ||
         mcuConfigKeysNTP.includes(val) ||
+        mcuConfigKeysCC1101.includes(val) ||
         mcuConfigKeysCU.includes(val) ||
         mcuConfigKeysAstro.includes(val) ||
         mcuConfigKeysTime.includes(val) ||
-        mcuConfigKeysCc1101.includes(val) ||
+        mcuConfigKeysCc1101Pin.includes(val) ||
         val.endsWith("-pin") ||
         mcuConfigKeysPin.includes(val)
       )
   );
 
-  let mcuConfig = {};
-  function updateMcuConfig(obj) {
-    mcuConfig = { ...obj };
-  }
-
   $: {
-    updateMcuConfig($McuConfig);
+    console.log("mcuConfigKeysCc1101Pin: ", mcuConfigKeysCc1101Pin);
+    console.log("mcuConfigKeysMisc: ", mcuConfigKeysMisc);
+    console.log("$McuConfigKeys: ", $McuConfigKeys);
+    console.log("rf-trx: ", mcuConfig["rf-trx"]);
+    console.log("mcuConfig: ", mcuConfig);
   }
 
   $: gmu = $Gmu;
@@ -88,15 +134,11 @@
 
   export function reload_config() {
     updateMcuConfig($McuConfig);
-
-    for (let i = 1; i <= 7; ++i) {
-      document.getElementById("gmu" + i.toString()).value = $Gmu[i];
-    }
   }
 
   function hClick_Reload() {
     reload_config();
-    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
+    fetch_one_after_another();
   }
 
   function hClick_Save() {
@@ -141,13 +183,15 @@
       }
     });
 
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, { config: cfg_mod });
+    httpFetch.http_postCommand({ config: cfg_mod });
 
     setTimeout(() => {
-      httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG, true);
-      }, 200);
+      fetch_one_after_another();
+    }, 500);
 
+    setTimeout(() => {
+      fetch_one_after_another();
+    }, 2500);
   }
 
   function cfg_by_name(name) {
@@ -167,11 +211,11 @@
     cmd.config[gpioKey] = "i";
     wiz_gpio = -1;
 
-    httpFetch.http_postRequest("/cmd.json", cmd);
+    httpFetch.http_postCommand(cmd);
     wiz_gpio_status = "";
     setTimeout(() => {
-      httpFetch.http_postRequest("/cmd.json", { config: { gpio: "?" } });
-      httpFetch.http_postRequest("/cmd.json", { config: { gpio: "$" } });
+      httpFetch.http_postCommand({ config: { gpio: "?" } });
+      httpFetch.http_postCommand({ config: { gpio: "$" } });
       setTimeout(() => {
         wiz_gpio_status = $McuConfig[gpioKey] ? '<span class="bg-green-500">ok</span>' : '<span class="bg-red-500">error</span>';
       }, 200);
@@ -181,7 +225,8 @@
   /////////////////////////////////////////////
 </script>
 
-<NavTabs nav_tabs={[$_("mcuConfig.network"), $_("mcuConfig.misc")]} name="mcc" vertical={true} />
+<NavTabs nav_tabs={[$_("mcuConfig.network"), $_("mcuConfig.misc"), ...(hasCc1101 ? ["CC1101"] : [])]} name="mcc" vertical={true} />
+
 
 {#if tabIdxMcc === 0}
   {#if mcuConfigKeysNetwork.length > 0}
@@ -189,7 +234,7 @@
       <table class="conf-table top_table rounded-xl overflow-hidden">
         {#each mcuConfigKeysNetwork as key, i}
           <tr>
-            <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}" >{mcuConfigNames[key]}</label></td>
             {#if key.endsWith("-enable")}
               <td>
                 <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -212,7 +257,7 @@
               <caption>{$_("mcuConfig.wlan_station")}</caption>
               {#each mcuConfigKeysWLAN as key, i}
                 <tr>
-                  <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
                   {#if key.endsWith("-enable")}
                     <td>
                       <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -232,7 +277,7 @@
               <caption>{$_("mcuConfig.ethernet")}</caption>
               {#each mcuConfigKeysLAN as key, i}
                 <tr>
-                  <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
                   {#if key.endsWith("-enable")}
                     <td>
                       <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -260,7 +305,7 @@
               <caption>{$_("mcuConfig.ntp_client")}</caption>
               {#each mcuConfigKeysNTP as key, i}
                 <tr>
-                  <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
                   {#if key.endsWith("-enable")}
                     <td>
                       <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -280,7 +325,7 @@
               <caption>{$_("mcuConfig.mqtt_client")}</caption>
               {#each mcuConfigKeysMQTT as key, i}
                 <tr>
-                  <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
 
                   {#if key.endsWith("-enable")}
                     <td>
@@ -301,7 +346,7 @@
               <caption>{$_("mcuConfig.http_server")}</caption>
               {#each mcuConfigKeysHTTP as key, i}
                 <tr>
-                  <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
 
                   {#if key.endsWith("-enable")}
                     <td>
@@ -336,7 +381,7 @@
         <table class="conf-table top_table rounded-xl overflow-hidden">
           {#each mcuConfigKeysCU as key, i}
             <tr>
-              <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
               {#if key.endsWith("-enable")}
                 <td>
                   <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -356,7 +401,7 @@
         <table class="conf-table top_table rounded-xl overflow-hidden">
           {#each mcuConfigKeysTime as key, i}
             <tr>
-              <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
               {#if key.endsWith("-enable")}
                 <td>
                   <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -375,7 +420,7 @@
         <table class="conf-table top_table rounded-xl overflow-hidden">
           {#each mcuConfigKeysAstro as key, i}
             <tr>
-              <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
               {#if key.endsWith("-enable")}
                 <td>
                   <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -405,13 +450,20 @@
       <table class="conf-table top_table rounded-xl overflow-hidden">
         <caption>{$_("mcuConfig.pin_gpio")}</caption>
 
-        {#each mcuConfigKeysCc1101 as key, i}
+        {#each mcuConfigKeysCc1101Pin as key, i}
           <tr>
-            <td
+            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
               ><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{$_("mcuConfigNames.cc1101." + key)}</label
               ></td
             >
-            {#if key === "rf-rx-pin" || key === "set-button-pin" || key === "rf-miso-pin"}
+            {#if key === "rf-rx-pin"}
+              <td>
+                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
+                {#if errorBit_cc1101_gpio_rfin}
+                  <span class="bg-red-400">(wire not connected)</span>
+                {/if}
+              </td>
+            {:else if key === "set-button-pin" || key === "rf-miso-pin"}
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
               </td>
@@ -427,7 +479,7 @@
 
         {#each mcuConfigKeysPin as key, i}
           <tr>
-            <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
             {#if key.endsWith("-enable")}
               <td>
                 <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -473,7 +525,7 @@
       <table id="cfg_table_id" class="conf-table top_table rounded-xl overflow-hidden">
         {#each mcuConfigKeysMisc as key, i}
           <tr>
-            <td><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
             {#if key.endsWith("-enable")}
               <td>
                 <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -494,17 +546,45 @@
       </table>
     </div>
   </div>
+{:else if tabIdxMcc === 2}
+  {#if mcuConfigKeysCC1101.length}
+    <div class="area">
+      {#each mcuConfigKeysCC1101 as key, i}
+        <tr>
+          <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+          {#if key.endsWith("-enable")}
+            <td>
+              <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+            </td>
+          {:else}
+            <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+          {/if}
+        </tr>
+      {/each}
+    </div>
+  {/if}
 {/if}
 
 <button type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
 <button type="button" on:click={hClick_Save}>{$_("app.save")}</button>
 <button type="button" on:click={hClick_RestartMcu}> {$_("app.restartMcu")}</button>
 
+{#if tabIdxMcc === 2}
+  <hr />
+  <CC1101 />
+{/if}
+
 {#if $ReloadProgress > 0}
   <br />
   <strong>{$_("app.msg_waitForMcuRestart")}</strong>
   <br />
   <progress id="reload_progress_bar" value={$ReloadProgress} max="100" />
+{/if}
+
+{#if tabIdxMcc === 2}
+  <hr />
+  <h3>Receiver Log</h3>
+  <AppLog rxonly={true} />
 {/if}
 
 <style type="text/scss">
