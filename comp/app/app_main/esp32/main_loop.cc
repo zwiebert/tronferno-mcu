@@ -7,18 +7,13 @@
 #include <freertos/timers.h>
 #include <cstdio>
 #include <app_settings/config.h>
+#include "utils_misc/int_macros.h"
 #include "utils_misc/int_types.h"
 #include "utils_time/run_time.h"
 #include "utils_time/ut_constants.hh"
-#include "fernotron/auto/fau_tevent.h"
-#include "fernotron/pos/positions_dynamic.h"
-#include "fernotron/pos/positions_static.h"
-#include "fernotron/alias/pairings.h"
-#include "fernotron/cuas/cuid_auto_set.h"
-#include "fernotron/sep/set_endpos.h"
-#include "fernotron_trx/fer_trx_c_api.h"
+
 #include "net/ipnet.h"
-#include "gpio/pin.h"
+
 
 #include "../app_private.h"
 
@@ -28,53 +23,6 @@ EventGroupHandle_t loop_event_group;
 uint32_t loop_flags_periodic_100ms;
 
 typedef void (*lfa_funT)(void);
-
-static const lfa_funT lfa_table[lf_Len] = {
-#ifdef USE_NETWORK
-    ipnet_connected,
-    ipnet_disconnected,
-#endif
-#ifdef USE_NTP
-    fer_am_updateTimerEvent,
-#endif
-#if defined USE_AP_FALLBACK || defined USE_WLAN_AP
-    lfa_createWifiAp,
-#endif
-    cli_loop,
-#ifdef FER_TRANSMITTER
-    fer_tx_loop,
-#endif
-#ifdef FER_RECEIVER
-    fer_rx_loop,
-#endif
-#ifdef USE_SEP
-    fer_sep_loop,
-#endif
-    fer_pos_loop, fer_am_loop, fer_am_updateTimerEvent,
-#ifdef USE_CUAS
-    fer_cuas_set_check_timeout,
-#endif
-#ifdef USE_PAIRINGS
-    fer_alias_auto_set_check_timeout,
-#endif
-    fer_statPos_loopAutoSave, fer_pos_loopCheckMoving,
-    pin_notify_input_change,
-    [] { mcu_delayedRestart(1500); },
-    config_setup_gpio,
-    config_setup_cc1101,
-    config_setup_astro,
-#ifdef USE_LAN
-    config_setup_ethernet,
-#endif
-#ifdef USE_MQTT
-    config_setup_mqttAppClient,
-#endif
-#ifdef USE_HTTP
-    config_setup_httpServer,
-#endif
-    config_setup_txtio,
-};
-
 
 void loop_eventBits_setup() {
   loop_event_group = xEventGroupCreate();
@@ -90,9 +38,7 @@ void loop_eventBits_check() {
     auto fb = static_cast<loop_flagbits>(i);
     if (!GET_BIT(lf, 0))
       continue;
-
-    if (lfa_table[fb])
-      (lfa_table[fb])();
+    loop_fun_table_call(fb);
   }
 }
 
