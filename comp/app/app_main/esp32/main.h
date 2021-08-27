@@ -1,64 +1,27 @@
+
 #pragma once
 
 #include "app_config/proj_app_cfg.h"
 
 #include "main_loop_fun_table.h"
+#include "main_loop_event_bits.h"
+#include "main_loop_periodic.h"
 
 #include <utils_misc/int_types.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/timers.h"
 #include "freertos/task.h"
-#include "freertos/event_groups.h"
 
-#include <esp_event.h>
 #include <esp_system.h>
 #include <esp_wifi.h>
 #include <esp_sntp.h>
 #include <string.h>
 
 #define KEY_BOOT_COUNTER "BOOT_CT"
-extern EventGroupHandle_t loop_event_group;
 
-inline void lf_setBits(const EventBits_t uxBitsToSet) { xEventGroupSetBits(loop_event_group, uxBitsToSet); }
-void lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield);
-
-
-
-
-
-
-extern volatile uint32_t loop_flags;
-extern uint32_t loop_flags_periodic_100ms;
 extern i32 boot_counter;
 extern bool wifi_ap_active;
-
-
-
-inline void lf_setBit(loop_flagbits v) {
-  lf_setBits(BIT(v));
-}
-inline void IRAM_ATTR lf_setBit_ISR(loop_flagbits v, bool yield) {
-  lf_setBits_ISR(BIT(v), yield);
-}
-
-#define lfPer100ms_setBits(v) (loop_flags_periodic_100ms |= (v))
-#define lfPer100ms_clrBits(v) (loop_flags_periodic_100ms &= ~(v))
-
-inline void lfPer100ms_setBit(loop_flagbits v) {
-  lfPer100ms_setBits(BIT(v));
-}
-inline void lfPer100ms_clrBit(loop_flagbits v) {
-  lfPer100ms_clrBits(BIT(v));
-}
-inline void lfPer100ms_putBit(loop_flagbits v, bool val) {
-  if (val)
-    lfPer100ms_setBit(v);
-  else
-    lfPer100ms_clrBit(v);
-}
-
-
 
 void lfa_createWifiAp(void);
 
@@ -69,11 +32,10 @@ void tmr_pingLoop_start();
 void loop_eventBits_setup();
 u32 loop_eventBits_wait();
 
-void  mcu_delayedRestart(unsigned delay_ms);
+void mcu_delayedRestart(unsigned delay_ms);
 
 extern "C++" void main_setup_ip_dependent();
 void mcu_init();
-
 
 #define D(x) x
 

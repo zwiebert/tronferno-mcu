@@ -55,6 +55,8 @@ enum loop_flagbits {
 };
 
 void loop_fun_table_call(loop_flagbits fb);
+void loop_fun_table_calls(uint32_t bitmask);
+
 
 
 

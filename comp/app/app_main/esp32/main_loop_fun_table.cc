@@ -66,8 +66,24 @@ const lfa_funT lfa_table[lf_Len] = {
     config_setup_txtio,
 };
 
+/**
+ * \brief      Call function table entry related to index
+ * \param fb   index
+ */
 void loop_fun_table_call(loop_flagbits fb) {
   if (lfa_table[fb])
     (lfa_table[fb])();
 }
+
+/**
+ * \brief          Call function table entries according to bitmask
+ * \param bitmask  bits set according to \ref loop_flagbits
+ */
+void loop_fun_table_calls(u32 bitmask) {
+   for (int i = 0; bitmask; ++i, (bitmask >>= 1)) {
+     if (GET_BIT(bitmask, 0))
+       loop_fun_table_call(static_cast<enum loop_flagbits>(i));
+   }
+}
+
 

@@ -17,30 +17,10 @@
 
 #include "../app_private.h"
 
-EventGroupHandle_t loop_event_group;
-#define EVT_BITS  ((1 << lf_Len) - 1)
 
 uint32_t loop_flags_periodic_100ms;
 
 typedef void (*lfa_funT)(void);
-
-void loop_eventBits_setup() {
-  loop_event_group = xEventGroupCreate();
-}
-u32 loop_eventBits_wait() {
-  EventBits_t bits = xEventGroupWaitBits(loop_event_group, EVT_BITS, pdTRUE, pdFALSE, portMAX_DELAY);
-  return bits;
-}
-
-void loop_eventBits_check() {
-  u32 lf = loop_eventBits_wait();
-  for (int i = 0; lf; ++i, (lf >>= 1)) {
-    auto fb = static_cast<loop_flagbits>(i);
-    if (!GET_BIT(lf, 0))
-      continue;
-    loop_fun_table_call(fb);
-  }
-}
 
 
 #ifdef USE_WLAN_AP

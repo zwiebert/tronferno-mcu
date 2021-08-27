@@ -1,4 +1,4 @@
-set(srcs main_setup.cc esp32/main.cc esp32/main_setup.cc esp32/main_loop.cc esp32/main_loop_fun_table.cc esp32/unity_setup.cc) 
+set(srcs main_setup.cc esp32/main.cc esp32/main_setup.cc esp32/main_loop.cc esp32/main_loop_fun_table.cc esp32/main_loop_event_bits.cc esp32/unity_setup.cc) 
 
 idf_component_register(
     SRCS ${srcs}
