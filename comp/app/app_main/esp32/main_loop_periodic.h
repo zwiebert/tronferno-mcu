@@ -7,6 +7,7 @@
 #include "app_config/proj_app_cfg.h"
 
 #include <utils_misc/int_types.h>
+#include <utils_misc/int_macros.h>
 
 extern uint32_t loop_flags_periodic_100ms;
 

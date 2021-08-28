@@ -100,17 +100,5 @@ void cli_run_mainLoop(enum mainLoop req) {
 
 }
 
-void IRAM_ATTR lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield) {
-  BaseType_t xHigherPriorityTaskWoken = pdFALSE, xResult;
 
-  xResult = xEventGroupSetBitsFromISR(
-      loop_event_group,  // The event group being updated.
-      uxBitsToSet, // The bits being set.
-      &xHigherPriorityTaskWoken );
-
-  // Was the message posted successfully?
-  if (yield && xResult == pdPASS) {
-    portYIELD_FROM_ISR();
-  }
-}
 

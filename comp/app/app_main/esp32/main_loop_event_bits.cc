@@ -16,8 +16,30 @@
 
 #include "../app_private.h"
 
+
+
 EventGroupHandle_t loop_event_group;
 #define EVT_BITS  ((1 << lf_Len) - 1)
+
+
+ void lf_setBits(const EventBits_t uxBitsToSet) {
+  xEventGroupSetBits(loop_event_group, uxBitsToSet);
+}
+void lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield);
+
+void IRAM_ATTR lf_setBits_ISR(const EventBits_t uxBitsToSet, bool yield) {
+   BaseType_t xHigherPriorityTaskWoken = pdFALSE, xResult;
+
+   xResult = xEventGroupSetBitsFromISR(
+       loop_event_group,  // The event group being updated.
+       uxBitsToSet, // The bits being set.
+       &xHigherPriorityTaskWoken );
+
+   // Was the message posted successfully?
+   if (yield && xResult == pdPASS) {
+     portYIELD_FROM_ISR();
+   }
+ }
 
 typedef void (*lfa_funT)(void);
 
