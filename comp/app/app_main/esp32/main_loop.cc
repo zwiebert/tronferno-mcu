@@ -11,7 +11,7 @@
 #include "utils_misc/int_types.h"
 #include "utils_time/run_time.h"
 #include "utils_time/ut_constants.hh"
-
+#include "main_loop/main_queue.hh"
 #include "net/ipnet.h"
 
 
@@ -59,7 +59,7 @@ void tmr_loopPeriodic100ms_start() {
         struct tm tms;
         if (auto tmp = localtime_r(&now, &tms)) {
           if (tmp->tm_hour == 3 && tmp->tm_min >= 33)
-            lf_setBit(lf_mcuRestart);  // XXX: restart every >=24 hours at 03:33
+            mainLoop_mcuRestart(0);  // XXX: restart every >=24 hours at 03:33
         }
       }
     }

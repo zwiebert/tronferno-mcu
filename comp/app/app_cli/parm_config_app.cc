@@ -6,6 +6,7 @@
 #include "app_misc/opt_map.hh"
 #include <string.h>
 
+
 #include "fernotron/sep/set_endpos.h"
 #include "app_uout/status_output.h"
 #include "fernotron/cuas/cuid_auto_set.h"
@@ -35,6 +36,8 @@
 #include "gpio/pin.h"
 #include <utils_misc/mutex.hh>
 #include <utils_misc/int_macros.h>
+
+#include "main_loop/main_queue.hh"
 
 #include <stdlib.h>
 #include <iterator>
@@ -162,12 +165,12 @@ break;
 
 void parmConfig_reconfig_app(uint64_t changed_mask) {
   if (changed_mask & CBM_geo) {
-    cli_run_main_loop(mainLoop_configAstro);
+    mainLoop_callFun(config_setup_astro);
   }
   if (changed_mask & CBM_gpio) {
-    cli_run_main_loop(mainLoop_configGPIO);
+    mainLoop_callFun(config_setup_gpio);
   }
   if (changed_mask & CBM_cc1101) {
-    cli_run_main_loop(mainLoop_configCC1101);
+    mainLoop_callFun(config_setup_cc1101);
   }
 }

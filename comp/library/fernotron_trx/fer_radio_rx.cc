@@ -52,6 +52,7 @@ static u16 aTicks, pTicks, nTicks;
 static u16 wordsToReceive;
 // flags
 volatile fer_msg_type fer_rx_messageReceived;
+static bool fer_rx_messageReceived_flag;
 static u16 word_pair_buffer[2];
 static struct fer_rx_counter frxCount;
 
@@ -252,6 +253,7 @@ static void IRAM_ATTR fer_rx_tick_receive_message() {
       wordsToReceive = WORDS_MSG_RTC; // continue
     } else {
       fer_rx_messageReceived = MSG_TYPE_PLAIN; // done
+      fer_rx_messageReceived_flag = true;
     }
     break;
 
@@ -263,6 +265,7 @@ static void IRAM_ATTR fer_rx_tick_receive_message() {
 
     if (fer_rx_msg->rtc.sd.wd2.sd.rtc_only) {
       fer_rx_messageReceived = MSG_TYPE_RTC;  // done
+      fer_rx_messageReceived_flag = true;
     } else {
       wordsToReceive = WORDS_MSG_TIMER; // continue
     }
@@ -275,6 +278,7 @@ static void IRAM_ATTR fer_rx_tick_receive_message() {
     }
 
     fer_rx_messageReceived = MSG_TYPE_TIMER; // done
+    fer_rx_messageReceived_flag = true;
     break;
 
   default:
@@ -319,7 +323,8 @@ void IRAM_ATTR fer_rx_tick() {
     ++nTicks;
   }
 
-  if (fer_rx_messageReceived != MSG_TYPE_NONE) {
+  if (fer_rx_messageReceived_flag) {
+    fer_rx_messageReceived_flag = false;
     fer_rx_msg_received_isr_cb();
   }
 }

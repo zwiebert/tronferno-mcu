@@ -1,6 +1,7 @@
 #include "app_config/proj_app_cfg.h"
 
 #include "main.h"
+#include "main_loop/main_queue.hh"
 #include <cli/cli.h>
 #include <app_settings/config.h>
 #include "utils_misc/int_types.h"
@@ -20,24 +21,13 @@
 
 typedef void (*lfa_funT)(void);
 
-const lfa_funT lfa_table[lf_Len] = {
-#ifdef USE_NETWORK
-    ipnet_connected,
-    ipnet_disconnected,
-#endif
-#ifdef USE_NTP
-    fer_am_updateTimerEvent,
-#endif
+
+const lfa_funT lfa_table[] = {
+    [] { mainLoop_processMessages(); },
 #if defined USE_AP_FALLBACK || defined USE_WLAN_AP
     lfa_createWifiAp,
 #endif
     cli_loop,
-#ifdef FER_TRANSMITTER
-    fer_tx_loop,
-#endif
-#ifdef FER_RECEIVER
-    fer_rx_loop,
-#endif
 #ifdef USE_SEP
     fer_sep_loop,
 #endif
@@ -50,21 +40,9 @@ const lfa_funT lfa_table[lf_Len] = {
 #endif
     fer_statPos_loopAutoSave, fer_pos_loopCheckMoving,
     pin_notify_input_change,
-    [] { mcu_delayedRestart(1500); },
-    config_setup_gpio,
-    config_setup_cc1101,
-    config_setup_astro,
-#ifdef USE_LAN
-    config_setup_ethernet,
-#endif
-#ifdef USE_MQTT
-    config_setup_mqttAppClient,
-#endif
-#ifdef USE_HTTP
-    config_setup_httpServer,
-#endif
-    config_setup_txtio,
 };
+
+static_assert(sizeof lfa_table / sizeof lfa_table[0] == lf_Len);
 
 /**
  * \brief      Call function table entry related to index

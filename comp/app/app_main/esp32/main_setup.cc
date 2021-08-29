@@ -37,13 +37,14 @@
 #include "../app_private.h"
 #include "fernotron/types.h"
 #include "app_main/loop.h"
+#include "main_loop/main_queue.hh"
 
 #ifdef FER_TRANSMITTER
 
 void tmr_setBit_txLoop_start(u32 interval_ms) {
   const int interval = pdMS_TO_TICKS(interval_ms);
   TimerHandle_t tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, nullptr, [](TimerHandle_t xTimer) {
-    lf_setBit(lf_loopFerTx);
+    mainLoop_callFun(fer_tx_loop);
   });
   if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("CheckNetworkTimer start error");
@@ -53,7 +54,7 @@ void tmr_setBit_txLoop_start(u32 interval_ms) {
 void loop_setBit_txLoop(u32 when_to_transmit_ts) {
   u32 now_ts = get_now_time_ts();
   if (now_ts >= when_to_transmit_ts) {
-    lf_setBit(lf_loopFerTx);
+    mainLoop_callFun(fer_tx_loop);
     return;
   }
 
@@ -68,7 +69,7 @@ void loop_setBit_txLoop(u32 when_to_transmit_ts) {
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb([](struct timeval *tv) {
     ets_printf("ntp synced: %ld\n", time(0));
-    lf_setBit(lf_ntpSyncTime);
+    mainLoop_callFun(fer_am_updateTimerEvent);
   });
   config_setup_ntpClient();
 }
@@ -138,12 +139,10 @@ void mcu_init() {
     gpio_INPUT_PIN_CHANGED_ISR_cb = pin_change_cb::cb;
 #endif
 
-    cli_run_mainLoop_cb = cli_run_mainLoop;
-
   #ifdef FER_RECEIVER
     //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
     struct msg_received_cb { static void IRAM_ATTR cb() {
-      lf_setBit_ISR(lf_loopFerRx, true);}
+      mainLoop_callFun_fromISR(fer_rx_loop);}
     };
     Fer_Trx_API::register_callback_msgReceived_ISR(msg_received_cb::cb);
   #endif
@@ -151,7 +150,7 @@ void mcu_init() {
   #ifdef FER_TRANSMITTER
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
   struct msg_transmitted_cb { static void IRAM_ATTR cb() {
-    lf_setBit_ISR(lf_loopFerTx, true);}
+    mainLoop_callFun_fromISR(fer_tx_loop);}
   };
   Fer_Trx_API::register_callback_msgTransmitted_ISR(msg_transmitted_cb::cb);
   #endif
@@ -185,13 +184,6 @@ void mcu_init() {
 #ifdef USE_HTTP
     hts_setup_content();
 #endif
-
-    ipnet_gotIpAddr_cb = [] {
-      lf_setBit(lf_gotIpAddr);
-    };
-    ipnet_lostIpAddr_cb = [] {
-      lf_setBit(lf_lostIpAddr);
-    };
 
     switch (network) {
 #ifdef USE_WLAN
