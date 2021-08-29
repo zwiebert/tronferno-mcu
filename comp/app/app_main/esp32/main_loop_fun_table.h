@@ -4,16 +4,11 @@
 
 enum loop_flagbits {
   lf_mainLoopQueue,
-#if defined USE_AP_FALLBACK || defined USE_WLAN_AP
-  lf_createWifiAp,
-#endif
-  lf_loopCli,
 #ifdef USE_SEP
   lf_loopFerSep,
 #endif
   lf_loopFerPos,
   lf_loopFerTimerState,
-  lf_loopFauTimerDataHasChanged,
 #ifdef USE_CUAS
   lf_checkCuasTimeout,
 #endif
@@ -21,8 +16,6 @@ enum loop_flagbits {
   lf_checkPairingTimeout,
 #endif
   lf_loopPosAutoSave, lf_loopPosCheckMoving,
-  lf_gpio_input_intr,
-
 
 //---------------
   lf_Len

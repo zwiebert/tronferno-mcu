@@ -28,7 +28,7 @@ void tmr_checkNetwork_start() {
   const int interval = pdMS_TO_TICKS(1000 * CHECK_NETWORK_INTERVAL);
   TimerHandle_t tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, nullptr, [](TimerHandle_t xTimer) {
     if (!ipnet_isConnected()) {
-      lf_setBit(lf_createWifiAp);
+      mainLoop_callFun(lfa_createWifiAp);
     }
   });
   if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {

@@ -115,7 +115,7 @@ void mcu_init() {
 #ifdef USE_CLI_TASK
   cli_setup_task(true);
 #else
-  lfPer100ms_setBit(lf_loopCli);
+#error
 #endif
   fer_am_updateTimerEvent();
   lfPer100ms_setBit(lf_loopFerTimerState);
@@ -129,12 +129,12 @@ void mcu_init() {
   };
   fer_tx_READY_TO_TRANSMIT_cb = loop_setBit_txLoop;
   fer_au_TIMER_DATA_CHANGE_cb = [] {
-      lf_setBit(lf_loopFauTimerDataHasChanged);
+      mainLoop_callFun(fer_am_updateTimerEvent);
     };
 #ifdef USE_GPIO_PINS
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
     struct pin_change_cb {static void IRAM_ATTR cb() {
-      lf_setBit_ISR(lf_gpio_input_intr, true);}
+      mainLoop_callFun_fromISR(pin_notify_input_change);}
     };
     gpio_INPUT_PIN_CHANGED_ISR_cb = pin_change_cb::cb;
 #endif

@@ -24,14 +24,10 @@ typedef void (*lfa_funT)(void);
 
 const lfa_funT lfa_table[] = {
     [] { mainLoop_processMessages(); },
-#if defined USE_AP_FALLBACK || defined USE_WLAN_AP
-    lfa_createWifiAp,
-#endif
-    cli_loop,
 #ifdef USE_SEP
     fer_sep_loop,
 #endif
-    fer_pos_loop, fer_am_loop, fer_am_updateTimerEvent,
+    fer_pos_loop, fer_am_loop,
 #ifdef USE_CUAS
     fer_cuas_set_check_timeout,
 #endif
@@ -39,7 +35,6 @@ const lfa_funT lfa_table[] = {
     fer_alias_auto_set_check_timeout,
 #endif
     fer_statPos_loopAutoSave, fer_pos_loopCheckMoving,
-    pin_notify_input_change,
 };
 
 static_assert(sizeof lfa_table / sizeof lfa_table[0] == lf_Len);
