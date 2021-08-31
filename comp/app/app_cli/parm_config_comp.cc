@@ -20,6 +20,8 @@
 #include <net/ntp_client_setup.h>
 #endif
 
+#include "main_loop/main_queue.hh"
+
 #include <utils_misc/int_types.h>
 #include <utils_misc/int_types.h>
 #include <utils_misc/mutex.hh>
@@ -28,9 +30,6 @@
 #include <stdlib.h>
 #include <iterator>
 #include <algorithm>
-
-
-void (*cli_run_mainLoop_cb)(enum mainLoop req);
 
 bool process_parmConfig_get_comp(otok kt, const char *val, const struct TargetDesc &td) {
   switch (kt) {
@@ -132,8 +131,7 @@ bool process_parmConfig_comp(otok kt, const char *key, const char *val, const st
   switch (kt) {
 #if ENABLE_RESTART
   case otok::k_restart:
-    if (cli_run_mainLoop_cb)
-      cli_run_mainLoop_cb(mainLoop_mcuRestart);
+    mainLoop_callFun([]() { mainLoop_mcuRestart(1500); });
     break;
 #endif
 
@@ -207,20 +205,21 @@ void parmConfig_reconfig_comp(u64 changed_mask) {
 
 #ifdef USE_LAN
   if (changed_mask & CMB_lan) {
-    cli_run_main_loop(mainLoop_configEthernet);
+    mainLoop_callFun(config_setup_ethernet);
   }
 #endif
 #ifdef USE_MQTT
   if (changed_mask & CBM_mqttClient) {
-    cli_run_main_loop(mainLoop_configMqttAppClient);
+    mainLoop_callFun(config_setup_mqttAppClient);
   }
 #endif
 #ifdef USE_HTTP
   if (changed_mask & CBM_httpServer) {
-    cli_run_main_loop(mainLoop_configHttpServer);
+    mainLoop_callFun(config_setup_httpServer);
   }
 #endif
   if (changed_mask & CBM_txtio) {
-    cli_run_main_loop(mainLoop_configTxtio);
+    mainLoop_callFun(config_setup_txtio);
   }
+
 }

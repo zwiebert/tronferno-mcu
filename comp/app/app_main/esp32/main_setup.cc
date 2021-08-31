@@ -37,13 +37,14 @@
 #include "../app_private.h"
 #include "fernotron/types.h"
 #include "app_main/loop.h"
+#include "main_loop/main_queue.hh"
 
 #ifdef FER_TRANSMITTER
 
 void tmr_setBit_txLoop_start(u32 interval_ms) {
   const int interval = pdMS_TO_TICKS(interval_ms);
   TimerHandle_t tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, nullptr, [](TimerHandle_t xTimer) {
-    lf_setBit(lf_loopFerTx);
+    mainLoop_callFun(fer_tx_loop);
   });
   if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("CheckNetworkTimer start error");
@@ -53,7 +54,7 @@ void tmr_setBit_txLoop_start(u32 interval_ms) {
 void loop_setBit_txLoop(u32 when_to_transmit_ts) {
   u32 now_ts = get_now_time_ts();
   if (now_ts >= when_to_transmit_ts) {
-    lf_setBit(lf_loopFerTx);
+    mainLoop_callFun(fer_tx_loop);
     return;
   }
 
@@ -68,7 +69,7 @@ void loop_setBit_txLoop(u32 when_to_transmit_ts) {
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb([](struct timeval *tv) {
     ets_printf("ntp synced: %ld\n", time(0));
-    lf_setBit(lf_ntpSyncTime);
+    mainLoop_callFun(fer_am_updateTimerEvent);
   });
   config_setup_ntpClient();
 }
@@ -100,8 +101,43 @@ void main_setup_ip_dependent() {
   }
 }
 
+void lfPer100ms_mainFun() {
+  fer_am_loop();
+
+  if (mainLoop_PeriodicFlags.bitmask) {
+#ifdef USE_SEP
+    if (mainLoop_PeriodicFlags.flags.lf_loopFerSep) {
+      fer_sep_loop();
+    }
+#endif
+#ifdef USE_CUAS
+   if (mainLoop_PeriodicFlags.flags.lf_checkCuasTimeout) {
+     fer_cuas_set_check_timeout();
+   }
+#endif
+#ifdef USE_PAIRINGS
+    if (mainLoop_PeriodicFlags.flags.lf_checkPairingTimeout) {
+      fer_alias_auto_set_check_timeout();
+    }
+#endif
+
+    if (mainLoop_PeriodicFlags.flags.lf_loopFerPos) {
+      fer_pos_loop();
+    }
+
+    if (mainLoop_PeriodicFlags.flags.lf_loopPosAutoSave) {
+      fer_statPos_loopAutoSave();
+    }
+
+    if (mainLoop_PeriodicFlags.flags.lf_loopPosCheckMoving) {
+      fer_pos_loopCheckMoving();
+    }
+
+  }
+}
+
 void mcu_init() {
-  loop_eventBits_setup();
+  mainLoop_setup(32);
   kvs_setup();
   config_setup_txtio();
 
@@ -114,36 +150,32 @@ void mcu_init() {
 #ifdef USE_CLI_TASK
   cli_setup_task(true);
 #else
-  lfPer100ms_setBit(lf_loopCli);
+#error
 #endif
   fer_am_updateTimerEvent();
-  lfPer100ms_setBit(lf_loopFerTimerState);
-
 
   fer_pos_POSITIONS_MOVE_cb = [](bool enable) {
-    lfPer100ms_putBit(lf_loopPosCheckMoving, enable);
+    mainLoop_PeriodicFlags.flags.lf_loopPosCheckMoving = enable;
   };
   fer_pos_POSITIONS_SAVE_cb  = [](bool enable) {
-    lfPer100ms_putBit(lf_loopPosAutoSave, enable);
+    mainLoop_PeriodicFlags.flags.lf_loopPosAutoSave = enable;
   };
   fer_tx_READY_TO_TRANSMIT_cb = loop_setBit_txLoop;
   fer_au_TIMER_DATA_CHANGE_cb = [] {
-      lf_setBit(lf_loopFauTimerDataHasChanged);
+      mainLoop_callFun(fer_am_updateTimerEvent);
     };
 #ifdef USE_GPIO_PINS
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
     struct pin_change_cb {static void IRAM_ATTR cb() {
-      lf_setBit_ISR(lf_gpio_input_intr, true);}
+      mainLoop_callFun_fromISR(pin_notify_input_change);}
     };
     gpio_INPUT_PIN_CHANGED_ISR_cb = pin_change_cb::cb;
 #endif
 
-    cli_run_mainLoop_cb = cli_run_mainLoop;
-
   #ifdef FER_RECEIVER
     //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
     struct msg_received_cb { static void IRAM_ATTR cb() {
-      lf_setBit_ISR(lf_loopFerRx, true);}
+      mainLoop_callFun_fromISR(fer_rx_loop);}
     };
     Fer_Trx_API::register_callback_msgReceived_ISR(msg_received_cb::cb);
   #endif
@@ -151,23 +183,23 @@ void mcu_init() {
   #ifdef FER_TRANSMITTER
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
   struct msg_transmitted_cb { static void IRAM_ATTR cb() {
-    lf_setBit_ISR(lf_loopFerTx, true);}
+    mainLoop_callFun_fromISR(fer_tx_loop);}
   };
   Fer_Trx_API::register_callback_msgTransmitted_ISR(msg_transmitted_cb::cb);
   #endif
 #ifdef USE_SEP
   fer_sep_enable_disable_cb = [] (bool enable) {
-    lfPer100ms_putBit(lf_loopFerSep, enable);
+    mainLoop_PeriodicFlags.flags.lf_loopFerSep = enable;
   };
 #endif
 #ifdef USE_PAIRINGS
   fer_alias_enable_disable_cb = [] (bool enable) {
-    lfPer100ms_putBit(lf_checkPairingTimeout, enable);
+    mainLoop_PeriodicFlags.flags.lf_checkPairingTimeout = enable;
   };
 #endif
 #ifdef USE_CUAS
   fer_cuas_enable_disable_cb = [] (bool enable, uint32_t cu) {
-    lfPer100ms_putBit(lf_checkCuasTimeout, enable);
+    mainLoop_PeriodicFlags.flags.lf_checkCuasTimeout = enable;
     config_save_item_n_u32(settings_get_kvsKey(CB_CUID), cu);
     config_item_modified(CB_CUID);
 };
@@ -185,13 +217,6 @@ void mcu_init() {
 #ifdef USE_HTTP
     hts_setup_content();
 #endif
-
-    ipnet_gotIpAddr_cb = [] {
-      lf_setBit(lf_gotIpAddr);
-    };
-    ipnet_lostIpAddr_cb = [] {
-      lf_setBit(lf_lostIpAddr);
-    };
 
     switch (network) {
 #ifdef USE_WLAN

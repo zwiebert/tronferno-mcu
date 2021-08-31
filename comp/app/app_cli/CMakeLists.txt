@@ -12,7 +12,7 @@ idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS "./include" 
     REQUIRES cli
-    PRIV_REQUIRES cc1101_ook net net_http_server app_mqtt app_misc utils_misc app_uout txtio fernotron_app fernotron_trx utils_debug app_http_server app_settings key_value_store firmware_update
+    PRIV_REQUIRES main_loop cc1101_ook net net_http_server app_mqtt app_misc utils_misc app_uout txtio fernotron_app fernotron_trx utils_debug app_http_server app_settings key_value_store firmware_update
     EMBED_TXTFILES ./ca_cert.pem
 )
 
