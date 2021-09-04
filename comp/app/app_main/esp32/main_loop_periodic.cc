@@ -27,10 +27,7 @@
 #include <freertos/timers.h>
 
 lfPerFlags mainLoop_PeriodicFlags;
-/**
- * \brief Interval for periodic events. Will also restart MCU periodically to avoid memory fragmentation.
- * \param[in] loop_flags_periodic_100ms  global variable with loop_flagbits
- */
+
 void tmr_loopPeriodic100ms_start() {
   const int interval = pdMS_TO_TICKS(LOOP_PERIODIC_INTERVAL_MS);
   TimerHandle_t tmr = xTimerCreate("PerLoop100ms", interval, pdTRUE, nullptr, [](TimerHandle_t xTimer) {

@@ -14,10 +14,25 @@
 #include "fer_trx_impl.hh"
 #include "utils_time/run_time.h"
 #include "cc1101_ook/trx.hh"
-
+#include "main_loop/main_queue.hh"
 
 
 void (*fer_tx_READY_TO_TRANSMIT_cb)(uint32_t when_to_transmit_ts);
+
+static void run_tx_worker_loop_main_thread(u32 when_to_transmit_ts) {
+  const u32 now_ts = get_now_time_ts();
+  if (now_ts >= when_to_transmit_ts) {
+    mainLoop_callFun(fer_tx_loop);
+    return;
+  }
+
+  // message sent time lies in future
+
+  const u32 delay_ms = (when_to_transmit_ts - now_ts) * 100;
+  if (!mainLoop_callFun(fer_tx_loop, delay_ms)) {
+    printf("TxWorker Timer start error");
+  }
+}
 
 static inline void fer_tx_ready_to_transmit_cb(uint32_t time_ts) {
   if (fer_tx_READY_TO_TRANSMIT_cb)
@@ -33,6 +48,7 @@ static void fer_send_checkQuedState() {
 
   if ((msg = fer_tx_nextMsg())) {
     fer_tx_ready_to_transmit_cb(msg->when_to_transmit_ts);
+    run_tx_worker_loop_main_thread(msg->when_to_transmit_ts);
   }
 }
 

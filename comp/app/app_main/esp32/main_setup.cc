@@ -23,48 +23,25 @@
 #include "net/ipnet.h"
 #include "storage/storage.h"
 #include "txtio/inout.h"
-#include <esp_attr.h>
-#include <esp_err.h>
-#include <esp_event.h>
-#include <esp_netif.h>
-#include <esp32/rom/ets_sys.h>
-#include <freertos/projdefs.h>
-#include <freertos/timers.h>
+
 #include <ctime>
 #include "config_kvs/config.h"
 #include "app_uout/status_output.h"
 #include "uout/uo_callbacks.h"
 #include "../app_private.h"
 #include "fernotron/types.h"
-#include "app_main/loop.h"
 #include "main_loop/main_queue.hh"
 
-#ifdef FER_TRANSMITTER
-
-void tmr_setBit_txLoop_start(u32 interval_ms) {
-  const int interval = pdMS_TO_TICKS(interval_ms);
-  TimerHandle_t tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, nullptr, [](TimerHandle_t xTimer) {
-    mainLoop_callFun(fer_tx_loop);
-  });
-  if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
+#ifdef USE_WLAN_AP
+void tmr_checkNetwork_start() {
+  if (!mainLoop_callFun([]() {
+    if (!ipnet_isConnected())
+      lfa_createWifiAp();
+  }, pdMS_TO_TICKS(1000 * CHECK_NETWORK_INTERVAL))) {
     printf("CheckNetworkTimer start error");
   }
 }
-
-void loop_setBit_txLoop(u32 when_to_transmit_ts) {
-  u32 now_ts = get_now_time_ts();
-  if (now_ts >= when_to_transmit_ts) {
-    mainLoop_callFun(fer_tx_loop);
-    return;
-  }
-
-  // message sent time lies in future
-
-  u32 delay_ms = (when_to_transmit_ts - now_ts) * 100;
-  tmr_setBit_txLoop_start(delay_ms);
-}
 #endif
-
 
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb([](struct timeval *tv) {
@@ -102,9 +79,7 @@ void main_setup_ip_dependent() {
 }
 
 void lfPer100ms_mainFun() {
-  fer_am_loop();
-
-  if (mainLoop_PeriodicFlags.bitmask) {
+  if (mainLoop_PeriodicFlags.flagbits) {
 #ifdef USE_SEP
     if (mainLoop_PeriodicFlags.flags.lf_loopFerSep) {
       fer_sep_loop();
@@ -115,24 +90,6 @@ void lfPer100ms_mainFun() {
      fer_cuas_set_check_timeout();
    }
 #endif
-#ifdef USE_PAIRINGS
-    if (mainLoop_PeriodicFlags.flags.lf_checkPairingTimeout) {
-      fer_alias_auto_set_check_timeout();
-    }
-#endif
-
-    if (mainLoop_PeriodicFlags.flags.lf_loopFerPos) {
-      fer_pos_loop();
-    }
-
-    if (mainLoop_PeriodicFlags.flags.lf_loopPosAutoSave) {
-      fer_statPos_loopAutoSave();
-    }
-
-    if (mainLoop_PeriodicFlags.flags.lf_loopPosCheckMoving) {
-      fer_pos_loopCheckMoving();
-    }
-
   }
 }
 
@@ -153,17 +110,8 @@ void mcu_init() {
 #error
 #endif
   fer_am_updateTimerEvent();
+  mainLoop_callFun(fer_am_loop, 1000, true);
 
-  fer_pos_POSITIONS_MOVE_cb = [](bool enable) {
-    mainLoop_PeriodicFlags.flags.lf_loopPosCheckMoving = enable;
-  };
-  fer_pos_POSITIONS_SAVE_cb  = [](bool enable) {
-    mainLoop_PeriodicFlags.flags.lf_loopPosAutoSave = enable;
-  };
-  fer_tx_READY_TO_TRANSMIT_cb = loop_setBit_txLoop;
-  fer_au_TIMER_DATA_CHANGE_cb = [] {
-      mainLoop_callFun(fer_am_updateTimerEvent);
-    };
 #ifdef USE_GPIO_PINS
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
     struct pin_change_cb {static void IRAM_ATTR cb() {
@@ -190,11 +138,6 @@ void mcu_init() {
 #ifdef USE_SEP
   fer_sep_enable_disable_cb = [] (bool enable) {
     mainLoop_PeriodicFlags.flags.lf_loopFerSep = enable;
-  };
-#endif
-#ifdef USE_PAIRINGS
-  fer_alias_enable_disable_cb = [] (bool enable) {
-    mainLoop_PeriodicFlags.flags.lf_checkPairingTimeout = enable;
   };
 #endif
 #ifdef USE_CUAS

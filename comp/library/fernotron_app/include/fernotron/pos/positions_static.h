@@ -15,7 +15,7 @@
  * \brief              Will be called if a position  has changed or has been saved.
  * \param has_unsaved  If true, a changed position needs saving; If false, all positions were saved successfully. XXX
  */
-extern void (*fer_pos_POSITIONS_SAVE_cb)(bool has_unsaved);
+void fer_pos_POSITIONS_SAVE_cb(bool has_unsaved);
 
 struct fer_shutterGroupPositionsT {
    operator uint8_t*() { return grpPos_; }
@@ -50,8 +50,6 @@ Pct fer_statPos_getPct(uint8_t g, uint8_t m);
  * \param td     Output descriptor
  */
 void fer_statPos_printAllPcts(const struct TargetDesc &td);
-
-void fer_statPos_loopAutoSave();
 
 void fer_pos_loop(void);
 void fer_pos_init(void);

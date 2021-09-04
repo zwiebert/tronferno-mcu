@@ -41,8 +41,6 @@ void test_send() {
   Fer_MsgPlainCmd m { 0x804243, 5, 8, fer_if_cmd_STOP };
 
   Fer_Trx_API::send_cmd(m.a, m.g, m.m, m.cmd );
-  TEST_ASSERT_EQUAL(first_msg_count, 0);
-  Fer_Trx_API::loop_tx();
   TEST_ASSERT_EQUAL(first_msg_count, 1);
   TEST_ASSERT_EQUAL(any_msg_count, 1);
   TEST_ASSERT_TRUE(is_equal(m, first_msg_cmd));

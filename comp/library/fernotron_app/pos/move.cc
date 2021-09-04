@@ -110,7 +110,7 @@ void fer_pos_mvCheck_mvi(struct Fer_Move *Fer_Move) {
 }
 
 
-static void fer_pos_checkStatus_whileMoving() {
+void fer_pos_checkStatus_whileMoving() {
   struct Fer_Move *Fer_Move;
   for (Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {
     fer_pos_mvCheck_mvi(Fer_Move);
@@ -203,10 +203,6 @@ Pct fer_simPos_getPct_whileMoving(u8 g, u8 m) {
     }
   }
   return fer_statPos_getPct(g, m);
-}
-
-void fer_pos_loopCheckMoving() {
-  fer_pos_checkStatus_whileMoving_periodic(20);
 }
 
 #ifdef NO_OPT

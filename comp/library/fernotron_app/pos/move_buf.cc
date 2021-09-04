@@ -13,20 +13,28 @@
 #include "fernotron/types.h"
 #include "utils_misc/int_macros.h"
 #include "utils_misc/int_types.h"
+#include "main_loop/main_queue.hh"
 
 #define fer_mv_SIZE 8
 struct Fer_Move moving[fer_mv_SIZE];
 u8 moving_mask;
 
+void fer_pos_POSITIONS_MOVE_cb(bool has_unsaved) {
+  static void *tmr;
+  if (has_unsaved && !tmr) {
+    tmr = mainLoop_callFun(fer_pos_checkStatus_whileMoving, 1000, true);
+  }
+  if (!has_unsaved && tmr) {
+    mainLoop_stopFun(tmr);
+    tmr = nullptr;
+  }
+}
 
-void (*fer_pos_POSITIONS_MOVE_cb)(bool has_unsaved);
 static inline void fer_pos_HAS_MOVING_cb() {
-  if (fer_pos_POSITIONS_MOVE_cb)
-    fer_pos_POSITIONS_MOVE_cb(true);
+  fer_pos_POSITIONS_MOVE_cb(true);
 }
 static inline void fer_pos_HAS_NO_MOVING_cb() {
-  if (fer_pos_POSITIONS_MOVE_cb)
-    fer_pos_POSITIONS_MOVE_cb(false);
+  fer_pos_POSITIONS_MOVE_cb(false);
 }
 
 

@@ -72,25 +72,31 @@ public:
     return (getPct((g), 0) == pm_GROUP_UNUSED);
   }
 
+  void autoSavePositions() {
+    DT(ets_printf("%s: \n", __func__, interval_ts));
+
+    fer_pos_POSITIONS_SAVE_cb(false);
+    u8 mask = changedGroupMask_;
+    changedGroupMask_ = 0;
+    u8 g;
+    for (g = 0; mask; ++g, (mask >>= 1)) {
+      if ((mask & 1) == 0)
+        continue;
+
+      store_group_positions(g);
+      D(io_printf_v(vrbDebug, "autosave_pos: g=%d\n", (int)g));
+    }
+
+  }
+
 
   void autoSavePositions_iv(int interval_ts) {
     DT(ets_printf("%s: interval_tx=%d\n", __func__, interval_ts));
     static unsigned next_save_pos;
     u8 mask = changedGroupMask_;
     if (mask && periodic_ts(interval_ts, &next_save_pos)) {
-      if (fer_pos_POSITIONS_SAVE_cb)
-        fer_pos_POSITIONS_SAVE_cb(false);
-      changedGroupMask_ = 0;
+      autoSavePositions();
       next_save_pos = 0;
-
-      u8 g;
-      for (g = 0; mask; ++g, (mask >>= 1)) {
-        if ((mask & 1) == 0)
-          continue;
-
-        store_group_positions(g);
-        D(io_printf_v(vrbDebug, "autosave_pos: g=%d\n", (int)g));
-      }
     }
   }
 

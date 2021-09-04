@@ -5,17 +5,18 @@
  *      Author: bertw
  */
 #include "app_config/proj_app_cfg.h"
+#include "fernotron/auto/fau_tevent.h"
 #include "timer_data_fs.h"
 #include "timer_data_kvs.h"
 #include "fernotron/auto/fau_tdata_store.h"
 #include "utils_misc/int_types.h"
+#include "main_loop/main_queue.hh"
+
+
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
-void (*fer_au_TIMER_DATA_CHANGE_cb)(void);
-
 static inline void fer_au_timer_data_change_cb() {
-  if (fer_au_TIMER_DATA_CHANGE_cb)
-    fer_au_TIMER_DATA_CHANGE_cb();
+  mainLoop_callFun(fer_am_updateTimerEvent);
 }
 
 #ifdef USE_TIMER_DATA_KVS

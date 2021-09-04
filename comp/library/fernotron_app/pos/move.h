@@ -33,6 +33,7 @@ bool fer_pos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts);
 void fer_pos_mvCheck_mvi(struct Fer_Move *Fer_Move);
 int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts);
 void fer_pos_checkStatus_whileMoving_periodic(int interval_ts);
+void fer_pos_checkStatus_whileMoving();
 u16 fer_simPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct);
 
 
