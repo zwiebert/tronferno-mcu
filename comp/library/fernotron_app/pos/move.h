@@ -47,6 +47,6 @@ void fer_pos_stop_mvi(struct Fer_Move *Fer_Move, u8 g, u8 m, u32 now_ts);
 void fer_pos_stop_mm(Fer_GmSet *mm, u32 now_ts);
 void fer_pos_stop_mvi_mm(struct Fer_Move *Fer_Move, Fer_GmSet *mm, u32 now_ts);
 
-
+void fer_pos_POSITIONS_SAVE_cb(bool has_unsaved);
 
 

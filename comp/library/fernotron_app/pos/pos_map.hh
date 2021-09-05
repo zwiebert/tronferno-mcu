@@ -8,6 +8,8 @@
 
 #include <utils_time/periodic.h>
 
+#include "move.h"
+
 
 enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 

@@ -11,12 +11,6 @@
 #include <stdbool.h>
 
 
-/**
- * \brief              Will be called if a position  has changed or has been saved.
- * \param has_unsaved  If true, a changed position needs saving; If false, all positions were saved successfully. XXX
- */
-void fer_pos_POSITIONS_SAVE_cb(bool has_unsaved);
-
 struct fer_shutterGroupPositionsT {
    operator uint8_t*() { return grpPos_; }
   uint8_t grpPos_[8];
