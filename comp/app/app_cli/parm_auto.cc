@@ -188,7 +188,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   if (is_timer_frame) {
     if (f_disableManu || f_enableManu) {
       manual_bits.putMember(parm_g, parm_m, f_enableManu);
-      fer_stor_gmSet_save("MANU", manual_bits, 1);
+      manual_bits.store_save(MANUAL_BITS_STORE_NAME);
     }
     f_manual = manual_bits.getMember(parm_g, parm_m);
   }

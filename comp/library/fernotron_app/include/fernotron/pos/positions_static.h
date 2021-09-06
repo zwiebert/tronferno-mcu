@@ -11,11 +11,6 @@
 #include <stdbool.h>
 
 
-struct fer_shutterGroupPositionsT {
-   operator uint8_t*() { return grpPos_; }
-  uint8_t grpPos_[8];
-};
-
 // keep track of static positions
 
 /**

@@ -33,7 +33,3 @@ public:
   Pct(uint8_t pct) : pct_(pct) {}
   Pct() : invalid_(true) { }
 };
-
-// read/save one or more elements of type Fer_GmSet
-bool fer_stor_gmSet_load(const char *name, gmSetT gm[], int count);
-bool fer_stor_gmSet_save(const char *name, const gmSetT gm[], int count);

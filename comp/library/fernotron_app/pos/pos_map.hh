@@ -9,7 +9,7 @@
 #include <utils_time/periodic.h>
 
 #include "move.h"
-
+#include "key_value_store/kvs_wrapper.h"
 
 enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 
@@ -18,15 +18,17 @@ enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 #define DT(x)
 #define D(x)
 
+#define CFG_NAMESPACE "Tronferno"
+
 static inline char *g_to_name(u8 g, char *buf) {
-  STRCPY(buf, "PMAP_Gx");
-  buf[6] = '0' + g;
+  STRCPY(buf, "GMBM_PMAP_Gx");
+  buf[11] = '0' + g;
   return buf;
 }
 
 
 class Fer_Pos_Map {
-  fer_shutterGroupPositionsT allPos_[8];
+  uint8_t allPos_[8][8];
   u8 changedGroupMask_ = 0;
 
 public:
@@ -43,7 +45,6 @@ public:
 
 
 public:
-  fer_shutterGroupPositionsT & operator[](int idx) { return allPos_[idx]; }
   u8 getChangedGroups()  { u8 result = changedGroupMask_; changedGroupMask_ = 0; return result; }
 
   inline u8 getPct(u8 g, u8 m) {
@@ -102,9 +103,32 @@ public:
     }
   }
 
+
+
+  static bool store_load(const char *name, uint8_t *gm) {
+    bool success = false;
+
+    if (kvshT handle = kvs_open(CFG_NAMESPACE, kvs_READ); handle) {
+      success = (kvs_rw_blob(handle, name, (void*) gm, 8, false));
+      kvs_close(handle);
+    }
+    return success;
+  }
+
+  static bool store_save(const char *name, const uint8_t *gm) {
+    bool success = false;
+
+    if (kvshT handle = kvs_open(CFG_NAMESPACE, kvs_WRITE); handle) {
+      success = (kvs_rw_blob(handle, name, (void*) gm, 8, true));
+      kvs_commit(handle);
+      kvs_close(handle);
+    }
+    return success;
+  }
+
   bool load_group_positions(u8 g) {
-    char buf[8];
-    if (fer_stor_gmSet_load(g_to_name(g, buf), &allPos_[g].grpPos_, 1)) {
+    char buf[16];
+    if (store_load(g_to_name(g, buf), allPos_[g])) {
       setPct(g,0,getAvgPctGroup(g)); // XXX: enforce new meaning of m==0
       return true;
     }
@@ -112,8 +136,8 @@ public:
   }
 
   bool store_group_positions(u8 g) {
-    char buf[8];
-    return fer_stor_gmSet_save(g_to_name(g, buf), &allPos_[g].grpPos_, 1);
+    char buf[16];
+    return store_save(g_to_name(g, buf), allPos_[g]);
   }
 
   u8 getAvgPctGroup(u8 g) {

@@ -107,7 +107,7 @@ void fer_main_setup(const fer_configT &ferConfig, const bool reinit) {
 
    fer_config = ferConfig;
    fer_usedMemberMask.fromNibbleCounters(ferConfig.usedMembers);
-   manual_bits = Fer_GmSet("MANU");
+   manual_bits = Fer_GmSet(MANUAL_BITS_STORE_NAME);
    if (reinit)
      return;
 
