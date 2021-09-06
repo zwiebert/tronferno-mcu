@@ -138,10 +138,30 @@ bool fer_pos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts) {
 }
 
 bool fer_pos_shouldMove_sunDown(u8 g, u8 m) {
+
+  if (fer_statPos_isSunPos(g, m))
+    return false;
+
   u8 pct_curr = fer_statPos_getPct(g, m);
   u8 pct_sun = fer_pos_mGetSunPct(g, m);
 
   if (pct_curr <= pct_sun)
+    return false;
+
+  if (manual_bits.getMember(g, m))
+    return false;
+
+  Fer_TimerData td = { };
+  if (fer_stor_timerData_load(&td, &g, &m, true)) {
+    if (!td.getSunAuto())
+      return false;
+  }
+
+  return true;
+}
+
+bool fer_pos_shouldMove_sunUp(u8 g, u8 m) {
+  if (!fer_statPos_isSunPos(g, m))
     return false;
 
   if (manual_bits.getMember(g, m))
