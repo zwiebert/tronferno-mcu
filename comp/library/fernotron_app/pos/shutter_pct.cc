@@ -63,20 +63,28 @@ Pct fer_statPos_getPct(u8 g, u8 m) {
   return Pct{};
 }
 
-static void set_state(u32 a, u8 g, u8 m, int position) {
+bool fer_statPos_isSunPos(u8 g, u8 m) {
+  precond(g <= 7 && m <= 7);
+
+  if (g == 0 || m == 0) {
+    return false;
+  }
+   return pos_map.isSunPos(g, m);
+}
+static void set_state(u32 a, u8 g, u8 m, int position, bool isSunPos) {
   DT(db_printf("%s: a=%x, g=%d, m=%d, position=%d\n", __func__, a, g, m, position));
   precond(g <= 7 && m <= 7);
   precond(0 <= position && position <= 100);
 
   pos_map.setMemberUnused(g,0);
-  pos_map.setPct(g,m,position);
+  pos_map.setPct(g,m,position, isSunPos);
   pos_map.setPct(g,0, pos_map.getAvgPctGroup(g));
 
   fer_pos_POSITIONS_SAVE_cb(true);
 }
 
 void
-fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
+fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct, bool isSunPos) {
   precond(g <= 7 && m <= 7);
 
 #ifndef TEST_HOST
@@ -98,7 +106,7 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
 #endif
 #endif
 
-  set_state(a, g, m, pct);
+  set_state(a, g, m, pct, isSunPos);
 
 
 #ifndef TEST_HOST

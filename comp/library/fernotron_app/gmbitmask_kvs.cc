@@ -20,37 +20,24 @@
 #include <string.h>
 #include "key_value_store/kvs_wrapper.h"
 
-#define NB_SIZE 30
-#define NB_PFX "GMBM_"
-#define NB_N (NB_SIZE - sizeof (NB_PFX))
-
-
-
-static bool gm_save(const char *name, const gmSetT gm[], int count, bool write) {
-  char nb[NB_SIZE] = NB_PFX;
-  strncat (nb, name, NB_N);
+bool Fer_GmSet::store_load(const char *name) {
   bool success = false;
-  const size_t byte_len = sizeof(gm[0]) * count;
 
-  kvshT handle = kvs_open(CFG_NAMESPACE, write ? kvs_WRITE : kvs_READ);
-
-  if (handle) {
-    success = (kvs_rw_blob(handle, nb, (void*)gm, byte_len, write));
-    if (write) {
-      kvs_commit(handle);
-    }
+  if (kvshT handle = kvs_open(CFG_NAMESPACE, kvs_READ); handle) {
+    success = (kvs_rw_blob(handle, name, (void*) mBm, 8, false));
     kvs_close(handle);
   }
   return success;
 }
 
-bool fer_stor_gmSet_load(const char *name, gmSetT gm[], int count) {
-  return gm_save (name, (gmSetT*)gm, count, false);
+bool Fer_GmSet::store_save(const char *name) {
+  bool success = false;
+
+  if (kvshT handle = kvs_open(CFG_NAMESPACE, kvs_WRITE); handle) {
+    success = (kvs_rw_blob(handle, name, (void*) mBm, 8, true));
+    kvs_commit(handle);
+    kvs_close(handle);
+  }
+  return success;
 }
-
-bool fer_stor_gmSet_save(const char *name, const gmSetT gm[], int count) {
-  return gm_save (name, gm, count, true);
-}
-
-
 
