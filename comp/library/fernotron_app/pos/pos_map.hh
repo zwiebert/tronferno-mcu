@@ -9,7 +9,6 @@
 #include <utils_time/periodic.h>
 
 #include "move.h"
-#include "key_value_store/kvs_wrapper.h"
 
 enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 
@@ -120,26 +119,8 @@ public:
 
 
 
-  static bool store_load(const char *name, posDataT *gm) {
-    bool success = false;
-
-    if (kvshT handle = kvs_open(CFG_NAMESPACE, kvs_READ); handle) {
-      success = (kvs_rw_blob(handle, name, (void*) gm, 8, false));
-      kvs_close(handle);
-    }
-    return success;
-  }
-
-  static bool store_save(const char *name, const posDataT *gm) {
-    bool success = false;
-
-    if (kvshT handle = kvs_open(CFG_NAMESPACE, kvs_WRITE); handle) {
-      success = (kvs_rw_blob(handle, name, (void*) gm, 8, true));
-      kvs_commit(handle);
-      kvs_close(handle);
-    }
-    return success;
-  }
+  static bool store_load(const char *name, posDataT *gm);
+  static bool store_save(const char *name, const posDataT *gm);
 
   bool load_group_positions(u8 g) {
     char buf[16];

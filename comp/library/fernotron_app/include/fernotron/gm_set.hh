@@ -250,7 +250,10 @@ public:
 
   bool store_load(const char *name);
   bool store_save(const char *name);
-
+#ifdef HOST_TESTING
+public:
+  operator uint8_t*() { return mBm; }
+#endif
 private:
   uint8_t mBm[8] = { };
 };

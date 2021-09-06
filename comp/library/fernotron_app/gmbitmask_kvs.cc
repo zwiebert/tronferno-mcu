@@ -20,6 +20,7 @@
 #include <string.h>
 #include "key_value_store/kvs_wrapper.h"
 
+
 bool Fer_GmSet::store_load(const char *name) {
   bool success = false;
 
@@ -41,3 +42,25 @@ bool Fer_GmSet::store_save(const char *name) {
   return success;
 }
 
+#include "pos/pos_map.hh"
+
+ bool Fer_Pos_Map::store_load(const char *name, posDataT *gm) {
+  bool success = false;
+
+  if (kvshT handle = kvs_open(CFG_NAMESPACE, kvs_READ); handle) {
+    success = (kvs_rw_blob(handle, name, (void*) gm, 8, false));
+    kvs_close(handle);
+  }
+  return success;
+}
+
+ bool Fer_Pos_Map::store_save(const char *name, const posDataT *gm) {
+  bool success = false;
+
+  if (kvshT handle = kvs_open(CFG_NAMESPACE, kvs_WRITE); handle) {
+    success = (kvs_rw_blob(handle, name, (void*) gm, 8, true));
+    kvs_commit(handle);
+    kvs_close(handle);
+  }
+  return success;
+}
