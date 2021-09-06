@@ -49,7 +49,9 @@ public:
     if (msg_type == MSG_TYPE_PLAIN || msg_type == MSG_TYPE_PLAIN_DOUBLE) {
       fer_msg_print("R:", fer_rx_msg, msg_type, TXTIO_IS_VERBOSE(vrbDebug));
      // fer_msg_print_as_cmdline((msg_type == MSG_TYPE_PLAIN_DOUBLE ? "Rc:" : "RC:"), fer_rx_msg, msg_type);
+#ifdef USE_REPEATER
       ferRep_repeatCommand(fer_rx_msg->cmd.sd.cmd);
+#endif
     }
 
 #ifndef FER_RECEIVER_MINIMAL
