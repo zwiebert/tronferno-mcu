@@ -14,6 +14,7 @@ struct fer_configT {
 
 extern fer_configT fer_config;
 extern  Fer_GmSet manual_bits;
+#define MANUAL_BITS_STORE_NAME "GMBM_MANU"
 extern  Fer_GmSet fer_usedMemberMask;
 
 void fer_main_setup(const fer_configT &ferConfig, bool reinit = false);

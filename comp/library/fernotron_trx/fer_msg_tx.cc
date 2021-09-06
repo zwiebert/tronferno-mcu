@@ -124,9 +124,23 @@ void fer_trx_direction(bool tx) {
   cc1101_ook_setDirection(tx);
 }
 
+extern uint32_t last_rx_ts;
+
+/**
+ * \brief Test if receiver is not receiving right now, to avoid RF collision with transmitter.
+ */
+inline bool fer_rx_clear_to_send() {
+#ifdef HOST_TESTING
+  return true;
+#endif
+  return last_rx_ts + 5 <= get_now_time_ts(); // TODO: we could use RSSI with CC1101 here. For now just check if nothing was received in the last 500ms
+}
+
 void fer_tx_loop() {
-  if (fer_tx_isTransmitterBusy())
+  if (fer_tx_isTransmitterBusy() || !fer_rx_clear_to_send()) {
+    mainLoop_callFun(fer_tx_loop, 100);
     return;
+  }
 
   struct sf *msg = fer_tx_nextMsg();
 

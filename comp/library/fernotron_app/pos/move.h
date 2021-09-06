@@ -39,7 +39,7 @@ u16 fer_simPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct);
 
 // start moving
 bool fer_pos_shouldMove_sunDown(uint8_t g, uint8_t m);
-
+bool fer_pos_shouldMove_sunUp(uint8_t g, uint8_t m);
 
 // stop moving
 void fer_pos_stop_mv(struct Fer_Move *Fer_Move, u8 g, u8 m, u8 pct);
@@ -47,6 +47,6 @@ void fer_pos_stop_mvi(struct Fer_Move *Fer_Move, u8 g, u8 m, u32 now_ts);
 void fer_pos_stop_mm(Fer_GmSet *mm, u32 now_ts);
 void fer_pos_stop_mvi_mm(struct Fer_Move *Fer_Move, Fer_GmSet *mm, u32 now_ts);
 
-
+void fer_pos_POSITIONS_SAVE_cb(bool has_unsaved);
 
 

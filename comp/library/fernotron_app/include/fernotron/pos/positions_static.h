@@ -11,17 +11,6 @@
 #include <stdbool.h>
 
 
-/**
- * \brief              Will be called if a position  has changed or has been saved.
- * \param has_unsaved  If true, a changed position needs saving; If false, all positions were saved successfully. XXX
- */
-void fer_pos_POSITIONS_SAVE_cb(bool has_unsaved);
-
-struct fer_shutterGroupPositionsT {
-   operator uint8_t*() { return grpPos_; }
-  uint8_t grpPos_[8];
-};
-
 // keep track of static positions
 
 /**
@@ -29,7 +18,7 @@ struct fer_shutterGroupPositionsT {
  * \param a,g,m  Shutter, group or alias
  * \param pct    Position
  */
-void fer_statPos_setPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct);
+void fer_statPos_setPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct, bool isSunPos = false);
 
 /**
  * \brief        Set static position for a given set of shutters or group
@@ -44,6 +33,13 @@ void fer_statPos_setPcts(Fer_GmSet *mm, uint8_t pct);
  * \return        -1 for error or Position in percent.
  */
 Pct fer_statPos_getPct(uint8_t g, uint8_t m);
+
+/**
+ * \brief        Test if shutter is in sun position
+ * \param g,m    Shutter
+ * \return       result
+ */
+bool fer_statPos_isSunPos(uint8_t g, uint8_t m);
 
 /**
  * \brief        Output all tracked static positions to user

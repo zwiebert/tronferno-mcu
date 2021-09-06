@@ -32,6 +32,7 @@
 struct filter {
   bool same_direction : 1;
   bool sun_not_ready_to_move_down : 1;
+  bool sun_not_ready_to_move_up : 1;
   bool destination_already_reached : 1;
   enum direction dir;
 };
@@ -46,6 +47,10 @@ static int fer_pos_filter_mm(Fer_GmSet *mm, struct filter *filter) {
 
     if (filter->sun_not_ready_to_move_down && !fer_pos_shouldMove_sunDown(g, m))
       goto filter_out;
+
+    if (filter->sun_not_ready_to_move_up && !fer_pos_shouldMove_sunUp(g, m))
+      goto filter_out;
+
 
     if (filter->destination_already_reached) {
       u8 currPct = fer_statPos_getPct(g, m);
@@ -135,6 +140,7 @@ bool fer_simPos_registerMovingShutters(Fer_GmSet *mm, fer_if_cmd cmd) {
   case fer_if_cmd_SunUP:
     dir = DIRECTION_SUN_UP;
     filter.destination_already_reached = true;
+    filter.sun_not_ready_to_move_up = true;
     break;
   case fer_if_cmd_UP:
     dir = DIRECTION_UP;

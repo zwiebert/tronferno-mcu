@@ -21,9 +21,10 @@
 #include "fernotron/auto/fau_tdata_store.h"
 
 #include "move.h"
+#include "move_buf.h"
 
 void fer_pos_stop_mv(struct Fer_Move *Fer_Move, u8 g, u8 m, u8 pct) {
-  fer_statPos_setPct(0, g, m, pct);
+  fer_statPos_setPct(0, g, m, pct, direction_isSun(Fer_Move->dir) && direction_isDown(Fer_Move->dir));
   Fer_Move->mask.clearMember(g, m);
   if (Fer_Move->mask.isAllClear())
     fer_mv_free(Fer_Move);
