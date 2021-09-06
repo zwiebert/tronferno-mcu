@@ -28,7 +28,17 @@ static inline char *g_to_name(u8 g, char *buf) {
 
 
 class Fer_Pos_Map {
-  uint8_t allPos_[8][8];
+  struct __attribute__ ((packed)) posDataT {
+    operator uint8_t() { return pct; }
+    bool isGroupUnused() const { return pct == pm_GROUP_UNUSED; }
+    bool isMemberUnused() const { return pct == pm_MEMBER_UNUSED; }
+    bool isInvalid() const { return pct == pm_INVALID; }
+    bool isValidPos() const { return 0 <= pct && pct <= 100; }
+    bool isSunPos() const { return isValidPos() && sun; }
+    uint8_t pct : 7;
+    bool sun : 1;
+  };
+  posDataT allPos_[8][8];
   u8 changedGroupMask_ = 0;
 
 public:
@@ -36,9 +46,9 @@ public:
     u8 g, m;
 
     for (g=0; g < 8; ++g) {
-      allPos_[g][0] = pm_GROUP_UNUSED;
+      allPos_[g][0].pct = pm_GROUP_UNUSED;
       for (m=1; m < 8; ++m) {
-        allPos_[g][m] = pm_MEMBER_UNUSED;
+        allPos_[g][m].pct = pm_MEMBER_UNUSED;
       }
     }
   }
@@ -47,32 +57,37 @@ public:
 public:
   u8 getChangedGroups()  { u8 result = changedGroupMask_; changedGroupMask_ = 0; return result; }
 
-  inline u8 getPct(u8 g, u8 m) {
-       u8 result = (allPos_[(g)][(m)] + 0);
+  u8 getPct(u8 g, u8 m) {
+       u8 result = (allPos_[g][m] + 0);
        if (result == pm_INVALID && m == 0) {
-         allPos_[(g)][0] = result = getAvgPctGroup(g);
+         allPos_[g][0].pct = result = getAvgPctGroup(g);
        }
        return result;
   }
 
-  inline void setPct(u8 g, u8 m, u8 pct) {
-    allPos_[(g)][(m)] = (pct);
+  bool isSunPos(u8 g, u8 m) {
+       return allPos_[g][m].isSunPos();
+  }
+
+  void setPct(u8 g, u8 m, u8 pct, bool  isSunPos = false) {
+    allPos_[g][m].pct = (pct);
+    allPos_[g][m].sun = isSunPos;
     SET_BIT(changedGroupMask_, g);
-    allPos_[(g)][0] = pm_INVALID;
+    allPos_[g][0].pct = pm_INVALID;
   }
-  inline void setMemberUnused(u8 g, u8 m) {
-    setPct((g), (m), pm_MEMBER_UNUSED);
-    SET_BIT(changedGroupMask_, g);
-  }
-  inline bool isMemberUnused(u8 g, u8 m) {
-    return (getPct((g), (m)) == pm_MEMBER_UNUSED);
-  }
-  inline void setGroupUnused(u8 g) {
-    setPct((g), 0, pm_GROUP_UNUSED);
+  void setMemberUnused(u8 g, u8 m) {
+    setPct(g, m, pm_MEMBER_UNUSED);
     SET_BIT(changedGroupMask_, g);
   }
-  inline bool isGroupUnused(u8 g) {
-    return (getPct((g), 0) == pm_GROUP_UNUSED);
+  bool isMemberUnused(u8 g, u8 m) {
+    return (getPct(g, m) == pm_MEMBER_UNUSED);
+  }
+  void setGroupUnused(u8 g) {
+    setPct(g, 0, pm_GROUP_UNUSED);
+    SET_BIT(changedGroupMask_, g);
+  }
+  bool isGroupUnused(u8 g) {
+    return (getPct(g, 0) == pm_GROUP_UNUSED);
   }
 
   void autoSavePositions() {
@@ -105,7 +120,7 @@ public:
 
 
 
-  static bool store_load(const char *name, uint8_t *gm) {
+  static bool store_load(const char *name, posDataT *gm) {
     bool success = false;
 
     if (kvshT handle = kvs_open(CFG_NAMESPACE, kvs_READ); handle) {
@@ -115,7 +130,7 @@ public:
     return success;
   }
 
-  static bool store_save(const char *name, const uint8_t *gm) {
+  static bool store_save(const char *name, const posDataT *gm) {
     bool success = false;
 
     if (kvshT handle = kvs_open(CFG_NAMESPACE, kvs_WRITE); handle) {
