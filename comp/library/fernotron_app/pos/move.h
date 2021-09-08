@@ -13,7 +13,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "fernotron/pos/positions_dynamic.h"
 
-#include "move_buf.h"
+
 
 extern struct shutter_timings st_def;
 
@@ -27,6 +27,8 @@ extern struct shutter_timings st_def;
 #define DEF_MV_UP_10 260
 #define DEF_MV_DOWN_10 250
 #define DEF_MV_SUN_DOWN_10 100
+
+#include "move_buf.h"
 
 // general control for moving
 bool fer_pos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts);

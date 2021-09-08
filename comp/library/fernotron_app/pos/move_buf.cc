@@ -10,40 +10,22 @@
 
 #include "stdbool.h"
 #include <stdint.h>
+#include <array>
 #include "fernotron/types.h"
 #include "utils_misc/int_macros.h"
 #include "utils_misc/int_types.h"
 #include "main_loop/main_queue.hh"
 
 #define fer_mv_SIZE 8
-struct Fer_Move moving[fer_mv_SIZE];
-u8 moving_mask;
-
-void fer_pos_POSITIONS_MOVE_cb(bool has_unsaved) {
-  static void *tmr;
-  if (has_unsaved && !tmr) {
-    tmr = mainLoop_callFun(fer_pos_checkStatus_whileMoving, 1000, true);
-  }
-  if (!has_unsaved && tmr) {
-    mainLoop_stopFun(tmr);
-    tmr = nullptr;
-  }
-}
-
-static inline void fer_pos_HAS_MOVING_cb() {
-  fer_pos_POSITIONS_MOVE_cb(true);
-}
-static inline void fer_pos_HAS_NO_MOVING_cb() {
-  fer_pos_POSITIONS_MOVE_cb(false);
-}
-
-
+struct std::array<Fer_Move, fer_mv_SIZE> moving;
+static u8 moving_mask;
+static void *moving_timer;
 
 struct Fer_Move* fer_mv_getNext(struct Fer_Move *pred) {
   if (!moving_mask)
     return 0;
 
-  int mvi = pred ? (pred - moving) + 1 : 0;
+  int mvi = pred ? std::distance(moving.begin(), pred) + 1 : 0;
   u8 msk = moving_mask >> mvi;
 
   for (; msk; ++mvi, (msk >>= 1)) {
@@ -62,16 +44,21 @@ struct Fer_Move* fer_mv_calloc() {
 
     SET_BIT(moving_mask, mvi);
     moving[mvi] = (struct Fer_Move ) { };
-    fer_pos_HAS_MOVING_cb();
+    if (!moving_timer) {
+      moving_timer = mainLoop_callFun(fer_pos_checkStatus_whileMoving, 200, true);
+    }
     return &moving[mvi];
   }
   return 0;
 }
 
 void fer_mv_free(struct Fer_Move *Fer_Move) {
-  int mvi = Fer_Move - moving;
+  const int mvi = std::distance(moving.begin(), Fer_Move);
   CLR_BIT(moving_mask, mvi);
   if (!moving_mask)
-    fer_pos_HAS_NO_MOVING_cb();
+    if (moving_timer) {
+      mainLoop_stopFun(moving_timer);
+      moving_timer = nullptr;
+    }
 }
 

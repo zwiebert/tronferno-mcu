@@ -84,21 +84,18 @@ int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts) {
 
     pct = fer_simPos_getPct_afterDuration(g, m, direction_isUp(Fer_Move->dir), duration_ts);
 
-    if ((direction_isUp(Fer_Move->dir) && pct == PCT_UP) || (!direction_isUp(Fer_Move->dir) && pct == PCT_DOWN)) {
+    if (direction_isEndPos(Fer_Move->dir, pct) // end-position reached
+    || (Fer_Move->dir == DIRECTION_SUN_DOWN && fer_pos_shouldStop_sunDown(g, m, duration_ts)) // sun-position reached
+        ) {
       fer_pos_stop_mv(Fer_Move, g, m, pct);
       ++stopped_count;
-      continue;
+    } else {
+      static unsigned last_call_ts;
+      if (periodic_ts(10, &last_call_ts)) {
+        uoApp_publish_pctChange_gmp(so_arg_gmp_t { g, m, pct });
+      }
     }
-
-    if (Fer_Move->dir == DIRECTION_SUN_DOWN && fer_pos_shouldStop_sunDown(g, m, duration_ts)) {
-      fer_pos_stop_mv(Fer_Move, g, m, pct);
-      ++stopped_count;
-      continue;
-    }
-
-    uoApp_publish_pctChange_gmp(so_arg_gmp_t{g, m, pct});
   }
-
   return stopped_count;
 }
 

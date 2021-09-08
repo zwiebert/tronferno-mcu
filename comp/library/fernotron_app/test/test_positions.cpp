@@ -139,7 +139,6 @@ TEST_CASE("dynamic_positions", "[fernotron/pos]") {
 
 void setUp() {
   fer_main_setup({0x801234, ~0U});
-  //fer_pos_POSITIONS_MOVE_cb =cb_start_move;
 }
 
 #endif
