@@ -16,9 +16,9 @@
 #include "utils_misc/int_types.h"
 #include "main_loop/main_queue.hh"
 
-#define fer_mv_SIZE 8
+
 struct std::array<Fer_Move, fer_mv_SIZE> moving;
-static u8 moving_mask;
+static unsigned moving_mask;
 static void *moving_timer;
 
 struct Fer_Move* fer_mv_getNext(struct Fer_Move *pred) {

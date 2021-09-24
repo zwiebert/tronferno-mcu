@@ -40,7 +40,13 @@ u16 fer_simPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct);
 
 
 // start moving
+/**
+ * \brief Test if real movement happens configuration and current position (needs to be above sun-position)
+ */
 bool fer_pos_shouldMove_sunDown(uint8_t g, uint8_t m);
+/**
+ * \brief Test if real movement happens configuration and current position (needs to be at sun-position)
+ */
 bool fer_pos_shouldMove_sunUp(uint8_t g, uint8_t m);
 
 // stop moving

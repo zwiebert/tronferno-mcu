@@ -108,8 +108,7 @@ void fer_pos_mvCheck_mvi(struct Fer_Move *Fer_Move) {
 
 
 void fer_pos_checkStatus_whileMoving() {
-  struct Fer_Move *Fer_Move;
-  for (Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {
+  for (struct Fer_Move *Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {
     fer_pos_mvCheck_mvi(Fer_Move);
   }
 }
