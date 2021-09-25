@@ -7,25 +7,25 @@
 		"lint": "eslint . --ext .js,.svelte"
 	},
 	"devDependencies": {
-		"@rollup/plugin-alias": "^3.1.5",
-		"@rollup/plugin-commonjs": "^20.0.0",
+		"@rollup/plugin-alias": "^3.1.8",
+		"@rollup/plugin-commonjs": "^21.0.1",
 		"@rollup/plugin-json": "^4.1.0",
-		"@rollup/plugin-node-resolve": "^13.0.5",
+		"@rollup/plugin-node-resolve": "^13.0.6",
 		"@rollup/plugin-strip": "^2.1.0",
 		"eslint-plugin-svelte3": "^3.2.1",
-		"node-sass": "^6.0.1",
-		"postcss": "^8.3.8",
+		"node-sass": "^7.0.0",
+		"postcss": "^8.4.4",
 		"postcss-load-config": "^3.1.0",
-		"rollup": "^2.57.0",
+		"rollup": "^2.61.1",
 		"rollup-plugin-css-only": "^3.1.0",
 		"rollup-plugin-eslint": "^7.0.0",
 		"rollup-plugin-livereload": "^2.0.5",
 		"rollup-plugin-svelte": "^7.1.0",
 		"rollup-plugin-terser": "^7.0.2",
-		"svelte": "^3.43.0",
-		"svelte-i18n": "^3.3.10",
-		"svelte-preprocess": "^4.9.5",
-		"tailwindcss": "^2.2.15"
+		"svelte": "^3.44.2",
+		"svelte-i18n": "^3.3.13",
+		"svelte-preprocess": "^4.9.8",
+		"tailwindcss": "^3.0.1"
 	},
 	"jshintConfig": {
 		"esversion": 6,
@@ -47,7 +47,7 @@
 	},
 	"dependencies": {
 		"@rollup/plugin-replace": "^3.0.0",
-		"autoprefixer": "^10.3.5",
+		"autoprefixer": "^10.4.0",
 		"svelte-icons": "^2.1.0",
 		"sveltejs-tippy": "^3.0.0"
 	}
