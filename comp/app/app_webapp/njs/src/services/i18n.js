@@ -20,11 +20,22 @@ const en = {
       cfg: {
         mcu: "MCU",
         aliases: "Aliases",
-        durations: "Duration",
+        sender: "Sender",       
+        positions: "Positions",
         name: "Misc",
         set_mode: "Set",
         app: "App",
       },
+      sender: {
+        aliases: "Aliases",
+        repeater: "Repeater",
+        transmit: "Transmit",
+      },
+      positions: {
+        aliases: "Aliases",
+        durations: "Duration",
+      },
+
     },
 
     auto: {
@@ -168,11 +179,19 @@ const de = {
       },
       cfg: {
         mcu: "MCU",
-        aliases: "Alias",
-        durations: "Laufzeit",
+        positions: "Positionen",
         name: "Sonstiges",
         set_mode: "Set",
         app: "App",
+      },
+      sender: {
+        aliases: "Aliases",
+        repeater: "Repeater",
+        transmit: "Transmit",
+      },
+      positions: {
+        aliases: "Aliases",
+        durations: "Laufzeit",
       },
     },
 

@@ -32,13 +32,23 @@
 
   $: tabIdxMain = $TabIdx["main"] || 0;
   $: tabIdxSettings = $TabIdx["settings"] || 0;
+  $: tabIdxSender = $TabIdx["sender"] || 0;
+  $: tabIdxPositions = $TabIdx["positions"] || 0;
 </script>
 
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
     <NavTabs
-      nav_tabs={[$_('app.navTab.main.move'), '2411', $_('app.navTab.main.percent'), $_('app.navTab.main.auto'), $_('app.navTab.main.config'), ...(!misc.NODE_ENV_DEV ? [] : ['Test'])]}
-      name="main" />
+      nav_tabs={[
+        $_("app.navTab.main.move"),
+        "2411",
+        $_("app.navTab.main.percent"),
+        $_("app.navTab.main.auto"),
+        $_("app.navTab.main.config"),
+        ...(!misc.NODE_ENV_DEV ? [] : ["Test"]),
+      ]}
+      name="main"
+    />
   </div>
   {#if !tabIdxMain}
     <PaneShutterControl />
@@ -51,15 +61,42 @@
   {:else if tabIdxMain === 4}
     <div class="navtab-sub">
       <NavTabs
-        nav_tabs={[$_('app.navTab.cfg.mcu'), $_('app.navTab.cfg.aliases'), $_('app.navTab.cfg.durations'), $_('app.navTab.cfg.name'), $_('app.navTab.cfg.set_mode'), $_('app.navTab.main.firmware'), 'Log']}
-        name="settings" />
+        nav_tabs={[
+          $_("app.navTab.cfg.mcu"),
+          $_("app.navTab.cfg.sender"),
+          $_("app.navTab.cfg.positions"),
+          $_("app.navTab.cfg.name"),
+          $_("app.navTab.cfg.set_mode"),
+          $_("app.navTab.main.firmware"),
+          "Log",
+        ]}
+        name="settings"
+      />
     </div>
     {#if !tabIdxSettings}
       <PaneMcuSettings />
     {:else if tabIdxSettings === 1}
-      <PaneShutterAlias />
+      <div class="navtab-sub2">
+        <NavTabs nav_tabs={[$_("app.navTab.sender.aliases"), $_("app.navTab.sender.repeater"), $_("app.navTab.sender.transmit")]} name="sender" />
+      </div>
+      {#if !tabIdxSender}
+        <PaneShutterAlias />
+      {:else if tabIdxSender === 1}
+        Repeater
+      {:else if tabIdxSender === 2}
+        Transmit
+      {/if}
     {:else if tabIdxSettings === 2}
-      <PaneShutterDurations />
+      <div class="navtab-sub2">
+        <NavTabs nav_tabs={[$_("app.navTab.positions.durations"), $_("app.navTab.positions.aliases")]} name="positions" />
+      </div>
+      {#if !tabIdxPositions}
+        <PaneShutterDurations />
+      {:else if tabIdxPositions === 1}
+        <PaneShutterAlias />
+      {:else if tabIdxPositions === 2}
+        Transmit
+      {/if}
     {:else if tabIdxSettings === 3}
       <PaneShutterName />
     {:else if tabIdxSettings === 4}
