@@ -3,6 +3,7 @@
   import { _ } from "services/i18n";
   import * as httpFetch from "app/fetch.js";
   import { G, M0, GM, GMH } from "stores/curr_shutter.js";
+  import { SelectedId } from "stores/id.js";
   import { Gmu, GmuMaxM } from "stores/mcu_config.js";
   import { Aliases } from "stores/shutters.js";
   import { ShowHelp } from "stores/app_state.js";
@@ -22,7 +23,7 @@
 
   $: AliasesAllKeys = Object.keys($Aliases);
   $: AliasesPairedKeys = AliasesAllKeys.filter((key) => alias_isKeyPairedToM(key, $G, $M0));
-  $: selectedId = 0;
+  $: selectedId = $SelectedId;
   $: selectedId_isValid = id_isValid(selectedId);
 
   $: {
@@ -34,17 +35,8 @@
     return re.test(id);
   }
 
-  let select_id_in_progress = false;
   function select_id(id) {
-    console.log("id,entered", id, entered);
-    if (select_id_in_progress) return;
-    select_id_in_progress = true;
-
-    for (let eid of ["paired", "aliases", "received", "entered"]) {
-      document.getElementById(eid).value = id;
-    }
-    selectedId = id;
-    select_id_in_progress = false;
+    $SelectedId = id;
   }
 
   function hClick_Pair() {
@@ -165,6 +157,8 @@
   }
 </script>
 
+
+
 <div id="aliasdiv text-center">
   <div class="area text-center" id="aliasPairUnpair">
     <button id="alias_pair" type="button" on:click={hClick_Pair}> Scan for ID to alias it to {$GMH} </button>
@@ -176,64 +170,16 @@
       {:else if $Pras.timeout}
         <span class="bg-red-400">Timeout</span>
       {:else if $Pras.success}
-        <label class="bg-green-400"
-          >Found: <button type="button" on:click={() => select_id($Pras.a)}>{$Pras.a}</button></label
-        >
+        <label class="bg-green-400">Found: <button type="button" on:click={() => select_id($Pras.a)}>{$Pras.a}</button></label>
       {:else}
-        <label class="bg-gray-300"
-          >Nothing to do for: <button type="button" on:click={() => select_id($Pras.a)}>{$Pras.a}</button
-          ></label
-        >
+        <label class="bg-gray-300">Nothing to do for: <button type="button" on:click={() => select_id($Pras.a)}>{$Pras.a}</button></label>
       {/if}
     {/if}
   </div>
   <br />
 
   <div class="area text-center">
-    <h5>Select or Enter an ID</h5>
-    <table class="top_table">
-      <tr>
-        <td use:tippy={{ content: "All aliased IDs" }}>All</td>
-        <td use:tippy={{ content: "IDs aliased to this number" }}>{$GMH}</td>
-        <td use:tippy={{ content: "Any received IDs" }}>RX</td>
-        <td use:tippy={{ content: "Enter an ID by hand" }}>Enter</td>
-      </tr>
-      <tr>
-        <td>
-          <select id="aliases" size="5" on:change={() => select_id(document.getElementById("aliases").value)}>
-            {#each AliasesAllKeys.sort() as key}
-              <option>{key}</option>
-            {/each}
-          </select>
-        </td>
-        <td>
-          <select id="paired" size="5" on:change={() => select_id(document.getElementById("paired").value)}>
-            {#each AliasesPairedKeys.sort() as key}
-              <option>{key}</option>
-            {/each}
-          </select>
-        </td>
-        <td>
-          <select id="received" size="5" on:change={() => select_id(document.getElementById("received").value)}>
-            {#each [...$ReceivedAddresses].sort() as key}
-              <option>{key}</option>
-            {/each}
-          </select>
-        </td>
-        <td>
-          <label use:tippy={{ content: "Enter an ID or select one from a list" }}
-            >
-            <input
-              id="entered"
-              class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}"
-              type="text"
-              on:input={() => select_id(document.getElementById("entered").value)}
-              maxlength="6"
-            />
-          </label>
-        </td>
-      </tr>
-    </table>
+ 
 
     <br />
 
@@ -267,34 +213,6 @@
       </span>
     </div>
 
-    <div class="area text-center">
-      <h5>Send Commands as {selectedId}</h5>
-      <button
-        type="button"
-        use:tippy={{ content: "Identify motor(s) paired with this ID by moving them" }}
-        disabled={!selectedId_isValid}
-        on:click={() => {
-          httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-test" } });
-        }}>Test</button
-      >
-
-      <button
-        type="button"
-        disabled={!(selectedId_isValid && selectedId.startsWith("20"))}
-        on:click={() => {
-          httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-inst" } });
-        }}>Sun-Pos/Inst</button
-      >
-
-      <button
-        type="button"
-        disabled={!(selectedId_isValid && selectedId.startsWith("10"))}
-        on:click={() => {
-          httpFetch.http_postCommand({ cmd: { a: selectedId, c: "stop" } });
-        }}>STOP</button
-      >
-    </div>
-
     <div class="area">
       <h5>Alias {selectedId} -> {$GMH}</h5>
       <button
@@ -318,22 +236,7 @@
 
 <style type="text/scss">
   @import "../styles/app.scss";
-  #aliasHeader {
-    grid-area: ah;
-  }
-  #aliases {
-    grid-area: as;
-  }
-  #divPairAll {
-    grid-area: at;
-  }
-  #aliasSaveReload {
-    grid-area: ar;
-  }
-  #aliasPairUnpair {
-    grid-area: ap;
-  }
-
+  
   table,
   td,
   tr {

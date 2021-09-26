@@ -70,6 +70,18 @@ $color_border: darken($color_b, 5%);
   }
 }
 
+.navtab-sub2 {
+  border-radius: .5rem;
+  padding: 0;
+  background-color: $color_bg_nav2;
+  border: thin dotted $color_border;
+
+  .tabbt.is-selected {
+    background-color: $color_bg_nav2_select;
+    color: $color_fg_select;
+  }
+}
+
 .main-area {
   border-radius: .75rem;
   margin-top: 1rem;
