@@ -50,7 +50,7 @@ typedef int64_t i64;
 #define MCU_ESP32
 #endif
 
-//#define USE_REPEATER
+#define USE_REPEATER
 
 #include "proj_kconfig.h"
 

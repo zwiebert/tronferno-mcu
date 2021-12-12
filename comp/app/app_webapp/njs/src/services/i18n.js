@@ -98,6 +98,8 @@ const en = {
       "To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.",
     hint_shutterAlias:
       "To register position changes caused by plain controllers and sun-sensors, these controllers have to be registered here.",
+    hint_repeater:
+      "Repeat RF commands to increase reach. You have to provide a list of IDs. Only senders from this list will be repeated.",
   },
   mcuConfigNames: {
     verbose: "CLI Verbosity",

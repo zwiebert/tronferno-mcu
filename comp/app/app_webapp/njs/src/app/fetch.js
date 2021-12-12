@@ -16,6 +16,7 @@ export const FETCH_AUTO = 1 << b++;
 export const FETCH_POS = 1 << b++;
 export const FETCH_VERSION = 1 << b++;
 export const FETCH_ALIASES = 1 << b++;
+export const FETCH_REPEATER_IDS = 1 << b++;
 export const FETCH_ALIASES_START_PAIRING = 1 << b++;
 export const FETCH_ALIASES_START_UNPAIRING = 1 << b++;
 export const FETCH_SHUTTER_PREFS = 1 << b++;
@@ -206,6 +207,8 @@ export function http_fetchByMask(mask, synchron) {
     add_kv(tfmcu, "pair", "a", "?");
     add_kv(tfmcu, "pair", "c", mask & FETCH_ALIASES_START_PAIRING ? "pair" : "unpair");
   }
+
+  if (mask & FETCH_REPEATER_IDS) add_kv(tfmcu, "repeater", "id-list", "?");
 
   if (mask & FETCH_SHUTTER_PREFS) {
     add_kv(tfmcu, "shpref", "g", g);

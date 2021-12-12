@@ -386,6 +386,16 @@ void soMsg_pair_print_kmm_single(const struct TargetDesc &td, const so_arg_kmm_t
 
 }
 
+#ifdef USE_REPEATER
+void soMsg_repeater_begin(const struct TargetDesc &td) {
+  td.so().x_open("repeater");
+}
+
+void soMsg_repeater_end(const struct TargetDesc &td) {
+  td.so().x_close();
+}
+#endif
+
 #ifdef USE_NETWORK
 void soMsg_inet_print_address(const struct TargetDesc &td) {
   char buf[20];

@@ -96,8 +96,7 @@
   
 </script>
 
-<div id="aliasdiv text-center">
-  <div class="area text-center">
+<div id="aliasdiv" class="text-center">
     <h5>Select or Enter an ID</h5>
     <table class="top_table">
       <tr>
@@ -151,7 +150,6 @@
       </tr>
     </table>
  </div>
-</div>
 
 <style type="text/scss">
   @import "../styles/app.scss";
