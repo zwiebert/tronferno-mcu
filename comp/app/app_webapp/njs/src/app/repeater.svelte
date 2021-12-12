@@ -32,17 +32,24 @@
   }
 
   function add_repeaterID(id) {
+    httpFetch.http_postCommand({ repeater: { "id-add": id, "id-list": "?" } });
+    
+/*
     RepeaterIDs.update((obj) => {
       obj.add(id);
       return obj;
     });
+    */
   }
 
   function remove_repeaterID(id) {
+    httpFetch.http_postCommand({ repeater: { "id-rm": id, "id-list": "?" } });
+    /*
     RepeaterIDs.update((obj) => {
       obj.delete(id);
       return obj;
     });
+    */
   }
 </script>
 
