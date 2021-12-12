@@ -14,6 +14,7 @@ import {
 import * as cuas from "app/cuas.js";
 import { McuConfig, Gmu, Cc1101Config, Cc1101Status } from "stores/mcu_config.js";
 import { Pcts, Prefs, Aliases, Autos, Names } from "stores/shutters.js";
+import { RepeaterIDs } from "../store/repeater.js";
 import { McuDocs } from "stores/mcu_docs.js";
 import { Gpios } from "stores/gpio.js";
 import {AppLog} from "stores/app_log.js";
@@ -87,6 +88,13 @@ export function http_handleResponses(obj) {
       let all = {};
       all[key] = val;
       Aliases.update(all);
+    }
+  }
+
+  if ("repeater" in obj) {
+    const repeater = obj.repeater;
+    if ("id-list" in repeater) {
+      RepeaterIDs.set(new Set(repeater["id-list"]));
     }
   }
 

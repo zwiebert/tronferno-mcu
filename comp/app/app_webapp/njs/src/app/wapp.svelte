@@ -8,6 +8,7 @@
   import PaneShuttersPct from "panes/shutters_pct.svelte";
   import PaneShutterAuto from "panes/shutter_auto.svelte";
   import PaneShutterAlias from "panes/shutter_alias.svelte";
+  import PaneRepeater from "panes/repeater.svelte";
   import PaneShutterDurations from "panes/shutter_durations.svelte";
   import PaneShutterName from "panes/shutter_name.svelte";
   import PaneFirmwareEsp32 from "panes/firmware_esp32.svelte";
@@ -82,7 +83,7 @@
       {#if !tabIdxSender}
         <PaneShutterAlias />
       {:else if tabIdxSender === 1}
-        Repeater
+      <PaneRepeater />
       {:else if tabIdxSender === 2}
         Transmit
       {/if}

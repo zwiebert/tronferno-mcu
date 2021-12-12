@@ -13,6 +13,7 @@ extern const char cli_help_parmTimer[]; ///< help text for CLI command
 extern const char cli_help_parmConfig[]; ///< help text for CLI command
 extern const char cli_help_parmMcu[]; ///< help text for CLI command
 extern const char cli_help_parmPair[]; ///< help text for CLI command
+extern const char cli_help_parmRepeater[]; ///< help text for CLI command
 extern const char cli_help_parmShpref[]; ///< help text for CLI command
 extern const char cli_help_parmHelp[]; ///< help text for CLI command
 

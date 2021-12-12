@@ -53,6 +53,8 @@ enum class otok : otokBaseT  {
 
   k_weekly, k_daily, k_astro, k_rtc_only, k_random, k_sun_auto, k_f, // auto
 
+  k_id_list, k_id_add, k_id_rm, // repeater
+
   SIZE // key array size
 };
 
@@ -76,11 +78,13 @@ constexpr const_cstringT otok_strings[] = {
     "r", "p", "SEP", // cmd
     "boot-count", "print", "kvs-pk", "tm", "am", "stack", "te", "dbp", "cs", "up-time", "version", "ota", // mcu
 
-    "weekly", "daily", "astro", "rtc-only", "random", "sun-auto", "f" // auto
+    "weekly", "daily", "astro", "rtc-only", "random", "sun-auto", "f", // auto
+
+    "id-list", "id-add", "id-rm", // repeater
 
     };
 #else
 #include "generated_opts.hh"
 #endif
-static_assert(!((sizeof otok_strings / sizeof otok_strings[0]) > (size_t)otok::SIZE));
-static_assert(!((sizeof otok_strings / sizeof otok_strings[0]) < (size_t)otok::SIZE));
+static_assert(!((sizeof otok_strings / sizeof otok_strings[0]) > (size_t)otok::SIZE)); // too many strings
+static_assert(!((sizeof otok_strings / sizeof otok_strings[0]) < (size_t)otok::SIZE)); // not enought strings (missing comma?)
