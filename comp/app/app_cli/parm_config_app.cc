@@ -43,6 +43,38 @@
 #include <iterator>
 #include <algorithm>
 
+static bool id_isValid(const char *s) {
+  if (strlen(s) != 6)
+    return false;
+  if (! (s[0] == '1' || s[0] == '2'))
+    return false;
+
+  for (int i=1; i < 6; ++i)
+    if (!isxdigit(s[i]))
+      return false;
+
+  return true;
+}
+
+static bool ids_areValid(const char *ids) {
+  const int len = strlen(ids);
+
+  if (len % 6 != 0)
+    return false;
+  for (int i = 0; i < len; i += 6) {
+    const char *s = ids + i;
+
+    if (!(s[0] == '1' || s[0] == '2'))
+      return false;
+
+    for (int i = 1; i < 6; ++i)
+      if (!isxdigit(s[i]))
+        return false;
+  }
+
+  return true;
+}
+
 
 bool process_parmConfig_get_app(otok kt, const char *val, const struct TargetDesc &td) {
   switch (kt) {
@@ -99,6 +131,51 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, const str
     }
   }
     break;
+
+  case otok::k_rf_repeater: {
+    NODEFAULT();
+
+    if (val[0] == '+') {
+      if (id_isValid(val + 1)) {
+
+        char buf[80];
+        if (config_read_item(CB_RF_REPEATER, buf, sizeof buf, "")) {
+          strncat(buf, val + 1, sizeof buf - 1);
+          set_optStr(buf, CB_RF_REPEATER);
+          soCfg_RF_REPEATER(td);
+          SET_BIT64(changed_mask, CB_RF_REPEATER);
+        } else {
+          ++errors;
+        }
+      }
+    } else if (val[0] == '-') {
+      if (id_isValid(val + 1)) {
+
+        char buf[80];
+        if (config_read_item(CB_RF_REPEATER, buf, sizeof buf, "")) {
+          for (int i = 0, len = strlen(buf); i < len; i += 6) {
+            if (0 == strncasecmp(val + 1, buf + i, 6)) {
+              memmove(buf + i, buf + i + 6, strlen(buf + i + 6) + 1);
+              set_optStr(buf, CB_RF_REPEATER);
+            }
+          }
+        }
+        SET_BIT64(changed_mask, CB_RF_REPEATER);
+        soCfg_RF_REPEATER(td);
+      } else {
+        ++errors;
+      }
+    } else {
+      if (ids_areValid(val)) {
+        set_optStr(val, CB_RF_REPEATER);
+        SET_BIT64(changed_mask, CB_RF_REPEATER);
+        soCfg_RF_REPEATER(td);
+      } else {
+        ++errors;
+      }
+    }
+  }
+  break;
 
 #ifdef USE_GPIO_PINS
 case otok::k_gpio:
@@ -172,5 +249,8 @@ void parmConfig_reconfig_app(uint64_t changed_mask) {
   }
   if (changed_mask & CBM_cc1101) {
     mainLoop_callFun(config_setup_cc1101);
+  }
+  if (changed_mask & CBM_rf_repeater) {
+    mainLoop_callFun(config_setup_repeater);
   }
 }

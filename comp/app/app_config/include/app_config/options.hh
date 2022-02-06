@@ -44,6 +44,7 @@ enum class otok : otokBaseT  {
       k_rf_tx_pin, k_rf_rx_pin, k_set_button_pin, k_gpio, //
       k_rf_miso_pin, k_rf_mosi_pin, k_rf_sclk_pin, k_rf_ss_pin, // CC1101 SPI
       k_cc1101_config,
+      k_rf_repeater,
       ///////////// end of config keys /////////////////
 
   k_a, k_g, k_m, k_mm, k_c, //
@@ -72,6 +73,7 @@ constexpr const_cstringT otok_strings[] = {
     "rf-tx-pin", "rf-rx-pin", "set-button-pin", "gpio", //
     "rf-miso-pin", "rf-mosi-pin", "rf-sclk-pin", "rf-ss-pin", //CC1101 SPI
     "cc1101-config",
+    "rf-repeater" ,
     ///////////// end of config keys /////////////////
     "a", "g", "m", "mm", "c",  //
     "restart", "all", "cuas", "set-pw", "receiver", "transmitter", "rf-trx", // config
