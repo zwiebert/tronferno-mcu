@@ -47,7 +47,7 @@
   <caption  class="{changed ? 'font-bold' : 'font-normal'}">{caption}</caption>
   <tr>
     {#each { length: 7 } as _, i}
-      <td><label>G{i + 1}</label></td>
+      <td>G{i + 1}</td>
     {/each}
   </tr>
   <tr>
