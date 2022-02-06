@@ -106,9 +106,6 @@ static struct parm_handler const handlers[] = { //
 #ifdef USE_PAIRINGS
         { "pair", process_parmPair, cli_help_parmPair},//
 #endif
-#ifdef USE_REPEATER
-        { "repeater", process_parmRepeater, cli_help_parmRepeater},//
-#endif
         { "shpref", process_parmShpref, cli_help_parmShpref }, //
     };
 
