@@ -4,9 +4,8 @@
   import * as httpFetch from "app/fetch.js";
   import { G, M0, GM, GMH } from "stores/curr_shutter.js";
   import { SelectedId } from "stores/id.js";
-  import { Gmu, GmuMaxM } from "stores/mcu_config.js";
+  import { Gmu, GmuMaxM, McuConfig } from "stores/mcu_config.js";
   import { Aliases } from "stores/shutters.js";
-  import { RepeaterIDs } from "stores/repeater.js";
   import { ShowHelp } from "stores/app_state.js";
   import { Pras, ReceivedAddresses } from "stores/alias.js";
   import { onMount, onDestroy } from "svelte";
@@ -22,6 +21,8 @@
     }
   });
 
+  $: mcuConfig = $McuConfig;
+  $: RepeaterIDs = new Set("rf-repeater" in mcuConfig ? $McuConfig["rf-repeater"].match(/.{6}/g) : []);
   $: selectedId_isValid = id_isValid($SelectedId);
 
   $: selectedRepId = "";
@@ -32,7 +33,7 @@
   }
 
   function add_repeaterID(id) {
-    httpFetch.http_postCommand({ repeater: { "id-add": id, "id-list": "?" } });
+    httpFetch.http_postCommand({ config: { "rf-repeater": "+" + id } });
     
 /*
     RepeaterIDs.update((obj) => {
@@ -43,7 +44,7 @@
   }
 
   function remove_repeaterID(id) {
-    httpFetch.http_postCommand({ repeater: { "id-rm": id, "id-list": "?" } });
+    httpFetch.http_postCommand({ config: { "rf-repeater": "-" + id } });
     /*
     RepeaterIDs.update((obj) => {
       obj.delete(id);
@@ -57,16 +58,16 @@
   <br />
 
   <div class="area text-center">
-    <h5>Senders-IDs to be repeated</h5>
+    <h5>Sender-IDs to be repeated</h5>
     <select id="repeaterIDs" size="5" bind:value={selectedRepId}>
-      {#each [...$RepeaterIDs].sort() as key}
+      {#each [...RepeaterIDs].sort() as key}
         <option>{key}</option>
       {/each}
     </select>
     <br />
     <button
       type="button"
-      disabled={!selectedId_isValid || $RepeaterIDs.has($SelectedId)}
+      disabled={!selectedId_isValid || RepeaterIDs.has($SelectedId)}
       on:click={() => {
         add_repeaterID($SelectedId);
       }}>Add {$SelectedId}</button
@@ -74,10 +75,10 @@
 
     <button
       type="button"
-      disabled={!$RepeaterIDs.has(selectedRepId)}
+      disabled={!RepeaterIDs.has(selectedRepId)}
       on:click={() => {
         remove_repeaterID(selectedRepId);
-      }}>Remove {$RepeaterIDs.has(selectedRepId) ? selectedRepId : ""}</button
+      }}>Remove {RepeaterIDs.has(selectedRepId) ? selectedRepId : ""}</button
     >
   </div>
 </div>

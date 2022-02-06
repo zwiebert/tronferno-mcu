@@ -100,6 +100,7 @@
   $: mcuConfigKeysAstro = $McuConfigKeys.filter((val) => val === "longitude" || val === "latitude" || val.startsWith("astro-"));
   $: mcuConfigKeysTime = $McuConfigKeys.filter((val) => val === "rtc" || val === "tz");
   $: mcuConfigKeysCc1101Pin = mcuConfig["rf-trx"] === "cc1101" ? $McuConfigKeys.filter((val) => val.startsWith("rf-") && val.endsWith("-pin")) : [];
+  $: mcuConfigKeysIgnore = ["rf-repeater"];
 
   $: mcuConfigKeysMisc = $McuConfigKeys.filter(
     (val) =>
@@ -116,6 +117,7 @@
         mcuConfigKeysAstro.includes(val) ||
         mcuConfigKeysTime.includes(val) ||
         mcuConfigKeysCc1101Pin.includes(val) ||
+        mcuConfigKeysIgnore.includes(val) ||
         val.endsWith("-pin") ||
         mcuConfigKeysPin.includes(val)
       )

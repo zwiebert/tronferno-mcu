@@ -32,6 +32,7 @@ CB_TIZO,
   CB_RFOUT_GPIO, CB_RFIN_GPIO, CB_SETBUTTON_GPIO,
   CB_RFMISO_GPIO, CB_RFMOSI_GPIO, CB_RFSCK_GPIO, CB_RFSS_GPIO,
   CB_CC1101_CONFIG,
+  CB_RF_REPEATER,
 //-----------
   CBA_size
 };
@@ -39,6 +40,7 @@ CB_TIZO,
 constexpr u32 CBM_gpio = BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO) | BIT(CB_SETBUTTON_GPIO) | BIT(CB_GPIO) | BIT(CB_RF_TRX);
 constexpr u32 CBM_geo = BIT(CB_LONGITUDE) | BIT(CB_LATITUDE) | BIT(CB_TZ) | BIT(CB_ASTRO_CORRECTION);
 constexpr u64 CBM_cc1101 = BIT64(CB_CC1101_CONFIG) | BIT64(CB_RF_TRX) | BIT64(CB_RFSCK_GPIO) | BIT64(CB_RFMISO_GPIO) | BIT64(CB_RFMOSI_GPIO) | BIT64(CB_RFSS_GPIO) | BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO);
+constexpr u64 CBM_rf_repeater = BIT64(CB_RF_REPEATER);
 
 
 class AppSettings: public Settings<configAppItem, CBA_size - CB_size, CB_size> {
@@ -75,6 +77,7 @@ public:
     initField(CB_RFMOSI_GPIO, "C_SETRFMOSI", otok::k_rf_mosi_pin, CBT_i8, soCfg_GPIO_RFMOSI, STF_direct);
     initField(CB_RFSS_GPIO, "C_SETRFSS", otok::k_rf_ss_pin, CBT_i8, soCfg_GPIO_RFSS, STF_direct);
     initField(CB_CC1101_CONFIG, "C_CC1101_CFG", otok::k_cc1101_config, CBT_str, soCfg_CC1101_CONFIG, STF_direct);
+    initField(CB_RF_REPEATER, "C_RF_REP", otok::k_rf_repeater, CBT_str, soCfg_RF_REPEATER);
   }
 
 };

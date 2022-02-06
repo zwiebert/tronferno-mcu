@@ -208,7 +208,7 @@ export function http_fetchByMask(mask, synchron) {
     add_kv(tfmcu, "pair", "c", mask & FETCH_ALIASES_START_PAIRING ? "pair" : "unpair");
   }
 
-  if (mask & FETCH_REPEATER_IDS) add_kv(tfmcu, "repeater", "id-list", "?");
+  if (mask & FETCH_REPEATER_IDS) add_kv(tfmcu, "config", "rf-repeater", "?");
 
   if (mask & FETCH_SHUTTER_PREFS) {
     add_kv(tfmcu, "shpref", "g", g);
