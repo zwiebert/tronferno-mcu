@@ -9,6 +9,8 @@
 
 #include <utils_time/run_time.h>
 
+#include <stdlib.h>
+
 const unsigned REP_DELAY_TS = 10;
 
 static u32 *known_ids;
