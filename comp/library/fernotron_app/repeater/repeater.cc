@@ -11,7 +11,7 @@
 
 #include <stdlib.h>
 
-const unsigned REP_DELAY_TS = 10;
+const unsigned REP_DELAY_TS = 1;
 
 static u32 *known_ids;
 static int known_ids_count;
@@ -39,7 +39,7 @@ bool ferRep_repeatCommand(struct Fer_Cmd cmd) {
     return false;
 
   struct sf
-  msg { .fsb = { .sd = cmd }, .when_to_transmit_ts = (u32) get_now_time_ts() + REP_DELAY_TS, .mt = MSG_TYPE_PLAIN, .repeats = 1, .sent_ct = 1 };
+  msg { .when_to_transmit_ts = (u32) get_now_time_ts() + REP_DELAY_TS, .fsb = { .sd = cmd }, .rf_repeater = true, .mt = MSG_TYPE_PLAIN, .repeats = 0 };
 
   fer_tx_pushMsg (&msg);
   fer_tx_loop();

@@ -11,6 +11,30 @@
 #include <fernotron_trx/fer_trx_api.hh>
 #include "fer_trx_incoming_event.hh"
 
+static bool ferCmd_isEqual(const Fer_Cmd a, const Fer_Cmd b) {
+#if 0
+  if (0 != memcmp(&a,&b, sizeof a)) {
+     return false;
+  }
+#else
+  if (a.addr[0] != b.addr[0] || a.addr[1] != b.addr[1] || a.addr[2] != b.addr[2])
+    return false;
+
+  if (a.cmd != b.cmd)
+    return false;
+
+  if (a.grp != b.grp)
+    return false;
+
+  if (a.memb != b.memb)
+    return false;
+
+  if (a.tgl != b.tgl)
+    return false;
+#endif
+  return true;
+
+}
 
 
 void fer_rx_loop() {
@@ -24,7 +48,7 @@ void fer_rx_loop() {
     memcpy(&evt.fsb, fer_rx_msg->cmd.bd, 5);
 
     if (evt.kind == MSG_TYPE_PLAIN) {
-      if (0 == memcmp(&last_received_sender.data, fer_rx_msg->cmd.bd, 5)) {
+      if (ferCmd_isEqual(last_received_sender.sd, fer_rx_msg->cmd.sd.cmd)) {
         evt.kind = MSG_TYPE_PLAIN_DOUBLE;
       } else {
         memcpy(&last_received_sender.data, fer_rx_msg->cmd.bd, 5);
