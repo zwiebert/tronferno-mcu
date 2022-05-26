@@ -24,7 +24,7 @@
   }
 </script>
 
-<style type="text/scss">
+<style lang="scss">
   #pvtable,
   .pvgroup {
     background-color: rgb(255, 255, 255);

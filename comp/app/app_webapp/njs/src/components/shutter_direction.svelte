@@ -67,6 +67,6 @@
   /></label
 >
 
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/app.scss";
 </style>

@@ -589,7 +589,7 @@
   <AppLog rxonly={true} />
 {/if}
 
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/app.scss";
   .row1 {
     background-color: darken($color_bg_area, 10%);

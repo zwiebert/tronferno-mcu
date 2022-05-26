@@ -166,5 +166,5 @@
   <button id="shp_save" type="button" on:click={hClick_Save}>{$_("app.save")}</button>
 </div>
 
-<style type="text/scss">
+<style lang="scss">
 </style>
