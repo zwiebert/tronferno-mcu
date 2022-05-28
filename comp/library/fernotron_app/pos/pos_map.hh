@@ -170,6 +170,8 @@ public:
       for (mT m = 0; m <= MBR_MAX; ++m) {
         if (isMemberUnused(g, m))
           continue; //
+        if (!allPos_[g][m].isValidPos())
+          continue;
         result.setMember(g, m);
       }
     }
@@ -179,7 +181,7 @@ public:
 
   template<class FuncObj>
   void fer_statPos_forEachPct(const FuncObj &func_obj) {
-    const Fer_GmSet all = (getValidPcts() | fer_usedMemberMask).updateGroup();
+    const Fer_GmSet all = (getValidPcts() & fer_usedMemberMask).updateGroup();
     Fer_GmSet seen;
 
     for (auto ia = all.begin(1); ia; ++ia) {
