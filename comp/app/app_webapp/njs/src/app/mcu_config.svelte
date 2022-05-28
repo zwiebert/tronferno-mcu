@@ -94,7 +94,7 @@
   $: mcuConfigKeysCC1101 = $McuConfigKeys.filter((val) => val.startsWith("cc1101-"));
 
   $: mcuConfigKeysPin = $McuConfigKeys.filter(
-    (val) => val.startsWith("gpio") || val === "set-button-pin" || (mcuConfig["rf-trx"] !== "cc1101" && (val === "rf-rx-pin" || val === "rf-tx-pin"))
+    (val) => val.startsWith("gpio") || val === "set-button-pin" || (mcuConfig["rf-trx"] !== "cc1101" && mcuConfig["rf-trx"] !== "none" && (val === "rf-rx-pin" || val === "rf-tx-pin"))
   );
   $: mcuConfigKeysCU = $McuConfigKeys.filter((val) => val === "cu");
   $: mcuConfigKeysAstro = $McuConfigKeys.filter((val) => val === "longitude" || val === "latitude" || val.startsWith("astro-"));
@@ -486,13 +486,9 @@
               <td>
                 <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
               </td>
-            {:else if key === "rf-rx-pin" || key === "set-button-pin"}
+            {:else if key === "set-button-pin"}
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
-              </td>
-            {:else if key === "rf-tx-pin"}
-              <td>
-                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="33" />
               </td>
             {:else if key.startsWith("gpio")}
               <td>
@@ -503,7 +499,7 @@
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
               </td>
-            {:else if key === "rf-tx-pin" || key === "rf-sclk-pin" || key == "rf-mosi-pin" || key === "rf-ss-pin"}
+            {:else if key === "rf-tx-pin" || key === "rf-sclk-pin" || key === "rf-mosi-pin" || key === "rf-ss-pin"}
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="33" />
               </td>
