@@ -27,6 +27,7 @@
   $: selectedId_isValid = id_isValid(selectedId);
 
   $: {
+    AliasesPairedKeys;
     aliasTable_updHtml(selectedId);
   }
 
@@ -65,7 +66,6 @@
     }
   }
   function onAliasesReload() {
-    aliasTable_updHtml(selectedId);
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
   }
 
@@ -220,6 +220,7 @@
         disabled={!selectedId_isValid}
         on:click={() => {
           httpFetch.http_postCommand({ pair: { a: selectedId, g: $G, m: $M0, c: "pair" } });
+          httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
         }}>Add</button
       >
 
@@ -228,6 +229,7 @@
         disabled={!selectedId_isValid}
         on:click={() => {
           httpFetch.http_postCommand({ pair: { a: selectedId, g: $G, m: $M0, c: "unpair" } });
+          httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
         }}>Remove</button
       >
     </div>
