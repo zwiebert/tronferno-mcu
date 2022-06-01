@@ -67,11 +67,11 @@
 
   function onAliasesApply() {
     if (selectedId_isValid) {
-     // aliasTable_fromHtml_toMcu(selectedId);
+      // aliasTable_fromHtml_toMcu(selectedId);
     }
   }
   function onAliasesReload() {
-   // aliasTable_updHtml(selectedId);
+    // aliasTable_updHtml(selectedId);
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
   }
 
@@ -92,64 +92,62 @@
 
     return (b & (1 << m)) !== 0;
   }
-
-  
 </script>
 
 <div id="aliasdiv" class="text-center">
-    <h5>Select or Enter an ID</h5>
-    <table class="top_table">
-      <tr>
-        <td use:tippy={{ content: "All aliased IDs" }}>All</td>
-        <td use:tippy={{ content: "IDs aliased to this number" }}>{$GMH}</td>
-        <td use:tippy={{ content: "Any received IDs" }}>RX</td>
-        <td use:tippy={{ content: "Enter an ID by hand" }}>Enter</td>
-      </tr>
-      <tr>
-        <td>
-          <select id="aliases" size="5" on:change={() => select_id(document.getElementById("aliases").value)}>
-            {#each AliasesAllKeys.sort() as key}
-              <option>{key}</option>
-            {/each}
-          </select>
-        </td>
-        <td>
-          <select id="paired" size="5" on:change={() => select_id(document.getElementById("paired").value)}>
-            {#each AliasesPairedKeys.sort() as key}
-              <option>{key}</option>
-            {/each}
-          </select>
-        </td>
-        <td>
-          <select id="received" size="5" on:change={() => select_id(document.getElementById("received").value)}>
-            {#each [...$ReceivedAddresses].sort() as key}
-              <option>{key}</option>
-            {/each}
-          </select>
-        </td>
-        <td>
-          <label use:tippy={{ content: "Enter an ID or select one from a list" }}>
-            <input
-              id="entered"
-              class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}"
-              type="text"
-              on:input={() => select_id(document.getElementById("entered").value)}
-              maxlength="6"
-            />
-          </label>
-          <br>
-          <button
-            type="button"
-            use:tippy={{ content: "Identify motor(s) paired with this ID by moving them" }}
-            disabled={!selectedId_isValid}
-            on:click={() => {
-              httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-test" } });
-            }}>Test</button
-          >
-        </td>
-      </tr>
-    </table>
- </div>
+  <h5>{ $_("app.id.chose_header") }</h5>
+  <table class="top_table">
+    <tr>
+      <td use:tippy={{ content: $_("app.id.tt.chose_allRegIds") }}>{$_("app.id.chose_allRegIds")}</td>
+      <td use:tippy={{ content: $_("app.id.tt.chose_regIds") }}>{$GMH}</td>
+      <td use:tippy={{ content: $_("app.id.tt.chose_rxIds") }}>{$_("app.id.chose_rxIds")}</td>
+      <td use:tippy={{ content: $_("app.id.tt.chose_enterId") }}>{$_("app.id.chose_enterId")}</td>
+    </tr>
+    <tr>
+      <td>
+        <select id="aliases" size="5" on:change={() => select_id(document.getElementById("aliases").value)}>
+          {#each AliasesAllKeys.sort() as key}
+            <option>{key}</option>
+          {/each}
+        </select>
+      </td>
+      <td>
+        <select id="paired" size="5" on:change={() => select_id(document.getElementById("paired").value)}>
+          {#each AliasesPairedKeys.sort() as key}
+            <option>{key}</option>
+          {/each}
+        </select>
+      </td>
+      <td>
+        <select id="received" size="5" on:change={() => select_id(document.getElementById("received").value)}>
+          {#each [...$ReceivedAddresses].sort() as key}
+            <option>{key}</option>
+          {/each}
+        </select>
+      </td>
+      <td>
+        <label use:tippy={{ content: $_("app.id.tt.text_enterId") }}>
+          <input
+            id="entered"
+            class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}"
+            type="text"
+            on:input={() => select_id(document.getElementById("entered").value)}
+            maxlength="6"
+          />
+        </label>
+        <br />
+        <button
+          type="button"
+          use:tippy={{ content: $_("app.id.tt.test_selectedId") }}
+          disabled={!selectedId_isValid}
+          on:click={() => {
+            httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-test" } });
+          }}>{ $_("app.id.test_selectedId") }</button
+        >
+      </td>
+    </tr>
+  </table>
+</div>
 
 <style lang="scss">
   @import "../styles/app.scss";

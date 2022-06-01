@@ -48,6 +48,23 @@ const en = {
       sendRtc: "Send wall time to:",
     },
 
+
+    id: {
+      chose_header: "Pick/Enter a Sender-ID",
+      chose_allRegIds: "All",
+      chose_rxIds: "RX",
+      chose_enterId: "Enter",
+      test_selectedId: "Test",
+      tt: {
+        chose_allRegIds: "Any registered Sender-IDs",
+        chose_regIds: "Sender-IDs registered to this receiver number only",
+        chose_rxIds: "List of Sender-IDs recveived via RF",
+        chose_enterId: "Enter a Sender-ID",
+        text_enterId: "Enter an ID or select ID from a list",
+        test_selectedId: "Identify motor(s) paired with this ID by moving them",
+      },
+    },
+
     dur: {
       h: "Duration of Shutter-Movements",
     },
@@ -206,6 +223,20 @@ const de = {
       manual: "Manuell",
       manual: "Manual",
       sendRtc: "Uhrzeit senden an:",
+    },
+
+    id: {
+      chose_header: "Sender-ID Auswahl/Eingabe",
+      chose_allRegIds: "Alle",
+      chose_rxIds: "RX",
+      chose_enterId: "Eingabe",
+      tt: {
+        chose_allRegIds: "Alle angemeldeten Sender-IDs",
+        chose_regIds: "An dieser Empfängernummer angemeldete Sender-IDs",
+        chose_rxIds: "Alle Sender-IDs empfangen über Funk",
+        chose_enterId: "Eingabe einer Sender-ID",
+        text_enterId: "Sender-ID direkt eingeben oder aus Liste wählen",
+      },
     },
 
     dur: {
