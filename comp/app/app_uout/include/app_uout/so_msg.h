@@ -48,7 +48,6 @@ void soMsg_pair_begin(const TargetDesc &td);
 void soMsg_pair_end(const TargetDesc &td);
 void soMsg_pair_all_begin(const TargetDesc &td);
 void soMsg_pair_all_end(const TargetDesc &td);
-void soMsg_pair_print_amm(const TargetDesc &td, const so_arg_amm_t a);
 void soMsg_pair_print_kmm(const TargetDesc &td, const so_arg_kmm_t a);
 void soMsg_pair_print_kmm_single(const TargetDesc &td, const so_arg_kmm_t a);
 void soMsg_repeater_begin(const TargetDesc &td);
