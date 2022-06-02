@@ -2,12 +2,10 @@
   "use strict";
   import { _ } from "services/i18n";
   import * as httpFetch from "app/fetch.js";
-  import { G, M0, GM, GMH } from "stores/curr_shutter.js";
+  import { G, M0,  GMH } from "stores/curr_shutter.js";
   import { SelectedId } from "stores/id.js";
-  import { Gmu, GmuMaxM } from "stores/mcu_config.js";
   import { Aliases } from "stores/shutters.js";
-  import { ShowHelp } from "stores/app_state.js";
-  import { Pras, ReceivedAddresses } from "stores/alias.js";
+  import { ReceivedAddresses } from "stores/alias.js";
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
 
@@ -26,6 +24,10 @@
   $: selectedId = 0;
   $: selectedId_isValid = id_isValid(selectedId);
 
+  $: {
+    select_id($SelectedId);
+  }
+
   function id_isValid(id) {
     const re = /^[12]0[0-9A-Fa-f]{4}$/;
     return re.test(id);
@@ -33,47 +35,19 @@
 
   let select_id_in_progress = false;
   function select_id(id) {
-    console.log("id,entered", id, entered);
     if (select_id_in_progress) return;
     select_id_in_progress = true;
 
     for (let eid of ["paired", "aliases", "received", "entered"]) {
-      document.getElementById(eid).value = id;
+      let el = document.getElementById(eid);
+      if (el) el.value = id;
     }
     selectedId = id;
     $SelectedId = id;
     select_id_in_progress = false;
   }
 
-  function hClick_Pair() {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_PAIRING);
-  }
 
-  function hClick_UnPair() {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_UNPAIRING);
-  }
-
-  function aliasControllers_fromHtml() {
-    // XXX
-    const pad = $Aliases;
-    const pas = document.getElementById("aliases");
-    const pas_sel = pas.selectedIndex;
-
-    for (let opt of pas.options) {
-      const key = opt.text;
-      aliasTable_fromHtml(key);
-    }
-  }
-
-  function onAliasesApply() {
-    if (selectedId_isValid) {
-      // aliasTable_fromHtml_toMcu(selectedId);
-    }
-  }
-  function onAliasesReload() {
-    // aliasTable_updHtml(selectedId);
-    httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
-  }
 
   function alias_isKeyPairedToM(key, g, m) {
     const val = $Aliases[key];
@@ -94,9 +68,9 @@
   }
 </script>
 
-<div id="aliasdiv" class="text-center">
-  <h5>{ $_("app.id.chose_header") }</h5>
-  <table class="top_table">
+<div id="aliasdiv">
+  <table class="top_table ml-auto mr-auto">
+    <tr><th colspan="4">{ $_("app.id.chose_header") }</th></tr>
     <tr>
       <td use:tippy={{ content: $_("app.id.tt.chose_allRegIds") }}>{$_("app.id.chose_allRegIds")}</td>
       <td use:tippy={{ content: $_("app.id.tt.chose_regIds") }}>{$GMH}</td>
@@ -161,7 +135,7 @@
     border-radius: 0.75rem;
     overflow: hidden;
     border-collapse: collapse;
-    margin: 0rem;
+    margin: 0 auto;
     padding: 0rem 0.25rem;
     border-gap: 0;
   }

@@ -2,6 +2,12 @@ import { getLocaleFromNavigator, init, addMessages, _ } from "svelte-i18n";
 
 const en = {
   weekdays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+  fernotron: {
+    register: "register",
+    unregister: "unregister",
+    Register: "Register",
+    Unregister: "Unregister",
+  },
   app: {
     run: "Run",
     reload: "Reload",
@@ -55,6 +61,8 @@ const en = {
       chose_rxIds: "RX",
       chose_enterId: "Enter",
       test_selectedId: "Test",
+      regTbl_header1: "Sender-ID",
+      regTbl_header2: "is registered to:",
       tt: {
         chose_allRegIds: "Any registered Sender-IDs",
         chose_regIds: "Sender-IDs registered to this receiver number only",
@@ -62,6 +70,8 @@ const en = {
         chose_enterId: "Enter a Sender-ID",
         text_enterId: "Enter an ID or select ID from a list",
         test_selectedId: "Identify motor(s) paired with this ID by moving them",
+        register_id: "Register/Unregister selected Sender-ID to selected receiver-number",
+        register_rf: "Register/Unregister RF-Sender to selected receiver-number. Click button and then press Stop on RF transmitter",
       },
     },
 
@@ -184,6 +194,12 @@ const en = {
 
 const de = {
   weekdays: ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"],
+  fernotron: {
+    register: "anmelden",
+    unregister: "abmelden",
+    Register: "Anmelden",
+    Unregister: "Abmelden",
+  },
   app: {
     duration: "Dauer (sek)",
     reload: "Neu Laden",
@@ -221,7 +237,6 @@ const de = {
       random: "Zufall",
       sun: "Sonne",
       manual: "Manuell",
-      manual: "Manual",
       sendRtc: "Uhrzeit senden an:",
     },
 
@@ -230,12 +245,17 @@ const de = {
       chose_allRegIds: "Alle",
       chose_rxIds: "RX",
       chose_enterId: "Eingabe",
+      regTbl_header1: "Sender-ID",
+      regTbl_header2: "ist angemeldet bei:",
+
       tt: {
         chose_allRegIds: "Alle angemeldeten Sender-IDs",
         chose_regIds: "An dieser Empfängernummer angemeldete Sender-IDs",
         chose_rxIds: "Alle Sender-IDs empfangen über Funk",
         chose_enterId: "Eingabe einer Sender-ID",
         text_enterId: "Sender-ID direkt eingeben oder aus Liste wählen",
+        register_id: "An-/Abmelden der ausgewählten Sender-ID an die ausgewählte Empfängernummer",
+        register_rf: "An-/Abmelden eines Funksenders an die ausgewählte Empfängernummer. Erst Knopf anklicken und dann Stop am Funksender drücken!",
       },
     },
 
@@ -282,7 +302,7 @@ const de = {
     hint_durStopClock:
       "Zum Messen der Dauer der Rollandenbewegungen. Drücke Start/Stop zum gleichzeitigen Starten von Bewegung und Stoppuhr. Sobald der Rollladen stoppt, Start/Stop erneut drücken um die Stoppuhr anzuhalten.",
     hint_shutterAlias:
-      "Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren müssen diese hier registriert werden.",
+      "Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren müssen diese hier erneut angemeldet werden.",
   },
   mcuConfigNames: {
     verbose: "CLI Verbose Level",

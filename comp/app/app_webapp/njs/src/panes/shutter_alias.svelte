@@ -7,13 +7,14 @@
   import tippy from "sveltejs-tippy";
 </script>
 
-<div class="main-area">
+<div class="main-area text-center">
   <h4 class="text-center" use:tippy={{ content: $_("help.hint_shutterAlias") }}>Alias</h4>
 
   <div class="mt-4 p-2">
     <ShutterGM />
   </div>
 
+<br />
 
   <div>
     <IdSelector />
