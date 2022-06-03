@@ -109,7 +109,14 @@ const en = {
       h_register_receiver_as_gm: "Register Central-Unit to Receiver in Set-Mode",
       h_register_sender_to_smr: "Register a Sender to Receiver in Set-Mode",
     },
+    names: {
+      restoreNames: "Restore names",
+      tt: {
+        restoreNames: "If MCU is new or MCU flash was erased, restore the shutter names from local browser cache storage",
+      },
+    },
   },
+
   firmware: {
     latest_master: "Latest Release",
     latest_beta: "Latest Beta",
@@ -287,6 +294,12 @@ const de = {
       h_set_mode_enable: "Ein Empfängerät in Set/Eingabe-Modus versetzen",
       h_register_receiver_as_gm: "Melde Zentrale an Empfänger-im-Set-Modus an",
       h_register_sender_to_smr: "Melde Sender an Empfänger-im-Set-Modus an",
+    },
+    names: {
+      restoreNames: "Namen wiederherstellen",
+      tt: {
+        restoreNames: "Wurde die MCU erneuert oder der MCU-Flash-Speicher gelöscht, können hier die Namen aus dem lokalen Browser-Speicher an die MCU gesendet werden.",
+      },
     },
   },
   firmware: {
