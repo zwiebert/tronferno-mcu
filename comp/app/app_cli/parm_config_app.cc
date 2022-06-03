@@ -75,6 +75,18 @@ static bool ids_areValid(const char *ids) {
   return true;
 }
 
+static int ids_count(const char *ids) {
+  const int len = strlen(ids);
+
+  if (len == 0)
+     return 0;
+  if (len % 6)
+    return -1;
+
+  const int count = len / 6;
+  return count;
+}
+
 
 bool process_parmConfig_get_app(otok kt, const char *val, const struct TargetDesc &td) {
   switch (kt) {
@@ -140,7 +152,11 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, const str
 
         char buf[80];
         if (config_read_item(CB_RF_REPEATER, buf, sizeof buf, "")) {
-          strncat(buf, val + 1, sizeof buf - 1);
+        if (!ids_areValid(buf)) {
+          *buf = '\0';
+        }
+
+          strncat(buf, val + 1, sizeof buf - 1 - strlen(val));
           set_optStr(buf, CB_RF_REPEATER);
           soCfg_RF_REPEATER(td);
           SET_BIT64(changed_mask, CB_RF_REPEATER);
