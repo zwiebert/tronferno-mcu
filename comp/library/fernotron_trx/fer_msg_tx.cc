@@ -68,7 +68,7 @@ bool fer_send_msg_with_stop(const fer_sbT *fsb, u16 delay, u16 stopDelay, i8 rep
 bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, i8 repeats, u16 delay) {
   precond(fsb);
 
-  struct sf msg = { .fsb = *fsb, .when_to_transmit_ts = (delay + (u32)get_now_time_ts()), .mt = msgType, .repeats = repeats };
+  struct sf msg = { .when_to_transmit_ts = (delay + (u32)get_now_time_ts()), .fsb = *fsb, .mt = msgType, .repeats = repeats };
   if (!fer_tx_pushMsg(&msg))
     return false;
 
@@ -84,7 +84,9 @@ static bool fer_send_queued_msg(struct sf *msg) {
   Fer_Trx_IncomingEvent evt { .raw = fer_tx_msg, .fsb = msg->fsb, .kind = msg->mt, .tx = true };
 
   if (msg->sent_ct++ == 0) {
-    sf_toggle = fer_tglNibble_ctUp(sf_toggle, 1);
+    if (!msg->rf_repeater) {
+      sf_toggle = fer_tglNibble_ctUp(sf_toggle, 1);
+    }
     FER_SB_PUT_TGL(&msg->fsb, sf_toggle);
     if (msg->mt == MSG_TYPE_PLAIN) {
       evt.first = true;

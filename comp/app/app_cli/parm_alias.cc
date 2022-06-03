@@ -154,10 +154,10 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
     }
 
     if (read) {
-      Fer_GmSet gm;
-      if (fer_alias_getControllerPairings(addr, &gm)) {
-        so_arg_amm_t amm = {addr, &gm };
-        soMsg_pair_print_amm(td, amm);
+      Fer_GmSet mm;
+      if (fer_alias_getControllerPairings(addr, &mm)) {
+        so_arg_kmm_t kmm = {addr_as_string, &mm };
+        soMsg_pair_print_kmm_single(td, kmm);
       }
     }
 

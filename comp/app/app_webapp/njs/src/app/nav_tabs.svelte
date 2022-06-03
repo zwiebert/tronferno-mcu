@@ -13,7 +13,7 @@
   }
 </script>
 
-<style type="text/scss">
+<style lang="scss">
   /* Style the buttons that are used to open the tab content */
 </style>
 

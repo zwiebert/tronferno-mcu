@@ -94,12 +94,13 @@
   $: mcuConfigKeysCC1101 = $McuConfigKeys.filter((val) => val.startsWith("cc1101-"));
 
   $: mcuConfigKeysPin = $McuConfigKeys.filter(
-    (val) => val.startsWith("gpio") || val === "set-button-pin" || (mcuConfig["rf-trx"] !== "cc1101" && (val === "rf-rx-pin" || val === "rf-tx-pin"))
+    (val) => val.startsWith("gpio") || val === "set-button-pin" || (mcuConfig["rf-trx"] !== "cc1101" && mcuConfig["rf-trx"] !== "none" && (val === "rf-rx-pin" || val === "rf-tx-pin"))
   );
   $: mcuConfigKeysCU = $McuConfigKeys.filter((val) => val === "cu");
   $: mcuConfigKeysAstro = $McuConfigKeys.filter((val) => val === "longitude" || val === "latitude" || val.startsWith("astro-"));
   $: mcuConfigKeysTime = $McuConfigKeys.filter((val) => val === "rtc" || val === "tz");
   $: mcuConfigKeysCc1101Pin = mcuConfig["rf-trx"] === "cc1101" ? $McuConfigKeys.filter((val) => val.startsWith("rf-") && val.endsWith("-pin")) : [];
+  $: mcuConfigKeysIgnore = ["rf-repeater"];
 
   $: mcuConfigKeysMisc = $McuConfigKeys.filter(
     (val) =>
@@ -116,6 +117,7 @@
         mcuConfigKeysAstro.includes(val) ||
         mcuConfigKeysTime.includes(val) ||
         mcuConfigKeysCc1101Pin.includes(val) ||
+        mcuConfigKeysIgnore.includes(val) ||
         val.endsWith("-pin") ||
         mcuConfigKeysPin.includes(val)
       )
@@ -234,7 +236,7 @@
       <table class="conf-table top_table rounded-xl overflow-hidden">
         {#each mcuConfigKeysNetwork as key, i}
           <tr>
-            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}" >{mcuConfigNames[key]}</label></td>
+            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}" >{mcuConfigNames[key]}</label></td>
             {#if key.endsWith("-enable")}
               <td>
                 <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -257,7 +259,7 @@
               <caption>{$_("mcuConfig.wlan_station")}</caption>
               {#each mcuConfigKeysWLAN as key, i}
                 <tr>
-                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
                   {#if key.endsWith("-enable")}
                     <td>
                       <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -277,7 +279,7 @@
               <caption>{$_("mcuConfig.ethernet")}</caption>
               {#each mcuConfigKeysLAN as key, i}
                 <tr>
-                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
                   {#if key.endsWith("-enable")}
                     <td>
                       <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -305,7 +307,7 @@
               <caption>{$_("mcuConfig.ntp_client")}</caption>
               {#each mcuConfigKeysNTP as key, i}
                 <tr>
-                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
                   {#if key.endsWith("-enable")}
                     <td>
                       <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -325,7 +327,7 @@
               <caption>{$_("mcuConfig.mqtt_client")}</caption>
               {#each mcuConfigKeysMQTT as key, i}
                 <tr>
-                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
 
                   {#if key.endsWith("-enable")}
                     <td>
@@ -346,7 +348,7 @@
               <caption>{$_("mcuConfig.http_server")}</caption>
               {#each mcuConfigKeysHTTP as key, i}
                 <tr>
-                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
 
                   {#if key.endsWith("-enable")}
                     <td>
@@ -381,7 +383,7 @@
         <table class="conf-table top_table rounded-xl overflow-hidden">
           {#each mcuConfigKeysCU as key, i}
             <tr>
-              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
               {#if key.endsWith("-enable")}
                 <td>
                   <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -401,7 +403,7 @@
         <table class="conf-table top_table rounded-xl overflow-hidden">
           {#each mcuConfigKeysTime as key, i}
             <tr>
-              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
               {#if key.endsWith("-enable")}
                 <td>
                   <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -420,7 +422,7 @@
         <table class="conf-table top_table rounded-xl overflow-hidden">
           {#each mcuConfigKeysAstro as key, i}
             <tr>
-              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
               {#if key.endsWith("-enable")}
                 <td>
                   <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -453,7 +455,7 @@
         {#each mcuConfigKeysCc1101Pin as key, i}
           <tr>
             <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-              ><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{$_("mcuConfigNames.cc1101." + key)}</label
+              ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{$_("mcuConfigNames.cc1101." + key)}</label
               ></td
             >
             {#if key === "rf-rx-pin"}
@@ -467,7 +469,7 @@
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
               </td>
-            {:else if key === "rf-tx-pin" || key === "rf-sclk-pin" || key == "rf-mosi-pin" || key === "rf-ss-pin"}
+            {:else if key === "rf-tx-pin" || key === "rf-sclk-pin" || key === "rf-mosi-pin" || key === "rf-ss-pin"}
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="33" />
               </td>
@@ -479,18 +481,14 @@
 
         {#each mcuConfigKeysPin as key, i}
           <tr>
-            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
             {#if key.endsWith("-enable")}
               <td>
                 <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
               </td>
-            {:else if key === "rf-rx-pin" || key === "set-button-pin"}
+            {:else if key === "set-button-pin"}
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
-              </td>
-            {:else if key === "rf-tx-pin"}
-              <td>
-                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="33" />
               </td>
             {:else if key.startsWith("gpio")}
               <td>
@@ -501,7 +499,7 @@
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
               </td>
-            {:else if key === "rf-tx-pin" || key === "rf-sclk-pin" || key == "rf-mosi-pin" || key === "rf-ss-pin"}
+            {:else if key === "rf-tx-pin" || key === "rf-sclk-pin" || key === "rf-mosi-pin" || key === "rf-ss-pin"}
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="33" />
               </td>
@@ -525,7 +523,7 @@
       <table id="cfg_table_id" class="conf-table top_table rounded-xl overflow-hidden">
         {#each mcuConfigKeysMisc as key, i}
           <tr>
-            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
             {#if key.endsWith("-enable")}
               <td>
                 <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -551,7 +549,7 @@
     <div class="area">
       {#each mcuConfigKeysCC1101 as key, i}
         <tr>
-          <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] != $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
+          <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td>
           {#if key.endsWith("-enable")}
             <td>
               <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
@@ -587,7 +585,7 @@
   <AppLog rxonly={true} />
 {/if}
 
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/app.scss";
   .row1 {
     background-color: darken($color_bg_area, 10%);

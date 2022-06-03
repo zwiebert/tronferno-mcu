@@ -48,9 +48,10 @@ void soMsg_pair_begin(const TargetDesc &td);
 void soMsg_pair_end(const TargetDesc &td);
 void soMsg_pair_all_begin(const TargetDesc &td);
 void soMsg_pair_all_end(const TargetDesc &td);
-void soMsg_pair_print_amm(const TargetDesc &td, const so_arg_amm_t a);
 void soMsg_pair_print_kmm(const TargetDesc &td, const so_arg_kmm_t a);
 void soMsg_pair_print_kmm_single(const TargetDesc &td, const so_arg_kmm_t a);
+void soMsg_repeater_begin(const TargetDesc &td);
+void soMsg_repeater_end(const TargetDesc &td);
 void soMsg_inet_print_address(const TargetDesc &td);
 void soMsg_gpio_pin(const TargetDesc &td, const so_arg_pch_t a, bool broadcast = false);
 

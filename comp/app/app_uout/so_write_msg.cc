@@ -364,11 +364,6 @@ void soMsg_pair_all_end(const struct TargetDesc &td) {
   td.so().x_close();
 }
 
-void soMsg_pair_print_amm(const struct TargetDesc &td, const so_arg_amm_t a) {
-  td.write("pair a="), io_print_hex(a.a, false), td.write(" mm="), so_print_gmbitmask(a.mm), td.write(";\n");
-
-}
-
 void soMsg_pair_print_kmm(const struct TargetDesc &td, const so_arg_kmm_t a) {
   //td.write("pair a="), td.write(a.key), td.write(" mm="), so_print_gmbitmask(a.mm), td.write(";\n");
   char buf[20];
@@ -385,6 +380,16 @@ void soMsg_pair_print_kmm_single(const struct TargetDesc &td, const so_arg_kmm_t
   td.so().print("mm", buf);
 
 }
+
+#ifdef USE_REPEATER
+void soMsg_repeater_begin(const struct TargetDesc &td) {
+  td.so().x_open("repeater");
+}
+
+void soMsg_repeater_end(const struct TargetDesc &td) {
+  td.so().x_close();
+}
+#endif
 
 #ifdef USE_NETWORK
 void soMsg_inet_print_address(const struct TargetDesc &td) {

@@ -11,6 +11,7 @@
 #include "config_kvs.h"
 #include <fernotron_trx/fer_trx_api.hh>
 #include <fernotron_trx/raw/fer_radio_trx.h>
+#include <fernotron/repeater/repeater.h>
 #include "utils_misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
@@ -105,6 +106,11 @@ int8_t config_read_rfmiso_gpio() {
 }
 int8_t config_read_rfss_gpio() {
   return config_read_item((CB_RFSS_GPIO), -1);
+}
+
+const char* config_read_rf_repeater(char *d, unsigned d_size) {
+  const char *s =  config_read_item(CB_RF_REPEATER, d, d_size, "");
+  return s;
 }
 
 #if 1
@@ -212,4 +218,10 @@ void config_setup_cc1101() {
         cc1101_ook_updConfig_fromSparse(item);
     }
   }
+}
+
+void config_setup_repeater() {
+  char buf[80];
+  config_read_rf_repeater(buf, sizeof buf);
+  ferRep_setup(buf);
 }

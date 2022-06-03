@@ -2,6 +2,12 @@ import { getLocaleFromNavigator, init, addMessages, _ } from "svelte-i18n";
 
 const en = {
   weekdays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+  fernotron: {
+    register: "register",
+    unregister: "unregister",
+    Register: "Register",
+    Unregister: "Unregister",
+  },
   app: {
     run: "Run",
     reload: "Reload",
@@ -20,11 +26,22 @@ const en = {
       cfg: {
         mcu: "MCU",
         aliases: "Aliases",
-        durations: "Duration",
+        sender: "Sender",       
+        positions: "Positions",
         name: "Misc",
         set_mode: "Set",
         app: "App",
       },
+      sender: {
+        aliases: "Aliases",
+        repeater: "Repeater",
+        transmit: "Transmit",
+      },
+      positions: {
+        aliases: "Aliases",
+        durations: "Duration",
+      },
+
     },
 
     auto: {
@@ -35,6 +52,27 @@ const en = {
       sun: "Sun",
       manual: "Manual",
       sendRtc: "Send wall time to:",
+    },
+
+
+    id: {
+      chose_header: "Pick/Enter a Sender-ID",
+      chose_allRegIds: "All",
+      chose_rxIds: "RX",
+      chose_enterId: "Enter",
+      test_selectedId: "Test",
+      regTbl_header1: "Sender-ID",
+      regTbl_header2: "is registered to:",
+      tt: {
+        chose_allRegIds: "Any registered Sender-IDs",
+        chose_regIds: "Sender-IDs registered to this receiver number only",
+        chose_rxIds: "List of Sender-IDs recveived via RF",
+        chose_enterId: "Enter a Sender-ID",
+        text_enterId: "Enter an ID or select ID from a list",
+        test_selectedId: "Identify motor(s) paired with this ID by moving them",
+        register_id: "Register/Unregister selected Sender-ID to selected receiver-number",
+        register_rf: "Register/Unregister RF-Sender to selected receiver-number. Click button and then press Stop on RF transmitter",
+      },
     },
 
     dur: {
@@ -71,7 +109,14 @@ const en = {
       h_register_receiver_as_gm: "Register Central-Unit to Receiver in Set-Mode",
       h_register_sender_to_smr: "Register a Sender to Receiver in Set-Mode",
     },
+    names: {
+      restoreNames: "Restore names",
+      tt: {
+        restoreNames: "If MCU is new or MCU flash was erased, restore the shutter names from local browser cache storage",
+      },
+    },
   },
+
   firmware: {
     latest_master: "Latest Release",
     latest_beta: "Latest Beta",
@@ -87,6 +132,8 @@ const en = {
       "To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.",
     hint_shutterAlias:
       "To register position changes caused by plain controllers and sun-sensors, these controllers have to be registered here.",
+    hint_repeater:
+      "Repeat RF commands to increase reach. You have to provide a list of IDs. Only senders from this list will be repeated.",
   },
   mcuConfigNames: {
     verbose: "CLI Verbosity",
@@ -154,6 +201,12 @@ const en = {
 
 const de = {
   weekdays: ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"],
+  fernotron: {
+    register: "anmelden",
+    unregister: "abmelden",
+    Register: "Anmelden",
+    Unregister: "Abmelden",
+  },
   app: {
     duration: "Dauer (sek)",
     reload: "Neu Laden",
@@ -168,11 +221,19 @@ const de = {
       },
       cfg: {
         mcu: "MCU",
-        aliases: "Alias",
-        durations: "Laufzeit",
+        positions: "Positionen",
         name: "Sonstiges",
         set_mode: "Set",
         app: "App",
+      },
+      sender: {
+        aliases: "Aliases",
+        repeater: "Repeater",
+        transmit: "Transmit",
+      },
+      positions: {
+        aliases: "Aliases",
+        durations: "Laufzeit",
       },
     },
 
@@ -183,8 +244,26 @@ const de = {
       random: "Zufall",
       sun: "Sonne",
       manual: "Manuell",
-      manual: "Manual",
       sendRtc: "Uhrzeit senden an:",
+    },
+
+    id: {
+      chose_header: "Sender-ID Auswahl/Eingabe",
+      chose_allRegIds: "Alle",
+      chose_rxIds: "RX",
+      chose_enterId: "Eingabe",
+      regTbl_header1: "Sender-ID",
+      regTbl_header2: "ist angemeldet bei:",
+
+      tt: {
+        chose_allRegIds: "Alle angemeldeten Sender-IDs",
+        chose_regIds: "An dieser Empfängernummer angemeldete Sender-IDs",
+        chose_rxIds: "Alle Sender-IDs empfangen über Funk",
+        chose_enterId: "Eingabe einer Sender-ID",
+        text_enterId: "Sender-ID direkt eingeben oder aus Liste wählen",
+        register_id: "An-/Abmelden der ausgewählten Sender-ID an die ausgewählte Empfängernummer",
+        register_rf: "An-/Abmelden eines Funksenders an die ausgewählte Empfängernummer. Erst Knopf anklicken und dann Stop am Funksender drücken!",
+      },
     },
 
     dur: {
@@ -216,6 +295,12 @@ const de = {
       h_register_receiver_as_gm: "Melde Zentrale an Empfänger-im-Set-Modus an",
       h_register_sender_to_smr: "Melde Sender an Empfänger-im-Set-Modus an",
     },
+    names: {
+      restoreNames: "Namen wiederherstellen",
+      tt: {
+        restoreNames: "Wurde die MCU erneuert oder der MCU-Flash-Speicher gelöscht, können hier die Namen aus dem lokalen Browser-Speicher an die MCU gesendet werden.",
+      },
+    },
   },
   firmware: {
     latest_master: "Letzte Release",
@@ -230,7 +315,7 @@ const de = {
     hint_durStopClock:
       "Zum Messen der Dauer der Rollandenbewegungen. Drücke Start/Stop zum gleichzeitigen Starten von Bewegung und Stoppuhr. Sobald der Rollladen stoppt, Start/Stop erneut drücken um die Stoppuhr anzuhalten.",
     hint_shutterAlias:
-      "Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren müssen diese hier registriert werden.",
+      "Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren müssen diese hier erneut angemeldet werden.",
   },
   mcuConfigNames: {
     verbose: "CLI Verbose Level",

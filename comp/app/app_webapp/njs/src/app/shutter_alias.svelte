@@ -2,11 +2,11 @@
   "use strict";
   import { _ } from "services/i18n";
   import * as httpFetch from "app/fetch.js";
-  import { G, M0, GM, GMH } from "stores/curr_shutter.js";
+  import { G, M0, GMH } from "stores/curr_shutter.js";
+  import { SelectedId } from "stores/id.js";
   import { Gmu, GmuMaxM } from "stores/mcu_config.js";
   import { Aliases } from "stores/shutters.js";
-  import { ShowHelp } from "stores/app_state.js";
-  import { Pras, ReceivedAddresses } from "stores/alias.js";
+  import { Pras } from "stores/alias.js";
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
 
@@ -20,12 +20,28 @@
     }
   });
 
+
   $: AliasesAllKeys = Object.keys($Aliases);
   $: AliasesPairedKeys = AliasesAllKeys.filter((key) => alias_isKeyPairedToM(key, $G, $M0));
-  $: selectedId = 0;
+  $: selectedId = $SelectedId;
   $: selectedId_isValid = id_isValid(selectedId);
 
+  $: isPaired = false;
   $: {
+    AliasesPairedKeys;
+    isPaired = alias_isKeyPairedToM($SelectedId, $G, $M0);
+  }
+
+  $: {
+    $Pras;
+    if ($Pras && $Pras.success) {
+      selectedId = $SelectedId = $Pras.a;
+      console.log($Pras);
+    }
+  }
+
+  $: {
+    AliasesPairedKeys;
     aliasTable_updHtml(selectedId);
   }
 
@@ -34,17 +50,8 @@
     return re.test(id);
   }
 
-  let select_id_in_progress = false;
   function select_id(id) {
-    console.log("id,entered", id, entered);
-    if (select_id_in_progress) return;
-    select_id_in_progress = true;
-
-    for (let eid of ["paired", "aliases", "received", "entered"]) {
-      document.getElementById(eid).value = id;
-    }
-    selectedId = id;
-    select_id_in_progress = false;
+    $SelectedId = id;
   }
 
   function hClick_Pair() {
@@ -55,30 +62,17 @@
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_UNPAIRING);
   }
 
-  function aliasControllers_fromHtml() {
-    // XXX
-    const pad = $Aliases;
-    const pas = document.getElementById("aliases");
-    const pas_sel = pas.selectedIndex;
-
-    for (let opt of pas.options) {
-      const key = opt.text;
-      aliasTable_fromHtml(key);
-    }
-  }
-
   function onAliasesApply() {
     if (selectedId_isValid) {
       aliasTable_fromHtml_toMcu(selectedId);
     }
   }
   function onAliasesReload() {
-    aliasTable_updHtml(selectedId);
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
   }
 
   function alias_isKeyPairedToM(key, g, m) {
-    const val = $Aliases[key];
+    const val = $Aliases[key] || {};
 
     let chunks = [];
 
@@ -96,7 +90,7 @@
   }
 
   function aliasTable_updHtml(key) {
-    const val = $Aliases[key];
+    const val = $Aliases[key] || {};
     if (!val) {
       for (let g = 1; g <= 7; ++g) {
         for (let m = 1; m <= 7; ++m) {
@@ -128,7 +122,7 @@
       }
     }
   }
-  function aliasTable_fromHtml(key) {
+  function aliasTable_fromHtml() {
     let val = "00";
     let null_run = 0;
 
@@ -156,7 +150,7 @@
   }
 
   function aliasTable_fromHtml_toMcu(key) {
-    const val = aliasTable_fromHtml(key);
+    const val = aliasTable_fromHtml();
 
     let tfmcu = { to: "tfmcu", pair: { a: key, mm: val, c: "store" } };
 
@@ -166,173 +160,83 @@
 </script>
 
 <div id="aliasdiv text-center">
-  <div class="area text-center" id="aliasPairUnpair">
-    <button id="alias_pair" type="button" on:click={hClick_Pair}> Scan for ID to alias it to {$GMH} </button>
-    <button id="alias_unpair" type="button" on:click={hClick_UnPair}> Scan for ID to unalias it from {$GMH} </button>
-    {#if $Pras}
-      <br />
-      {#if $Pras.scanning}
-        <span class="bg-blue-400">Scanning to {$Pras.pairing ? "alias" : "unalias"}. Press STOP (or SO POS/INST) on Sender now.</span>
-      {:else if $Pras.timeout}
-        <span class="bg-red-400">Timeout</span>
-      {:else if $Pras.success}
-        <label class="bg-green-400"
-          >Found: <button type="button" on:click={() => select_id($Pras.a)}>{$Pras.a}</button></label
-        >
-      {:else}
-        <label class="bg-gray-300"
-          >Nothing to do for: <button type="button" on:click={() => select_id($Pras.a)}>{$Pras.a}</button
-          ></label
-        >
-      {/if}
-    {/if}
-  </div>
   <br />
 
-  <div class="area text-center">
-    <h5>Select or Enter an ID</h5>
-    <table class="top_table">
-      <tr>
-        <td use:tippy={{ content: "All aliased IDs" }}>All</td>
-        <td use:tippy={{ content: "IDs aliased to this number" }}>{$GMH}</td>
-        <td use:tippy={{ content: "Any received IDs" }}>RX</td>
-        <td use:tippy={{ content: "Enter an ID by hand" }}>Enter</td>
-      </tr>
-      <tr>
-        <td>
-          <select id="aliases" size="5" on:change={() => select_id(document.getElementById("aliases").value)}>
-            {#each AliasesAllKeys.sort() as key}
-              <option>{key}</option>
-            {/each}
-          </select>
-        </td>
-        <td>
-          <select id="paired" size="5" on:change={() => select_id(document.getElementById("paired").value)}>
-            {#each AliasesPairedKeys.sort() as key}
-              <option>{key}</option>
-            {/each}
-          </select>
-        </td>
-        <td>
-          <select id="received" size="5" on:change={() => select_id(document.getElementById("received").value)}>
-            {#each [...$ReceivedAddresses].sort() as key}
-              <option>{key}</option>
-            {/each}
-          </select>
-        </td>
-        <td>
-          <label use:tippy={{ content: "Enter an ID or select one from a list" }}
-            >
-            <input
-              id="entered"
-              class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}"
-              type="text"
-              on:input={() => select_id(document.getElementById("entered").value)}
-              maxlength="6"
-            />
-          </label>
-        </td>
-      </tr>
-    </table>
+  <br />
 
-    <br />
-
-    <div class="area" id="divPairAll">
-      <h5>ID {selectedId} is aliased to:</h5>
-      <table id="aliasTable">
-        <tr>
-          <th />
-          {#each [1, 2, 3, 4, 5, 6, 7] as m}
-            {#if m <= $GmuMaxM}
-              <th>{m}</th>
-            {/if}
-          {/each}
-        </tr>
-        {#each [1, 2, 3, 4, 5, 6, 7] as g}
-          {#if $Gmu[g] > 0}
-            <tr>
-              <th>g{g}</th>
-              {#each [1, 2, 3, 4, 5, 6, 7] as m}
-                {#if m <= $Gmu[g]}
-                  <td><input id="cbAlias_{g}{m}" type="checkbox" disabled={!selectedId_isValid} /></td>
-                {/if}
-              {/each}
-            </tr>
+  <div class="area" id="divPairAll">
+    <table id="aliasTable">
+      <tr><th colspan="8">{$_("app.id.regTbl_header1") + " " + selectedId + " " +$_("app.id.regTbl_header2") }</th></tr>
+      <tr>
+        
+        <th />
+        {#each [1, 2, 3, 4, 5, 6, 7] as m}
+          {#if m <= $GmuMaxM}
+            <th>{m}</th>
           {/if}
         {/each}
-      </table>
-      <span id="aliasSaveReload">
-        <button id="alias_reload" type="button" on:click={onAliasesReload}> {$_("app.reload")} </button>
-        <button id="alias_save" type="button" on:click={onAliasesApply}> {$_("app.save")} </button>
-      </span>
-    </div>
+      </tr>
+      {#each [1, 2, 3, 4, 5, 6, 7] as g}
+        {#if $Gmu[g] > 0}
+          <tr>
+            <th>g{g}</th>
+            {#each [1, 2, 3, 4, 5, 6, 7] as m}
+              {#if m <= $Gmu[g]}
+                <td><input id="cbAlias_{g}{m}" type="checkbox" disabled={!selectedId_isValid} /></td>
+              {/if}
+            {/each}
+          </tr>
+        {/if}
+      {/each}
+    </table>
+    <span id="aliasSaveReload">
+      <button id="alias_reload" type="button" on:click={onAliasesReload}> {$_("app.reload")} </button>
+      <button id="alias_save" type="button" on:click={onAliasesApply}> {$_("app.save")} </button>
+    </span>
+  </div>
 
-    <div class="area text-center">
-      <h5>Send Commands as {selectedId}</h5>
-      <button
-        type="button"
-        use:tippy={{ content: "Identify motor(s) paired with this ID by moving them" }}
-        disabled={!selectedId_isValid}
-        on:click={() => {
-          httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-test" } });
-        }}>Test</button
-      >
-
-      <button
-        type="button"
-        disabled={!(selectedId_isValid && selectedId.startsWith("20"))}
-        on:click={() => {
-          httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-inst" } });
-        }}>Sun-Pos/Inst</button
-      >
-
-      <button
-        type="button"
-        disabled={!(selectedId_isValid && selectedId.startsWith("10"))}
-        on:click={() => {
-          httpFetch.http_postCommand({ cmd: { a: selectedId, c: "stop" } });
-        }}>STOP</button
-      >
-    </div>
-
-    <div class="area">
-      <h5>Alias {selectedId} -> {$GMH}</h5>
-      <button
-        type="button"
-        disabled={!selectedId_isValid}
-        on:click={() => {
-          httpFetch.http_postCommand({ pair: { a: selectedId, g: $G, m: $M0, c: "pair" } });
-        }}>Add</button
-      >
-
-      <button
-        type="button"
-        disabled={!selectedId_isValid}
-        on:click={() => {
-          httpFetch.http_postCommand({ pair: { a: selectedId, g: $G, m: $M0, c: "unpair" } });
-        }}>Remove</button
-      >
-    </div>
+  <div class="area">
+    <button
+      type="button"
+      disabled={!selectedId_isValid || isPaired}
+      use:tippy={{ content: $_("app.id.tt.register_id") }}
+      on:click={() => {
+        httpFetch.http_postCommand({ pair: { a: selectedId, g: $G, m: $M0, c: "pair" } });
+        httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
+      }}>{$_("fernotron.Register")}</button
+    >
+    {selectedId} -> {$GMH}
+    <button
+      type="button"
+      disabled={!selectedId_isValid || !isPaired}
+      use:tippy={{ content: $_("app.id.tt.register_id") }}
+      on:click={() => {
+        httpFetch.http_postCommand({ pair: { a: selectedId, g: $G, m: $M0, c: "unpair" } });
+        httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
+      }}>{$_("fernotron.Unregister")}</button
+    >
   </div>
 </div>
+<div class="area text-center" id="aliasPairUnpair">
+  <button id="alias_pair" type="button" on:click={hClick_Pair} use:tippy={{ content: $_("app.id.tt.register_rf") }}>{$_("fernotron.Register")}</button>
+  RF-> {$GMH}
+  <button id="alias_unpair" type="button" on:click={hClick_UnPair} use:tippy={{ content: $_("app.id.tt.register_rf") }}>{$_("fernotron.Unregister")}</button>
+  {#if $Pras}
+    <br />
+    {#if $Pras.scanning}
+      <span class="bg-blue-400">Press STOP (or SO POS/INST) on Sender now to {$Pras.pairing ? "register" : "unregister"}.</span>
+    {:else if $Pras.timeout}
+      <span class="bg-red-400">Timeout</span>
+    {:else if $Pras.success}
+      <label class="bg-green-400">Found: <button type="button" on:click={() => select_id($Pras.a)}>{$Pras.a}</button></label>
+    {:else}
+      <label class="bg-gray-300">Nothing to do for: <button type="button" on:click={() => select_id($Pras.a)}>{$Pras.a}</button></label>
+    {/if}
+  {/if}
+</div>
 
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/app.scss";
-  #aliasHeader {
-    grid-area: ah;
-  }
-  #aliases {
-    grid-area: as;
-  }
-  #divPairAll {
-    grid-area: at;
-  }
-  #aliasSaveReload {
-    grid-area: ar;
-  }
-  #aliasPairUnpair {
-    grid-area: ap;
-  }
 
   table,
   td,
@@ -343,7 +247,7 @@
     border-radius: 0.75rem;
     overflow: hidden;
     border-collapse: collapse;
-    margin: 0rem;
+    margin: 0 auto;
     padding: 0rem 0.25rem;
     border-gap: 0;
   }

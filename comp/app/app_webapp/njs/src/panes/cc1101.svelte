@@ -685,7 +685,7 @@
 <button type="button" use:tippy={{ content: "Erase saved CC1101 configuration registers on MCU" }} on:click={reset_to_defaults}>Reset to Defaults</button>
 <br />
 
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/app.scss";
   table,
   td,

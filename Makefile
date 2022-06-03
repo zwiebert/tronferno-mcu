@@ -46,27 +46,19 @@ esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui
 .PHONY: esp32-dot
 .PHONY: FORCE
 
-
 define GEN_RULE
-.PHONY: $(2)-$(1)
-$(2)-$(1):
-	idf.py -G Ninja -C $(THIS_ROOT)/src/$(2) -B $(THIS_ROOT)/build/$(2)  -p $(PORT)  $(esp32_build_opts) $(1) 
+.PHONY: esp32-$(1)
+esp32-$(1):
+	$(esp32_build_cmd) $(1) 
 endef
-$(foreach f,$(flavors),$(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt),$(f)))))
-
-define GEN_RULE
-.PHONY: all-$(1)
-all-$(1):
-	$(foreach f,$(flavors),make $(1) flavor=$(f);)
-endef
-$(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,esp32-$(tgt))))
-
+$(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
 
 esp32-all:
 	$(esp32_build_cmd) reconfigure all
-	
+
+
 esp32-png: $(esp32_build_dir)/tfmcu.png
 esp32-dot: $(esp32_build_dir)/tfmcu.dot
 
