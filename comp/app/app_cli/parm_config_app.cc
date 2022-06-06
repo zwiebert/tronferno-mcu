@@ -6,7 +6,6 @@
 #include "app_misc/opt_map.hh"
 #include <string.h>
 
-
 #include "fernotron/sep/set_endpos.h"
 #include "app_uout/status_output.h"
 #include "fernotron/cuas/cuid_auto_set.h"
@@ -46,10 +45,10 @@
 static bool id_isValid(const char *s) {
   if (strlen(s) != 6)
     return false;
-  if (! (s[0] == '1' || s[0] == '2'))
+  if (!(s[0] == '1' || s[0] == '2'))
     return false;
 
-  for (int i=1; i < 6; ++i)
+  for (int i = 1; i < 6; ++i)
     if (!isxdigit(s[i]))
       return false;
 
@@ -79,14 +78,13 @@ static int ids_count(const char *ids) {
   const int len = strlen(ids);
 
   if (len == 0)
-     return 0;
+    return 0;
   if (len % 6)
     return -1;
 
   const int count = len / 6;
   return count;
 }
-
 
 bool process_parmConfig_get_app(otok kt, const char *val, const struct TargetDesc &td) {
   switch (kt) {
@@ -152,9 +150,9 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, const str
 
         char buf[80];
         if (config_read_item(CB_RF_REPEATER, buf, sizeof buf, "")) {
-        if (!ids_areValid(buf)) {
-          *buf = '\0';
-        }
+          if (!ids_areValid(buf)) {
+            *buf = '\0';
+          }
 
           strncat(buf, val + 1, sizeof buf - 1 - strlen(val));
           set_optStr(buf, CB_RF_REPEATER);
@@ -191,7 +189,7 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, const str
       }
     }
   }
-  break;
+    break;
 
 #ifdef USE_GPIO_PINS
 case otok::k_gpio:
@@ -249,12 +247,12 @@ break;
   }
 #endif
 
+  [[fallthrough]];
   default:
     return false;
   }
   return true;
 }
-
 
 void parmConfig_reconfig_app(uint64_t changed_mask) {
   if (changed_mask & CBM_geo) {
@@ -267,6 +265,6 @@ void parmConfig_reconfig_app(uint64_t changed_mask) {
     mainLoop_callFun(config_setup_cc1101);
   }
   if (changed_mask & CBM_rf_repeater) {
-    mainLoop_callFun(config_setup_repeater);
+    mainLoop_callFun (config_setup_repeater);
   }
 }

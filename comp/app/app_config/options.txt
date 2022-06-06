@@ -64,3 +64,4 @@ weekly
 wlan-password
 wlan-ssid
 spiffs
+enable

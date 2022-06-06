@@ -56,6 +56,7 @@ enum class otok : otokBaseT  {
 
   k_id_list, k_id_add, k_id_rm, // repeater
 
+  k_enable, k_timeout, k_request_auth, k_auth_key, // SEP
   SIZE // key array size
 };
 
@@ -84,6 +85,7 @@ constexpr const_cstringT otok_strings[] = {
 
     "id-list", "id-add", "id-rm", // repeater
 
+    "enable", "timeout", "request-auth", "auth-key", // SEP
     };
 #else
 #include "generated_opts.hh"

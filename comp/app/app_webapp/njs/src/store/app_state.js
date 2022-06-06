@@ -11,3 +11,5 @@ export const ReloadProgress = writable(0);
 export const Verbose = PersistentValStore("AppVerbose", 1);
 
 export const ShowHelp = derived(TabIdx, opts => opts.showHelp ? "help-text-v1" : "help-text-v0");
+
+export const SepModeEnabled = PersistentValStore("SepMode", false);

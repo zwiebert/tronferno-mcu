@@ -12,13 +12,16 @@
 #include "app_config/proj_app_cfg.h"
 #include <fernotron_trx/fer_trx_c_api.h>
 
-
-
 /**
  * \brief          Event callback: SEP-mode had been enabled or disabled
  * \param enabled  true: was enabled, false: was disabled
  */
 extern void (*fer_sep_enable_disable_cb)(bool enable);
+
+const int fer_sep_TIMEOUT = 180; // timeout to switch off SEP mode
+const int fer_sep_BUTTON_TIMEOUT = 3; // timeout to send stop if no movement function was called repeatedly.
+
+bool fer_sep_authenticate(const struct TargetDesc &td, u32 auth_key, int mode_timeout = fer_sep_TIMEOUT);
 
 /**
  * \brief          Enable set-end-position-mode
@@ -27,8 +30,13 @@ extern void (*fer_sep_enable_disable_cb)(bool enable);
  * \param cmd      FIXME: xUP=set upper end position, xDOWN=set lower end position
  * \return         true for success
  */
-bool fer_sep_enable(const struct TargetDesc &td, u32 a, u8 g, u8 m, fer_if_cmd cmd);
+bool fer_sep_enable(const struct TargetDesc &td, u32 auth_key, u32 a, u8 g = 0, u8 m = 0, int timeout = fer_sep_TIMEOUT);
 
+bool fer_sep_move_up(u32 auth_key = 0, int button_timeout = fer_sep_BUTTON_TIMEOUT);
+bool fer_sep_move_down(u32 auth_key = 0, int button_timeout = fer_sep_BUTTON_TIMEOUT);
+bool fer_sep_move_continue(u32 auth_key = 0, int button_timeout = fer_sep_BUTTON_TIMEOUT);
+bool fer_sep_move_stop(u32 auth_key = 0);
+bool fer_sep_move_test();
 
 /**
  * \brief          Disable set-end-position-mode
@@ -44,7 +52,4 @@ void fer_sep_loop(void);
  * \brief         Test if set-end-position-mode is active
  */
 bool fer_sep_is_enabled(void);
-
-
-
 

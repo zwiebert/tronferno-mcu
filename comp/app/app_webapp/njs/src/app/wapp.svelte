@@ -12,7 +12,6 @@
   import PaneShutterDurations from "panes/shutter_durations.svelte";
   import PaneShutterName from "panes/shutter_name.svelte";
   import PaneFirmwareEsp32 from "panes/firmware_esp32.svelte";
-  import PaneWappSettings from "panes/wapp_settings.svelte";
   import PaneMcuSettings from "panes/mcu_settings.svelte";
   import Pane2411 from "panes/2411.svelte";
   import PaneShutterSetMode from "panes/shutter_set_mode.svelte";

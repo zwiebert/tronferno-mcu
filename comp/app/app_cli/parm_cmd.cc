@@ -1,7 +1,6 @@
 #include "app_config/proj_app_cfg.h"
 
 #include <string.h>
-#include "fernotron/sep/set_endpos.h"
 #include "fernotron/fer_main.h"
 #include "fernotron/pos/commands.h"
 #include "fernotron/pos/shutter_pct.h"
@@ -41,14 +40,11 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
   u32 addr = fer_config.cu;
   u8 g = 0, m = 0;
   fer_if_cmd cmd = fer_if_cmd_None;
-  int set_end_pos = -1;
   u8 repeats = FER_SB_PLAIN_REPEATS;
   bool has_requested_position = false;
   i8 pct = -1;
 #define has_pct (pct >= 0)
 #define has_cmd (cmd != fer_if_cmd_None)
-#define has_sep (set_end_pos >= 0)
-
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -109,13 +105,6 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
       }
         break;
 
-      case otok::k_SEP: {
-        set_end_pos = asc2bool(val);
-        if (set_end_pos != 1)
-          set_end_pos = 0;  // force disable
-      }
-        break;
-
       default:
         cli_warning_optionUnknown(td, key);
         break;
@@ -138,12 +127,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
     }
 
   } else {
-    if (has_sep) { // enable hardware buttons to set end position
-      if (set_end_pos)
-        fer_sep_enable(td, addr,g,m, cmd);
-      else
-        fer_sep_disable();
-    } else if (has_pct) {
+   if (has_pct) {
       cli_replyResult(td, fer_cmd_moveShutterToPct(addr, g, m, pct, repeats));
     } else if (has_cmd) {
       cli_replyResult(td, fer_cmd_sendShutterCommand(addr, g, m, cmd, cmd == fer_if_cmd_ToggleRotationDirection ? 0 : repeats));

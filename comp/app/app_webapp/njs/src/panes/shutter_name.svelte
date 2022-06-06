@@ -4,7 +4,9 @@
   import ShutterGM from "app/shutter_gm.svelte";
   import ShutterName from "app/shutter_name.svelte";
   import ShutterDirection from "components/shutter_direction.svelte";
+  import SepEnable from "app/sep_enable.svelte";
   import tippy from "sveltejs-tippy";
+
 </script>
 
 <div class="text-center main-area">
@@ -24,4 +26,10 @@
     <h5>{$_('app.hdr_motorRotDir')}</h5>
     <ShutterDirection />
   </div>
+
+  <div class="area">
+    <h5>{$_('app.sep_enable')}</h5>
+    <SepEnable />
+  </div>
+
 </div>
