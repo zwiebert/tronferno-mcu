@@ -79,6 +79,16 @@ const en = {
       h: "Duration of Shutter-Movements",
     },
 
+    sun: {
+      move_sun_down: "\u263C\u25bc",
+      set_sun_pos: "\u263C\u2699",
+
+      tt: {
+        move_sun_down: "Move shutter down to sun position (sun automatic needs to be enabled for this)",
+        set_sun_pos: "Set sun position to current position",
+      }
+    },
+
     msg_waitForMcuRestart: "Wait for MCU to restart...",
     msg_firmwareIsUpdating: "Firmware is updating...",
     msg_firmwareUpdSuccess: "Update succeeded",
@@ -269,6 +279,17 @@ const de = {
     dur: {
       h: "Motor-Laufzeiten",
     },
+
+    sun: {
+      move_sun_down: "\u263C\u25bc",
+      set_sun_pos: "\u263C\u2699",
+
+      tt: {
+        move_sun_down: "Bewege Rolladen herunter zur Sonnenposition. Sonnenautomatik muß dafür aktiviert sein.",
+        set_sun_pos: "Speicher aktuelle Rollladen-Position als neue Sonnenposition",
+      }
+    },
+
 
     msg_waitForMcuRestart: "MCU wird neu gestartet...",
     msg_firmwareIsUpdating: "Firmware wird aktualisiert...",
