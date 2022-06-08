@@ -248,7 +248,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
 
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    char buf[64];
+    char buf[80];
     if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit)) {
       snprintf(buf, sizeof buf, "SC:type=central: a=%06x g=%d m=%d c=%s;", m.a, m.g, m.m, ci.cs);
     } else {
@@ -260,7 +260,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
   flags.fmt.txt = false;
   flags.fmt.json = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    char buf[64];
+    char buf[80];
     if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit)) {
       snprintf(buf, sizeof buf, "{\"sc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"%s\"}}", m.a, m.g, m.m, ci.cs);
     } else {
