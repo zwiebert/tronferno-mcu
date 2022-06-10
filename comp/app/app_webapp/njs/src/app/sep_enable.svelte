@@ -1,7 +1,7 @@
 <script>
   "use strict";
 
-  import { SepMode } from "stores/app_state";
+  import { SepMode } from "stores/sep";
 
   function create_auth_key() {
     return Math.floor(Math.random() * 10000) + 1;

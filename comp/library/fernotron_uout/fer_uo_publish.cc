@@ -182,13 +182,12 @@ void uoApp_publish_timer_json(uint8_t g, uint8_t m, struct Fer_TimerData *tda) {
   }
 }
 
-
 struct cmdInfo {
   const char *cs = 0;
   const char *fdt = 0;
 };
 static cmdInfo cmdString_fromPlainCmd(const Fer_MsgPlainCmd &m) {
-    struct cmdInfo r;
+  struct cmdInfo r;
 
   if ((FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_PlainSender) && (r.fdt = "plain")) || (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit) && (r.fdt = "central"))) {
     switch (m.cmd) {
@@ -388,3 +387,38 @@ void uoApp_publish_fer_cuasState(const so_arg_cuas_t args) {
   }
 }
 
+void uoApp_publish_fer_authState(const so_arg_auth_t args, char tag) {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_SEP = true;
+  flags.evt.gen_app_state_change = true;
+
+  flags.fmt.raw = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    uoCb_publish(idxs, &args, flags);
+  }
+
+  flags.fmt.raw = false;
+  flags.fmt.json = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+
+    char sj_buf[128];
+    StatusJsonT sj = { sj_buf, sizeof sj_buf };
+
+    if (sj.open_root_object("tfmcu")) {
+      sj.add_object("auth");
+      if (args.auth_success)
+        sj.add_key_value_pair_d("auth-success", 1);
+      if (args.auth_terminated)
+        sj.add_key_value_pair_d("auth-terminated", 1);
+      if (args.auth_timeout)
+        sj.add_key_value_pair_d("auth-timeout", 1);
+      if (args.ui_timeout)
+        sj.add_key_value_pair_d("ui-timeout", 1);
+      sj.close_object();
+
+      sj.close_root_object();
+
+      uoCb_publish(idxs, sj.get_json(), flags);
+    }
+  }
+}

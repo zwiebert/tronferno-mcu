@@ -281,6 +281,10 @@ void setup_pin(const struct cfg_gpio *c) {
   pin_set_mode_int(BUTTON_GPIO, PIN_INPUT, PIN_HIGH);
   pins_not_cli = pins_in_use;
 
+  if (BUTTON_GPIO != GPIO_NUM_NC) {
+    pin_setup_input_handler(static_cast<gpio_num_t>(BUTTON_GPIO));
+  }
+
 #ifdef USE_GPIO_PINS
   for (int i = 0; i < CONFIG_GPIO_SIZE; ++i) {
     if (gpioCfg_getPinMode(gpio_cfg, i) == PIN_DEFAULT)

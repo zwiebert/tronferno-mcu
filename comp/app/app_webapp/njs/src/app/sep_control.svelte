@@ -1,11 +1,11 @@
 <script>
   "use strict";
   import * as httpFetch from "app/fetch.js";
-  import { G, M0, GMH } from "stores/curr_shutter.js";
+  import { G, M0 } from "stores/curr_shutter.js";
   import { onMount, onDestroy } from "svelte";
   import ShutterGM from "app/shutter_gm.svelte";
   import ShutterMove from "app/shutter_move.svelte";
-  import { SepMode } from "stores/app_state";
+  import { Sep, SepMode } from "stores/sep";
 
   $: upDown_enabled = false;
   let Button_Interval = null;
@@ -13,17 +13,28 @@
   const sep_auth_key = $SepMode.auth_key;
 
   $: isValidAddress = $M0 !== 0;
+  $: sep_auth_button_was_pressed = false;
+  
+  $: isAuthenticated = sep_auth_button_was_pressed;
 
+  let progress_interval = null;
+  $: progress_value = 0;
+  $: progress_max = 0;
+  $: progress_auth = false;
 
-
-  let on_destroy = [];
+  $: {
+    if ($Sep["auth-success"]) {
+      sep_auth_button_was_pressed = true;
+      clearInterval(progress_interval);
+      progress_interval = null;
+      progress_auth = false;
+    }
+  }
   onMount(() => {
     sep_disable();
   });
   onDestroy(() => {
-    for (const fn of on_destroy) {
-      fn();
-    }
+    sep_disable();
   });
 
   function hClick_Stop() {
@@ -73,6 +84,27 @@
   function sep_exit() {
     httpFetch.http_postCommand({ sep: { enable: "off" } });
     $SepMode.enabled = false;
+    sep_unauth();
+  }
+
+  function sep_auth() {
+    $Sep = {};
+    httpFetch.http_postCommand({ sep: { "request-auth": "button", "auth-key": sep_auth_key } });
+    progress_value = 60;
+    progress_max = 60;
+    progress_auth = true;
+    progress_interval = setInterval(() => {
+      if (--progress_value < 0) {
+        clearInterval(progress_interval);
+        progress_interval = null;
+        progress_auth = false;
+      }
+    }, 1000);
+  }
+
+  function sep_unauth() {
+    $Sep = {};
+    httpFetch.http_postCommand({ sep: { "request-auth": "off", "auth-key": sep_auth_key } });
   }
 
   function sep_enable() {
@@ -90,10 +122,20 @@
 
 <div class="main-area flex flex-col text-center items-center px-1 border-none">
   <div id="sdi" class="inline-block">
+    <div class={isAuthenticated ? "bg-green-500" : "bg-red-500"}>
+      <p>
+        <button type="button" on:click={sep_auth} disabled={!isValidAddress || upDown_enabled || isAuthenticated}>Authenticate</button>
+      </p>
+
+      {#if progress_auth}
+        <progress value={progress_value} max={progress_max} />
+        <p>Press physical set-button on Tronferno-MCU device</p>
+      {/if}
+    </div>
     <button type="button" on:click={sep_enable} disabled={!isValidAddress || upDown_enabled}>Enable</button>
     <button type="button" on:click={sep_disable} disabled={!upDown_enabled}>Disable</button>
     {#if upDown_enabled}
-      <div class="flex flex-row items-center bg-red-500">
+      <div class="flex flex-row items-center bg-yellow-500">
         <button class="w-24 h-16 text-lg" type="button" disabled={disable_button_envents} on:mousedown={hClick_Down} on:mouseup={hClick_Stop}>
           &#x25bc;
         </button>

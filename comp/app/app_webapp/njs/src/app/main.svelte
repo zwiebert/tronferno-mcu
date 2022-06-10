@@ -3,7 +3,7 @@
   import Layout from "app/layout.svelte";
   import Wapp from "app/wapp.svelte";
   import { setupI18n } from "services/i18n";
-  import {SepMode } from "stores/app_state";
+  import {SepMode } from "stores/sep";
   import SepControl from "app/sep_control.svelte";
 
   setupI18n();

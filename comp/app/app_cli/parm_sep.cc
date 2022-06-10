@@ -38,6 +38,7 @@ int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
   bool enable = false;
   bool disable = false;
   bool request_auth = false;
+  bool request_unauth = false;
   u32 auth_key = 0;
   move_funT move_fun = 0;
   bool move_stop = false;
@@ -61,7 +62,11 @@ int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
       switch (kt) {
 
       case otok::k_request_auth: {
+        if (is_val(button)) {
         request_auth = true;
+        } else if (is_val(off)) {
+          request_unauth = true;
+        }
       }
         break;
 
@@ -124,6 +129,10 @@ int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
     } else {
       cli_replyFailure(td);
     }
+  }
+
+  if (request_unauth) {
+    fer_sep_deauthenticate(td, auth_key);
   }
 
   if (request_auth) {
