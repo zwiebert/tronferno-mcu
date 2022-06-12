@@ -27,14 +27,14 @@ static inline void fer_sep_DISABLE_cb() {
 
 static Sep sep;
 
-bool fer_sep_move_up(u32 auth_key, int button_timeout) {
-  return sep.move_up(auth_key, button_timeout);
+bool fer_sep_move_up(u32 auth_key) {
+  return sep.move_up(auth_key);
 }
-bool fer_sep_move_down(u32 auth_key, int button_timeout) {
-  return sep.move_down(auth_key, button_timeout);
+bool fer_sep_move_down(u32 auth_key) {
+  return sep.move_down(auth_key);
 }
-bool fer_sep_move_continue(u32 auth_key, int button_timeout) {
-  return sep.move_continue(auth_key, button_timeout);
+bool fer_sep_move_continue(u32 auth_key) {
+  return sep.move_continue(auth_key);
 }
 bool fer_sep_move_stop(u32 auth_key) {
   return sep.move_stop(auth_key);
@@ -55,8 +55,8 @@ void fer_sep_disable(void) {
   sep.disable();
 }
 
-bool fer_sep_enable(const struct TargetDesc &td, u32 auth_key, const u32 a, const u8 g, const u8 m) {
-  return sep.enable(auth_key, a, g, m);
+bool fer_sep_enable(const struct TargetDesc &td, u32 auth_key, const u32 a, const u8 g, const u8 m, int enable_timeout_secs, int button_timeout_secs) {
+  return sep.enable(auth_key, a, g, m, enable_timeout_secs, button_timeout_secs);
 }
 
 void fer_sep_loop(void) {

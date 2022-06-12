@@ -33,7 +33,7 @@ const char cli_help_parmSend[]  =
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
-int 
+int
 process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
 
@@ -58,8 +58,12 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
       switch (kt) {
       case otok::k_a: {
         u32 tmp = val ? strtol(val, NULL, 16) : 0;
-        if (tmp)
+        if (tmp) {
           addr = tmp;
+          if (*val == '0')
+            addr += 0x900000; // convert radio-code to real address
+        } else if (!is_val("0"))
+          return cli_replyFailure(td);
       }
         break;
 

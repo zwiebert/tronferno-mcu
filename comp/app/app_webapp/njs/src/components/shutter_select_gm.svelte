@@ -1,18 +1,50 @@
 <script>
   "use strict";
-  import { G, M, GM } from "stores/curr_shutter.js";
+  import { G, M, GM, GMH, RadioCode, RadioCodeEnabled } from "stores/curr_shutter.js";
   import { Names } from "stores/shutters.js";
   import { Gmu } from "stores/mcu_config.js";
   import * as httpFetch from "app/fetch.js";
 
-  $: gm = $GM;
+  let gmInit = $RadioCodeEnabled ? "RadioCode" : $GM;
+  $: gm = gmInit;
   $: names = Object.values($Names);
   $: a = "A " + ($Names["00"] || "");
+  $: showRadioCode = gm === "RadioCode";
+
+  let radioCode = $RadioCode;
+  $: use_motorCode = showRadioCode;
+  $: motorCode = radioCode;
+  $: motorCode_isValid = false;
+  $: target = use_motorCode ? motorCode : $GMH;
+
+  function get_motorCode(mc) {
+    const re = /^9?0[a-fA-F0-9]{4}$/;
+    if (!re.test(mc)) {
+      return "invalid";
+    }
+/*
+    if (mc.startsWith("0")) {
+      return "9" + mc;
+    }
+    */
+
+    return mc;
+  }
 
   $: {
-    $G = Number.parseInt(gm.substr(0, 1));
-    $M = Number.parseInt(gm.substr(1, 1));
-    httpFetch.http_fetchByMask(httpFetch.FETCH_SHUTTER_NAME);
+    const mc = get_motorCode(motorCode);
+    const rce = gm === "RadioCode";
+    $RadioCodeEnabled = rce;
+    $RadioCode = rce ? mc : "invalid";
+    motorCode_isValid = mc;
+  }
+
+  $: {
+    if (!showRadioCode) {
+      $G = Number.parseInt(gm.substr(0, 1));
+      $M = Number.parseInt(gm.substr(1, 1));
+      httpFetch.http_fetchByMask(httpFetch.FETCH_SHUTTER_NAME);
+    }
   }
 </script>
 
@@ -22,10 +54,15 @@
     {#if $Gmu[g]}
       {#each { length: $Gmu[g] + 1 } as _, m}
         <option value={g.toString() + m.toString()}>
-          {g}{m || 'A'}
-          {$Names[g.toString() + m.toString()] || ''}
+          {g}{m || "A"}
+          {$Names[g.toString() + m.toString()] || ""}
         </option>
       {/each}
     {/if}
   {/each}
+  <option value={"RadioCode"}> RadioCode </option>
 </select>
+
+{#if showRadioCode}
+  <input class="w-24 {motorCode_isValid ? 'text-green-600' : 'text-red-600'}" type="text" maxlength="6" bind:value={motorCode} disabled={!use_motorCode} />
+{/if}

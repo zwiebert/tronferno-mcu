@@ -27,10 +27,10 @@ const char cli_help_parmSep[] = ""
     "m=[0-7]   0  group member number\n";
 
 #define is_kt(k) (kt == otok:: k)
-#define is_key(k) (strcmp(key, #k) == 0)
-#define is_val(k) (strcmp(val, #k) == 0)
+#define is_key(k) (strcmp(key, k) == 0)
+#define is_val(k) (strcmp(val, k) == 0)
 
-typedef bool (*move_funT)(u32 auth_key, int timeout);
+typedef bool (*move_funT)(u32 auth_key);
 
 int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
@@ -62,9 +62,9 @@ int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
       switch (kt) {
 
       case otok::k_request_auth: {
-        if (is_val(button)) {
+        if (is_val("button")) {
         request_auth = true;
-        } else if (is_val(off)) {
+        } else if (is_val("off")) {
           request_unauth = true;
         }
       }
@@ -76,16 +76,16 @@ int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
         break;
 
       case otok::k_enable: {
-        if (is_val(off)) {
+        if (is_val("off")) {
           fer_sep_disable();
-        } else if (is_val(on)) {
+        } else if (is_val("on")) {
           enable = true;
         }
       }
         break;
 
       case otok::k_timeout: {
-        if (is_val(?)) {
+        if (is_val("?")) {
 
         } else {
           timeout = atoi(val);
@@ -94,9 +94,16 @@ int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
         break;
 
       case otok::k_a: {
-        addr = val ? strtol(val, NULL, 16) : 0;
+        u32 tmp = val ? strtol(val, NULL, 16) : 0;
+        if (tmp) {
+          addr = tmp;
+          if (*val == '0')
+            addr += 0x900000; // convert radio-code to real address
+        } else if (!is_val("0"))
+          return cli_replyFailure(td);
       }
         break;
+
 
       case otok::k_g: {
         if (!asc2u8(val, &g, 7))
@@ -109,15 +116,15 @@ int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
       }
         break;
       case otok::k_c: {
-        if (is_val(up)) {
+        if (is_val("up")) {
           move_fun = fer_sep_move_up;
-        } else if (is_val(down)) {
+        } else if (is_val("down")) {
           move_fun = fer_sep_move_down;
-        } else if (is_val(keep-moving)) {
+        } else if (is_val("keep-moving")) {
           move_fun = fer_sep_move_continue;
-        } else if (is_val(stop)) {
-          move_stop = true;
-        }else if (is_val(test)) {
+        } else if (is_val("stop")) {
+          move_fun = fer_sep_move_stop;
+        }else if (is_val("test")) {
           fer_sep_move_test();
         }
       }
@@ -144,11 +151,7 @@ int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
   }
 
   if (move_fun) {
-    (*move_fun)(auth_key, fer_sep_BUTTON_TIMEOUT);
-  }
-
-  if (move_stop) {
-    fer_sep_move_stop(auth_key);
+    (*move_fun)(auth_key);
   }
 
   return 0;

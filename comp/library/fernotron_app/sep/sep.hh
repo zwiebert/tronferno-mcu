@@ -15,8 +15,11 @@
 //
 // if 0, only normal up/down commands are used for testing.
 // German: wenn 0, werden ungefährliche hoch/runter kommandos gesendet (zum Testen)
+#ifdef DISTRIBUTION
+#define ENABLE_SET_ENDPOS 1
+#else
 #define ENABLE_SET_ENDPOS 0
-
+#endif
 //
 // DANGER ZONE
 //////////////////////////////////////////////////////////////////
@@ -65,14 +68,14 @@ public:
 
 public:
 
-  bool move_up(u32 auth_key, int button_timeout) {
+  bool move_up(u32 auth_key) {
     if (!m_sep_auth.isAuthenticated(auth_key))
       return false;
     if (!fer_sep_is_enabled())
       return false;
 
-    m_button_time_out.set(button_timeout);
-    m_sep_auth.restart_timeout();
+    restart_timeout();
+
     if (m_down_pressed) {
       send_stop();
       m_down_pressed = false;
@@ -83,14 +86,14 @@ public:
     }
     return true;
   }
-  bool move_down(u32 auth_key, int button_timeout) {
+  bool move_down(u32 auth_key) {
     if (!m_sep_auth.isAuthenticated(auth_key))
       return false;
     if (!fer_sep_is_enabled())
       return false;
 
-    m_sep_auth.restart_timeout();
-    m_button_time_out.set(button_timeout);
+    restart_timeout();
+
     if (m_up_pressed) {
       send_stop();
       m_up_pressed = false;
@@ -101,7 +104,7 @@ public:
     }
     return true;
   }
-  bool move_continue(u32 auth_key, int button_timeout) {
+  bool move_continue(u32 auth_key) {
     if (!m_sep_auth.isAuthenticated(auth_key))
       return false;
     if (!fer_sep_is_enabled())
@@ -109,8 +112,7 @@ public:
     if (!(m_up_pressed || m_down_pressed)) {
       return false;
     }
-    m_button_time_out.set(button_timeout);
-    m_sep_auth.restart_timeout();
+    restart_timeout();
     return true;
   }
   bool move_stop(u32 auth_key) {
@@ -120,8 +122,8 @@ public:
   #endif
     send_stop();
     m_up_pressed = m_down_pressed = false;
-    m_button_time_out.clear();
-    m_sep_auth.restart_timeout();
+    m_button_timeout.clear();
+    restart_timeout();
 
     return false;
   }
@@ -141,19 +143,19 @@ public:
     if (!m_sep_auth.deauthenticate(auth_key))
       return false;
     uoApp_publish_fer_authState( { .auth_terminated = 1 });
+    fer_sep_DISABLE_cb();
     return true;
   }
 
   void disable(void) {
     if (m_buttons_enabled) {
-      fer_sep_DISABLE_cb();
       send_stop();  // don't remove this line
       m_up_pressed = m_down_pressed = false;
       m_buttons_enabled = false;
     }
   }
 
-  bool enable(u32 auth_key, const u32 a, const u8 g, const u8 m) {
+  bool enable(u32 auth_key, const u32 a, const u8 g, const u8 m,  int enabled_timeout_secs, int button_timeout_secs) {
     if (!m_sep_auth.isAuthenticated(auth_key))
       return false;
     if (fer_sep_is_enabled()) {
@@ -169,16 +171,30 @@ public:
     m_agm.g = g;
     m_agm.m = m;
 
+    m_enabled_timeout_secs = enabled_timeout_secs;
+    m_button_timeout_secs = button_timeout_secs;
     m_buttons_enabled = true;
-    m_sep_auth.restart_timeout();
+    restart_timeout();
+    m_enabled_timeout.set(enabled_timeout_secs);
     fer_sep_ENABLE_cb();
     return true;
   }
 
+  void restart_timeout() {
+    m_sep_auth.restart_timeout();
+    m_enabled_timeout.set(m_enabled_timeout_secs);
+    if(m_up_pressed || m_down_pressed) {
+      m_button_timeout.set(m_button_timeout_secs);
+    }
+  }
 public:
   void work_loop(void) {
-    if (m_button_time_out.isTimeoutReached()) {
+    if (m_button_timeout.isTimeoutReached()) {
       send_stop();
+    }
+    if (m_enabled_timeout.isTimeoutReached()) {
+      uoApp_publish_fer_authState( { .ui_timeout = 1 });
+      disable();
     }
 
     if (!m_sep_auth.work_loop())
@@ -187,14 +203,16 @@ public:
     if (m_sep_auth.hasTimedOut()) {
       send_stop();
       disable();
+      deauthenticate(m_sep_auth.getAuthKey());
       return;
     }
   }
 
 private:
   Sep_Auth m_sep_auth;
-  Time_Out_Secs m_button_time_out;
+  Time_Out_Secs m_button_timeout, m_enabled_timeout;
   Agm m_agm;
+  u16 m_button_timeout_secs = 0, m_enabled_timeout_secs = 0;
   bool m_buttons_enabled = false;
   bool m_up_pressed = false;
   bool m_down_pressed = false;

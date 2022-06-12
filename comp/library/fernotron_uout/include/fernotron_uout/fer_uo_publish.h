@@ -68,7 +68,8 @@ typedef struct {
 
 typedef struct {
   bool auth_success:1; ///< true if user pressed hardware button successful
-  bool auth_timeout:1; ///< true if timeout before pressing hardware button
+  bool auth_button_timeout:1; ///< true if timeout before pressing hardware button
+  bool auth_timeout:1; ///< true if authentication timed out
   bool auth_terminated: 1; ///< authentication terminated
   bool ui_timeout:1;  ///< true if timeout after user interaction
 } so_arg_auth_t;

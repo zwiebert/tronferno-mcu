@@ -31,8 +31,8 @@ const char cli_help_parmPair[] = ""
     "c=(pair|unpair|read)\n";
 
 #define is_kt(k) (kt == otok:: k)
-#define is_key(k) (strcmp(key, #k) == 0)
-#define is_val(k) (strcmp(val, #k) == 0)
+#define is_key(k) (strcmp(key, k) == 0)
+#define is_val(k) (strcmp(val, k) == 0)
 
 int 
 process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
@@ -61,7 +61,7 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
       switch (kt) {
 
       case otok::k_a: {
-        if (is_val(?))
+        if (is_val("?"))
           scan = true;
         else {
           addr = val ? strtol(val, NULL, 16) : 0;
@@ -92,19 +92,19 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
         break;
 
       case otok::k_c: {
-        if (is_val(unpair)) {
+        if (is_val("unpair")) {
           unpair = true;
           c = PC_unpair;
-        } else if (is_val(pair)) {
+        } else if (is_val("pair")) {
           pair = true;
           c = PC_pair;
-        } else if (is_val(read)) {
+        } else if (is_val("read")) {
           read = true;
           c = PC_read;
-        } else if (is_val(read_all)) {
+        } else if (is_val("read_all")) {
           read_all = true;
           c = PC_read;
-        } else if (is_val(store)) {
+        } else if (is_val("store")) {
           store = true;
         }
       }

@@ -189,7 +189,8 @@ struct cmdInfo {
 static cmdInfo cmdString_fromPlainCmd(const Fer_MsgPlainCmd &m) {
   struct cmdInfo r;
 
-  if ((FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_PlainSender) && (r.fdt = "plain")) || (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit) && (r.fdt = "central"))) {
+  if ((FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_PlainSender) && (r.fdt = "plain")) || (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit) && (r.fdt = "central"))
+      || (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_Receiver) && (r.fdt = "receiver"))) {
     switch (m.cmd) {
     case fer_if_cmd_DOWN:
       r.cs = "down";
@@ -208,6 +209,15 @@ static cmdInfo cmdString_fromPlainCmd(const Fer_MsgPlainCmd &m) {
       break;
     case fer_if_cmd_SunINST:
       r.cs = "sun-pos";
+      break;
+    case fer_if_cmd_EndPosDOWN:
+      r.cs = "sep-down";
+      break;
+    case fer_if_cmd_EndPosUP:
+      r.cs = "sep-up";
+      break;
+    case fer_if_cmd_ToggleRotationDirection:
+      r.cs = "rot-dir";
       break;
     default:
       r.cs = 0;
@@ -410,6 +420,8 @@ void uoApp_publish_fer_authState(const so_arg_auth_t args, char tag) {
         sj.add_key_value_pair_d("auth-success", 1);
       if (args.auth_terminated)
         sj.add_key_value_pair_d("auth-terminated", 1);
+      if (args.auth_button_timeout)
+        sj.add_key_value_pair_d("auth-button-timeout", 1);
       if (args.auth_timeout)
         sj.add_key_value_pair_d("auth-timeout", 1);
       if (args.ui_timeout)

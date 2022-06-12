@@ -27,7 +27,7 @@ void Auth_Button::work_loop() {
   if (m_auth_button_timeout.isTimeoutReached()) {
     log_out();
     m_timed_out = true;
-    uoApp_publish_fer_authState( { .auth_timeout = 1 });
+    uoApp_publish_fer_authState( { .auth_button_timeout = 1 });
     return;
   }
 

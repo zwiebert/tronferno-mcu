@@ -1,29 +1,20 @@
 <script>
   "use strict";
   import * as httpFetch from "app/fetch.js";
-  import { GMH } from "stores/curr_shutter.js";
+  import { GMH, RadioCode, RadioCodeEnabled, Address } from "stores/curr_shutter.js";
   import tippy from "sveltejs-tippy";
+  import SelectRadioCode from "components/select_radio_code.svelte";
 
-  $: use_motorCode = false;
-  $: motorCode = "";
-  $: motorCode_isValid = get_motorCode(motorCode) !== null;
-  $: target = use_motorCode ? motorCode : $GMH;
+  $: target = $RadioCodeEnabled ? $RadioCode : $GMH;
 
-  function get_motorCode() {
-    const re = /^9?0[a-fA-F0-9]{4}$/;
-    if (!re.test(motorCode)) return null;
-    if (motorCode.startsWith("0")) return "9" + motorCode;
-
-    return motorCode;
-  }
 
   function postShutterCommand(cmd) {
-    if (!use_motorCode) return httpFetch.http_postShutterCommand(cmd);
+    if (!$RadioCodeEnabled) return httpFetch.http_postShutterCommand(cmd);
 
-    const mc = get_motorCode();
+    const mc = $RadioCode;
     if (!mc) return;
 
-    let req = { cmd: { a: mc, c: cmd } };
+    let req = { cmd: { ...$Address, c: cmd } };
     httpFetch.http_postCommand(req);
   }
   function hClick_RotDir() {
@@ -54,18 +45,6 @@
     <button class="w-16 h-16 text-lg" type="button" on:click={hClick_Up}> Test &#x25b2; </button>
   </div>
 </div>
-
-<hr />
-<label
-  >Motorcode: <input type="checkbox" bind:checked={use_motorCode} />
-  <input
-    class="w-24 {motorCode_isValid ? 'text-green-600' : 'text-red-600'}"
-    type="text"
-    maxlength="6"
-    bind:value={motorCode}
-    disabled={!use_motorCode}
-  /></label
->
 
 <style lang="scss">
   @import "../styles/app.scss";
