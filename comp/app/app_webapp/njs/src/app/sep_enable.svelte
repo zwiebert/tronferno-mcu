@@ -1,6 +1,7 @@
 <script>
   "use strict";
-
+  import { _ } from "services/i18n";
+  import tippy from "sveltejs-tippy";
   import { SepMode } from "stores/sep";
 
   function create_auth_key() {
@@ -8,10 +9,14 @@
   }
 </script>
 
+<p class="w-80">{$_("app.sep.warning")}</p>
+
 <button
   type="button"
   on:click={() => {
     $SepMode.auth_key = create_auth_key();
     $SepMode.enabled = true;
-  }}>Enter SepMode</button
->
+  }}
+  use:tippy={{ content: $_("app.sep.tt.enter") }}
+  >{$_("app.sep.enter")}
+</button>

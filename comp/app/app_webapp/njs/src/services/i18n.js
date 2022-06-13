@@ -26,7 +26,7 @@ const en = {
       cfg: {
         mcu: "MCU",
         aliases: "Aliases",
-        sender: "Sender",       
+        sender: "Sender",
         positions: "Positions",
         name: "Misc",
         set_mode: "Set",
@@ -41,7 +41,6 @@ const en = {
         aliases: "Aliases",
         durations: "Duration",
       },
-
     },
 
     auto: {
@@ -53,7 +52,6 @@ const en = {
       manual: "Manual",
       sendRtc: "Send wall time to:",
     },
-
 
     id: {
       chose_header: "Pick/Enter a Sender-ID",
@@ -86,7 +84,19 @@ const en = {
       tt: {
         move_sun_down: "Move shutter down to sun position (sun automatic needs to be enabled for this)",
         set_sun_pos: "Set sun position to current position",
-      }
+      },
+    },
+
+    sep: {
+      header: "Set End-Positions",
+      enter: "Enter Set End Position Controller",
+      warning:
+        "Adjusting shutter end-postions may be harmful. Make sure you have addressed the correct shutter number. " +
+        "If there are multiple shutters registered under the same number, then use RadioCode instead of shutter number only.",
+      tt: {
+        header: "Adjusting shutter end-postions. A physical button needs to be connected to MCU.",
+        enter: "Open controller to adjust end positions.",
+      },
     },
 
     msg_waitForMcuRestart: "Wait for MCU to restart...",
@@ -134,16 +144,13 @@ const en = {
     url: "URL",
   },
   help: {
-    hint_shutterMisc:
-    "Miscelleanous settings per shutter",
+    hint_shutterMisc: "Miscelleanous settings per shutter",
     hint_shutterDurations:
       "Configute here the durations for the shutter to move from open to close and from open to sup-position. This is needed to calculate the current in-between shutter position and to reach a requested in-between position.",
     hint_durStopClock:
       "To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.",
-    hint_shutterAlias:
-      "To register position changes caused by plain controllers and sun-sensors, these controllers have to be registered here.",
-    hint_repeater:
-      "Repeat RF commands to increase reach. You have to provide a list of IDs. Only senders from this list will be repeated.",
+    hint_shutterAlias: "To register position changes caused by plain controllers and sun-sensors, these controllers have to be registered here.",
+    hint_repeater: "Repeat RF commands to increase reach. You have to provide a list of IDs. Only senders from this list will be repeated.",
   },
   mcuConfigNames: {
     verbose: "CLI Verbosity",
@@ -203,7 +210,10 @@ const en = {
   notifyUser: {
     caption: "Important firmware changes",
     messages: [
-      { date: "2021-03", text: "Configuration: Default values for GPIOP-pings removed. Used to be (tx=22, rx=17 (tx=15, rx=16 for LAN version). Please configure manually!" },
+      {
+        date: "2021-03",
+        text: "Configuration: Default values for GPIOP-pings removed. Used to be (tx=22, rx=17 (tx=15, rx=16 for LAN version). Please configure manually!",
+      },
       { date: "2021-03", text: "Hardware added: Ethern/LAN. CC1101 RF transceiver module." },
     ],
   },
@@ -287,9 +297,8 @@ const de = {
       tt: {
         move_sun_down: "Bewege Rolladen herunter zur Sonnenposition. Sonnenautomatik muß dafür aktiviert sein.",
         set_sun_pos: "Speicher aktuelle Rollladen-Position als neue Sonnenposition",
-      }
+      },
     },
-
 
     msg_waitForMcuRestart: "MCU wird neu gestartet...",
     msg_firmwareIsUpdating: "Firmware wird aktualisiert...",
@@ -319,7 +328,8 @@ const de = {
     names: {
       restoreNames: "Namen wiederherstellen",
       tt: {
-        restoreNames: "Wurde die MCU erneuert oder der MCU-Flash-Speicher gelöscht, können hier die Namen aus dem lokalen Browser-Speicher an die MCU gesendet werden.",
+        restoreNames:
+          "Wurde die MCU erneuert oder der MCU-Flash-Speicher gelöscht, können hier die Namen aus dem lokalen Browser-Speicher an die MCU gesendet werden.",
       },
     },
   },
@@ -329,14 +339,12 @@ const de = {
     version: "Versions-Nummer",
   },
   help: {
-    hint_shutterMisc:
-    "Sonstinge Einstellungen je Rollladen",
+    hint_shutterMisc: "Sonstinge Einstellungen je Rollladen",
     hint_shutterDurations:
-    "Konfiguration der Rollladen-Laufzeiten von Offen bis Geschlossen und von Offen bis Sonnenposition. Diese Werte sind nötig zum berechnen der aktuellen Position und um eine geforderte Position zu finden.",
+      "Konfiguration der Rollladen-Laufzeiten von Offen bis Geschlossen und von Offen bis Sonnenposition. Diese Werte sind nötig zum berechnen der aktuellen Position und um eine geforderte Position zu finden.",
     hint_durStopClock:
       "Zum Messen der Dauer der Rollandenbewegungen. Drücke Start/Stop zum gleichzeitigen Starten von Bewegung und Stoppuhr. Sobald der Rollladen stoppt, Start/Stop erneut drücken um die Stoppuhr anzuhalten.",
-    hint_shutterAlias:
-      "Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren müssen diese hier erneut angemeldet werden.",
+    hint_shutterAlias: "Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren müssen diese hier erneut angemeldet werden.",
   },
   mcuConfigNames: {
     verbose: "CLI Verbose Level",
@@ -382,11 +390,14 @@ const de = {
   notifyUser: {
     caption: "Wichtige Firmware-Änderungen",
     messages: [
-      { date: "2021-03", text: "Konfiguration: Alle Defaultwerte für GPIO-Pins wurden entfernt. War Senden=22, Empfangen=17 (tx=15 und rx=16 bei LAN-Version). Bitte manuell konfigurieren!" },
+      {
+        date: "2021-03",
+        text:
+          "Konfiguration: Alle Defaultwerte für GPIO-Pins wurden entfernt. War Senden=22, Empfangen=17 (tx=15 und rx=16 bei LAN-Version). Bitte manuell konfigurieren!",
+      },
       { date: "2021-03", text: "Neue Hardware: Ethernet/LAN, CC1101-Funkmodul" },
     ],
   },
-
 };
 
 function setupI18n() {

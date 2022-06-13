@@ -32,7 +32,7 @@
 
   {#if $GuiAcc.shutter_sep}
     <div class="area">
-      <h5>{$_("app.sep_enable")}</h5>
+      <h5>{$_("app.sep.header")}</h5>
       <SepEnable />
     </div>
   {/if}
