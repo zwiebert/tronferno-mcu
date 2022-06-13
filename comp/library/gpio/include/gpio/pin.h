@@ -22,6 +22,8 @@ typedef enum mcu_pin_state { PIN_STATE_none = -1, PIN_READ, PIN_CLEAR, PIN_SET, 
 
 const char* mcu_access_pin(int gpio_number, mcu_pin_state *result, mcu_pin_state state);
 bool  is_gpio_number_usable(int gpio_number, bool cli);
+bool gpio_isLevelReadable(int gpio_number);
+bool gpio_isLevelWritable(int gpio_number);
 void gpio_get_levels(unsigned long long gpio_mask, char *buf, int buf_size);
 
 

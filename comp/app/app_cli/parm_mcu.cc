@@ -212,11 +212,6 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       int gpio_number = atoi(key + 4);
 
 
-      if (!is_gpio_number_usable(gpio_number, true)) {
-        reply_message(td, "gpio:error", "gpio number cannot be used");
-        return -1;
-      } else {
-
         const char *error = NULL;
         int psi;
         for (psi = 0; pin_state_args[psi] != 0; ++psi) {
@@ -229,15 +224,24 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 
           case PIN_CLEAR:
           case PIN_SET:
-          case PIN_TOGGLE:
+          case PIN_TOGGLE: {
+            if (!gpio_isLevelWritable(gpio_number)) {
+              reply_message(td, "gpio:error", "gpio not writable");
+              return -1;
+            }
           error = mcu_access_pin(gpio_number, NULL, ps);
           break;
 
           case PIN_READ: {
+            if (!gpio_isLevelReadable(gpio_number)) {
+              reply_message(td, "gpio:error", "gpio not readable");
+              return -1;
+            }
           error = mcu_access_pin(gpio_number, &ps_result, ps);
           i8 level = (ps_result == PIN_STATE_none) ? -1 :
                      (ps_result == PIN_CLEAR) ? 0 : 1;
           soMsg_gpio_pin(td, so_arg_pch_t {u8(gpio_number), level != 0, level});
+          }
           }
           break;
 
@@ -250,7 +254,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
           reply_message(td, "gpio:failure", error);
           return -1;
         }
-      }
+
       break;
     }
 #endif

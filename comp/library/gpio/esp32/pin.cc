@@ -70,6 +70,17 @@ void gpio_get_levels(uint64_t gpio_mask, char *buf, int buf_size) {
 
 }
 
+bool gpio_isLevelReadable(int gpio_number) {
+  if (gpio_number == BUTTON_GPIO && gpio_number != GPIO_NUM_NC)
+    return true;
+
+  return (gpioUsable & (1ULL << gpio_number)) != 0;
+}
+
+bool gpio_isLevelWritable(int gpio_number) {
+  return (gpioUsable & (1ULL << gpio_number)) != 0;
+}
+
 bool is_gpio_number_usable(int gpio_number, bool cli) {
   return (gpioUsable & (1ULL << gpio_number)) != 0;
 }

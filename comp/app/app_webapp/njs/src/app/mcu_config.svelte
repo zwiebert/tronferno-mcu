@@ -510,6 +510,9 @@
             {:else if key === "set-button-pin"}
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
+                {#if mcuConfig[key] >= 0}
+                <GpioLevel name={"gpio"+mcuConfig[key]} force={true} />
+                {/if}
               </td>
             {:else if key.startsWith("gpio")}
               <td>
