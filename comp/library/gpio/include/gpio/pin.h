@@ -27,6 +27,7 @@ void gpio_get_levels(unsigned long long gpio_mask, char *buf, int buf_size);
 
 
 struct cfg_gpio {
+  uint64_t gpio_in_use; ///< GPIO used by other modules like SPI
   int8_t out_rf, in_rf, in_setButton;
   bool out_rf_inv;
 #ifdef USE_GPIO_PINS

@@ -258,12 +258,11 @@ void parmConfig_reconfig_app(uint64_t changed_mask) {
   if (changed_mask & CBM_geo) {
     mainLoop_callFun(config_setup_astro);
   }
-  if (changed_mask & CBM_gpio) {
+  if ((changed_mask & CBM_gpio) || (changed_mask & CBM_cc1101)) {
     mainLoop_callFun(config_setup_gpio);
-  }
-  if (changed_mask & CBM_cc1101) {
     mainLoop_callFun(config_setup_cc1101);
   }
+
   if (changed_mask & CBM_rf_repeater) {
     mainLoop_callFun (config_setup_repeater);
   }
