@@ -422,6 +422,8 @@ void uoApp_publish_fer_authState(const so_arg_auth_t args, char tag) {
         sj.add_key_value_pair_d("auth-terminated", 1);
       if (args.auth_button_timeout)
         sj.add_key_value_pair_d("auth-button-timeout", 1);
+      if (args.auth_button_error)
+        sj.add_key_value_pair_d("auth-button-error", 1);
       if (args.auth_timeout)
         sj.add_key_value_pair_d("auth-timeout", 1);
       if (args.ui_timeout)

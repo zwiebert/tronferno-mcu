@@ -20,9 +20,11 @@ public:
   }
 
 private:
+  Time_Out_Secs m_button_pre_test_timeout; ///< check for GPIO have pullup R and is n.o.
   Time_Out_Secs m_auth_button_timeout;
   const get_gpio_funT m_get_gpio_fun;
   char m_tag;
   bool m_logged_in :1 = false;
   bool m_timed_out :1 = false;
+  bool m_button_error :1 = false;
 };

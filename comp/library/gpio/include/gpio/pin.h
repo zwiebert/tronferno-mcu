@@ -51,6 +51,7 @@ uint8_t   mcu_get_rxPin();
 bool mcu_get_buttonUpPin(void);
 bool mcu_get_buttonDownPin(void);
 bool mcu_get_buttonPin(void);
+bool mcu_button_was_pressed(void);
 
 void pin_notify_input_change(void);
 extern void (*gpio_INPUT_PIN_CHANGED_ISR_cb)();

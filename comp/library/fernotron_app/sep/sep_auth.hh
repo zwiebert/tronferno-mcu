@@ -13,7 +13,7 @@ class Sep_Auth {
 
 public:
   Sep_Auth() :
-      m_auth_button(mcu_get_buttonPin, 'e') {
+      m_auth_button(mcu_button_was_pressed, 'e') {
 
   }
 
