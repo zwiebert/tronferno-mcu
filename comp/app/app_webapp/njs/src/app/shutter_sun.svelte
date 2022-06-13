@@ -3,6 +3,7 @@
   import { GM, Auto } from "stores/curr_shutter.js";
   import * as httpFetch from "app/fetch.js";
   import { onMount, onDestroy } from "svelte";
+  import { GuiAcc } from "stores/app_state";
   import { _ } from "services/i18n";
   import tippy from "sveltejs-tippy";
 
@@ -43,9 +44,11 @@
       {$_("app.sun.move_sun_down")}
     </button>
 
+    {#if $GuiAcc.shutter_sunpos}
     <button id="sspb" class="sb" type="button" on:click={hClick_SunPos} use:tippy={{ content: $_("app.sun.tt.set_sun_pos") }}>
       {$_("app.sun.set_sun_pos")}
     </button>
+    {/if}
 
     {#if hasSun}
       Sun-Auto        

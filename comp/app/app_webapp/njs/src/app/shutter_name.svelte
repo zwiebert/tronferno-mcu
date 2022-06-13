@@ -2,6 +2,7 @@
   "use strict";
   import { _ } from "services/i18n";
   import { G, M0, Name } from "stores/curr_shutter.js";
+  import { GuiAcc } from "stores/app_state";
   import * as httpFetch from "app/fetch.js";
   import { Names } from "stores/shutters.js";
   import tippy from "sveltejs-tippy";
@@ -37,7 +38,9 @@
 <div class="text-center">
   <input type="text" name="name" bind:value={GMName} on:change={hChange_Name} />
   <br />
+  {#if $GuiAcc.restore_shutter_names}
   <button type="button" use:tippy={{ content: $_("app.names.tt.restoreNames") }} on:click={names_fromBrowserStorage_toMcu}>{$_("app.names.restoreNames")}</button>
+  {/if}
 </div>
 
 <style lang="scss">

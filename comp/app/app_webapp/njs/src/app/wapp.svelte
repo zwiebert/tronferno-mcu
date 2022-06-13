@@ -1,6 +1,7 @@
 <script>
   import { _ } from "services/i18n";
   import * as misc from "app/misc.js";
+  import { GuiAcc } from "stores/app_state";
   import NavTabs from "app/nav_tabs.svelte";
   import { TabIdx } from "stores/app_state.js";
 
@@ -17,6 +18,7 @@
   import PaneShutterSetMode from "panes/shutter_set_mode.svelte";
   import PaneAppLog from "panes/app_log.svelte";
   import PaneDeveloper from "panes/developer.svelte";
+  import PaneUserLevel from "panes/user_level.svelte";
   import * as httpFetch from "app/fetch.js";
   import { onMount, onDestroy } from "svelte";
 
@@ -40,12 +42,13 @@
   <div class="navtab-main">
     <NavTabs
       nav_tabs={[
-        $_("app.navTab.main.move"),
-        "2411",
-        $_("app.navTab.main.percent"),
-        $_("app.navTab.main.auto"),
-        $_("app.navTab.main.config"),
-        ...(!misc.NODE_ENV_DEV ? [] : ["Test"]),
+        { name: $_("app.navTab.main.move"), idx: 0 },
+        { name: "2411", idx: 1 },
+        { name: $_("app.navTab.main.percent"), idx: 2 },
+        ...($GuiAcc.shutter_auto ? [{ name: $_("app.navTab.main.auto"), idx: 3 }] : []),
+        ...($GuiAcc.cfg ? [{ name: $_("app.navTab.main.config"), idx: 4 }] : []),
+        { name: "UL", idx: 5 },
+        ...($GuiAcc.debug ? [{ name: "Test", idx: 6 }] : []),
       ]}
       name="main"
     />
@@ -62,13 +65,13 @@
     <div class="navtab-sub">
       <NavTabs
         nav_tabs={[
-          $_("app.navTab.cfg.mcu"),
-          $_("app.navTab.cfg.sender"),
-          $_("app.navTab.cfg.positions"),
-          $_("app.navTab.cfg.name"),
-          $_("app.navTab.cfg.set_mode"),
-          $_("app.navTab.main.firmware"),
-          "Log",
+          { name: $_("app.navTab.cfg.mcu"), idx: 0 },
+          { name: $_("app.navTab.cfg.sender"), idx: 1 },
+          { name: $_("app.navTab.cfg.positions"), idx: 2 },
+          { name: $_("app.navTab.cfg.name"), idx: 3 },
+          { name: $_("app.navTab.cfg.set_mode"), idx: 4 },
+          { name: $_("app.navTab.main.firmware"), idx: 5 },
+          { name: "Log", idx: 6 },
         ]}
         name="settings"
       />
@@ -77,18 +80,31 @@
       <PaneMcuSettings />
     {:else if tabIdxSettings === 1}
       <div class="navtab-sub2">
-        <NavTabs nav_tabs={[$_("app.navTab.sender.aliases"), $_("app.navTab.sender.repeater"), $_("app.navTab.sender.transmit")]} name="sender" />
+        <NavTabs
+          nav_tabs={[
+            { name: $_("app.navTab.sender.aliases"), idx: 0 },
+            { name: $_("app.navTab.sender.repeater"), idx: 1 },
+            { name: $_("app.navTab.sender.transmit"), idx: 2 },
+          ]}
+          name="sender"
+        />
       </div>
       {#if !tabIdxSender}
         <PaneShutterAlias />
       {:else if tabIdxSender === 1}
-      <PaneRepeater />
+        <PaneRepeater />
       {:else if tabIdxSender === 2}
         Transmit
       {/if}
     {:else if tabIdxSettings === 2}
       <div class="navtab-sub2">
-        <NavTabs nav_tabs={[$_("app.navTab.positions.durations"), $_("app.navTab.positions.aliases")]} name="positions" />
+        <NavTabs
+          nav_tabs={[
+            { name: $_("app.navTab.positions.durations"), idx: 0 },
+            { name: $_("app.navTab.positions.aliases"), idx: 1 },
+          ]}
+          name="positions"
+        />
       </div>
       {#if !tabIdxPositions}
         <PaneShutterDurations />
@@ -107,6 +123,8 @@
       <PaneAppLog />
     {/if}
   {:else if !misc.DISTRO && tabIdxMain === 5}
+    <PaneUserLevel />
+  {:else if !misc.DISTRO && tabIdxMain === 6}
     <PaneDeveloper />
   {/if}
 </div>
