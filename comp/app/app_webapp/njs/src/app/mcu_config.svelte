@@ -500,7 +500,7 @@
 
         {#each mcuConfigKeysPin as key, i}
           <tr>
-            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+            <td use:tippy={{ content: key.startsWith("gpio") ? $_("app.cfg.mcu.user_gpio.tt.gpioxx") : $McuDocs_cliHelpConfig[key] }}
               ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
             >
             {#if key.endsWith("-enable")}
@@ -511,7 +511,7 @@
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
                 {#if mcuConfig[key] >= 0}
-                <GpioLevel name={"gpio"+mcuConfig[key]} force={true} />
+                  <GpioLevel name={"gpio" + mcuConfig[key]} force={true} />
                 {/if}
               </td>
             {:else if key.startsWith("gpio")}
@@ -534,10 +534,10 @@
         {/each}
       </table>
       <div class="area">
-        <label
-          >GPIO add:
+        <label use:tippy={{ content: $_("app.cfg.mcu.user_gpio.tt.add_label") }}
+          >{$_("app.cfg.mcu.user_gpio.add_label")}
           <McuConfigGpioSelect name="wizard_gpio" bind:value={wiz_gpio} show_value={false} />
-          <button type="button" on:click={wiz_addGpio}>Add</button>
+          <button type="button" disabled={wiz_gpio === -1} on:click={wiz_addGpio}>{$_("app.cfg.mcu.user_gpio.add_button")}</button>
           {@html wiz_gpio_status}
         </label>
       </div>

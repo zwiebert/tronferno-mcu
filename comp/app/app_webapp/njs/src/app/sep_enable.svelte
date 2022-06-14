@@ -9,7 +9,7 @@
   }
 </script>
 
-<p class="w-80">{$_("app.sep.warning")}</p>
+<p class="w-80 text-left">{@html $_("app.sep.warning_html")}</p>
 
 <button
   type="button"
