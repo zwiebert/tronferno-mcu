@@ -3,8 +3,7 @@
   import * as httpFetch from "app/fetch.js";
   import { GMH, RadioCode, RadioCodeEnabled, Address } from "stores/curr_shutter.js";
   import tippy from "sveltejs-tippy";
-  import SelectRadioCode from "components/select_radio_code.svelte";
-
+  
   $: target = $RadioCodeEnabled ? $RadioCode : $GMH;
 
 

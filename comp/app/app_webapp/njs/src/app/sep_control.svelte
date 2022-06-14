@@ -20,23 +20,22 @@
   let progress_interval = null;
   $: progress_value = 0;
   $: progress_max = 0;
-  $: progress_auth = false;
 
   $: {
     if ($Sep["auth-success"]) {
-      sep_auth_button_was_pressed = true;
-      clearInterval(progress_interval);
-      progress_interval = null;
-      progress_auth = false;
+      auth_button_done(true);
     }
   }
 
   $: {
     if ($Sep["auth-terminated"]) {
-      sep_auth_button_was_pressed = false;
-      clearInterval(progress_interval);
-      progress_interval = null;
-      progress_auth = false;
+      auth_button_done(false);
+    }
+  }
+
+  $: {
+    if ($Sep["auth-button-error"]) {
+      auth_button_done(false);
     }
   }
 
@@ -54,6 +53,13 @@
     sep_disable();
   });
 
+  function auth_button_done(success) {
+    isAuthenticated = success;
+    sep_auth_button_was_pressed = success;
+    clearInterval(progress_interval);
+    progress_interval = null;
+    progress_value = 0;
+  }
   function hClick_Stop() {
     disable_button_envents = true;
     setTimeout(() => {
@@ -109,12 +115,9 @@
     httpFetch.http_postCommand({ sep: { "request-auth": "button", "auth-key": sep_auth_key } });
     progress_value = 60;
     progress_max = 60;
-    progress_auth = true;
     progress_interval = setInterval(() => {
       if (--progress_value < 0) {
-        clearInterval(progress_interval);
-        progress_interval = null;
-        progress_auth = false;
+        auth_button_done(false);
       }
     }, 1000);
   }
@@ -143,8 +146,10 @@
       <p>
         <button type="button" on:click={sep_auth} disabled={!isValidAddress || upDown_enabled || isAuthenticated}>Authenticate</button>
       </p>
-
-      {#if progress_auth}
+      {#if 55 < progress_value}
+      <progress value={progress_value - 55} max={5} />
+      <p>Wait a few secondes...</p>
+      {:else if 0 < progress_value}
         <progress value={progress_value} max={progress_max} />
         <p>Press physical set-button on Tronferno-MCU device</p>
       {/if}
@@ -153,11 +158,29 @@
     <button type="button" on:click={sep_disable} disabled={!upDown_enabled}>Disable</button>
     {#if upDown_enabled}
       <div class="flex flex-row items-center bg-yellow-500">
-        <button class="w-24 h-16 text-lg" type="button" disabled={disable_button_envents} on:touchstart={hClick_Down} on:mousedown={hClick_Down} on:touchend={hClick_Stop} on:mouseup={hClick_Stop}>
+        <button
+          class="w-24 h-16 text-lg"
+          type="button"
+          disabled={disable_button_envents}
+          on:touchstart={hClick_Down}
+          on:mousedown={hClick_Down}
+          on:touchend={hClick_Stop}
+          on:mouseup={hClick_Stop}
+        >
           &#x25bc;
         </button>
 
-        <button class="w-24 h-16 text-lg" type="button" disabled={disable_button_envents} on:touchstart={hClick_Up} on:mousedown={hClick_Up} on:mouseup={hClick_Stop} on:touchend={hClick_Stop}> &#x25b2; </button>
+        <button
+          class="w-24 h-16 text-lg"
+          type="button"
+          disabled={disable_button_envents}
+          on:touchstart={hClick_Up}
+          on:mousedown={hClick_Up}
+          on:mouseup={hClick_Stop}
+          on:touchend={hClick_Stop}
+        >
+          &#x25b2;
+        </button>
       </div>
     {:else}
       <div>

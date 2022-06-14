@@ -51,6 +51,6 @@ export function set_gui_access_level(al) {
     edit_shutter_names: al < 20,
     restore_shutter_names:al < 10,
     program_shutter_rotation_direction: al < 20,
-    debug: NODE_ENV_DEV && al === 0,
+    debug: al < 0,
   });
 }

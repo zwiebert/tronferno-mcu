@@ -122,7 +122,7 @@
     {:else if tabIdxSettings === 6}
       <PaneAppLog />
     {/if}
-  {:else if !misc.DISTRO && tabIdxMain === 5}
+  {:else if tabIdxMain === 5}
     <PaneUserLevel />
   {:else if !misc.DISTRO && tabIdxMain === 6}
     <PaneDeveloper />
