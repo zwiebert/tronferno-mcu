@@ -4,6 +4,7 @@
   import tippy from "sveltejs-tippy";
   import * as appDebug from "app/app_debug.js";
   import * as httpFetch from "app/fetch.js";
+  import { GuiAcc } from "stores/app_state";
   import { AutoData, G, M, GM, GMH } from "stores/curr_shutter.js";
   import { onMount } from "svelte";
 
@@ -267,12 +268,13 @@
         httpFetch.http_postCommand(a);
       }}>{$_("app.auto.sendRtc")} A</button
     >
-
-    <hr />
-    <label use:tippy={{ content: "Provide your own ISO-Time-string time to send to the shutter" }}
-      >ISO-Time
-      <input type="checkbox" bind:checked={providTimeString} />
-      <input type="text" bind:value={isoTimeString} disabled={!providTimeString} /></label
-    >
+    {#if $GuiAcc.shutter_time_iso}
+      <hr />
+      <label use:tippy={{ content: "Provide your own ISO-Time-string time to send to the shutter" }}
+        >ISO-Time
+        <input type="checkbox" bind:checked={providTimeString} />
+        <input type="text" bind:value={isoTimeString} disabled={!providTimeString} /></label
+      >
+    {/if}
   </div>
 </div>

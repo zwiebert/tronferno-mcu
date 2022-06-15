@@ -47,6 +47,7 @@ export function set_gui_access_level(al) {
     mcu_cfg: al < 20,
     shutter_sep: al < 0, //10,
     shutter_auto: al < 30,
+    shutter_time_iso: al < 10,
     shutter_sunpos: al < 30,
     edit_shutter_names: al < 20,
     restore_shutter_names:al < 10,
