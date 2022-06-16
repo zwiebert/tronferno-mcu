@@ -45,7 +45,7 @@ export function set_gui_access_level(al) {
   GuiAcc.set( {
     cfg: al < 20,
     mcu_cfg: al < 20,
-    shutter_sep: al < 0, //10,
+    shutter_sep: al < 10,
     shutter_auto: al < 30,
     shutter_time_iso: al < 10,
     shutter_sunpos: al < 30,
