@@ -193,7 +193,7 @@ const char* pin_set_mode_int(int ngpio_number, mcu_pin_mode mode, mcu_pin_level 
   case GPIO_NUM_37:
   case GPIO_NUM_38:
   case GPIO_NUM_39:
-    if (mode > PIN_INPUT || level != PIN_FLOATING)
+    if (mode > PIN_INPUT || (level != PIN_FLOATING && mode != PIN_DEFAULT))
       return "GPIOs 34..39 can only used for input (w/o pull)";
 
     pin_set_gpio_mode(gpio_number, mode, level);
@@ -291,7 +291,7 @@ void setup_pin(const struct cfg_gpio *c) {
     // clear all gpio
     pin_set_mode_int(RFOUT_GPIO, PIN_DEFAULT, gpio_cfg->out_rf_inv ? PIN_HIGH : PIN_LOW);
     pin_set_mode_int(RFIN_GPIO, PIN_DEFAULT, PIN_FLOATING);
-    pin_set_mode_int(BUTTON_GPIO, PIN_DEFAULT, PIN_HIGH);
+    pin_set_mode_int(BUTTON_GPIO, PIN_DEFAULT,  BUTTON_GPIO < 34 ? PIN_HIGH : PIN_FLOATING);
     pin_setup_input_handler(GPIO_NUM_NC);
     pins_in_use = 0;
   }
@@ -303,7 +303,7 @@ void setup_pin(const struct cfg_gpio *c) {
 
   pin_set_mode_int(RFOUT_GPIO, PIN_OUTPUT, gpio_cfg->out_rf_inv ? PIN_HIGH : PIN_LOW);
   pin_set_mode_int(RFIN_GPIO, PIN_INPUT, PIN_FLOATING);
-  pin_set_mode_int(BUTTON_GPIO, PIN_INPUT, PIN_HIGH);
+  pin_set_mode_int(BUTTON_GPIO, PIN_INPUT, BUTTON_GPIO < 34 ? PIN_HIGH : PIN_FLOATING);
   pins_not_cli = pins_in_use;
 
   if (BUTTON_GPIO != GPIO_NUM_NC) {
