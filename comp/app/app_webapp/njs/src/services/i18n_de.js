@@ -17,6 +17,15 @@ export const de = {
       main: {
         auto: "Auto",
         firmware: "Firmware",
+        user_level: {
+          name: {
+            developer:"Entwickler",
+            expert:"Experte",
+            admin:"Administrator",
+            user:"Benutzer",
+            kid:"Kind",
+          },
+        },
       },
       cfg: {
         mcu: "MCU",

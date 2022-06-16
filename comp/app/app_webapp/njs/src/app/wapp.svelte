@@ -1,7 +1,7 @@
 <script>
   import { _ } from "services/i18n";
   import * as misc from "app/misc.js";
-  import { GuiAcc } from "stores/app_state";
+  import { GuiAcc, GuiUserLevel } from "stores/app_state";
   import NavTabs from "app/nav_tabs.svelte";
   import { TabIdx } from "stores/app_state.js";
 
@@ -36,6 +36,19 @@
   $: tabIdxSettings = $TabIdx["settings"] || 0;
   $: tabIdxSender = $TabIdx["sender"] || 0;
   $: tabIdxPositions = $TabIdx["positions"] || 0;
+
+
+  function getUserLevelHeader(ul) {
+    return ul < 0
+      ? $_("app.navTab.main.user_level.developer")
+      : ul < 10
+      ? $_("app.navTab.main.user_level.expert")
+      : ul < 20
+      ? $_("app.navTab.main.user_level.admin")
+      : ul < 30
+      ? $_("app.navTab.main.user_level.user")
+      : $_("app.navTab.main.user_level.kid");
+  }
 </script>
 
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
@@ -47,7 +60,7 @@
         { name: $_("app.navTab.main.percent"), idx: 2 },
         ...($GuiAcc.shutter_auto ? [{ name: $_("app.navTab.main.auto"), idx: 3 }] : []),
         ...($GuiAcc.cfg ? [{ name: $_("app.navTab.main.config"), idx: 4 }] : []),
-        { name: "UL", idx: 5 },
+        { name: getUserLevelHeader($GuiUserLevel), idx: 5 },
         ...($GuiAcc.debug ? [{ name: "Test", idx: 6 }] : []),
       ]}
       name="main"

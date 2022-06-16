@@ -20,6 +20,21 @@ export const en = {
         config: "\u2699",
         auto: "Auto",
         firmware: "Firmware",
+        user_level: {
+          developer: ">>",
+          all: "$#",
+          expert: "##>",
+          admin: "#>",
+          user: "$>",
+          kid: "@>",
+          name: {
+            developer:"Developer",
+            expert:"Expert",
+            admin:"Admin",
+            user:"User",
+            kid:"Kid",
+          },
+        },
       },
       cfg: {
         mcu: "MCU",
@@ -102,8 +117,7 @@ export const en = {
     sep: {
       header: "Set End-Positions",
       enter: "Enter Set End Position Controller",
-      warning_html:
-        `When adjusting shutter end-postions: 
+      warning_html: `When adjusting shutter end-postions: 
         <ul>
         <li>Use this functionality at your OWN RISK, or don't use it at all</li>
         <li>Be aware that moving a shutter beyond physical limits while adjusting end positions may harm it.</li>
