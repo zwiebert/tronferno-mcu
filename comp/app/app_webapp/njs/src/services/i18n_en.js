@@ -117,6 +117,13 @@ export const en = {
     sep: {
       header: "Set End-Positions",
       enter: "Enter Set End Position Controller",
+      authenticate: "Authenticate",
+      auth_prog_wait: "Prepare... please wait...",
+      auth_prog_press: "...press physical set-button on Tronferno-MCU device",
+      enable: "Enable",
+      disable: "Disable",
+      exit: "Exit",
+
       warning_html: `When adjusting shutter end-postions: 
         <ul>
         <li>Use this functionality at your OWN RISK, or don't use it at all</li>
@@ -128,6 +135,10 @@ export const en = {
       tt: {
         header: "Adjusting shutter end-postions. A physical button needs to be connected to MCU.",
         enter: "Open controller to adjust end positions.",
+        authenticate: "Authenticate user by pressing physical button on the MCU device",
+        enable: "Enable RF commands to set end positions. Shows Up and Down button you can press and hold to adjust the Up/Down end positions",
+        disable: "Disable RF commands for end postions",
+        exit: "Deauthenticate and leave this controller",
       },
     },
 

@@ -101,6 +101,34 @@ export const de = {
       },
     },
 
+    sep: {
+      header: "Endpositionen einstellen",
+      enter: "Öffne Endposition Einsteller",
+      authenticate: "Authentisiere", 
+      auth_prog_wait: "Vorbereitung... Bitte warten...",
+      auth_prog_press: "Drücke Taster am MCU Gerät!",
+      enable: "Aktiviere",
+      disable: "Deaktiviere",
+      exit: "Beenden",
+
+      warning_html: `Zum Einstellen der Rollladen-Endpositionen: 
+        <ul>
+        <li>Nutze diese Funktion auf eigenes Risiko oder gar nicht</li>
+        <li>Das Bewegen des Rohrmotors über den mechanisch möglichen Bereich hinaus kann den Rollladen beschädigen.</li>
+        <li>Überprüfe ob wirklich der richtige Rollladen ausgewählt und teste dies mit harmlosen Hoch/Runter/Stop-Kommandos.</li>
+        <li>Nur ein EINZIGER Rohrmotor darf angemeldet sein unter der Gruppen-/Empfängernummer. Anderfalls Radio-Code des Rohrmotors zur Adressierung benutzen.</li>
+        <li>Zur Sicherheit immer einen Handsender bereit haben um ein STOP zu senden, falls die MCU während der Bewegung abstürzt.</li>
+        </ul>`,
+      tt: {
+        header: "Einstellen der Rollladen Endpositionen. Ein physischer Taster muss an der MCU angeschlossen sein. Schritte: 1) Authentisieren 2) Adressieren 3) Bewegung testen 4) Aktivieren 5) Endpositionen setzen 6) Deaktvieren 7) Testen 8) Wiederhohlen oder Beenden",
+        enter: "Öffne die Steuerung zum Einstellen der Endpositionen.",
+        authenticate: "Authentisiere den Benutzer durch drücken des Setzknopfes am MCU Gerät",
+        enable: "Aktiviere Funkkommandos für Endpositionen. Zeigt Hoch/Runter Knopfe zum Einstellen der oberen/unteren Endposition.",
+        disable: "Deaktiviere Funkkommandos für Endpositionen.",
+        exit: "Beende Authentisierung und verlasse die Steuerung",
+      },
+    },
+
     msg_waitForMcuRestart: "MCU wird neu gestartet...",
     msg_firmwareIsUpdating: "Firmware wird aktualisiert...",
     msg_firmwareUpdSuccess: "Aktualisierung erfolgreich",

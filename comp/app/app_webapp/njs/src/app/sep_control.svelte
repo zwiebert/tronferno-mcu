@@ -1,5 +1,7 @@
 <script>
   "use strict";
+  import { _ } from "services/i18n";
+  import tippy from "sveltejs-tippy";
   import * as httpFetch from "app/fetch.js";
   import { G, M0, Address, RadioCode, RadioCodeEnabled } from "stores/curr_shutter.js";
   import { onMount, onDestroy } from "svelte";
@@ -142,20 +144,26 @@
 
 <div class="w-fit mr-auto ml-auto flex flex-col text-center px-1 border-none">
   <div class="main-area">
+    <h5 use:tippy={{ content: $_("app.sep.tt.header") }}>{$_("app.sep.header")}</h5>
+
     <div class={isAuthenticated ? "bg-green-500" : "bg-red-500"}>
       <p>
-        <button type="button" on:click={sep_auth} disabled={!isValidAddress || upDown_enabled || isAuthenticated}>Authenticate</button>
+        <button
+          type="button"
+          on:click={sep_auth}
+          disabled={!isValidAddress || upDown_enabled || isAuthenticated}
+          use:tippy={{ content: $_("app.sep.tt.authenticate") }}>{$_("app.sep.authenticate")}</button
+        >
       </p>
       {#if 55 < progress_value}
-      <progress value={progress_value - 55} max={5} />
-      <p>Wait a few secondes...</p>
+        <progress value={progress_value - 55} max={5} />
+        <p>{$_("app.sep.auth_prog_wait")}</p>
       {:else if 0 < progress_value}
         <progress value={progress_value} max={progress_max} />
-        <p>Press physical set-button on Tronferno-MCU device</p>
+        <p>{$_("app.sep.auth_prog_press")}</p>
       {/if}
     </div>
-    <button type="button" on:click={sep_enable} disabled={!isValidAddress || upDown_enabled || !isAuthenticated}>Enable</button>
-    <button type="button" on:click={sep_disable} disabled={!upDown_enabled}>Disable</button>
+
     {#if upDown_enabled}
       <div class="flex flex-row items-center bg-yellow-500">
         <button
@@ -184,12 +192,23 @@
       </div>
     {:else}
       <div>
-        <ShutterGM />
-        <ShutterMove />
+        <div class="area">
+          <ShutterGM />
+          <ShutterMove />
+        </div>
       </div>
     {/if}
+
+    <button
+      type="button"
+      on:click={sep_enable}
+      disabled={!isValidAddress || upDown_enabled || !isAuthenticated}
+      use:tippy={{ content: $_("app.sep.tt.enable") }}>{$_("app.sep.enable")}</button
+    >
+    <button type="button" on:click={sep_disable} disabled={!upDown_enabled} use:tippy={{ content: $_("app.sep.tt.disable") }}>{$_("app.sep.disable")}</button>
+
     <br />
-    <button type="button" on:click={sep_exit}>Exit</button>
+    <button type="button" on:click={sep_exit} use:tippy={{ content: $_("app.sep.tt.exit") }}>{$_("app.sep.exit")}</button>
   </div>
 </div>
 
