@@ -14,6 +14,8 @@ void soMsg_mcu_ota(const TargetDesc &td, const char *url);
 void soMsg_mcu_ota_state(const TargetDesc &td);
 void soMsg_mcu_boot_count(const TargetDesc &td);
 void soMsg_mcu_end(const TargetDesc &td);
+void soMsg_sep_obj_begin(const TargetDesc &td);
+void soMsg_sep_obj_end(const TargetDesc &td);
 void soMsg_sep_enable(const TargetDesc &td);
 void soMsg_sep_disable(const TargetDesc &td);
 void soMsg_sep_button_pressed_error(const TargetDesc &td);

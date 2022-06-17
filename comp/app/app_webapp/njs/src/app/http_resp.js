@@ -116,8 +116,8 @@ export function http_handleResponses(obj) {
     }
   }
 
-  if ("auth" in obj) {
-    Sep.update(obj.auth);
+  if ("sep" in obj) {
+    Sep.update(obj.sep);
   }
 
   if ("mcu" in obj) {

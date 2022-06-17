@@ -44,7 +44,7 @@ int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
   bool move_stop = false;
 
 
-  //so_object<void> cfgObj(&soMsg_sep_begin, &soMsg_sep_end, td);
+  so_object<void> cfgObj(&soMsg_sep_obj_begin, &soMsg_sep_obj_end, td);
 
   u32 addr = fer_config.cu;
   int timeout = fer_sep_TIMEOUT;
@@ -143,7 +143,12 @@ int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
   }
 
   if (request_auth) {
-    fer_sep_authenticate(td, auth_key);
+    if (!fer_sep_authenticate(td, auth_key)) {
+      cli_replyFailure(td);
+      td.so().print("auth-terminated", 1);
+      return -1;
+    }
+
   }
 
   if (enable) {

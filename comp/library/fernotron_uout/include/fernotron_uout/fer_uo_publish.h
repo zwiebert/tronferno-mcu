@@ -73,7 +73,7 @@ typedef struct {
   bool auth_timeout:1; ///< true if authentication timed out
   bool auth_terminated: 1; ///< authentication terminated
   bool ui_timeout:1;  ///< true if timeout after user interaction
-} so_arg_auth_t;
+} so_arg_sep_t;
 
 
 
@@ -86,7 +86,7 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg);
 void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg);
 void uoApp_publish_fer_prasState(const so_arg_pras_t args);
 void uoApp_publish_fer_cuasState(const so_arg_cuas_t args);
-void uoApp_publish_fer_authState(const so_arg_auth_t args, char tag = '\0');
+void uoApp_publish_fer_sepState(const so_arg_sep_t args, char tag = '\0');
 
 
 inline const so_arg_pch_t *uoCb_pchFromMsg(const uoCb_msgT msg) {

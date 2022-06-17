@@ -134,7 +134,9 @@ public:
   }
 
   bool authenticate(u32 auth_key, int sep_mode_timeout_secs, int button_timeout_secs) {
-    m_sep_auth.authenticate(auth_key, sep_mode_timeout_secs, button_timeout_secs);
+    if (!m_sep_auth.authenticate(auth_key, sep_mode_timeout_secs, button_timeout_secs))
+      return false;
+
     fer_sep_ENABLE_cb();
     return true;
   }
@@ -142,7 +144,7 @@ public:
   bool deauthenticate(u32 auth_key) {
     if (!m_sep_auth.deauthenticate(auth_key))
       return false;
-    uoApp_publish_fer_authState( { .auth_terminated = 1 });
+    uoApp_publish_fer_sepState( { .auth_terminated = 1 });
     fer_sep_DISABLE_cb();
     return true;
   }
@@ -193,7 +195,7 @@ public:
       send_stop();
     }
     if (m_enabled_timeout.isTimeoutReached()) {
-      uoApp_publish_fer_authState( { .ui_timeout = 1 });
+      uoApp_publish_fer_sepState( { .ui_timeout = 1 });
       disable();
     }
 

@@ -410,4 +410,10 @@ void soMsg_gpio_pin(const struct TargetDesc &td, const so_arg_pch_t a, bool broa
     uoCb_publish_pinChange(a);
 }
 
+void soMsg_sep_obj_begin(const struct TargetDesc &td) {
+  td.so().x_open("sep");
+}
 
+void soMsg_sep_obj_end(const struct TargetDesc &td) {
+  td.so().x_close();
+}
