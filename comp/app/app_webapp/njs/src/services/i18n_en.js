@@ -166,11 +166,16 @@ export const en = {
       dev_address: "Device Address",
       receiver_address: "Receiver Address",
       sender_address: "Sender",
-      gm_address: "Central",
+      gm_address: "Central/RadioCode",
       motor_code: "Motor-Code",
       h_set_mode_enable: "Enable Set Mode",
       h_register_receiver_as_gm: "Register Central-Unit to Receiver in Set-Mode",
       h_register_sender_to_smr: "Register a Sender to Receiver in Set-Mode",
+      tt: {
+        tt: {
+          set_mode: "Send SET command to RF-receiver to enable its set mode",
+        },
+      },
     },
     names: {
       restoreNames: "Restore names",

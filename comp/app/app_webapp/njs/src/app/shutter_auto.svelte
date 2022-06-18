@@ -259,15 +259,6 @@
       }}>{$_("app.auto.sendRtc")} {$GMH}</button
     >
 
-    <button
-      class="sb"
-      type="button"
-      on:click={() => {
-        let a = { auto: { "rtc-only": 1 } };
-        if (providTimeString) a.rtc = isoTimeString;
-        httpFetch.http_postCommand(a);
-      }}>{$_("app.auto.sendRtc")} A</button
-    >
     {#if $GuiAcc.shutter_time_iso}
       <hr />
       <label use:tippy={{ content: "Provide your own ISO-Time-string time to send to the shutter" }}

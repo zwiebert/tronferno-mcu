@@ -37,7 +37,6 @@
   $: tabIdxSender = $TabIdx["sender"] || 0;
   $: tabIdxPositions = $TabIdx["positions"] || 0;
 
-
   function getUserLevelHeader(ul) {
     return ul < 0
       ? $_("app.navTab.main.user_level.developer")
@@ -82,7 +81,7 @@
           { name: $_("app.navTab.cfg.sender"), idx: 1 },
           { name: $_("app.navTab.cfg.positions"), idx: 2 },
           { name: $_("app.navTab.cfg.name"), idx: 3 },
-          { name: $_("app.navTab.cfg.set_mode"), idx: 4 },
+          ...($GuiAcc.set_mode ? [{ name: $_("app.navTab.cfg.set_mode"), idx: 4 }] : []),
           { name: $_("app.navTab.main.firmware"), idx: 5 },
           { name: "Log", idx: 6 },
         ]}

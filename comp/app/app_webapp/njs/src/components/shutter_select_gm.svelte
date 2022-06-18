@@ -3,6 +3,7 @@
   import { G, M, GM, GMH, RadioCode, RadioCodeEnabled } from "stores/curr_shutter.js";
   import { Names } from "stores/shutters.js";
   import { Gmu } from "stores/mcu_config.js";
+  import { GuiAcc } from "stores/app_state";
   import * as httpFetch from "app/fetch.js";
 
   let gmInit = $RadioCodeEnabled ? "RadioCode" : $GM;
@@ -11,9 +12,8 @@
   $: a = "A " + ($Names["00"] || "");
   $: showRadioCode = gm === "RadioCode";
 
-  let radioCode = $RadioCode;
   $: use_motorCode = showRadioCode;
-  $: motorCode = radioCode;
+  let motorCode = $RadioCode;
   $: motorCode_isValid = false;
   $: target = use_motorCode ? motorCode : $GMH;
 
@@ -22,7 +22,7 @@
     if (!re.test(mc)) {
       return "invalid";
     }
-/*
+    /*
     if (mc.startsWith("0")) {
       return "9" + mc;
     }
@@ -35,8 +35,9 @@
     const mc = get_motorCode(motorCode);
     const rce = gm === "RadioCode";
     $RadioCodeEnabled = rce;
-    $RadioCode = rce ? mc : "invalid";
-    motorCode_isValid = mc;
+    motorCode_isValid = mc !== "invalid";
+
+    if (rce && motorCode_isValid) $RadioCode = mc;
   }
 
   $: {
@@ -60,7 +61,9 @@
       {/each}
     {/if}
   {/each}
-  <option value={"RadioCode"}> RadioCode </option>
+  {#if $GuiAcc.radio_code}
+    <option value={"RadioCode"}> RadioCode </option>
+  {/if}
 </select>
 
 {#if showRadioCode}
