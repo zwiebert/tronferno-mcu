@@ -226,7 +226,7 @@
 </script>
 
 <NavTabs
-  nav_tabs={[{ name: $_("mcuConfig.network"), idx: 0 }, { name: $_("mcuConfig.misc"), idx: 1 }, ...(hasCc1101 ? [{ name: "CC1101", idx: 3 }] : [])]}
+  nav_tabs={[{ name: $_("mcuConfig.network"), idx: 0 }, { name: $_("mcuConfig.misc"), idx: 1 }, ...(hasCc1101 ? [{ name: "CC1101", idx: 2 }] : [])]}
   name="mcc"
   vertical={true}
 />
