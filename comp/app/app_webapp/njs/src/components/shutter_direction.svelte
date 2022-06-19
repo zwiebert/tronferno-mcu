@@ -1,11 +1,12 @@
 <script>
   "use strict";
+  import { _ } from "services/i18n";
+  import tippy from "sveltejs-tippy";
   import * as httpFetch from "app/fetch.js";
   import { GMH, RadioCode, RadioCodeEnabled, Address } from "stores/curr_shutter.js";
-  import tippy from "sveltejs-tippy";
-  
-  $: target = $RadioCodeEnabled ? $RadioCode : $GMH;
+  import FaArrowsAltV from "svelte-icons/fa/FaArrowsAltV.svelte";
 
+  $: target = $RadioCodeEnabled ? $RadioCode : $GMH;
 
   function postShutterCommand(cmd) {
     if (!$RadioCodeEnabled) return httpFetch.http_postShutterCommand(cmd);
@@ -37,11 +38,21 @@
 
 <div class="inline-block">
   <div class="flex flex-row items-center">
-    <button class="w-16 h-16 text-lg" type="button" on:click={hClick_Down}> Test &#x25bc; </button>
+    <button class="w-16 h-16 text-lg" type="button" on:click={hClick_Down} use:tippy={{ content: $_("app.rotDir.tt.test_down") }}>
+      {$_("app.rotDir.test_down")}
+    </button>
 
-    <button class="m-2 w-32 h-16 text-lg" type="button" on:click={hClick_RotDir}> Toggle ({target}) </button>
+    <button class="m-2 w-32 h-16 text-lg" type="button" on:click={hClick_RotDir} use:tippy={{ content: $_("app.rotDir.tt.toggle") }}>
+      <div class="flex flex-row">
+        <div class="h-4 w-4"><FaArrowsAltV /></div>
+        {$_("app.rotDir.toggle")} ({target})
+        <div class="h-4 w-4"><FaArrowsAltV /></div>
+      </div>
+    </button>
 
-    <button class="w-16 h-16 text-lg" type="button" on:click={hClick_Up}> Test &#x25b2; </button>
+    <button class="w-16 h-16 text-lg" type="button" on:click={hClick_Up} use:tippy={{ content: $_("app.rotDir.tt.test_up") }}>
+      {$_("app.rotDir.test_up")}
+    </button>
   </div>
 </div>
 

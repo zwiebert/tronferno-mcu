@@ -19,11 +19,11 @@ export const de = {
         firmware: "Firmware",
         user_level: {
           name: {
-            developer:"Entwickler",
-            expert:"Experte",
-            admin:"Administrator",
-            user:"Benutzer",
-            kid:"Kind",
+            developer: "Entwickler",
+            expert: "Experte",
+            admin: "Administrator",
+            user: "Benutzer",
+            kid: "Kind",
           },
         },
       },
@@ -104,7 +104,7 @@ export const de = {
     sep: {
       header: "Endpositionen einstellen",
       enter: "Öffne Endposition Einsteller",
-      authenticate: "Authentisiere", 
+      authenticate: "Authentisiere",
       auth_prog_wait: "Vorbereitung... Bitte warten...",
       auth_prog_press: "Drücke Taster am MCU Gerät!",
       enable: "Aktiviere",
@@ -120,7 +120,8 @@ export const de = {
         <li>Zur Sicherheit immer einen Handsender bereit haben um ein STOP zu senden, falls die MCU während der Bewegung abstürzt.</li>
         </ul>`,
       tt: {
-        header: "Einstellen der Rollladen Endpositionen. Ein physischer Taster muss an der MCU angeschlossen sein. Schritte: 1) Authentisieren 2) Adressieren 3) Bewegung testen 4) Aktivieren 5) Endpositionen setzen 6) Deaktvieren 7) Testen 8) Wiederhohlen oder Beenden",
+        header:
+          "Einstellen der Rollladen Endpositionen. Ein physischer Taster muss an der MCU angeschlossen sein. Schritte: 1) Authentisieren 2) Adressieren 3) Bewegung testen 4) Aktivieren 5) Endpositionen setzen 6) Deaktvieren 7) Testen 8) Wiederhohlen oder Beenden",
         enter: "Öffne die Steuerung zum Einstellen der Endpositionen.",
         authenticate: "Authentisiere den Benutzer durch drücken des Setzknopfes am MCU Gerät",
         enable: "Aktiviere Funkkommandos für Endpositionen. Zeigt Hoch/Runter Knopfe zum Einstellen der oberen/unteren Endposition.",
@@ -136,9 +137,21 @@ export const de = {
     stopClock: "Stopp-Uhr",
     msg_enterNewName: "Rollladen-Name",
     hdr_motorRotDir: "Motor Drehrichtung",
-    downToZero: "Abwärts bis 0%",
-    downSunPos: "Abwärts bis Sonnenposition",
-    upTo100: "Aufwärts bis 100%",
+    downToZero: "\u25bc 100% bis 0%",
+    downSunPos: "\u25bc 100% bis Sonnenpos.",
+    upTo100: "\u25b2  0% bis 100%",
+
+    rotDir: {
+      toggle: "Umkehren",
+      test_up: "Test \u25b2",
+      test_down: "Test \u25bc",
+      tt: {
+        toggle: "Ändere Drehrichtung. Jeder Klick kehrt die Drehrichtung um.",
+        test_up: "Teste Drehrichtung. Panzer sollte ein Stück nach oben fahren.",
+        test_down: "Teste Drehrichtung. Panzer sollte ein Stück nach unten fahren.",
+      },
+    },
+
     setMode: {
       set_button: "Set-Knopf am Empfängergerät drücken und hier klicken.",
       set_button_radio: "Taster",
@@ -209,8 +222,8 @@ export const de = {
 
   mcuConfig: {
     wlan_station: "WLAN Station",
-    network: "Netzwerkverbindung und -dienste",
-    misc: "Sonstige Einstellungen",
+    network: "Netzwerk",
+    misc: "Allgemein",
     ntp_client: "NTP Klient",
     mqtt_client: "MQTT Klient",
     http_server: "Webserver",
@@ -220,14 +233,10 @@ export const de = {
   },
 
   notifyUser: {
-    caption: "Wichtige Firmware-Änderungen",
+    caption: "Firmware-Änderungen",
     messages: [
-      {
-        date: "2021-03",
-        text:
-          "Konfiguration: Alle Defaultwerte für GPIO-Pins wurden entfernt. War Senden=22, Empfangen=17 (tx=15 und rx=16 bei LAN-Version). Bitte manuell konfigurieren!",
-      },
-      { date: "2021-03", text: "Neue Hardware: Ethernet/LAN, CC1101-Funkmodul" },
+      { date: "2022", text: "Funktionalität: Drehrichtung umkehren. Endpostionen einstellen. Funk-Repeater" },
+      { date: "2021", text: "Hardware: Ethernet/LAN, CC1101-Funkmodul" },
     ],
   },
 };

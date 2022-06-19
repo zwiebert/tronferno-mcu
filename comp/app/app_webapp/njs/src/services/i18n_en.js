@@ -28,11 +28,11 @@ export const en = {
           user: "$>",
           kid: "@>",
           name: {
-            developer:"Developer",
-            expert:"Expert",
-            admin:"Admin",
-            user:"User",
-            kid:"Kid",
+            developer: "Developer",
+            expert: "Expert",
+            admin: "Admin",
+            user: "User",
+            kid: "Kid",
           },
         },
       },
@@ -155,6 +155,17 @@ export const en = {
     downToZero: "down to 0%",
     downSunPos: "down to sun position",
     upTo100: "up to 100%",
+
+    rotDir: {
+      toggle: "Toggle",
+      test_up: "Test \u25b2",
+      test_down: "Test \u25bc",
+      tt: {
+        toggle: "Change rotation direction of the tubular motor. Each button press reverses the direcion.",
+        test_up: "Test direction. Should move the shutter upwards.",
+        test_down: "Test direction: Should move the shutter downwards.",
+      },
+    },
     setMode: {
       set_button: "Press Set-Button on Receiver first. Then click here.",
       set_button_radio: "Button",
@@ -245,8 +256,8 @@ export const en = {
   mcuConfig: {
     ethernet: "LAN/Ethernet",
     wlan_station: "WLAN Station",
-    network: "Network-Connection and -Services",
-    misc: "Other Settings",
+    network: "Network",
+    misc: "Other",
     ntp_client: "NTP Client",
     mqtt_client: "MQTT Client",
     http_server: "Webserver",
@@ -256,13 +267,10 @@ export const en = {
   },
 
   notifyUser: {
-    caption: "Important firmware changes",
+    caption: "Firmware Changes",
     messages: [
-      {
-        date: "2021-03",
-        text: "Configuration: Default values for GPIOP-pings removed. Used to be (tx=22, rx=17 (tx=15, rx=16 for LAN version). Please configure manually!",
-      },
-      { date: "2021-03", text: "Hardware added: Ethern/LAN. CC1101 RF transceiver module." },
+      { date: "2022", text: "Features: Change rotation direction. Set end positions. RF-Repeater" },
+      { date: "2021", text: "Hardware: Ethernet. CC1101 RF module" },
     ],
   },
 };

@@ -50,7 +50,7 @@
   }
 </script>
 
-<div id="navTabs" class="flex flex-col items-center px-1 border-none">
+<div class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
     <NavTabs
       nav_tabs={[

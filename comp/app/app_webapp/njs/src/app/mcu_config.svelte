@@ -225,176 +225,20 @@
   /////////////////////////////////////////////
 </script>
 
-<NavTabs
-  nav_tabs={[{ name: $_("mcuConfig.network"), idx: 0 }, { name: $_("mcuConfig.misc"), idx: 1 }, ...(hasCc1101 ? [{ name: "CC1101", idx: 2 }] : [])]}
-  name="mcc"
-  vertical={true}
-/>
+<div class="navtab-sub2 flex flex-col items-center px-1 border-none">
+  <NavTabs
+    nav_tabs={[{ name: $_("mcuConfig.network"), idx: 0 }, { name: $_("mcuConfig.misc"), idx: 1 }, ...(hasCc1101 ? [{ name: "CC1101", idx: 2 }] : [])]}
+    name="mcc"
+    vertical={false}
+  />
+</div>
 
-{#if tabIdxMcc === 0}
-  {#if mcuConfigKeysNetwork.length > 0}
-    <div class="area network">
-      <table class="conf-table top_table rounded-xl overflow-hidden">
-        {#each mcuConfigKeysNetwork as key, i}
-          <tr>
-            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-              ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-            >
-            {#if key.endsWith("-enable")}
-              <td>
-                <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-              </td>
-            {:else if key === "network"}
-              <td>
-                <McuConfigNetwork name={key} bind:value={mcuConfig[key]} has_lan={mcuConfigKeysLAN.length > 0 || mcuConfig.network === "lan"} />
-              </td>
-            {:else}
-              <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-            {/if}
-          </tr>
-        {/each}
-      </table>
-
-      {#if mcuConfig.network !== "none"}
-        {#if mcuConfigKeysWLAN.length > 0 && mcuConfig.network === "wlan"}
-          <div class="area">
-            <table class="conf-table top_table rounded-xl overflow-hidden">
-              <caption>{$_("mcuConfig.wlan_station")}</caption>
-              {#each mcuConfigKeysWLAN as key, i}
-                <tr>
-                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-                    ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-                  >
-                  {#if key.endsWith("-enable")}
-                    <td>
-                      <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-                    </td>
-                  {:else}
-                    <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-                  {/if}
-                </tr>
-              {/each}
-            </table>
-          </div>
-        {/if}
-
-        {#if mcuConfigKeysLAN.length > 0 && mcuConfig.network === "lan"}
-          <div class="area">
-            <table class="conf-table top_table rounded-xl overflow-hidden">
-              <caption>{$_("mcuConfig.ethernet")}</caption>
-              {#each mcuConfigKeysLAN as key, i}
-                <tr>
-                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-                    ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-                  >
-                  {#if key.endsWith("-enable")}
-                    <td>
-                      <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-                    </td>
-                  {:else if key === "lan-phy"}
-                    <td>
-                      <McuConfigLanPhy name={key} bind:value={mcuConfig[key]} />
-                    </td>
-                  {:else if key === "lan-pwr-gpio"}
-                    <td>
-                      <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="36" />
-                    </td>
-                  {:else}
-                    <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-                  {/if}
-                </tr>
-              {/each}
-            </table>
-          </div>
-        {/if}
-
-        {#if mcuConfigKeysNTP.length > 0}
-          <div class="area">
-            <table class="conf-table top_table rounded-xl overflow-hidden">
-              <caption>{$_("mcuConfig.ntp_client")}</caption>
-              {#each mcuConfigKeysNTP as key, i}
-                <tr>
-                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-                    ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-                  >
-                  {#if key.endsWith("-enable")}
-                    <td>
-                      <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-                    </td>
-                  {:else}
-                    <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-                  {/if}
-                </tr>
-              {/each}
-            </table>
-          </div>
-        {/if}
-
-        {#if mcuConfigKeysMQTT.length > 0}
-          <div class="area">
-            <table class="conf-table top_table rounded-xl overflow-hidden">
-              <caption>{$_("mcuConfig.mqtt_client")}</caption>
-              {#each mcuConfigKeysMQTT as key, i}
-                <tr>
-                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-                    ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-                  >
-
-                  {#if key.endsWith("-enable")}
-                    <td>
-                      <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-                    </td>
-                  {:else}
-                    <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-                  {/if}
-                </tr>
-              {/each}
-            </table>
-          </div>
-        {/if}
-
-        {#if mcuConfigKeysHTTP.length > 0}
-          <div class="area">
-            <table class="conf-table top_table rounded-xl overflow-hidden">
-              <caption>{$_("mcuConfig.http_server")}</caption>
-              {#each mcuConfigKeysHTTP as key, i}
-                <tr>
-                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-                    ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-                  >
-
-                  {#if key.endsWith("-enable")}
-                    <td>
-                      <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-                    </td>
-                  {:else}
-                    <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-                  {/if}
-                </tr>
-              {/each}
-            </table>
-          </div>
-        {/if}
-      {/if}
-    </div>
-  {/if}
-{:else if tabIdxMcc === 1}
-  <div class="area network">
-    {#if "gm-used" in mcuConfig}
-      <div class="area">
-        <McuConfigUsedMembers
-          caption={$_("mcuConfig.gm_used")}
-          name={mcuConfigNames["gm-used"]}
-          bind:value={mcuConfig["gm-used"]}
-          changed={mcuConfig["gm-used"] !== $McuConfig["gm-used"]}
-        />
-      </div>
-    {/if}
-
-    {#if mcuConfigKeysCU.length > 0}
-      <div class="area">
+<div class="main-area">
+  {#if tabIdxMcc === 0}
+    {#if mcuConfigKeysNetwork.length > 0}
+      <div class="area network">
         <table class="conf-table top_table rounded-xl overflow-hidden">
-          {#each mcuConfigKeysCU as key, i}
+          {#each mcuConfigKeysNetwork as key, i}
             <tr>
               <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
                 ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
@@ -403,27 +247,9 @@
                 <td>
                   <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
                 </td>
-              {:else}
-                <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-              {/if}
-            </tr>
-          {/each}
-        </table>
-        <div class="area"><button id="id_cuasb" type="button" on:click={hClick_ScanCU}> {$_("app.wizard_cuas")} </button> <span id="id_cuasStatus" /></div>
-      </div>
-    {/if}
-
-    {#if mcuConfigKeysTime.length > 0}
-      <div class="area">
-        <table class="conf-table top_table rounded-xl overflow-hidden">
-          {#each mcuConfigKeysTime as key, i}
-            <tr>
-              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-                ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-              >
-              {#if key.endsWith("-enable")}
+              {:else if key === "network"}
                 <td>
-                  <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                  <McuConfigNetwork name={key} bind:value={mcuConfig[key]} has_lan={mcuConfigKeysLAN.length > 0 || mcuConfig.network === "lan"} />
                 </td>
               {:else}
                 <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
@@ -431,187 +257,365 @@
             </tr>
           {/each}
         </table>
-      </div>
-    {/if}
 
-    {#if mcuConfigKeysAstro.length > 0}
-      <div class="area">
-        <table class="conf-table top_table rounded-xl overflow-hidden">
-          {#each mcuConfigKeysAstro as key, i}
-            <tr>
-              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-                ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-              >
-              {#if key.endsWith("-enable")}
-                <td>
-                  <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-                </td>
-              {:else if key === "latitude"}
-                <td>
-                  <McuConfigNumber name={key} bind:value={mcuConfig[key]} min="-90" max="90" step="0.01" />
-                </td>
-              {:else if key === "longitude"}
-                <td>
-                  <McuConfigNumber name={key} bind:value={mcuConfig[key]} min="-180" max="180" step="0.01" />
-                </td>
-              {:else if key === "astro-correction"}
-                <td>
-                  <McuConfigAstroCorrection name={key} bind:value={mcuConfig[key]} />
-                </td>
-              {:else}
-                <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-              {/if}
-            </tr>
-          {/each}
-        </table>
-      </div>
-    {/if}
-
-    <div class="area">
-      <table class="conf-table top_table rounded-xl overflow-hidden">
-        <caption>{$_("mcuConfig.pin_gpio")}</caption>
-
-        {#each mcuConfigKeysCc1101Pin as key, i}
-          <tr>
-            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-              ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{$_("mcuConfigNames.cc1101." + key)}</label
-              ></td
-            >
-            {#if key === "rf-rx-pin"}
-              <td>
-                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
-                {#if errorBit_cc1101_gpio_rfin}
-                  <span class="bg-red-400">(wire not connected)</span>
-                {/if}
-              </td>
-            {:else if key === "set-button-pin" || key === "rf-miso-pin"}
-              <td>
-                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
-              </td>
-            {:else if key === "rf-tx-pin" || key === "rf-sclk-pin" || key === "rf-mosi-pin" || key === "rf-ss-pin"}
-              <td>
-                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="33" />
-              </td>
-            {:else}
-              <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-            {/if}
-          </tr>
-        {/each}
-
-        {#each mcuConfigKeysPin as key, i}
-          <tr>
-            <td use:tippy={{ content: key.startsWith("gpio") ? $_("app.cfg.mcu.user_gpio.tt.gpioxx") : $McuDocs_cliHelpConfig[key] }}
-              ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-            >
-            {#if key.endsWith("-enable")}
-              <td>
-                <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-              </td>
-            {:else if key === "set-button-pin"}
-              <td>
-                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
-                {#if mcuConfig[key] >= 0}
-                  <GpioLevel name={"gpio" + mcuConfig[key]} force={true} />
-                {/if}
-              </td>
-            {:else if key.startsWith("gpio")}
-              <td>
-                <McuConfigGpio name={key} bind:value={mcuConfig[key]} />
-                <GpioLevel name={key} />
-              </td>
-            {:else if key === "rf-rx-pin" || key === "set-button-pin" || key === "rf-miso-pin"}
-              <td>
-                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
-              </td>
-            {:else if key === "rf-tx-pin" || key === "rf-sclk-pin" || key === "rf-mosi-pin" || key === "rf-ss-pin"}
-              <td>
-                <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="33" />
-              </td>
-            {:else}
-              <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-            {/if}
-          </tr>
-        {/each}
-      </table>
-      <div class="area">
-        <label use:tippy={{ content: $_("app.cfg.mcu.user_gpio.tt.add_label") }}
-          >{$_("app.cfg.mcu.user_gpio.add_label")}
-          <McuConfigGpioSelect name="wizard_gpio" bind:value={wiz_gpio} show_value={false} />
-          <button type="button" disabled={wiz_gpio === -1} on:click={wiz_addGpio}>{$_("app.cfg.mcu.user_gpio.add_button")}</button>
-          {@html wiz_gpio_status}
-        </label>
-      </div>
-    </div>
-
-    <div class="area" id="config-div">
-      <table id="cfg_table_id" class="conf-table top_table rounded-xl overflow-hidden">
-        {#each mcuConfigKeysMisc as key, i}
-          <tr>
-            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-              ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-            >
-            {#if key.endsWith("-enable")}
-              <td>
-                <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-              </td>
-            {:else if key === "verbose"}
-              <td>
-                <McuConfigNumber name={key} bind:value={mcuConfig[key]} min="0" max="5" />
-              </td>
-            {:else if key === "rf-trx"}
-              <td>
-                <McuRfTrx name={key} bind:value={mcuConfig[key]} />
-              </td>
-            {:else}
-              <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-            {/if}
-          </tr>
-        {/each}
-      </table>
-    </div>
-  </div>
-{:else if tabIdxMcc === 2}
-  {#if mcuConfigKeysCC1101.length}
-    <div class="area">
-      {#each mcuConfigKeysCC1101 as key, i}
-        <tr>
-          <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-            ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-          >
-          {#if key.endsWith("-enable")}
-            <td>
-              <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-            </td>
-          {:else}
-            <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+        {#if mcuConfig.network !== "none"}
+          {#if mcuConfigKeysWLAN.length > 0 && mcuConfig.network === "wlan"}
+            <div class="area">
+              <table class="conf-table top_table rounded-xl overflow-hidden">
+                <caption>{$_("mcuConfig.wlan_station")}</caption>
+                {#each mcuConfigKeysWLAN as key, i}
+                  <tr>
+                    <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+                      ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+                    >
+                    {#if key.endsWith("-enable")}
+                      <td>
+                        <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                      </td>
+                    {:else}
+                      <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                    {/if}
+                  </tr>
+                {/each}
+              </table>
+            </div>
           {/if}
-        </tr>
-      {/each}
+
+          {#if mcuConfigKeysLAN.length > 0 && mcuConfig.network === "lan"}
+            <div class="area">
+              <table class="conf-table top_table rounded-xl overflow-hidden">
+                <caption>{$_("mcuConfig.ethernet")}</caption>
+                {#each mcuConfigKeysLAN as key, i}
+                  <tr>
+                    <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+                      ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+                    >
+                    {#if key.endsWith("-enable")}
+                      <td>
+                        <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                      </td>
+                    {:else if key === "lan-phy"}
+                      <td>
+                        <McuConfigLanPhy name={key} bind:value={mcuConfig[key]} />
+                      </td>
+                    {:else if key === "lan-pwr-gpio"}
+                      <td>
+                        <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="36" />
+                      </td>
+                    {:else}
+                      <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                    {/if}
+                  </tr>
+                {/each}
+              </table>
+            </div>
+          {/if}
+
+          {#if mcuConfigKeysNTP.length > 0}
+            <div class="area">
+              <table class="conf-table top_table rounded-xl overflow-hidden">
+                <caption>{$_("mcuConfig.ntp_client")}</caption>
+                {#each mcuConfigKeysNTP as key, i}
+                  <tr>
+                    <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+                      ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+                    >
+                    {#if key.endsWith("-enable")}
+                      <td>
+                        <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                      </td>
+                    {:else}
+                      <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                    {/if}
+                  </tr>
+                {/each}
+              </table>
+            </div>
+          {/if}
+
+          {#if mcuConfigKeysMQTT.length > 0}
+            <div class="area">
+              <table class="conf-table top_table rounded-xl overflow-hidden">
+                <caption>{$_("mcuConfig.mqtt_client")}</caption>
+                {#each mcuConfigKeysMQTT as key, i}
+                  <tr>
+                    <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+                      ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+                    >
+
+                    {#if key.endsWith("-enable")}
+                      <td>
+                        <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                      </td>
+                    {:else}
+                      <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                    {/if}
+                  </tr>
+                {/each}
+              </table>
+            </div>
+          {/if}
+
+          {#if mcuConfigKeysHTTP.length > 0}
+            <div class="area">
+              <table class="conf-table top_table rounded-xl overflow-hidden">
+                <caption>{$_("mcuConfig.http_server")}</caption>
+                {#each mcuConfigKeysHTTP as key, i}
+                  <tr>
+                    <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+                      ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+                    >
+
+                    {#if key.endsWith("-enable")}
+                      <td>
+                        <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                      </td>
+                    {:else}
+                      <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                    {/if}
+                  </tr>
+                {/each}
+              </table>
+            </div>
+          {/if}
+        {/if}
+      </div>
+    {/if}
+  {:else if tabIdxMcc === 1}
+    <div class="area network">
+      {#if "gm-used" in mcuConfig}
+        <div class="area">
+          <McuConfigUsedMembers
+            caption={$_("mcuConfig.gm_used")}
+            name={mcuConfigNames["gm-used"]}
+            bind:value={mcuConfig["gm-used"]}
+            changed={mcuConfig["gm-used"] !== $McuConfig["gm-used"]}
+          />
+        </div>
+      {/if}
+
+      {#if mcuConfigKeysCU.length > 0}
+        <div class="area">
+          <table class="conf-table top_table rounded-xl overflow-hidden">
+            {#each mcuConfigKeysCU as key, i}
+              <tr>
+                <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+                  ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+                >
+                {#if key.endsWith("-enable")}
+                  <td>
+                    <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                  </td>
+                {:else}
+                  <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                {/if}
+              </tr>
+            {/each}
+          </table>
+          <div class="area"><button id="id_cuasb" type="button" on:click={hClick_ScanCU}> {$_("app.wizard_cuas")} </button> <span id="id_cuasStatus" /></div>
+        </div>
+      {/if}
+
+      {#if mcuConfigKeysTime.length > 0}
+        <div class="area">
+          <table class="conf-table top_table rounded-xl overflow-hidden">
+            {#each mcuConfigKeysTime as key, i}
+              <tr>
+                <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+                  ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+                >
+                {#if key.endsWith("-enable")}
+                  <td>
+                    <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                  </td>
+                {:else}
+                  <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                {/if}
+              </tr>
+            {/each}
+          </table>
+        </div>
+      {/if}
+
+      {#if mcuConfigKeysAstro.length > 0}
+        <div class="area">
+          <table class="conf-table top_table rounded-xl overflow-hidden">
+            {#each mcuConfigKeysAstro as key, i}
+              <tr>
+                <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+                  ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+                >
+                {#if key.endsWith("-enable")}
+                  <td>
+                    <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                  </td>
+                {:else if key === "latitude"}
+                  <td>
+                    <McuConfigNumber name={key} bind:value={mcuConfig[key]} min="-90" max="90" step="0.01" />
+                  </td>
+                {:else if key === "longitude"}
+                  <td>
+                    <McuConfigNumber name={key} bind:value={mcuConfig[key]} min="-180" max="180" step="0.01" />
+                  </td>
+                {:else if key === "astro-correction"}
+                  <td>
+                    <McuConfigAstroCorrection name={key} bind:value={mcuConfig[key]} />
+                  </td>
+                {:else}
+                  <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+                {/if}
+              </tr>
+            {/each}
+          </table>
+        </div>
+      {/if}
+
+      <div class="area">
+        <table class="conf-table top_table rounded-xl overflow-hidden">
+          <caption>{$_("mcuConfig.pin_gpio")}</caption>
+
+          {#each mcuConfigKeysCc1101Pin as key, i}
+            <tr>
+              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+                ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{$_("mcuConfigNames.cc1101." + key)}</label
+                ></td
+              >
+              {#if key === "rf-rx-pin"}
+                <td>
+                  <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
+                  {#if errorBit_cc1101_gpio_rfin}
+                    <span class="bg-red-400">(wire not connected)</span>
+                  {/if}
+                </td>
+              {:else if key === "set-button-pin" || key === "rf-miso-pin"}
+                <td>
+                  <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
+                </td>
+              {:else if key === "rf-tx-pin" || key === "rf-sclk-pin" || key === "rf-mosi-pin" || key === "rf-ss-pin"}
+                <td>
+                  <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="33" />
+                </td>
+              {:else}
+                <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+              {/if}
+            </tr>
+          {/each}
+
+          {#each mcuConfigKeysPin as key, i}
+            <tr>
+              <td use:tippy={{ content: key.startsWith("gpio") ? $_("app.cfg.mcu.user_gpio.tt.gpioxx") : $McuDocs_cliHelpConfig[key] }}
+                ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+              >
+              {#if key.endsWith("-enable")}
+                <td>
+                  <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                </td>
+              {:else if key === "set-button-pin"}
+                <td>
+                  <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
+                  {#if mcuConfig[key] >= 0}
+                    <GpioLevel name={"gpio" + mcuConfig[key]} force={true} />
+                  {/if}
+                </td>
+              {:else if key.startsWith("gpio")}
+                <td>
+                  <McuConfigGpio name={key} bind:value={mcuConfig[key]} />
+                  <GpioLevel name={key} />
+                </td>
+              {:else if key === "rf-rx-pin" || key === "set-button-pin" || key === "rf-miso-pin"}
+                <td>
+                  <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
+                </td>
+              {:else if key === "rf-tx-pin" || key === "rf-sclk-pin" || key === "rf-mosi-pin" || key === "rf-ss-pin"}
+                <td>
+                  <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="33" />
+                </td>
+              {:else}
+                <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+              {/if}
+            </tr>
+          {/each}
+        </table>
+        <div class="area">
+          <label use:tippy={{ content: $_("app.cfg.mcu.user_gpio.tt.add_label") }}
+            >{$_("app.cfg.mcu.user_gpio.add_label")}
+            <McuConfigGpioSelect name="wizard_gpio" bind:value={wiz_gpio} show_value={false} />
+            <button type="button" disabled={wiz_gpio === -1} on:click={wiz_addGpio}>{$_("app.cfg.mcu.user_gpio.add_button")}</button>
+            {@html wiz_gpio_status}
+          </label>
+        </div>
+      </div>
+
+      <div class="area" id="config-div">
+        <table id="cfg_table_id" class="conf-table top_table rounded-xl overflow-hidden">
+          {#each mcuConfigKeysMisc as key, i}
+            <tr>
+              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+                ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+              >
+              {#if key.endsWith("-enable")}
+                <td>
+                  <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                </td>
+              {:else if key === "verbose"}
+                <td>
+                  <McuConfigNumber name={key} bind:value={mcuConfig[key]} min="0" max="5" />
+                </td>
+              {:else if key === "rf-trx"}
+                <td>
+                  <McuRfTrx name={key} bind:value={mcuConfig[key]} />
+                </td>
+              {:else}
+                <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+              {/if}
+            </tr>
+          {/each}
+        </table>
+      </div>
     </div>
+  {:else if tabIdxMcc === 2}
+    {#if mcuConfigKeysCC1101.length}
+      <div class="area">
+        {#each mcuConfigKeysCC1101 as key, i}
+          <tr>
+            <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+              ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+            >
+            {#if key.endsWith("-enable")}
+              <td>
+                <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+              </td>
+            {:else}
+              <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+            {/if}
+          </tr>
+        {/each}
+      </div>
+    {/if}
   {/if}
-{/if}
 
-<button type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
-<button type="button" on:click={hClick_Save}>{$_("app.save")}</button>
-<button type="button" on:click={hClick_RestartMcu}> {$_("app.restartMcu")}</button>
+  <button type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
+  <button type="button" on:click={hClick_Save}>{$_("app.save")}</button>
+  <button type="button" on:click={hClick_RestartMcu}> {$_("app.restartMcu")}</button>
 
-{#if tabIdxMcc === 2}
-  <hr />
-  <CC1101 />
-{/if}
+  {#if tabIdxMcc === 2}
+    <hr />
+    <CC1101 />
+  {/if}
 
-{#if $ReloadProgress > 0}
-  <br />
-  <strong>{$_("app.msg_waitForMcuRestart")}</strong>
-  <br />
-  <progress id="reload_progress_bar" value={$ReloadProgress} max="100" />
-{/if}
+  {#if $ReloadProgress > 0}
+    <br />
+    <strong>{$_("app.msg_waitForMcuRestart")}</strong>
+    <br />
+    <progress id="reload_progress_bar" value={$ReloadProgress} max="100" />
+  {/if}
 
-{#if tabIdxMcc === 2}
-  <hr />
-  <h3>Receiver Log</h3>
-  <AppLog rxonly={true} />
-{/if}
+  {#if tabIdxMcc === 2}
+    <hr />
+    <h3>Receiver Log</h3>
+    <AppLog rxonly={true} />
+  {/if}
+</div>
 
 <style lang="scss">
   @import "../styles/app.scss";

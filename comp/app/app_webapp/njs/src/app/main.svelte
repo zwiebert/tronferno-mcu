@@ -4,7 +4,7 @@
   import Wapp from "app/wapp.svelte";
   import { setupI18n } from "services/i18n";
   import { SepMode } from "stores/sep";
-  import { GuiAcc, GuiUserLevel } from "stores/app_state";
+  import { GuiUserLevel } from "stores/app_state";
   import * as misc from "app/misc.js";
   import SepControl from "app/sep_control.svelte";
 
