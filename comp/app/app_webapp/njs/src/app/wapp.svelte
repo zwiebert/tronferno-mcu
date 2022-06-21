@@ -12,10 +12,9 @@
   import PaneRepeater from "panes/repeater.svelte";
   import PaneShutterDurations from "panes/shutter_durations.svelte";
   import PaneShutterName from "panes/shutter_name.svelte";
-  import PaneFirmwareEsp32 from "panes/firmware_esp32.svelte";
   import PaneMcuSettings from "panes/mcu_settings.svelte";
+  import PaneReceiverProgramming from "panes/receiver_programming.svelte";
   import Pane2411 from "panes/2411.svelte";
-  import PaneShutterSetMode from "panes/shutter_set_mode.svelte";
   import PaneAppLog from "panes/app_log.svelte";
   import PaneDeveloper from "panes/developer.svelte";
   import PaneUserLevel from "panes/user_level.svelte";
@@ -78,11 +77,8 @@
       <NavTabs
         nav_tabs={[
           { name: $_("app.navTab.cfg.mcu"), idx: 0 },
+          { name: $_("app.navTab.cfg.receiver"), idx: 7 },
           { name: $_("app.navTab.cfg.sender"), idx: 1 },
-          { name: $_("app.navTab.cfg.positions"), idx: 2 },
-          { name: $_("app.navTab.cfg.name"), idx: 3 },
-          ...($GuiAcc.set_mode ? [{ name: $_("app.navTab.cfg.set_mode"), idx: 4 }] : []),
-          { name: $_("app.navTab.main.firmware"), idx: 5 },
           { name: "Log", idx: 6 },
         ]}
         name="settings"
@@ -90,13 +86,15 @@
     </div>
     {#if !tabIdxSettings}
       <PaneMcuSettings />
+      {:else if tabIdxSettings === 7}
+      <PaneReceiverProgramming />
     {:else if tabIdxSettings === 1}
       <div class="navtab-sub2">
         <NavTabs
           nav_tabs={[
             { name: $_("app.navTab.sender.aliases"), idx: 0 },
             { name: $_("app.navTab.sender.repeater"), idx: 1 },
-            { name: $_("app.navTab.sender.transmit"), idx: 2 },
+           // { name: $_("app.navTab.sender.transmit"), idx: 2 },
           ]}
           name="sender"
         />
@@ -113,7 +111,7 @@
         <NavTabs
           nav_tabs={[
             { name: $_("app.navTab.positions.durations"), idx: 0 },
-            { name: $_("app.navTab.positions.aliases"), idx: 1 },
+          //  { name: $_("app.navTab.positions.aliases"), idx: 1 },
           ]}
           name="positions"
         />
@@ -127,10 +125,6 @@
       {/if}
     {:else if tabIdxSettings === 3}
       <PaneShutterName />
-    {:else if tabIdxSettings === 4}
-      <PaneShutterSetMode />
-    {:else if tabIdxSettings === 5}
-      <PaneFirmwareEsp32 />
     {:else if tabIdxSettings === 6}
       <PaneAppLog />
     {/if}

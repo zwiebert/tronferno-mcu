@@ -16,7 +16,7 @@ export const de = {
     navTab: {
       main: {
         auto: "Auto",
-        firmware: "Firmware",
+     //   firmware: "FW-Update",
         user_level: {
           name: {
             developer: "Entwickler",
@@ -30,13 +30,16 @@ export const de = {
       cfg: {
         mcu: "MCU",
         positions: "Positionen",
-        name: "Sonstiges",
-        set_mode: "Set",
+        name: "Name",
+        receiver: "Empfänger",
+        rot_dir: "Drehrichtung",
+        endpos: "Endpunkte",
+        set_mode: "SET",
         app: "App",
       },
       sender: {
         aliases: "Aliases",
-        repeater: "Repeater",
+       // repeater: "Repeater",
         transmit: "Transmit",
       },
       positions: {
@@ -102,8 +105,8 @@ export const de = {
     },
 
     sep: {
-      header: "Endpositionen einstellen",
-      enter: "Öffne Endposition Einsteller",
+      header: "Endpunkte einstellen",
+      enter: "Öffne Endpunkte Einsteller",
       authenticate: "Authentisiere",
       auth_prog_wait: "Vorbereitung... Bitte warten...",
       auth_prog_press: "Drücke Taster am MCU Gerät!",
@@ -111,7 +114,7 @@ export const de = {
       disable: "Deaktiviere",
       exit: "Beenden",
 
-      warning_html: `Zum Einstellen der Rollladen-Endpositionen: 
+      warning_html: `Zum Einstellen der Rollladen-Endpunkte: 
         <ul>
         <li>Nutze diese Funktion auf eigenes Risiko oder gar nicht</li>
         <li>Das Bewegen des Rohrmotors über den mechanisch möglichen Bereich hinaus kann den Rollladen beschädigen.</li>
@@ -121,11 +124,11 @@ export const de = {
         </ul>`,
       tt: {
         header:
-          "Einstellen der Rollladen Endpositionen. Ein physischer Taster muss an der MCU angeschlossen sein. Schritte: 1) Authentisieren 2) Adressieren 3) Bewegung testen 4) Aktivieren 5) Endpositionen setzen 6) Deaktvieren 7) Testen 8) Wiederhohlen oder Beenden",
-        enter: "Öffne die Steuerung zum Einstellen der Endpositionen.",
+          "Einstellen der Rollladen Endpunkte. Ein physischer Taster muss an der MCU angeschlossen sein. Schritte: 1) Authentisieren 2) Adressieren 3) Bewegung testen 4) Aktivieren 5) Endpunkte setzen 6) Deaktvieren 7) Testen 8) Wiederhohlen oder Beenden",
+        enter: "Öffne die Steuerung zum Einstellen der Endpunkte.",
         authenticate: "Authentisiere den Benutzer durch drücken des Setzknopfes am MCU Gerät",
-        enable: "Aktiviere Funkkommandos für Endpositionen. Zeigt Hoch/Runter Knopfe zum Einstellen der oberen/unteren Endposition.",
-        disable: "Deaktiviere Funkkommandos für Endpositionen.",
+        enable: "Aktiviere Funkkommandos für Endpunkte. Zeigt Hoch/Runter Knopfe zum Einstellen des oberen/unteren Endpunktes.",
+        disable: "Deaktiviere Funkkommandos für Endpunkte.",
         exit: "Beende Authentisierung und verlasse die Steuerung",
       },
     },
@@ -153,21 +156,21 @@ export const de = {
     },
 
     setMode: {
-      set_button: "Set-Knopf am Empfängergerät drücken und hier klicken.",
+      set_button: "SET-Knopf am Empfängergerät drücken und hier klicken.",
       set_button_radio: "Taster",
-      register_unregister: "An- oder Abmelden an Empfänger im Eingabe-Modus",
+      register_unregister: "An- oder Abmelden an Empfänger mit aktiver SET-Funktion",
       register_cu: "Zentrale",
       register_cu_bt: "Melde Zentrale/G/E beim Empfänger an",
-      set_mode: "Aktiviere SET-Modus",
+      set_mode: "Aktiviere SET-Funktion",
       dev_address: "Geräte Adresse",
       receiver_address: "Empfänger Adresse",
       sender_address: "Sender",
       gm_address: "Zentrale/RadioCode",
-      h_set_mode_enable: "Ein Empfängerät in Set/Eingabe-Modus versetzen",
-      h_register_receiver_as_gm: "Melde Zentrale an Empfänger-im-Set-Modus an",
-      h_register_sender_to_smr: "Melde Sender an Empfänger-im-Set-Modus an",
+      h_set_mode_enable: "SET-Funktion eines Empfängers aktivieren",
+      h_register_receiver_as_gm: "Melde Zentrale an den Empfänger mit aktiver SET-Funktion an",
+      h_register_sender_to_smr: "Melde Sender an Empfänger mit aktiver SET-Funktion an",
       tt: {
-        set_mode: "Sende SET Kommando an Funk-Empfänger um dort den SET Modus zu aktivieren",
+        set_mode: "Aktiviere die SET-Funktion eines Empfängers über Funk. Hinweis: Besonders nützlich für Empfänger mit schwer zugänglicher SET Taste, aber auch sonst.",
       },
     },
     names: {

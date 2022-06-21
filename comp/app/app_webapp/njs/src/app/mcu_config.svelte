@@ -2,6 +2,7 @@
   "use strict";
   import { _ } from "services/i18n";
   import tippy from "sveltejs-tippy";
+  import { GuiAcc, TabIdx } from "stores/app_state";
   import { McuConfig, McuConfigKeys, Gmu, McuGpiosFree } from "stores/mcu_config.js";
   import { McuDocs, McuDocs_cliHelpConfig } from "stores/mcu_docs.js";
   import * as appDebug from "app/app_debug.js";
@@ -11,7 +12,6 @@
   import { onMount, onDestroy } from "svelte";
   import { ReloadProgress } from "stores/app_state.js";
   import NavTabs from "app/nav_tabs.svelte";
-  import { TabIdx } from "stores/app_state.js";
   import { McuErrorMask } from "stores/mcu_firmware.js";
 
   import McuConfigGpio from "components/mcu_config/gpio.svelte";
@@ -25,6 +25,7 @@
   import McuRfTrx from "components/mcu_config/rf_trx.svelte";
   import GpioLevel from "components/gpio_level.svelte";
   import CC1101 from "panes/cc1101.svelte";
+  import PaneFirmwareEsp32 from "panes/firmware_esp32.svelte";
   import AppLog from "panes/app_log.svelte";
 
   let on_destroy = [];
@@ -227,7 +228,12 @@
 
 <div class="navtab-sub2 flex flex-col items-center px-1 border-none">
   <NavTabs
-    nav_tabs={[{ name: $_("mcuConfig.network"), idx: 0 }, { name: $_("mcuConfig.misc"), idx: 1 }, ...(hasCc1101 ? [{ name: "CC1101", idx: 2 }] : [])]}
+    nav_tabs={[
+      { name: $_("mcuConfig.network"), idx: 0 },
+      { name: $_("mcuConfig.misc"), idx: 1 },
+      ...($GuiAcc.edit_rf_module && hasCc1101 ? [{ name: "CC1101", idx: 2 }] : []),
+      { name: $_("app.navTab.main.firmware"), idx: 3 },
+    ]}
     name="mcc"
     vertical={false}
   />
@@ -592,6 +598,8 @@
         {/each}
       </div>
     {/if}
+  {:else if tabIdxMcc === 3}
+  <PaneFirmwareEsp32 />
   {/if}
 
   <button type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
@@ -615,6 +623,9 @@
     <h3>Receiver Log</h3>
     <AppLog rxonly={true} />
   {/if}
+
+
+
 </div>
 
 <style lang="scss">

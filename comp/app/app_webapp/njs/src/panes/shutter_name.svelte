@@ -22,18 +22,4 @@
       <ShutterName />
     </div>
   {/if}
-
-  {#if $GuiAcc.program_shutter_rotation_direction}
-    <div class="area">
-      <h5>{$_("app.hdr_motorRotDir")}</h5>
-      <ShutterDirection />
-    </div>
-  {/if}
-
-  {#if $GuiAcc.shutter_sep}
-    <div class="area">
-      <h5>{$_("app.sep.header")}</h5>
-      <SepEnable />
-    </div>
-  {/if}
 </div>
