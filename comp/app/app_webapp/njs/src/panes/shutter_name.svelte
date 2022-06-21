@@ -9,17 +9,13 @@
   import tippy from "sveltejs-tippy";
 </script>
 
-<div class="text-center main-area">
-  <h4 class="text-center" use:tippy={{ content: $_("help.hint_shutterMisc") }}>{$_("app.navTab.cfg.name")}</h4>
-
-  <div class="mt-4 p-2">
-    <ShutterGM />
-  </div>
-
-  {#if $GuiAcc.edit_shutter_names}
-    <div class="area">
-      <h5>{$_("app.msg_enterNewName")}</h5>
-      <ShutterName />
-    </div>
-  {/if}
+<div class="mt-4 p-2">
+  <ShutterGM />
 </div>
+
+{#if $GuiAcc.edit_shutter_names}
+  <div class="main-area">
+    <h5>{$_("app.msg_enterNewName")}</h5>
+    <ShutterName />
+  </div>
+{/if}

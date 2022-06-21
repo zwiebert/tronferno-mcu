@@ -1,5 +1,6 @@
 export const de = {
   weekdays: ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"],
+  weekdays_short: ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
   fernotron: {
     register: "anmelden",
     unregister: "abmelden",
@@ -31,6 +32,7 @@ export const de = {
         mcu: "MCU",
         positions: "Positionen",
         name: "Name",
+        sender: "Sender",
         receiver: "Empfänger",
         rot_dir: "Drehrichtung",
         endpos: "Endpunkte",
@@ -160,17 +162,18 @@ export const de = {
       set_button_radio: "Taster",
       register_unregister: "An- oder Abmelden an Empfänger mit aktiver SET-Funktion",
       register_cu: "Zentrale",
-      register_cu_bt: "Melde Zentrale/G/E beim Empfänger an",
+      register_cu_bt: "Melde Zentrale-G-E beim Empfänger an",
       set_mode: "Aktiviere SET-Funktion",
       dev_address: "Geräte Adresse",
       receiver_address: "Empfänger Adresse",
       sender_address: "Sender",
-      gm_address: "Zentrale/RadioCode",
+      gm_address: "G/E/RadioCode",
       h_set_mode_enable: "SET-Funktion eines Empfängers aktivieren",
       h_register_receiver_as_gm: "Melde Zentrale an den Empfänger mit aktiver SET-Funktion an",
       h_register_sender_to_smr: "Melde Sender an Empfänger mit aktiver SET-Funktion an",
       tt: {
         set_mode: "Aktiviere die SET-Funktion eines Empfängers über Funk. Hinweis: Besonders nützlich für Empfänger mit schwer zugänglicher SET Taste, aber auch sonst.",
+        register_cu_bt: "Restriere Gruppe/Empfänger beim per SET aktivierte Empfänger. Danach ist der Empfänger unter dieser G/E-Nummber ansprechbar",
       },
     },
     names: {
@@ -187,7 +190,6 @@ export const de = {
     version: "Versions-Nummer",
   },
   help: {
-    hint_shutterMisc: "Sonstinge Einstellungen je Rollladen",
     hint_shutterDurations:
       "Konfiguration der Rollladen-Laufzeiten von Offen bis Geschlossen und von Offen bis Sonnenposition. Diese Werte sind nötig zum berechnen der aktuellen Position und um eine geforderte Position zu finden.",
     hint_durStopClock:

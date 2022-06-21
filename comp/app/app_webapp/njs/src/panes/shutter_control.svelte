@@ -4,6 +4,7 @@
   import ShutterMove from "app/shutter_move.svelte";
   import ShutterSun from "app/shutter_sun.svelte";
   import ShutterPct from "app/shutter_pct.svelte";
+  import { M0, AutoSunEnabled, RadioCodeEnabled } from "stores/curr_shutter.js";
 </script>
 
 <div class="main-area">
@@ -19,7 +20,9 @@
     <ShutterPct />
   </div>
 
-  <div class="area">
-    <ShutterSun />
-  </div>
+  {#if $AutoSunEnabled || !$M0 || $RadioCodeEnabled}
+    <div class="area">
+      <ShutterSun />
+    </div>
+  {/if}
 </div>

@@ -189,7 +189,7 @@
     {#if autoData.hasWeekly}
       {#each weekly_objArr as day, i}
         <tr class="auto-weekday">
-          <td class="auto-weekday text-sm text-right">{$_("weekdays")[i]}</td>
+          <td class="auto-weekday text-sm text-right">{$_("weekdays_short")[i]}</td>
           <td class="auto-weekday text-sm">
             {#if i > 0}
               <label><input type="checkbox" bind:checked={day.enabled} /></label>
@@ -205,7 +205,7 @@
                 ><input type="time" bind:value={day.down} />
                 &#x25bd;</label
               >
-            {:else}= {$_("weekdays")[i - 1]}{/if}
+            {:else}= {$_("weekdays_short")[i - 1]}{/if}
           </td>
         </tr>
       {/each}
