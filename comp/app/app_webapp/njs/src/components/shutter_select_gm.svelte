@@ -1,5 +1,6 @@
 <script>
   "use strict";
+  import { _ } from "services/i18n";
   import { G, M, GM, GMH, RadioCode, RadioCodeEnabled } from "stores/curr_shutter.js";
   import { Names } from "stores/shutters.js";
   import { Gmu } from "stores/mcu_config.js";
@@ -35,8 +36,7 @@
   }
 
   $: {
-    if (!$GuiAcc.radio_code || !radio)
-    showRadioCode = false;
+    if (!$GuiAcc.radio_code || !radio) showRadioCode = false;
   }
 
   $: {
@@ -59,22 +59,22 @@
 
 <select bind:value={gm}>
   {#if groups}
-   <option value="00">{a}</option>
+    <option value="00">{a}</option>
   {/if}
   {#each [1, 2, 3, 4, 5, 6, 7] as g}
     {#if $Gmu[g]}
       {#each { length: $Gmu[g] + 1 } as _, m}
-      {#if m || groups}
-        <option value={g.toString() + m.toString()}>
-          {g}{m || "A"}
-          {$Names[g.toString() + m.toString()] || ""}
-        </option>
+        {#if m || groups}
+          <option value={g.toString() + m.toString()}>
+            {g}{m || "A"}
+            {$Names[g.toString() + m.toString()] || ""}
+          </option>
         {/if}
       {/each}
     {/if}
   {/each}
   {#if $GuiAcc.radio_code && radio}
-    <option value={"RadioCode"}> RadioCode </option>
+    <option value={"RadioCode"}> {$_("fernotron.RadioCode")} </option>
   {/if}
 </select>
 

@@ -6,6 +6,8 @@ export const de = {
     unregister: "abmelden",
     Register: "Anmelden",
     Unregister: "Abmelden",
+    RadioCode: "Funkcode",
+    radio_code: "Funkcode",
   },
   app: {
     duration: "Dauer (sek)",
@@ -121,7 +123,7 @@ export const de = {
         <li>Nutze diese Funktion auf eigenes Risiko oder gar nicht</li>
         <li>Das Bewegen des Rohrmotors über den mechanisch möglichen Bereich hinaus kann den Rollladen beschädigen.</li>
         <li>Überprüfe ob wirklich der richtige Rollladen ausgewählt und teste dies mit harmlosen Hoch/Runter/Stop-Kommandos.</li>
-        <li>Nur ein EINZIGER Rohrmotor darf angemeldet sein unter der Gruppen-/Empfängernummer. Anderfalls Radio-Code des Rohrmotors zur Adressierung benutzen.</li>
+        <li>Nur ein EINZIGER Rohrmotor darf angemeldet sein unter der Gruppen-/Empfängernummer. Anderfalls Funkcode des Rohrmotors zur Adressierung benutzen.</li>
         <li>Zur Sicherheit immer einen Handsender bereit haben um ein STOP zu senden, falls die MCU während der Bewegung abstürzt.</li>
         </ul>`,
       tt: {
@@ -167,13 +169,16 @@ export const de = {
       dev_address: "Geräte Adresse",
       receiver_address: "Empfänger Adresse",
       sender_address: "Sender",
-      gm_address: "G/E/RadioCode",
+      gm_address: "G/E/Funkcode",
       h_set_mode_enable: "SET-Funktion eines Empfängers aktivieren",
       h_register_receiver_as_gm: "Melde Zentrale an den Empfänger mit aktiver SET-Funktion an",
       h_register_sender_to_smr: "Melde Sender an Empfänger mit aktiver SET-Funktion an",
       tt: {
         set_mode: "Aktiviere die SET-Funktion eines Empfängers über Funk. Hinweis: Besonders nützlich für Empfänger mit schwer zugänglicher SET Taste, aber auch sonst.",
-        register_cu_bt: "Restriere Gruppe/Empfänger beim per SET aktivierte Empfänger. Danach ist der Empfänger unter dieser G/E-Nummber ansprechbar",
+        register_cu_bt: "Restriere Programmierzentrale und Gruppe/Empfänger beim Empfänger und übertrage alle Timer-Daten an den Empfänger",
+        register_cu: "Anmelden der Programmierzentrale (MCU) am Empfänger. Der Empfänger reagiert dann auf Kommandos von dieser Zentrale für die angegebene Gruppen-/Empfängernummer.",
+        register_sender: "Anmelden eines Senders an den Empfänger. Der Empfänger reagiert auf Kommandos von allen registrierten Sendern.",
+  
       },
     },
     names: {

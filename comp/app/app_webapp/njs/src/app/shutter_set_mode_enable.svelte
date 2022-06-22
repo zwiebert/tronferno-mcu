@@ -4,8 +4,8 @@
   import { _ } from "services/i18n";
   import tippy from "sveltejs-tippy";
   import { GuiAcc } from "stores/app_state";
-  import { G, M0, Address, Name } from "stores/curr_shutter.js";
-  import { SetModeSrcAddress, SetModeSrcRadio, SetModeSrcMotorCode, SetModeSrcProgress } from "stores/shutter_set_mode.js";
+  import {  Address, Name } from "stores/curr_shutter.js";
+  import {  SetModeSrcRadio,  SetModeSrcProgress } from "stores/shutter_set_mode.js";
   import IdSelector from "app/id_selector.svelte";
   import { SelectedId, SelectedIdIsValid } from "stores/id.js";
   import * as httpFetch from "app/fetch.js";

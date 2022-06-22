@@ -6,6 +6,8 @@ export const en = {
     unregister: "unregister",
     Register: "Register",
     Unregister: "Unregister",
+    RadioCode: "RadioCode",
+    radio_code: "radio-code",
   },
   app: {
     run: "Run",
@@ -198,7 +200,9 @@ export const en = {
       h_register_sender_to_smr: "Register a Transmitter to Receiver in SET-function",
       tt: {
         set_mode: "Send RF-command to receiver to activate its SET-function",
-        register_cu_bt: "Register the activated receiver to have the identity of G/E",
+        register_cu_bt: "Register the Programming Centre and group-number, receiver-number with the receiver and tell the receiver its group-/receiver-number. Will also transmit all data (like timers) to the receiver.",
+        register_cu: "Register the Programming Centre (MCU) with the receiver. The receiver will listen to commands matching the given group-/receiver-number if they are coming from the registered Programming Centre.",
+        register_sender: "Register a transmitter with the receiver. The receiver will listen to commands coming from any registered transmitter.",
       },
     },
     names: {

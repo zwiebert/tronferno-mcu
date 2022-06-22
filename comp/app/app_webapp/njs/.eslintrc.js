@@ -4,7 +4,7 @@ module.exports = {
     sourceType: 'module'
   },
   env: {
-    es9: true,
+    es6: true,
     browser: true
   },
   plugins: [
