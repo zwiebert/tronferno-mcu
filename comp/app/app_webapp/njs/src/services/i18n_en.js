@@ -140,11 +140,11 @@ export const en = {
       disable: "Disable",
       exit: "Exit",
 
-      warning_html: `When adjusting shutter end-postions: 
+      warning_html: `
         <ul>
         <li>Use this functionality at your OWN RISK, or don't use it at all</li>
         <li>Be aware that moving a shutter beyond physical limits while adjusting end positions may harm it.</li>
-        <li> Make sure you really have addressed the shutter you intend to adjust and test this with normal harmless Up/Down/Stop.</li>
+        <li>Make sure you really have addressed the shutter you intend to adjust and test this with normal harmless Up/Down/Stop.</li>
         <li>Make sure only a SINGLE shutter motor is registered on the selected group/receiver number or use the motor's Radio-Code</li>
         <li>To be safe, have a indepent transmitter ready to send STOP to the shutter, in case the MCU crashes in between</li>
         </ul>`,

@@ -1,6 +1,5 @@
 <script>
   import { _ } from "services/i18n";
-  import * as appDebug from "app/app_debug.js";
   import * as httpFetch from "app/fetch.js";
   import * as misc from "app/misc.js";
   import {
@@ -136,7 +135,7 @@
       <strong>{$_('app.msg_firmwareIsUpdating')}</strong>
       <br />
       <br />
-      <progress value={$McuFirmwareUpdProgress} max={updSecs} />
+      <progress value={$McuFirmwareUpdProgress} max={updSecs * 2} />
     {/if}
     {#if $ReloadProgress > 0}
       <strong>{$_('app.msg_waitForMcuRestart')}</strong>

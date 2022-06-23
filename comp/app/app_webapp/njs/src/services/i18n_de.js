@@ -118,7 +118,7 @@ export const de = {
       disable: "Deaktiviere",
       exit: "Beenden",
 
-      warning_html: `Zum Einstellen der Rollladen-Endpunkte: 
+      warning_html: ` 
         <ul>
         <li>Nutze diese Funktion auf eigenes Risiko oder gar nicht</li>
         <li>Das Bewegen des Rohrmotors über den mechanisch möglichen Bereich hinaus kann den Rollladen beschädigen.</li>

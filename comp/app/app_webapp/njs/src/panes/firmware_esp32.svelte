@@ -58,6 +58,6 @@
 </script>
 
 <div class="area">
-  <McuFirmwareUpd bind:fwbtns chip="" updSecs="15" />
+  <McuFirmwareUpd bind:fwbtns chip="" updSecs="30" />
   <McuFirmwareInfo />
 </div>
