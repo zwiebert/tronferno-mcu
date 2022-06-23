@@ -113,7 +113,7 @@
 
 
   <div class="area text-center" id="aliasPairUnpair">
-    <ShutterGM />
+    <ShutterGM radio={false} />
 
     <button id="alias_pair" type="button" on:click={hClick_Pair} use:tippy={{ content: $_("app.id.tt.register_rf") }}>{$_("fernotron.Register")}</button>
     RF-> {$GMH}

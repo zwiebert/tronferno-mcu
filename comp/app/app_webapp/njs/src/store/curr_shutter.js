@@ -4,6 +4,7 @@ import { Gmu } from "./mcu_config.js";
 import { Autos, Pcts, Prefs, Names } from "./shutters.js";
 import { PersistentIntStore, PersistentStringStore } from "./custom_stores.js";
 
+export const GMR = writable("00");
 export const G = PersistentIntStore("group");
 export const M = PersistentIntStore("member");
 export const M0 = derived([G, M, Gmu], ([g, m, gmu]) => (g === 0 ? 0 : Math.min(gmu[g], m)));

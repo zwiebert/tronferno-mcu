@@ -245,7 +245,7 @@ export const de = {
   notifyUser: {
     caption: "Firmware-Änderungen",
     messages: [
-      { date: "2022", text: "Funktionalität: Drehrichtung umkehren. Endpostionen einstellen. Funk-Repeater" },
+      { date: "2022", text: "Funktionalität: Drehrichtung. Endpunkte. Funk-Repeater" },
       { date: "2021", text: "Hardware: Ethernet/LAN, CC1101-Funkmodul" },
     ],
   },
