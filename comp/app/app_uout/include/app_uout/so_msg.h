@@ -40,6 +40,9 @@ void soMsg_shpref_obj_begin(const TargetDesc &td);
 void soMsg_shpref_obj_end(const TargetDesc &td);
 void soMsg_shpref_obj_gm_begin(const TargetDesc &td, const so_arg_gm_t a);
 void soMsg_shpref_obj_gm_end(const TargetDesc &td);
+void soMsg_KVS_begin(const struct TargetDesc &td);
+void soMsg_KVS_end(const struct TargetDesc &td);
+bool soMsg_KVS_print(const struct TargetDesc &td, const char *key);
 
 void soMsg_pos_print_gmp(const TargetDesc &td, const so_arg_gmp_t a);
 void soMsg_pos_print_gmpa(const TargetDesc &td, const so_arg_gmp_t *a);

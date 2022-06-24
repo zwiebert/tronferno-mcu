@@ -11,6 +11,7 @@
 #include "utils_misc/int_types.h"
 #include "app_misc/firmware.h"
 #include "app_misc/rtc.h"
+#include "app_misc/kvstore.h"
 #include "app_settings/config.h"
 #include "net/ipnet.h"
 #include "txtio/inout.h"
@@ -238,6 +239,25 @@ void soMsg_shpref_obj_gm_begin(const struct TargetDesc &td, const so_arg_gm_t a)
 
 void soMsg_shpref_obj_gm_end(const struct TargetDesc &td) {
   td.so().x_close();
+}
+
+void soMsg_KVS_begin(const struct TargetDesc &td) {
+  td.so().x_open("kvs");
+}
+
+void soMsg_KVS_end(const struct TargetDesc &td) {
+  td.so().x_close();
+}
+
+bool soMsg_KVS_print(const struct TargetDesc &td, const char *key) {
+  char buf[64];
+#ifndef TEST_HOST
+  if (kvs_get_string(key, buf, sizeof buf)) {
+    td.so().print(key, buf);
+    return true;
+  }
+#endif
+  return false;
 }
 
 void soMsg_print_kvd(const struct TargetDesc &td, const so_arg_kvd_t a) {
