@@ -63,6 +63,10 @@ int process_parmKvs(clpar p[], int len, const struct TargetDesc &td) {
 #ifndef TEST_HOST
     if (!kvs_store_string(key, val)) {
       ++errors;
+    } else {
+      if (!soMsg_KVS_print(td, key)) {
+         td.so().print(key, "");
+       }
     }
 #endif
     continue;
