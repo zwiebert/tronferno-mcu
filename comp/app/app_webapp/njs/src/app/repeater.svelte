@@ -2,12 +2,8 @@
   "use strict";
   import { _ } from "services/i18n";
   import * as httpFetch from "app/fetch.js";
-  import { G, M0, GM, GMH } from "stores/curr_shutter.js";
   import { SelectedId } from "stores/id.js";
-  import { Gmu, GmuMaxM, McuConfig } from "stores/mcu_config.js";
-  import { Aliases } from "stores/shutters.js";
-  import { ShowHelp } from "stores/app_state.js";
-  import { Pras, ReceivedAddresses } from "stores/alias.js";
+  import { McuConfig } from "stores/mcu_config.js";
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
 

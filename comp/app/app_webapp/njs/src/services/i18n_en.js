@@ -55,6 +55,11 @@ export const en = {
         aliases: "Aliases",
         repeater: "RF-Repeater",
         transmit: "Transmit",
+        names: {
+          tab: "Names",
+          header: "Transmitter-Names",
+        },
+        
       },
       positions: {
         aliases: "Aliases",

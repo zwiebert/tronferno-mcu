@@ -1,0 +1,40 @@
+<script>
+  "use strict";
+  import { _ } from "services/i18n";
+  import { G, M0, Name } from "stores/curr_shutter.js";
+  import { GuiAcc } from "stores/app_state";
+  import * as httpFetch from "app/fetch.js";
+  import { SelectedId } from "stores/id.js";
+  import { TxName } from "stores/id.js";
+  import tippy from "sveltejs-tippy";
+
+  $: GMName = $TxName || "";
+
+  $: {
+    $SelectedId;
+    const key = "TXN." + $SelectedId;
+    let tfmcu = { to: "tfmcu", kvs: {} };
+    tfmcu.kvs[key] = "?";
+
+    httpFetch.http_postCommand(tfmcu);
+  }
+
+  function storeName_toMcu(id, name) {
+    const key = "TXN." + id;
+    let tfmcu = { to: "tfmcu", kvs: {} };
+    tfmcu.kvs[key] = name;
+
+    httpFetch.http_postCommand(tfmcu);
+  }
+
+  function hChange_Name() {
+    storeName_toMcu($SelectedId, GMName);
+  }
+</script>
+
+<div class="text-center">
+  <input type="text" name="name" bind:value={GMName} on:change={hChange_Name} />
+</div>
+
+<style lang="scss">
+</style>

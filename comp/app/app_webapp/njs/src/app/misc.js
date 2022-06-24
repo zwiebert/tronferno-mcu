@@ -55,6 +55,7 @@ export function set_gui_access_level(al) {
     shutter_auto: al < kid,
     shutter_time_iso: al < admin,
     shutter_sunpos: al < kid,
+    edit_transmitter_names: al < expert,
     edit_shutter_names: al < user,
     edit_shutter_durations: al < user,
     edit_rf_module: al < admin,

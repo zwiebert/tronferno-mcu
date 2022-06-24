@@ -72,7 +72,7 @@
     <tr><th colspan="4">{$_("app.id.chose_header")}</th></tr>
     <tr>
       <td use:tippy={{ content: $_("app.id.tt.chose_allRegIds") }}>{$_("app.id.chose_allRegIds")}</td>
-      <td use:tippy={{ content: $_("app.id.tt.chose_regIds") }}><ShutterGM radio={false} /></td>
+      <td use:tippy={{ content: $_("app.id.tt.chose_regIds") }}><ShutterGM radio={false} groups={false} /></td>
       <td use:tippy={{ content: $_("app.id.tt.chose_rxIds") }}>{$_("app.id.chose_rxIds")}</td>
       <td use:tippy={{ content: $_("app.id.tt.chose_enterId") }}>{$_("app.id.chose_enterId")}</td>
     </tr>

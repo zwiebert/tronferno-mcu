@@ -42,6 +42,7 @@ export const de = {
         app: "App",
       },
       sender: {
+        names: "Namen",
         aliases: "Aliases",
        // repeater: "Repeater",
         transmit: "Transmit",

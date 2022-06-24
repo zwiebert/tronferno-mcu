@@ -8,6 +8,7 @@
   import PaneShutterControl from "panes/shutter_control.svelte";
   import PaneShuttersPct from "panes/shutters_pct.svelte";
   import PaneShutterAuto from "panes/shutter_auto.svelte";
+  import PaneTransmitterNames from "panes/transmitter_names.svelte";
   import PaneShutterAlias from "panes/shutter_alias.svelte";
   import PaneRepeater from "panes/repeater.svelte";
   import PaneShutterDurations from "panes/shutter_durations.svelte";
@@ -86,32 +87,33 @@
     </div>
     {#if !tabIdxSettings}
       <PaneMcuSettings />
-      {:else if tabIdxSettings === 7}
+    {:else if tabIdxSettings === 7}
       <PaneReceiverProgramming />
     {:else if tabIdxSettings === 1}
       <div class="navtab-sub2">
         <NavTabs
           nav_tabs={[
-            { name: $_("app.navTab.sender.aliases"), idx: 0 },
-            { name: $_("app.navTab.sender.repeater"), idx: 1 },
-           // { name: $_("app.navTab.sender.transmit"), idx: 2 },
+            ...($GuiAcc.edit_transmitter_names ? [{ name: $_("app.navTab.sender.names.tab"), idx: 0 }] : []),
+            { name: $_("app.navTab.sender.aliases"), idx: 1 },
+            { name: $_("app.navTab.sender.repeater"), idx: 2 },
+            // { name: $_("app.navTab.sender.transmit"), idx: 2 },
           ]}
           name="sender"
         />
       </div>
       {#if !tabIdxSender}
-        <PaneShutterAlias />
+      <PaneTransmitterNames />
       {:else if tabIdxSender === 1}
-        <PaneRepeater />
+        <PaneShutterAlias />
       {:else if tabIdxSender === 2}
-        Transmit
+        <PaneRepeater />
       {/if}
     {:else if tabIdxSettings === 2}
       <div class="navtab-sub2">
         <NavTabs
           nav_tabs={[
             { name: $_("app.navTab.positions.durations"), idx: 0 },
-          //  { name: $_("app.navTab.positions.aliases"), idx: 1 },
+            //  { name: $_("app.navTab.positions.aliases"), idx: 1 },
           ]}
           name="positions"
         />
