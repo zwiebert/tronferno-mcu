@@ -1,26 +1,12 @@
 <script>
   "use strict";
-  import { GM, M0, Auto, RadioCodeEnabled, AutoSunEnabled } from "stores/curr_shutter.js";
+  import { M0, RadioCodeEnabled } from "stores/curr_shutter.js";
   import * as httpFetch from "app/fetch.js";
-  import { onMount, onDestroy } from "svelte";
+
+
   import { GuiAcc } from "stores/app_state";
   import { _ } from "services/i18n";
   import tippy from "sveltejs-tippy";
-
-  let on_destroy = [];
-  onMount(() => {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
-  });
-  onDestroy(() => {
-    for (const fn of on_destroy) {
-      fn();
-    }
-  });
-
-  $: {
-    $GM;
-    httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
-  }
 
   function hClick_Sun() {
     httpFetch.http_postShutterCommand("sun-down");

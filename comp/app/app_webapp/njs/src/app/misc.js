@@ -61,7 +61,7 @@ export function set_gui_access_level(al) {
     restore_shutter_names:al < admin,
     set_func_by_transmitter_id: al < admin,
     register_by_transmitter_id: al < admin,
-    program_shutter_rotation_direction: al < user,
+    program_shutter_rotation_direction: al < admin,
     radio_code: al < user,
     set_mode: al < user,
     debug: al < expert,
