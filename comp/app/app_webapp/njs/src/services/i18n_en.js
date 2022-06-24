@@ -103,16 +103,16 @@ export const en = {
 
     id: {
       chose_header: "Pick/Enter a Transmitter-ID",
-      chose_allRegIds: "All",
+      chose_allRegIds: "Other",
       chose_rxIds: "RX",
       chose_enterId: "Enter",
       test_selectedId: "Test",
       regTbl_header1: "Transmitter-ID",
       regTbl_header2: "is registered to:",
       tt: {
-        chose_allRegIds: "Any registered Transmitter-IDs",
+        chose_allRegIds: "Transmitter-IDs registered to other receivers",
         chose_regIds: "Transmitter-IDs registered to this receiver number only",
-        chose_rxIds: "List of Transmitter-IDs recveived via RF",
+        chose_rxIds: "List of unregistered transmitter-IDs recveived via RF",
         chose_enterId: "Enter a Transmitter-ID",
         text_enterId: "Enter an ID or select ID from a list",
         test_selectedId: "Identify motor(s) paired with this ID by moving them",

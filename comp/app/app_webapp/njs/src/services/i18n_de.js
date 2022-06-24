@@ -42,10 +42,13 @@ export const de = {
         app: "App",
       },
       sender: {
-        names: "Namen",
         aliases: "Aliases",
        // repeater: "Repeater",
         transmit: "Transmit",
+        names: {
+          tab: "Namen",
+          header: "Sender-Namen",
+        },
       },
       positions: {
         aliases: "Aliases",
@@ -78,16 +81,16 @@ export const de = {
     },
     id: {
       chose_header: "Sender-ID Auswahl/Eingabe",
-      chose_allRegIds: "Alle",
+      chose_allRegIds: "Andere",
       chose_rxIds: "RX",
       chose_enterId: "Eingabe",
       regTbl_header1: "Sender-ID",
       regTbl_header2: "ist angemeldet bei:",
 
       tt: {
-        chose_allRegIds: "Alle angemeldeten Sender-IDs",
+        chose_allRegIds: "Woanders angemeldete Sender-IDs",
         chose_regIds: "An dieser Empfängernummer angemeldete Sender-IDs",
-        chose_rxIds: "Alle Sender-IDs empfangen über Funk",
+        chose_rxIds: "Unregistrierte Sender-IDs empfangen über Funk",
         chose_enterId: "Eingabe einer Sender-ID",
         text_enterId: "Sender-ID direkt eingeben oder aus Liste wählen",
         register_id: "An-/Abmelden der ausgewählten Sender-ID an die ausgewählte Empfängernummer",

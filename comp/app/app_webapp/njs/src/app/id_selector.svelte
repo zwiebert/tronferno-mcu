@@ -4,7 +4,7 @@
   import * as httpFetch from "app/fetch.js";
   import { G, M0, GMH } from "stores/curr_shutter.js";
   import ShutterGM from "app/shutter_gm.svelte";
-  import { SelectedId } from "stores/id.js";
+  import { SelectedId, TxNames } from "stores/id.js";
   import { Aliases } from "stores/shutters.js";
   import { ReceivedAddresses } from "stores/alias.js";
   import { onMount, onDestroy } from "svelte";
@@ -20,8 +20,10 @@
     }
   });
 
-  $: AliasesAllKeys = Object.keys($Aliases);
-  $: AliasesPairedKeys = AliasesAllKeys.filter((key) => alias_isKeyPairedToM(key, $G, $M0));
+  $: AliasesPairedKeys = Object.keys($Aliases).filter((key) => alias_isKeyPairedToM(key, $G, $M0));
+  $: AliasesAllKeys = Object.keys($Aliases).filter((key) => !AliasesPairedKeys.includes(key));
+  $: AliasesRxKeys = [...$ReceivedAddresses].filter((key) => !(AliasesPairedKeys.includes(key) || AliasesAllKeys.includes(key)));
+
   $: selectedId = 0;
   $: selectedId_isValid = id_isValid(selectedId);
 
@@ -68,58 +70,169 @@
 </script>
 
 <div id="aliasdiv">
-  <table class="top_table ml-auto mr-auto">
-    <tr><th colspan="4">{$_("app.id.chose_header")}</th></tr>
-    <tr>
-      <td use:tippy={{ content: $_("app.id.tt.chose_allRegIds") }}>{$_("app.id.chose_allRegIds")}</td>
-      <td use:tippy={{ content: $_("app.id.tt.chose_regIds") }}><ShutterGM radio={false} groups={false} /></td>
-      <td use:tippy={{ content: $_("app.id.tt.chose_rxIds") }}>{$_("app.id.chose_rxIds")}</td>
-      <td use:tippy={{ content: $_("app.id.tt.chose_enterId") }}>{$_("app.id.chose_enterId")}</td>
-    </tr>
-    <tr>
-      <td>
-        <select id="aliases" size="5" on:change={() => select_id(document.getElementById("aliases").value)}>
-          {#each AliasesAllKeys.sort() as key}
-            <option>{key}</option>
-          {/each}
-        </select>
-      </td>
-      <td>
-        <select id="paired" size="5" on:change={() => select_id(document.getElementById("paired").value)}>
-          {#each AliasesPairedKeys.sort() as key}
-            <option>{key}</option>
-          {/each}
-        </select>
-      </td>
-      <td>
-        <select id="received" size="5" on:change={() => select_id(document.getElementById("received").value)}>
-          {#each [...$ReceivedAddresses].sort() as key}
-            <option>{key}</option>
-          {/each}
-        </select>
-      </td>
-      <td>
-        <label use:tippy={{ content: $_("app.id.tt.text_enterId") }}>
-          <input
-            id="entered"
-            class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}"
-            type="text"
-            on:input={() => select_id(document.getElementById("entered").value)}
-            maxlength="6"
-          />
-        </label>
-        <br />
-        <button
-          type="button"
-          use:tippy={{ content: $_("app.id.tt.test_selectedId") }}
-          disabled={!selectedId_isValid}
-          on:click={() => {
-            httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-test" } });
-          }}>{$_("app.id.test_selectedId")}</button
+  {#if true}
+    <table>
+      <tr>
+        <td use:tippy={{ content: $_("app.id.tt.chose_regIds") }}>
+          <ShutterGM radio={false} groups={false} />
+        </td>
+        <td
+          ><select class="w-full" id="paired" size={AliasesPairedKeys.length} on:change={() => select_id(document.getElementById("paired").value)}>
+            {#each AliasesPairedKeys.sort() as key}
+              <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
+            {/each}
+          </select></td
         >
-      </td>
-    </tr>
-  </table>
+      </tr>
+      <tr>
+        <td use:tippy={{ content: $_("app.id.tt.chose_allRegIds") }}>{$_("app.id.chose_allRegIds")}</td>
+        <td
+          ><select class="w-full" id="aliases" size="1" on:change={() => select_id(document.getElementById("aliases").value)}>
+            {#each AliasesAllKeys.sort() as key}
+              <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
+            {/each}
+          </select></td
+        >
+      </tr>
+
+      <tr>
+        <td use:tippy={{ content: $_("app.id.tt.chose_rxIds") }}>{$_("app.id.chose_rxIds")}</td>
+        <td
+          ><select class="w-full" id="received" size="1" on:change={() => select_id(document.getElementById("received").value)}>
+            {#each AliasesRxKeys.sort() as key}
+              <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
+            {/each}
+          </select></td
+        >
+      </tr>
+      <tr>
+        <td use:tippy={{ content: $_("app.id.tt.chose_enterId") }}>{$_("app.id.chose_enterId")}</td>
+        <td
+          ><label use:tippy={{ content: $_("app.id.tt.text_enterId") }}>
+            <input
+              id="entered"
+              class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}"
+              type="text"
+              on:input={() => select_id(document.getElementById("entered").value)}
+              maxlength="6"
+            />
+          </label>
+          
+          <button
+            type="button"
+            use:tippy={{ content: $_("app.id.tt.test_selectedId") }}
+            disabled={!selectedId_isValid}
+            on:click={() => {
+              httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-test" } });
+            }}>{$_("app.id.test_selectedId")}</button
+          >
+        </td>
+      </tr>
+    </table>
+  {:else if true}
+    <div class="flex flex-row">
+      <h4 use:tippy={{ content: $_("app.id.tt.chose_regIds") }}>
+        <ShutterGM radio={false} groups={false} />
+      </h4>
+      <select id="paired" size="5" on:change={() => select_id(document.getElementById("paired").value)}>
+        {#each AliasesPairedKeys.sort() as key}
+          <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
+        {/each}
+      </select>
+    </div>
+    <div class="flex flex-row">
+      <h4 use:tippy={{ content: $_("app.id.tt.chose_allRegIds") }}>{$_("app.id.chose_allRegIds")}</h4>
+      <select id="aliases" size="1" on:change={() => select_id(document.getElementById("aliases").value)}>
+        {#each AliasesAllKeys.sort() as key}
+          <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
+        {/each}
+      </select>
+    </div>
+
+    <div class="flex flex-row">
+      <h4 use:tippy={{ content: $_("app.id.tt.chose_rxIds") }}>{$_("app.id.chose_rxIds")}</h4>
+      <select id="received" size="1" on:change={() => select_id(document.getElementById("received").value)}>
+        {#each AliasesRxKeys.sort() as key}
+          <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
+        {/each}
+      </select>
+    </div>
+    <div class="flex flex-row">
+      <h4 use:tippy={{ content: $_("app.id.tt.chose_enterId") }}>{$_("app.id.chose_enterId")}</h4>
+      <label use:tippy={{ content: $_("app.id.tt.text_enterId") }}>
+        <input
+          id="entered"
+          class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}"
+          type="text"
+          on:input={() => select_id(document.getElementById("entered").value)}
+          maxlength="6"
+        />
+      </label>
+      <br />
+      <button
+        type="button"
+        use:tippy={{ content: $_("app.id.tt.test_selectedId") }}
+        disabled={!selectedId_isValid}
+        on:click={() => {
+          httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-test" } });
+        }}>{$_("app.id.test_selectedId")}</button
+      >
+    </div>
+  {:else}
+    <table class="top_table ml-auto mr-auto">
+      <tr><th colspan="4">{$_("app.id.chose_header")}</th></tr>
+      <tr>
+        <td use:tippy={{ content: $_("app.id.tt.chose_allRegIds") }}>{$_("app.id.chose_allRegIds")}</td>
+        <td use:tippy={{ content: $_("app.id.tt.chose_regIds") }}><ShutterGM radio={false} groups={false} /></td>
+        <td use:tippy={{ content: $_("app.id.tt.chose_rxIds") }}>{$_("app.id.chose_rxIds")}</td>
+        <td use:tippy={{ content: $_("app.id.tt.chose_enterId") }}>{$_("app.id.chose_enterId")}</td>
+      </tr>
+      <tr>
+        <td>
+          <select id="aliases" size="5" on:change={() => select_id(document.getElementById("aliases").value)}>
+            {#each AliasesAllKeys.sort() as key}
+              <option use:tippy={{ content: key + " " + ($TxNames[key] || "???") }}>{key + " " + ($TxNames[key] || "???")}</option>
+            {/each}
+          </select>
+        </td>
+        <td>
+          <select id="paired" size="5" on:change={() => select_id(document.getElementById("paired").value)}>
+            {#each AliasesPairedKeys.sort() as key}
+              <option use:tippy={{ content: key + " " + ($TxNames[key] || "???") }}>{key}</option>
+            {/each}
+          </select>
+        </td>
+        <td>
+          <select id="received" size="5" on:change={() => select_id(document.getElementById("received").value)}>
+            {#each AliasesRxKeys.sort() as key}
+              <option use:tippy={{ content: key + " " + ($TxNames[key] || "???") }}>{key}</option> //FIXME: ??? Wrong ID (key) shown in tooltip... But option text
+              is correct.
+            {/each}
+          </select>
+        </td>
+        <td>
+          <label use:tippy={{ content: $_("app.id.tt.text_enterId") }}>
+            <input
+              id="entered"
+              class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}"
+              type="text"
+              on:input={() => select_id(document.getElementById("entered").value)}
+              maxlength="6"
+            />
+          </label>
+          <br />
+          <button
+            type="button"
+            use:tippy={{ content: $_("app.id.tt.test_selectedId") }}
+            disabled={!selectedId_isValid}
+            on:click={() => {
+              httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-test" } });
+            }}>{$_("app.id.test_selectedId")}</button
+          >
+        </td>
+      </tr>
+    </table>
+  {/if}
 </div>
 
 <style lang="scss">
