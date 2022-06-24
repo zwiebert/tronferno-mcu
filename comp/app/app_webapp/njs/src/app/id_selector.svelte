@@ -13,6 +13,7 @@
   let on_destroy = [];
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_GMU | httpFetch.FETCH_ALIASES);
+    setTimeout(fetchTxNames, 1000);
   });
   onDestroy(() => {
     for (const fn of on_destroy) {
@@ -29,6 +30,25 @@
 
   $: {
     select_id($SelectedId);
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+  async function fetchTxNames() {
+    let keys = Object.keys($Aliases);
+    const length = keys.length;
+    const how_many = 6;
+
+    for (let i = 0; i < length; i += how_many) {
+      let tfmcu = { to: "tfmcu", kvs: {} };
+      for (let k = i; k < i + how_many && k < length; ++k) {
+        tfmcu.kvs["TXN." + keys[k]] = "?";
+      }
+      httpFetch.http_postCommand(tfmcu, true);
+      await sleep(500);
+    }
   }
 
   function id_isValid(id) {
