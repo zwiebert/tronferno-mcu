@@ -86,6 +86,10 @@
 
     return (b & (1 << m)) !== 0;
   }
+
+  function rxOptTxt(id) {
+    return (id.startsWith("20") ? "\u263C " : "\u2195 ") + id + " " + ($TxNames[id] || "");
+  }
 </script>
 
 <div id="aliasdiv">
@@ -97,7 +101,7 @@
       <td
         ><select class="w-full" id="paired" size={AliasesPairedKeys.length} on:change={onChange_Paired} on:click={onChange_Paired}>
           {#each AliasesPairedKeys.sort() as key}
-            <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
+            <option value={key}>{rxOptTxt(key)}</option>
           {/each}
         </select></td
       >
@@ -107,7 +111,7 @@
       <td
         ><select class="w-full" id="aliases" size="1" on:change={onChange_All} on:click={onChange_All}>
           {#each AliasesAllKeys.sort() as key}
-            <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
+            <option value={key}>{rxOptTxt(key)}</option>
           {/each}
         </select></td
       >
@@ -118,7 +122,7 @@
       <td
         ><select class="w-full" id="received" size="1" on:change={onChange_Rx} on:click={onChange_Rx}>
           {#each AliasesRxKeys.sort() as key}
-            <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
+            <option value={key}>{rxOptTxt(key)}</option>
           {/each}
         </select></td
       >
@@ -152,7 +156,10 @@
     </tr>
 
     {#if $GuiAcc.edit_transmitter_names}
-      <tr><td use:tippy={{ content: $_("app.id.tt.enterName") }}>{$_("app.navTab.transmitter.names.input")}</td><td><TransmitterNames edit={editTxNames} /></td></tr>
+      <tr
+        ><td use:tippy={{ content: $_("app.id.tt.enterName") }}>{$_("app.navTab.transmitter.names.input")}</td><td><TransmitterNames edit={editTxNames} /></td
+        ></tr
+      >
     {/if}
   </table>
 </div>
