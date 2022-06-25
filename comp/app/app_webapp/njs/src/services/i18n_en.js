@@ -41,33 +41,45 @@ export const en = {
       },
       cfg: {
         mcu: "MCU",
-        aliases: "Aliases",
-        sender: "Transmitter",
-        receiver: "Receiver",
-        rot_dir: "Rotation-Direction",
-        endpos: "End-Positions",
-        set: "SET",
-        positions: "Positions",
-        set_mode: "SET",
-        app: "App",
+
+        endpos: {
+          tab: "End-Positions",
+        },
+
+        set_mode: {
+          tab: "SET",
+        },
+
+        rot_dir: {
+          tab: "Rotation-Direction",
+        },
+        receiver: {
+          tab: "Receiver",
+        },
+        durations: {
+          tab: "Duration",
+        },
       },
-      sender: {
-        aliases: "Aliases",
-        repeater: "RF-Repeater",
-        transmit: "Transmit",
+      transmitter: {
+        tab: "Transmitter",
+        repeater: {
+          tab: "RF-Repeater",
+        },
+        register: {
+          tab: "Register",
+          header: "Register Transmitters",
+          tt: {
+            header: "To register position changes caused by plain controllers and sun-sensors, these controllers have to be registered here.",
+          },
+        },
         names: {
           tab: "Names",
           header: "Transmitter-Names",
           input: "TX-Name",
-          tt:{
+          tt: {
             header: "Assign names to transmitters for user convinience",
           },
         },
-        
-      },
-      positions: {
-        aliases: "Aliases",
-        durations: "Duration",
       },
     },
 
@@ -111,7 +123,7 @@ export const en = {
       chose_rxIds: "RX",
       chose_enterId: "TX-ID",
       test_selectedId: "Test",
-      send_stop: "STOP",      
+      send_stop: "STOP",
       regTbl_header1: "Transmitter-ID",
       regTbl_header2: "is registered to:",
       tt: {
@@ -213,8 +225,10 @@ export const en = {
       h_register_sender_to_smr: "Register a Transmitter to Receiver in SET-function",
       tt: {
         set_mode: "Send RF-command to receiver to activate its SET-function",
-        register_cu_bt: "Register the Programming Centre and group-number, receiver-number with the receiver and tell the receiver its group-/receiver-number. Will also transmit all data (like timers) to the receiver.",
-        register_cu: "Register the Programming Centre (MCU) with the receiver. The receiver will listen to commands matching the given group-/receiver-number if they are coming from the registered Programming Centre.",
+        register_cu_bt:
+          "Register the Programming Centre and group-number, receiver-number with the receiver and tell the receiver its group-/receiver-number. Will also transmit all data (like timers) to the receiver.",
+        register_cu:
+          "Register the Programming Centre (MCU) with the receiver. The receiver will listen to commands matching the given group-/receiver-number if they are coming from the registered Programming Centre.",
         register_sender: "Register a transmitter with the receiver. The receiver will listen to commands coming from any registered transmitter.",
       },
     },
@@ -237,7 +251,6 @@ export const en = {
       "Configute here the durations for the shutter to move from open to close and from open to sup-position. This is needed to calculate the current in-between shutter position and to reach a requested in-between position.",
     hint_durStopClock:
       "To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.",
-    hint_shutterAlias: "To register position changes caused by plain controllers and sun-sensors, these controllers have to be registered here.",
     hint_repeater: "Repeat RF commands to increase reach. You have to provide a list of IDs. Only senders from this list will be repeated.",
   },
   mcuConfigNames: {

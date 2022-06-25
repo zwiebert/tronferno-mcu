@@ -19,7 +19,7 @@ export const de = {
     navTab: {
       main: {
         auto: "Auto",
-     //   firmware: "FW-Update",
+        //   firmware: "FW-Update",
         user_level: {
           name: {
             developer: "Entwickler",
@@ -31,32 +31,49 @@ export const de = {
         },
       },
       cfg: {
-        mcu: "MCU",
-        positions: "Positionen",
-        name: "Name",
-        sender: "Sender",
-        receiver: "Empfänger",
-        rot_dir: "Drehrichtung",
-        endpos: "Endpunkte",
-        set_mode: "SET",
-        app: "App",
+        mcu: {
+          tab: "MCU",
+        },
+
+        name: {
+          tab: "Name",
+        },
+        receiver: {
+          tab: "Empfänger",
+        },
+        durations: {
+          tab: "Laufzeit",
+        },
+        rot_dir: {
+          tab: "Drehrichtung",
+        },
+        endpos: {
+          tab: "Endpunkte",
+        },
+        set_mode: {
+          tab: "SET",
+        },
       },
-      sender: {
-        aliases: "Aliases",
-       // repeater: "Repeater",
-        transmit: "Transmit",
+      transmitter: {
+        tab: "Sender",
+        repeater: {
+          tab: "Repeater",
+        },
+        register: {
+          tab: "Anmelden",
+          header: "Sender Anmelden",
+          tt: {
+            header: "Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren müssen diese hier erneut angemeldet werden.",
+          },
+        },
         names: {
           tab: "Namen",
           header: "Sender-Namen",
           input: "Name",
-          tt:{
+          tt: {
             header: "Namen für Sender für bessere Übersichtlichkeit. Ein Name könnte z.B. den genauen Stand-Ort des Senders beschreiben.",
           },
         },
-      },
-      positions: {
-        aliases: "Aliases",
-        durations: "Laufzeit",
       },
     },
 
@@ -186,11 +203,12 @@ export const de = {
       h_register_receiver_as_gm: "Melde Zentrale an den Empfänger mit aktiver SET-Funktion an",
       h_register_sender_to_smr: "Melde Sender an Empfänger mit aktiver SET-Funktion an",
       tt: {
-        set_mode: "Aktiviere die SET-Funktion eines Empfängers über Funk. Hinweis: Besonders nützlich für Empfänger mit schwer zugänglicher SET Taste, aber auch sonst.",
+        set_mode:
+          "Aktiviere die SET-Funktion eines Empfängers über Funk. Hinweis: Besonders nützlich für Empfänger mit schwer zugänglicher SET Taste, aber auch sonst.",
         register_cu_bt: "Restriere Programmierzentrale und Gruppe/Empfänger beim Empfänger und übertrage alle Timer-Daten an den Empfänger",
-        register_cu: "Anmelden der Programmierzentrale (MCU) am Empfänger. Der Empfänger reagiert dann auf Kommandos von dieser Zentrale für die angegebene Gruppen-/Empfängernummer.",
+        register_cu:
+          "Anmelden der Programmierzentrale (MCU) am Empfänger. Der Empfänger reagiert dann auf Kommandos von dieser Zentrale für die angegebene Gruppen-/Empfängernummer.",
         register_sender: "Anmelden eines Senders an den Empfänger. Der Empfänger reagiert auf Kommandos von allen registrierten Sendern.",
-  
       },
     },
     names: {
@@ -211,7 +229,6 @@ export const de = {
       "Konfiguration der Rollladen-Laufzeiten von Offen bis Geschlossen und von Offen bis Sonnenposition. Diese Werte sind nötig zum berechnen der aktuellen Position und um eine geforderte Position zu finden.",
     hint_durStopClock:
       "Zum Messen der Dauer der Rollandenbewegungen. Drücke Start/Stop zum gleichzeitigen Starten von Bewegung und Stoppuhr. Sobald der Rollladen stoppt, Start/Stop erneut drücken um die Stoppuhr anzuhalten.",
-    hint_shutterAlias: "Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren müssen diese hier erneut angemeldet werden.",
   },
   mcuConfigNames: {
     verbose: "CLI Verbose Level",

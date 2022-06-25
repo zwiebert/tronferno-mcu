@@ -152,7 +152,7 @@
     </tr>
 
     {#if $GuiAcc.edit_transmitter_names}
-      <tr><td use:tippy={{ content: $_("app.id.tt.enterName") }}>{$_("app.navTab.sender.names.input")}</td><td><TransmitterNames edit={editTxNames} /></td></tr>
+      <tr><td use:tippy={{ content: $_("app.id.tt.enterName") }}>{$_("app.navTab.transmitter.names.input")}</td><td><TransmitterNames edit={editTxNames} /></td></tr>
     {/if}
   </table>
 </div>

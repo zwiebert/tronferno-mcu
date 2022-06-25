@@ -17,8 +17,7 @@
   }
 </script>
 
-<div id="sdi" class="inline-block">
-  <div class="flex flex-row items-center content-between">
+  <div class="text-center">
     <button id="sspb" class="sb text-lg rounded-l-full" type="button" on:click={hClick_Sun} use:tippy={{ content: $_("app.sun.tt.move_sun_down") }}>
       {$_("app.sun.move_sun_down")}
     </button>
@@ -29,7 +28,7 @@
       </button>
     {/if}
   </div>
-</div>
+
 
 <style lang="scss">
 </style>

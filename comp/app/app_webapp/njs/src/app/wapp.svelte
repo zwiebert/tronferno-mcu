@@ -77,9 +77,9 @@
     <div class="navtab-sub">
       <NavTabs
         nav_tabs={[
-          { name: $_("app.navTab.cfg.mcu"), idx: 0 },
-          { name: $_("app.navTab.cfg.receiver"), idx: 7 },
-          { name: $_("app.navTab.cfg.sender"), idx: 1 },
+          { name: $_("app.navTab.cfg.mcu.tab"), idx: 0 },
+          { name: $_("app.navTab.cfg.receiver.tab"), idx: 7 },
+          { name: $_("app.navTab.transmitter.tab"), idx: 1 },
           { name: "Log", idx: 6 },
         ]}
         name="settings"
@@ -93,10 +93,10 @@
       <div class="navtab-sub2">
         <NavTabs
           nav_tabs={[
-            ...($GuiAcc.edit_transmitter_names ? [{ name: $_("app.navTab.sender.names.tab"), idx: 0 }] : []),
-            { name: $_("app.navTab.sender.aliases"), idx: 1 },
-            { name: $_("app.navTab.sender.repeater"), idx: 2 },
-            // { name: $_("app.navTab.sender.transmit"), idx: 2 },
+            ...($GuiAcc.edit_transmitter_names ? [{ name: $_("app.navTab.transmitter.names.tab"), idx: 0 }] : []),
+            { name: $_("app.navTab.transmitter.register.tab"), idx: 1 },
+            { name: $_("app.navTab.transmitter.repeater.tab"), idx: 2 },
+            // { name: $_("app.navTab.transmitter.transmit"), idx: 2 },
           ]}
           name="sender"
         />

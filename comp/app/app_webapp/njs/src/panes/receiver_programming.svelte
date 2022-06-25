@@ -19,11 +19,11 @@
 <div class="navtab-sub2">
   <NavTabs
     nav_tabs={[
-      ...($GuiAcc.edit_shutter_names ? [{ name: $_("app.navTab.cfg.name"), idx: 0 }] : []),
-      ...($GuiAcc.set_mode ? [{ name: $_("app.navTab.cfg.set_mode"), idx: 1 }] : []),
-      ...($GuiAcc.program_shutter_rotation_direction ? [{ name: $_("app.navTab.cfg.rot_dir"), idx: 2 }] : []),
-      ...($GuiAcc.shutter_sep ? [{ name: $_("app.navTab.cfg.endpos"), idx: 3 }] : []),
-      ...($GuiAcc.edit_shutter_durations ? [{ name: $_("app.navTab.positions.durations"), idx: 4 }] : []),
+      ...($GuiAcc.edit_shutter_names ? [{ name: $_("app.navTab.cfg.name.tab"), idx: 0 }] : []),
+      ...($GuiAcc.set_mode ? [{ name: $_("app.navTab.cfg.set_mode.tab"), idx: 1 }] : []),
+      ...($GuiAcc.program_shutter_rotation_direction ? [{ name: $_("app.navTab.cfg.rot_dir.tab"), idx: 2 }] : []),
+      ...($GuiAcc.shutter_sep ? [{ name: $_("app.navTab.cfg.endpos.tab"), idx: 3 }] : []),
+      ...($GuiAcc.edit_shutter_durations ? [{ name: $_("app.navTab.cfg.durations.tab"), idx: 4 }] : []),
 
       //...($GuiAcc.shutter_auto ? [{ name: $_("app.navTab.main.auto"), idx: 0 }] : []),
     ]}

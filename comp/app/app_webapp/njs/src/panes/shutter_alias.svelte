@@ -8,7 +8,7 @@
 </script>
 
 <div class="main-area text-center">
-  <h4 class="text-center" use:tippy={{ content: $_("help.hint_shutterAlias") }}>Alias</h4>
+  <h4 class="text-center" use:tippy={{ content: $_("app.navTab.transmitter.register.tt.header") }}>{$_("app.navTab.transmitter.register.header")}</h4>
 
   <div>
     <ShutterAliasRf />
