@@ -17,4 +17,6 @@ bool kvs_get_string(const char *key, char *buf, size_t buf_size);
 bool kvs_store_int32(const char *key, i32 val);
 bool kvs_get_int32(const char *key, i32 *dest);
 
+bool kvs_erase_key(const char *key);
+
 #endif /* MAIN_KVSTORE_H_ */

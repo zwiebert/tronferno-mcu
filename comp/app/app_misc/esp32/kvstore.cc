@@ -66,3 +66,15 @@ bool kvs_get_int32(const char *key, i32 *dest) {
   }
   return err == ESP_OK;
 }
+
+bool kvs_erase_key(const char *key) {
+  esp_err_t err = 0;
+  nvs_handle handle;
+
+  if ((err = nvs_open("kvs", NVS_READWRITE, &handle)) == ESP_OK) {
+    nvs_erase_key(handle, key);
+    nvs_commit(handle);
+    nvs_close(handle);
+  }
+  return err == ESP_OK;
+}

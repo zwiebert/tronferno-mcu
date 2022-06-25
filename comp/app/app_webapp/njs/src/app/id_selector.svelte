@@ -4,7 +4,7 @@
   import * as httpFetch from "app/fetch.js";
   import { G, M0 } from "stores/curr_shutter.js";
   import ShutterGM from "app/shutter_gm.svelte";
-  import { SelectedId, TxNames } from "stores/id.js";
+  import { SelectedId, SelectedIdIsValid, TxNames } from "stores/id.js";
   import { Aliases } from "stores/shutters.js";
   import { ReceivedAddresses } from "stores/alias.js";
   import { onMount, onDestroy } from "svelte";
@@ -23,18 +23,27 @@
 
   $: AliasesPairedKeys = Object.keys($Aliases).filter((key) => alias_isKeyPairedToM(key, $G, $M0));
   $: AliasesAllKeys = Object.keys($Aliases).filter((key) => !AliasesPairedKeys.includes(key));
-  $: AliasesRxKeys = [...$ReceivedAddresses].filter((key) => !(AliasesPairedKeys.includes(key) || AliasesAllKeys.includes(key)));
+  $: AliasesRxKeys = [...$ReceivedAddresses].filter((key) => id_isValid(key) && !(AliasesPairedKeys.includes(key) || AliasesAllKeys.includes(key)));
 
-  $: selectedId = 0;
-  $: selectedId_isValid = id_isValid(selectedId);
+  function setSelectedId(id) {
+    $SelectedId = id;
+  }
 
-  $: {
-    select_id($SelectedId);
+  function onChange_Paired() {
+    setSelectedId(document.getElementById("paired").value);
+  }
+
+  function onChange_All() {
+    setSelectedId(document.getElementById("aliases").value);
+  }
+
+  function onChange_Rx() {
+    setSelectedId(document.getElementById("received").value);
   }
 
   function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
   async function fetchTxNames() {
     let keys = Object.keys($Aliases);
@@ -54,20 +63,6 @@
   function id_isValid(id) {
     const re = /^[12]0[0-9A-Fa-f]{4}$/;
     return re.test(id);
-  }
-
-  let select_id_in_progress = false;
-  function select_id(id) {
-    if (select_id_in_progress) return;
-    select_id_in_progress = true;
-
-    for (let eid of ["paired", "aliases", "received", "entered"]) {
-      let el = document.getElementById(eid);
-      if (el) el.value = id;
-    }
-    selectedId = id;
-    $SelectedId = id;
-    select_id_in_progress = false;
   }
 
   function alias_isKeyPairedToM(key, g, m) {
@@ -96,7 +91,7 @@
         <ShutterGM radio={false} groups={false} />
       </td>
       <td
-        ><select class="w-full" id="paired" size={AliasesPairedKeys.length} on:change={() => select_id(document.getElementById("paired").value)}>
+        ><select class="w-full" id="paired" size={AliasesPairedKeys.length} on:change={onChange_Paired} on:click={onChange_Paired}>
           {#each AliasesPairedKeys.sort() as key}
             <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
           {/each}
@@ -106,7 +101,7 @@
     <tr>
       <td use:tippy={{ content: $_("app.id.tt.chose_allRegIds") }}>{$_("app.id.chose_allRegIds")}</td>
       <td
-        ><select class="w-full" id="aliases" size="1" on:change={() => select_id(document.getElementById("aliases").value)}>
+        ><select class="w-full" id="aliases" size="1" on:change={onChange_All}>
           {#each AliasesAllKeys.sort() as key}
             <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
           {/each}
@@ -117,7 +112,7 @@
     <tr>
       <td use:tippy={{ content: $_("app.id.tt.chose_rxIds") }}>{$_("app.id.chose_rxIds")}</td>
       <td
-        ><select class="w-full" id="received" size="1" on:change={() => select_id(document.getElementById("received").value)}>
+        ><select class="w-full" id="received" size="1" on:change={onChange_Rx}>
           {#each AliasesRxKeys.sort() as key}
             <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
           {/each}
@@ -128,21 +123,15 @@
       <td use:tippy={{ content: $_("app.id.tt.chose_enterId") }}>{$_("app.id.chose_enterId")}</td>
       <td
         ><label use:tippy={{ content: $_("app.id.tt.text_enterId") }}>
-          <input
-            id="entered"
-            class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}"
-            type="text"
-            on:input={() => select_id(document.getElementById("entered").value)}
-            maxlength="6"
-          />
+          <input id="entered" class="w-16 {$SelectedIdIsValid ? 'text-green-600' : 'text-red-600'}" type="text" bind:value={$SelectedId} maxlength="6" />
         </label>
 
         <button
           type="button"
           use:tippy={{ content: $_("app.id.tt.test_selectedId") }}
-          disabled={!selectedId_isValid}
+          disabled={!$SelectedIdIsValid}
           on:click={() => {
-            httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-test" } });
+            httpFetch.http_postCommand({ cmd: { a: $SelectedId, c: "sun-test" } });
           }}>{$_("app.id.test_selectedId")}</button
         >
       </td>
