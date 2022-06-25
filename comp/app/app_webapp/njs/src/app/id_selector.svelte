@@ -12,7 +12,6 @@
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
 
-
   export const editTxNames = true;
 
   let on_destroy = [];
@@ -106,7 +105,7 @@
     <tr>
       <td use:tippy={{ content: $_("app.id.tt.chose_allRegIds") }}>{$_("app.id.chose_allRegIds")}</td>
       <td
-        ><select class="w-full" id="aliases" size="1" on:change={onChange_All}>
+        ><select class="w-full" id="aliases" size="1" on:change={onChange_All} on:click={onChange_All}>
           {#each AliasesAllKeys.sort() as key}
             <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
           {/each}
@@ -117,7 +116,7 @@
     <tr>
       <td use:tippy={{ content: $_("app.id.tt.chose_rxIds") }}>{$_("app.id.chose_rxIds")}</td>
       <td
-        ><select class="w-full" id="received" size="1" on:change={onChange_Rx}>
+        ><select class="w-full" id="received" size="1" on:change={onChange_Rx} on:click={onChange_Rx}>
           {#each AliasesRxKeys.sort() as key}
             <option value={key}>{key + " " + ($TxNames[key] || "")}</option>
           {/each}
@@ -132,12 +131,22 @@
         </label>
 
         <button
+          class="rounded-full"
           type="button"
           use:tippy={{ content: $_("app.id.tt.test_selectedId") }}
           disabled={!$SelectedIdIsValid}
           on:click={() => {
             httpFetch.http_postCommand({ cmd: { a: $SelectedId, c: "sun-test" } });
           }}>{$_("app.id.test_selectedId")}</button
+        >
+        <button
+          class="rounded-full"
+          type="button"
+          use:tippy={{ content: $_("app.id.tt.send_stop") }}
+          disabled={!$SelectedIdIsValid}
+          on:click={() => {
+            httpFetch.http_postCommand({ cmd: { a: $SelectedId, c: "stop" } });
+          }}>{$_("app.id.send_stop")}</button
         >
       </td>
     </tr>

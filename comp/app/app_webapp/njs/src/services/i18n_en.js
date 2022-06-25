@@ -111,6 +111,7 @@ export const en = {
       chose_rxIds: "RX",
       chose_enterId: "TX-ID",
       test_selectedId: "Test",
+      send_stop: "STOP",      
       regTbl_header1: "Transmitter-ID",
       regTbl_header2: "is registered to:",
       tt: {
@@ -121,6 +122,8 @@ export const en = {
         enterName: "Enter/edit name for this transmitter",
         text_enterId: "Enter an ID or select ID from a list",
         test_selectedId: "Identify motor(s) paired with this ID by moving them",
+        send_stop: "Send STOP if you want to register/unregister this transmitter whith a receiver in SET-function",
+        set_function: "Enable SET function on the selected receiver number",
         register_id: "Register/Unregister selected Transmitter-ID to selected receiver-number",
         register_rf: "Register/Unregister RF-Transmitter to selected receiver-number. Click button and then press Stop on RF transmitter",
       },

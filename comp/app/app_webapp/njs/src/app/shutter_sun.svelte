@@ -19,12 +19,12 @@
 
 <div id="sdi" class="inline-block">
   <div class="flex flex-row items-center content-between">
-    <button id="sspb" class="sb" type="button" on:click={hClick_Sun} use:tippy={{ content: $_("app.sun.tt.move_sun_down") }}>
+    <button id="sspb" class="sb text-lg rounded-l-full" type="button" on:click={hClick_Sun} use:tippy={{ content: $_("app.sun.tt.move_sun_down") }}>
       {$_("app.sun.move_sun_down")}
     </button>
 
     {#if $GuiAcc.shutter_sunpos && ($M0 || $RadioCodeEnabled)}
-      <button id="sspb" class="sb" type="button" on:click={hClick_SunPos} use:tippy={{ content: $_("app.sun.tt.set_sun_pos") }}>
+      <button id="sspb" class="sb text-lg rounded-r-full" type="button" on:click={hClick_SunPos} use:tippy={{ content: $_("app.sun.tt.set_sun_pos") }}>
         {$_("app.sun.set_sun_pos")}
       </button>
     {/if}

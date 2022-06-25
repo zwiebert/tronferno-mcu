@@ -30,9 +30,11 @@
     <ShutterMove />
   </div>
 
+  {#if !$RadioCodeEnabled}
   <div class="area">
     <ShutterPct />
   </div>
+  {/if}
 
   {#if $AutoSunEnabled || !$M0 || $RadioCodeEnabled}
     <div class="area">

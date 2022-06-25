@@ -10,7 +10,6 @@
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
 
-
   $: AliasesAllKeys = Object.keys($Aliases);
   $: AliasesPairedKeys = AliasesAllKeys.filter((key) => alias_isKeyPairedToM(key, $G, $M0));
   $: selectedId = $SelectedId;
@@ -52,6 +51,9 @@
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES_START_UNPAIRING);
   }
 
+  function hClick_Set() {
+    httpFetch.http_postShutterCommand("set");
+  }
 
   function alias_isKeyPairedToM(key, g, m) {
     const val = $Aliases[key] || {};
@@ -104,20 +106,19 @@
       }
     }
   }
-
-
-
 </script>
 
 <div id="aliasdiv text-center">
-
-
   <div class="area text-center" id="aliasPairUnpair">
-    <ShutterGM radio={false} />
-
+    <div class="flex flex-row items-center justify-center">
+      <ShutterGM radio={false} /> 
+    </div>
     <button id="alias_pair" type="button" on:click={hClick_Pair} use:tippy={{ content: $_("app.id.tt.register_rf") }}>{$_("fernotron.Register")}</button>
     RF-> {$GMH}
     <button id="alias_unpair" type="button" on:click={hClick_UnPair} use:tippy={{ content: $_("app.id.tt.register_rf") }}>{$_("fernotron.Unregister")}</button>
+    <br />
+    <button class="rounded-full" type="button" on:click={hClick_Set} use:tippy={{ content: $_("app.id.tt.set_function") }}>SET</button>
+
     {#if $Pras}
       <br />
       {#if $Pras.scanning}

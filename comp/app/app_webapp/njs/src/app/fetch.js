@@ -102,7 +102,7 @@ export function getFile(url) {
 
 export function http_postShutterCommand(c = document.getElementById("send-c").value) {
   let tfmcu = { to: "tfmcu" };
- console.log("rce",get(RadioCodeEnabled));
+
   let send = {
     ...get(Address),
     c: c,
