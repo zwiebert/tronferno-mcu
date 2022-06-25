@@ -58,6 +58,10 @@ export const en = {
         names: {
           tab: "Names",
           header: "Transmitter-Names",
+          input: "TX-Name",
+          tt:{
+            header: "Assign names to transmitters for user convinience",
+          },
         },
         
       },
@@ -105,7 +109,7 @@ export const en = {
       chose_header: "Pick/Enter a Transmitter-ID",
       chose_allRegIds: "Other",
       chose_rxIds: "RX",
-      chose_enterId: "Enter",
+      chose_enterId: "TX-ID",
       test_selectedId: "Test",
       regTbl_header1: "Transmitter-ID",
       regTbl_header2: "is registered to:",
@@ -114,6 +118,7 @@ export const en = {
         chose_regIds: "Transmitter-IDs registered to this receiver number only",
         chose_rxIds: "List of unregistered transmitter-IDs recveived via RF",
         chose_enterId: "Enter a Transmitter-ID",
+        enterName: "Enter/edit name for this transmitter",
         text_enterId: "Enter an ID or select ID from a list",
         test_selectedId: "Identify motor(s) paired with this ID by moving them",
         register_id: "Register/Unregister selected Transmitter-ID to selected receiver-number",

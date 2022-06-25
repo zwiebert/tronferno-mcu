@@ -48,6 +48,10 @@ export const de = {
         names: {
           tab: "Namen",
           header: "Sender-Namen",
+          input: "Name",
+          tt:{
+            header: "Namen für Sender für bessere Übersichtlichkeit. Ein Name könnte z.B. den genauen Stand-Ort des Senders beschreiben.",
+          },
         },
       },
       positions: {
@@ -83,7 +87,7 @@ export const de = {
       chose_header: "Sender-ID Auswahl/Eingabe",
       chose_allRegIds: "Andere",
       chose_rxIds: "RX",
-      chose_enterId: "Eingabe",
+      chose_enterId: "ID",
       regTbl_header1: "Sender-ID",
       regTbl_header2: "ist angemeldet bei:",
 
@@ -92,6 +96,7 @@ export const de = {
         chose_regIds: "An dieser Empfängernummer angemeldete Sender-IDs",
         chose_rxIds: "Unregistrierte Sender-IDs empfangen über Funk",
         chose_enterId: "Eingabe einer Sender-ID",
+        enterName: "Namen für Sender vergeben oder ändern",
         text_enterId: "Sender-ID direkt eingeben oder aus Liste wählen",
         register_id: "An-/Abmelden der ausgewählten Sender-ID an die ausgewählte Empfängernummer",
         register_rf: "An-/Abmelden eines Funksenders an die ausgewählte Empfängernummer. Erst Knopf anklicken und dann Stop am Funksender drücken!",

@@ -7,6 +7,9 @@
   import { SelectedId, SelectedIdIsValid, TxName } from "stores/id.js";
   import tippy from "sveltejs-tippy";
 
+
+  export const edit = true;
+
   $: GMName = $TxName || "";
 
   $: {
@@ -33,7 +36,7 @@
 </script>
 
 <div class="text-center">
-  <input type="text" name="name" disabled={!$SelectedIdIsValid} bind:value={GMName} on:change={hChange_Name} />
+  <input type="text" name="name"  class="w-full" disabled={!edit || !$SelectedIdIsValid} bind:value={GMName} on:change={hChange_Name} />
 </div>
 
 <style lang="scss">

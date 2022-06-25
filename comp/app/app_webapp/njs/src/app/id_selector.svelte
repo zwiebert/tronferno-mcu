@@ -2,13 +2,18 @@
   "use strict";
   import { _ } from "services/i18n";
   import * as httpFetch from "app/fetch.js";
+  import { GuiAcc } from "stores/app_state";
   import { G, M0 } from "stores/curr_shutter.js";
   import ShutterGM from "app/shutter_gm.svelte";
+  import TransmitterNames from "app/transmitter_names.svelte";
   import { SelectedId, SelectedIdIsValid, TxNames } from "stores/id.js";
   import { Aliases } from "stores/shutters.js";
   import { ReceivedAddresses } from "stores/alias.js";
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
+
+
+  export const editTxNames = true;
 
   let on_destroy = [];
   onMount(() => {
@@ -136,6 +141,10 @@
         >
       </td>
     </tr>
+
+    {#if $GuiAcc.edit_transmitter_names}
+      <tr><td use:tippy={{ content: $_("app.id.tt.enterName") }}>{$_("app.navTab.sender.names.input")}</td><td><TransmitterNames edit={editTxNames} /></td></tr>
+    {/if}
   </table>
 </div>
 

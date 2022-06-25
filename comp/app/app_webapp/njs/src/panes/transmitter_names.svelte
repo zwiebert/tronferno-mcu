@@ -74,13 +74,15 @@
 </script>
 
 <div class="main-area text-center">
+
+  <h4 use:tippy={{ content: $_("app.navTab.sender.names.tt.header") }}> {$_("app.navTab.sender.names.header")}</h4>
   <div>
     <IdSelector />
   </div>
 
-  {#if $GuiAcc.edit_transmitter_names}
-    <div class="main-area">
-      <h5>{$_("app.navTab.sender.names.header")}</h5>
+  {#if false && $GuiAcc.edit_transmitter_names}
+    <div class="main-area flex flex-row">
+      {$_("app.navTab.sender.names.input")}
       <TransmitterNames />
     </div>
   {/if}
