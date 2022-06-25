@@ -10,7 +10,7 @@
 
 
   onMount(() => {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
+    setTimeout(()=> {httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);}, 500);
   });
 
   $: {
