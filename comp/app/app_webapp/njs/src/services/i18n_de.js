@@ -63,7 +63,10 @@ export const de = {
           tab: "Anmelden",
           header: "Sender Anmelden",
           tt: {
-            header: "Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren müssen diese hier erneut angemeldet werden.",
+            header: `Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren muss der MCU bekannt sein, an welchen Empfängern diese angemeldet sind.
+            Da diese nicht automatisch erfolgen kann, muss der User diese An-/Abmeldungen hier zusätzlich noch einmal durchführen. 
+            Runde Knöpfe auf dieser Seite testen oder ändern die realen An-/Abmeldung. 
+             `,
           },
         },
         names: {
@@ -112,7 +115,7 @@ export const de = {
         chose_allRegIds: "Woanders angemeldete Sender-IDs",
         chose_regIds: "An dieser Empfängernummer angemeldete Sender-IDs",
         chose_rxIds: "Unregistrierte Sender-IDs empfangen über Funk",
-        chose_enterId: "Eingabe einer Sender-ID",
+        chose_enterId: "Eingabe einer sechstelligen Sender-ID",
         test_selectedId: "Bewege kurz Motor(en) bei denen dieser Sender angemeldet ist",
         send_stop: "Sende STOP um den Sender an- oder abzumelden beim Empfänger mit aktivierter SET Funktion",
         set_function: "Aktiviere SET Funktion beim ausgewählten Empfänger",
@@ -120,6 +123,8 @@ export const de = {
         text_enterId: "Sender-ID direkt eingeben oder aus Liste wählen",
         register_id: "An-/Abmelden der ausgewählten Sender-ID an die ausgewählte Empfängernummer",
         register_rf: "An-/Abmelden eines Funksenders an die ausgewählte Empfängernummer. Erst Knopf anklicken und dann Stop am Funksender drücken!",
+        registeredToTheseRx: "Anzeigen/Ändern der Anmeldungen eines Senders an den/die Empfänger. Spiegelt nur die realen Anmeldungen mittels SET Funktion.",
+   
       },
     },
 

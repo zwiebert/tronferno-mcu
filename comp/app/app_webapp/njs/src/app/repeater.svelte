@@ -2,7 +2,7 @@
   "use strict";
   import { _ } from "services/i18n";
   import * as httpFetch from "app/fetch.js";
-  import { SelectedId } from "stores/id.js";
+  import { SelectedId, TxNames } from "stores/id.js";
   import { McuConfig } from "stores/mcu_config.js";
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
@@ -30,8 +30,8 @@
 
   function add_repeaterID(id) {
     httpFetch.http_postCommand({ config: { "rf-repeater": "+" + id } });
-    
-/*
+
+    /*
     RepeaterIDs.update((obj) => {
       obj.add(id);
       return obj;
@@ -48,16 +48,19 @@
     });
     */
   }
+  function rxOptTxt(id) {
+    return (id.startsWith("20") ? "\u263C " : "\u2195 ") + id + " " + ($TxNames[id] || "");
+  }
 </script>
 
 <div id="aliasdiv text-center">
   <br />
 
   <div class="area text-center">
-    <h5>Sender-IDs to be repeated</h5>
+    <h5>Transmitters to be repeated</h5>
     <select id="repeaterIDs" size="5" bind:value={selectedRepId}>
       {#each [...RepeaterIDs].sort() as key}
-        <option>{key}</option>
+        <option value={key}>{rxOptTxt(key)}</option>
       {/each}
     </select>
     <br />

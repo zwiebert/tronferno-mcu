@@ -2,8 +2,8 @@
   "use strict";
   import { _ } from "services/i18n";
   import * as httpFetch from "app/fetch.js";
-  import { G, M0, GMH } from "stores/curr_shutter.js";
-  import { SelectedId } from "stores/id.js";
+  import { G, M0 } from "stores/curr_shutter.js";
+  import { SelectedId, SelectedIdIsValid, TxName } from "stores/id.js";
   import { Gmu, GmuMaxM } from "stores/mcu_config.js";
   import { Aliases } from "stores/shutters.js";
   import { Pras } from "stores/alias.js";
@@ -48,7 +48,6 @@
     const re = /^[12]0[0-9A-Fa-f]{4}$/;
     return re.test(id);
   }
-
 
   function onAliasesApply() {
     if (selectedId_isValid) {
@@ -145,14 +144,16 @@
     httpFetch.http_postCommand(tfmcu);
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALIASES);
   }
+
+  function rxSymbol(id) {
+    return id.startsWith("20") ? "\u263C " : "\u2195 ";
+  }
 </script>
 
 <div id="aliasdiv text-center">
-
-
-  <div class="area" id="divPairAll">
+  <div class="area" id="divPairAll" style={$SelectedIdIsValid ? "" : "visibility:hidden"}>
+    <h5 use:tippy={{ content: $_("app.id.tt.registeredToTheseRx") }}>{rxSymbol(selectedId) + selectedId + " " + $TxName}</h5>
     <table id="aliasTable">
-      <tr><th colspan="8">{$_("app.id.regTbl_header1") + " " + selectedId + " " + $_("app.id.regTbl_header2")}</th></tr>
       <tr>
         <th />
         {#each [1, 2, 3, 4, 5, 6, 7] as m}
@@ -167,9 +168,9 @@
             <th>g{g}</th>
             {#each [1, 2, 3, 4, 5, 6, 7] as m}
               {#if m <= $Gmu[g]}
-                <td class={$G === 0 || (g === $G && ($M0 === 0 || m === $M0)) ? "bg-selected" : ""}
-                  ><input id="cbAlias_{g}{m}" type="checkbox" disabled={!selectedId_isValid} /></td
-                >
+                <td class={$G === 0 || (g === $G && ($M0 === 0 || m === $M0)) ? "bg-selected" : ""}>
+                  <input id="cbAlias_{g}{m}" type="checkbox" disabled={!selectedId_isValid} />
+                </td>
               {/if}
             {/each}
           </tr>
@@ -181,7 +182,6 @@
       <button id="alias_save" type="button" on:click={onAliasesApply}> {$_("app.save")} </button>
     </span>
   </div>
-
 </div>
 
 <style lang="scss">

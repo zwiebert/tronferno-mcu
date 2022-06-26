@@ -11,7 +11,6 @@
   import { SelectedId, SelectedIdIsValid } from "stores/id.js";
   import { Gmu, GmuMaxM } from "stores/mcu_config.js";
 
-
   $: AliasesPairedKeys = Object.keys($Aliases).filter((key) => alias_isKeyPairedToM(key, $G, $M0));
 
   $: {
@@ -70,12 +69,10 @@
       }
     }
   }
-
 </script>
 
 <div class="main-area text-center">
-
-  <h4 use:tippy={{ content: $_("app.navTab.transmitter.names.tt.header") }}> {$_("app.navTab.transmitter.names.header")}</h4>
+  <h4 use:tippy={{ content: $_("app.navTab.transmitter.names.tt.header") }}>{$_("app.navTab.transmitter.names.header")}</h4>
   <div>
     <IdSelector />
   </div>
@@ -87,10 +84,8 @@
     </div>
   {/if}
 
-
-  <div class="area" id="divPairAll">
+  <div class="area" style={$SelectedIdIsValid && $Aliases[$SelectedId] ? "" : "visibility:hidden"} id="divPairAll">
     <table id="aliasTable">
-      <tr><th colspan="8">{$_("app.id.regTbl_header1") + " " + $SelectedId + " " + $_("app.id.regTbl_header2")}</th></tr>
       <tr>
         <th />
         {#each [1, 2, 3, 4, 5, 6, 7] as m}

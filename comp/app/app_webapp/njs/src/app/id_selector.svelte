@@ -87,6 +87,9 @@
     return (b & (1 << m)) !== 0;
   }
 
+  function rxSymbol(id) {
+    return (id.startsWith("20") ? "\u263C " : "\u2195 ");
+  }
   function rxOptTxt(id) {
     return (id.startsWith("20") ? "\u263C " : "\u2195 ") + id + " " + ($TxNames[id] || "");
   }
@@ -156,10 +159,10 @@
     </tr>
 
     {#if $GuiAcc.edit_transmitter_names}
-      <tr
-        ><td use:tippy={{ content: $_("app.id.tt.enterName") }}>{$_("app.navTab.transmitter.names.input")}</td><td><TransmitterNames edit={editTxNames} /></td
-        ></tr
-      >
+      <tr>
+        <td use:tippy={{ content: $_("app.id.tt.enterName") }}>{$_("app.navTab.transmitter.names.input")}</td>
+        <td> <TransmitterNames edit={editTxNames} /></td>
+      </tr>
     {/if}
   </table>
 </div>

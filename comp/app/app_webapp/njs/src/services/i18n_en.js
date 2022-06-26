@@ -138,6 +138,7 @@ export const en = {
         set_function: "Enable SET function on the selected receiver number",
         register_id: "Register/Unregister selected Transmitter-ID to selected receiver-number",
         register_rf: "Register/Unregister RF-Transmitter to selected receiver-number. Click button and then press Stop on RF transmitter",
+        registeredToTheseRx: "Shows/Edits on wich Receivers a Transmitter is registered.  These registrations only mirror the real registrations in the receivers.",
       },
     },
 
@@ -251,7 +252,7 @@ export const en = {
       "Configute here the durations for the shutter to move from open to close and from open to sup-position. This is needed to calculate the current in-between shutter position and to reach a requested in-between position.",
     hint_durStopClock:
       "To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.",
-    hint_repeater: "Repeat RF commands to increase reach. You have to provide a list of IDs. Only senders from this list will be repeated.",
+    hint_repeater: "Repeat RF commands to increase reach. You have to provide a list of Transmitter-IDs. Only transmitters on this list will be repeated.",
   },
   mcuConfigNames: {
     verbose: "CLI Verbosity",
