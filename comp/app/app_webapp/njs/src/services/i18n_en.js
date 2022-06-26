@@ -40,7 +40,21 @@ export const en = {
         },
       },
       cfg: {
-        mcu: "MCU",
+        mcu: {
+          tab: "MCU",
+          network: { tab: "Network", header: "Network-Connections/-Services", tt: { header: "" } },
+          misc: { tab: "General", header: "General Configuration", tt: { header: "" } },
+          ota: {
+            tab: "OTA",
+            header: "OTA Firmware Update",
+            tt: {
+              header: "Firmware information and Over the Air firmware update from GitHub zwiebert/tronferno-mcu-bin repository",
+            },
+          },
+          cc1101: { tab: "CC1101", header: "CC1101 RF-Module Configuration (For Developers)", tt: {
+             header: "Configure CC1101 by providing a register file (ASCII-HEX string) or change a small subset of registers in the experimental configuration editor"
+             } },
+        },
 
         endpos: {
           tab: "End-Positions",
@@ -63,7 +77,12 @@ export const en = {
       transmitter: {
         tab: "Transmitter",
         repeater: {
-          tab: "RF-Repeater",
+          tab: "Repeater",
+          header: "RF-Repeater",
+          tt: {
+            header:
+              "Repeat plain RF transmitter commands by the MCU's RF transmitter to increase reach. You have to provide a list of transmitter-IDs. Only transmitters on this list will be repeated.",
+          },
         },
         register: {
           tab: "Register",
@@ -115,6 +134,21 @@ export const en = {
       sun: "Sun",
       manual: "Manual",
       sendRtc: "Send wall time to:",
+      sendISO: "ISO-Time",
+      tt: {
+        daily: "Daily 24h timer. One time for up/down each. You can leave one time empty if you want only one of both up or down.",
+        weekly:
+          "Weekly timer. Seven times for up/down each and each day of the week. If the checkbox is unchecked, then related weekday will copy the previous day's times.",
+        astro: `Automatic dusk mode. (Needs longitude/latitude configured according to your location). Closes roller shutter at civil dusk. 
+        You can provide an offset in minutes to adjust the closing time. Negative values will close the shutter prior to civil-dusk. Positive values after civil-dusk.`,
+        random: `Automatic random operation. This setting results in a random delay of the set switching time of
+        between 0 and 30 minutes. Automatic random operation does not apply for the dusk times.`,
+        sun: "Automated sun-light protection mode.",
+        manual:
+          "Deactivate automatic operation. Disables all of the above (daily, weekly, astro, random, sun). This will overwrite the data in the receiver's storage, but a copy is kept in the MCU for later re-use.",
+        sendRtc: "Transmit the current time/date to receiver or group(s).",
+        sendISO: "For testing purposes only: This sends a specifiy time string to the receiver instead of using the actual time from internal RTC.",
+      },
     },
 
     id: {
@@ -138,7 +172,8 @@ export const en = {
         set_function: "Enable SET function on the selected receiver number",
         register_id: "Register/Unregister selected Transmitter-ID to selected receiver-number",
         register_rf: "Register/Unregister RF-Transmitter to selected receiver-number. Click button and then press Stop on RF transmitter",
-        registeredToTheseRx: "Shows/Edits on wich Receivers a Transmitter is registered.  These registrations only mirror the real registrations in the receivers.",
+        registeredToTheseRx:
+          "Shows/Edits on wich Receivers a Transmitter is registered.  These registrations only mirror the real registrations in the receivers.",
       },
     },
 
@@ -239,6 +274,19 @@ export const en = {
         restoreNames: "If MCU is new or MCU flash was erased, restore the shutter names from local browser cache storage",
       },
     },
+    repeater: {
+      ids: {
+        header: "Transmitter(s) to be repeated",
+        add_button: "Add",
+        remove_button: "Remove",
+        tt: {
+          header:
+            "List of transmitter-IDs. Only commands sent from these transmitters will be repeated via the MCU's RF-transmitter. Other transmitter's commands won't be repeated.",
+          add_button: "Add",
+          remove_button: "Remove",
+        },
+      },
+    },
   },
 
   firmware: {
@@ -252,7 +300,6 @@ export const en = {
       "Configute here the durations for the shutter to move from open to close and from open to sup-position. This is needed to calculate the current in-between shutter position and to reach a requested in-between position.",
     hint_durStopClock:
       "To measure the duration of up/down movements, press Start/Stop to start both movement and clock. After the movement stops by itself, press again to stop the clock.",
-    hint_repeater: "Repeat RF commands to increase reach. You have to provide a list of Transmitter-IDs. Only transmitters on this list will be repeated.",
   },
   mcuConfigNames: {
     verbose: "CLI Verbosity",
@@ -299,8 +346,6 @@ export const en = {
   mcuConfig: {
     ethernet: "LAN/Ethernet",
     wlan_station: "WLAN Station",
-    network: "Network",
-    misc: "General",
     ntp_client: "NTP Client",
     mqtt_client: "MQTT Client",
     http_server: "Webserver",

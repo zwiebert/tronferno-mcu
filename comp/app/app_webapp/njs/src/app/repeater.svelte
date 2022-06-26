@@ -57,7 +57,7 @@
   <br />
 
   <div class="area text-center">
-    <h5>Transmitters to be repeated</h5>
+    <h5  use:tippy={{ content: $_("app.repeater.ids.tt.header") }}>{$_("app.repeater.ids.header")}</h5>
     <select id="repeaterIDs" size="5" bind:value={selectedRepId}>
       {#each [...RepeaterIDs].sort() as key}
         <option value={key}>{rxOptTxt(key)}</option>
@@ -65,19 +65,21 @@
     </select>
     <br />
     <button
+    use:tippy={{ content: $_("app.repeater.ids.tt.add_button") }}
       type="button"
       disabled={!selectedId_isValid || RepeaterIDs.has($SelectedId)}
       on:click={() => {
         add_repeaterID($SelectedId);
-      }}>Add {$SelectedId}</button
+      }}>{$_("app.repeater.ids.add_button") + " " + $SelectedId}</button
     >
 
     <button
+    use:tippy={{ content: $_("app.repeater.ids.tt.remove_button") }}
       type="button"
       disabled={!RepeaterIDs.has(selectedRepId)}
       on:click={() => {
         remove_repeaterID(selectedRepId);
-      }}>Remove {RepeaterIDs.has(selectedRepId) ? selectedRepId : ""}</button
+      }}>{$_("app.repeater.ids.remove_button") + " " + (RepeaterIDs.has(selectedRepId) ? selectedRepId : "")}</button
     >
   </div>
 </div>

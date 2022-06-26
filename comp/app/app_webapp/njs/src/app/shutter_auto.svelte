@@ -163,7 +163,7 @@
 <div id="autodiv" class="auto">
   <table class="top_table">
     <tr>
-      <td>{$_("app.auto.daily")}</td>
+      <td use:tippy={{ content: $_("app.auto.tt.daily") }}>{$_("app.auto.daily")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.hasDaily} />
       </td>
@@ -179,7 +179,7 @@
       </td>
     </tr>
     <tr>
-      <td>{$_("app.auto.weekly")}</td>
+      <td use:tippy={{ content: $_("app.auto.tt.weekly") }}>{$_("app.auto.weekly")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.hasWeekly} />
       </td>
@@ -212,7 +212,7 @@
     {/if}
 
     <tr>
-      <td>{$_("app.auto.astro")}</td>
+      <td use:tippy={{ content: $_("app.auto.tt.astro") }}>{$_("app.auto.astro")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.hasAstro} />
       </td>
@@ -222,19 +222,19 @@
       </td>
     </tr>
     <tr>
-      <td>{$_("app.auto.random")}</td>
+      <td use:tippy={{ content: $_("app.auto.tt.random") }}>{$_("app.auto.random")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.isRandom} />
       </td>
     </tr>
     <tr>
-      <td>{$_("app.auto.sun")}</td>
+      <td use:tippy={{ content: $_("app.auto.tt.sun") }}>{$_("app.auto.sun")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.isSun} />
       </td>
     </tr>
     <tr>
-      <td>{$_("app.auto.manual")}</td>
+      <td use:tippy={{ content: $_("app.auto.tt.manual") }}>{$_("app.auto.manual")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.isManual} />
       </td>
@@ -250,22 +250,24 @@
   <hr />
   <div class="text-center">
     <button
+      use:tippy={{ content: $_("app.auto.tt.sendRtc") }}
       class="sb"
       type="button"
       on:click={() => {
         let a = { auto: { g: $G, m: $M, "rtc-only": 1 } };
         if (providTimeString) a.rtc = isoTimeString;
         httpFetch.http_postCommand(a);
-      }}>{$_("app.auto.sendRtc")} {$GMH}</button
-    >
+      }}
+      >{$_("app.auto.sendRtc")} {$GMH}
+    </button>
 
     {#if $GuiAcc.shutter_time_iso}
       <hr />
-      <label use:tippy={{ content: "Provide your own ISO-Time-string time to send to the shutter" }}
-        >ISO-Time
+      <label use:tippy={{ content: $_("app.auto.tt.sendISO") }}>
+        {$_("app.auto.sendISO")}
         <input type="checkbox" bind:checked={providTimeString} />
-        <input type="text" bind:value={isoTimeString} disabled={!providTimeString} /></label
-      >
+        <input type="text" bind:value={isoTimeString} disabled={!providTimeString} />
+      </label>
     {/if}
   </div>
 </div>

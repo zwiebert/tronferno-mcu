@@ -1,5 +1,6 @@
 <script>
   import { _ } from "services/i18n";
+  import tippy from "sveltejs-tippy";
   import McuFirmwareUpd from "app/mcu_firmware_upd.svelte";
   import McuFirmwareInfo from "app/mcu_firmware_info.svelte";
   import * as misc from "app/misc.js";
@@ -58,6 +59,8 @@
 </script>
 
 <div class="area">
+  <h4  class="text-center" use:tippy={{ content: $_("app.navTab.cfg.mcu.ota.tt.header") }}>{$_("app.navTab.cfg.mcu.ota.header")}</h4>
+
   <McuFirmwareUpd bind:fwbtns chip="" updSecs="30" />
   <McuFirmwareInfo />
 </div>

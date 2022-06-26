@@ -33,6 +33,15 @@ export const de = {
       cfg: {
         mcu: {
           tab: "MCU",
+          network: { tab: "Netzwerk", header: "Netzwer-Verbindungen und -Dienste", tt: { header: "--" } },
+          misc: { tab: "Allgemein", header: "Allgemeine Konfiguration", tt: { header: "--" } },
+          ota: {
+            tab: "OTA",
+            header: "OTA Firmware Update",
+            tt: {
+              header: `Firmware Information und "Over the Air" Firmware update vom GitHub zwiebert/tronferno-mcu-bin Repository`,
+            },
+          },
         },
 
         name: {
@@ -58,6 +67,11 @@ export const de = {
         tab: "Sender",
         repeater: {
           tab: "Repeater",
+          header: "Funk-Repeater",
+          tt: {
+            header: `Repeat Handsender/Funksensor-Kommandos durch den Funksender der MCU um die Reichweite zu erhöhen.
+             Eine Liste aller zu repeatenden Sender-IDs muss angelegt werden. Nur Sender auf dieser Liste werden repeated.`,
+          },
         },
         register: {
           tab: "Anmelden",
@@ -88,6 +102,19 @@ export const de = {
       sun: "Sonne",
       manual: "Manuell",
       sendRtc: "Uhrzeit senden an:",
+      tt: {
+        daily: "Standardschaltzeiten AUF/AB. Gleiche Schaltzeiten für alle Wochentage. Die Einstellung --:-- führt zu keinem Schaltbefehl.",
+        weekly: "Wochenprogramm. Zwei Schaltzeiten für AUF/AB pro Wochentag. Ohne Häkchen wird der vorige Wochentag kopiert (für z.B. Mo-Fr und Sa-So)",
+        astro: `Dämmerungsautomatik mit Astrofunktion. (Die Dämmerungsautomatik benötigt Längen- und Breitengrad in Konfiguration). Schließt Rolladen zur zivilen Dämmerung.
+        Eine Verzögerungszeit kann in Minuten angegeben wodurch die Schließzeit entsprechend später wird. Negative Verzögerungszeit verändert die Schließzeit in Richung früher.`,
+        random:
+          "Zufallsautomatik. Bewirkt eine zufällige Verzögerung der einstellten Schaltzeiten zwischen 0 und 30 Minuten. Die Zufallsautomatik gilt nicht für Dämmerungszeiten.",
+        sun: "Sonnenautomatik. Aktivieren der helligkeitsabhängigen Steuerung mit Funksonnensensor 2440.",
+        manual:
+          "Automatikbetrieb auschalten. Deaktiviert Schaltzeiten, Sonnenautomtik, Dämmerungsautomatik, etc. (Überschreibt Daten im Empfänger, aber MCU hält eine Kopie zur Wiederherstellung)",
+        sendRtc: "Aktuelle Uhrzeit/Aktuelles Datum zu Empfänger oder Grupen(n) übertragen.",
+        sendISO: "Zu Testzwecken: Sendet ISO Time an Empfänger anstatt der aktuellen Zeit aus der internen Echtzeituhr.",
+      },
     },
 
     cfg: {
@@ -124,7 +151,6 @@ export const de = {
         register_id: "An-/Abmelden der ausgewählten Sender-ID an die ausgewählte Empfängernummer",
         register_rf: "An-/Abmelden eines Funksenders an die ausgewählte Empfängernummer. Erst Knopf anklicken und dann Stop am Funksender drücken!",
         registeredToTheseRx: "Anzeigen/Ändern der Anmeldungen eines Senders an den/die Empfänger. Spiegelt nur die realen Anmeldungen mittels SET Funktion.",
-   
       },
     },
 
@@ -223,6 +249,20 @@ export const de = {
           "Wurde die MCU erneuert oder der MCU-Flash-Speicher gelöscht, können hier die Namen aus dem lokalen Browser-Speicher an die MCU gesendet werden.",
       },
     },
+
+    repeater: {
+      ids: {
+        header: "Senderliste für Repeater",
+        add_button: "Füge hinzu",
+        remove_button: "Entferne",
+        tt: {
+          header:
+            "Sender-ID-Liste. Nur Funkbefehle die von diesen Sender stammen werden repeated vom Funsender der MCU. Andere Funkbefehle werden nicht repeated.",
+          add_button: "Add",
+          remove_button: "Remove",
+        },
+      },
+    },
   },
   firmware: {
     latest_master: "Letzte Release",
@@ -266,8 +306,6 @@ export const de = {
 
   mcuConfig: {
     wlan_station: "WLAN Station",
-    network: "Netzwerk",
-    misc: "Allgemein",
     ntp_client: "NTP Klient",
     mqtt_client: "MQTT Klient",
     http_server: "Webserver",

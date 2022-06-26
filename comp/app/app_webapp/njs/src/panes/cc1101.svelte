@@ -389,7 +389,7 @@
   }
 </script>
 
-<span class="bg-green-200">Experimental.</span>
+<h5 class="bg-green-200 text-center" >Experimental Register Editor</h5>
 <div class="flex flex-col content-center justify-center">
   <div class="area">
     <h4>AGC_Control</h4>
