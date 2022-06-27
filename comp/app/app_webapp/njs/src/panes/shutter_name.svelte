@@ -10,7 +10,7 @@
 {#if $GuiAcc.edit_shutter_names}
   <h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.receiver.names.tt.header") }}>{$_("app.navTab.cfg.receiver.names.header")}</h4>
 
-  <div class="main-area">
+  <div class="area">
     <div class="mt-4 p-2">
       <ShutterGM group={false} />
     </div>

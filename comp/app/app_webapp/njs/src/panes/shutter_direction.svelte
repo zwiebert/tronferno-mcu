@@ -8,7 +8,7 @@
 
 <h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.rot_dir.tt.header") }}>{$_("app.navTab.cfg.rot_dir.header")}</h4>
 
-<div class="main-area">
+<div class="area">
   <div class="mt-4 p-2">
     <ShutterGM group={false} />
   </div>

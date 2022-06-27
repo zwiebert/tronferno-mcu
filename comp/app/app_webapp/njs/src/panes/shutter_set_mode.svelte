@@ -14,7 +14,7 @@
 
 <h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.set_mode.tt.header") }}>{$_("app.navTab.cfg.set_mode.header")}</h4>
 
-<div class="main-area">
+<div class="area">
   <h4>{$_("app.setMode.h_set_mode_enable")}</h4>
   <div class="mt-4 p-2">
     <ShutterSetModeEnable />
