@@ -52,6 +52,11 @@ export const de = {
         },
         durations: {
           tab: "Laufzeit",
+          header: "Motor Laufzeiten",
+          tt: {
+            header:
+              "Konfiguration der Rollladen-Laufzeiten von Offen bis Geschlossen und von Offen bis Sonnenposition. Diese Werte sind nötig zum berechnen der aktuellen Position und um eine geforderte Position zu finden.",
+          },
         },
 
         rot_dir: {
@@ -67,7 +72,7 @@ export const de = {
           header: "Endpunkteinstellung",
           tt: {
             header: "Oberen und unteren Endpunkt einstellen für Fernotron-Rohrmotore",
-          }
+          },
         },
 
         set_mode: {
@@ -280,8 +285,6 @@ export const de = {
     version: "Versions-Nummer",
   },
   help: {
-    hint_shutterDurations:
-      "Konfiguration der Rollladen-Laufzeiten von Offen bis Geschlossen und von Offen bis Sonnenposition. Diese Werte sind nötig zum berechnen der aktuellen Position und um eine geforderte Position zu finden.",
     hint_durStopClock:
       "Zum Messen der Dauer der Rollandenbewegungen. Drücke Start/Stop zum gleichzeitigen Starten von Bewegung und Stoppuhr. Sobald der Rollladen stoppt, Start/Stop erneut drücken um die Stoppuhr anzuhalten.",
   },
