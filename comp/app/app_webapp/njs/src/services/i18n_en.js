@@ -51,9 +51,14 @@ export const en = {
               header: "Firmware information and Over the Air firmware update from GitHub zwiebert/tronferno-mcu-bin repository",
             },
           },
-          cc1101: { tab: "CC1101", header: "CC1101 RF-Module Configuration (For Developers)", tt: {
-             header: "Configure CC1101 by providing a register file (ASCII-HEX string) or change a small subset of registers in the experimental configuration editor"
-             } },
+          cc1101: {
+            tab: "CC1101",
+            header: "CC1101 RF-Module Configuration (For Developers)",
+            tt: {
+              header:
+                "Configure CC1101 by providing a register file (ASCII-HEX string) or change a small subset of registers in the experimental configuration editor",
+            },
+          },
         },
 
         endpos: {
@@ -66,6 +71,11 @@ export const en = {
 
         rot_dir: {
           tab: "Rotation-Direction",
+          header: "Motor Rotation Direction",
+          tt: {
+            header: `Direction of rotation. Change direction of roation of a motor.
+First check the current direction with arrow buttons. If wrong, then reverse the rotation with the button and check again`,
+          },
         },
         receiver: {
           tab: "Receiver",
@@ -223,7 +233,7 @@ export const en = {
     msg_firmwareIsUpdating: "Firmware is updating...",
     msg_firmwareUpdSuccess: "Update succeeded",
     msg_enterNewName: "Shutter-Name",
-    hdr_motorRotDir: "Motor Rotation Direction",
+
     config_wizards: "Configuration-Wizards",
     wizard_cuas: "Scan Central-Unit-ID",
     direction: "Direction",

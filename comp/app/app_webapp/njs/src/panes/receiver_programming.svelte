@@ -9,7 +9,7 @@
 
   import PaneShutterName from "panes/shutter_name.svelte";
   import PaneShutterSetMode from "panes/shutter_set_mode.svelte";
-  import ShutterDirection from "components/shutter_direction.svelte";
+  import PaneShutterDirection from "panes/shutter_direction.svelte";
   import SepEnable from "app/sep_enable.svelte";
   import PaneShutterDurations from "panes/shutter_durations.svelte";
 
@@ -34,13 +34,8 @@
   {#if tabIdxRx === 5 && $GuiAcc.shutter_auto}
     <PaneShutterAuto />
   {:else if tabIdxRx === 2 && $GuiAcc.program_shutter_rotation_direction}
-    <div class="mt-4 p-2">
-      <ShutterGM />
-    </div>
-    <div class="area">
-      <h5>{$_("app.hdr_motorRotDir")}</h5>
-      <ShutterDirection />
-    </div>
+      <PaneShutterDirection />
+   
   {:else if tabIdxRx === 3 && $GuiAcc.shutter_sep}
     <div class="mt-4 p-2">
       <ShutterGM />

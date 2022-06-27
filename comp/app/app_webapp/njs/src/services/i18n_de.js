@@ -53,8 +53,14 @@ export const de = {
         durations: {
           tab: "Laufzeit",
         },
+
         rot_dir: {
           tab: "Drehrichtung",
+          header: "Motor Drehrichtung",
+          tt: {
+            header: `Motordrehrichtung prüfen. Drehrichtung ändern. Zuerst Drehrichtung mit Pfeiltasten überprüfen.
+             Wenn falsch, dann Drehrichtung mit dem Button umkehren und erneut prüfen.`,
+          },
         },
         endpos: {
           tab: "Endpunkte",
@@ -203,7 +209,6 @@ export const de = {
     direction: "Richtung",
     stopClock: "Stopp-Uhr",
     msg_enterNewName: "Rollladen-Name",
-    hdr_motorRotDir: "Motor Drehrichtung",
     downToZero: "\u25bc 100% bis 0%",
     downSunPos: "\u25bc 100% bis Sonnenpos.",
     upTo100: "\u25b2  0% bis 100%",
