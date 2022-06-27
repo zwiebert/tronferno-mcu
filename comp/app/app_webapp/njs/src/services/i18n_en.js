@@ -66,7 +66,7 @@ export const en = {
           header: "End Position Setting",
           tt: {
             header: "Set lower end upper end position for Fernotron tubular-motors ",
-          }
+          },
         },
 
         set_mode: {
@@ -88,14 +88,21 @@ First check the current direction with arrow buttons. If wrong, then reverse the
         },
         receiver: {
           tab: "Receiver",
+          names: {
+            tab: "Names",
+            header: "Receiver Names",
+            tt: {
+              header: "Edit group and receiver names",
+            },
+          },
         },
         durations: {
           tab: "Duration",
           header: "Movement Durations",
           tt: {
-            header:  "Configute here the durations for the shutter to move from open to close and from open to sup-position. This is needed to calculate the current in-between shutter position and to reach a requested in-between position.",
-       
-          }
+            header:
+              "Configute here the durations for the shutter to move from open to close and from open to sup-position. This is needed to calculate the current in-between shutter position and to reach a requested in-between position.",
+          },
         },
       },
       transmitter: {

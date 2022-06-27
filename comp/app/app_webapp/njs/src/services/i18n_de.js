@@ -44,11 +44,15 @@ export const de = {
           },
         },
 
-        name: {
-          tab: "Name",
-        },
         receiver: {
           tab: "Empfänger",
+          names: {
+            tab: "Namen",
+            header: "Empfängernamen",
+            tt: {
+              header: "Bearbeite Gruppen- und Empfängernamen",
+            },
+          },
         },
         durations: {
           tab: "Laufzeit",
