@@ -5,7 +5,7 @@
   import { GuiAcc, TabIdx } from "stores/app_state";
   import { McuConfig, McuConfigKeys, Gmu } from "stores/mcu_config.js";
   import { McuDocs_cliHelpConfig } from "stores/mcu_docs.js";
-    import * as httpFetch from "app/fetch.js";
+  import * as httpFetch from "app/fetch.js";
   import * as cuas from "app/cuas.js";
   import * as misc from "app/misc.js";
   import { onMount, onDestroy } from "svelte";
@@ -242,7 +242,7 @@
   {#if tabIdxMcc === 0}
     {#if mcuConfigKeysNetwork.length > 0}
       <div class="area network">
-        <h4  class="text-center" use:tippy={{ content: $_("app.navTab.cfg.mcu.network.tt.header") }}>{$_("app.navTab.cfg.mcu.network.header")}</h4>
+        <h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.mcu.network.tt.header") }}>{$_("app.navTab.cfg.mcu.network.header")}</h4>
         <table class="conf-table top_table rounded-xl overflow-hidden">
           {#each mcuConfigKeysNetwork as key, i}
             <tr>
@@ -389,7 +389,7 @@
     {/if}
   {:else if tabIdxMcc === 1}
     <div class="area network">
-      <h4  class="text-center" use:tippy={{ content: $_("app.navTab.cfg.mcu.misc.tt.header") }}>{$_("app.navTab.cfg.mcu.misc.header")}</h4>
+      <h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.mcu.misc.tt.header") }}>{$_("app.navTab.cfg.mcu.misc.header")}</h4>
       {#if "gm-used" in mcuConfig}
         <div class="area">
           <McuConfigUsedMembers
@@ -583,8 +583,8 @@
   {:else if tabIdxMcc === 2}
     {#if mcuConfigKeysCC1101.length}
       <div class="area">
-        <h4  class="text-center" use:tippy={{ content: $_("app.navTab.cfg.mcu.cc1101.tt.header") }}>{$_("app.navTab.cfg.mcu.cc1101.header")}</h4>
- 
+        <h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.mcu.cc1101.tt.header") }}>{$_("app.navTab.cfg.mcu.cc1101.header")}</h4>
+
         {#each mcuConfigKeysCC1101 as key, i}
           <tr>
             <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
@@ -602,12 +602,14 @@
       </div>
     {/if}
   {:else if tabIdxMcc === 3}
-  <PaneFirmwareEsp32 />
+    <PaneFirmwareEsp32 />
   {/if}
 
-  <button type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
-  <button type="button" on:click={hClick_Save}>{$_("app.save")}</button>
-  <button type="button" on:click={hClick_RestartMcu}> {$_("app.restartMcu")}</button>
+  {#if tabIdxMcc < 3}
+    <button type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
+    <button type="button" on:click={hClick_Save}>{$_("app.save")}</button>
+    <button type="button" on:click={hClick_RestartMcu}> {$_("app.restartMcu")}</button>
+  {/if}
 
   {#if tabIdxMcc === 2}
     <hr />
@@ -626,9 +628,6 @@
     <h3>Receiver Log</h3>
     <AppLog rxonly={true} />
   {/if}
-
-
-
 </div>
 
 <style lang="scss">
