@@ -166,6 +166,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
       manual: "Manual",
       sendRtc: "Send wall time to:",
       sendISO: "ISO-Time",
+      sendData: "Transmit Data",
       tt: {
         daily: "Daily 24h timer. One time for up/down each. You can leave one time empty if you want only one of both up or down.",
         weekly:
@@ -179,6 +180,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
           "Deactivate automatic operation. Disables all of the above (daily, weekly, astro, random, sun). This will overwrite the data in the receiver's storage, but a copy is kept in the MCU for later re-use.",
         sendRtc: "Transmit the current time/date to receiver or group(s).",
         sendISO: "For testing purposes only: This sends a specify time string to the receiver instead of using the actual time from internal RTC.",
+        sendData: "Save data to MCU and transmit data to receiver or group. The RF transmission takes 5 seconds",
       },
     },
 

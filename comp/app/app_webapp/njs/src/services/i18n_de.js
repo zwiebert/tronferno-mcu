@@ -127,18 +127,21 @@ export const de = {
       sun: "Sonne",
       manual: "Manuell",
       sendRtc: "Uhrzeit senden an:",
+      sendData: "Datenübertragung",
       tt: {
         daily: "Standardschaltzeiten AUF/AB. Gleiche Schaltzeiten für alle Wochentage. Die Einstellung --:-- führt zu keinem Schaltbefehl.",
         weekly: "Wochenprogramm. Zwei Schaltzeiten für AUF/AB pro Wochentag. Ohne Häkchen wird der vorige Wochentag kopiert (für z.B. Mo-Fr und Sa-So)",
         astro: `Dämmerungsautomatik mit Astrofunktion. (Die Dämmerungsautomatik benötigt Längen- und Breitengrad in Konfiguration). Schließt Rollladen zur zivilen Dämmerung.
         Eine Verzögerungszeit kann in Minuten angegeben wodurch die Schließzeit entsprechend später wird. Negative Verzögerungszeit verändert die Schließzeit in Richtung früher.`,
         random:
-          "Zufallsautomatik. Bewirkt eine zufällige Verzögerung der einstellten Schaltzeiten zwischen 0 und 30 Minuten. Die Zufallsautomatik gilt nicht für Dämmerungszeiten.",
+          "Zufallsautomatik. Bewirkt eine zufällige Verzögerung der Schaltzeiten zwischen 0 und 30 Minuten. Die Zufallsautomatik gilt nicht für Dämmerungszeiten.",
         sun: "Sonnenautomatik. Aktivieren der helligkeitsabhängigen Steuerung mit Funksonnensensor 2440.",
         manual:
           "Automatikbetrieb ausschalten. Deaktiviert Schaltzeiten, Sonnenautomtik, Dämmerungsautomatik, etc. (Überschreibt Daten im Empfänger, aber MCU hält eine Kopie zur Wiederherstellung)",
         sendRtc: "Aktuelle Uhrzeit/Aktuelles Datum zu Empfänger oder Gruppen(n) übertragen.",
         sendISO: "Zu Testzwecken: Sendet ISO Zeit an Empfänger anstatt der aktuellen Zeit aus der internen Echtzeituhr.",
+        sendData: `Speichert Einstellungen und überträgt die Daten per Funk zu Empfänger oder Gruppe, was 5 Sekunden dauert.
+        Der Empfänger quittiert die erfolgreiche Datenübertragung durch kurzes Einschalten des angeschlossenen Motors.`,
       },
     },
 
@@ -189,7 +192,7 @@ export const de = {
 
       tt: {
         move_sun_down: "Bewege Rollladen herunter zur Sonnenposition. Sonnenautomatik muss dafür aktiviert sein.",
-        set_sun_pos: "Speicher aktuelle Rollladen-Position als neue Sonnenposition",
+        set_sun_pos: "Sonnenpostion einstellen: setze aktuelle Rollladen-Position als neue Sonnenposition",
       },
     },
 
