@@ -82,7 +82,7 @@ export const en = {
           tab: "Rotation-Direction",
           header: "Motor Rotation Direction",
           tt: {
-            header: `Direction of rotation. Change direction of roation of a motor.
+            header: `Direction of rotation. Change direction of rotation of a motor.
 First check the current direction with arrow buttons. If wrong, then reverse the rotation with the button and check again`,
           },
         },
@@ -101,7 +101,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
           header: "Movement Durations",
           tt: {
             header:
-              "Configute here the durations for the shutter to move from open to close and from open to sup-position. This is needed to calculate the current in-between shutter position and to reach a requested in-between position.",
+              "Configure here the durations for the shutter to move from open to close and from open to sup-position. This is needed to calculate the current in-between shutter position and to reach a requested in-between position.",
           },
         },
       },
@@ -127,7 +127,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
           header: "Transmitter-Names",
           input: "TX-Name",
           tt: {
-            header: "Assign names to transmitters for user convinience",
+            header: "Assign names to transmitters for user convenience",
           },
         },
       },
@@ -178,7 +178,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
         manual:
           "Deactivate automatic operation. Disables all of the above (daily, weekly, astro, random, sun). This will overwrite the data in the receiver's storage, but a copy is kept in the MCU for later re-use.",
         sendRtc: "Transmit the current time/date to receiver or group(s).",
-        sendISO: "For testing purposes only: This sends a specifiy time string to the receiver instead of using the actual time from internal RTC.",
+        sendISO: "For testing purposes only: This sends a specify time string to the receiver instead of using the actual time from internal RTC.",
       },
     },
 
@@ -194,17 +194,17 @@ First check the current direction with arrow buttons. If wrong, then reverse the
       tt: {
         chose_allRegIds: "Transmitter-IDs registered to other receivers",
         chose_regIds: "Transmitter-IDs registered to this receiver number only",
-        chose_rxIds: "List of unregistered transmitter-IDs recveived via RF",
+        chose_rxIds: "List of unregistered transmitter-IDs received via RF",
         chose_enterId: "Enter a Transmitter-ID",
         enterName: "Enter/edit name for this transmitter",
         text_enterId: "Enter an ID or select ID from a list",
         test_selectedId: "Identify motor(s) paired with this ID by moving them",
-        send_stop: "Send STOP if you want to register/unregister this transmitter whith a receiver in SET-function",
+        send_stop: "Send STOP if you want to register/unregister this transmitter with a receiver in SET-function",
         set_function: "Activate SET-function on the selected receiver number",
         register_id: "Register/Unregister selected Transmitter-ID to selected receiver-number",
         register_rf: "Register/Unregister RF-Transmitter to selected receiver-number. Click button and then press Stop on RF transmitter",
         registeredToTheseRx:
-          "Shows/Edits on wich Receivers a Transmitter is registered.  These registrations only mirror the real registrations in the receivers.",
+          "Shows/Edits on which Receivers a Transmitter is registered.  These registrations only mirror the real registrations in the receivers.",
       },
     },
 
@@ -238,14 +238,14 @@ First check the current direction with arrow buttons. If wrong, then reverse the
         <li>Be aware that moving a shutter beyond physical limits while adjusting end positions may harm it.</li>
         <li>Make sure you really have addressed the shutter you intend to adjust and test this with normal harmless Up/Down/Stop.</li>
         <li>Make sure only a SINGLE shutter motor is registered on the selected group/receiver number or use the motor's Radio-Code</li>
-        <li>To be safe, have a indepent transmitter ready to send STOP to the shutter, in case the MCU crashes in between</li>
+        <li>To be safe, have a independent transmitter ready to send STOP to the shutter, in case the MCU crashes in between</li>
         </ul>`,
       tt: {
-        header: "Adjusting shutter end-postions. A physical button needs to be connected to MCU.",
+        header: "Adjusting shutter end-positions. A physical button needs to be connected to MCU.",
         enter: "Open controller to adjust end positions.",
         authenticate: "Authenticate user by pressing physical button on the MCU device",
         enable: "Enable RF commands to set end positions. Shows Up and Down button you can press and hold to adjust the Up/Down end positions",
-        disable: "Disable RF commands for end postions",
+        disable: "Disable RF commands for end positions",
         exit: "Deauthenticate and leave this controller",
       },
     },
@@ -269,7 +269,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
       test_up: "Test \u25b2",
       test_down: "Test \u25bc",
       tt: {
-        toggle: "Change rotation direction of the tubular motor. Each button press reverses the direcion.",
+        toggle: "Change rotation direction of the tubular motor. Each button press reverses the direction.",
         test_up: "Test direction. Should move the shutter upwards.",
         test_down: "Test direction: Should move the shutter downwards.",
       },
@@ -335,8 +335,8 @@ First check the current direction with arrow buttons. If wrong, then reverse the
     cu: "Central-Unit-ID",
     "astro-correction": "Astro Correction",
     rtc: "Date/Time",
-    tz: "Timezone (Posix)",
-    "lan-phy": "PHY-Chip",
+    tz: "Timezone (POSIX)",
+    "Van-phy": "PHY-Chip",
     "lan-pwr-gpio": "Power-ON/OFF GPIO",
     "wlan-ssid": "SSID",
     "wlan-password": "Password",
@@ -377,8 +377,8 @@ First check the current direction with arrow buttons. If wrong, then reverse the
     wlan_station: "WLAN Station",
     ntp_client: "NTP Client",
     mqtt_client: "MQTT Client",
-    http_server: "Webserver",
-    pin_gpio: "Elektrical In-/Outputs",
+    http_server: "Web server",
+    pin_gpio: "Electrical In-/Outputs",
     config_wizards: "Configurations-Wizards",
     gm_used: "Number of Receivers per Group",
   },

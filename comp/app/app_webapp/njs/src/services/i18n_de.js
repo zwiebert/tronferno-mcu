@@ -33,13 +33,13 @@ export const de = {
       cfg: {
         mcu: {
           tab: "MCU",
-          network: { tab: "Netzwerk", header: "Netzwer-Verbindungen und -Dienste", tt: { header: "--" } },
+          network: { tab: "Netzwerk", header: "Netzwerk-Verbindungen und -Dienste", tt: { header: "--" } },
           misc: { tab: "Allgemein", header: "Allgemeine Konfiguration", tt: { header: "--" } },
           ota: {
             tab: "OTA",
             header: "OTA Firmware Update",
             tt: {
-              header: `Firmware Information und "Over the Air" Firmware update vom GitHub zwiebert/tronferno-mcu-bin Repository`,
+              header: `Firmware Information und "Over the Air" Firmware Update vom GitHub zwiebert/tronferno-mcu-bin Repository`,
             },
           },
         },
@@ -75,7 +75,7 @@ export const de = {
           tab: "Endpunkte",
           header: "Endpunkteinstellung",
           tt: {
-            header: "Oberen und unteren Endpunkt einstellen für Fernotron-Rohrmotore",
+            header: "Oberen und unteren Endpunkt einstellen für Fernotron-Rohrmotoren",
           },
         },
 
@@ -130,20 +130,20 @@ export const de = {
       tt: {
         daily: "Standardschaltzeiten AUF/AB. Gleiche Schaltzeiten für alle Wochentage. Die Einstellung --:-- führt zu keinem Schaltbefehl.",
         weekly: "Wochenprogramm. Zwei Schaltzeiten für AUF/AB pro Wochentag. Ohne Häkchen wird der vorige Wochentag kopiert (für z.B. Mo-Fr und Sa-So)",
-        astro: `Dämmerungsautomatik mit Astrofunktion. (Die Dämmerungsautomatik benötigt Längen- und Breitengrad in Konfiguration). Schließt Rolladen zur zivilen Dämmerung.
-        Eine Verzögerungszeit kann in Minuten angegeben wodurch die Schließzeit entsprechend später wird. Negative Verzögerungszeit verändert die Schließzeit in Richung früher.`,
+        astro: `Dämmerungsautomatik mit Astrofunktion. (Die Dämmerungsautomatik benötigt Längen- und Breitengrad in Konfiguration). Schließt Rollladen zur zivilen Dämmerung.
+        Eine Verzögerungszeit kann in Minuten angegeben wodurch die Schließzeit entsprechend später wird. Negative Verzögerungszeit verändert die Schließzeit in Richtung früher.`,
         random:
           "Zufallsautomatik. Bewirkt eine zufällige Verzögerung der einstellten Schaltzeiten zwischen 0 und 30 Minuten. Die Zufallsautomatik gilt nicht für Dämmerungszeiten.",
         sun: "Sonnenautomatik. Aktivieren der helligkeitsabhängigen Steuerung mit Funksonnensensor 2440.",
         manual:
-          "Automatikbetrieb auschalten. Deaktiviert Schaltzeiten, Sonnenautomtik, Dämmerungsautomatik, etc. (Überschreibt Daten im Empfänger, aber MCU hält eine Kopie zur Wiederherstellung)",
-        sendRtc: "Aktuelle Uhrzeit/Aktuelles Datum zu Empfänger oder Grupen(n) übertragen.",
-        sendISO: "Zu Testzwecken: Sendet ISO Time an Empfänger anstatt der aktuellen Zeit aus der internen Echtzeituhr.",
+          "Automatikbetrieb ausschalten. Deaktiviert Schaltzeiten, Sonnenautomtik, Dämmerungsautomatik, etc. (Überschreibt Daten im Empfänger, aber MCU hält eine Kopie zur Wiederherstellung)",
+        sendRtc: "Aktuelle Uhrzeit/Aktuelles Datum zu Empfänger oder Gruppen(n) übertragen.",
+        sendISO: "Zu Testzwecken: Sendet ISO Zeit an Empfänger anstatt der aktuellen Zeit aus der internen Echtzeituhr.",
       },
     },
 
-    cfg: {
-      mcu: {
+    bog: {
+      LCD: {
         user_gpio: {
           add_label: "User-GPIOs",
           add_button: "Hinzufügen",
@@ -167,14 +167,14 @@ export const de = {
         chose_allRegIds: "Woanders angemeldete Sender-IDs",
         chose_regIds: "An dieser Empfängernummer angemeldete Sender-IDs",
         chose_rxIds: "Unregistrierte Sender-IDs empfangen über Funk",
-        chose_enterId: "Eingabe einer sechstelligen Sender-ID",
+        chose_enterId: "Eingabe einer sechs-stelligen Sender-ID",
         test_selectedId: "Bewege kurz Motor(en) bei denen dieser Sender angemeldet ist",
         send_stop: "Sende STOP um den Sender an- oder abzumelden beim Empfänger mit aktivierter SET Funktion",
         set_function: "Aktiviere SET Funktion beim ausgewählten Empfänger",
         enterName: "Namen für Sender vergeben oder ändern",
         text_enterId: "Sender-ID direkt eingeben oder aus Liste wählen",
         register_id: "An-/Abmelden der ausgewählten Sender-ID an die ausgewählte Empfängernummer",
-        register_rf: "An-/Abmelden eines Funksenders an die ausgewählte Empfängernummer. Erst Knopf anklicken und dann Stop am Funksender drücken!",
+        register_rf: "An-/Abmelden eines Funksenders an die ausgewählte Empfängernummer. Erst Knopf anklicken und dann STOP am Funksender drücken!",
         registeredToTheseRx: "Anzeigen/Ändern der Anmeldungen eines Senders an den/die Empfänger. Spiegelt nur die realen Anmeldungen mittels SET Funktion.",
       },
     },
@@ -188,7 +188,7 @@ export const de = {
       set_sun_pos: "\u263C\u2699",
 
       tt: {
-        move_sun_down: "Bewege Rolladen herunter zur Sonnenposition. Sonnenautomatik muß dafür aktiviert sein.",
+        move_sun_down: "Bewege Rollladen herunter zur Sonnenposition. Sonnenautomatik muss dafür aktiviert sein.",
         set_sun_pos: "Speicher aktuelle Rollladen-Position als neue Sonnenposition",
       },
     },
@@ -208,15 +208,15 @@ export const de = {
         <li>Nutze diese Funktion auf eigenes Risiko oder gar nicht</li>
         <li>Das Bewegen des Rohrmotors über den mechanisch möglichen Bereich hinaus kann den Rollladen beschädigen.</li>
         <li>Überprüfe ob wirklich der richtige Rollladen ausgewählt und teste dies mit harmlosen Hoch/Runter/Stop-Kommandos.</li>
-        <li>Nur ein EINZIGER Rohrmotor darf angemeldet sein unter der Gruppen-/Empfängernummer. Anderfalls Funkcode des Rohrmotors zur Adressierung benutzen.</li>
+        <li>Nur ein EINZIGER Rohrmotor darf angemeldet sein unter der Gruppen-/Empfängernummer. Andernfalls Funkcode des Rohrmotors zur Adressierung benutzen.</li>
         <li>Zur Sicherheit immer einen Handsender bereit haben um ein STOP zu senden, falls die MCU während der Bewegung abstürzt.</li>
         </ul>`,
       tt: {
         header:
-          "Einstellen der Rollladen Endpunkte. Ein physischer Taster muss an der MCU angeschlossen sein. Schritte: 1) Authentisieren 2) Adressieren 3) Bewegung testen 4) Aktivieren 5) Endpunkte setzen 6) Deaktvieren 7) Testen 8) Wiederhohlen oder Beenden",
+          "Einstellen der Rollladen Endpunkte. Ein physischer Taster muss an der MCU angeschlossen sein. Schritte: 1) Authentisieren 2) Adressieren 3) Bewegung testen 4) Aktivieren 5) Endpunkte setzen 6) Deaktivieren 7) Testen 8) Wiederhohlen oder Beenden",
         enter: "Öffne die Steuerung zum Einstellen der Endpunkte.",
         authenticate: "Authentisiere den Benutzer durch drücken des Setzknopfes am MCU Gerät",
-        enable: "Aktiviere Funkkommandos für Endpunkte. Zeigt Hoch/Runter Knopfe zum Einstellen des oberen/unteren Endpunktes.",
+        enable: "Aktiviere Funkkommandos für Endpunkte. Zeigt Hoch/Runter Knöpfe zum Einstellen des oberen/unteren Endpunktes.",
         disable: "Deaktiviere Funkkommandos für Endpunkte.",
         exit: "Beende Authentisierung und verlasse die Steuerung",
       },
@@ -260,7 +260,7 @@ export const de = {
       tt: {
         set_mode:
           "Aktiviere die SET-Funktion eines Empfängers über Funk. Hinweis: Besonders nützlich für Empfänger mit schwer zugänglicher SET Taste, aber auch sonst.",
-        register_cu_bt: "Restriere Programmierzentrale und Gruppe/Empfänger beim Empfänger und übertrage alle Timer-Daten an den Empfänger",
+        register_cu_bt: "Registriere Programmierzentrale und Gruppe/Empfänger beim Empfänger und übertrage alle Timer-Daten an den Empfänger",
         register_cu:
           "Anmelden der Programmierzentrale (MCU) am Empfänger. Der Empfänger reagiert dann auf Kommandos von dieser Zentrale für die angegebene Gruppen-/Empfängernummer.",
         register_sender: "Anmelden eines Senders an den Empfänger. Der Empfänger reagiert auf Kommandos von allen registrierten Sendern.",
