@@ -63,6 +63,10 @@ export const en = {
 
         endpos: {
           tab: "End-Positions",
+          header: "End Position Setting",
+          tt: {
+            header: "Set lower end upper end position for Fernotron tubular-motors ",
+          }
         },
 
         set_mode: {

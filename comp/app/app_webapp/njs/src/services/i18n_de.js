@@ -64,7 +64,12 @@ export const de = {
         },
         endpos: {
           tab: "Endpunkte",
+          header: "Endpunkteinstellung",
+          tt: {
+            header: "Oberen und unteren Endpunkt einstellen für Fernotron-Rohrmotore",
+          }
         },
+
         set_mode: {
           tab: "SET",
         },
