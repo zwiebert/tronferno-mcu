@@ -81,10 +81,12 @@ export const de = {
 
         set_mode: {
           tab: "SET",
-          header: "SET-Funktion",
-          tt: {
-            header: `SET-Funktion eines Empfängers aktivieren. Sie haben dann 60 Sekunden Zeit, um
+          activate: {
+            header: "SET-Funktion",
+            tt: {
+              header: `SET-Funktion eines Empfängers aktivieren. Sie haben dann 60 Sekunden Zeit, um
             einen Sender am ausgewählten Empfänger an- oder abzumelden.`,
+            },
           },
         },
       },

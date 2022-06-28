@@ -10,10 +10,10 @@
 </script>
 
 
-<h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.set_mode.activate.tt.header") }}>{$_("app.navTab.cfg.set_mode.activate.header")}</h4>
+
+<h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.set_mode.register_gm.tt.header") }}>{$_("app.navTab.cfg.set_mode.register_gm.header")}</h4>
 
 <div class="area">
-  <div class="mt-4 p-2">
-    <ShutterSetModeEnable />
-  </div>
+  <h4>{$_("app.setMode.register_unregister")}</h4>
+  <ShutterRegister />
 </div>

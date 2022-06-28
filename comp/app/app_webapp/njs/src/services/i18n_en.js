@@ -71,11 +71,19 @@ export const en = {
 
         set_mode: {
           tab: "SET",
-          header: "Activate SET",
-          tt: {
-            header: `Activate SET-function of receiver. You have 60 seconds in which to
-            register additional transmitters with the selected receiver.`,
+          activate: {
+            tab: "Activate",
+            header: "Activate SET",
+            tt: {
+              header: `Activate SET-function of receiver. You have 60 seconds in which to
+              register additional transmitters with the selected receiver.`,
+            },
           },
+          register_gm: {
+            tab: "Register G/E",
+            header: "Register Receiver with Programming Centre"
+          }
+
         },
 
         rot_dir: {
