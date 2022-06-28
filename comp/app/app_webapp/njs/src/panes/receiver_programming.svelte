@@ -8,15 +8,14 @@
   import PaneShutterAuto from "panes/shutter_auto.svelte";
 
   import PaneShutterName from "panes/shutter_name.svelte";
-  
+
   import PaneShutterSetMode from "panes/shutter_set_mode.svelte";
   import PaneShutterRegisterGm from "panes/shutter_register_gm.svelte";
+  import PaneShutterRegisterTx from "panes/shutter_register_tx.svelte";
 
   import PaneShutterDirection from "panes/shutter_direction.svelte";
   import PaneShutterEndpos from "panes/shutter_end_pos.svelte";
   import PaneShutterDurations from "panes/shutter_durations.svelte";
-
-
 
   $: tabIdxRx = $TabIdx["receiver"] || 0;
   $: tabIdxSet = $TabIdx["set"] || 0;
@@ -43,6 +42,7 @@
       nav_tabs={[
         ...($GuiAcc.set_mode ? [{ name: $_("app.navTab.cfg.set_mode.activate.tab"), idx: 0 }] : []),
         ...($GuiAcc.set_mode ? [{ name: $_("app.navTab.cfg.set_mode.register_gm.tab"), idx: 1 }] : []),
+        ...($GuiAcc.set_mode ? [{ name: $_("app.navTab.cfg.set_mode.register_tx.tab"), idx: 2 }] : []),
       ]}
       name="set"
     />
@@ -59,8 +59,10 @@
   {:else if tabIdxRx === 1 && $GuiAcc.set_mode}
     {#if tabIdxSet === 0}
       <PaneShutterSetMode />
-      {:else if tabIdxSet === 1}
+    {:else if tabIdxSet === 1}
       <PaneShutterRegisterGm />
+    {:else if tabIdxSet === 2}
+      <PaneShutterRegisterTx />
     {/if}
   {:else if tabIdxRx === 0 && $GuiAcc.edit_shutter_names}
     <PaneShutterName />

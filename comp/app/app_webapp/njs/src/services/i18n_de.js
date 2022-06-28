@@ -54,6 +54,7 @@ export const de = {
             },
           },
         },
+
         durations: {
           tab: "Laufzeit",
           header: "Motor Laufzeiten",
@@ -82,10 +83,27 @@ export const de = {
         set_mode: {
           tab: "SET",
           activate: {
-            header: "SET-Funktion",
+            tab: "Aktivieren",
+            header: "SET-Funktion aktivieren",
             tt: {
               header: `SET-Funktion eines Empfängers aktivieren. Sie haben dann 60 Sekunden Zeit, um
             einen Sender am ausgewählten Empfänger an- oder abzumelden.`,
+            },
+          },
+          register_gm: {
+            tab: "Anmelden-G/E",
+            header: "Melde Programmierzentrale an bei Empfänger",
+            tt: {
+              header: `Um einen Empfänger über eine Gruppen-/Empfängernummer der Zentrale ansprechbar zu machen:
+               1) Aktiviere SET-Funktion bei Empfänger. 2) Übertrage Daten (Timer) unter der gewünschten Gruppen-/Empfängernummer`,
+            },
+          },
+          register_tx: {
+            tab: "Anmelden-Sender",
+            header: "Melde Sender an bei Empfänger",
+            tt: {
+              header: `Zum anmelden/abmelden eines Sender an einen Empfänger: 1) Aktiviere SET-Funktion bei Empfänger.
+               2) Sende STOP vom Sender -oder- wähle Sender-ID hier aus und klicke STOP Knopf.`,
             },
           },
         },

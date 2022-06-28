@@ -80,10 +80,21 @@ export const en = {
             },
           },
           register_gm: {
-            tab: "Register G/E",
-            header: "Register Receiver with Programming Centre"
-          }
-
+            tab: "Register-G/E",
+            header: "Register Receiver with Programming Centre",
+            tt: {
+              header: `To assign a receiver to a group and give it a receiver number:
+               1) active SET function of receiver. 2) transmit data (as in timer data) using the intended group/receiver-number`,
+            },
+          },
+          register_tx: {
+            tab: "Register-TX",
+            header: "Register Receiver with Transmitter",
+            tt: {
+              header:
+                "To register/unregister a transmitter to a receiver: 1) activate SET function of receiver. 2) send STOP command with transmitter -or- chose the transmitter ID here and press STOP",
+            },
+          },
         },
 
         rot_dir: {
