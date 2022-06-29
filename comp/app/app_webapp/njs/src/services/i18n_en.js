@@ -9,148 +9,187 @@ export const en = {
     RadioCode: "RadioCode",
     radio_code: "radio-code",
   },
+
+  navTab: {
+    main: {
+      move: "\u25b3\u25bd",
+      percent: "%%",
+      config: "\u2699",
+      auto: "Auto",
+      firmware: "OTA",
+      user_level: {
+        developer: ">>",
+        all: "$#",
+        expert: "##>",
+        admin: "#>",
+        user: "$>",
+        kid: "@>",
+        name: {
+          developer: "Developer",
+          expert: "Expert",
+          admin: "Admin",
+          user: "User",
+          kid: "Kid",
+        },
+      },
+      help: {
+        tab: "?",
+        ota: {
+          tab: "OTA",
+        },
+      },
+    },
+
+    cfg: {
+      mcu: {
+        tab: "MCU",
+        cc1101: {
+          tab: "CC1101",
+        },
+      },
+
+      receiver: {
+        tab: "Receiver",
+        names: {
+          tab: "Names",
+        },
+        durations: {
+          tab: "Duration",
+        },
+        rot_dir: {
+          tab: "Rotation-Direction",
+        },
+
+        endpos: {
+          tab: "End-Positions",
+        },
+
+        set_mode: {
+          tab: "SET",
+          activate: {
+            tab: "Function",
+          },
+          register_gm: {
+            tab: "Centre",
+          },
+          register_tx: {
+            tab: "Transmitter",
+          },
+        },
+      },
+
+      transmitter: {
+        tab: "Transmitter",
+        repeater: {
+          tab: "Repeater",
+        },
+        register: {
+          tab: "Register",
+        },
+        names: {
+          tab: "Names",
+          input: "TX-Name",
+        },
+      },
+    },
+  },
+
+  panes: {
+    ota: {
+      header: "OTA Firmware Update",
+      tt: {
+        header: "Firmware information and Over the Air firmware update from GitHub zwiebert/tronferno-mcu-bin repository",
+      },
+    },
+
+    network: { header: "Netzwerk-Verbindungen und -Dienste", tt: { header: "--" } },
+    misc: { header: "Allgemeine Konfiguration", tt: { header: "--" } },
+    cc1101: {
+      header: "CC1101 RF-Module Configuration (For Developers)",
+      tt: {
+        header:
+          "Configure CC1101 by providing a register file (ASCII-HEX string) or change a small subset of registers in the experimental configuration editor",
+      },
+    },
+
+    rx_names: {
+      header: "Receiver Names",
+      tt: {
+        header: "Edit group and receiver names",
+      },
+    },
+    durations: {
+      header: "Movement Durations",
+      tt: {
+        header:
+          "Configure here the durations for the shutter to move from open to close and from open to sup-position. This is needed to calculate the current in-between shutter position and to reach a requested in-between position.",
+      },
+    },
+    rot_dir: {
+      header: "Motor Rotation Direction",
+      tt: {
+        header: `Direction of rotation. Change direction of rotation of a motor.
+First check the current direction with arrow buttons. If wrong, then reverse the rotation with the button and check again`,
+      },
+    },
+
+    endpos: {
+      header: "End Position Setting",
+      tt: {
+        header: "Set lower end upper end position for Fernotron tubular-motors ",
+      },
+    },
+
+    activate: {
+      header: "Activate SET",
+      tt: {
+        header: `Activate SET-function of receiver. You have 60 seconds in which to
+          register additional transmitters with the selected receiver.`,
+      },
+    },
+    register_gm: {
+      header: "Register Receiver with Programming Centre",
+      tt: {
+        header: `To assign a receiver to a group and give it a receiver number:
+           1) active SET function of receiver. 2) transmit data (as in timer data) using the intended group/receiver-number`,
+      },
+    },
+    register_tx: {
+      header: "Register Receiver with Transmitter",
+      tt: {
+        header:
+          "To register/unregister a transmitter to a receiver: 1) activate SET function of receiver. 2) send STOP command with transmitter -or- chose the transmitter ID here and press STOP",
+      },
+    },
+
+    repeater: {
+      header: "RF-Repeater",
+      tt: {
+        header:
+          "Repeat plain RF transmitter commands by the MCU's RF transmitter to increase reach. You have to provide a list of transmitter-IDs. Only transmitters on this list will be repeated.",
+      },
+    },
+    register: {
+      header: "Register Transmitters",
+      tt: {
+        header: "To register position changes caused by plain controllers and sun-sensors, these controllers have to be registered here.",
+      },
+    },
+    tx_names: {
+      header: "Transmitter-Names",
+      input: "TX-Name",
+      tt: {
+        header: "Assign names to transmitters for user convenience",
+      },
+    },
+  },
+
   app: {
     run: "Run",
     reload: "Reload",
     restartMcu: "Restart MCU",
     save: "Save",
     hide: "Hide",
-
-    navTab: {
-      main: {
-        move: "\u25b3\u25bd",
-        percent: "%%",
-        config: "\u2699",
-        auto: "Auto",
-        firmware: "OTA",
-        user_level: {
-          developer: ">>",
-          all: "$#",
-          expert: "##>",
-          admin: "#>",
-          user: "$>",
-          kid: "@>",
-          name: {
-            developer: "Developer",
-            expert: "Expert",
-            admin: "Admin",
-            user: "User",
-            kid: "Kid",
-          },
-        },
-      },
-      cfg: {
-        mcu: {
-          tab: "MCU",
-          network: { tab: "Network", header: "Network-Connections/-Services", tt: { header: "" } },
-          misc: { tab: "General", header: "General Configuration", tt: { header: "" } },
-          ota: {
-            tab: "OTA",
-            header: "OTA Firmware Update",
-            tt: {
-              header: "Firmware information and Over the Air firmware update from GitHub zwiebert/tronferno-mcu-bin repository",
-            },
-          },
-          cc1101: {
-            tab: "CC1101",
-            header: "CC1101 RF-Module Configuration (For Developers)",
-            tt: {
-              header:
-                "Configure CC1101 by providing a register file (ASCII-HEX string) or change a small subset of registers in the experimental configuration editor",
-            },
-          },
-        },
-
-        endpos: {
-          tab: "End-Positions",
-          header: "End Position Setting",
-          tt: {
-            header: "Set lower end upper end position for Fernotron tubular-motors ",
-          },
-        },
-
-        set_mode: {
-          tab: "SET",
-          activate: {
-            tab: "Activate",
-            header: "Activate SET",
-            tt: {
-              header: `Activate SET-function of receiver. You have 60 seconds in which to
-              register additional transmitters with the selected receiver.`,
-            },
-          },
-          register_gm: {
-            tab: "Register-G/E",
-            header: "Register Receiver with Programming Centre",
-            tt: {
-              header: `To assign a receiver to a group and give it a receiver number:
-               1) active SET function of receiver. 2) transmit data (as in timer data) using the intended group/receiver-number`,
-            },
-          },
-          register_tx: {
-            tab: "Register-TX",
-            header: "Register Receiver with Transmitter",
-            tt: {
-              header:
-                "To register/unregister a transmitter to a receiver: 1) activate SET function of receiver. 2) send STOP command with transmitter -or- chose the transmitter ID here and press STOP",
-            },
-          },
-        },
-
-        rot_dir: {
-          tab: "Rotation-Direction",
-          header: "Motor Rotation Direction",
-          tt: {
-            header: `Direction of rotation. Change direction of rotation of a motor.
-First check the current direction with arrow buttons. If wrong, then reverse the rotation with the button and check again`,
-          },
-        },
-        receiver: {
-          tab: "Receiver",
-          names: {
-            tab: "Names",
-            header: "Receiver Names",
-            tt: {
-              header: "Edit group and receiver names",
-            },
-          },
-        },
-        durations: {
-          tab: "Duration",
-          header: "Movement Durations",
-          tt: {
-            header:
-              "Configure here the durations for the shutter to move from open to close and from open to sup-position. This is needed to calculate the current in-between shutter position and to reach a requested in-between position.",
-          },
-        },
-      },
-      transmitter: {
-        tab: "Transmitter",
-        repeater: {
-          tab: "Repeater",
-          header: "RF-Repeater",
-          tt: {
-            header:
-              "Repeat plain RF transmitter commands by the MCU's RF transmitter to increase reach. You have to provide a list of transmitter-IDs. Only transmitters on this list will be repeated.",
-          },
-        },
-        register: {
-          tab: "Register",
-          header: "Register Transmitters",
-          tt: {
-            header: "To register position changes caused by plain controllers and sun-sensors, these controllers have to be registered here.",
-          },
-        },
-        names: {
-          tab: "Names",
-          header: "Transmitter-Names",
-          input: "TX-Name",
-          tt: {
-            header: "Assign names to transmitters for user convenience",
-          },
-        },
-      },
-    },
 
     cfg: {
       mcu: {
@@ -162,16 +201,6 @@ First check the current direction with arrow buttons. If wrong, then reverse the
             gpioxx: "Configure or remove a user defined GPIO here",
             add_label: "Add user defined GPIOs, which can then be configured above for input or output and later accessed via MQTT",
           },
-        },
-      },
-
-      receiver: {
-        tab_name: "Receiver",
-        rot_dir: {
-          tab_name: "Rotation",
-        },
-        end_pos: {
-          tab_name: "End-Position",
         },
       },
     },
@@ -302,7 +331,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
       register_cu_bt: "Register central-unit-G-E to Receiver",
       register_cu: "Central-Unit",
       register_sender: "Transmitter",
-      set_mode: "Enable SET-function",
+      set_mode: "SET",
       dev_address: "Device Address",
       receiver_address: "Receiver Address",
       sender_address: "Transmitter",

@@ -58,7 +58,7 @@
   }
 </script>
 
-<h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.mcu.ota.tt.header") }}>{$_("app.navTab.cfg.mcu.ota.header")}</h4>
+<h4 class="text-center" use:tippy={{ content: $_("panes.ota.tt.header") }}>{$_("panes.ota.header")}</h4>
 
 <div class="area">
   <McuFirmwareUpd bind:fwbtns chip="" updSecs="30" />

@@ -19,6 +19,8 @@
   import PaneAppLog from "panes/app_log.svelte";
   import PaneDeveloper from "panes/developer.svelte";
   import PaneUserLevel from "panes/user_level.svelte";
+  import PaneUserHelp from "panes/user_help.svelte";
+  import PaneFirmwareEsp32 from "panes/firmware_esp32.svelte";
   import * as httpFetch from "app/fetch.js";
   import { onMount, onDestroy } from "svelte";
 
@@ -39,14 +41,14 @@
 
   function getUserLevelHeader(ul) {
     return ul < 0
-      ? $_("app.navTab.main.user_level.developer")
+      ? $_("navTab.main.user_level.developer")
       : ul < 10
-      ? $_("app.navTab.main.user_level.expert")
+      ? $_("navTab.main.user_level.expert")
       : ul < 20
-      ? $_("app.navTab.main.user_level.admin")
+      ? $_("navTab.main.user_level.admin")
       : ul < 30
-      ? $_("app.navTab.main.user_level.user")
-      : $_("app.navTab.main.user_level.kid");
+      ? $_("navTab.main.user_level.user")
+      : $_("navTab.main.user_level.kid");
   }
 </script>
 
@@ -54,11 +56,12 @@
   <div class="navtab-main">
     <NavTabs
       nav_tabs={[
-        { name: $_("app.navTab.main.move"), idx: 0 },
+        { name: $_("navTab.main.move"), idx: 0 },
         { name: "2411", idx: 1 },
-        { name: $_("app.navTab.main.percent"), idx: 2 },
-        ...($GuiAcc.shutter_auto ? [{ name: $_("app.navTab.main.auto"), idx: 3 }] : []),
-        ...($GuiAcc.cfg ? [{ name: $_("app.navTab.main.config"), idx: 4 }] : []),
+        { name: $_("navTab.main.percent"), idx: 2 },
+        ...($GuiAcc.shutter_auto ? [{ name: $_("navTab.main.auto"), idx: 3 }] : []),
+        ...($GuiAcc.cfg ? [{ name: $_("navTab.main.config"), idx: 4 }] : []),
+        { name: $_("navTab.main.help.tab"), idx: 7},
         { name: getUserLevelHeader($GuiUserLevel), idx: 5 },
         ...($GuiAcc.debug ? [{ name: "Test", idx: 6 }] : []),
       ]}
@@ -77,9 +80,9 @@
     <div class="navtab-sub">
       <NavTabs
         nav_tabs={[
-          { name: $_("app.navTab.cfg.mcu.tab"), idx: 0 },
-          { name: $_("app.navTab.cfg.receiver.tab"), idx: 7 },
-          { name: $_("app.navTab.transmitter.tab"), idx: 1 },
+          { name: $_("navTab.cfg.mcu.tab"), idx: 0 },
+          { name: $_("navTab.cfg.receiver.tab"), idx: 7 },
+          { name: $_("navTab.cfg.transmitter.tab"), idx: 1 },
           { name: "Log", idx: 6 },
         ]}
         name="settings"
@@ -93,10 +96,10 @@
       <div class="navtab-sub2">
         <NavTabs
           nav_tabs={[
-            ...($GuiAcc.edit_transmitter_names ? [{ name: $_("app.navTab.transmitter.names.tab"), idx: 0 }] : []),
-            { name: $_("app.navTab.transmitter.register.tab"), idx: 1 },
-            { name: $_("app.navTab.transmitter.repeater.tab"), idx: 2 },
-            // { name: $_("app.navTab.transmitter.transmit"), idx: 2 },
+            ...($GuiAcc.edit_transmitter_names ? [{ name: $_("navTab.cfg.transmitter.names.tab"), idx: 0 }] : []),
+            { name: $_("navTab.cfg.transmitter.register.tab"), idx: 1 },
+            { name: $_("navTab.cfg.transmitter.repeater.tab"), idx: 2 },
+            // { name: $_("navTab.cfg.transmitter.transmit"), idx: 2 },
           ]}
           name="sender"
         />
@@ -112,8 +115,8 @@
       <div class="navtab-sub2">
         <NavTabs
           nav_tabs={[
-            { name: $_("app.navTab.positions.durations"), idx: 0 },
-            //  { name: $_("app.navTab.positions.aliases"), idx: 1 },
+            { name: $_("navTab.positions.durations"), idx: 0 },
+            //  { name: $_("navTab.positions.aliases"), idx: 1 },
           ]}
           name="positions"
         />
@@ -132,6 +135,17 @@
     {/if}
   {:else if tabIdxMain === 5}
     <PaneUserLevel />
+    {:else if !misc.DISTRO && tabIdxMain === 7}
+    <div class="navtab-sub">
+      <NavTabs
+        nav_tabs={[
+          { name: $_("navTab.help.ota.tab"), idx: 0 },
+        ]}
+        name="user_help"
+      />
+    </div>
+    <PaneFirmwareEsp32 />
+    <PaneUserHelp />
   {:else if !misc.DISTRO && tabIdxMain === 6}
     <PaneDeveloper />
   {/if}

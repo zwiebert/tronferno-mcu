@@ -24,13 +24,13 @@
 <div class="navtab-sub2">
   <NavTabs
     nav_tabs={[
-      ...($GuiAcc.edit_shutter_names ? [{ name: $_("app.navTab.cfg.receiver.names.tab"), idx: 0 }] : []),
-      ...($GuiAcc.set_mode ? [{ name: $_("app.navTab.cfg.set_mode.tab"), idx: 1 }] : []),
-      ...($GuiAcc.program_shutter_rotation_direction ? [{ name: $_("app.navTab.cfg.rot_dir.tab"), idx: 2 }] : []),
-      ...($GuiAcc.shutter_sep ? [{ name: $_("app.navTab.cfg.endpos.tab"), idx: 3 }] : []),
-      ...($GuiAcc.edit_shutter_durations ? [{ name: $_("app.navTab.cfg.durations.tab"), idx: 4 }] : []),
+      ...($GuiAcc.edit_shutter_names ? [{ name: $_("navTab.cfg.receiver.names.tab"), idx: 0 }] : []),
+      ...($GuiAcc.set_mode ? [{ name: $_("navTab.cfg.receiver.set_mode.tab"), idx: 1 }] : []),
+      ...($GuiAcc.program_shutter_rotation_direction ? [{ name: $_("navTab.cfg.receiver.rot_dir.tab"), idx: 2 }] : []),
+      ...($GuiAcc.shutter_sep ? [{ name: $_("navTab.cfg.receiver.endpos.tab"), idx: 3 }] : []),
+      ...($GuiAcc.edit_shutter_durations ? [{ name: $_("navTab.cfg.receiver.durations.tab"), idx: 4 }] : []),
 
-      //...($GuiAcc.shutter_auto ? [{ name: $_("app.navTab.main.auto"), idx: 0 }] : []),
+      //...($GuiAcc.shutter_auto ? [{ name: $_("navTab.main.auto"), idx: 0 }] : []),
     ]}
     name="receiver"
   />
@@ -40,9 +40,9 @@
   <div class="navtab-sub3">
     <NavTabs
       nav_tabs={[
-        ...($GuiAcc.set_mode ? [{ name: $_("app.navTab.cfg.set_mode.activate.tab"), idx: 0 }] : []),
-        ...($GuiAcc.set_mode ? [{ name: $_("app.navTab.cfg.set_mode.register_gm.tab"), idx: 1 }] : []),
-        ...($GuiAcc.set_mode ? [{ name: $_("app.navTab.cfg.set_mode.register_tx.tab"), idx: 2 }] : []),
+        ...($GuiAcc.set_mode ? [{ name: $_("navTab.cfg.receiver.set_mode.activate.tab"), idx: 0 }] : []),
+        ...($GuiAcc.set_mode ? [{ name: $_("navTab.cfg.receiver.set_mode.register_gm.tab"), idx: 1 }] : []),
+        ...($GuiAcc.set_mode ? [{ name: $_("navTab.cfg.receiver.set_mode.register_tx.tab"), idx: 2 }] : []),
       ]}
       name="set"
     />

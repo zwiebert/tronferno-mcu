@@ -228,10 +228,10 @@
 <div class="navtab-sub2 flex flex-col items-center px-1 border-none">
   <NavTabs
     nav_tabs={[
-      { name: $_("app.navTab.cfg.mcu.network.tab"), idx: 0 },
-      { name: $_("app.navTab.cfg.mcu.misc.tab"), idx: 1 },
+      { name: $_("navTab.cfg.mcu.network.tab"), idx: 0 },
+      { name: $_("navTab.cfg.mcu.misc.tab"), idx: 1 },
       ...($GuiAcc.edit_rf_module && hasCc1101 ? [{ name: "CC1101", idx: 2 }] : []),
-      { name: $_("app.navTab.main.firmware"), idx: 3 },
+      { name: $_("navTab.main.firmware"), idx: 3 },
     ]}
     name="mcc"
     vertical={false}
@@ -242,7 +242,7 @@
   {#if tabIdxMcc === 0}
     {#if mcuConfigKeysNetwork.length > 0}
       <div class="area network">
-        <h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.mcu.network.tt.header") }}>{$_("app.navTab.cfg.mcu.network.header")}</h4>
+        <h4 class="text-center" use:tippy={{ content: $_("panes.network.tt.header") }}>{$_("panes.network.header")}</h4>
         <table class="conf-table top_table rounded-xl overflow-hidden">
           {#each mcuConfigKeysNetwork as key, i}
             <tr>
@@ -389,7 +389,7 @@
     {/if}
   {:else if tabIdxMcc === 1}
     <div class="area network">
-      <h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.mcu.misc.tt.header") }}>{$_("app.navTab.cfg.mcu.misc.header")}</h4>
+      <h4 class="text-center" use:tippy={{ content: $_("panes.misc.tt.header") }}>{$_("panes.misc.header")}</h4>
       {#if "gm-used" in mcuConfig}
         <div class="area">
           <McuConfigUsedMembers
@@ -583,7 +583,7 @@
   {:else if tabIdxMcc === 2}
     {#if mcuConfigKeysCC1101.length}
       <div class="area">
-        <h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.mcu.cc1101.tt.header") }}>{$_("app.navTab.cfg.mcu.cc1101.header")}</h4>
+        <h4 class="text-center" use:tippy={{ content: $_("panes.cc1101.tt.header") }}>{$_("panes.cc1101.header")}</h4>
 
         {#each mcuConfigKeysCC1101 as key, i}
           <tr>

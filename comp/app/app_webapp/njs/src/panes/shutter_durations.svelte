@@ -6,7 +6,7 @@
   import tippy from "sveltejs-tippy";
 </script>
 
-<h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.durations.tt.header") }}>{$_("app.navTab.cfg.durations.header")}</h4>
+<h4 class="text-center" use:tippy={{ content: $_("panes.durations.tt.header") }}>{$_("panes.durations.header")}</h4>
 
 <div class="area">
   <div class="mt-4 p-2">

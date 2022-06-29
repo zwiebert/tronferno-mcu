@@ -6,7 +6,7 @@
   import ShutterDirection from "components/shutter_direction.svelte";
 </script>
 
-<h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.rot_dir.tt.header") }}>{$_("app.navTab.cfg.rot_dir.header")}</h4>
+<h4 class="text-center" use:tippy={{ content: $_("panes.rot_dir.tt.header") }}>{$_("panes.rot_dir.header")}</h4>
 
 <div class="area">
   <div class="mt-4 p-2">

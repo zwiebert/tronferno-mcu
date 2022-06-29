@@ -9,135 +9,191 @@ export const de = {
     RadioCode: "Funkcode",
     radio_code: "Funkcode",
   },
+
+  navTab: {
+    main: {
+      auto: "Auto",
+      //   firmware: "FW-Update",
+      user_level: {
+        name: {
+          developer: "Entwickler",
+          expert: "Experte",
+          admin: "Administrator",
+          user: "Benutzer",
+          kid: "Kind",
+        },
+      },
+    },
+    help: {
+      tab: "?",
+      ota: {
+        tab: "OTA",
+      },
+    },
+    cfg: {
+      mcu: {
+        tab: "MCU",
+        network: { tab: "Netzwerk" },
+        misc: { tab: "Allgemein" },
+      },
+
+      receiver: {
+        tab: "Empfänger",
+        names: {
+          tab: "Namen",
+        },
+
+        durations: {
+          tab: "Laufzeit",
+        },
+
+        rot_dir: {
+          tab: "Drehrichtung",
+        },
+        endpos: {
+          tab: "Endpunkte",
+        },
+
+        set_mode: {
+          tab: "SET",
+          activate: {
+            tab: "Funktion",
+          },
+          register_gm: {
+            tab: "Zentrale",
+          },
+          register_tx: {
+            tab: "Sender",
+          },
+        },
+      },
+
+      transmitter: {
+        tab: "Sender",
+        repeater: {
+          tab: "Repeater",
+        },
+        names: {
+          tab: "Namen",
+        },
+        register: {
+          tab: "Anmelden",
+        },
+      },
+    },
+  },
+
+  panes: {
+    main: {
+      auto: "Auto",
+      //   firmware: "FW-Update",
+      user_level: {
+        name: {
+          developer: "Entwickler",
+          expert: "Experte",
+          admin: "Administrator",
+          user: "Benutzer",
+          kid: "Kind",
+        },
+      },
+    },
+
+    ota: {
+      header: "OTA Firmware Update",
+      tt: {
+        header: `Firmware Information und "Over the Air" Firmware Update vom GitHub zwiebert/tronferno-mcu-bin Repository`,
+      },
+    },
+
+    mcu: {
+      network: { header: "Netzwerk-Verbindungen und -Dienste", tt: { header: "--" } },
+      misc: { header: "Allgemeine Konfiguration", tt: { header: "--" } },
+    },
+
+    rx_names: {
+      header: "Empfängernamen",
+      tt: {
+        header: "Bearbeite Gruppen- und Empfängernamen",
+      },
+    },
+
+    durations: {
+      header: "Motor Laufzeiten",
+      tt: {
+        header:
+          "Konfiguration der Rollladen-Laufzeiten von Offen bis Geschlossen und von Offen bis Sonnenposition. Diese Werte sind nötig zum berechnen der aktuellen Position und um eine geforderte Position zu finden.",
+      },
+    },
+
+    rot_dir: {
+      header: "Motor Drehrichtung",
+      tt: {
+        header: `Motordrehrichtung prüfen. Drehrichtung ändern. Zuerst Drehrichtung mit Pfeiltasten überprüfen.
+             Wenn falsch, dann Drehrichtung mit dem Button umkehren und erneut prüfen.`,
+      },
+    },
+    endpos: {
+      header: "Endpunkteinstellung",
+      tt: {
+        header: "Oberen und unteren Endpunkt einstellen für Fernotron-Rohrmotoren",
+      },
+    },
+
+    set_mode: {
+      activate: {
+        header: "SET-Funktion aktivieren",
+        tt: {
+          header: `SET-Funktion eines Empfängers aktivieren. Sie haben dann 60 Sekunden Zeit, um
+            einen Sender am ausgewählten Empfänger an- oder abzumelden.`,
+        },
+      },
+      register_gm: {
+        header: "Melde Programmierzentrale an bei Empfänger",
+        tt: {
+          header: `Um einen Empfänger über eine Gruppen-/Empfängernummer der Zentrale ansprechbar zu machen:
+               1) Aktiviere SET-Funktion bei Empfänger. 2) Übertrage Daten (Timer) unter der gewünschten Gruppen-/Empfängernummer`,
+        },
+      },
+      register_tx: {
+        header: "Melde Sender an bei Empfänger",
+        tt: {
+          header: `Zum anmelden/abmelden eines Sender an einen Empfänger: 1) Aktiviere SET-Funktion bei Empfänger.
+               2) Sende STOP vom Sender -oder- wähle Sender-ID hier aus und klicke STOP Knopf.`,
+        },
+      },
+
+      repeater: {
+        header: "Funk-Repeater",
+        tt: {
+          header: `Repeat Handsender/Funksensor-Kommandos durch den Funksender der MCU um die Reichweite zu erhöhen.
+             Eine Liste aller zu repeatenden Sender-IDs muss angelegt werden. Nur Sender auf dieser Liste werden repeated.`,
+        },
+      },
+      tx_names: {
+        header: "Sender-Namen",
+        input: "Name",
+        tt: {
+          header: "Namen für Sender für bessere Übersichtlichkeit. Ein Name könnte z.B. den genauen Stand-Ort des Senders beschreiben.",
+        },
+      },
+      register: {
+        header: "Sender Anmelden",
+        tt: {
+          header: `Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren muss der MCU bekannt sein, an welchen Empfängern diese angemeldet sind.
+              Da diese nicht automatisch erfolgen kann, muss der User diese An-/Abmeldungen hier zusätzlich noch einmal durchführen. 
+              Runde Knöpfe auf dieser Seite testen oder ändern die realen An-/Abmeldung. 
+               `,
+        },
+      },
+    },
+  },
+
   app: {
     duration: "Dauer (sek)",
     reload: "Neu Laden",
     restartMcu: "MCU Neustart",
     save: "Speichern",
     hide: "Verstecke",
-
-    navTab: {
-      main: {
-        auto: "Auto",
-        //   firmware: "FW-Update",
-        user_level: {
-          name: {
-            developer: "Entwickler",
-            expert: "Experte",
-            admin: "Administrator",
-            user: "Benutzer",
-            kid: "Kind",
-          },
-        },
-      },
-      cfg: {
-        mcu: {
-          tab: "MCU",
-          network: { tab: "Netzwerk", header: "Netzwerk-Verbindungen und -Dienste", tt: { header: "--" } },
-          misc: { tab: "Allgemein", header: "Allgemeine Konfiguration", tt: { header: "--" } },
-          ota: {
-            tab: "OTA",
-            header: "OTA Firmware Update",
-            tt: {
-              header: `Firmware Information und "Over the Air" Firmware Update vom GitHub zwiebert/tronferno-mcu-bin Repository`,
-            },
-          },
-        },
-
-        receiver: {
-          tab: "Empfänger",
-          names: {
-            tab: "Namen",
-            header: "Empfängernamen",
-            tt: {
-              header: "Bearbeite Gruppen- und Empfängernamen",
-            },
-          },
-        },
-
-        durations: {
-          tab: "Laufzeit",
-          header: "Motor Laufzeiten",
-          tt: {
-            header:
-              "Konfiguration der Rollladen-Laufzeiten von Offen bis Geschlossen und von Offen bis Sonnenposition. Diese Werte sind nötig zum berechnen der aktuellen Position und um eine geforderte Position zu finden.",
-          },
-        },
-
-        rot_dir: {
-          tab: "Drehrichtung",
-          header: "Motor Drehrichtung",
-          tt: {
-            header: `Motordrehrichtung prüfen. Drehrichtung ändern. Zuerst Drehrichtung mit Pfeiltasten überprüfen.
-             Wenn falsch, dann Drehrichtung mit dem Button umkehren und erneut prüfen.`,
-          },
-        },
-        endpos: {
-          tab: "Endpunkte",
-          header: "Endpunkteinstellung",
-          tt: {
-            header: "Oberen und unteren Endpunkt einstellen für Fernotron-Rohrmotoren",
-          },
-        },
-
-        set_mode: {
-          tab: "SET",
-          activate: {
-            tab: "Aktivieren",
-            header: "SET-Funktion aktivieren",
-            tt: {
-              header: `SET-Funktion eines Empfängers aktivieren. Sie haben dann 60 Sekunden Zeit, um
-            einen Sender am ausgewählten Empfänger an- oder abzumelden.`,
-            },
-          },
-          register_gm: {
-            tab: "Anmelden-G/E",
-            header: "Melde Programmierzentrale an bei Empfänger",
-            tt: {
-              header: `Um einen Empfänger über eine Gruppen-/Empfängernummer der Zentrale ansprechbar zu machen:
-               1) Aktiviere SET-Funktion bei Empfänger. 2) Übertrage Daten (Timer) unter der gewünschten Gruppen-/Empfängernummer`,
-            },
-          },
-          register_tx: {
-            tab: "Anmelden-Sender",
-            header: "Melde Sender an bei Empfänger",
-            tt: {
-              header: `Zum anmelden/abmelden eines Sender an einen Empfänger: 1) Aktiviere SET-Funktion bei Empfänger.
-               2) Sende STOP vom Sender -oder- wähle Sender-ID hier aus und klicke STOP Knopf.`,
-            },
-          },
-        },
-      },
-      transmitter: {
-        tab: "Sender",
-        repeater: {
-          tab: "Repeater",
-          header: "Funk-Repeater",
-          tt: {
-            header: `Repeat Handsender/Funksensor-Kommandos durch den Funksender der MCU um die Reichweite zu erhöhen.
-             Eine Liste aller zu repeatenden Sender-IDs muss angelegt werden. Nur Sender auf dieser Liste werden repeated.`,
-          },
-        },
-        register: {
-          tab: "Anmelden",
-          header: "Sender Anmelden",
-          tt: {
-            header: `Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren muss der MCU bekannt sein, an welchen Empfängern diese angemeldet sind.
-            Da diese nicht automatisch erfolgen kann, muss der User diese An-/Abmeldungen hier zusätzlich noch einmal durchführen. 
-            Runde Knöpfe auf dieser Seite testen oder ändern die realen An-/Abmeldung. 
-             `,
-          },
-        },
-        names: {
-          tab: "Namen",
-          header: "Sender-Namen",
-          input: "Name",
-          tt: {
-            header: "Namen für Sender für bessere Übersichtlichkeit. Ein Name könnte z.B. den genauen Stand-Ort des Senders beschreiben.",
-          },
-        },
-      },
-    },
 
     auto: {
       daily: "Täglich",
@@ -272,7 +328,7 @@ export const de = {
       register_unregister: "An- oder Abmelden an Empfänger mit aktiver SET-Funktion",
       register_cu: "Zentrale",
       register_cu_bt: "Melde Zentrale-G-E beim Empfänger an",
-      set_mode: "Aktiviere SET-Funktion",
+      set_mode: "SET",
       dev_address: "Geräte Adresse",
       receiver_address: "Empfänger Adresse",
       sender_address: "Sender",

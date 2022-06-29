@@ -72,14 +72,14 @@
 </script>
 
 <div class="main-area text-center">
-  <h4 use:tippy={{ content: $_("app.navTab.transmitter.names.tt.header") }}>{$_("app.navTab.transmitter.names.header")}</h4>
+  <h4 use:tippy={{ content: $_("panes.names.tt.header") }}>{$_("panes.names.header")}</h4>
   <div>
     <IdSelector />
   </div>
 
   {#if false && $GuiAcc.edit_transmitter_names}
     <div class="main-area flex flex-row">
-      {$_("app.navTab.transmitter.names.input")}
+      {$_("navTab.cfg.transmitter.names.input")}
       <TransmitterNames />
     </div>
   {/if}

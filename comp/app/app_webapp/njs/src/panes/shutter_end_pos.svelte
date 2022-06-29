@@ -6,7 +6,7 @@
   import SepEnable from "app/sep_enable.svelte";
 </script>
 
-<h4 class="text-center" use:tippy={{ content: $_("app.navTab.cfg.endpos.tt.header") }}>{$_("app.navTab.cfg.endpos.header")}</h4>
+<h4 class="text-center" use:tippy={{ content: $_("panes.endpos.tt.header") }}>{$_("panes.endpos.header")}</h4>
 
 <div class="area">
   <div class="mt-4 p-2">
