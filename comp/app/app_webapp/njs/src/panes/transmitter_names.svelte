@@ -72,7 +72,7 @@
 </script>
 
 <div class="main-area text-center">
-  <h4 use:tippy={{ content: $_("panes.names.tt.header") }}>{$_("panes.names.header")}</h4>
+  <h4 use:tippy={{ content: $_("panes.tx_names.tt.header") }}>{$_("panes.tx_names.header")}</h4>
   <div>
     <IdSelector />
   </div>

@@ -38,7 +38,7 @@
   $: tabIdxSettings = $TabIdx["settings"] || 0;
   $: tabIdxSender = $TabIdx["sender"] || 0;
   $: tabIdxPositions = $TabIdx["positions"] || 0;
-
+  $: tabIdxUserHelp = $TabIdx["user_help"] || 0;
   function getUserLevelHeader(ul) {
     return ul < 0
       ? $_("navTab.main.user_level.developer")
@@ -61,7 +61,7 @@
         { name: $_("navTab.main.percent"), idx: 2 },
         ...($GuiAcc.shutter_auto ? [{ name: $_("navTab.main.auto"), idx: 3 }] : []),
         ...($GuiAcc.cfg ? [{ name: $_("navTab.main.config"), idx: 4 }] : []),
-        { name: $_("navTab.main.help.tab"), idx: 7},
+        { name: $_("navTab.main.help.tab"), idx: 7 },
         { name: getUserLevelHeader($GuiUserLevel), idx: 5 },
         ...($GuiAcc.debug ? [{ name: "Test", idx: 6 }] : []),
       ]}
@@ -105,7 +105,7 @@
         />
       </div>
       {#if !tabIdxSender}
-      <PaneTransmitterNames />
+        <PaneTransmitterNames />
       {:else if tabIdxSender === 1}
         <PaneShutterAlias />
       {:else if tabIdxSender === 2}
@@ -135,17 +135,13 @@
     {/if}
   {:else if tabIdxMain === 5}
     <PaneUserLevel />
-    {:else if !misc.DISTRO && tabIdxMain === 7}
+  {:else if !misc.DISTRO && tabIdxMain === 7}
     <div class="navtab-sub">
-      <NavTabs
-        nav_tabs={[
-          { name: $_("navTab.help.ota.tab"), idx: 0 },
-        ]}
-        name="user_help"
-      />
+      <NavTabs nav_tabs={[...($GuiAcc.ota ? [{ name: $_("navTab.help.ota.tab"), idx: 0 }] : [])]} name="user_help" />
     </div>
-    <PaneFirmwareEsp32 />
-    <PaneUserHelp />
+    {#if !tabIdxUserHelp}
+      <PaneFirmwareEsp32 />
+    {/if}
   {:else if !misc.DISTRO && tabIdxMain === 6}
     <PaneDeveloper />
   {/if}

@@ -38,6 +38,10 @@ export const en = {
           tab: "OTA",
         },
       },
+  
+      guiacc: {
+       tab: "",
+      },
     },
 
     cfg: {
@@ -92,6 +96,9 @@ export const en = {
         },
       },
     },
+
+
+
   },
 
   panes: {
@@ -182,6 +189,13 @@ First check the current direction with arrow buttons. If wrong, then reverse the
         header: "Assign names to transmitters for user convenience",
       },
     },
+
+    guiacc: {
+      header: "GUI Access restriction",
+      tt: {
+        header: "Experimental/Unfinished work: Reduce user level to hide inappropriate user interface areas (e.g. most configuration areas need at least admin level)",
+      }
+    }
   },
 
   app: {

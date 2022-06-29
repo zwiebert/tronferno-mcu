@@ -66,5 +66,6 @@ export function set_gui_access_level(al) {
     radio_code: al < user,
     set_mode: al < user,
     debug: al < expert,
+    ota: al < user,
   });
 }

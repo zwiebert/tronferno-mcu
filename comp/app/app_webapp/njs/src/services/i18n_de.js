@@ -139,51 +139,50 @@ export const de = {
       },
     },
 
-    set_mode: {
-      activate: {
-        header: "SET-Funktion aktivieren",
-        tt: {
-          header: `SET-Funktion eines Empfängers aktivieren. Sie haben dann 60 Sekunden Zeit, um
+    activate: {
+      header: "SET-Funktion aktivieren",
+      tt: {
+        header: `SET-Funktion eines Empfängers aktivieren. Sie haben dann 60 Sekunden Zeit, um
             einen Sender am ausgewählten Empfänger an- oder abzumelden.`,
-        },
       },
-      register_gm: {
-        header: "Melde Programmierzentrale an bei Empfänger",
-        tt: {
-          header: `Um einen Empfänger über eine Gruppen-/Empfängernummer der Zentrale ansprechbar zu machen:
+    },
+    register_gm: {
+      header: "Melde Programmierzentrale an bei Empfänger",
+      tt: {
+        header: `Um einen Empfänger über eine Gruppen-/Empfängernummer der Zentrale ansprechbar zu machen:
                1) Aktiviere SET-Funktion bei Empfänger. 2) Übertrage Daten (Timer) unter der gewünschten Gruppen-/Empfängernummer`,
-        },
       },
-      register_tx: {
-        header: "Melde Sender an bei Empfänger",
-        tt: {
-          header: `Zum anmelden/abmelden eines Sender an einen Empfänger: 1) Aktiviere SET-Funktion bei Empfänger.
+    },
+    register_tx: {
+      header: "Melde Sender an bei Empfänger",
+      tt: {
+        header: `Zum anmelden/abmelden eines Sender an einen Empfänger: 1) Aktiviere SET-Funktion bei Empfänger.
                2) Sende STOP vom Sender -oder- wähle Sender-ID hier aus und klicke STOP Knopf.`,
-        },
       },
+    },
 
-      repeater: {
-        header: "Funk-Repeater",
-        tt: {
-          header: `Repeat Handsender/Funksensor-Kommandos durch den Funksender der MCU um die Reichweite zu erhöhen.
-             Eine Liste aller zu repeatenden Sender-IDs muss angelegt werden. Nur Sender auf dieser Liste werden repeated.`,
-        },
+    repeater: {
+      header: "Funk-Signalverstärker",
+      tt: {
+        header: `Verstärkt Handsender/Sonnensensor-Kommandos durch erneutes Aussenden über den Funksender der MCU um die Reichweite zu erhöhen.
+             Eine Liste aller zu verstärkenden Sender-IDs muss angelegt werden. Nur Sender die auf dieser Liste angemeldet sind, werden verstärkt.
+             Bei mehr als einem vorhandenen Signalverstärker-Gerät (wie Fernotron 2427), darf jeder Sender nur bei maximal einem Signalverstärker angemeldet sein.`,
       },
-      tx_names: {
-        header: "Sender-Namen",
-        input: "Name",
-        tt: {
-          header: "Namen für Sender für bessere Übersichtlichkeit. Ein Name könnte z.B. den genauen Stand-Ort des Senders beschreiben.",
-        },
+    },
+    tx_names: {
+      header: "Sender-Namen",
+      input: "Name",
+      tt: {
+        header: "Namen für Sender für bessere Übersichtlichkeit. Ein Name könnte z.B. den genauen Stand-Ort des Senders beschreiben.",
       },
-      register: {
-        header: "Sender Anmelden",
-        tt: {
-          header: `Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren muss der MCU bekannt sein, an welchen Empfängern diese angemeldet sind.
+    },
+    register: {
+      header: "Sender Anmelden",
+      tt: {
+        header: `Zum Zuordnen von Bewegungen verursacht von Handsendern und Sonnensensoren muss der MCU bekannt sein, an welchen Empfängern diese angemeldet sind.
               Da diese nicht automatisch erfolgen kann, muss der User diese An-/Abmeldungen hier zusätzlich noch einmal durchführen. 
               Runde Knöpfe auf dieser Seite testen oder ändern die realen An-/Abmeldung. 
                `,
-        },
       },
     },
   },
@@ -355,12 +354,12 @@ export const de = {
 
     repeater: {
       ids: {
-        header: "Senderliste für Repeater",
+        header: "Senderliste",
         add_button: "Füge hinzu",
         remove_button: "Entferne",
         tt: {
           header:
-            "Sender-ID-Liste. Nur Funkbefehle die von diesen Sender stammen werden repeated vom Funsender der MCU. Andere Funkbefehle werden nicht repeated.",
+            "Liste der zu verstärkenden Sender. Alle anderen Sender werden ignoriert. Keine Mehrfachanmeldung bei mehreren Signalverstärkern erlaubt (führt zu Ping-Pong!)",
           add_button: "Add",
           remove_button: "Remove",
         },

@@ -8,7 +8,7 @@
 </script>
 
 {#if $GuiAcc.edit_shutter_names}
-  <h4 class="text-center" use:tippy={{ content: $_("panes.names.tt.header") }}>{$_("panes.names.header")}</h4>
+  <h4 class="text-center" use:tippy={{ content: $_("panes.rx_names.tt.header") }}>{$_("panes.rx_names.header")}</h4>
 
   <div class="area">
     <div class="mt-4 p-2">

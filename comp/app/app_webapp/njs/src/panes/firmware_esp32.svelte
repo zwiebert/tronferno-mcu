@@ -1,6 +1,7 @@
 <script>
   import { _ } from "services/i18n";
   import tippy from "sveltejs-tippy";
+  import { GuiAcc } from "stores/app_state";
   import McuFirmwareUpd from "app/mcu_firmware_upd.svelte";
   import McuFirmwareInfo from "app/mcu_firmware_info.svelte";
   import * as misc from "app/misc.js";
@@ -58,9 +59,13 @@
   }
 </script>
 
-<h4 class="text-center" use:tippy={{ content: $_("panes.ota.tt.header") }}>{$_("panes.ota.header")}</h4>
+{#if $GuiAcc.ota}
+  <div class="main-area">
+    <h4 class="text-center" use:tippy={{ content: $_("panes.ota.tt.header") }}>{$_("panes.ota.header")}</h4>
 
-<div class="area">
-  <McuFirmwareUpd bind:fwbtns chip="" updSecs="30" />
-  <McuFirmwareInfo />
-</div>
+    <div class="area">
+      <McuFirmwareUpd bind:fwbtns chip="" updSecs="30" />
+      <McuFirmwareInfo />
+    </div>
+  </div>
+{/if}
