@@ -135,7 +135,7 @@
     {/if}
   {:else if tabIdxMain === 5}
     <PaneUserLevel />
-  {:else if !misc.DISTRO && tabIdxMain === 7}
+  {:else if tabIdxMain === 7}
     <div class="navtab-sub">
       <NavTabs nav_tabs={[...($GuiAcc.ota ? [{ name: $_("navTab.help.ota.tab"), idx: 0 }] : [])]} name="user_help" />
     </div>
