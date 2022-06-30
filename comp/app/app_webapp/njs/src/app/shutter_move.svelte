@@ -24,15 +24,15 @@
 <div id="sdi" class="inline-block">
   <div class="flex flex-row items-center">
 
-    <button class="w-24 h-16 text-lg" type="button" on:click={hClick_Down}>
+    <button class="w-24 h-16 text-lg rounded-l-full" type="button" on:click={hClick_Down}>
       &#x25bc;
     </button>
 
-    <button class="m-2 w-16 h-16 text-lg" type="button" on:click={hClick_Stop}>
+    <button class="m-2 w-16 h-16 text-lg rounded-full" type="button" on:click={hClick_Stop}>
       STOP
     </button>
 
-    <button class="w-24 h-16 text-lg" type="button" on:click={hClick_Up}>
+    <button class="w-24 h-16 text-lg rounded-r-full" type="button" on:click={hClick_Up}>
       &#x25b2;
     </button>
 

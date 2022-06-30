@@ -2,17 +2,22 @@
   "use strict";
   import { _ } from "services/i18n";
   import * as httpFetch from "app/fetch.js";
-  import { G, M0,  GMH } from "stores/curr_shutter.js";
+  import { GuiAcc } from "stores/app_state";
+  import { G, M0 } from "stores/curr_shutter.js";
   import ShutterGM from "app/shutter_gm.svelte";
-  import { SelectedId } from "stores/id.js";
+  import TransmitterNames from "app/transmitter_names.svelte";
+  import { SelectedId, SelectedIdIsValid, TxNames } from "stores/id.js";
   import { Aliases } from "stores/shutters.js";
   import { ReceivedAddresses } from "stores/alias.js";
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
 
+  export const editTxNames = true;
+
   let on_destroy = [];
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_GMU | httpFetch.FETCH_ALIASES);
+    setTimeout(fetchTxNames, 1000);
   });
   onDestroy(() => {
     for (const fn of on_destroy) {
@@ -20,35 +25,49 @@
     }
   });
 
-  $: AliasesAllKeys = Object.keys($Aliases);
-  $: AliasesPairedKeys = AliasesAllKeys.filter((key) => alias_isKeyPairedToM(key, $G, $M0));
-  $: selectedId = 0;
-  $: selectedId_isValid = id_isValid(selectedId);
+  $: AliasesPairedKeys = Object.keys($Aliases).filter((key) => alias_isKeyPairedToM(key, $G, $M0));
+  $: AliasesAllKeys = Object.keys($Aliases).filter((key) => !AliasesPairedKeys.includes(key));
+  $: AliasesRxKeys = [...$ReceivedAddresses].filter((key) => id_isValid(key) && !(AliasesPairedKeys.includes(key) || AliasesAllKeys.includes(key)));
 
-  $: {
-    select_id($SelectedId);
+  function setSelectedId(id) {
+    $SelectedId = id;
+  }
+
+  function onChange_Paired() {
+    setSelectedId(document.getElementById("paired").value);
+  }
+
+  function onChange_All() {
+    setSelectedId(document.getElementById("aliases").value);
+  }
+
+  function onChange_Rx() {
+    setSelectedId(document.getElementById("received").value);
+  }
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function fetchTxNames() {
+    let keys = Object.keys($Aliases);
+    const length = keys.length;
+    const how_many = 6;
+
+    for (let i = 0; i < length; i += how_many) {
+      let tfmcu = { to: "tfmcu", kvs: {} };
+      for (let k = i; k < i + how_many && k < length; ++k) {
+        tfmcu.kvs["TXN." + keys[k]] = "?";
+      }
+      httpFetch.http_postCommand(tfmcu, true);
+      await sleep(500);
+    }
   }
 
   function id_isValid(id) {
     const re = /^[12]0[0-9A-Fa-f]{4}$/;
     return re.test(id);
   }
-
-  let select_id_in_progress = false;
-  function select_id(id) {
-    if (select_id_in_progress) return;
-    select_id_in_progress = true;
-
-    for (let eid of ["paired", "aliases", "received", "entered"]) {
-      let el = document.getElementById(eid);
-      if (el) el.value = id;
-    }
-    selectedId = id;
-    $SelectedId = id;
-    select_id_in_progress = false;
-  }
-
-
 
   function alias_isKeyPairedToM(key, g, m) {
     const val = $Aliases[key];
@@ -67,60 +86,84 @@
 
     return (b & (1 << m)) !== 0;
   }
+
+  function rxSymbol(id) {
+    return (id.startsWith("20") ? "\u263C " : "\u2195 ");
+  }
+  function rxOptTxt(id) {
+    return (id.startsWith("20") ? "\u263C " : "\u2195 ") + id + " " + ($TxNames[id] || "");
+  }
 </script>
 
 <div id="aliasdiv">
-  <table class="top_table ml-auto mr-auto">
-    <tr><th colspan="4">{ $_("app.id.chose_header") }</th></tr>
+  <table>
     <tr>
-      <td use:tippy={{ content: $_("app.id.tt.chose_allRegIds") }}>{$_("app.id.chose_allRegIds")}</td>
-      <td use:tippy={{ content: $_("app.id.tt.chose_regIds") }}><ShutterGM /></td>
-      <td use:tippy={{ content: $_("app.id.tt.chose_rxIds") }}>{$_("app.id.chose_rxIds")}</td>
-      <td use:tippy={{ content: $_("app.id.tt.chose_enterId") }}>{$_("app.id.chose_enterId")}</td>
+      <td use:tippy={{ content: $_("app.id.tt.chose_regIds") }}>
+        <ShutterGM radio={false} groups={false} />
+      </td>
+      <td
+        ><select class="w-full" id="paired" size={AliasesPairedKeys.length} on:change={onChange_Paired} on:click={onChange_Paired}>
+          {#each AliasesPairedKeys.sort() as key}
+            <option value={key}>{rxOptTxt(key)}</option>
+          {/each}
+        </select></td
+      >
     </tr>
     <tr>
-      <td>
-        <select id="aliases" size="5" on:change={() => select_id(document.getElementById("aliases").value)}>
+      <td use:tippy={{ content: $_("app.id.tt.chose_allRegIds") }}>{$_("app.id.chose_allRegIds")}</td>
+      <td
+        ><select class="w-full" id="aliases" size="1" on:change={onChange_All} on:click={onChange_All}>
           {#each AliasesAllKeys.sort() as key}
-            <option>{key}</option>
+            <option value={key}>{rxOptTxt(key)}</option>
           {/each}
-        </select>
-      </td>
-      <td>
-        <select id="paired" size="5" on:change={() => select_id(document.getElementById("paired").value)}>
-          {#each AliasesPairedKeys.sort() as key}
-            <option>{key}</option>
+        </select></td
+      >
+    </tr>
+
+    <tr>
+      <td use:tippy={{ content: $_("app.id.tt.chose_rxIds") }}>{$_("app.id.chose_rxIds")}</td>
+      <td
+        ><select class="w-full" id="received" size="1" on:change={onChange_Rx} on:click={onChange_Rx}>
+          {#each AliasesRxKeys.sort() as key}
+            <option value={key}>{rxOptTxt(key)}</option>
           {/each}
-        </select>
-      </td>
-      <td>
-        <select id="received" size="5" on:change={() => select_id(document.getElementById("received").value)}>
-          {#each [...$ReceivedAddresses].sort() as key}
-            <option>{key}</option>
-          {/each}
-        </select>
-      </td>
-      <td>
-        <label use:tippy={{ content: $_("app.id.tt.text_enterId") }}>
-          <input
-            id="entered"
-            class="w-16 {selectedId_isValid ? 'text-green-600' : 'text-red-600'}"
-            type="text"
-            on:input={() => select_id(document.getElementById("entered").value)}
-            maxlength="6"
-          />
+        </select></td
+      >
+    </tr>
+    <tr>
+      <td use:tippy={{ content: $_("app.id.tt.chose_enterId") }}>{$_("app.id.chose_enterId")}</td>
+      <td
+        ><label use:tippy={{ content: $_("app.id.tt.text_enterId") }}>
+          <input id="entered" class="w-16 {$SelectedIdIsValid ? 'text-green-600' : 'text-red-600'}" type="text" bind:value={$SelectedId} maxlength="6" />
         </label>
-        <br />
+
         <button
+          class="rounded-full"
           type="button"
           use:tippy={{ content: $_("app.id.tt.test_selectedId") }}
-          disabled={!selectedId_isValid}
+          disabled={!$SelectedIdIsValid}
           on:click={() => {
-            httpFetch.http_postCommand({ cmd: { a: selectedId, c: "sun-test" } });
-          }}>{ $_("app.id.test_selectedId") }</button
+            httpFetch.http_postCommand({ cmd: { a: $SelectedId, c: "sun-test" } });
+          }}>{$_("app.id.test_selectedId")}</button
+        >
+        <button
+          class="rounded-full"
+          type="button"
+          use:tippy={{ content: $_("app.id.tt.send_stop") }}
+          disabled={!$SelectedIdIsValid}
+          on:click={() => {
+            httpFetch.http_postCommand({ cmd: { a: $SelectedId, c: "stop" } });
+          }}>{$_("app.id.send_stop")}</button
         >
       </td>
     </tr>
+
+    {#if $GuiAcc.edit_transmitter_names}
+      <tr>
+        <td use:tippy={{ content: $_("app.id.tt.enterName") }}>{$_("navTab.cfg.transmitter.names.input")}</td>
+        <td> <TransmitterNames edit={editTxNames} /></td>
+      </tr>
+    {/if}
   </table>
 </div>
 

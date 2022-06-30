@@ -1,5 +1,6 @@
 <script>
   import Pane2411 from "app/ui2411.svelte";
+  import { GuiAcc } from "stores/app_state";
   import { MenuCount } from "stores/ui2411.js";
   import ShutterAuto from "app/shutter_auto.svelte";
 </script>
@@ -22,7 +23,7 @@
 </div>
 
 
-{#if $MenuCount === 1}
+{#if $MenuCount === 1 && $GuiAcc.shutter_auto}
 <div class="area">
   <div class="bg-white rounded-xl">
   <ShutterAuto />

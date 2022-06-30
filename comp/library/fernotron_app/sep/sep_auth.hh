@@ -24,7 +24,11 @@ public:
   //sep_auth.restart_timeout();
 public:
   bool authenticate(u32 auth_key, unsigned auth_timeout_secs = fer_sep_TIMEOUT, unsigned auth_button_timeout_secs = SEP_AUTH_BUTTON_TIMEOUT_SECS) {
-    setKey(auth_key);
+    if (!m_auth_key)
+      setKey(auth_key);
+    else if (!isKeyMatched(auth_key))
+      return false;
+
     m_auth_timeout_secs = auth_timeout_secs;
     m_auth_button.log_in(auth_button_timeout_secs);
     fer_sep_ENABLE_cb();
@@ -35,7 +39,9 @@ public:
     if (!isKeyMatched(auth_key))
       return false;
     m_auth_button.log_out();
+    m_auth_key = 0;
     fer_sep_DISABLE_cb();
+
     return true;
   }
 
@@ -50,7 +56,7 @@ public:
 
   bool hasTimedOut() {
     if (m_auth_timeout.isTimeoutReached()) {
-      uoApp_publish_fer_authState( { .auth_timeout = 1 });
+      uoApp_publish_fer_sepState( { .auth_timeout = 1 });
       return true;
     }
     return false;

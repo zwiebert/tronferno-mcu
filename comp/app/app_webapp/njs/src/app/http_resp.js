@@ -11,6 +11,7 @@ import {
   McuFirmwareUpdProgress,
   McuFirmwareUpdState,
 } from "stores/mcu_firmware.js";
+import { TxNames } from "stores/id.js";
 import * as cuas from "app/cuas.js";
 import { McuConfig, Gmu, Cc1101Config, Cc1101Status } from "stores/mcu_config.js";
 import { Pcts, Prefs, Aliases, Autos, Names } from "stores/shutters.js";
@@ -99,6 +100,18 @@ export function http_handleResponses(obj) {
     }
   }
 
+  if ("kvs" in obj) {
+    const kvs = obj.kvs;
+    let names = {};
+    for (const key in kvs) {
+      if (key.startsWith("TXN.")) {
+        names[key.substring(4)] = kvs[key];
+      }
+    }
+    if (names) {
+      TxNames.update(names);
+    }
+  }
   if ("shs" in obj) {
     let shs = obj.shs;
     Prefs.update(shs);
@@ -116,8 +129,8 @@ export function http_handleResponses(obj) {
     }
   }
 
-  if ("auth" in obj) {
-    Sep.update(obj.auth);
+  if ("sep" in obj) {
+    Sep.update(obj.sep);
   }
 
   if ("mcu" in obj) {

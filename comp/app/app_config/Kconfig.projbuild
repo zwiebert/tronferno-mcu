@@ -70,7 +70,7 @@ config APP_USE_TCPS_TASK
 
 config APP_USE_SEP
   bool "Activate SEP"
-  default n
+  default y
 
 config APP_USE_WS
   bool "Activate WS"

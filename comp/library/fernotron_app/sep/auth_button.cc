@@ -10,11 +10,11 @@ Auth_Button::Auth_Button(get_gpio_funT get_gpio_fun, char tag) :
 
 void Auth_Button::log_in(unsigned button_timeout_secs) {
   if (isLoggedIn()) {
-    uoApp_publish_fer_authState( { .auth_success = 1 });
+    uoApp_publish_fer_sepState( { .auth_success = 1 });
     return;
   }
   (void)(*m_get_gpio_fun)(); // clear previously pressed button event
-
+  m_button_error = false;
   m_button_pre_test_timeout.set(BUTTON_PRE_TEST_SECS);
   m_auth_button_timeout.set(button_timeout_secs);
 }
@@ -36,24 +36,23 @@ void Auth_Button::work_loop() {
   if (m_button_pre_test_timeout.isTimeoutRunning()) {
     if ((*m_get_gpio_fun)()) {
       m_button_error = true;
-      uoApp_publish_fer_authState( { .auth_button_error = 1 });
+      uoApp_publish_fer_sepState( { .auth_button_error = 1 });
     }
-      return;
-  }
-  if (!m_button_pre_test_timeout.isTimeoutReached())
+    (void) m_button_pre_test_timeout.isTimeoutReached();
     return;
+  }
 
   if (m_auth_button_timeout.isTimeoutReached()) {
     log_out();
     m_timed_out = true;
-    uoApp_publish_fer_authState( { .auth_button_timeout = 1 });
+    uoApp_publish_fer_sepState( { .auth_button_timeout = 1 });
     return;
   }
 
   if (m_auth_button_timeout.isTimeoutRunning()) {
     if ((*m_get_gpio_fun)()) {
       m_logged_in = true;
-      uoApp_publish_fer_authState( { .auth_success = 1 });
+      uoApp_publish_fer_sepState( { .auth_success = 1 });
       return;
     }
   }

@@ -41,7 +41,7 @@
 <div id="sdi" class="inline-block">
   <div class="flex flex-row items-center content-between">
 
-    <button id="spb" type="button" on:click={hClick_P}>Position</button>
+    <button id="spb" type="button" class="rounded-l-full rounded-r-full" on:click={hClick_P}>Position</button>
     <input class="w-16" id="spi" type="number" min="0" max="100" name="p" value={$Pct} />
     <input
       id="spr"

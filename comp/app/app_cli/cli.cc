@@ -113,6 +113,7 @@ static struct parm_handler const handlers[] = { //
         { "pair", process_parmPair, cli_help_parmPair},//
 #endif
         { "shpref", process_parmShpref, cli_help_parmShpref }, //
+        { "kvs", process_parmKvs, cli_help_parmKvs }, //
     };
 
 static const struct parm_handlers our_parm_handlers = { .handlers = handlers, .count = sizeof(handlers) / sizeof(handlers[0]), };

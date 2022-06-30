@@ -2,12 +2,8 @@
   "use strict";
   import { _ } from "services/i18n";
   import * as httpFetch from "app/fetch.js";
-  import { G, M0, GM, GMH } from "stores/curr_shutter.js";
-  import { SelectedId } from "stores/id.js";
-  import { Gmu, GmuMaxM, McuConfig } from "stores/mcu_config.js";
-  import { Aliases } from "stores/shutters.js";
-  import { ShowHelp } from "stores/app_state.js";
-  import { Pras, ReceivedAddresses } from "stores/alias.js";
+  import { SelectedId, TxNames } from "stores/id.js";
+  import { McuConfig } from "stores/mcu_config.js";
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
 
@@ -34,8 +30,8 @@
 
   function add_repeaterID(id) {
     httpFetch.http_postCommand({ config: { "rf-repeater": "+" + id } });
-    
-/*
+
+    /*
     RepeaterIDs.update((obj) => {
       obj.add(id);
       return obj;
@@ -52,33 +48,38 @@
     });
     */
   }
+  function rxOptTxt(id) {
+    return (id.startsWith("20") ? "\u263C " : "\u2195 ") + id + " " + ($TxNames[id] || "");
+  }
 </script>
 
 <div id="aliasdiv text-center">
   <br />
 
   <div class="area text-center">
-    <h5>Sender-IDs to be repeated</h5>
+    <h5  use:tippy={{ content: $_("app.repeater.ids.tt.header") }}>{$_("app.repeater.ids.header")}</h5>
     <select id="repeaterIDs" size="5" bind:value={selectedRepId}>
       {#each [...RepeaterIDs].sort() as key}
-        <option>{key}</option>
+        <option value={key}>{rxOptTxt(key)}</option>
       {/each}
     </select>
     <br />
     <button
+    use:tippy={{ content: $_("app.repeater.ids.tt.add_button") }}
       type="button"
       disabled={!selectedId_isValid || RepeaterIDs.has($SelectedId)}
       on:click={() => {
         add_repeaterID($SelectedId);
-      }}>Add {$SelectedId}</button
+      }}>{$_("app.repeater.ids.add_button") + " " + $SelectedId}</button
     >
 
     <button
+    use:tippy={{ content: $_("app.repeater.ids.tt.remove_button") }}
       type="button"
       disabled={!RepeaterIDs.has(selectedRepId)}
       on:click={() => {
         remove_repeaterID(selectedRepId);
-      }}>Remove {RepeaterIDs.has(selectedRepId) ? selectedRepId : ""}</button
+      }}>{$_("app.repeater.ids.remove_button") + " " + (RepeaterIDs.has(selectedRepId) ? selectedRepId : "")}</button
     >
   </div>
 </div>

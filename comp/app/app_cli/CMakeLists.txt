@@ -7,6 +7,7 @@ set(srcs cli.cc
     parm_mcu.cc
     parm_sep.cc
     parm_shpref.cc
+    parm_kvs.cc
 )
 
 idf_component_register(

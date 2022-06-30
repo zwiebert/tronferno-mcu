@@ -397,7 +397,7 @@ void uoApp_publish_fer_cuasState(const so_arg_cuas_t args) {
   }
 }
 
-void uoApp_publish_fer_authState(const so_arg_auth_t args, char tag) {
+void uoApp_publish_fer_sepState(const so_arg_sep_t args, char tag) {
   uo_flagsT flags;
   flags.evt.uo_evt_flag_SEP = true;
   flags.evt.gen_app_state_change = true;
@@ -415,7 +415,7 @@ void uoApp_publish_fer_authState(const so_arg_auth_t args, char tag) {
     StatusJsonT sj = { sj_buf, sizeof sj_buf };
 
     if (sj.open_root_object("tfmcu")) {
-      sj.add_object("auth");
+      sj.add_object("sep");
       if (args.auth_success)
         sj.add_key_value_pair_d("auth-success", 1);
       if (args.auth_terminated)

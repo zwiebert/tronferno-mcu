@@ -7,7 +7,7 @@
 </script>
 
 <div class="main-area">
-  <h4 class="text-center" use:tippy={{ content: $_("help.hint_repeater") }}>Repeater</h4>
+  <h4 class="text-center" use:tippy={{ content: $_("panes.repeater.tt.header") }}>{$_("panes.repeater.header") }</h4>
 
   <div>
     <IdSelector />

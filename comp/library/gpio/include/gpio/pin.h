@@ -22,6 +22,8 @@ typedef enum mcu_pin_state { PIN_STATE_none = -1, PIN_READ, PIN_CLEAR, PIN_SET, 
 
 const char* mcu_access_pin(int gpio_number, mcu_pin_state *result, mcu_pin_state state);
 bool  is_gpio_number_usable(int gpio_number, bool cli);
+bool gpio_isLevelReadable(int gpio_number);
+bool gpio_isLevelWritable(int gpio_number);
 void gpio_get_levels(unsigned long long gpio_mask, char *buf, int buf_size);
 
 
@@ -43,7 +45,7 @@ void setup_pin(const struct cfg_gpio *c);
 
 enum mcu_pin_mode pin_getPinMode(unsigned gpio_number);
 enum mcu_pin_level pin_getPinLevel(unsigned gpio_number);
-const char* pin_set_mode(int gpio_number, mcu_pin_mode mode, mcu_pin_level level);
+const char* pin_set_mode(int gpio_number, mcu_pin_mode mode, mcu_pin_level level = PIN_LEVEL_none);
 
 void mcu_put_txPin(uint8_t level);
 uint8_t   mcu_get_rxPin();
