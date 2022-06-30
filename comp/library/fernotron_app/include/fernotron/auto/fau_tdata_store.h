@@ -14,13 +14,6 @@
 #include "app_config/proj_app_cfg.h"
 
 /**
- * \brief      Called if stored timer data has been modified.
- *
- *             It will not tell you which timer has been changed.  It may be just one of them or even all of them.
- */
-extern void (*fer_au_TIMER_DATA_CHANGE_cb)(void);
-
-/**
  * \brief         Store timer data
  * \param p       Timer data object
  * \param g,m     Group/Member to which the timer data is attached to.  Wild-cards allowed.  All overshadowed timers will then be removed. (e.g. g0,m0 will erase all existing timers)

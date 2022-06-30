@@ -36,10 +36,55 @@
 #include <utils_misc/mutex.hh>
 #include <utils_misc/int_macros.h>
 
+#include "main_loop/main_queue.hh"
+
 #include <stdlib.h>
 #include <iterator>
 #include <algorithm>
 
+static bool id_isValid(const char *s) {
+  if (strlen(s) != 6)
+    return false;
+  if (!(s[0] == '1' || s[0] == '2'))
+    return false;
+
+  for (int i = 1; i < 6; ++i)
+    if (!isxdigit(s[i]))
+      return false;
+
+  return true;
+}
+
+static bool ids_areValid(const char *ids) {
+  const int len = strlen(ids);
+
+  if (len % 6 != 0)
+    return false;
+  for (int i = 0; i < len; i += 6) {
+    const char *s = ids + i;
+
+    if (!(s[0] == '1' || s[0] == '2'))
+      return false;
+
+    for (int i = 1; i < 6; ++i)
+      if (!isxdigit(s[i]))
+        return false;
+  }
+
+  return true;
+}
+
+static int ids_count(const char *ids) {
+  const int len = strlen(ids);
+
+  if (len == 0)
+    return 0;
+  if (len % 6)
+    return -1;
+
+  const int count = len / 6;
+  return count;
+}
 
 bool process_parmConfig_get_app(otok kt, const char *val, const struct TargetDesc &td) {
   switch (kt) {
@@ -93,6 +138,55 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, const str
     }); it != std::end(cfg_args_rfTrx)) {
       int idx = std::distance(std::begin(cfg_args_rfTrx), it);
       set_optN(i8, idx, CB_RF_TRX);
+    }
+  }
+    break;
+
+  case otok::k_rf_repeater: {
+    NODEFAULT();
+
+    if (val[0] == '+') {
+      if (id_isValid(val + 1)) {
+
+        char buf[80];
+        if (config_read_item(CB_RF_REPEATER, buf, sizeof buf, "")) {
+          if (!ids_areValid(buf)) {
+            *buf = '\0';
+          }
+
+          strncat(buf, val + 1, sizeof buf - 1 - strlen(val));
+          set_optStr(buf, CB_RF_REPEATER);
+          soCfg_RF_REPEATER(td);
+          SET_BIT64(changed_mask, CB_RF_REPEATER);
+        } else {
+          ++errors;
+        }
+      }
+    } else if (val[0] == '-') {
+      if (id_isValid(val + 1)) {
+
+        char buf[80];
+        if (config_read_item(CB_RF_REPEATER, buf, sizeof buf, "")) {
+          for (int i = 0, len = strlen(buf); i < len; i += 6) {
+            if (0 == strncasecmp(val + 1, buf + i, 6)) {
+              memmove(buf + i, buf + i + 6, strlen(buf + i + 6) + 1);
+              set_optStr(buf, CB_RF_REPEATER);
+            }
+          }
+        }
+        SET_BIT64(changed_mask, CB_RF_REPEATER);
+        soCfg_RF_REPEATER(td);
+      } else {
+        ++errors;
+      }
+    } else {
+      if (ids_areValid(val)) {
+        set_optStr(val, CB_RF_REPEATER);
+        SET_BIT64(changed_mask, CB_RF_REPEATER);
+        soCfg_RF_REPEATER(td);
+      } else {
+        ++errors;
+      }
     }
   }
     break;
@@ -153,21 +247,23 @@ break;
   }
 #endif
 
+  [[fallthrough]];
   default:
     return false;
   }
   return true;
 }
 
-
 void parmConfig_reconfig_app(uint64_t changed_mask) {
   if (changed_mask & CBM_geo) {
-    cli_run_main_loop(mainLoop_configAstro);
+    mainLoop_callFun(config_setup_astro);
   }
-  if (changed_mask & CBM_gpio) {
-    cli_run_main_loop(mainLoop_configGPIO);
+  if ((changed_mask & CBM_gpio) || (changed_mask & CBM_cc1101)) {
+    mainLoop_callFun(config_setup_gpio);
+    mainLoop_callFun(config_setup_cc1101);
   }
-  if (changed_mask & CBM_cc1101) {
-    cli_run_main_loop(mainLoop_configCC1101);
+
+  if (changed_mask & CBM_rf_repeater) {
+    mainLoop_callFun (config_setup_repeater);
   }
 }

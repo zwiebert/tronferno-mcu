@@ -29,7 +29,7 @@
 
 static struct cfg_gpio *gpio_cfg;
 
-#define RESERVED_GPIO_APP (1ULL<<RFOUT_GPIO|1ULL<<RFIN_GPIO|1ULL<<BUTTON_GPIO)
+#define RESERVED_GPIO_APP (1ULL<<RFOUT_GPIO|1ULL<<RFIN_GPIO|1ULL<<BUTTON_GPIO|gpio_cfg->gpio_in_use)
 #define RESERVED_GPIO_SPI (BIT64(6)|BIT64(7)|BIT64(8)|BIT64(9)|BIT64(10)|BIT64(11))
 
 #define gpioUnUsuable (BIT64(0)|BIT64(1)|BIT64(2)|BIT64(20)|BIT64(24)|BIT64(28)|BIT64(29)|BIT64(30)|BIT64(31)|RESERVED_GPIO_SPI|RESERVED_GPIO_APP)
@@ -70,6 +70,17 @@ void gpio_get_levels(uint64_t gpio_mask, char *buf, int buf_size) {
 
 }
 
+bool gpio_isLevelReadable(int gpio_number) {
+  if (gpio_number == BUTTON_GPIO && gpio_number != GPIO_NUM_NC)
+    return true;
+
+  return (gpioUsable & (1ULL << gpio_number)) != 0;
+}
+
+bool gpio_isLevelWritable(int gpio_number) {
+  return (gpioUsable & (1ULL << gpio_number)) != 0;
+}
+
 bool is_gpio_number_usable(int gpio_number, bool cli) {
   return (gpioUsable & (1ULL << gpio_number)) != 0;
 }
@@ -94,6 +105,14 @@ bool mcu_get_buttonUpPin(void) {
 
 bool mcu_get_buttonDownPin(void) {
   return false;
+}
+
+static bool button_was_pressed;
+bool mcu_button_was_pressed() {
+  if (!button_was_pressed)
+    return false;
+  button_was_pressed = false;
+  return true;
 }
 
 bool mcu_get_buttonPin(void) {
@@ -174,7 +193,7 @@ const char* pin_set_mode_int(int ngpio_number, mcu_pin_mode mode, mcu_pin_level 
   case GPIO_NUM_37:
   case GPIO_NUM_38:
   case GPIO_NUM_39:
-    if (mode > PIN_INPUT || level != PIN_FLOATING)
+    if (mode > PIN_INPUT || (level != PIN_FLOATING && mode != PIN_DEFAULT))
       return "GPIOs 34..39 can only used for input (w/o pull)";
 
     pin_set_gpio_mode(gpio_number, mode, level);
@@ -242,6 +261,10 @@ void pin_notify_input_change() {
 void pin_input_isr_handler(void *args) {
   gpio_num_t gpio_num = static_cast<gpio_num_t>(reinterpret_cast<size_t>(args));
   SET_BIT64(pin_int_mask, gpio_num);
+  if (gpio_num == BUTTON_GPIO) {
+    if (gpio_get_level(BUTTON_GPIO) == 0)
+      button_was_pressed = true;
+  }
   if (gpio_INPUT_PIN_CHANGED_ISR_cb)
     gpio_INPUT_PIN_CHANGED_ISR_cb();
 }
@@ -265,21 +288,27 @@ void setup_pin(const struct cfg_gpio *c) {
   if (!gpio_cfg) {
     gpio_cfg = static_cast<cfg_gpio*>(calloc(1, sizeof *gpio_cfg));
   } else {
+    // clear all gpio
     pin_set_mode_int(RFOUT_GPIO, PIN_DEFAULT, gpio_cfg->out_rf_inv ? PIN_HIGH : PIN_LOW);
     pin_set_mode_int(RFIN_GPIO, PIN_DEFAULT, PIN_FLOATING);
-    pin_set_mode_int(BUTTON_GPIO, PIN_DEFAULT, PIN_HIGH);
-    pins_in_use = 0;
+    pin_set_mode_int(BUTTON_GPIO, PIN_DEFAULT,  BUTTON_GPIO < 34 ? PIN_HIGH : PIN_FLOATING);
     pin_setup_input_handler(GPIO_NUM_NC);
+    pins_in_use = 0;
   }
   memcpy(gpio_cfg, c, sizeof *gpio_cfg);
 
   inputGpioUsable = gpioUsable;
   outputGpioUsable = gpioUsable;
+  pins_in_use = c->gpio_in_use;
 
   pin_set_mode_int(RFOUT_GPIO, PIN_OUTPUT, gpio_cfg->out_rf_inv ? PIN_HIGH : PIN_LOW);
   pin_set_mode_int(RFIN_GPIO, PIN_INPUT, PIN_FLOATING);
-  pin_set_mode_int(BUTTON_GPIO, PIN_INPUT, PIN_HIGH);
+  pin_set_mode_int(BUTTON_GPIO, PIN_INPUT, BUTTON_GPIO < 34 ? PIN_HIGH : PIN_FLOATING);
   pins_not_cli = pins_in_use;
+
+  if (BUTTON_GPIO != GPIO_NUM_NC) {
+    pin_setup_input_handler(static_cast<gpio_num_t>(BUTTON_GPIO));
+  }
 
 #ifdef USE_GPIO_PINS
   for (int i = 0; i < CONFIG_GPIO_SIZE; ++i) {

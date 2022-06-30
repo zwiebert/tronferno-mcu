@@ -14,9 +14,6 @@
 
 enum fer_alias_cmds { PC_none, PC_pair, PC_unpair, PC_read };
 
-extern void (*fer_alias_enable_disable_cb)(bool enable);
-
-
 /**
  * \brief               Pair or un-pair a CONTROLLER to g/m.
  * \param controller    3-byte-address of a controller (e.g. sun-sensor)

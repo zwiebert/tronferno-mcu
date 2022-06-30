@@ -4,7 +4,8 @@
   import tippy from "sveltejs-tippy";
   import * as appDebug from "app/app_debug.js";
   import * as httpFetch from "app/fetch.js";
-  import { AutoData, G, M, GM, GMH } from "stores/curr_shutter.js";
+  import { GuiAcc } from "stores/app_state";
+  import { AutoData, AutoSunEnabled, G, M, M0, GM, GMH } from "stores/curr_shutter.js";
   import { onMount } from "svelte";
 
   onMount(() => {});
@@ -162,23 +163,25 @@
 <div id="autodiv" class="auto">
   <table class="top_table">
     <tr>
-      <td>{$_("app.auto.daily")}</td>
+      <td use:tippy={{ content: $_("app.auto.tt.daily") }}>{$_("app.auto.daily")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.hasDaily} />
       </td>
       <td>
-        <label
-          ><input type="time" disabled={!autoData.hasDaily} bind:value={autoData.dailyUp} />
-          &#x25b3;</label
-        ><br />
-        <label
-          ><input type="time" disabled={!autoData.hasDaily} bind:value={autoData.dailyDown} />
-          &#x25bd;</label
-        >
+        <div class={autoData.hasDaily ? "" : "invisible"}>
+          <label
+            ><input type="time" disabled={!autoData.hasDaily} bind:value={autoData.dailyUp} />
+            &#x25b3;</label
+          ><br />
+          <label
+            ><input type="time" disabled={!autoData.hasDaily} bind:value={autoData.dailyDown} />
+            &#x25bd;</label
+          >
+        </div>
       </td>
     </tr>
     <tr>
-      <td>{$_("app.auto.weekly")}</td>
+      <td use:tippy={{ content: $_("app.auto.tt.weekly") }}>{$_("app.auto.weekly")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.hasWeekly} />
       </td>
@@ -188,7 +191,7 @@
     {#if autoData.hasWeekly}
       {#each weekly_objArr as day, i}
         <tr class="auto-weekday">
-          <td class="auto-weekday text-sm text-right">{$_("weekdays")[i]}</td>
+          <td class="auto-weekday text-sm text-right">{$_("weekdays_short")[i]}</td>
           <td class="auto-weekday text-sm">
             {#if i > 0}
               <label><input type="checkbox" bind:checked={day.enabled} /></label>
@@ -204,36 +207,54 @@
                 ><input type="time" bind:value={day.down} />
                 &#x25bd;</label
               >
-            {:else}= {$_("weekdays")[i - 1]}{/if}
+            {:else}= {$_("weekdays_short")[i - 1]}{/if}
           </td>
         </tr>
       {/each}
     {/if}
 
     <tr>
-      <td>{$_("app.auto.astro")}</td>
-      <td>
-        <input class="cb" type="checkbox" bind:checked={autoData.hasAstro} />
-      </td>
-      <td>
-        <input style="width:5em;" type="number" min="-90" max="90" disabled={!autoData.hasAstro} bind:value={autoData.astro} />
-        {autoData.astroToday}
-      </td>
-    </tr>
-    <tr>
-      <td>{$_("app.auto.random")}</td>
+      <td use:tippy={{ content: $_("app.auto.tt.random") }}>{$_("app.auto.random")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.isRandom} />
       </td>
     </tr>
+
     <tr>
-      <td>{$_("app.auto.sun")}</td>
+      <td use:tippy={{ content: $_("app.auto.tt.astro") }}>{$_("app.auto.astro")}</td>
+      <td>
+        <input class="cb" type="checkbox" bind:checked={autoData.hasAstro} />
+      </td>
+      <td>
+        <div class={autoData.hasAstro ? "" : "invisible"}>
+          <input style="width:5em;" type="number" min="-90" max="90" disabled={!autoData.hasAstro} bind:value={autoData.astro} />
+          {autoData.astroToday}
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td use:tippy={{ content: $_("app.auto.tt.sun") }}>{$_("app.auto.sun")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.isSun} />
       </td>
+      <td>
+        {#if $GuiAcc.shutter_sunpos && $M0 && $AutoSunEnabled}
+          <button
+            id="sspb"
+            class="sb text-sm rounded-full"
+            type="button"
+            on:click={() => httpFetch.http_postShutterCommand("sun-inst")}
+            use:tippy={{ content: $_("app.sun.tt.set_sun_pos") }}
+          >
+            {$_("app.sun.set_sun_pos")}
+          </button>
+        {/if}
+      </td>
     </tr>
+
     <tr>
-      <td>{$_("app.auto.manual")}</td>
+      <td use:tippy={{ content: $_("app.auto.tt.manual") }}>{$_("app.auto.manual")}</td>
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.isManual} />
       </td>
@@ -243,36 +264,35 @@
   <br />
   <button id="arlb" class="sb" type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
 
-  <button id="asvb" class="sb" type="button" disabled={transmitCountDown > 0} on:click={hClick_Save}
-    >{transmitCountDown > 0 ? transmitCountDown : $_("app.save")}</button
+  <button
+    id="asvb"
+    class="sb rounded-l-full rounded-r-full"
+    type="button"
+    use:tippy={{ content: $_("app.auto.tt.sendData") }}
+    disabled={transmitCountDown > 0}
+    on:click={hClick_Save}>{transmitCountDown > 0 ? ("-" + transmitCountDown + "-") : $_("app.auto.sendData")}</button
   >
   <hr />
   <div class="text-center">
     <button
-      class="sb"
+      use:tippy={{ content: $_("app.auto.tt.sendRtc") }}
+      class="sb rounded-l-full rounded-r-full"
       type="button"
       on:click={() => {
         let a = { auto: { g: $G, m: $M, "rtc-only": 1 } };
         if (providTimeString) a.rtc = isoTimeString;
         httpFetch.http_postCommand(a);
-      }}>{$_("app.auto.sendRtc")} {$GMH}</button
-    >
+      }}
+      >{$_("app.auto.sendRtc")} {$GMH}
+    </button>
 
-    <button
-      class="sb"
-      type="button"
-      on:click={() => {
-        let a = { auto: { "rtc-only": 1 } };
-        if (providTimeString) a.rtc = isoTimeString;
-        httpFetch.http_postCommand(a);
-      }}>{$_("app.auto.sendRtc")} A</button
-    >
-
-    <hr />
-    <label use:tippy={{ content: "Provide your own ISO-Time-string time to send to the shutter" }}
-      >ISO-Time
-      <input type="checkbox" bind:checked={providTimeString} />
-      <input type="text" bind:value={isoTimeString} disabled={!providTimeString} /></label
-    >
+    {#if $GuiAcc.shutter_time_iso}
+      <hr />
+      <label use:tippy={{ content: $_("app.auto.tt.sendISO") }}>
+        {$_("app.auto.sendISO")}
+        <input type="checkbox" bind:checked={providTimeString} />
+        <input type="text" bind:value={isoTimeString} disabled={!providTimeString} />
+      </label>
+    {/if}
   </div>
 </div>

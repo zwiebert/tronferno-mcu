@@ -44,6 +44,7 @@ enum class otok : otokBaseT  {
       k_rf_tx_pin, k_rf_rx_pin, k_set_button_pin, k_gpio, //
       k_rf_miso_pin, k_rf_mosi_pin, k_rf_sclk_pin, k_rf_ss_pin, // CC1101 SPI
       k_cc1101_config,
+      k_rf_repeater,
       ///////////// end of config keys /////////////////
 
   k_a, k_g, k_m, k_mm, k_c, //
@@ -53,6 +54,9 @@ enum class otok : otokBaseT  {
 
   k_weekly, k_daily, k_astro, k_rtc_only, k_random, k_sun_auto, k_f, // auto
 
+  k_id_list, k_id_add, k_id_rm, // repeater
+
+  k_enable, k_timeout, k_request_auth, k_auth_key, // SEP
   SIZE // key array size
 };
 
@@ -70,17 +74,21 @@ constexpr const_cstringT otok_strings[] = {
     "rf-tx-pin", "rf-rx-pin", "set-button-pin", "gpio", //
     "rf-miso-pin", "rf-mosi-pin", "rf-sclk-pin", "rf-ss-pin", //CC1101 SPI
     "cc1101-config",
+    "rf-repeater" ,
     ///////////// end of config keys /////////////////
     "a", "g", "m", "mm", "c",  //
     "restart", "all", "cuas", "set-pw", "receiver", "transmitter", "rf-trx", // config
     "r", "p", "SEP", // cmd
     "boot-count", "print", "kvs-pk", "tm", "am", "stack", "te", "dbp", "cs", "up-time", "version", "ota", // mcu
 
-    "weekly", "daily", "astro", "rtc-only", "random", "sun-auto", "f" // auto
+    "weekly", "daily", "astro", "rtc-only", "random", "sun-auto", "f", // auto
 
+    "id-list", "id-add", "id-rm", // repeater
+
+    "enable", "timeout", "request-auth", "auth-key", // SEP
     };
 #else
 #include "generated_opts.hh"
 #endif
-static_assert(!((sizeof otok_strings / sizeof otok_strings[0]) > (size_t)otok::SIZE));
-static_assert(!((sizeof otok_strings / sizeof otok_strings[0]) < (size_t)otok::SIZE));
+static_assert(!((sizeof otok_strings / sizeof otok_strings[0]) > (size_t)otok::SIZE)); // too many strings
+static_assert(!((sizeof otok_strings / sizeof otok_strings[0]) < (size_t)otok::SIZE)); // not enought strings (missing comma?)

@@ -235,6 +235,12 @@ static esp_err_t handle_uri_get_file(httpd_req_t *req) {
 
 #ifdef USE_WS
 static esp_err_t handle_uri_ws(httpd_req_t *req) {
+
+  if (req->method == HTTP_GET) {
+      ESP_LOGI(TAG, "Handshake done, the new connection was opened");
+      return ESP_OK;
+  }
+
   int fd = httpd_req_to_sockfd(req);
   FD_SET(fd, &ws_fds);
   if (ws_nfds <= fd)

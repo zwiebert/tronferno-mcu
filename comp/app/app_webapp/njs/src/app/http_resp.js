@@ -11,12 +11,14 @@ import {
   McuFirmwareUpdProgress,
   McuFirmwareUpdState,
 } from "stores/mcu_firmware.js";
+import { TxNames } from "stores/id.js";
 import * as cuas from "app/cuas.js";
 import { McuConfig, Gmu, Cc1101Config, Cc1101Status } from "stores/mcu_config.js";
 import { Pcts, Prefs, Aliases, Autos, Names } from "stores/shutters.js";
 import { McuDocs } from "stores/mcu_docs.js";
 import { Gpios } from "stores/gpio.js";
-import {AppLog} from "stores/app_log.js";
+import { Sep } from "stores/sep";
+import { AppLog } from "stores/app_log.js";
 import { Pras, ReceivedAddresses } from "stores/alias.js";
 
 function parse_gmu(s) {
@@ -35,26 +37,26 @@ export function http_handleResponses(obj) {
   appDebug.dbLog("reply-json: " + JSON.stringify(obj));
 
   if ("log" in obj) {
-    AppLog.update(old => {
-      old.unshift({log : obj.log, date: new Date()});
+    AppLog.update((old) => {
+      old.unshift({ log: obj.log, date: new Date() });
       return old;
     });
   }
 
   if ("rc" in obj) {
-    AppLog.update(old => {
-      old.unshift({rc : obj.rc, date: new Date()});
+    AppLog.update((old) => {
+      old.unshift({ rc: obj.rc, date: new Date() });
       return old;
     });
-    ReceivedAddresses.update(old => {
+    ReceivedAddresses.update((old) => {
       old.add(obj.rc.a);
       return old;
     });
   }
 
   if ("sc" in obj) {
-    AppLog.update(old => {
-      old.unshift({sc : obj.sc, date: new Date()});
+    AppLog.update((old) => {
+      old.unshift({ sc: obj.sc, date: new Date() });
       return old;
     });
   }
@@ -98,6 +100,18 @@ export function http_handleResponses(obj) {
     }
   }
 
+  if ("kvs" in obj) {
+    const kvs = obj.kvs;
+    let names = {};
+    for (const key in kvs) {
+      if (key.startsWith("TXN.")) {
+        names[key.substring(4)] = kvs[key];
+      }
+    }
+    if (names) {
+      TxNames.update(names);
+    }
+  }
   if ("shs" in obj) {
     let shs = obj.shs;
     Prefs.update(shs);
@@ -113,6 +127,10 @@ export function http_handleResponses(obj) {
       Names.update(names);
       console.log("names: ", JSON.stringify(names));
     }
+  }
+
+  if ("sep" in obj) {
+    Sep.update(obj.sep);
   }
 
   if ("mcu" in obj) {
@@ -137,7 +155,7 @@ export function http_handleResponses(obj) {
     }
     if ("cc1101-config" in mcu) {
       Cc1101Config.set(mcu["cc1101-config"]);
-    } 
+    }
 
     if ("ota-state" in mcu) {
       let ota_state = mcu["ota-state"];
@@ -155,11 +173,10 @@ export function http_handleResponses(obj) {
     }
   }
 
-  if ("auto" in obj)
-  {
+  if ("auto" in obj) {
     let autos = {};
     let autos_count = 0;
-  
+
     for (const key in obj.auto) {
       if (key.startsWith("auto")) {
         autos[key] = obj.auto[key];
@@ -187,10 +204,7 @@ export function gitTags_handleResponse(json) {
   McuGitTagNames.set(names);
 }
 
-
 function handleOtaState(state) {
-  if (state === 1)
-    McuFirmwareUpdProgress.update((old) => old+1);
-  else
-    McuFirmwareUpdProgress.set(0);
+  if (state === 1) McuFirmwareUpdProgress.update((old) => old + 1);
+  else McuFirmwareUpdProgress.set(0);
 }

@@ -11,6 +11,7 @@
 #include "utils_misc/int_types.h"
 #include "app_misc/firmware.h"
 #include "app_misc/rtc.h"
+#include "app_misc/kvstore.h"
 #include "app_settings/config.h"
 #include "net/ipnet.h"
 #include "txtio/inout.h"
@@ -240,6 +241,25 @@ void soMsg_shpref_obj_gm_end(const struct TargetDesc &td) {
   td.so().x_close();
 }
 
+void soMsg_KVS_begin(const struct TargetDesc &td) {
+  td.so().x_open("kvs");
+}
+
+void soMsg_KVS_end(const struct TargetDesc &td) {
+  td.so().x_close();
+}
+
+bool soMsg_KVS_print(const struct TargetDesc &td, const char *key) {
+  char buf[64];
+#ifndef TEST_HOST
+  if (kvs_get_string(key, buf, sizeof buf)) {
+    td.so().print(key, buf);
+    return true;
+  }
+#endif
+  return false;
+}
+
 void soMsg_print_kvd(const struct TargetDesc &td, const so_arg_kvd_t a) {
   td.so().print(a.key, a.val);
 }
@@ -364,11 +384,6 @@ void soMsg_pair_all_end(const struct TargetDesc &td) {
   td.so().x_close();
 }
 
-void soMsg_pair_print_amm(const struct TargetDesc &td, const so_arg_amm_t a) {
-  td.write("pair a="), io_print_hex(a.a, false), td.write(" mm="), so_print_gmbitmask(a.mm), td.write(";\n");
-
-}
-
 void soMsg_pair_print_kmm(const struct TargetDesc &td, const so_arg_kmm_t a) {
   //td.write("pair a="), td.write(a.key), td.write(" mm="), so_print_gmbitmask(a.mm), td.write(";\n");
   char buf[20];
@@ -385,6 +400,16 @@ void soMsg_pair_print_kmm_single(const struct TargetDesc &td, const so_arg_kmm_t
   td.so().print("mm", buf);
 
 }
+
+#ifdef USE_REPEATER
+void soMsg_repeater_begin(const struct TargetDesc &td) {
+  td.so().x_open("repeater");
+}
+
+void soMsg_repeater_end(const struct TargetDesc &td) {
+  td.so().x_close();
+}
+#endif
 
 #ifdef USE_NETWORK
 void soMsg_inet_print_address(const struct TargetDesc &td) {
@@ -405,4 +430,10 @@ void soMsg_gpio_pin(const struct TargetDesc &td, const so_arg_pch_t a, bool broa
     uoCb_publish_pinChange(a);
 }
 
+void soMsg_sep_obj_begin(const struct TargetDesc &td) {
+  td.so().x_open("sep");
+}
 
+void soMsg_sep_obj_end(const struct TargetDesc &td) {
+  td.so().x_close();
+}

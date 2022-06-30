@@ -11,6 +11,7 @@
 #include "config_kvs.h"
 #include <fernotron_trx/fer_trx_api.hh>
 #include <fernotron_trx/raw/fer_radio_trx.h>
+#include <fernotron/repeater/repeater.h>
 #include "utils_misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
@@ -72,10 +73,28 @@ int app_safeMode_increment(bool reset) {
 }
 
 void config_setup_gpio() {
-  struct cfg_gpio c = { .out_rf = MY_RFOUT_GPIO, .in_rf = MY_RFIN_GPIO, .in_setButton = MY_SETBUTTON_GPIO };
+  const auto trx = config_read_rf_trx();
+  struct cfg_gpio c = { .gpio_in_use = 0, .out_rf = MY_RFOUT_GPIO, .in_rf = MY_RFIN_GPIO, .in_setButton = MY_SETBUTTON_GPIO };
 
   if (!app_safe_mode)
     config_read_gpio(&c);
+
+  if (trx == rfTrxNone) {
+    c.out_rf = c.in_rf = -1;
+  }
+
+  if (trx == rfTrxCc1101) {
+    struct cc1101_settings cc = { .sclk = -1, .ss = -1, .miso = -1, .mosi = -1 };
+    config_read_cc1101(&cc);
+    if (cc.sclk >= 0)
+      SET_BIT64(c.gpio_in_use, cc.sclk);
+    if (cc.ss >= 0)
+      SET_BIT64(c.gpio_in_use, cc.ss);
+    if (cc.miso >= 0)
+      SET_BIT64(c.gpio_in_use, cc.miso);
+    if (cc.mosi >= 0)
+      SET_BIT64(c.gpio_in_use, cc.mosi);
+  }
 
   setup_pin(&c);
 }
@@ -105,6 +124,11 @@ int8_t config_read_rfmiso_gpio() {
 }
 int8_t config_read_rfss_gpio() {
   return config_read_item((CB_RFSS_GPIO), -1);
+}
+
+const char* config_read_rf_repeater(char *d, unsigned d_size) {
+  const char *s =  config_read_item(CB_RF_REPEATER, d, d_size, "");
+  return s;
 }
 
 #if 1
@@ -199,6 +223,7 @@ struct cc1101_settings* config_read_cc1101(struct cc1101_settings *c) {
 
 
 void config_setup_cc1101() {
+
   struct cc1101_settings c = { .sclk = -1, .ss = -1, .miso = -1, .mosi = -1 };
   config_read_cc1101(&c);
   cc1101_ook_spi_setup(&c);
@@ -212,4 +237,10 @@ void config_setup_cc1101() {
         cc1101_ook_updConfig_fromSparse(item);
     }
   }
+}
+
+void config_setup_repeater() {
+  char buf[80];
+  config_read_rf_repeater(buf, sizeof buf);
+  ferRep_setup(buf);
 }

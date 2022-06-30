@@ -97,7 +97,7 @@ onDestroy(() => {
 
 </script>
 
-<style type="text/scss">
+<style lang="scss">
 
       #senddiv {
       display: grid;

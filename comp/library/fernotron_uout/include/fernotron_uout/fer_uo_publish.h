@@ -12,6 +12,7 @@
 #define uo_evt_flag_PRAS uo_evt_flag_F
 #define uo_evt_flag_CUAS uo_evt_flag_E
 #define uo_evt_flag_msgSent uo_evt_flag_D
+#define uo_evt_flag_SEP uo_evt_flag_C
 
 
 
@@ -65,6 +66,15 @@ typedef struct {
   bool timeout:1; ///< true if timeout reached
 } so_arg_cuas_t;
 
+typedef struct {
+  bool auth_success:1; ///< true if user pressed hardware button successful
+  bool auth_button_timeout:1; ///< true if timeout before pressing hardware button
+  bool auth_button_error:1; ///< true if timeout before pressing hardware button
+  bool auth_timeout:1; ///< true if authentication timed out
+  bool auth_terminated: 1; ///< authentication terminated
+  bool ui_timeout:1;  ///< true if timeout after user interaction
+} so_arg_sep_t;
+
 
 
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags = {});
@@ -76,7 +86,7 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg);
 void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg);
 void uoApp_publish_fer_prasState(const so_arg_pras_t args);
 void uoApp_publish_fer_cuasState(const so_arg_cuas_t args);
-
+void uoApp_publish_fer_sepState(const so_arg_sep_t args, char tag = '\0');
 
 
 inline const so_arg_pch_t *uoCb_pchFromMsg(const uoCb_msgT msg) {

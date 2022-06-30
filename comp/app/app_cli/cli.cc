@@ -17,6 +17,7 @@
 #include "app_uout/status_output.h"
 #include "app_settings/config.h"
 #include <fernotron_trx/fer_trx_c_api.h>
+#include <fernotron/sep/set_endpos.h>
 #include <algorithm>
 #include <iterator>
 
@@ -32,6 +33,8 @@ struct c_map {
 struct c_map const fc_map[] = { //
     { "down", fer_if_cmd_DOWN }, //
     { "up", fer_if_cmd_UP }, //
+    { "sep-down", fer_if_cmd_EndPosDOWN }, //
+    { "sep-up", fer_if_cmd_EndPosUP }, //
     { "stop", fer_if_cmd_STOP }, //
     { "sun-down", fer_if_cmd_SunDOWN }, //
     { "sun-up", fer_if_cmd_SunUP }, //
@@ -42,14 +45,14 @@ struct c_map const fc_map[] = { //
     { "rot-dir", fer_if_cmd_ToggleRotationDirection },  //
     };
 
-bool 
-cli_parm_to_ferCMD(const char *token, fer_if_cmd *cmd) {
+bool cli_parm_to_ferCMD(const char *token, fer_if_cmd *cmd) {
   int i;
-  
+  fer_if_cmd result;
 
   for (i = 0; i < (sizeof(fc_map) / sizeof(fc_map[0])); ++i) {
     if (strcmp(token, fc_map[i].fs) == 0) {
-      *cmd = fc_map[i].fc;
+      result = fc_map[i].fc;
+      *cmd = result;
       return true;
     }
   }
@@ -98,6 +101,9 @@ const char cli_help_parmHelp[]  =
 "type 'help command;'  or 'help all;'\ncommands are: ";
 
 static struct parm_handler const handlers[] = { //
+#ifdef USE_SEP
+        { "sep", process_parmSep, cli_help_parmSep }, //
+#endif
         { "cmd", process_parmSend, cli_help_parmSend },
         { "config", process_parmConfig, cli_help_parmConfig }, //
         { "mcu", process_parmMcu, cli_help_parmMcu }, //
@@ -107,11 +113,20 @@ static struct parm_handler const handlers[] = { //
         { "pair", process_parmPair, cli_help_parmPair},//
 #endif
         { "shpref", process_parmShpref, cli_help_parmShpref }, //
+        { "kvs", process_parmKvs, cli_help_parmKvs }, //
     };
 
 static const struct parm_handlers our_parm_handlers = { .handlers = handlers, .count = sizeof(handlers) / sizeof(handlers[0]), };
 
 const parm_handler* cli_parmHandler_find(const char *key) {
+#ifdef USE_SEP
+  // While in SEP mode reserve the MCU and RF for SEP commands only
+  if (fer_sep_is_enabled()) {
+    if (strcmp("sep", key) == 0)
+      return &handlers[0];
+    return nullptr;
+  }
+#endif
   auto handler = std::find_if(std::begin(handlers), std::end(handlers), [&key](auto el) {
     return strcmp(key, el.parm) == 0;
   });

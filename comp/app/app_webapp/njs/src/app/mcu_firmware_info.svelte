@@ -12,7 +12,7 @@
   $: nu = $_("notifyUser");
 </script>
 
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/app.scss";
   table,
   th,

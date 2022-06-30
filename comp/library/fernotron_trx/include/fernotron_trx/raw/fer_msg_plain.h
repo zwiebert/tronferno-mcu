@@ -6,6 +6,8 @@
 
 #include "fer_msg_type.h"
 #include "fer_msg_plain_enum.h"
+#include <fernotron_trx/fer_trx_c_api.h>
+#include "utils_misc/int_macros.h"
 
 #define FER_CMD_BYTE_CT    6   ///<  Message byte count (with checksum)
 #define FER_CMD_ADDR_CT    3   ///<  Device address byte count
@@ -51,13 +53,6 @@ enum Fer_DevType : uint8_t {
 };
 
 /**
- *  \brief     convert byte array device address to integer
- *  \param ba  address as byte array
- *  \return    address as uint32_t
- */
-#define FER_RB_GET_DEVID(data) (((uint32_t)(data[fer_dat_ADDR_2]) << 16) | ((uint16_t)(data[fer_dat_ADDR_1]) << 8) | (data[fer_dat_ADDR_0]))
-
-/**
  * \brief       Match type of device address
  * \param a     device address
  * \param t     type
@@ -68,6 +63,91 @@ inline bool FER_U32_TEST_TYPE(uint32_t a, Fer_DevType t) {
 }
 
 /// \brief Test if address matches a central unit
-inline bool FER_CMD_ADDR_IS_CENTRAL(const Fer_Cmd *cmd) {
+inline bool FER_CMD_ADDR_IS_CENTRAL(const struct Fer_Cmd *cmd) {
   return ((cmd->addr[fer_dat_ADDR_2] & 0xf0) == (uint8_t)FER_CentralUnit);
 }
+
+
+
+/////////////////////
+
+
+/// \brief Test if address matches a central unit
+inline bool FER_RB_ADDR_IS_CENTRAL(const struct Fer_Cmd *cmd) {
+  return ((cmd->addr[fer_dat_ADDR_2] & 0xf0) == FER_ADDR_TYPE_CentralUnit);
+}
+/// \brief Test if address matches a sun sensor
+inline bool FER_RB_ADDR_IS_SUNSENS(const struct Fer_Cmd *cmd) {
+  return ((cmd->addr[fer_dat_ADDR_2] & 0xf0) == FER_ADDR_TYPE_SunSensor);
+}
+/// \brief Test if address matches a plain sender
+inline bool FER_RB_ADDR_IS_PLAIN(const struct Fer_Cmd *cmd) {
+  return ((cmd->addr[fer_dat_ADDR_2] & 0xf0) == FER_ADDR_TYPE_PlainSender);
+}
+/**
+ * \brief        Put device address into message
+ * \param devID  Address as number
+ */
+inline void FER_RB_PUT_DEVID(struct Fer_Cmd *cmd, uint32_t devID) {
+  (cmd->addr[fer_dat_ADDR_2] = GET_BYTE_2(devID));
+  (cmd->addr[fer_dat_ADDR_1] = GET_BYTE_1(devID));
+  (cmd->addr[fer_dat_ADDR_0] = GET_BYTE_0(devID));
+}
+/// \brief Get device address as number from message
+inline uint32_t FER_RB_GET_DEVID(const struct Fer_Cmd *cmd) {
+  return (((uint32_t) cmd->addr[fer_dat_ADDR_2] << 16) | (uint16_t) (cmd->addr[fer_dat_ADDR_1] << 8) | (cmd->addr[fer_dat_ADDR_0]));
+}
+
+/// \brief Get cmd from message
+inline fer_cmd FER_RB_GET_CMD(const struct Fer_Cmd *cmd) {
+  return cmd->cmd;
+}
+/// \brief Put cmd into message
+inline void FER_RB_PUT_CMD(struct Fer_Cmd *cmd, fer_cmd val) {
+  (cmd->cmd = (fer_cmd) (val));
+}
+
+/// \brief Get tgl field from message
+inline uint8_t FER_RB_GET_TGL(const struct Fer_Cmd *cmd) {
+  return (cmd->tgl);
+}
+/// \brief Put tgl field into message
+inline void FER_RB_PUT_TGL(struct Fer_Cmd *cmd, uint8_t val) {
+  (cmd->tgl = (val));
+}
+/// \brief Get grp field from message
+inline fer_grp FER_RB_GET_GRP(const struct Fer_Cmd *cmd) {
+  return ((fer_grp) cmd->grp);
+}
+/// \brief Put grp field into message
+inline void FER_RB_PUT_GRP(struct Fer_Cmd *cmd, fer_grp val) {
+  (cmd->grp = (val));
+}
+/// \brief Put group number into message
+inline void FER_RB_PUT_NGRP(struct Fer_Cmd *cmd, uint8_t val) {
+  FER_RB_PUT_GRP(cmd, static_cast<fer_grp>(val));
+}
+
+/// \brief Get memb field from message
+inline fer_memb FER_RB_GET_MEMB(const struct Fer_Cmd *cmd) {
+  return ((fer_memb) cmd->memb);
+}
+/// \brief Get memb field from message
+inline uint8_t FER_RB_GET_NMEMB(const struct Fer_Cmd *cmd) {
+  uint8_t memb = cmd->memb;
+  if (memb > 0)
+    memb -= 7;
+  return memb;
+}
+/// \brief Put memb field into message
+inline void FER_RB_PUT_MEMB(struct Fer_Cmd *cmd, fer_memb val) {
+  (cmd->memb = (val));
+}
+/// \brief Put member number into message
+inline void FER_RB_PUT_NMEMB(struct Fer_Cmd *cmd, uint8_t m) {
+  cmd->memb =  static_cast<fer_memb>(m == 0 ? 0 : m + 7);
+}
+
+
+
+

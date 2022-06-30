@@ -16,6 +16,7 @@
 #include "fernotron/auto/fau_tdata_store.h"
 #include "utils_time/run_time.h"
 #include "utils_time/periodic.h"
+#include "main_loop/main_queue.hh"
 
 #include "move.h"
 
@@ -34,9 +35,19 @@ static inline bool cfg_isMemberUnused(gT g, mT m) { return !fer_usedMemberMask.g
 
 static char *g_to_name(u8 g, char *buf);
 
-void (*fer_pos_POSITIONS_SAVE_cb)(bool has_unsaved);
+
 static Fer_Pos_Map pos_map;
 
+void fer_pos_POSITIONS_SAVE_cb(bool has_unsaved) {
+  static void *tmr;
+  if (has_unsaved && !tmr) {
+    tmr = mainLoop_callFun([]() {pos_map.autoSavePositions();}, 10000, true);
+  }
+  if (!has_unsaved && tmr) {
+    mainLoop_stopFun(tmr);
+    tmr = nullptr;
+  }
+}
 
 
 Pct fer_statPos_getPct(u8 g, u8 m) {
@@ -52,21 +63,28 @@ Pct fer_statPos_getPct(u8 g, u8 m) {
   return Pct{};
 }
 
-static void set_state(u32 a, u8 g, u8 m, int position) {
+bool fer_statPos_isSunPos(u8 g, u8 m) {
+  precond(g <= 7 && m <= 7);
+
+  if (g == 0 || m == 0) {
+    return false;
+  }
+   return pos_map.isSunPos(g, m);
+}
+static void set_state(u32 a, u8 g, u8 m, int position, bool isSunPos) {
   DT(db_printf("%s: a=%x, g=%d, m=%d, position=%d\n", __func__, a, g, m, position));
   precond(g <= 7 && m <= 7);
   precond(0 <= position && position <= 100);
 
   pos_map.setMemberUnused(g,0);
-  pos_map.setPct(g,m,position);
+  pos_map.setPct(g,m,position, isSunPos);
   pos_map.setPct(g,0, pos_map.getAvgPctGroup(g));
 
-  if (fer_pos_POSITIONS_SAVE_cb)
-    fer_pos_POSITIONS_SAVE_cb(true);
+  fer_pos_POSITIONS_SAVE_cb(true);
 }
 
 void
-fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
+fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct, bool isSunPos) {
   precond(g <= 7 && m <= 7);
 
 #ifndef TEST_HOST
@@ -88,7 +106,7 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct) {
 #endif
 #endif
 
-  set_state(a, g, m, pct);
+  set_state(a, g, m, pct, isSunPos);
 
 
 #ifndef TEST_HOST
@@ -131,14 +149,8 @@ void fer_statPos_printAllPcts(const struct TargetDesc &td) {
   soMsg_pos_end(td);
 }
 
-
-
 void fer_pos_loop() {
   fer_pos_checkStatus_whileMoving_periodic(20);
-  pos_map.autoSavePositions_iv(100);
-}
-
-void fer_statPos_loopAutoSave() {
   pos_map.autoSavePositions_iv(100);
 }
 

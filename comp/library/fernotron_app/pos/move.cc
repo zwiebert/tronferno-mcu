@@ -84,21 +84,18 @@ int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts) {
 
     pct = fer_simPos_getPct_afterDuration(g, m, direction_isUp(Fer_Move->dir), duration_ts);
 
-    if ((direction_isUp(Fer_Move->dir) && pct == PCT_UP) || (!direction_isUp(Fer_Move->dir) && pct == PCT_DOWN)) {
+    if (direction_isEndPos(Fer_Move->dir, pct) // end-position reached
+    || (Fer_Move->dir == DIRECTION_SUN_DOWN && fer_pos_shouldStop_sunDown(g, m, duration_ts)) // sun-position reached
+        ) {
       fer_pos_stop_mv(Fer_Move, g, m, pct);
       ++stopped_count;
-      continue;
+    } else {
+      static unsigned last_call_ts;
+      if (periodic_ts(10, &last_call_ts)) {
+        uoApp_publish_pctChange_gmp(so_arg_gmp_t { g, m, pct });
+      }
     }
-
-    if (Fer_Move->dir == DIRECTION_SUN_DOWN && fer_pos_shouldStop_sunDown(g, m, duration_ts)) {
-      fer_pos_stop_mv(Fer_Move, g, m, pct);
-      ++stopped_count;
-      continue;
-    }
-
-    uoApp_publish_pctChange_gmp(so_arg_gmp_t{g, m, pct});
   }
-
   return stopped_count;
 }
 
@@ -110,9 +107,8 @@ void fer_pos_mvCheck_mvi(struct Fer_Move *Fer_Move) {
 }
 
 
-static void fer_pos_checkStatus_whileMoving() {
-  struct Fer_Move *Fer_Move;
-  for (Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {
+void fer_pos_checkStatus_whileMoving() {
+  for (struct Fer_Move *Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {
     fer_pos_mvCheck_mvi(Fer_Move);
   }
 }
@@ -138,10 +134,30 @@ bool fer_pos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts) {
 }
 
 bool fer_pos_shouldMove_sunDown(u8 g, u8 m) {
+
+  if (fer_statPos_isSunPos(g, m))
+    return false;
+
   u8 pct_curr = fer_statPos_getPct(g, m);
   u8 pct_sun = fer_pos_mGetSunPct(g, m);
 
   if (pct_curr <= pct_sun)
+    return false;
+
+  if (manual_bits.getMember(g, m))
+    return false;
+
+  Fer_TimerData td = { };
+  if (fer_stor_timerData_load(&td, &g, &m, true)) {
+    if (!td.getSunAuto())
+      return false;
+  }
+
+  return true;
+}
+
+bool fer_pos_shouldMove_sunUp(u8 g, u8 m) {
+  if (!fer_statPos_isSunPos(g, m))
     return false;
 
   if (manual_bits.getMember(g, m))
@@ -203,10 +219,6 @@ Pct fer_simPos_getPct_whileMoving(u8 g, u8 m) {
     }
   }
   return fer_statPos_getPct(g, m);
-}
-
-void fer_pos_loopCheckMoving() {
-  fer_pos_checkStatus_whileMoving_periodic(20);
 }
 
 #ifdef NO_OPT
