@@ -15,7 +15,7 @@
 
 </script>
 
-<style type="text/scss">
+<style lang="scss">
  
   .pvbar {
     background-color: #111730;

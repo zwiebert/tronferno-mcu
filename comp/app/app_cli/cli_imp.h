@@ -11,7 +11,10 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td);
 int process_parmTimer(clpar p[], int len, const struct TargetDesc &td);
 int process_parmHelp(clpar p[], int len, const struct TargetDesc &td);
 int process_parmPair(clpar p[], int len, const struct TargetDesc &td);
+int process_parmSep(clpar p[], int len, const struct TargetDesc &td);
 int process_parmShpref(clpar p[], int len, const struct TargetDesc &td);
+int process_parmKvs(clpar p[], int len, const struct TargetDesc &td);
+
 
 
 

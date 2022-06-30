@@ -94,7 +94,7 @@
   }
 </script>
 
-<style type="text/scss">
+<style lang="scss">
   $color_bg: white;
   $color_fg: black;
   $color_border: grey;

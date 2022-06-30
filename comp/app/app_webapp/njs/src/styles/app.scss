@@ -14,6 +14,8 @@ $color_bg_nav1: darken($color_bg_nav, 5%);
 $color_bg_nav1_select: darken($color_bg_nav_select, 5%);
 $color_bg_nav2: darken($color_bg_nav1, 5%);
 $color_bg_nav2_select: darken($color_bg_nav1_select, 5%);
+$color_bg_nav3: darken($color_bg_nav2, 5%);
+$color_bg_nav3_select: darken($color_bg_nav2_select, 5%);
 
 $color_bg_main_area: darken($color_bg_nav1, 5%);
 $color_border_main_area: darken($color_bg_main_area, 20%);
@@ -66,6 +68,30 @@ $color_border: darken($color_b, 5%);
 
   .tabbt.is-selected {
     background-color: $color_bg_nav1_select;
+    color: $color_fg_select;
+  }
+}
+
+.navtab-sub2 {
+  border-radius: .5rem;
+  padding: 0;
+  background-color: $color_bg_nav2;
+  border: thin dotted $color_border;
+
+  .tabbt.is-selected {
+    background-color: $color_bg_nav2_select;
+    color: $color_fg_select;
+  }
+}
+
+.navtab-sub3 {
+  border-radius: .5rem;
+  padding: 0;
+  background-color: $color_bg_nav3;
+  border: thin dotted $color_border;
+
+  .tabbt.is-selected {
+    background-color: $color_bg_nav3_select;
     color: $color_fg_select;
   }
 }

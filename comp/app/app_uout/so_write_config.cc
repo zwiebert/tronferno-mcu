@@ -106,6 +106,11 @@ void soCfg_RF_TRX(const struct TargetDesc &td) {
   td.so().print(settings_get_optKeyStr(CB_RF_TRX), cfg_args_rfTrx[config_read_rf_trx()]);
 }
 
+void soCfg_RF_REPEATER(const struct TargetDesc &td) {
+  char buf[80];
+  td.so().print(settings_get_optKeyStr(CB_RF_REPEATER), config_read_rf_repeater(buf, sizeof buf));
+}
+
 void soCfg_GPIO_RFSCK(const struct TargetDesc &td) {
   td.so().print(settings_get_optKeyStr(CB_RFSCK_GPIO), config_read_rfsck_gpio());
 }

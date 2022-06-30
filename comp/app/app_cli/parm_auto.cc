@@ -28,6 +28,7 @@ static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard);
 #define FLAG_FALSE 0
 #define FLAG_TRUE 1
 #define HAS_FLAG(v) (v >= 0)
+#define is_val(k) (strcmp(val, k) == 0)
 
 const char cli_help_parmTimer[] = "daily=T        set daily timer\n"
     "weekly=TTTTTTT set weekly timer\n"
@@ -103,7 +104,9 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
       case otok::k_a: {
         u32 tmp = val ? strtol(val, NULL, 16) : 0;
         if (tmp)
-        addr = tmp;
+          addr = tmp;
+        else if (!is_val("0"))
+          return cli_replyFailure(td);
       }
       break;
       case otok::k_g: {
@@ -188,7 +191,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   if (is_timer_frame) {
     if (f_disableManu || f_enableManu) {
       manual_bits.putMember(parm_g, parm_m, f_enableManu);
-      fer_stor_gmSet_save("MANU", manual_bits, 1);
+      manual_bits.store_save(MANUAL_BITS_STORE_NAME);
     }
     f_manual = manual_bits.getMember(parm_g, parm_m);
   }
@@ -198,7 +201,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   {
     bool f_modified =
         !f_modify
-            || 
+            ||
                 tda.hasAstro() || f_disableAstro || tda.hasDaily() || f_disableDaily || tda.hasWeekly() || f_disableWeekly || has_parm_Random || has_parm_SunAuto;
     bool no_read_save_td = (!f_modified && !f_disableManu) && !(f_modify && !f_no_send); // when not modified read/save would do nothing. but wee need to read when disabling manual mode
 

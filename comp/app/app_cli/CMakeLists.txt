@@ -5,14 +5,16 @@ set(srcs cli.cc
     parm_cmd.cc
     parm_config.cc parm_config_comp.cc parm_config_app.cc parm_config_help.cc
     parm_mcu.cc
+    parm_sep.cc
     parm_shpref.cc
+    parm_kvs.cc
 )
 
 idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS "./include" 
     REQUIRES cli
-    PRIV_REQUIRES cc1101_ook net net_http_server app_mqtt app_misc utils_misc app_uout txtio fernotron_app fernotron_trx utils_debug app_http_server app_settings key_value_store firmware_update
+    PRIV_REQUIRES main_loop cc1101_ook net net_http_server app_mqtt app_misc utils_misc app_uout txtio fernotron_app fernotron_trx utils_debug app_http_server app_settings key_value_store firmware_update
     EMBED_TXTFILES ./ca_cert.pem
 )
 

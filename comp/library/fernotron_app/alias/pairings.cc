@@ -9,6 +9,7 @@
 #include "debug/dbg.h"
 #include "utils_misc/int_types.h"
 #include <utils_time/run_time.h>
+#include "main_loop/main_queue.hh"
 
 #if defined DISTRIBUTION || 0
 #define D(x) x
@@ -20,21 +21,29 @@
 #define DL
 #endif
 
-void (*fer_alias_enable_disable_cb)(bool enable);
-
 static bool pras_active;
 static time_t end_time;
 static u8 pras_g, pras_m;
 static fer_alias_cmds pras_c;
 
+static void fer_alias_enable_disable_cb(bool enable) {
+  static void *tmr;
+  if (enable && !tmr) {
+    tmr = mainLoop_callFun(fer_alias_auto_set_check_timeout, 100, true);
+  }
+  if (!enable && tmr) {
+    mainLoop_stopFun(tmr);
+    tmr = nullptr;
+  }
+}
+
 static inline void fer_alias_ENABLE_cb() {
-  if (fer_alias_enable_disable_cb)
-    fer_alias_enable_disable_cb(true);
+  fer_alias_enable_disable_cb(true);
 }
 static inline void fer_alias_DISABLE_cb() {
-  if (fer_alias_enable_disable_cb)
-    fer_alias_enable_disable_cb(false);
+  fer_alias_enable_disable_cb(false);
 }
+
 
 bool  fer_alias_auto_set(u8 g, u8 m, fer_alias_cmds c, u16 id, unsigned timeout_secs) {
   if (end_time != 0)

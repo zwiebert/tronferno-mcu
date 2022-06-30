@@ -6,7 +6,7 @@
 
 <div class="main-area">
   <div class="mt-4 p-2">
-    <ShutterGM />
+    <ShutterGM radio={false} />
   </div>
   <div class="area">
     <ShutterAuto />

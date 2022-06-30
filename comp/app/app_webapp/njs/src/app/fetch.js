@@ -1,10 +1,11 @@
 "use strict";
 import * as appDebug from "app/app_debug.js";
 import * as httpResp from "app/http_resp.js";
-import { G, M0 } from "stores/curr_shutter.js";
+import { G, M0, Address } from "stores/curr_shutter.js";
 import { Gmu } from "stores/mcu_config.js";
 import { get } from "svelte/store";
 import { ws_isOpen, ws_sendObject } from "main/net/conn_ws";
+import { RadioCodeEnabled } from "../store/curr_shutter";
 
 let b = 0;
 export const FETCH_CONFIG = 1 << b++;
@@ -16,6 +17,7 @@ export const FETCH_AUTO = 1 << b++;
 export const FETCH_POS = 1 << b++;
 export const FETCH_VERSION = 1 << b++;
 export const FETCH_ALIASES = 1 << b++;
+export const FETCH_REPEATER_IDS = 1 << b++;
 export const FETCH_ALIASES_START_PAIRING = 1 << b++;
 export const FETCH_ALIASES_START_UNPAIRING = 1 << b++;
 export const FETCH_SHUTTER_PREFS = 1 << b++;
@@ -102,8 +104,7 @@ export function http_postShutterCommand(c = document.getElementById("send-c").va
   let tfmcu = { to: "tfmcu" };
 
   let send = {
-    g: g.toString(),
-    m: m.toString(),
+    ...get(Address),
     c: c,
   };
   tfmcu.send = send;
@@ -206,6 +207,8 @@ export function http_fetchByMask(mask, synchron) {
     add_kv(tfmcu, "pair", "a", "?");
     add_kv(tfmcu, "pair", "c", mask & FETCH_ALIASES_START_PAIRING ? "pair" : "unpair");
   }
+
+  if (mask & FETCH_REPEATER_IDS) add_kv(tfmcu, "config", "rf-repeater", "?");
 
   if (mask & FETCH_SHUTTER_PREFS) {
     add_kv(tfmcu, "shpref", "g", g);

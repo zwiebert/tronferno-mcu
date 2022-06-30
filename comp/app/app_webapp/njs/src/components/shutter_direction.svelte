@@ -1,29 +1,20 @@
 <script>
   "use strict";
-  import * as httpFetch from "app/fetch.js";
-  import { GMH } from "stores/curr_shutter.js";
+  import { _ } from "services/i18n";
   import tippy from "sveltejs-tippy";
+  import * as httpFetch from "app/fetch.js";
+  import { GMH, RadioCode, RadioCodeEnabled, Address } from "stores/curr_shutter.js";
+  import FaArrowsAltV from "svelte-icons/fa/FaArrowsAltV.svelte";
 
-  $: use_motorCode = false;
-  $: motorCode = "";
-  $: motorCode_isValid = get_motorCode(motorCode) !== null;
-  $: target = use_motorCode ? motorCode : $GMH;
-
-  function get_motorCode() {
-    const re = /^9?0[a-fA-F0-9]{4}$/;
-    if (!re.test(motorCode)) return null;
-    if (motorCode.startsWith("0")) return "9" + motorCode;
-
-    return motorCode;
-  }
+  $: target = $RadioCodeEnabled ? $RadioCode : $GMH;
 
   function postShutterCommand(cmd) {
-    if (!use_motorCode) return httpFetch.http_postShutterCommand(cmd);
+    if (!$RadioCodeEnabled) return httpFetch.http_postShutterCommand(cmd);
 
-    const mc = get_motorCode();
+    const mc = $RadioCode;
     if (!mc) return;
 
-    let req = { cmd: { a: mc, c: cmd } };
+    let req = { cmd: { ...$Address, c: cmd } };
     httpFetch.http_postCommand(req);
   }
   function hClick_RotDir() {
@@ -47,26 +38,24 @@
 
 <div class="inline-block">
   <div class="flex flex-row items-center">
-    <button class="w-16 h-16 text-lg" type="button" on:click={hClick_Down}> Test &#x25bc; </button>
+    <button class="w-16 h-16 text-lg" type="button" on:click={hClick_Down} use:tippy={{ content: $_("app.rotDir.tt.test_down") }}>
+      {$_("app.rotDir.test_down")}
+    </button>
 
-    <button class="m-2 w-32 h-16 text-lg" type="button" on:click={hClick_RotDir}> Toggle ({target}) </button>
+    <button class="m-2 w-32 h-16 text-lg" type="button" on:click={hClick_RotDir} use:tippy={{ content: $_("app.rotDir.tt.toggle") }}>
+      <div class="flex flex-row">
+        <div class="h-4 w-4"><FaArrowsAltV /></div>
+        {$_("app.rotDir.toggle")} ({target})
+        <div class="h-4 w-4"><FaArrowsAltV /></div>
+      </div>
+    </button>
 
-    <button class="w-16 h-16 text-lg" type="button" on:click={hClick_Up}> Test &#x25b2; </button>
+    <button class="w-16 h-16 text-lg" type="button" on:click={hClick_Up} use:tippy={{ content: $_("app.rotDir.tt.test_up") }}>
+      {$_("app.rotDir.test_up")}
+    </button>
   </div>
 </div>
 
-<hr />
-<label
-  >Motorcode: <input type="checkbox" bind:checked={use_motorCode} />
-  <input
-    class="w-24 {motorCode_isValid ? 'text-green-600' : 'text-red-600'}"
-    type="text"
-    maxlength="6"
-    bind:value={motorCode}
-    disabled={!use_motorCode}
-  /></label
->
-
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/app.scss";
 </style>

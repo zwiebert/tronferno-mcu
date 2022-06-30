@@ -16,6 +16,7 @@
 #include "fernotron/fer_main.h"
 #include <fernotron_trx/fer_trx_api.hh>
 #include <fernotron_uout/fer_uo_publish.h>
+#include <fernotron/repeater/repeater.h>
 #include <string.h>
 
 struct fer_configT fer_config;
@@ -48,6 +49,9 @@ public:
     if (msg_type == MSG_TYPE_PLAIN || msg_type == MSG_TYPE_PLAIN_DOUBLE) {
       fer_msg_print("R:", fer_rx_msg, msg_type, TXTIO_IS_VERBOSE(vrbDebug));
      // fer_msg_print_as_cmdline((msg_type == MSG_TYPE_PLAIN_DOUBLE ? "Rc:" : "RC:"), fer_rx_msg, msg_type);
+#ifdef USE_REPEATER
+      ferRep_repeatCommand(fer_rx_msg->cmd.sd.cmd);
+#endif
     }
 
 #ifndef FER_RECEIVER_MINIMAL
@@ -105,7 +109,7 @@ void fer_main_setup(const fer_configT &ferConfig, const bool reinit) {
 
    fer_config = ferConfig;
    fer_usedMemberMask.fromNibbleCounters(ferConfig.usedMembers);
-   manual_bits = Fer_GmSet("MANU");
+   manual_bits = Fer_GmSet(MANUAL_BITS_STORE_NAME);
    if (reinit)
      return;
 

@@ -2,7 +2,6 @@
   import { Gmu } from "stores/mcu_config.js";
 
   export let caption;
-  export let name;
   export let value;
   export let changed;
 
@@ -47,7 +46,7 @@
   <caption  class="{changed ? 'font-bold' : 'font-normal'}">{caption}</caption>
   <tr>
     {#each { length: 7 } as _, i}
-      <td><label>G{i + 1}</label></td>
+      <td>G{i + 1}</td>
     {/each}
   </tr>
   <tr>

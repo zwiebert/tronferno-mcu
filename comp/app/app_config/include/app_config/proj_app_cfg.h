@@ -50,6 +50,8 @@ typedef int64_t i64;
 #define MCU_ESP32
 #endif
 
+#define USE_REPEATER
+
 #include "proj_kconfig.h"
 
 #ifdef USE_FER_RECEIVER
@@ -60,9 +62,6 @@ typedef int64_t i64;
 #endif
 #ifdef USE_POSIX_TIME
 #define POSIX_TIME 1
-#endif
-#ifdef USE_SEP
-#define ENABLE_SET_ENDPOS 1
 #endif
 #ifdef USE_MDR_TIME
 #define MDR_TIME

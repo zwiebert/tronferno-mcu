@@ -23,6 +23,7 @@ void soCfg_GPIO_RFOUT(const TargetDesc &td);
 void soCfg_GPIO_RFIN(const TargetDesc &td);
 void soCfg_GPIO_SETBUTTON(const TargetDesc &td);
 void soCfg_RF_TRX(const struct TargetDesc &td);
+void soCfg_RF_REPEATER(const struct TargetDesc &td);
 void soCfg_GPIO_RFSCK(const TargetDesc &td);
 void soCfg_GPIO_RFMOSI(const TargetDesc &td);
 void soCfg_GPIO_RFMISO(const TargetDesc &td);

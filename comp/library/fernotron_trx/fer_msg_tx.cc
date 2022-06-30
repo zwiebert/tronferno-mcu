@@ -14,10 +14,25 @@
 #include "fer_trx_impl.hh"
 #include "utils_time/run_time.h"
 #include "cc1101_ook/trx.hh"
-
+#include "main_loop/main_queue.hh"
 
 
 void (*fer_tx_READY_TO_TRANSMIT_cb)(uint32_t when_to_transmit_ts);
+
+static void run_tx_worker_loop_main_thread(u32 when_to_transmit_ts) {
+  const u32 now_ts = get_now_time_ts();
+  if (now_ts >= when_to_transmit_ts) {
+    mainLoop_callFun(fer_tx_loop);
+    return;
+  }
+
+  // message sent time lies in future
+
+  const u32 delay_ms = (when_to_transmit_ts - now_ts) * 100;
+  if (!mainLoop_callFun(fer_tx_loop, delay_ms)) {
+    printf("TxWorker Timer start error");
+  }
+}
 
 static inline void fer_tx_ready_to_transmit_cb(uint32_t time_ts) {
   if (fer_tx_READY_TO_TRANSMIT_cb)
@@ -33,6 +48,7 @@ static void fer_send_checkQuedState() {
 
   if ((msg = fer_tx_nextMsg())) {
     fer_tx_ready_to_transmit_cb(msg->when_to_transmit_ts);
+    run_tx_worker_loop_main_thread(msg->when_to_transmit_ts);
   }
 }
 
@@ -52,7 +68,7 @@ bool fer_send_msg_with_stop(const fer_sbT *fsb, u16 delay, u16 stopDelay, i8 rep
 bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, i8 repeats, u16 delay) {
   precond(fsb);
 
-  struct sf msg = { .fsb = *fsb, .when_to_transmit_ts = (delay + (u32)get_now_time_ts()), .mt = msgType, .repeats = repeats };
+  struct sf msg = { .when_to_transmit_ts = (delay + (u32)get_now_time_ts()), .fsb = *fsb, .mt = msgType, .repeats = repeats };
   if (!fer_tx_pushMsg(&msg))
     return false;
 
@@ -68,7 +84,9 @@ static bool fer_send_queued_msg(struct sf *msg) {
   Fer_Trx_IncomingEvent evt { .raw = fer_tx_msg, .fsb = msg->fsb, .kind = msg->mt, .tx = true };
 
   if (msg->sent_ct++ == 0) {
-    sf_toggle = fer_tglNibble_ctUp(sf_toggle, 1);
+    if (!msg->rf_repeater) {
+      sf_toggle = fer_tglNibble_ctUp(sf_toggle, 1);
+    }
     FER_SB_PUT_TGL(&msg->fsb, sf_toggle);
     if (msg->mt == MSG_TYPE_PLAIN) {
       evt.first = true;
@@ -108,9 +126,23 @@ void fer_trx_direction(bool tx) {
   cc1101_ook_setDirection(tx);
 }
 
+extern uint32_t last_rx_ts;
+
+/**
+ * \brief Test if receiver is not receiving right now, to avoid RF collision with transmitter.
+ */
+inline bool fer_rx_clear_to_send() {
+#ifdef HOST_TESTING
+  return true;
+#endif
+  return last_rx_ts + 5 <= get_now_time_ts(); // TODO: we could use RSSI with CC1101 here. For now just check if nothing was received in the last 500ms
+}
+
 void fer_tx_loop() {
-  if (fer_tx_isTransmitterBusy())
+  if (fer_tx_isTransmitterBusy() || !fer_rx_clear_to_send()) {
+    mainLoop_callFun(fer_tx_loop, 100);
     return;
+  }
 
   struct sf *msg = fer_tx_nextMsg();
 

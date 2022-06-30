@@ -6,14 +6,12 @@
   import tippy from "sveltejs-tippy";
 </script>
 
-<div class="main-area">
-  <h4 class="text-center" use:tippy={{ content: $_("help.hint_shutterDurations") }}>{$_("app.dur.h")}</h4>
-  
+<h4 class="text-center" use:tippy={{ content: $_("panes.durations.tt.header") }}>{$_("panes.durations.header")}</h4>
+
+<div class="area">
   <div class="mt-4 p-2">
-    <ShutterGM />
+    <ShutterGM group={false} />
   </div>
 
-  <div class="area">
-    <ShutterPrefs />
-  </div>
+  <ShutterPrefs />
 </div>

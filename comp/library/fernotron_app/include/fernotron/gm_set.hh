@@ -11,17 +11,8 @@
 #include <string.h>
 #include <utils_misc/int_types.h>
 
-typedef uint8_t gmSetT[8];
-typedef uint8_t gT, mT;
 
-/**
- * \brief          Load one or more Fer_GmSet from persistent storage.
- * \param name     File name of storage
- * \param[out] gm  Destination pointer to an array of capacity of at least COUNT
- * \param count    Number of sets to read from file
- * \return         true for success
- */
-bool fer_stor_gmSet_load(const char *name, gmSetT gm[], int count);
+typedef uint8_t gT, mT;
 
 using gm_pairT = std::pair<gT, mT>;
 
@@ -83,17 +74,11 @@ private:
  * \brief    Set of groups and/or members
  */
 class Fer_GmSet {
-
 public:
   Fer_GmSet() = default;
 
-  explicit Fer_GmSet(gmSetT bm) {
-    if (bm)
-      memcpy(mBm, bm, sizeof(mBm));
-  }
-
   explicit Fer_GmSet(const char *name) {
-    fer_stor_gmSet_load("MANU", &mBm, 1);
+    store_load(name);
   }
 
   /**
@@ -112,9 +97,6 @@ public:
   }
 
 public:
-  operator gmSetT*() {
-    return &mBm;
-  } //XXX
   uint8_t& operator[](int idx) {
     return mBm[idx];
   }
@@ -162,7 +144,7 @@ public:
 public:
   /// \brief  Make the set empty
   void clear() {
-    memset(mBm, 0, sizeof(gmSetT));
+    memset(mBm, 0, sizeof mBm);
   }
   /// \brief Get a group as bit-mask
   uint8_t getGroup(gT g) const {
@@ -264,8 +246,16 @@ public:
     return it;
   }
 
+public:
+
+  bool store_load(const char *name);
+  bool store_save(const char *name);
+#ifdef HOST_TESTING
+public:
+  operator uint8_t*() { return mBm; }
+#endif
 private:
-  gmSetT mBm = { };
+  uint8_t mBm[8] = { };
 };
 
-static_assert(sizeof (gmSetT) == sizeof (Fer_GmSet));
+static_assert(8 == sizeof (Fer_GmSet));

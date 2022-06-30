@@ -3,6 +3,7 @@
   import { McuConfig } from "stores/mcu_config.js";
   import * as httpFetch from "app/fetch.js";
   export let name;
+  export let force = false;
   //export let value;
 
   $: level = $Gpios[name] || -1;
@@ -10,7 +11,7 @@
   $: output_only = true;
 
   $: {
-    if (/[Qiq]/.test(cfg)) {
+    if (force || /[Qiq]/.test(cfg)) {
       let cmd = { mcu: { } };
       cmd.mcu[name] = "?";
       httpFetch.http_postCommand(cmd);

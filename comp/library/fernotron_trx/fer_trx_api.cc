@@ -1,10 +1,12 @@
 #include <fernotron_trx/fer_trx_api.hh>
 #include "fer_trx_incoming_event.hh"
 #include "fer_trx_impl.hh"
+#include <utils_time/run_time.h>
 
 
 
 static Fer_Trx_API *OurDerivedObject;
+uint32_t last_rx_ts;
 
 void Fer_Trx_API::setup(Fer_Trx_API *derived_object) {
   OurDerivedObject = derived_object;
@@ -59,6 +61,7 @@ void Fer_Trx_API::push_event(struct Fer_Trx_IncomingEvent *evt) {
       that.event_any_message_will_be_sent();
 
   } else { //rx
+    last_rx_ts = get_now_time_ts();
     switch (evt->kind) {
     case MSG_TYPE_PLAIN_DOUBLE:
       that.event_any_message_was_received();

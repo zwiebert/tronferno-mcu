@@ -13,7 +13,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "fernotron/pos/positions_dynamic.h"
 
-#include "move_buf.h"
+
 
 extern struct shutter_timings st_def;
 
@@ -28,17 +28,26 @@ extern struct shutter_timings st_def;
 #define DEF_MV_DOWN_10 250
 #define DEF_MV_SUN_DOWN_10 100
 
+#include "move_buf.h"
+
 // general control for moving
 bool fer_pos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts);
 void fer_pos_mvCheck_mvi(struct Fer_Move *Fer_Move);
 int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts);
 void fer_pos_checkStatus_whileMoving_periodic(int interval_ts);
+void fer_pos_checkStatus_whileMoving();
 u16 fer_simPos_calcMoveDuration_fromPctDiff_m(u8 g, u8 m, u8 curr_pct, u8 pct);
 
 
 // start moving
+/**
+ * \brief Test if real movement happens configuration and current position (needs to be above sun-position)
+ */
 bool fer_pos_shouldMove_sunDown(uint8_t g, uint8_t m);
-
+/**
+ * \brief Test if real movement happens configuration and current position (needs to be at sun-position)
+ */
+bool fer_pos_shouldMove_sunUp(uint8_t g, uint8_t m);
 
 // stop moving
 void fer_pos_stop_mv(struct Fer_Move *Fer_Move, u8 g, u8 m, u8 pct);
@@ -46,6 +55,6 @@ void fer_pos_stop_mvi(struct Fer_Move *Fer_Move, u8 g, u8 m, u32 now_ts);
 void fer_pos_stop_mm(Fer_GmSet *mm, u32 now_ts);
 void fer_pos_stop_mvi_mm(struct Fer_Move *Fer_Move, Fer_GmSet *mm, u32 now_ts);
 
-
+void fer_pos_POSITIONS_SAVE_cb(bool has_unsaved);
 
 

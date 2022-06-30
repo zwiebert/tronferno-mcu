@@ -85,6 +85,7 @@ export default {
   },
   plugins: [
     replace({
+      preventAssignment:true,
       // workaround the way sveltejs-tippy imports tippy: https://github.com/mdauner/sveltejs-tippy/issues/117
       "process.env.NODE_ENV": JSON.stringify(
         isProduction ? "production" : "development"

@@ -389,7 +389,7 @@
   }
 </script>
 
-<span class="bg-green-200">Experimental.</span>
+<h5 class="bg-green-200 text-center" >Experimental Register Editor</h5>
 <div class="flex flex-col content-center justify-center">
   <div class="area">
     <h4>AGC_Control</h4>
@@ -685,7 +685,7 @@
 <button type="button" use:tippy={{ content: "Erase saved CC1101 configuration registers on MCU" }} on:click={reset_to_defaults}>Reset to Defaults</button>
 <br />
 
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/app.scss";
   table,
   td,

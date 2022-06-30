@@ -182,15 +182,15 @@ void uoApp_publish_timer_json(uint8_t g, uint8_t m, struct Fer_TimerData *tda) {
   }
 }
 
-
 struct cmdInfo {
   const char *cs = 0;
   const char *fdt = 0;
 };
 static cmdInfo cmdString_fromPlainCmd(const Fer_MsgPlainCmd &m) {
-    struct cmdInfo r;
+  struct cmdInfo r;
 
-  if ((FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_PlainSender) && (r.fdt = "plain")) || (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit) && (r.fdt = "central"))) {
+  if ((FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_PlainSender) && (r.fdt = "plain")) || (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit) && (r.fdt = "central"))
+      || (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_Receiver) && (r.fdt = "receiver"))) {
     switch (m.cmd) {
     case fer_if_cmd_DOWN:
       r.cs = "down";
@@ -209,6 +209,15 @@ static cmdInfo cmdString_fromPlainCmd(const Fer_MsgPlainCmd &m) {
       break;
     case fer_if_cmd_SunINST:
       r.cs = "sun-pos";
+      break;
+    case fer_if_cmd_EndPosDOWN:
+      r.cs = "sep-down";
+      break;
+    case fer_if_cmd_EndPosUP:
+      r.cs = "sep-up";
+      break;
+    case fer_if_cmd_ToggleRotationDirection:
+      r.cs = "rot-dir";
       break;
     default:
       r.cs = 0;
@@ -248,7 +257,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
 
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    char buf[64];
+    char buf[80];
     if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit)) {
       snprintf(buf, sizeof buf, "SC:type=central: a=%06x g=%d m=%d c=%s;", m.a, m.g, m.m, ci.cs);
     } else {
@@ -260,7 +269,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
   flags.fmt.txt = false;
   flags.fmt.json = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    char buf[64];
+    char buf[80];
     if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit)) {
       snprintf(buf, sizeof buf, "{\"sc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"%s\"}}", m.a, m.g, m.m, ci.cs);
     } else {
@@ -388,3 +397,42 @@ void uoApp_publish_fer_cuasState(const so_arg_cuas_t args) {
   }
 }
 
+void uoApp_publish_fer_sepState(const so_arg_sep_t args, char tag) {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_SEP = true;
+  flags.evt.gen_app_state_change = true;
+
+  flags.fmt.raw = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    uoCb_publish(idxs, &args, flags);
+  }
+
+  flags.fmt.raw = false;
+  flags.fmt.json = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+
+    char sj_buf[128];
+    StatusJsonT sj = { sj_buf, sizeof sj_buf };
+
+    if (sj.open_root_object("tfmcu")) {
+      sj.add_object("sep");
+      if (args.auth_success)
+        sj.add_key_value_pair_d("auth-success", 1);
+      if (args.auth_terminated)
+        sj.add_key_value_pair_d("auth-terminated", 1);
+      if (args.auth_button_timeout)
+        sj.add_key_value_pair_d("auth-button-timeout", 1);
+      if (args.auth_button_error)
+        sj.add_key_value_pair_d("auth-button-error", 1);
+      if (args.auth_timeout)
+        sj.add_key_value_pair_d("auth-timeout", 1);
+      if (args.ui_timeout)
+        sj.add_key_value_pair_d("ui-timeout", 1);
+      sj.close_object();
+
+      sj.close_root_object();
+
+      uoCb_publish(idxs, sj.get_json(), flags);
+    }
+  }
+}

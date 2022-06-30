@@ -12,11 +12,6 @@
 
 
 
-/**
- * \brief    will be called if a moving starts or stops by any command or duration
- */
-extern void (*fer_pos_POSITIONS_MOVE_cb)(bool has_moving);
-
 // keep track of movement by simulation
 
 /**
@@ -60,13 +55,6 @@ uint16_t fer_simPos_calcMoveDuration_fromPctDiff_m(uint8_t g, uint8_t m, uint8_t
  * \return             calculated position in percent
  */
 Pct  fer_simPos_getPct_afterDuration(uint8_t g, uint8_t m, bool direction_up, uint16_t duration_ts);
-
-
-/**
- * \brief   Check for movement and if any generate events. Should be called from an interval or after being notified by callback fer_pos_POSITIONS_MOVE_cb. ???
- * \note    The events will be generated at an interval of at least 200ms. So there is no point to call this function in intervals shorter than this.
- */
-void fer_pos_loopCheckMoving();
 
 /**
  * \brief    Do work.
