@@ -187,6 +187,8 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
   bool is_timer_frame = FER_U32_TEST_TYPE(addr, FER_ADDR_TYPE_CentralUnit) && flag_rtc_only != FLAG_TRUE;
   bool f_manual = false;
+  bool f_manual_old = manual_bits.getMember(parm_g, parm_m);
+  bool f_manual_changed = false;
 
   if (is_timer_frame) {
     if (f_disableManu || f_enableManu) {
@@ -194,6 +196,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
       manual_bits.store_save(MANUAL_BITS_STORE_NAME);
     }
     f_manual = manual_bits.getMember(parm_g, parm_m);
+    f_manual_changed = f_manual != f_manual_old;
   }
 
   bool need_reload_td,
@@ -257,6 +260,12 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
     } else {
       reply_message(td, "bug", "rs not saved");
       print_enr(td);
+    }
+  } else if (f_manual_changed) {
+    Fer_TimerData tdb;
+    u8 rg = parm_g, rm = parm_m;
+    if (fer_stor_timerData_load(&tdb, &rg, &rm, true)) {
+      uoApp_publish_timer_json(rg, rm, &tda);
     }
   }
 
