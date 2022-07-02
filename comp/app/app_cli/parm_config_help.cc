@@ -13,7 +13,7 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
     "wlan-password=PW\n"
 #endif
 #ifdef USE_NETWORK
-    "network=(wlan|ap|lan) ap opens wlan access-point at 192.168.4.1 (restart required)\n"
+    "network=(none|wlan|ap|lan) ap opens wlan access-point at 192.168.4.1 (restart required)\n"
 #endif
 #ifdef USE_NTP
     "ntp-server=(gateway|dhcp|IP4ADDR|NAME) default: gateway\n"
