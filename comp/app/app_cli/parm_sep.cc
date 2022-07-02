@@ -21,10 +21,17 @@
 #define DL
 #endif
 
-const char cli_help_parmSep[] = ""
-    "a=(?|ID) 0  controller to pair. '?' starts auto-scan\n"
+const char cli_help_parmSep[] = "'sep' sets roller shutter end positions\n\n"
+    "a=(?|ID)  0  transmitter-ID or receiver radio code\n"
     "g=[0-7]   0  group number\n"
-    "m=[0-7]   0  group member number\n";
+    "m=[0-7]   0  receiver number\n"
+    "c=(down|keep-moving|stop|test)\n"
+    "request-auth=(button)\n"
+    "auth-key=N\n"
+    "enable=(on|off)\n"
+    "timeout=N\n"
+
+;
 
 #define is_kt(k) (kt == otok:: k)
 #define is_key(k) (strcmp(key, k) == 0)

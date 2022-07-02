@@ -18,15 +18,13 @@
 
 #define FER_SB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
-const char cli_help_parmSend[]  =
-    "a=(0|ID)  0  hex ID of sender or receiver.\n"
+const char cli_help_parmSend[]  = "'cmd' sends a command to a receiver (or get current position)\n\n"
+    "a=(0|ID)  0  transmitter ID (6 digit hex). 0 for programming center.\n"
     "g=[0-7]   0  group number\n"
-    "m=[0-7]   0  group member number\n"
-    "c=(up|down|stop|sun-down|sun-inst|sun-pos|sun-test|set|rot-dir|?)\n"
-    "p=?          get current position\n"
+    "m=[0-7]   0  receiver number\n"
+    "c=(up|down|stop|sun-down|sun-inst|sun-pos|sun-test|set|rot-dir|?) Command. '?' gets current pos\n"
+    "p=?          get current position in percent\n"
     "r=N       2  repeat command 1+N times\n"
-    "SEP[=0|1]    Enter end-position adjustment mode (needs hardware button)"
-// "TROT        Toggle rotation direction"
 ;
 
 #define is_kt(k) (kt == otok:: k)

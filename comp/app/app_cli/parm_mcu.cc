@@ -38,7 +38,8 @@
 
 #include <alloca.h>
 
-const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
+const char cli_help_parmMcu[] = "'mcu' handles special commands and data\n\n"
+    "print=(rtc|cu|reset-info)\n"
 #ifndef NO_SPIFFS
         "spiffs=(format|test)\n"
 #endif
@@ -46,7 +47,12 @@ const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
     "gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N\n"
 #endif
         "up-time=?\n"
-        "version=full\n";
+        "version=full\n"
+        "ota=(github-beta|github-master|tag-XXX|?)  Fetch and install firmware from github. ? gets status info\n"
+        "cc1101-config=(?|HEX-STRING) Get or set configuration registers\n"
+        "cc1101-status=?   Get status registers\n"
+
+;
 
 static void kvs_print_keys(const char *name_space);
 void cc1101_printCfg_asString(const struct TargetDesc &td);

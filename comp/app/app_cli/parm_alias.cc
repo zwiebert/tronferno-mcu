@@ -22,12 +22,16 @@
 
 #define PRAS_TIMEOUT 15
 
-const char cli_help_parmPair[] = ""
-    "a=(?|ID) 0  controller to pair. '?' starts auto-scan\n"
+//#define PAIR_GPIO
+
+const char cli_help_parmPair[] = "'pair' stores information about transmitter to receiver registration"
+    "a=(?|ID) 0  transmitter-ID to pair. '?' starts RF-auto-scan\n"
     "g=[0-7]   0  group number\n"
-    "m=[0-7]   0  group member number\n"
+    "m=[0-7]   0  receiver number\n"
+#ifdef PAIR_GPIO
     "gpoutN=(up|down|switch)   \n"
     "gpinN=(up|down|stop|rain|toggle)\n"
+#endif
     "c=(pair|unpair|read)\n";
 
 #define is_kt(k) (kt == otok:: k)

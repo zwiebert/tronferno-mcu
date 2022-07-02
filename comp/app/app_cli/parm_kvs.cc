@@ -20,7 +20,9 @@
 
 #define ENABLE_RESTART 1 // allow software reset
 
-const char cli_help_parmKvs[] = "'kvs' sets or gets key/value pairs\n\n";
+const char cli_help_parmKvs[] = "'kvs' stores general key value pairs\n\n"
+    "key=(value|?)      Set or get value of key\n"
+    ;
 
 int process_parmKvs(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;

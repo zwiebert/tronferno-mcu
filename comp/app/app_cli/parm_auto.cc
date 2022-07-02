@@ -30,14 +30,17 @@ static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard);
 #define HAS_FLAG(v) (v >= 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
-const char cli_help_parmTimer[] = "daily=T        set daily timer\n"
+const char cli_help_parmTimer[] = "'auto' programs the built-in automatic movement functionality\n\n"
+    "a=(0|ID)  0  programming center ID.\n"
+    "g=[0-7]   0  group number\n"
+    "m=[0-7]   0  receiver number\n"
+    "daily=T        set daily timer\n"
     "weekly=TTTTTTT set weekly timer\n"
     "astro[=N]      enables civil dusk timer +- minutes offset\n"
-    "sun-auto       enables sun sensor\n"
-    "random         enables random timer\n"
-    "rtc-only       send no timers but update receiver's real time clock\n"
+    "sun-auto=(1|0) 0 enables sun sensor\n"
+    "random=(1|0)   0 enables random timer offset (0...30 min)\n"
+    "rtc-only=(1|0) 0 send no timers but update receiver's real time clock\n"
     "rtc=ISO_TIME   provide your own time\n"
-    "a, g and m:    like in send command\n"
     "f=X...  flags (x|X means: x: disable, X: enable):\n"
     "  i   print saved timer information\n"
     "  I   like 'i' but returns matching group timers\n"
