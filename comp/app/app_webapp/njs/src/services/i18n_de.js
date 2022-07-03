@@ -164,7 +164,7 @@ export const de = {
     repeater: {
       header: "Funk-Signalverstärker",
       tt: {
-        header: `Verstärkt Handsender/Sonnensensor-Kommandos durch erneutes Aussenden über den Funksender der MCU um die Reichweite zu erhöhen.
+        header: `Verstärkt empfangene Funkbefehle durch erneutes Aussenden zwecks Reichweitenerhöhung.
              Eine Liste aller zu verstärkenden Sender-IDs muss angelegt werden. Nur Sender die auf dieser Liste angemeldet sind, werden verstärkt.
              Bei mehr als einem vorhandenen Signalverstärker-Gerät (wie Fernotron 2427), darf jeder Sender nur bei maximal einem Signalverstärker angemeldet sein.`,
       },
@@ -312,8 +312,8 @@ export const de = {
 
     rotDir: {
       toggle: "Umkehren",
-      test_up: "Test \u25b2",
-      test_down: "Test \u25bc",
+      //test_up: "Test \u25b2",
+      //test_down: "Test \u25bc",
       tt: {
         toggle: "Ändere Drehrichtung. Jeder Klick kehrt die Drehrichtung um.",
         test_up: "Teste Drehrichtung. Panzer sollte ein Stück nach oben fahren.",

@@ -1,5 +1,5 @@
 <script>
-  import Pane2411 from "app/ui2411.svelte";
+  import Ui2411 from "app/ui2411.svelte";
   import { GuiAcc } from "stores/app_state";
   import { MenuCount } from "stores/ui2411.js";
   import ShutterAuto from "app/shutter_auto.svelte";
@@ -18,7 +18,7 @@
 
 <div class="main-area">
   <div class="bg-white p-2 div-2411">
-    <Pane2411 />
+    <Ui2411 />
   </div>
 </div>
 

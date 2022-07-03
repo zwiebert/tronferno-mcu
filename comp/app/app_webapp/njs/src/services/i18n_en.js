@@ -330,8 +330,8 @@ First check the current direction with arrow buttons. If wrong, then reverse the
 
     rotDir: {
       toggle: "Toggle",
-      test_up: "Test \u25b2",
-      test_down: "Test \u25bc",
+      test_up: "\u25b2",
+      test_down: "\u25bc",
       tt: {
         toggle: "Change rotation direction of the tubular motor. Each button press reverses the direction.",
         test_up: "Test direction. Should move the shutter upwards.",
