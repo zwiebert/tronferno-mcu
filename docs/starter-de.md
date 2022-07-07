@@ -54,8 +54,9 @@ Für den FHEM-Homeserver existiert ein spezilelles Tronferno-Modul. Andere Homes
 ##### Android-App Tronferno
 * GitHub: [tronferno-andro](https://github.com/zwiebert/tronferno-andro)
            
-##### Terminal-Programm (USB oder TCP/IP Port 7777)
-* Lokal-Echo sollte im Terminalprogramm aktiviert werden um die eigenen Eingaben sehen zu können
+##### Terminal-Programm (USB oder TCP/IP Port 7777) oder Telnet (Port 7777)
+* Im Terminalprogramm werden Kommandozeilen nur mit einem Semikolon beendet
+* In Telnet werden Kommandozeilen mit Semikolon und Eingabe-Taste (Enter/Return-Taste) beendet
      
      
 #### Mehr Info

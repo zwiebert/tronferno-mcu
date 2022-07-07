@@ -13,7 +13,7 @@
 
   * Supported by FHEM home server via specific [FHEM module](https://github.com/zwiebert/tronferno-fhem) for USB and TCP connection
 
-  * Can be integrated into homer servers usint the built-in [MQTT client](docs/mqtt.md).
+  * Can be integrated into homer servers using the built-in [MQTT client](docs/mqtt.md).
   
   * [Android App](https://github.com/zwiebert/tronferno-andro) available
 
@@ -31,7 +31,7 @@ See the [hardware](docs/hardware.md) document.
 
  * [tronferno-fhem](https://github.com/zwiebert/tronferno-fhem): Perl module for integration into home server FHEM
 
- * [tronferno-andro](https://github.com/zwiebert/tronferno-andro): Android App
+ * [tronferno-andro](https://github.com/zwiebert/tronferno-andro): Android App (Obsolete. Use builtin the WebServer instead)
 
 
 ### Documentation
@@ -42,6 +42,8 @@ See the [hardware](docs/hardware.md) document.
 
 
 ### History
+ * 2022: WebGUI finished. All main features implemented.
+ * 2021: Port WebGUI to Svelte/Tailwind
  * 2020: shutter positions implemented
  * 2018: Moving to ESP32/esp-idf
  * 2017: Moving to ESP8266/NonOS
