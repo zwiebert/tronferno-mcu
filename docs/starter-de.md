@@ -19,7 +19,7 @@ Die erstmalige Konfiguration kann über einen WLAN-Accesspoint durchgeführt wer
 
 #### Weboberfläche öffnen
 
- Zum Aufruf der Weboberfläche wird die vom Router vergebene IP-Adresse benötigt. In der Fritz-Box-Oberfläche findet sich  diese unter Heimnetzwerk und dem Gerätenamen "espressif".  Wenn über USB mit einem FHEM-Server verbunden, taucht die IP Adresse außerdem als Reading im Modul TronfernoMCU auf.
+ Zum Aufruf der Weboberfläche wird die vom Router vergebene IP-Adresse benötigt. In der Fritz-Box-Oberfläche findet sich  diese unter Heimnetzwerk und dem Gerätenamen "tronferno" (vor 0.12.1.4: "espressif").  Wenn über USB mit einem FHEM-Server verbunden, taucht die IP Adresse außerdem als Reading im Modul TronfernoMCU auf.
  
 Das Webinterface erlaubt Konfiguration des Tronferno-Controllers und die Steuerung und Programmierung der Rollladenmotore.
 
