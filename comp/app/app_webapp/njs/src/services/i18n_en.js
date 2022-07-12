@@ -339,7 +339,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
       },
     },
     setMode: {
-      set_button: "Press SET-Button on Receiver first. Then click here.",
+      set_button: "Press SET-Button on Receiver.",
       set_button_radio: "Button",
       register_unregister: "Register/Unregister",
       register_cu_bt: "Register central-unit-G-E to Receiver",
@@ -355,6 +355,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
       h_register_receiver_as_gm: "Register Central-Unit to Receiver in SET-function",
       h_register_sender_to_smr: "Register a Transmitter to Receiver in SET-function",
       tt: {
+        set_button: "Press here to show you how long SET function will be active.",
         set_mode: "Send RF-command to receiver to activate its SET-function",
         register_cu_bt:
           "Register the Programming Centre and group-number, receiver-number with the receiver and tell the receiver its group-/receiver-number. Will also transmit all data (like timers) to the receiver.",

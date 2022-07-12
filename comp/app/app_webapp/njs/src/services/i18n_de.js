@@ -322,7 +322,7 @@ export const de = {
     },
 
     setMode: {
-      set_button: "SET-Knopf am Empfängergerät drücken und hier klicken.",
+      set_button: "SET-Knopf am Empfängergerät drücken.",
       set_button_radio: "Taster",
       register_unregister: "An- oder Abmelden an Empfänger mit aktiver SET-Funktion",
       register_cu: "Zentrale",
@@ -336,9 +336,10 @@ export const de = {
       h_register_receiver_as_gm: "Melde Zentrale an den Empfänger mit aktiver SET-Funktion an",
       h_register_sender_to_smr: "Melde Sender an Empfänger mit aktiver SET-Funktion an",
       tt: {
+        set_button: "Hier drücken um zu sehen wie lange die SET Funktion des Empfängers ativiert ist. Hat sonst keine echte Funktion.",
         set_mode:
           "Aktiviere die SET-Funktion eines Empfängers über Funk. Hinweis: Besonders nützlich für Empfänger mit schwer zugänglicher SET Taste, aber auch sonst.",
-        register_cu_bt: "Registriere Programmierzentrale und Gruppe/Empfänger beim Empfänger und übertrage alle Timer-Daten an den Empfänger",
+        register_cu_bt: `Übertrage Automatic-Daten an Empfänger "E" in Gruppe "G". Bei aktivierter SET Funktion: Melde Empfänger an Programmierzentrale an oder ab.`,
         register_cu:
           "Anmelden der Programmierzentrale (MCU) am Empfänger. Der Empfänger reagiert dann auf Kommandos von dieser Zentrale für die angegebene Gruppen-/Empfängernummer.",
         register_sender: "Anmelden eines Senders an den Empfänger. Der Empfänger reagiert auf Kommandos von allen registrierten Sendern.",

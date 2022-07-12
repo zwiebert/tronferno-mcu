@@ -4,8 +4,8 @@
   import { _ } from "services/i18n";
   import tippy from "sveltejs-tippy";
   import { GuiAcc } from "stores/app_state";
-  import {  Address, Name } from "stores/curr_shutter.js";
-  import {  SetModeSrcRadio,  SetModeSrcProgress } from "stores/shutter_set_mode.js";
+  import { Address, Name } from "stores/curr_shutter.js";
+  import { SetModeSrcRadio, SetModeSrcProgress } from "stores/shutter_set_mode.js";
   import IdSelector from "app/id_selector.svelte";
   import { SelectedId, SelectedIdIsValid } from "stores/id.js";
   import * as httpFetch from "app/fetch.js";
@@ -37,22 +37,25 @@
 <p>
   <label> <input type="radio" bind:group={$SetModeSrcRadio} value={0} /> {$_("app.setMode.gm_address")}</label>
   {#if $GuiAcc.set_func_by_transmitter_id}
-  <label><input type="radio" bind:group={$SetModeSrcRadio} value={1} /> {$_("app.setMode.sender_address")} </label>
+    <label><input type="radio" bind:group={$SetModeSrcRadio} value={1} /> {$_("app.setMode.sender_address")} </label>
   {/if}
   <label><input type="radio" bind:group={$SetModeSrcRadio} value={3} /> {$_("app.setMode.set_button_radio")} </label>
 </p>
 
 {#if $SetModeSrcRadio === 0}
   <ShutterSelectGM />
-  <button on:click={onClick_SetByGM} use:tippy={{ content: $_("app.setMode.tt.set_mode") }}>{$_("app.setMode.set_mode")}</button>
+  <button class="sb text-sm rounded-full" on:click={onClick_SetByGM} use:tippy={{ content: $_("app.setMode.tt.set_mode") }}>
+    {$_("app.setMode.set_mode")}
+  </button>
 {:else if $SetModeSrcRadio === 1}
   <IdSelector />
-  <button on:click={onClick_SetByAddr} disabled={!$SelectedIdIsValid}>{$_("app.setMode.set_mode")}</button>
+  <button class="sb text-sm rounded-full" on:click={onClick_SetByAddr} disabled={!$SelectedIdIsValid}> {$_("app.setMode.set_mode")} </button>
 {:else if $SetModeSrcRadio === 3}
-  <button on:click={enterSetMode}>{$_("app.setMode.set_button")}</button>
+  <button on:click={enterSetMode} use:tippy={{ content: $_("app.setMode.tt.set_button") }}> {$_("app.setMode.set_button")} </button>
 {/if}
 
 {#if $SetModeSrcProgress > 0}
+  <br />
   <progress value={$SetModeSrcProgress} max={60} />
 {/if}
 
