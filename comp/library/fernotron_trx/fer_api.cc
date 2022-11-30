@@ -108,7 +108,7 @@ bool fer_trx_send_cmd(const Fer_MsgCmd *msg) {
 }
 bool fer_trx_send_rtc(const Fer_MsgRtc *msg) {
   fer_sbT fsb = fer_construct_fsb(msg->a, msg->g, msg->m, fer_cmd_Program);
-  return fer_fill_rtc_buf(msg->rtc) && fer_send_msg(&fsb, MSG_TYPE_RTC, 0);
+  return fer_send_msg_rtc(&fsb, msg->rtc, 0);
 }
 
 bool fer_trx_send_timer(const Fer_MsgTimer *msg) {

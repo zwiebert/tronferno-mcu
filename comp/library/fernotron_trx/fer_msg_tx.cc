@@ -67,8 +67,21 @@ bool fer_send_msg_with_stop(const fer_sbT *fsb, u16 delay, u16 stopDelay, i8 rep
 
 bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, i8 repeats, u16 delay) {
   precond(fsb);
+  precond (msgType == MSG_TYPE_PLAIN || msgType == MSG_TYPE_TIMER);
 
   struct sf msg = { .when_to_transmit_ts = (delay + (u32)get_now_time_ts()), .fsb = *fsb, .mt = msgType, .repeats = repeats };
+  if (!fer_tx_pushMsg(&msg))
+    return false;
+
+  fer_send_checkQuedState();
+  return true;
+}
+
+bool fer_send_msg_rtc(const fer_sbT *fsb, time_t rtc, i8 repeats) {
+  precond(fsb);
+
+  struct sf msg = { .when_to_transmit_ts = (u32)get_now_time_ts(), .fsb = *fsb, .rtc = rtc, .mt = MSG_TYPE_RTC, .repeats = repeats };
+
   if (!fer_tx_pushMsg(&msg))
     return false;
 
@@ -93,8 +106,12 @@ static bool fer_send_queued_msg(struct sf *msg) {
       Fer_Trx_API::push_event(&evt);
     }
   }
-
+  if (msg->mt == MSG_TYPE_RTC) {
+    //fer_msg_raw_init(fer_tx_msg, MSG_TYPE_RTC); // TODO: superflous?!
+    fer_msg_rtc_from_time(&fer_tx_msg->rtc.sd, msg->rtc, true);
+  }
   memcpy(fer_tx_msg->cmd.bd, msg->fsb.data, 5);
+
   fer_msg_raw_checksumsCreate(fer_tx_msg, msg->mt);
 
   evt.first = false;
