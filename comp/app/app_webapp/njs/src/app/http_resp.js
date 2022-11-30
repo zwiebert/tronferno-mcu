@@ -61,6 +61,23 @@ export function http_handleResponses(obj) {
     });
   }
 
+  if ("st" in obj) {
+    AppLog.update((old) => {
+      obj.st.c = "time";
+      old.unshift({ sc: obj.st, date: new Date() });
+      return old;
+    });
+  }
+
+  if ("sa" in obj) {
+    AppLog.update((old) => {
+      obj.sa.c = "automatic";
+      old.unshift({ sc: obj.sa, date: new Date() });
+      return old;
+    });
+  }
+
+
   if ("config" in obj) {
     let config = obj.config;
 

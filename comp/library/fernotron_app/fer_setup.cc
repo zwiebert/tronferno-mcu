@@ -82,6 +82,17 @@ public:
     auto msg_type = get_msgKind();
     const fer_rawMsg *fer_tx_msg = static_cast<const fer_rawMsg*>(get_raw());
 
+    if (msg_type == MSG_TYPE_RTC) {
+      Fer_MsgPlainCmd plain_msg = get_msg();
+      Fer_MsgRtc rtc_msg = { plain_msg.a, plain_msg.g, plain_msg.m, 0 }; // TODO
+       uoApp_publish_fer_msgSent(&rtc_msg);
+    } else if (msg_type == MSG_TYPE_TIMER) {
+      Fer_MsgPlainCmd plain_msg = get_msg();
+      Fer_MsgTimer timer_msg = { plain_msg.a, plain_msg.g, plain_msg.m, 0 }; // TODO
+       uoApp_publish_fer_msgSent(&timer_msg);
+    }
+
+
     if (TXTIO_IS_VERBOSE(vrb1)) {
       auto t = TXTIO_IS_VERBOSE(vrb2) ? msg_type : fer_msg_kindT::MSG_TYPE_PLAIN;
       fer_msg_print("S:", fer_tx_msg, t, TXTIO_IS_VERBOSE(vrbDebug));
