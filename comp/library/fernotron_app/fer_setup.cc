@@ -58,6 +58,16 @@ public:
     if (msg_type == MSG_TYPE_RTC || msg_type == MSG_TYPE_TIMER) {
       fer_msg_print("timer frame received\n", fer_rx_msg, msg_type, TXTIO_IS_VERBOSE(vrbDebug));
     }
+
+    if (msg_type == MSG_TYPE_RTC) {
+      Fer_MsgPlainCmd plain_msg = get_msg();
+      Fer_MsgRtc rtc_msg = { plain_msg.a, plain_msg.g, plain_msg.m, 0 }; // TODO
+      uoApp_publish_fer_msgReceived(&rtc_msg);
+    } else if (msg_type == MSG_TYPE_TIMER) {
+      Fer_MsgPlainCmd plain_msg = get_msg();
+      Fer_MsgTimer timer_msg = { plain_msg.a, plain_msg.g, plain_msg.m, 0 }; // TODO
+      uoApp_publish_fer_msgReceived(&timer_msg);
+    }
 #endif
 
     if (TXTIO_IS_VERBOSE(vrbDebug)) {

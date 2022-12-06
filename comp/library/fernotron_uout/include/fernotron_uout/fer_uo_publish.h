@@ -83,6 +83,8 @@ void uoApp_publish_timer_json(const char *json, bool fragment = true);
 struct Fer_TimerData;
 void uoApp_publish_timer_json(uint8_t g, uint8_t m, struct Fer_TimerData *tda);
 void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg);
+void uoApp_publish_fer_msgReceived(const struct Fer_MsgRtc *msg);
+void uoApp_publish_fer_msgReceived(const struct Fer_MsgTimer *msg);
 void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg);
 void uoApp_publish_fer_msgSent(const struct Fer_MsgRtc *msg);
 void uoApp_publish_fer_msgSent(const struct Fer_MsgTimer *msg);

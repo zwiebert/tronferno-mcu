@@ -370,6 +370,60 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
   }
 }
 
+void uoApp_publish_fer_msgReceived(const struct Fer_MsgTimer *msg) {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_msgSent = true;
+  flags.evt.gen_app_state_change = true;
+
+  const Fer_MsgTimer &m = *msg;
+  if (!FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit))
+    return;
+
+  flags.fmt.txt = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[80];
+
+    snprintf(buf, sizeof buf, "RA:type=central: a=%06x g=%d m=%d;", m.a, m.g, m.m);
+    uoCb_publish(idxs, buf, flags);
+  }
+
+  flags.fmt.txt = false;
+  flags.fmt.json = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[80];
+
+    snprintf(buf, sizeof buf, "{\"ra\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d}}", m.a, m.g, m.m);
+    uoCb_publish(idxs, buf, flags);
+  }
+}
+
+void uoApp_publish_fer_msgReceived(const struct Fer_MsgRtc *msg) {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_msgSent = true;
+  flags.evt.gen_app_state_change = true;
+
+  const Fer_MsgRtc &m = *msg;
+  if (!FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit))
+    return;
+
+  flags.fmt.txt = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[80];
+
+    snprintf(buf, sizeof buf, "RT:type=central: a=%06x g=%d m=%d;", m.a, m.g, m.m);
+    uoCb_publish(idxs, buf, flags);
+  }
+
+  flags.fmt.txt = false;
+  flags.fmt.json = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[80];
+
+    snprintf(buf, sizeof buf, "{\"rt\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d}}", m.a, m.g, m.m);
+    uoCb_publish(idxs, buf, flags);
+  }
+}
+
 void uoApp_publish_fer_prasState(const so_arg_pras_t args) {
   uo_flagsT flags;
   flags.evt.uo_evt_flag_PRAS = true;
