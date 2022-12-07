@@ -7,6 +7,8 @@
 
 #include "app_config/proj_app_cfg.h"
 
+#define USE_GPTIMER
+
 #include "app_misc/rtc.h"
 #include "app_misc/timer.h"
 #include "app_settings/config.h"
@@ -14,10 +16,9 @@
 #include <fernotron_trx/fer_trx_api.hh>
 #include "txtio/inout.h"
 
-#include "driver/periph_ctrl.h"
 #include "driver/timer.h"
 #include "esp_sleep.h"
-#include "esp_timer.h"
+#include "driver/gptimer.h"
 #include "esp_types.h"
 #include "esp_intr_alloc.h"
 #include "hal/timer_types.h"
@@ -34,21 +35,16 @@
 #include <string.h>
 #include <unistd.h>
 
-
 #define E1 0 // experimental: 2=enable pulse on TX-GPIO to show interrupt duration, 1=toggle tx each call of interrupt (useless)
-
-constexpr unsigned TIMER_DIVIDER = 16; ///<   Hardware timer clock divider
-constexpr unsigned TIMER_SCALE = (TIMER_BASE_CLK / TIMER_DIVIDER); ///<  convert counter value to seconds
-constexpr unsigned TIMER_SCALE_MS = (TIMER_SCALE / 1000); ///<
-constexpr unsigned TIMER_SCALE_US = (TIMER_SCALE_MS / 1000); ///<
 
 //////////////////////////////////////////////////////////////////////////
 #ifndef USE_ESP_GET_TIME
 volatile u32 run_time_s_, run_time_ts_;
 #endif
 
-static void IRAM_ATTR intTimer_isr(void *args) {
-  int timer_idx = (int) args;
+static void IRAM_ATTR intTimer_isr_work() {
+  static uint_fast8_t tick_count;
+  ++tick_count;
 
 #ifdef FER_TRANSMITTER
 #if E1 == 1
@@ -64,19 +60,6 @@ static void IRAM_ATTR intTimer_isr(void *args) {
 #ifdef FER_RECEIVER
   Fer_Trx_API::isr_sample_rx_pin(mcu_get_rxPin());
 #endif
-
-  /* Retrieve the interrupt status and the counter value
-   from the timer that reported the interrupt */
-  TIMERG0.hw_timer[timer_idx].update = 1;
-  /* Clear the interrupt
-   and update the alarm time for the timer with without reload */
-  TIMERG0.int_clr_timers.t1 = 1;
-  /* After the alarm has been triggered
-   we need enable it again, so it is triggered the next time */
-  TIMERG0.hw_timer[timer_idx].config.alarm_en = TIMER_ALARM_EN;
-
-  static uint_fast8_t tick_count;
-  ++tick_count;
 
 #ifdef FER_TRANSMITTER
   {
@@ -112,20 +95,27 @@ static void IRAM_ATTR intTimer_isr(void *args) {
 #endif
 }
 
-static void intTimer_init(timer_group_t timer_group, timer_idx_t timer_idx, timer_autoreload_t auto_reload, unsigned interval_us) {
+static bool IRAM_ATTR intTimer_isr(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_ctx) {
+  intTimer_isr_work();
+  return false;
+}
 
-  timer_config_t config = { .alarm_en = TIMER_ALARM_EN,.counter_en = TIMER_PAUSE,  .intr_type =
-      TIMER_INTR_LEVEL, .counter_dir = TIMER_COUNT_DOWN, .auto_reload = auto_reload, .divider = TIMER_DIVIDER};
+static void intTimer_init() {
+  gptimer_handle_t gptimer = NULL;
+  gptimer_config_t timer_config = { .clk_src = GPTIMER_CLK_SRC_DEFAULT, .direction = GPTIMER_COUNT_UP, .resolution_hz = 1 * 1000 * 1000, // 1MHz, 1 tick = 1us
+      };
+  ESP_ERROR_CHECK(gptimer_new_timer(&timer_config, &gptimer));
 
-  timer_init(timer_group, timer_idx, &config);
-  timer_set_counter_value(timer_group, timer_idx, (1ULL * interval_us * TIMER_SCALE_US));
-  timer_set_alarm_value(timer_group, timer_idx, 0);
-  timer_enable_intr(timer_group, timer_idx);
-  timer_isr_register(timer_group, timer_idx, intTimer_isr, (void*) timer_idx, ESP_INTR_FLAG_IRAM | ESP_INTR_FLAG_LEVEL3, NULL);
-  timer_start(timer_group, timer_idx);
+  gptimer_alarm_config_t config = { .alarm_count = FER_ISR_TICK_US, .reload_count = 0, .flags = { .auto_reload_on_alarm = 1 } };
+
+  ESP_ERROR_CHECK(gptimer_set_alarm_action(gptimer, &config));
+  gptimer_event_callbacks_t cbs = { .on_alarm = intTimer_isr };
+  ESP_ERROR_CHECK(gptimer_register_event_callbacks(gptimer, &cbs, NULL));
+  ESP_ERROR_CHECK(gptimer_enable(gptimer));
+  ESP_ERROR_CHECK(gptimer_start(gptimer));
 }
 
 void app_timerISR_setup(void) {
-  intTimer_init(TIMER_GROUP_0, TIMER_1, TIMER_AUTORELOAD_EN, FER_ISR_TICK_US);
+  intTimer_init();
 }
 

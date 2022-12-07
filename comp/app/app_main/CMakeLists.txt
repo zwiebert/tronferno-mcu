@@ -5,7 +5,7 @@ idf_component_register(
    # INCLUDE_DIRS "./include"
     REQUIRES uout firmware_update utils_time utils_debug main_loop
     PRIV_REQUIRES cc1101_ook fernotron_app gpio net utils_misc app_http_server  app_cli app_settings key_value_store net app_mqtt storage config_kvs app_uout app_misc net_http_server
-                  freertos
+                  freertos esp_wifi
                   
 )
 

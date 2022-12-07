@@ -28,6 +28,7 @@ static fer_alias_cmds pras_c;
 
 static void fer_alias_enable_disable_cb(bool enable) {
   static void *tmr;
+
   if (enable && !tmr) {
     tmr = mainLoop_callFun(fer_alias_auto_set_check_timeout, 100, true);
   }

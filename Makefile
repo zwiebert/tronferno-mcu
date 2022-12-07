@@ -26,6 +26,8 @@ http_clean:
 PORT ?= /dev/ttyUSB1
 port ?= /dev/ttyUSB1
 
+V ?= 0
+
 ifdef V
 esp32_build_opts += -v
 endif

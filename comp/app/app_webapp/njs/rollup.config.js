@@ -10,6 +10,7 @@ import sveltePreprocess from "svelte-preprocess";
 import { terser } from "rollup-plugin-terser";
 import css from "rollup-plugin-css-only";
 
+
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDistro = process.env.DISTRO === "1";
 
