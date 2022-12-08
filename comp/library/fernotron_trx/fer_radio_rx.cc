@@ -286,7 +286,7 @@ static void IRAM_ATTR fer_rx_tick_receive_message() {
   }
 }
 
-void IRAM_ATTR fer_rx_sampleInput(bool pin_level) {
+static void IRAM_ATTR fer_rx_sampleInput(bool pin_level) {
 
   input_edge_pos = input_edge_neg = false;
   if (input_level != pin_level) {
@@ -299,7 +299,9 @@ void IRAM_ATTR fer_rx_sampleInput(bool pin_level) {
   input_level = pin_level;
 }
 
-void IRAM_ATTR fer_rx_tick() {
+void IRAM_ATTR fer_rx_tick(bool pin_level) {
+
+  fer_rx_sampleInput(pin_level);
 
   if ((input_level && nTicks > veryLongPauseLow_Len)) {
     fer_rx_clear();

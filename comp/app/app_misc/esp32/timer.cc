@@ -35,7 +35,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define E1 0 // experimental: 2=enable pulse on TX-GPIO to show interrupt duration, 1=toggle tx each call of interrupt (useless)
+#define E1 0 // experimental: 2=enable pulse on TX-GPIO to show interrupt frequency and duration, 1=toggle tx each call of interrupt (useless)
 
 //////////////////////////////////////////////////////////////////////////
 #ifndef USE_ESP_GET_TIME
@@ -58,7 +58,7 @@ static void IRAM_ATTR intTimer_isr_work() {
 #endif
 #endif
 #ifdef FER_RECEIVER
-  Fer_Trx_API::isr_sample_rx_pin(mcu_get_rxPin());
+  bool rx_pin_lvl = mcu_get_rxPin();
 #endif
 
 #ifdef FER_TRANSMITTER
@@ -70,7 +70,7 @@ static void IRAM_ATTR intTimer_isr_work() {
 #endif
 #ifdef FER_RECEIVER
   if (0 == (tick_count & ((FER_ISR_FMULT / FER_RX_FMULT) - 1))) {
-    Fer_Trx_API::isr_handle_rx();
+    Fer_Trx_API::isr_handle_rx(rx_pin_lvl);
   }
 #endif
 

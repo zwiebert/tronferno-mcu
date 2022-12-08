@@ -121,8 +121,7 @@ public:
   ////////////////////////////////////////////////////////////////
   ///////// timer interrupt for RF transceiver ///////////////////
   ////////////////////////////////////////////////////////////////
-  static void isr_sample_rx_pin(bool level);  ///< call this on top of timer ISR
-  static void isr_handle_rx(); ///< call this from timer ISR every (200/INTR_TICK_FREQ_MULT)us
+  static void isr_handle_rx(bool rx_pin_lvl); ///< call this from timer ISR every (200/INTR_TICK_FREQ_MULT)us
 
   static bool isr_get_tx_level(); ///< call this son top of timer ISR
   static void isr_handle_tx();  ///< call this from timer ISR every 200us

@@ -151,13 +151,6 @@ void fer_tx_loop(void);
 void fer_rx_loop(void);
 
 /**
- * \brief            Sample input pin and store the value in the receiver
- * \param pin_level  Current level of input pin
- * \note             Call this from top of a precise timer ISR handler
- */
-void fer_rx_sampleInput(bool pin_level);
-
-/**
  * \brief           Set RF output pin according to the state in the transmitter
  * \note            Calls this from the top of a precise timer ISR.
  */
@@ -165,11 +158,12 @@ bool fer_tx_setOutput(void);
 
 /**
  * \brief            Do some work in receiving a message
+ * \param rx_pin_lvl Level of RX pin sampled at begin of timer ISR callback
  * \note             Call this from timer ISR with 200us / FREQ_MULT (= 5kHz * FREQ_MULT).
  * \note             Because the sampling was done by \link fer_rx_sampleInput \endlink earlier, the timing is not so critical.
  *                   So it can be called at the end of the ISR or maybe even after the ISR (yield from ISR) XXX
  */
-void fer_rx_tick(void);
+void fer_rx_tick(bool rx_pin_lvl);
 
 
 /**

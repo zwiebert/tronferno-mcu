@@ -60,11 +60,8 @@ inline bool Fer_Trx_API::send_empty_timer(u32 a, u8 g, u8 m, time_t rtc) {
 
 
 ///////////////// ISR //////////////////////////////
-inline void IRAM_ATTR Fer_Trx_API::isr_sample_rx_pin(bool level) {
-  fer_rx_sampleInput(level);
-}
-inline void IRAM_ATTR Fer_Trx_API::isr_handle_rx() {
-  fer_rx_tick();
+inline void IRAM_ATTR Fer_Trx_API::isr_handle_rx(bool rx_pin_level) {
+  fer_rx_tick(rx_pin_level);
 }
 
 inline bool IRAM_ATTR Fer_Trx_API::isr_get_tx_level() {
