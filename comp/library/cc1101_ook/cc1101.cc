@@ -64,7 +64,7 @@ static int Write_CC_Config(uint8_t addr, uint8_t data) {
     return -1;
   }
 
-  return ta.rx_data[1];
+  return ta.rx_data[1];  // Byte1 + Byte0: CC11001 chip status byte
 }
 
 #define readReg(ra, rt) Read_CC_Register((ra)|(rt))
@@ -76,18 +76,18 @@ static int Read_CC_Register(uint8_t addr) {
   else
     addr |= READ_SINGLE;
 
-  struct spi_transaction_t ta = { .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA, .length = 16, .rxlength = 16, .tx_data = { addr }, };
+  struct spi_transaction_t ta = { .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA, .length = 16, .rxlength = 16, .tx_data = {addr  /* address|read_flag */, 0 /* ignored*/}, };
 
   if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
     ESP_ERROR_CHECK_WITHOUT_ABORT(res);
     return -1;
   }
 
-  return ta.rx_data[1];
+  return ta.rx_data[1]; // Byte1: data, Byte0: CC11001 chip status byte
 }
 
-#if 1
-bool Read_CC_Burst(uint8_t addr, void *data, size_t len) {
+
+static bool read_cc_status_burst(uint8_t addr, void *data, size_t len) {
   uint8_t *dst = (uint8_t*) data;
   for (int i = 0; i < len; ++i) {
     if (int rv = Read_CC_Register(addr + i); rv >= 0) {
@@ -98,20 +98,27 @@ bool Read_CC_Burst(uint8_t addr, void *data, size_t len) {
   }
   return true;
 }
-#else
-bool Read_CC_Burst(uint8_t addr, void *data, size_t len) {
 
-  struct spi_transaction_t ta = { .flags = SPI_TRANS_USE_TXDATA, .length = len * 8, .rxlength = len * 8, .tx_data = { (uint8_t) (addr) } , .rx_buffer = data};
+bool Read_CC_Burst(uint8_t addr, void *reg_data, size_t data_len) {
+  if (addr >= 0x30)
+    return read_cc_status_burst(addr, reg_data, data_len);
+
+  const size_t len = data_len + 1;
+  uint8_t addrs[len];
+  uint8_t data[len];
+  addrs[0] = addr | READ_BURST;
+
+  struct spi_transaction_t ta = { .flags = 0, .length = len * 8, .rxlength = len * 8, .tx_buffer = addrs , .rx_buffer = data};
 
   if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
     ESP_ERROR_CHECK_WITHOUT_ABORT(res);
-    return;
+    return false;
   }
 
-  return;
+  memcpy(reg_data, data+1, data_len);
+  return true;
 }
-#endif
-
+#if 0
 void Write_CC_Burst(const void *data, size_t len) {
 
   struct spi_transaction_t ta = { .flags = 0, .length = len * 8, .tx_buffer = data, };
@@ -123,18 +130,19 @@ void Write_CC_Burst(const void *data, size_t len) {
 
   return;
 }
-
+#endif
 static bool setup_CC_Idle() {
   Write_CC_CmdStrobe(CC1101_SIDLE);
+  int state;
 
   for (int i = 0; i < 10; ++i) {
     ms_delay(10);
-    if (Read_CC_Register(CC1101_MARCSTATE) == 0x01) {
+    if (state = Read_CC_Register(CC1101_MARCSTATE); state == 0x01) {
       rx_mode = tx_mode = false;
       return true;
     }
   }
-
+  ESP_LOGE(TAG, "switching to idle state failed (MARCSTATE=%d)", state);
   return false;
 }
 
