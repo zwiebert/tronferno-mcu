@@ -128,6 +128,7 @@ void soCfg_GPIO_RFSS(const struct TargetDesc &td) {
 }
 
 
+// TODO: should this show the current registers or the saved ones (if none are saved, how to get the default ones?).
 void soCfg_CC1101_CONFIG(const struct TargetDesc &td) {
   uint8_t regFile[48];
   size_t regFileSize = sizeof regFile;
@@ -137,6 +138,15 @@ void soCfg_CC1101_CONFIG(const struct TargetDesc &td) {
       sprintf(&rs[i * 2], "%02x", regFile[i]);
     }
     td.so().print("cc1101-config", rs);
+  }
+}
+
+void soCfg_CC1101_CONFIG_xxx(const struct TargetDesc &td) { // TODO:
+  char cc1101_config[97];
+  if (config_read_cc1101_config(cc1101_config, sizeof cc1101_config)) {
+      td.so().print("cc1101-config", cc1101_config);
+  } else {
+    td.so().print("cc1101-config", "");
   }
 }
 
@@ -245,7 +255,9 @@ void soCfg_all_misc(const struct TargetDesc &td) {
   soCfg_BAUD(td);
   soCfg_VERBOSE(td);
   soCfg_RF_TRX(td);
+#if 0 // disabled, becuase reading resgisters via SPI is not reentrant. It did crash when accessing config from FHEM and fetch registers periodically from Web-Browser.
   soCfg_CC1101_CONFIG(td);
+#endif
 }
 
 void soCfg_all_gpio(const struct TargetDesc &td) {

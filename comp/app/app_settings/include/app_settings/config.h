@@ -103,6 +103,7 @@ float config_read_latitude();
 void config_setup_cc1101();
 void config_setup_repeater();
 struct cc1101_settings* config_read_cc1101(struct cc1101_settings *c);
+const char *config_read_cc1101_config(char *buf, size_t len);
 
 void config_setup_mqttAppClient();
 

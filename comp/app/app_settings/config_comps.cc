@@ -219,6 +219,16 @@ struct cc1101_settings* config_read_cc1101(struct cc1101_settings *c) {
   return 0;
 }
 
+const char *config_read_cc1101_config(char *buf, size_t len) {
+  if (len < 97)
+    return NULL;
+
+  if (const char *item = config_read_item(CB_CC1101_CONFIG, buf, len, ""); *item && strlen(item) == 96) {
+    return item;
+  }
+
+  return NULL;
+}
 
 
 
@@ -233,8 +243,8 @@ void config_setup_cc1101() {
 
   if (c.enable) {
     char cc1101_config[97];
-    if (const char *item = config_read_item(CB_CC1101_CONFIG, cc1101_config, sizeof cc1101_config, ""); *item && strlen(item) == 96) {
-        cc1101_ook_updConfig_fromSparse(item);
+    if (config_read_cc1101_config(cc1101_config, sizeof cc1101_config)) {
+        cc1101_ook_updConfig_fromSparse(cc1101_config);
     }
   }
 }
