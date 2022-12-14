@@ -160,8 +160,6 @@ bool fer_tx_setOutput(void);
  * \brief            Do some work in receiving a message
  * \param rx_pin_lvl Level of RX pin sampled at begin of timer ISR callback
  * \note             Call this from timer ISR with 200us / FREQ_MULT (= 5kHz * FREQ_MULT).
- * \note             Because the sampling was done by \link fer_rx_sampleInput \endlink earlier, the timing is not so critical.
- *                   So it can be called at the end of the ISR or maybe even after the ISR (yield from ISR) XXX
  */
 void fer_rx_tick(bool rx_pin_lvl);
 

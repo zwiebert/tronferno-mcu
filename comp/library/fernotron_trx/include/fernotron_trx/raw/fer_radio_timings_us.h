@@ -50,6 +50,17 @@ constexpr unsigned FER_STP_NEDGE_US = 400; ///< \brief duration until negative e
 
 /**
  * \verbatim
+ * LEAD OUT BIT - ends last word in transmission
+ * 1 stop bit comes before each preamble and each data word
+ * /--\__________________ (2_on + 16_off = 18) * 1
+ * (200us * 18 * 1)
+ * \endverbatim
+ */
+constexpr unsigned FER_LEAD_OUT_WIDTH_US = 3600 * 4; ///< \brief duration of stop-bit
+constexpr unsigned FER_LEAD_OUT_NEDGE_US = 400; ///< \brief duration until negative edge of stop-bit
+
+/**
+ * \verbatim
  * DATA BIT - encodes 1 or 0
  * data bits are represented by two different positions of the negative edge (on-off)
  * 1=short-long  /--\____  (2_on, 4_off)

@@ -45,6 +45,8 @@ volatile u32 run_time_s_, run_time_ts_;
 static void IRAM_ATTR intTimer_isr_work() {
   static uint_fast8_t tick_count;
   ++tick_count;
+  const bool isTxTick = (0 == (tick_count & ((FER_ISR_FMULT / FER_TX_FMULT) - 1)));
+  const bool isRxTick = (0 == (tick_count & ((FER_ISR_FMULT / FER_RX_FMULT) - 1)));
 
 #ifdef FER_TRANSMITTER
 #if E1 == 1
@@ -54,7 +56,8 @@ static void IRAM_ATTR intTimer_isr_work() {
 #elif E1 == 2
   mcu_put_txPin(true);
 #else
-  mcu_put_txPin(Fer_Trx_API::isr_get_tx_level());
+  if (isTxTick)
+    mcu_put_txPin(Fer_Trx_API::isr_get_tx_level());
 #endif
 #endif
 #ifdef FER_RECEIVER
@@ -63,13 +66,13 @@ static void IRAM_ATTR intTimer_isr_work() {
 
 #ifdef FER_TRANSMITTER
   {
-    if (0 == (tick_count & ((FER_ISR_FMULT / FER_TX_FMULT) - 1))) {
+    if (isTxTick) {
       Fer_Trx_API::isr_handle_tx();
     }
   }
 #endif
 #ifdef FER_RECEIVER
-  if (0 == (tick_count & ((FER_ISR_FMULT / FER_RX_FMULT) - 1))) {
+  if (isRxTick) {
     Fer_Trx_API::isr_handle_rx(rx_pin_lvl);
   }
 #endif
