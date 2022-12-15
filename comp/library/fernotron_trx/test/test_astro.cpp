@@ -24,28 +24,6 @@
 
 int astroTableIndex_from_tm_OLD(const struct tm *tm);
 
-#if 0
-static void
-test_astro()  // FIXME: this does not really tests anything
-{
-  struct tm tm = {};
-  for (int m = 0; m < 12; ++m) {
-    for (int d = 1; d <= 30; ++d) {
-      if (m == 1 && d == 29)
-        break;
-      tm.tm_mon = m;
-      tm.tm_mday = d;
-
-      int i1 = astroTableIndex_from_tm_OLD(&tm);
-      int i2 = astroTableIndex_from_tm(&tm);
-      if (i1 != i2) {
-        TEST_ASSERT_EQUAL(i1, i2);
-      }
-    }
-  }
-}
-#endif
-
 static int  test_get_index(int mon, int mday) {
   struct tm tm = {.tm_mday = mday,  .tm_mon = mon - 1};
   return astroTableIndex_from_tm(&tm);

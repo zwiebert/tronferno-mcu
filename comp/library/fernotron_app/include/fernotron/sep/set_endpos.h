@@ -29,9 +29,10 @@ bool fer_sep_deauthenticate(const struct TargetDesc &td, u32 auth_key);
 
 /**
  * \brief          Enable set-end-position-mode
- * \param a        Address of motor to set position to (XXX: we should only use motor addresses here, because all others addresses could address more than one motor)
- * \param g,m      FIXME: this should better not be used
- * \param cmd      FIXME: xUP=set upper end position, xDOWN=set lower end position
+ * \param a        Radio code or central-unit-ID. WARNING: Only the radio code is always unique, while more than one motor can be registered under the same receiver number.
+ * \param g,m      Group/receiver number if A is a central-unit-ID.
+ * \param enable_timeout_secs  timeout to switch off SEP mode
+ * \param button_timeout_secs  timeout to send stop if no movement function was called repeatedly.
  * \return         true for success
  */
 bool fer_sep_enable(const struct TargetDesc &td, u32 auth_key, u32 a, u8 g = 0, u8 m = 0, int enable_timeout_secs = fer_sep_TIMEOUT, int button_timeout_secs =

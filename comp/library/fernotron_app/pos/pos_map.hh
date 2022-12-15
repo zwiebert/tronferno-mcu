@@ -124,11 +124,7 @@ public:
 
   bool load_group_positions(u8 g) {
     char buf[16];
-    if (store_load(g_to_name(g, buf), allPos_[g])) {
-      setPct(g,0,getAvgPctGroup(g)); // XXX: enforce new meaning of m==0
-      return true;
-    }
-    return false;
+    return store_load(g_to_name(g, buf), allPos_[g]);
   }
 
   bool store_group_positions(u8 g) {
