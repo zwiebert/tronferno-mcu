@@ -1,6 +1,6 @@
 /**
  * \file   app_config/host/sdkconfig.h
- * \brief  Default configuration values for host (tests). XXX: should be generated from Kconfig.projbuild
+ * \brief  Default configuration values for host (tests)
  */
 
 #define CONFIG_APP_USE_HTTP 1
