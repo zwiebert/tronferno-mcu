@@ -165,7 +165,7 @@ union __attribute__((__packed__)) fer_astro_row {
 };
 
 /// \brief Block of astro rows
-union fer_astro {
+union __attribute__((__packed__))  fer_astro {
   fer_astro_bd bd; ///< Astro block as byte data
   union fer_astro_row rows[FER_FPR_ASTRO_HEIGHT]; ///< Astro block as row array
 };
@@ -180,7 +180,7 @@ typedef struct __attribute__((__packed__)) fer_raw_msg {
   union fer_cmd_row cmd; ///<  Plain message
   union fer_rtc rtc; ///< RTC Message
   union fer_wdtimer wdtimer; ///<  Weekly/Daily timers
-  fer_astro_byte_data astro; ///<  Astro timers
+  union fer_astro astro; ///<  Astro timers
   fer_last_byte_data last; ///< Last row \link fer_fpr17 \endlink (special/unknown values)
 }  fer_rawMsg;
 

@@ -71,7 +71,7 @@ static struct fer_raw_msg  test_msg = {
         { 0x30, 0x09, 0x00, 0x05, 0xff, 0x0f, 0xff, 0x0f, 0x66 },
     }},
 
-    .astro = {
+    .astro = {.bd = {
         { 0x34, 0x15, 0x36, 0x15, 0x36, 0x15, 0x38, 0x15, 0xf8 },
         { 0x40, 0x15, 0x44, 0x15, 0x48, 0x15, 0x52, 0x15, 0x62 },
         { 0x58, 0x15, 0x04, 0x16, 0x10, 0x16, 0x16, 0x16, 0x9d },
@@ -85,7 +85,7 @@ static struct fer_raw_msg  test_msg = {
         { 0x06, 0x20, 0x10, 0x20, 0x14, 0x20, 0x18, 0x20, 0xc0 },
         { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x80 },
 
-    },
+    }},
     .last = { 0x00, 0x80, 0x49, 0x5d, 0x53, 0x00, 0x10, 0x00, 0x05 },
 
 };
@@ -131,14 +131,14 @@ static void test_ferMsg_writeData() {
 static void test_ferMsg_modData_andVerifyCS() {
   bool result;
 
-  ++test_msg.astro[1][8];
+  ++test_msg.astro.bd[1][8];
   result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
   TEST_ASSERT_TRUE(result);
   result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
   TEST_ASSERT_TRUE(result);
   result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
   TEST_ASSERT_FALSE(result);
-  --test_msg.astro[1][8];
+  --test_msg.astro.bd[1][8];
 
   ++test_msg.wdtimer.bd[1][8];
   result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);

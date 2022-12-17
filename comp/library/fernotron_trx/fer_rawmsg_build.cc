@@ -63,10 +63,10 @@ bool  fer_msg_raw_checksumsVerify(const struct fer_raw_msg *m, fer_msg_type t) {
 		for (column = 0; column < FER_PRG_BYTE_CT; ++column) {
 
 			if (column == FER_PRG_BYTE_CT - 1)
-				 if (m->astro[line][column] != checksum)
+				 if (m->astro.bd[line][column] != checksum)
 					 return false;
 
-			checksum += m->astro[line][column];
+			checksum += m->astro.bd[line][column];
 		}
 	}
 	return true;
@@ -114,9 +114,9 @@ void  fer_msg_raw_checksumsCreate(struct fer_raw_msg *m, fer_msg_type t) {
 		for (column = 0; column < FER_PRG_BYTE_CT; ++column) {
 
 			if (column == FER_PRG_BYTE_CT - 1)
-				 m->astro[line][column] = checksum;
+				 m->astro.bd[line][column] = checksum;
 
-			checksum += m->astro[line][column];
+			checksum += m->astro.bd[line][column];
 		}
 	}
 
@@ -196,6 +196,27 @@ void fer_msg_raw_init(struct fer_raw_msg *m, fer_msg_type t) {
   if (t == MSG_TYPE_TIMER)
     disable_timer(m->wdtimer.bd, FER_FPR_TIMER_HEIGHT + FER_FPR_ASTRO_HEIGHT);
 }
+
+void fer_msg_raw_from_time(fer_rawMsg *msg, time_t now, bool rtc_only) {
+  fer_msg_rtc_from_time(&msg->rtc.sd, now, rtc_only);
+}
+void fer_msg_from_flags(fer_rtc_sd *msg, uint8_t flags, uint8_t mask) {
+  write_flags(&msg->flags.bd, flags, mask);
+}
+void fer_msg_from_weeklyTimer(union fer_wdtimer *msg, const uint8_t *wtimer_data) {
+  write_wtimer(msg->bd, wtimer_data);
+}
+void fer_msg_from_dailyTimer(union fer_wdtimer *msg, const uint8_t *dtimer_data) {
+  write_dtimer(&msg->bd[3][FER_FPR_DAILY_START_COL], dtimer_data);
+}
+void fer_msg_from_astro(union fer_astro *msg, int mint_offset) {
+  fer_astro_write_data(msg->bd, mint_offset);
+}
+
+void fer_msg_raw_footerCreate(fer_rawMsg *msg, u32 a) {
+  write_lastline(a, msg->last);
+}
+
 void  fer_msg_raw_from_flags(fer_rawMsg *msg, u8 flags, u8 mask) {
   write_flags(&msg->rtc.sd.flags.bd, flags, mask);
 }
@@ -206,8 +227,7 @@ void  fer_msg_raw_from_dailyTimer(fer_rawMsg *msg, const u8 *dtimer_data) {
   write_dtimer(&msg->wdtimer.bd[3][FER_FPR_DAILY_START_COL], dtimer_data);
 }
 void  fer_msg_raw_from_astro(fer_rawMsg *msg, int mint_offset) {
-  fer_astro_write_data(msg->astro, mint_offset);
+  fer_astro_write_data(msg->astro.bd, mint_offset);
 }
-void  fer_msg_raw_footerCreate(fer_rawMsg *msg, u32 a) {
-	write_lastline(a, msg->last);
-}    
+
+
