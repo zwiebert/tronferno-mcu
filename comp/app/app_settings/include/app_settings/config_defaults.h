@@ -5,11 +5,10 @@
 
 #pragma once
 
-#if !defined MCU_ESP8266
 #if __has_include("sensitive/defaults.h")
 #define HAVE_USER_DEFAULTS
 #endif
-#endif
+
 
 #if defined HAVE_USER_DEFAULTS && ! defined DISTRIBUTION
 #include "sensitive/defaults.h"
@@ -106,8 +105,6 @@
 #else
 #define MY_RFOUT_GPIO -1
 #endif
-#elif defined MCU_ESP8266
-#define MY_RFOUT_GPIO 4
 #endif
 #endif
 
@@ -118,16 +115,12 @@
 #else
 #define MY_RFIN_GPIO -1 //XXX: GPIO15 is used by JTAG
 #endif
-#elif defined MCU_ESP8266
-#define MY_RFIN_GPIO 5
 #endif
 #endif
 
 #ifndef MY_SETBUTTON_GPIO
 #ifdef MCU_ESP32
 #define MY_SETBUTTON_GPIO -1
-#elif defined MCU_ESP8266
-#define MY_SETBUTTON_GPIO 0
 #endif
 #endif
 

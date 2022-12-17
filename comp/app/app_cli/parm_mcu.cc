@@ -25,12 +25,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #endif
-#ifdef MCU_ESP8266
-#include "user_interface.h"
-#ifndef NO_SPIFFS
-#include "storage/esp8266/spiffs_fs.h"
-#endif
-#endif
 
 #ifdef TEST_HOST
 #define ets_printf printf
@@ -90,16 +84,6 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       break;
 
     case otok::k_print: {
-#ifdef MCU_ESP8266
-      if (is_val("reset-info")) {
-        print_reset_info();
-      } else  if (is_val("mem-info")) {
-        void es_io_putc(char c);
-        os_install_putc1(es_io_putc);
-        system_set_os_print(1);
-        system_print_meminfo();
-      }
-#endif
     }
       break;
 

@@ -7,9 +7,6 @@
 
 #pragma once
 #ifndef __cplusplus
-#ifdef MCU_ESP8266
-#include <c_types.h>
-#endif
 
 #ifndef true
 typedef unsigned char bool;

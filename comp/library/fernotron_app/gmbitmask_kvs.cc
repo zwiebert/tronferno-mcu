@@ -5,8 +5,7 @@
  *      Author: bertw
  */
 
-
-#ifndef MCU_ESP8266
+#if 1
 #define CFG_NAMESPACE "Tronferno" // XXX: should rename, but don't want to lose existing data for now
 #else
 #define CFG_NAMESPACE "tf_gmbm"   // dedicated file, so all objects are same size

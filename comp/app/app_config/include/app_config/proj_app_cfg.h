@@ -38,9 +38,6 @@ typedef int64_t i64;
 #if defined TEST_HOST
 #include "app_config/host/proj_app_cfg.h"
 
-#elif defined MCU_ESP8266
-#include "app_config/esp8266/proj_app_cfg.h"
-
 #elif defined MCU_ESP32
 #include "app_config/esp32/proj_app_cfg.h"
 
