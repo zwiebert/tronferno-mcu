@@ -9,6 +9,7 @@
 #include "config_kvs/config.h"
 #include "txtio/inout.h"
 #include "fernotron/types.h"
+#include "fernotron_trx/astro.h"
 //#include "net/ethernet_setup.h"
 #include "gpio/pin.h"
 #include "stdbool.h"
@@ -98,6 +99,7 @@ enum nwConnection config_read_network_connection();
 
 void config_setup_astro();
 struct cfg_astro* config_read_astro(struct cfg_astro *c);
+enum astroCorrection config_read_astro_correction();
 float config_read_longitude();
 float config_read_latitude();
 void config_setup_cc1101();
@@ -106,4 +108,3 @@ struct cc1101_settings* config_read_cc1101(struct cc1101_settings *c);
 const char *config_read_cc1101_config(char *buf, size_t len);
 
 void config_setup_mqttAppClient();
-

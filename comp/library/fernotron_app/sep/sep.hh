@@ -164,7 +164,7 @@ public:
       return false;
     }
 
-    // check for possible broadcast  XXX: should we also forbid any non motor address (FER_ADDR_TYPE_Receiver)?
+    // check for possible broadcast
     if (FER_U32_TEST_TYPE(a, FER_ADDR_TYPE_CentralUnit) && !((1 <= m && m <= 7) && (1 <= g && g <= 7))) {
       return false; // no broadcast allowed
     }

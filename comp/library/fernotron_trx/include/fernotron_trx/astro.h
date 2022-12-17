@@ -37,9 +37,3 @@ int astroTableIndex_from_tm(const struct tm *tm);
  * \param cfg_astro  configuration data
  */
 void fer_astro_init_and_reinit(const struct cfg_astro *cfg_astro);
-
-
-/**
- * \brief Get persistent setting of astro_correction FIXME: This function should be declared in app-settings, where it's defined
- */
-enum astroCorrection config_read_astro_correction();
