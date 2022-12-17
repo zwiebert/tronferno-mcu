@@ -238,9 +238,17 @@ static bool cpairKey_isValid(const char *key) {
   return true;
 }
 
+static void remove_key(const char *key) {
+  if (kvshT h = kvs_open(key, kvs_WRITE)) {
+    kvs_erase_key(h, key);
+    kvs_commit(h);
+    kvs_close(h);
+  }
+}
+
 static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
   if (!cpairKey_isValid(key)) {
-    //TODO: delete this invalid key from kvs
+    remove_key(key);  //delete this invalid key from kvs
     D(ets_printf("%s: key=<%s>, type=%d\n", __func__, key, (int)type));
     return kvsCb_noMatch;
   }
@@ -253,7 +261,7 @@ static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
       return kvsCb_noMatch;
 
     if (gm.isAllClear()) {
-      //TODO: delete this enmpty value from kvs
+      remove_key(key);  //delete this empty value from kvs
       return kvsCb_noMatch;
     }
 
