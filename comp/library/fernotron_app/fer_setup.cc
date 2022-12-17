@@ -61,12 +61,10 @@ public:
 
     if (msg_type == MSG_TYPE_RTC) {
       Fer_MsgPlainCmd plain_msg = get_msg();
-      Fer_MsgRtc rtc_msg = { plain_msg.a, plain_msg.g, plain_msg.m, 0 }; // TODO
-      uoApp_publish_fer_msgReceived(&rtc_msg);
+      uoApp_publish_fer_msgRtcReceived(plain_msg, *fer_rx_msg);
     } else if (msg_type == MSG_TYPE_TIMER) {
       Fer_MsgPlainCmd plain_msg = get_msg();
-      Fer_MsgTimer timer_msg = { plain_msg.a, plain_msg.g, plain_msg.m, 0 }; // TODO
-      uoApp_publish_fer_msgReceived(&timer_msg);
+      uoApp_publish_fer_msgAutoReceived(plain_msg, *fer_rx_msg);
     }
 #endif
 
@@ -94,12 +92,10 @@ public:
 
     if (msg_type == MSG_TYPE_RTC) {
       Fer_MsgPlainCmd plain_msg = get_msg();
-      Fer_MsgRtc rtc_msg = { plain_msg.a, plain_msg.g, plain_msg.m, 0 }; // TODO
-       uoApp_publish_fer_msgSent(&rtc_msg);
+      uoApp_publish_fer_msgRtcSent(plain_msg, *fer_tx_msg);
     } else if (msg_type == MSG_TYPE_TIMER) {
       Fer_MsgPlainCmd plain_msg = get_msg();
-      Fer_MsgTimer timer_msg = { plain_msg.a, plain_msg.g, plain_msg.m, 0 }; // TODO
-       uoApp_publish_fer_msgSent(&timer_msg);
+      uoApp_publish_fer_msgAutoSent(plain_msg, *fer_tx_msg);
     }
 
 

@@ -54,53 +54,12 @@ export function http_handleResponses(obj) {
     });
   }
 
-  if ("rt" in obj) {
-    AppLog.update((old) => {
-      obj.rt.c = "time";
-      old.unshift({ rc: obj.rt, date: new Date() });
-      return old;
-    });
-    ReceivedAddresses.update((old) => {
-      old.add(obj.rt.a);
-      return old;
-    });
-  }
-
-  if ("ra" in obj) {
-    AppLog.update((old) => {
-      obj.ra.c = "automatic";
-      old.unshift({ rc: obj.ra, date: new Date() });
-      return old;
-    });
-    ReceivedAddresses.update((old) => {
-      old.add(obj.ra.a);
-      return old;
-    });
-  }
-
   if ("sc" in obj) {
     AppLog.update((old) => {
       old.unshift({ sc: obj.sc, date: new Date() });
       return old;
     });
   }
-
-  if ("st" in obj) {
-    AppLog.update((old) => {
-      obj.st.c = "time";
-      old.unshift({ sc: obj.st, date: new Date() });
-      return old;
-    });
-  }
-
-  if ("sa" in obj) {
-    AppLog.update((old) => {
-      obj.sa.c = "automatic";
-      old.unshift({ sc: obj.sa, date: new Date() });
-      return old;
-    });
-  }
-
 
   if ("config" in obj) {
     let config = obj.config;

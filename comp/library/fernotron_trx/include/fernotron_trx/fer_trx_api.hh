@@ -59,7 +59,7 @@ public:
   /// get data from current received message. Use it in event functions.
   MsgKind get_msgKind() const;
   /// get data from current received message. Use it in event functions.
-  const void * get_raw() const;
+  const struct fer_raw_msg * get_raw() const;
   /// get data from current received message. Use it in event functions.
   bool is_centralUnit() const;
 
