@@ -75,7 +75,7 @@ void fer_msg_raw_footerCreate(fer_rawMsg *msg, uint32_t a);
 
 
 
-
+#ifdef TEST_HOST
 
 /**
  * \brief          Build the RTC part of message
@@ -112,4 +112,4 @@ void fer_msg_from_dailyTimer(union fer_wdtimer *msg, const uint8_t *dtimer_data)
  * \param data    source
  */
 void fer_msg_from_astro(union fer_astro *msg, int mint_offset);
-
+#endif

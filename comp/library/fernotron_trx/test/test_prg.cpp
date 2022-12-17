@@ -122,10 +122,10 @@ static void test_ferMsg_writeChecksums() {
 }
 
 static void test_ferMsg_writeData() {
-  fer_msg_rtc_from_time(&test_msg.rtc.sd, time(NULL), false);
+  fer_msg_raw_from_time(&test_msg, time(NULL), false);
   fer_msg_raw_from_weeklyTimer(&test_msg, testdat_wtimer);
   fer_msg_raw_from_dailyTimer(&test_msg, testdat_wtimer);
-  fer_astro_write_data(test_msg.astro, 0);
+  fer_msg_raw_from_astro(&test_msg, 0);
 }
 
 static void test_ferMsg_modData_andVerifyCS() {

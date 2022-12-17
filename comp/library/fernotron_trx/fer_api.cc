@@ -54,7 +54,7 @@ timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
 
 bool fer_fill_rtc_buf(time_t rtc) {
   fer_msg_raw_init(fer_tx_msg, MSG_TYPE_RTC);
-  fer_msg_rtc_from_time(&fer_tx_msg->rtc.sd, rtc, true);
+  fer_msg_raw_from_time(fer_tx_msg, rtc, true);
   return true;
 }
 
@@ -62,7 +62,7 @@ bool fer_fill_timer_buf(u32 a, time_t rtc, const Fer_TimerData *tdr) {
 
   fer_msg_raw_init(fer_tx_msg, MSG_TYPE_TIMER);
 
-  fer_msg_rtc_from_time(&fer_tx_msg->rtc.sd, rtc, false);
+  fer_msg_raw_from_time(fer_tx_msg, rtc, false);
 
 
   if (tdr->hasWeekly()) {
