@@ -299,7 +299,7 @@ void hts_setup_content() {
   uo_flagsT flags;
   flags.tgt.websocket = true;
   flags.evt.pin_change = true;
-  flags.evt.pct_change = true;
+  flags.evt.uo_evt_flag_pctChange = true;
   flags.evt.gen_app_state_change = true;
   flags.evt.gen_app_error_message = true;
   flags.evt.gen_app_log_message = true;

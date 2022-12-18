@@ -83,7 +83,7 @@ static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
   if (auto gmp = uoCb_gmpFromMsg(msg))
     io_mqtt_publish_gmp(*gmp);
   if (auto json = uoCb_jsonFromMsg(msg)) {
-    if (msg.flags.evt.timer_change)
+    if (msg.flags.evt.uo_evt_flag_timerChange)
       Net_Mqtt::publish("tfmcu/timer_out", json);
   }
 }
@@ -109,8 +109,8 @@ void AppNetMqtt::connected ()  {
   uo_flagsT flags {};
   flags.tgt.mqtt = true;
   flags.evt.pin_change = true;
-  flags.evt.pct_change = true;
-  flags.evt.timer_change = true;
+  flags.evt.uo_evt_flag_pctChange = true;
+  flags.evt.uo_evt_flag_timerChange = true;
   flags.fmt.raw = true;
   flags.fmt.json = true;
   uoCb_subscribe(io_mqttApp_uoutPublish_cb, flags);

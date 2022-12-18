@@ -45,7 +45,7 @@ bool config_item_modified(enum configAppItem item) {
       break;
 #endif
     case CB_VERBOSE:
-      config_setup_txtio();
+      config_ext_setup_txtio();
       break;
 
     default:

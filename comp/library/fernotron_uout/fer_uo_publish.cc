@@ -23,7 +23,7 @@
 
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT tgtFlags) {
   uo_flagsT flags;
-  flags.evt.pct_change = true;
+  flags.evt.uo_evt_flag_pctChange = true;
   flags.evt.gen_app_state_change = true;
 
   flags.fmt.raw = true;
@@ -54,7 +54,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
 
       uo_flagsT flags;
       flags.fmt.json = true;
-      flags.evt.pct_change = true;
+      flags.evt.uo_evt_flag_pctChange = true;
 
       uoCb_publish(idxs, sj.get_json(), flags);
     }
@@ -73,7 +73,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
 
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
   uo_flagsT flags;
-  flags.evt.pct_change = true;
+  flags.evt.uo_evt_flag_pctChange = true;
   flags.evt.gen_app_state_change = true;
 
   flags.fmt.raw = true;
@@ -111,7 +111,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
 
 void uoApp_publish_timer_json(const char *json, bool fragment) {
   uo_flagsT flags;
-  flags.evt.timer_change = true;
+  flags.evt.uo_evt_flag_timerChange = true;
   flags.evt.gen_app_state_change = true;
 
   flags.fmt.json = true;
@@ -168,7 +168,7 @@ static void timer_json(TargetDesc &td, uint8_t g, uint8_t m, struct Fer_TimerDat
 
 void uoApp_publish_timer_json(uint8_t g, uint8_t m, struct Fer_TimerData *tda) {
   uo_flagsT flags;
-  flags.evt.timer_change = true;
+  flags.evt.uo_evt_flag_timerChange = true;
   flags.evt.gen_app_state_change = true;
 
   flags.fmt.json = true;
@@ -338,7 +338,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
 
 void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
   uo_flagsT flags;
-  flags.evt.rf_msg_received = true;
+  flags.evt.uo_evt_flag_rfMsgReceived = true;
   flags.evt.gen_app_state_change = true;
 
   const int rssi = Fer_Trx_API::get_rssi();

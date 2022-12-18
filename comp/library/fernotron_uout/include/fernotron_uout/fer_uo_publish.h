@@ -13,6 +13,10 @@
 #define uo_evt_flag_CUAS uo_evt_flag_E
 #define uo_evt_flag_msgSent uo_evt_flag_D
 #define uo_evt_flag_SEP uo_evt_flag_C
+#define uo_evt_flag_pctChange uo_evt_flag_B
+#define uo_evt_flag_rfMsgReceived uo_evt_flag_A
+#define uo_evt_flag_timerChange uo_evt_flag_10
+
 
 
 
@@ -99,7 +103,7 @@ inline const so_arg_pch_t *uoCb_pchFromMsg(const uoCb_msgT msg) {
   return nullptr;
 }
 inline const so_arg_gmp_t *uoCb_gmpFromMsg(const uoCb_msgT msg) {
-  if (msg.flags.evt.pct_change && msg.flags.fmt.raw)
+  if (msg.flags.evt.uo_evt_flag_pctChange && msg.flags.fmt.raw)
     return static_cast<const so_arg_gmp_t *>(msg.cptr);
   return nullptr;
 }

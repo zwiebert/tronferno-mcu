@@ -12,6 +12,7 @@
 #include <fernotron_trx/fer_trx_api.hh>
 #include <fernotron_trx/raw/fer_radio_trx.h>
 #include <fernotron/repeater/repeater.h>
+#include <fernotron_uout/fer_uo_publish.h>
 #include "utils_misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
@@ -253,4 +254,21 @@ void config_setup_repeater() {
   char buf[80];
   config_read_rf_repeater(buf, sizeof buf);
   ferRep_setup(buf);
+}
+
+void config_ext_setup_txtio() {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_pctChange = true;
+  flags.evt.uo_evt_flag_rfMsgReceived = true;
+  config_setup_txtio(&flags);
+
+}
+
+void config_ext_setup_cliTcpServer() {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_pctChange = true;
+  flags.evt.uo_evt_flag_rfMsgReceived = true;
+#ifndef TEST_HOST
+  config_setup_cliTcpServer(&flags);
+#endif
 }

@@ -219,7 +219,7 @@ void parmConfig_reconfig_comp(u64 changed_mask) {
   }
 #endif
   if (changed_mask & CBM_txtio) {
-    mainLoop_callFun(config_setup_txtio);
+    mainLoop_callFun(config_ext_setup_txtio);
   }
 
 }

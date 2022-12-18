@@ -68,7 +68,7 @@ void main_setup_ip_dependent() {
     config_setup_mqttAppClient();
 #endif
 #ifdef USE_TCPS_TASK
-    config_setup_cliTcpServer();
+    config_ext_setup_cliTcpServer();
 #endif
 #ifdef USE_HTTP
   config_setup_httpServer();
@@ -95,7 +95,7 @@ void lfPer100ms_mainFun() {
 void mcu_init() {
   mainLoop_setup(32);
   kvs_setup();
-  config_setup_txtio();
+  config_ext_setup_txtio();
 
   config_setup_global();
 

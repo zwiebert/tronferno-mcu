@@ -10,6 +10,7 @@
 #include "../app_private.h"
 #include "cc1101_ook/spi.hh"
 #include "main_loop/main_queue.hh"
+#include <fernotron_uout/fer_uo_publish.h>
 
 #include <esp_attr.h>
 #include <esp32/rom/ets_sys.h>
@@ -29,6 +30,8 @@ void lfa_createWifiAp() {
 
 #ifdef USE_TCPS_TASK
     struct cfg_tcps cfg_tcps = { .enable = true }; // XXX: user-flags not set
+    cfg_tcps.flags.evt.uo_evt_flag_pctChange = true;
+    cfg_tcps.flags.evt.uo_evt_flag_rfMsgReceived = true;
     tcpCli_setup_task(&cfg_tcps);
 #endif
 
