@@ -45,6 +45,7 @@ timer_to_minutes(fer_au_minutesT *result, const char *ts) {
   return true;
 }
 
+// NOTE: this function currently always succeeds, but that may change later. Don't change the return type!
 bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const Fer_TimerData *tdp, const struct tm *tm) {
 
   precond(timi && tdp);

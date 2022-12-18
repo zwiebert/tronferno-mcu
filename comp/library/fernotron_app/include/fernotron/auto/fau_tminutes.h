@@ -63,7 +63,7 @@ fer_au_minutesT fer_au_mintsFromTime(const time_t *timer);
  * \param timi   Caller provided memory where the created object will be stored
  * \param tdp    Data to convert from
  * \param tm     The point of time.  This determines which will be the next event.  NULL for current time.
- * \return       false if an error occurred (will never happen)  XXX
+ * \return       false if an error occurred
  */
 bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const Fer_TimerData *tdp, const struct tm *tm = NULL);
 
