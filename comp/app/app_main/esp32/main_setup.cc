@@ -28,7 +28,7 @@
 #include "app_uout/status_output.h"
 #include "uout/uo_callbacks.h"
 #include "../app_private.h"
-#include "fernotron/types.h"
+#include "fernotron/fer_pct.h"
 #include "main_loop/main_queue.hh"
 
 #ifdef USE_WLAN_AP

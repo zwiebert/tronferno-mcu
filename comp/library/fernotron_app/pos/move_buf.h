@@ -7,7 +7,7 @@
 
 #include "stdbool.h"
 #include <stdint.h>
-#include "fernotron/types.h"
+#include "fernotron/fer_pct.h"
 #include "move.h"
 
 enum direction {

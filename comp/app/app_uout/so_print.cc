@@ -10,7 +10,7 @@
 
 #include "fernotron/auto/fau_tminutes.h"
 #include "fernotron/auto/fau_tdata_store.h"
-#include <fernotron/types.h>
+#include <fernotron/fer_pct.h>
 #include "net/ipnet.h"
 #include "txtio/inout.h"
 #include "uout/status_json.hh"

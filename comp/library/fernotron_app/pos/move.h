@@ -9,7 +9,7 @@
 
 #include "stdbool.h"
 #include <stdint.h>
-#include "fernotron/types.h"
+#include "fernotron/fer_pct.h"
 #include "app_config/proj_app_cfg.h"
 #include "fernotron/pos/positions_dynamic.h"
 

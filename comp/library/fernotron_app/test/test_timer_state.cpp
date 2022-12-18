@@ -12,7 +12,7 @@
 #include "fernotron/auto/fau_tevent.h"
 #include "fernotron_trx/astro.h"
 #include <time.h>
-#include <fernotron/types.h>
+#include <fernotron/fer_pct.h>
 #include "debug/dbg.h"
 #include "fernotron/fer_main.h"
 #include <utils_misc/int_types.h>

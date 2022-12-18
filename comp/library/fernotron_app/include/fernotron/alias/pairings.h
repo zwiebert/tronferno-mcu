@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include "fernotron/types.h"
+#include "fernotron/fer_pct.h"
 #include "app_config/proj_app_cfg.h"
 
 #include <stdlib.h>

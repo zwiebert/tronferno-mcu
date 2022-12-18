@@ -8,7 +8,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "config_kvs/config.h"
 #include "txtio/inout.h"
-#include "fernotron/types.h"
+#include "fernotron/fer_pct.h"
 #include "fernotron_trx/astro.h"
 //#include "net/ethernet_setup.h"
 #include "gpio/pin.h"

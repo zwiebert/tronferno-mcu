@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "fernotron/types.h"
+#include "fernotron/fer_pct.h"
 #include "fernotron_trx/timer_data.h"
 
 #include <stdint.h>

@@ -11,7 +11,7 @@
 #include "stdbool.h"
 #include <stdint.h>
 #include <array>
-#include "fernotron/types.h"
+#include "fernotron/fer_pct.h"
 #include "utils_misc/int_macros.h"
 #include "utils_misc/int_types.h"
 #include "main_loop/main_queue.hh"

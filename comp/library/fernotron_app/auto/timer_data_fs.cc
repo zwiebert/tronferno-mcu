@@ -10,7 +10,7 @@
 #include "storage/storage.h"
 #include "utils_misc/int_types.h"
 #include "debug/dbg.h"
-#include "fernotron/types.h"
+#include "fernotron/fer_pct.h"
 
 #ifndef TEST_HOST
 #define printf ets_printf

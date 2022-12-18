@@ -1,13 +1,8 @@
 /**
- * \file    fernotron/types.h
- * \brief   XXX
+ * \file    fernotron/fer_pct.h
+ * \brief   class Pct to represent shutter opening percentage
  */
-/*
- * types.h
- *
- *  Created on: 07.03.2020
- *      Author: bertw
- */
+
 
 #pragma once
 
