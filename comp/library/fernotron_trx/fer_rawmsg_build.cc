@@ -157,7 +157,7 @@ static inline fer_rtc_wday getFerRtcWday(const struct tm *t) {
   return static_cast<fer_rtc_wday>(t->tm_wday == 0 ? 7 : t->tm_wday);
 }
 
-void fer_msg_rtc_from_time(fer_rtc_sd *msgPtr, time_t now, bool rtc_only) {
+void fer_msg_rtc_from_time(fer_rtc_sd *msgPtr, time_t now,  fer_msg_type msg_type) {
   struct tm *t = localtime(&now);
 
   auto &msg = *msgPtr;
@@ -167,7 +167,7 @@ void fer_msg_rtc_from_time(fer_rtc_sd *msgPtr, time_t now, bool rtc_only) {
   msg.mday = dec2bcd(t->tm_mday);
   msg.mont = dec2bcd(t->tm_mon + 1);
   msg.wd2.sd.wday = getFerRtcWday(t);
-  msg.wd2.sd.rtc_only = rtc_only;
+  msg.wd2.sd.rtc_only = (msg_type == MSG_TYPE_RTC);
 
   msg.wDayMask = BIT(t->tm_wday);
   msg.flags.bits.dst = t->tm_isdst;
@@ -197,8 +197,8 @@ void fer_msg_raw_init(struct fer_raw_msg *m, fer_msg_type t) {
     disable_timer(m->wdtimer.bd, FER_FPR_TIMER_HEIGHT + FER_FPR_ASTRO_HEIGHT);
 }
 
-void fer_msg_raw_from_time(fer_rawMsg *msg, time_t now, bool rtc_only) {
-  fer_msg_rtc_from_time(&msg->rtc.sd, now, rtc_only);
+void fer_msg_raw_from_time(fer_rawMsg *msg, time_t now, fer_msg_type t) {
+  fer_msg_rtc_from_time(&msg->rtc.sd, now, t);
 }
 void fer_msg_from_flags(fer_rtc_sd *msg, uint8_t flags, uint8_t mask) {
   write_flags(&msg->flags.bd, flags, mask);

@@ -27,7 +27,7 @@
    setenv("TZ", "UTC+0", 1);
    struct tm *tm = localtime(&tim);
    struct fer_rtc_sd rtc{};
-   fer_msg_rtc_from_time(&rtc, tim, true);
+   fer_msg_rtc_from_time(&rtc, tim, MSG_TYPE_RTC);
    TEST_ASSERT_EQUAL(tm->tm_mon+1, bcd2dec(rtc.mont));
    TEST_ASSERT_EQUAL(tm->tm_mday, bcd2dec(rtc.mday));
    TEST_ASSERT_EQUAL(tm->tm_hour, bcd2dec(rtc.hour));
@@ -46,7 +46,7 @@
    time_t tim = 1593605594; //2020-07-01T12:13:14+00:00 (Wednesday)
    setenv("TZ", "CET-1CEST-2,M3.5.0,M10.5.0", 1);
    struct fer_rtc_sd rtc{};
-   fer_msg_rtc_from_time(&rtc, tim, true);
+   fer_msg_rtc_from_time(&rtc, tim, MSG_TYPE_RTC);
    TEST_ASSERT_EQUAL(7, bcd2dec(rtc.mont));
    TEST_ASSERT_EQUAL(1, bcd2dec(rtc.mday));
    TEST_ASSERT_EQUAL(14, bcd2dec(rtc.hour));
@@ -122,7 +122,7 @@ static void test_ferMsg_writeChecksums() {
 }
 
 static void test_ferMsg_writeData() {
-  fer_msg_raw_from_time(&test_msg, time(NULL), false);
+  fer_msg_raw_from_time(&test_msg, time(NULL), MSG_TYPE_TIMER);
   fer_msg_raw_from_weeklyTimer(&test_msg, testdat_wtimer);
   fer_msg_raw_from_dailyTimer(&test_msg, testdat_wtimer);
   fer_msg_raw_from_astro(&test_msg, 0);

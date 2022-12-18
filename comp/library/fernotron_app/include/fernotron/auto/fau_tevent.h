@@ -39,6 +39,6 @@ void fer_am_updateTimerEvent();
 
 /**
  * \brief     Do work.
- * \note      Call it periodically from main loop (XXX ???)
+ * \note      Call it periodically from main loop
  */
 void fer_am_loop(void);

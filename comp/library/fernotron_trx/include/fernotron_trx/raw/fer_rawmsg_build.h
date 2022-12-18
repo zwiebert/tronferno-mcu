@@ -37,9 +37,9 @@ void fer_msg_raw_init(struct fer_raw_msg *msg, fer_msg_type t);
  * \brief          Build the RTC part of message
  * \param msg      Message pointer to a buffer with MSG_TYPE_RTC or MSG_TYPE_TIMER
  * \param now      Current time to set the internal RTC of a device
- * \param rtc_only True if MSG_TYPE_RTC (XXX)
+ * \param t        Message type (MSG_TYPE_RTC or MSG_TYPE_TIMER)
  */
-void fer_msg_raw_from_time(fer_rawMsg *msg, time_t now, bool rtc_only);
+void fer_msg_raw_from_time(fer_rawMsg *msg, time_t now, fer_msg_type t);
 
 
 /**
@@ -81,9 +81,9 @@ void fer_msg_raw_footerCreate(fer_rawMsg *msg, uint32_t a);
  * \brief          Build the RTC part of message
  * \param msg      Message pointer to a buffer with MSG_TYPE_RTC or MSG_TYPE_TIMER
  * \param now      Current time to set the internal RTC of a device
- * \param rtc_only True if MSG_TYPE_RTC (XXX)
+ * \param t        Message type (MSG_TYPE_RTC or MSG_TYPE_TIMER)
  */
-void fer_msg_rtc_from_time(struct fer_rtc_sd *msg, time_t now, bool rtc_only);
+void fer_msg_rtc_from_time(struct fer_rtc_sd *msg, time_t now,  fer_msg_type t);
 
 /**
  * \brief          Set/Clear options in rtc line of message

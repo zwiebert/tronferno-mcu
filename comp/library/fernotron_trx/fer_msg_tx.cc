@@ -107,7 +107,7 @@ static bool fer_send_queued_msg(struct sf *msg) {
     }
   }
   if (msg->mt == MSG_TYPE_RTC) {
-    fer_msg_raw_from_time(fer_tx_msg, msg->rtc, true);
+    fer_msg_raw_from_time(fer_tx_msg, msg->rtc, MSG_TYPE_RTC);
   }
   memcpy(fer_tx_msg->cmd.bd, msg->fsb.data, 5);
 
