@@ -16,6 +16,11 @@
 #include <string.h>
 
 #include "utils_misc/int_macros.h"
+#include <utils_misc/mutex.hh>
+
+
+
+
 
 #ifndef TEST_HOST
 #include "freertos/FreeRTOS.h"
@@ -36,18 +41,24 @@ static const char* TAG = "cc1101";
 static spi_device_handle_t spi;
 static bool rx_mode;
 static bool tx_mode;
-volatile int marcstate;
+static RecMutex cc_mutex;
 
 static bool ms_delay(unsigned ms) {
   vTaskDelay(ms / portTICK_PERIOD_MS);
   return true;
 }
 
+static esp_err_t safe_spi_device_transmit(spi_device_handle_t handle, spi_transaction_t *trans_desc) {
+  LockGuard lock(cc_mutex);
+  return spi_device_transmit(handle, trans_desc);
+}
+
+
 static int Write_CC_CmdStrobe(uint8_t cmd) {
 
   struct spi_transaction_t ta = { .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA, .length = 8, .rxlength = 8, .tx_data = { cmd, }, };
 
-  if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
+  if (esp_err_t res = safe_spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
     ESP_ERROR_CHECK_WITHOUT_ABORT(res);
     return -1;
   }
@@ -59,7 +70,7 @@ static int Write_CC_Config(uint8_t addr, uint8_t data) {
 
   struct spi_transaction_t ta = { .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA, .length = 16, .rxlength = 16, .tx_data = { addr, data, }, };
 
-  if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
+  if (esp_err_t res = safe_spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
     ESP_ERROR_CHECK_WITHOUT_ABORT(res);
     return -1;
   }
@@ -78,7 +89,7 @@ static int Read_CC_Register(uint8_t addr) {
 
   struct spi_transaction_t ta = { .flags = SPI_TRANS_USE_TXDATA | SPI_TRANS_USE_RXDATA, .length = 16, .rxlength = 16, .tx_data = {addr  /* address|read_flag */, 0 /* ignored*/}, };
 
-  if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
+  if (esp_err_t res = safe_spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
     ESP_ERROR_CHECK_WITHOUT_ABORT(res);
     return -1;
   }
@@ -88,6 +99,8 @@ static int Read_CC_Register(uint8_t addr) {
 
 
 static bool read_cc_status_burst(uint8_t addr, void *data, size_t len) {
+  LockGuard lock(cc_mutex);
+
   uint8_t *dst = (uint8_t*) data;
   for (int i = 0; i < len; ++i) {
     if (int rv = Read_CC_Register(addr + i); rv >= 0) {
@@ -110,7 +123,7 @@ bool Read_CC_Burst(uint8_t addr, void *reg_data, size_t data_len) {
 
   struct spi_transaction_t ta = { .flags = 0, .length = len * 8, .rxlength = len * 8, .tx_buffer = addrs , .rx_buffer = data};
 
-  if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
+  if (esp_err_t res = safe_spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
     ESP_ERROR_CHECK_WITHOUT_ABORT(res);
     return false;
   }
@@ -123,7 +136,7 @@ void Write_CC_Burst(const void *data, size_t len) {
 
   struct spi_transaction_t ta = { .flags = 0, .length = len * 8, .tx_buffer = data, };
 
-  if (esp_err_t res = spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
+  if (esp_err_t res = safe_spi_device_transmit(SPI_HANDLE, &ta); res != ESP_OK) {
     ESP_ERROR_CHECK_WITHOUT_ABORT(res);
     return;
   }
@@ -132,6 +145,8 @@ void Write_CC_Burst(const void *data, size_t len) {
 }
 #endif
 static bool setup_CC_Idle() {
+  LockGuard lock(cc_mutex);
+
   Write_CC_CmdStrobe(CC1101_SIDLE);
   int state;
 
@@ -147,6 +162,8 @@ static bool setup_CC_Idle() {
 }
 
 static bool setup_CC_TX() {
+  LockGuard lock(cc_mutex);
+
   if (tx_mode)
     return true;
   rx_mode = false;
@@ -165,6 +182,8 @@ static bool setup_CC_TX() {
 }
 
 static bool setup_CC_RX() {
+  LockGuard lock(cc_mutex);
+
   if (rx_mode)
     return true;
   tx_mode = false;
@@ -255,6 +274,8 @@ bool cc1101_ook_get_regfile(uint8_t *dst, size_t *dst_size) {
 }
 
 static bool cc1101_write_regs(const uint8_t *src) {
+  LockGuard lock(cc_mutex);
+
   for (int i = 0; src[i] != 0xff; i += 2) {
     Write_CC_Config(src[i], src[i + 1]);
   }
@@ -365,6 +386,8 @@ static void disable_cc1101() {
 }
 
 static bool enable_cc1101(const struct cc1101_settings *cfg) {
+  LockGuard lock(cc_mutex);
+
   spi_bus_config_t buscfg = { .mosi_io_num = cfg->mosi, .miso_io_num = cfg->miso, .sclk_io_num = cfg->sclk, //
       .quadwp_io_num = -1, .quadhd_io_num = -1,
   // .max_transfer_sz=PARALLEL_LINES*320*2+8
@@ -393,6 +416,8 @@ static bool enable_cc1101(const struct cc1101_settings *cfg) {
 }
 
 bool cc1101_ook_setDirection(bool tx) {
+  LockGuard lock(cc_mutex);
+
   if (!SPI_HANDLE)
     return false;
 
