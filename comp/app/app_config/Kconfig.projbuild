@@ -1,31 +1,7 @@
 menu "Tronferno Project Configuration"
-    
-config APP_USE_HTTP
-  bool "Activate HTTP"
-  default y
-
-config APP_USE_LAN
-  bool "Activate LAN"
-  default y
-
-config APP_USE_WLAN
-  bool "Activate WLAN"
-  default y
-
-config APP_USE_WLAN_AP
-  bool "Activate WLAN_AP"
-  default y
-
-config APP_USE_NTP
-  bool "Activate NTP"
-  default y
  
 config APP_USE_JSON
   bool "Activate JSON"
-  default y
-
-config APP_USE_MQTT
-  bool "Activate MQTT"
   default y
 
 config APP_USE_POSIX_TIME
@@ -44,32 +20,12 @@ config APP_USE_FS
   bool "Activate FS"
   default y
 
-config APP_USE_HTTP_CLIENT
-  bool "Activate HTTP_CLIENT"
-  default y
-
 config APP_USE_OTA
   bool "Activate OTA"
   default y
 
 config APP_USE_STM32OTA
   bool "Activate STM32OTA"
-  default y
-
-config APP_USE_CUAS
-  bool "Activate CUAS"
-  default y
-
-config APP_USE_TCPS
-  bool "Activate TCPS (non task)"
-  default n
-    
-config APP_USE_TCPS_TASK
-  bool "Activate TCPS_TASK"
-  default y
-
-config APP_USE_SEP
-  bool "Activate SEP"
   default y
 
 config APP_USE_WS
@@ -83,16 +39,7 @@ config APP_USE_MUTEX
 config APP_USE_CLI_TASK
   bool "Activate CLI_TASK"
   default y
-  
-config APP_USE_NETWORK
-  bool "Activate NETWORK"
-  default y
 
-config APP_USE_AP_FALLBACK
-  bool "Activate AP_FALLBACK"
-  default y
-  
-  
 config APP_USE_CONFIG_KVS
   bool "Activate CONFIG_KVS"
   default y
@@ -101,29 +48,9 @@ config APP_USE_ESP_GET_TIME
   bool "Activate ESP_GET_TIME"
   default y
 
-config APP_USE_FER_TRANSMITTER
-  bool "Activate FER_TRANSMITTER"
-  default y
- 
-config APP_USE_FER_RECEIVER
-  bool "Activate FER_RECEIVER"
-  default y
-
-config APP_USE_PAIRINGS
-  bool "Activate USE_PAIRINGS"
-  default y 
- 
 config APP_USE_GPIO_PINS
   bool "Activate USE_GPIO_PINS"
   default y 
- 
-config APP_USE_TIMER_DATA_FS
-  bool "Activate USE_TIMER_DATA_FS"
-  default n
-  
-config APP_USE_TIMER_DATA_KVS
-  bool "Activate USE_TIMER_DATA_KVS"
-  default y
  
 config APP_USE_FREERTOS
   bool "Activate USE_FREERTOS"

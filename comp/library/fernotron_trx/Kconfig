@@ -1,0 +1,11 @@
+menu "zwiebert: Tronferno Transceiver"
+    
+config APP_USE_FER_TRANSMITTER
+  bool "Activate FER_TRANSMITTER"
+  default y
+ 
+config APP_USE_FER_RECEIVER
+  bool "Activate FER_RECEIVER"
+  default y
+  
+  endmenu
