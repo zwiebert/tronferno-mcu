@@ -41,18 +41,7 @@ typedef int64_t i64;
 
 #define USE_REPEATER
 
-#include "proj_kconfig.h"
-
-#ifdef USE_FER_RECEIVER
-#define FER_RECEIVER
-#endif
-#ifdef USE_FER_TRANSMITTER
-#define FER_TRANSMITTER
-#endif
-#ifdef USE_POSIX_TIME
-#define POSIX_TIME 1
-#endif
-#ifdef USE_MDR_TIME
+#ifdef CONFIG_APP_USE_MDR_TIME
 #define MDR_TIME
 #endif
 

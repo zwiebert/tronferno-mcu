@@ -31,7 +31,7 @@
 #include "fernotron/fer_pct.h"
 #include "main_loop/main_queue.hh"
 
-#ifdef USE_WLAN_AP
+#ifdef CONFIG_APP_USE_WLAN_AP
 void tmr_checkNetwork_start() {
   if (!mainLoop_callFun([]() {
     if (!ipnet_isConnected())
@@ -61,16 +61,16 @@ void main_setup_ip_dependent() {
   }
   if (!once) {
     once = 1;
-#ifdef USE_NTP
+#ifdef CONFIG_APP_USE_NTP
     ntpApp_setup();
 #endif
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
     config_setup_mqttAppClient();
 #endif
-#ifdef USE_TCPS_TASK
+#ifdef CONFIG_APP_USE_TCPS_TASK
     config_ext_setup_cliTcpServer();
 #endif
-#ifdef USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
   config_setup_httpServer();
 #endif
 
@@ -79,12 +79,12 @@ void main_setup_ip_dependent() {
 
 void lfPer100ms_mainFun() {
   if (mainLoop_PeriodicFlags.flagbits) {
-#ifdef USE_SEP
+#ifdef CONFIG_APP_USE_SEP
     if (mainLoop_PeriodicFlags.flags.lf_loopFerSep) {
       fer_sep_loop();
     }
 #endif
-#ifdef USE_CUAS
+#ifdef CONFIG_APP_USE_CUAS
    if (mainLoop_PeriodicFlags.flags.lf_checkCuasTimeout) {
      fer_cuas_set_check_timeout();
    }
@@ -103,7 +103,7 @@ void mcu_init() {
 
   ESP_ERROR_CHECK(esp_event_loop_create_default());
   cliApp_setup();
-#ifdef USE_CLI_TASK
+#ifdef CONFIG_APP_USE_CLI_TASK
   cli_setup_task(true);
 #else
 #error
@@ -111,7 +111,7 @@ void mcu_init() {
   fer_am_updateTimerEvent();
   mainLoop_callFun(fer_am_loop, 1000, true);
 
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
     struct pin_change_cb {static void IRAM_ATTR cb() {
       mainLoop_callFun_fromISR(pin_notify_input_change);}
@@ -119,7 +119,7 @@ void mcu_init() {
     gpio_INPUT_PIN_CHANGED_ISR_cb = pin_change_cb::cb;
 #endif
 
-  #ifdef FER_RECEIVER
+  #ifdef CONFIG_APP_USE_FER_RECEIVER
     //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
     struct msg_received_cb { static void IRAM_ATTR cb() {
       mainLoop_callFun_fromISR(fer_rx_loop);}
@@ -127,19 +127,19 @@ void mcu_init() {
     Fer_Trx_API::register_callback_msgReceived_ISR(msg_received_cb::cb);
   #endif
 
-  #ifdef FER_TRANSMITTER
+  #ifdef CONFIG_APP_USE_FER_TRANSMITTER
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
   struct msg_transmitted_cb { static void IRAM_ATTR cb() {
     mainLoop_callFun_fromISR(fer_tx_loop);}
   };
   Fer_Trx_API::register_callback_msgTransmitted_ISR(msg_transmitted_cb::cb);
   #endif
-#ifdef USE_SEP
+#ifdef CONFIG_APP_USE_SEP
   fer_sep_enable_disable_cb = [] (bool enable) {
     mainLoop_PeriodicFlags.flags.lf_loopFerSep = enable;
   };
 #endif
-#ifdef USE_CUAS
+#ifdef CONFIG_APP_USE_CUAS
   fer_cuas_enable_disable_cb = [] (bool enable, uint32_t cu) {
     mainLoop_PeriodicFlags.flags.lf_checkCuasTimeout = enable;
     config_save_item_n_u32(settings_get_kvsKey(CB_CUID), cu);
@@ -147,31 +147,31 @@ void mcu_init() {
 };
 #endif
 
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
   ipnet_CONNECTED_cb = main_setup_ip_dependent;
   enum nwConnection network = config_read_network_connection();
 
-#ifdef USE_AP_FALLBACK
+#ifdef CONFIG_APP_USE_AP_FALLBACK
   if (network != nwNone)
 #endif
       {
     esp_netif_init();
-#ifdef USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
     hts_setup_content();
 #endif
 
     switch (network) {
-#ifdef USE_WLAN
+#ifdef CONFIG_APP_USE_WLAN
     case nwWlanSta:
       config_setup_wifiStation();
       break;
 #endif
-#ifdef USE_WLAN_AP
+#ifdef CONFIG_APP_USE_WLAN_AP
     case nwWlanAp:
       lfa_createWifiAp(); // XXX: Create the fall-back AP. Should we have a regular configured AP also?
       break;
 #endif
-#ifdef USE_LAN
+#ifdef CONFIG_APP_USE_LAN
     case nwLan:
       config_setup_ethernet();
 #endif
@@ -191,7 +191,7 @@ void mcu_init() {
 
   config_setup_gpio();
 
-#ifdef USE_AP_FALLBACK
+#ifdef CONFIG_APP_USE_AP_FALLBACK
   //if (network != nwWlanAp) //XXX this crashes TODO FIXME
   if (network == nwLan || network == nwWlanSta)
     tmr_checkNetwork_start();

@@ -24,7 +24,7 @@
 
 static const char *TAG="APP";
 
-#ifdef USE_WS
+#ifdef CONFIG_APP_USE_WS
 /*
  *
  * Structure holding server handle
@@ -213,7 +213,7 @@ static esp_err_t handle_uri_get_file(httpd_req_t *req) {
 
 }
 
-#ifdef USE_WS
+#ifdef CONFIG_APP_USE_WS
 static esp_err_t handle_uri_ws(httpd_req_t *req) {
 
   if (req->method == HTTP_GET) {
@@ -254,7 +254,7 @@ static const httpd_uri_t httpd_uris[] = {
     { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json },
     { .uri = "/f/*", .method = HTTP_GET, .handler = handle_uri_get_file },
     { .uri = "/", .method = HTTP_GET, .handler = handle_uri_get_file },
-#ifdef USE_WS
+#ifdef CONFIG_APP_USE_WS
     { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true },
 #endif
 };
@@ -275,7 +275,7 @@ static void ws_send_json_cb(const uoCb_msgT msg) {
 
 void hts_setup_content() {
   hts_register_uri_handlers_cb = hts_register_uri_handlers;
-#ifdef USE_WS
+#ifdef CONFIG_APP_USE_WS
   uo_flagsT flags;
   flags.tgt.websocket = true;
   flags.evt.pin_change = true;

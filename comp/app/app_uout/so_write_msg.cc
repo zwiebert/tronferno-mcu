@@ -110,12 +110,12 @@ void soMsg_mcu_version(const struct TargetDesc &td) {
 #endif
 
 void soMsg_mcu_ota(const struct TargetDesc &td, const char *url) {
-#ifdef USE_OTA
+#ifdef CONFIG_APP_USE_OTA
   td.so().print("ota-url", url);
 #endif
 }
 void soMsg_mcu_ota_state(const struct TargetDesc &td) {
-#ifdef USE_OTA
+#ifdef CONFIG_APP_USE_OTA
   td.so().print("ota-state", ota_getState());
 #endif
 }
@@ -387,7 +387,7 @@ void soMsg_pair_print_kmm_single(const struct TargetDesc &td, const so_arg_kmm_t
 
 }
 
-#ifdef USE_REPEATER
+#ifdef CONFIG_APP_USE_REPEATER
 void soMsg_repeater_begin(const struct TargetDesc &td) {
   td.so().x_open("repeater");
 }
@@ -397,7 +397,7 @@ void soMsg_repeater_end(const struct TargetDesc &td) {
 }
 #endif
 
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
 void soMsg_inet_print_address(const struct TargetDesc &td) {
   char buf[20];
   ipnet_addr_as_string(buf, 20);

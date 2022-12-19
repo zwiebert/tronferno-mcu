@@ -19,7 +19,7 @@ static inline void fer_au_timer_data_change_cb() {
   mainLoop_callFun(fer_am_updateTimerEvent);
 }
 
-#ifdef USE_TIMER_DATA_KVS
+#ifdef CONFIG_APP_USE_TIMER_DATA_KVS
 #define save_timer_data_fs save_timer_data_kvs
 #define erase_timer_data_fs erase_timer_data_kvs
 #define read_timer_data_fs read_timer_data_kvs

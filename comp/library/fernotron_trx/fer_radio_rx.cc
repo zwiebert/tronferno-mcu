@@ -42,7 +42,7 @@ bool ftrx_testLoopBack_getRxPin();
 #define mcu_get_rxPin ftrx_testLoopBack_getRxPin
 #endif
 
-#if defined FER_RECEIVER
+#if defined CONFIG_APP_USE_FER_RECEIVER
 
 void (*fer_rx_MSG_RECEIVED_ISR_cb)(void);
 

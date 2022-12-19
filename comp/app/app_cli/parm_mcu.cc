@@ -21,7 +21,7 @@
 #include <cc1101_ook/trx.hh>
 #include "debug/dbg.h"
 
-#ifdef USE_FREERTOS
+#ifdef CONFIG_APP_USE_FREERTOS
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #endif
@@ -121,7 +121,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
     }
       break;
 
-#ifdef USE_FREERTOS
+#ifdef CONFIG_APP_USE_FREERTOS
     case otok::k_stack: {
       int words = uxTaskGetStackHighWaterMark(NULL);
       ets_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
@@ -144,7 +144,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       }
     }
       break;
-#ifdef USE_PAIRINGS
+#ifdef CONFIG_APP_USE_PAIRINGS
     case otok::k_dbp: {
       fer_alias_so_output_all_pairings(td);
     }
@@ -168,7 +168,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       soMsg_mcu_version(td);
     }
       break;
-#ifdef USE_OTA
+#ifdef CONFIG_APP_USE_OTA
     case otok::k_ota: {
       if (is_val("?")) {
         soMsg_mcu_ota_state(td);
@@ -197,7 +197,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 #endif
 
     default:
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
     if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
 

@@ -46,7 +46,7 @@ enum nwConnection {
 };
 
 
-#ifdef USE_POSIX_TIME
+#ifdef CONFIG_APP_USE_POSIX_TIME
 void cfg_tz2timezone(void);
 #endif
 

@@ -45,7 +45,7 @@ static volatile std::atomic<std::uint64_t> pin_int_mask;
 
 #define gpioUsableHigh
 
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
 enum mcu_pin_mode pin_getPinMode(unsigned gpio_number) {
   if (gpio_number >= sizeof gpio_cfg->gpio)
     return PIN_MODE_none;
@@ -313,7 +313,7 @@ void setup_pin(const struct cfg_gpio *c) {
     pin_setup_input_handler(static_cast<gpio_num_t>(BUTTON_GPIO));
   }
 
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
   for (int i = 0; i < CONFIG_GPIO_SIZE; ++i) {
     if (gpioCfg_getPinMode(gpio_cfg, i) == PIN_DEFAULT)
       continue;

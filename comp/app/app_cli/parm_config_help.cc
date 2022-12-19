@@ -8,17 +8,17 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
 #ifndef MCU_ESP32
                                    "baud=(N|?)         serial baud rate\n"
 #endif
-#ifdef USE_WLAN
+#ifdef CONFIG_APP_USE_WLAN
     "wlan-ssid=(SSID|?)\n"
     "wlan-password=PW\n"
 #endif
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
     "network=(none|wlan|ap|lan) ap opens wlan access-point at 192.168.4.1 (restart required)\n"
 #endif
-#ifdef USE_NTP
+#ifdef CONFIG_APP_USE_NTP
     "ntp-server=(gateway|dhcp|IP4ADDR|NAME) default: gateway\n"
 #endif
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
     "mqtt-enable=(0|1)  enable MQTT\n"
     "mqtt-url=URL       broker/server URL (e.g. mqtt://192.168.1.42:7777)\n"
     "mqtt-user=NAME     user name on server\n"
@@ -26,7 +26,7 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
     "mqtt-client-id=ID  default: tfmcu\n"
     "mqtt-root-topic=TOPIC default: tfmcu/\n"
 #endif
-#ifdef USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
     "http-enable=(0|1)  enable HTTP\n"
     "http-user=NAME     user name on server\n"
     "http-password=PW   user password on server\n"
@@ -37,7 +37,7 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
                                    "time-zone=(N|?)    time zone hour offset\n"
                                    "dst=(eu|0|1|?)     daylight saving time\n"
 #endif
-#ifdef USE_POSIX_TIME
+#ifdef CONFIG_APP_USE_POSIX_TIME
     "tz=(POSIX_TZ|?)    time zone for RTC/NTP\n"
 #endif
     "astro-correction   modifies astro table: 0=average, 1=bright 2=dark\n"
@@ -47,7 +47,7 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
 #if ENABLE_RESTART
     "restart            restart MCU\n"
 #endif
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
                                    "gpioN=(d|i|o|O|q|Q|?)(h|l|m) Set gpio as pin for input (i) output (O), open drain output (o) or input/output (q,Q).\n"
                                    "                   Add suffix to input to enable pull up (h), pull down (l), pull up/down (m)\n"
                                    "                   Add suffix (h|l) to output to set the initial level high or low at restart\n"

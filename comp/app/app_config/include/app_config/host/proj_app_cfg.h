@@ -13,7 +13,7 @@
 #undef CONFIG_APP_USE_WLAN
 #undef CONFIG_APP_USE_WLAN_AP
 #undef CONFIG_APP_USE_NTP
-#undef CONFIG_APP_USE_JSON
+//#undef CONFIG_APP_USE_JSON
 #undef CONFIG_APP_USE_MQTT
 //#undef CONFIG_APP_USE_POSIX_TIME
 #undef CONFIG_APP_USE_SERIAL
@@ -44,12 +44,10 @@
 #undef CONFIG_APP_USE_MDR_TIME
 ///////////////////////////////////////////////
 
+#undef MDR_TIME
+
 #define IRAM_ATTR
-#undef MDR_TIME
-
 #define NO_SPIFFS
-
-#undef MDR_TIME
 #define MY_RFOUT_GPIO -1
 #define MY_RFIN_GPIO -1
 #define MY_SETBUTTON_GPIO -1

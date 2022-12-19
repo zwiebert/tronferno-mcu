@@ -28,7 +28,7 @@ void lfa_createWifiAp() {
     wifi_ap_active = true;
     wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
 
-#ifdef USE_TCPS_TASK
+#ifdef CONFIG_APP_USE_TCPS_TASK
     struct cfg_tcps cfg_tcps = { .enable = true }; // XXX: user-flags not set
     cfg_tcps.flags.evt.uo_evt_flag_pctChange = true;
     cfg_tcps.flags.evt.uo_evt_flag_rfMsgReceived = true;

@@ -17,7 +17,7 @@ enum configAppItem : i8 {
   CBA_start = CB_size - 1, //
   CB_RECV, CB_TRANSM, CB_CUID, CB_USED_MEMBERS, CB_BAUD, CB_GPIO, CB_CFG_PASSWD, CB_LONGITUDE, CB_LATITUDE,
   CB_RF_TRX,
-#ifndef USE_POSIX_TIME
+#ifndef CONFIG_APP_USE_POSIX_TIME
 CB_TIZO,
 #else
   CB_TZ,
@@ -26,7 +26,7 @@ CB_TIZO,
   CB_DST,
 #endif
   CB_ASTRO_CORRECTION,
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
   CB_NETWORK_CONNECTION,
 #endif
   CB_RFOUT_GPIO, CB_RFIN_GPIO, CB_SETBUTTON_GPIO,
@@ -60,13 +60,13 @@ public:
     initField(CB_CFG_PASSWD, "C_CFG_PASSWD", otok::NONE, CBT_str, 0, STF_direct);
     initField(CB_LONGITUDE, "C_LONGITUDE", otok::k_longitude, CBT_f, soCfg_LONGITUDE, STF_direct);
     initField(CB_LATITUDE, "C_LATITUDE", otok::k_latitude, CBT_f, soCfg_LATITUDE, STF_direct);
-#ifndef USE_POSIX_TIME
+#ifndef CONFIG_APP_USE_POSIX_TIME
 #error
 #else
     initField(CB_TZ, "C_TZ", otok::k_tz, CBT_str, soCfg_TZ, STF_direct);
 #endif
     initField(CB_ASTRO_CORRECTION, "C_AST_COR", otok::k_astro_correction, CBT_i8, soCfg_ASTRO_CORRECTION, STF_direct);
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
     initField(CB_NETWORK_CONNECTION, "C_NW_CONN", otok::k_network, CBT_i8, soCfg_NETWORK);
 #endif
     initField(CB_RFOUT_GPIO, "C_RFOUTP", otok::k_rf_tx_pin, CBT_i8, soCfg_GPIO_RFOUT, STF_direct);

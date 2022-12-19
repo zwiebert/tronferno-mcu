@@ -35,7 +35,7 @@ struct cfg_gpio* config_read_gpio(struct cfg_gpio *c) {
     kvsR(i8, CB_RFOUT_GPIO, c->out_rf);
     kvsR(i8, CB_RFIN_GPIO, c->in_rf);
     kvsR(i8, CB_SETBUTTON_GPIO, c->in_setButton);
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
     kvsRb(CB_GPIO, c->gpio);
 #endif
     kvs_close(h);
@@ -165,7 +165,7 @@ struct cfg_astro* config_read_astro(struct cfg_astro *c) {
     kvsRb(CB_LATITUDE, c->geo_latitude);
     kvsRead(i8, astroCorrection, CB_ASTRO_CORRECTION, c->astroCorrection);
 
-#ifndef USE_POSIX_TIME
+#ifndef CONFIG_APP_USE_POSIX_TIME
       kvsRb(CI(CB_TIZO), c->geo_timezone);
 #else
     char tz[64] = MY_GEO_TZ;
@@ -178,7 +178,7 @@ struct cfg_astro* config_read_astro(struct cfg_astro *c) {
 }
 void config_setup_astro() {
   struct cfg_astro c = { .astroCorrection = acAverage, .geo_longitude = MY_GEO_LONGITUDE, .geo_latitude = MY_GEO_LATITUDE,
-#ifndef USE_POSIX_TIME
+#ifndef CONFIG_APP_USE_POSIX_TIME
       .geo_timezone = MY_GEO_TIMEZONE,
 #endif
       };
@@ -196,7 +196,7 @@ enum astroCorrection config_read_astro_correction() {
 }
 #endif
 
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
 #include "app_mqtt/mqtt.h"
 void config_setup_mqttAppClient() {
   config_setup_mqttClient();

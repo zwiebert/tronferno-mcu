@@ -50,13 +50,13 @@ void soCfg_CU(const struct TargetDesc &td) {
 }
 
 void soCfg_NETWORK(const struct TargetDesc &td) {
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
   td.so().print(settings_get_optKeyStr(CB_NETWORK_CONNECTION), cfg_args_network[config_read_network_connection()]);
 #endif
 }
 
 void soCfg_TZ(const struct TargetDesc &td) {
-#ifdef USE_POSIX_TIME
+#ifdef CONFIG_APP_USE_POSIX_TIME
   char buf[64];
   td.so().print(settings_get_optKeyStr(CB_TZ), config_read_tz(buf, sizeof buf));
 #endif
@@ -71,7 +71,7 @@ void soCfg_LATITUDE(const struct TargetDesc &td) {
 }
 
 void soCfg_TIMEZONE(const struct TargetDesc &td) {
-#ifndef USE_POSIX_TIME
+#ifndef CONFIG_APP_USE_POSIX_TIME
   td.so().print(settings_get_optKeyStr(CB_TIMEZONE), config_read_timezone(), 5);
 #endif
 }
@@ -152,7 +152,7 @@ void soCfg_CC1101_CONFIG_xxx(const struct TargetDesc &td) { // TODO:
 
 
 void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
   {
     char buf[64];
     char key[10] = "gpio";
@@ -168,7 +168,7 @@ void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
 }
 
 void soCfg_GPIO_MODES(const struct TargetDesc &td) {
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
   {
     char buf[64];
     int gpio_number;
@@ -193,7 +193,7 @@ void soCfg_GPIO_MODES(const struct TargetDesc &td) {
 }
 
 void soCfg_GPIO_MODES_AS_STRING(const struct TargetDesc &td) {
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
   {
     int gpio_number;
     char val[CONFIG_GPIO_SIZE + 1];
@@ -225,18 +225,18 @@ void soCfg_end(const struct TargetDesc &td) {
 
 void soCfg_all_net(const struct TargetDesc &td) {
   soCfg_NETWORK(td);
-#ifdef USE_WLAN
+#ifdef CONFIG_APP_USE_WLAN
   soCfg_WLAN_SSID(td);
   soCfg_WLAN_PASSWORD(td);
 #endif
-#ifdef USE_NTP
+#ifdef CONFIG_APP_USE_NTP
   soCfg_NTP_SERVER(td);
 #endif
-#ifdef USE_LAN
+#ifdef CONFIG_APP_USE_LAN
   soCfg_LAN_PHY(td);
   soCfg_LAN_PWR_GPIO(td);
 #endif
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
   soCfg_MQTT_ENABLE(td);
   soCfg_MQTT_URL(td);
   soCfg_MQTT_USER(td);
@@ -244,7 +244,7 @@ void soCfg_all_net(const struct TargetDesc &td) {
   soCfg_MQTT_CLIENT_ID(td);
   soCfg_MQTT_ROOT_TOPIC(td);
 #endif
-#ifdef USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
   soCfg_HTTP_ENABLE(td);
   soCfg_HTTP_USER(td);
   soCfg_HTTP_PASSWORD(td);
@@ -282,7 +282,7 @@ void soCfg_all_fer(const struct TargetDesc &td) {
 
 void soCfg_all_time(const struct TargetDesc &td) {
   soCfg_RTC(td);
-#ifdef USE_POSIX_TIME
+#ifdef CONFIG_APP_USE_POSIX_TIME
   soCfg_TZ(td);
 #else
   soCfg_TIMEZONE(td);

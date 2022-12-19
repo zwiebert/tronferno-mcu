@@ -197,7 +197,7 @@ void io_mqttApp_received(const char *topic, int topic_len, const char *data, int
       if (!addr_end)
         return;
       int addr_len = addr_end - addr;
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
       int gpio_number = -1;
       std::from_chars(addr, addr + addr_len, gpio_number, 10);
       if (*data == '?') {

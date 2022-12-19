@@ -17,13 +17,13 @@
 #include "cli_imp.h"
 #include "utils_misc/stof.h"
 #include "utils_misc/cstring_utils.h"
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
 #include "app_mqtt/mqtt.h"
 #endif
-#ifdef USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
 #include "net_http_server/http_server_setup.h"
 #endif
-#ifdef USE_NTP
+#ifdef CONFIG_APP_USE_NTP
 #include "net/ntp_client_setup.h"
 #endif
 #include "fernotron_trx/astro.h"
@@ -179,7 +179,7 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, const str
   }
     break;
 
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
 case otok::k_gpio:
 {
   if (is_val("?"))
@@ -195,7 +195,7 @@ break;
 #endif
 
   case otok::NONE:
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
   if (strncmp(key, "gpio", 4) == 0)
   {
     int gpio_number = atoi(key + 4);

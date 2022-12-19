@@ -101,7 +101,7 @@ const char cli_help_parmHelp[]  =
 "type 'help command;'  or 'help all;'\ncommands are: ";
 
 static struct parm_handler const handlers[] = { //
-#ifdef USE_SEP
+#ifdef CONFIG_APP_USE_SEP
         { "sep", process_parmSep, cli_help_parmSep }, //
 #endif
         { "cmd", process_parmSend, cli_help_parmSend },
@@ -109,7 +109,7 @@ static struct parm_handler const handlers[] = { //
         { "mcu", process_parmMcu, cli_help_parmMcu }, //
         { "auto", process_parmTimer, cli_help_parmTimer },
         { "help", process_parmHelp, cli_help_parmHelp }, //
-#ifdef USE_PAIRINGS
+#ifdef CONFIG_APP_USE_PAIRINGS
         { "pair", process_parmPair, cli_help_parmPair},//
 #endif
         { "shpref", process_parmShpref, cli_help_parmShpref }, //
@@ -119,7 +119,7 @@ static struct parm_handler const handlers[] = { //
 static const struct parm_handlers our_parm_handlers = { .handlers = handlers, .count = sizeof(handlers) / sizeof(handlers[0]), };
 
 const parm_handler* cli_parmHandler_find(const char *key) {
-#ifdef USE_SEP
+#ifdef CONFIG_APP_USE_SEP
   // While in SEP mode reserve the MCU and RF for SEP commands only
   if (fer_sep_is_enabled()) {
     if (strcmp("sep", key) == 0)

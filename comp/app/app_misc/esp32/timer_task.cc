@@ -106,7 +106,7 @@ static bool rxTxTask_setup() {
 }
 
 //////////////////////////////////////////////////////////////////////////
-#ifndef USE_ESP_GET_TIME
+#ifndef CONFIG_APP_USE_ESP_GET_TIME
 volatile u32 run_time_s_, run_time_ts_;
 #endif
 
@@ -116,7 +116,7 @@ static bool IRAM_ATTR intTimer_isr(gptimer_handle_t timer, const gptimer_alarm_e
   static uint_fast8_t tick_count;
   ++tick_count;
 
-#ifdef FER_TRANSMITTER
+#ifdef CONFIG_APP_USE_FER_TRANSMITTER
 #if E1 == 1
   static bool e_tx_level;
   mcu_put_txPin (e_tx_level);
@@ -127,27 +127,27 @@ static bool IRAM_ATTR intTimer_isr(gptimer_handle_t timer, const gptimer_alarm_e
   mcu_put_txPin(Fer_Trx_API::isr_get_tx_level());
 #endif
 #endif
-#ifdef FER_RECEIVER
+#ifdef CONFIG_APP_USE_FER_RECEIVER
   bool rx_pin_lvl = mcu_get_rxPin();
 #endif
 
 
 
-#ifdef FER_TRANSMITTER
+#ifdef CONFIG_APP_USE_FER_TRANSMITTER
   {
     if (0 == (tick_count & ((FER_ISR_FMULT / FER_TX_FMULT) - 1))) {
       msg.run_tx = true;
     }
   }
 #endif
-#ifdef FER_RECEIVER
+#ifdef CONFIG_APP_USE_FER_RECEIVER
   if (0 == (tick_count & ((FER_ISR_FMULT / FER_RX_FMULT) - 1))) {
     msg.run_rx = true;
     msg.rx_pin_level = rx_pin_lvl;
   }
 #endif
 
-#ifndef USE_ESP_GET_TIME
+#ifndef CONFIG_APP_USE_ESP_GET_TIME
   {
     static u32 s10_ticks = TICK_FREQ_HZ / 10;
     static int8_t s_ticks = 10;

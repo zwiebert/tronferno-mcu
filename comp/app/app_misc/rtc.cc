@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include <time.h>
-#ifdef USE_POSIX_TIME
+#ifdef CONFIG_APP_USE_POSIX_TIME
 #include <sys/time.h>
 #endif
 #include <string.h>
@@ -16,7 +16,7 @@ rtc_get_by_string(char *s) {
   time_t timer = time(NULL);
   struct tm t;
   localtime_r(&timer, &t);
-#ifdef USE_POSIX_TIME
+#ifdef CONFIG_APP_USE_POSIX_TIME
   strftime(s, 20, "%FT%H:%M:%S", &t);
 #else
   isotime_r(&t, s);
@@ -63,7 +63,7 @@ bool
 rtc_set_by_string(const char *dateTimeString) {
   time_t timestamp = time_iso2time(dateTimeString);
   if (timestamp > 0) {
-#ifdef USE_POSIX_TIME
+#ifdef CONFIG_APP_USE_POSIX_TIME
     struct timeval tv = {.tv_sec = timestamp, .tv_usec = 0 };
     settimeofday(&tv, NULL);
 #else
@@ -96,7 +96,7 @@ always_dst(const time_t *timer, i32 * z) {
 void 
 rtc_setup() {
 
-#ifdef USE_POSIX_TIME
+#ifdef CONFIG_APP_USE_POSIX_TIME
   char buf[64];
   setenv("TZ", config_read_tz(buf, sizeof buf), 1);
   tzset();

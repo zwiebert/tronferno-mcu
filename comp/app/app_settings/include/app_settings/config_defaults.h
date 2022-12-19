@@ -90,7 +90,7 @@
 #endif
 
 #ifndef MY_NETWORK_CONNECTION
-#ifdef USE_LAN
+#ifdef CONFIG_APP_USE_LAN
 #define MY_NETWORK_CONNECTION nwLan
 #else
 #define MY_NETWORK_CONNECTION nwWlanAp
@@ -100,7 +100,7 @@
 
 #ifndef MY_RFOUT_GPIO
 #ifdef MCU_ESP32
-#ifndef USE_LAN
+#ifndef CONFIG_APP_USE_LAN
 #define MY_RFOUT_GPIO 22
 #else
 #define MY_RFOUT_GPIO -1
@@ -110,7 +110,7 @@
 
 #ifndef MY_RFIN_GPIO
 #ifdef MCU_ESP32
-#ifndef USE_LAN
+#ifndef CONFIG_APP_USE_LAN
 #define MY_RFIN_GPIO 17
 #else
 #define MY_RFIN_GPIO -1 //XXX: GPIO15 is used by JTAG

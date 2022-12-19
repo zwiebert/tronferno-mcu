@@ -32,7 +32,7 @@ struct cfg_gpio {
   uint64_t gpio_in_use; ///< GPIO used by other modules like SPI
   int8_t out_rf, in_rf, in_setButton;
   bool out_rf_inv;
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
   /* enum mcu_pin_mode */ uint8_t gpio[CONFIG_GPIO_SIZE];
 #define gpioCfg_getPinMode(c,gpio_num) (mcu_pin_mode)((c)->gpio[(gpio_num)] & 0x3f)
 #define gpioCfg_getPinLevel(c,gpio_num) (mcu_pin_level)((c)->gpio[(gpio_num)] >> 6)

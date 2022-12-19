@@ -12,7 +12,7 @@
 
 config C;
 
-#ifdef USE_POSIX_TIME
+#ifdef CONFIG_APP_USE_POSIX_TIME
 double tz2offset(const char *tz) {
   double offset = 0.0;
 
@@ -26,7 +26,7 @@ double tz2offset(const char *tz) {
 }
 
 #endif
-#ifdef USE_POSIX_TIME
+#ifdef CONFIG_APP_USE_POSIX_TIME
 const char* config_read_tz(char *d, unsigned d_size) {
   return config_read_item((CB_TZ), d, d_size, MY_GEO_TZ);
 }
@@ -40,7 +40,7 @@ enum dst config_read_dst() {
   return config_read_item((CB_DST), MY_GEO_DST);
 }
 #endif
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
 enum nwConnection config_read_network_connection() {
   return static_cast<enum nwConnection>(config_read_item((CB_NETWORK_CONNECTION), MY_NETWORK_CONNECTION));
 }

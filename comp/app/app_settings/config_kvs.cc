@@ -58,7 +58,7 @@ bool config_item_modified(enum configAppItem item) {
   return true;
 }
 
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
 bool config_gpio_setPinMode(unsigned gpio_number, mcu_pin_mode ps, mcu_pin_level pl) {
   bool result = false;
   kvshT h;

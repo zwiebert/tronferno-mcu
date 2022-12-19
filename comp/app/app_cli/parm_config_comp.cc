@@ -10,13 +10,13 @@
 #include <config_kvs/config.h>
 #include <uout/cli_out.h>
 
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
 #include <app_mqtt/mqtt.h>
 #endif
-#ifdef USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
 #include <net_http_server/http_server_setup.h>
 #endif
-#ifdef USE_NTP
+#ifdef CONFIG_APP_USE_NTP
 #include <net/ntp_client_setup.h>
 #endif
 
@@ -136,7 +136,7 @@ bool process_parmConfig_comp(otok kt, const char *key, const char *val, const st
 #endif
 
     ////////////////////////////////////////////////////////////
-#ifdef USE_LAN
+#ifdef CONFIG_APP_USE_LAN
   case otok::k_lan_phy: {
     NODEFAULT();
     if (auto it = std::find_if(std::begin(cfg_args_lanPhy), std::end(cfg_args_lanPhy), [&val](const char *cs) {
@@ -161,19 +161,19 @@ bool process_parmConfig_comp(otok kt, const char *key, const char *val, const st
   }
     break;
 
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
   case otok::k_network: {
     int i;
     NODEFAULT();
     bool success = false;
     for (i = 0; i < nwLEN; ++i) {
-#ifndef USE_LAN
+#ifndef CONFIG_APP_USE_LAN
     if (i == nwLan)
     {
       continue;
     }
 #endif
-#ifndef USE_WLAN
+#ifndef CONFIG_APP_USE_WLAN
     if (i == nwWlanSta || i == nwWlanAp)
     {
       continue;
@@ -203,17 +203,17 @@ void parmConfig_reconfig_comp(u64 changed_mask) {
     rtc_setup();
   }
 
-#ifdef USE_LAN
+#ifdef CONFIG_APP_USE_LAN
   if (changed_mask & CMB_lan) {
     mainLoop_callFun(config_setup_ethernet);
   }
 #endif
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
   if (changed_mask & CBM_mqttClient) {
     mainLoop_callFun(config_setup_mqttAppClient);
   }
 #endif
-#ifdef USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
   if (changed_mask & CBM_httpServer) {
     mainLoop_callFun(config_setup_httpServer);
   }

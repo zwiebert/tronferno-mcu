@@ -10,7 +10,7 @@
 /// start timer ISR
 void app_timerISR_setup(void);
 
-#ifndef USE_ESP_GET_TIME
+#ifndef CONFIG_APP_USE_ESP_GET_TIME
 volatile uint32_t run_time_ts_, run_time_s_;
 #endif
 

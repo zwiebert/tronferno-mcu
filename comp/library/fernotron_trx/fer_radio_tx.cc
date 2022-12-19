@@ -22,7 +22,7 @@ struct ftrx_counter {
 };
 #define US2DCK(us) FER_TX_US_TO_TCK(us)
 
-#ifdef FER_TRANSMITTER
+#ifdef CONFIG_APP_USE_FER_TRANSMITTER
 /////////////////////////// transmitter /////////////////////////
 static struct ftrx_counter ftxCount;
 static bool output_level;   // output line

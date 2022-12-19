@@ -89,7 +89,7 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct, bool isSunPos) {
 
 #ifndef TEST_HOST
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, pct=%d\n", __func__, a, (int)g, (int)m, (int)pct));
-#ifdef USE_PAIRINGS
+#ifdef CONFIG_APP_USE_PAIRINGS
   if (!(a == 0 || a == fer_config.cu)) {
     Fer_GmSet gm;
     if (fer_alias_getControllerPairings(a, &gm))

@@ -189,7 +189,7 @@ bool fer_simPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_if_cmd cmd) {
   precond(g <= 7 && m <= 7);
 
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, cmd=%d\n", __func__, a, (int)g, (int)m, (int)cmd));
-#ifdef USE_PAIRINGS
+#ifdef CONFIG_APP_USE_PAIRINGS
   if (!(a == 0 || a == fer_config.cu)) {
     Fer_GmSet gm;
     if (fer_alias_getControllerPairings(a, &gm))

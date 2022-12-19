@@ -31,7 +31,7 @@
 #define E1 0 // experimental: 2=enable pulse on TX-GPIO to show interrupt frequency and duration, 1=toggle tx each call of interrupt (useless)
 
 //////////////////////////////////////////////////////////////////////////
-#ifndef USE_ESP_GET_TIME
+#ifndef CONFIG_APP_USE_ESP_GET_TIME
 volatile u32 run_time_s_, run_time_ts_;
 #endif
 
@@ -41,7 +41,7 @@ static void IRAM_ATTR intTimer_isr_work() {
   const bool isTxTick = (0 == (tick_count & ((FER_ISR_FMULT / FER_TX_FMULT) - 1)));
   const bool isRxTick = (0 == (tick_count & ((FER_ISR_FMULT / FER_RX_FMULT) - 1)));
 
-#ifdef FER_TRANSMITTER
+#ifdef CONFIG_APP_USE_FER_TRANSMITTER
 #if E1 == 1
   static bool e_tx_level;
   mcu_put_txPin (e_tx_level);
@@ -53,24 +53,24 @@ static void IRAM_ATTR intTimer_isr_work() {
     mcu_put_txPin(Fer_Trx_API::isr_get_tx_level());
 #endif
 #endif
-#ifdef FER_RECEIVER
+#ifdef CONFIG_APP_USE_FER_RECEIVER
   bool rx_pin_lvl = mcu_get_rxPin();
 #endif
 
-#ifdef FER_TRANSMITTER
+#ifdef CONFIG_APP_USE_FER_TRANSMITTER
   {
     if (isTxTick) {
       Fer_Trx_API::isr_handle_tx();
     }
   }
 #endif
-#ifdef FER_RECEIVER
+#ifdef CONFIG_APP_USE_FER_RECEIVER
   if (isRxTick) {
     Fer_Trx_API::isr_handle_rx(rx_pin_lvl);
   }
 #endif
 
-#ifndef USE_ESP_GET_TIME
+#ifndef CONFIG_APP_USE_ESP_GET_TIME
   {
     static u32 s10_ticks = TICK_FREQ_HZ / 10;
     static int8_t s_ticks = 10;

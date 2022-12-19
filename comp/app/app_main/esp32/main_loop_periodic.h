@@ -14,13 +14,13 @@
  */
 union lfPerFlags {
   struct {
-#ifdef USE_SEP
+#ifdef CONFIG_APP_USE_SEP
     bool lf_loopFerSep :1; ///< enable set-end-position loop
 #endif
-#ifdef USE_CUAS
+#ifdef CONFIG_APP_USE_CUAS
     bool lf_checkCuasTimeout : 1; ///< enable cu-auto-scan timeout
 #endif
-#ifdef USE_PAIRINGS
+#ifdef CONFIG_APP_USE_PAIRINGS
     bool lf_checkPairingTimeout :1; ///< enable check pairing timeout
 #endif
     bool lf_loopPosAutoSave :1;  ///< enable automatic shutter position save

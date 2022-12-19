@@ -19,6 +19,8 @@
 #define app_main APP_MAIN
 #endif
 
+#undef MDR_TIME
+
 //////////////////////////////////////////////////////
 #define ISO_BUILD_TIME (__DATE__ "T" __TIME__)
 
@@ -29,10 +31,9 @@
 
 #define NO_SPIFFS
 #define CONFIG_GPIO_SIZE 40
-#undef MDR_TIME
+
 
 #define CFG_NAMESPACE "Tronferno" // XXX: backward compatibility
-
 
 #include "esp_attr.h"
 
