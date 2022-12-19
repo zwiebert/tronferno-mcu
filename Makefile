@@ -28,7 +28,7 @@ port ?= /dev/ttyUSB1
 
 V ?= 0
 
-ifdef V
+ifneq "$(V)" "0"
 esp32_build_opts += -v
 endif
 
