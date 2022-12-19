@@ -34,6 +34,7 @@
 
 
 #include "sep_auth.hh"
+#include "sep_enable.hh"
 
 class Sep {
   struct Agm {

@@ -98,49 +98,6 @@ add_rm_controller(const char *key, Fer_GmSet mm, bool remove) {
   return result;
 }
 
-static bool
-add_rm_controller(const char *key, u8 g, u8 m, bool remove) {
-  bool success;
-  kvshT handle;
-  bool result = false;
-
-  D(ets_printf("%s: key=\"%s\", g=%d, m=%d, remove=%d\n", __func__, key, (int)g, (int)m, (int)remove));
-  precond(key && 1 <= g && g <= 7 && 1 <= m && m <= 7);
-
-  handle = kvs_open(CFG_NAMESPACE, kvs_READ_WRITE);
-  if (handle) {
-    Fer_GmSet gm;
-    if (!kvs_rw_blob(handle, key, &gm, sizeof gm, false)) {
-      gm.clear();
-    }
-
-    gm.putMember(g, m, !remove);
-
-    bool not_empty = !gm.isAllClear();
-
-    if (not_empty) {
-      success = kvs_rw_blob(handle, key, &gm, sizeof gm, true);
-    } else {
-      success = kvs_erase_key(handle, key);
-    }
-
-    if (success) {
-      result = true;
-      kvs_commit(handle);
-    }
-
-    kvs_close(handle);
-#ifdef NVS_BUG_WA
-    if (not_empty && result) {
-      fixController(key, &gm);
-    }
-#endif
-  }
-
-
-  return result;
-}
-
 #define a2key(a)     char key[] = CPAIR_KEY_PREFIX "10abcd"; itoa(a, &key[sizeof(CPAIR_KEY_PREFIX) - 1], 16);
 
 

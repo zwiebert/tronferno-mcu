@@ -1,4 +1,4 @@
-set(srcs esp32/gpinput.cc esp32/pin.cc)
+set(srcs esp32/pin.cc)
 
 idf_component_register(SRCS ${srcs} 
     INCLUDE_DIRS "./include" 

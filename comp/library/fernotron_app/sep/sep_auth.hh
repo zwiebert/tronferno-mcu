@@ -8,6 +8,7 @@
 #pragma once
 
 #include "auth_button.hh"
+#include "sep_enable.hh"
 
 class Sep_Auth {
 

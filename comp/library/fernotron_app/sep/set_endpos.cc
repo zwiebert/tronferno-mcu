@@ -9,21 +9,13 @@
 #include <utils_time/time_out_secs.hh>
 #include "txtio/inout.h"
 
+#include "sep.hh"
 
 #define D(x)
 
 void (*fer_sep_enable_disable_cb)(bool enable);
 
-static inline void fer_sep_ENABLE_cb() {
-  if (fer_sep_enable_disable_cb)
-    fer_sep_enable_disable_cb(true);
-}
-static inline void fer_sep_DISABLE_cb() {
-  if (fer_sep_enable_disable_cb)
-    fer_sep_enable_disable_cb(false);
-}
 
-#include "sep.hh"
 
 static Sep sep;
 
