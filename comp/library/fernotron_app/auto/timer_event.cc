@@ -54,7 +54,7 @@ static void fer_am_updateTimerEventTime(const time_t *now_time) {
 
 void fer_am_updateTimerEvent() {
   const time_t now_time = time(NULL);
-  const time_t now_time_next = now_time + 60; // XXX: make sure we don't get the current event again
+  const time_t now_time_next = now_time + 60; // make sure we don't get the current event again
   fer_am_get_next_timer_event(&next_event_te, &now_time_next);
   fer_am_updateTimerEventTime(&now_time);
 }

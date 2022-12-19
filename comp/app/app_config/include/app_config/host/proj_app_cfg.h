@@ -45,8 +45,6 @@
 ///////////////////////////////////////////////
 
 #define IRAM_ATTR
-#undef CONFIG_BLOB
-//#undef CONFIG_DICT
 #undef MDR_TIME
 
 #define NO_SPIFFS

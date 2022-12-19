@@ -120,7 +120,7 @@ bool fer_trx_send_empty_timer(const Fer_MsgRtc *msg) {
   fer_sbT fsb = fer_construct_fsb(msg->a, msg->g, msg->m, fer_cmd_Program);
 
   Fer_TimerData tde;
-  return fer_fill_timer_buf(msg->a, msg->rtc, &tde) && fer_send_msg(&fsb, MSG_TYPE_TIMER, 0); // XXX: wasteful
+  return fer_fill_timer_buf(msg->a, msg->rtc, &tde) && fer_send_msg(&fsb, MSG_TYPE_TIMER, 0);
 }
 
 

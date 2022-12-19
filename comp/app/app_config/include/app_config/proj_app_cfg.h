@@ -5,12 +5,7 @@
 
 #pragma once
 
-#define CONFIG_BLOB
-#define CONFIG_DICT
-
 #define MDR_TIME
-
-//#define USE_PCT_ARRAY
 
 #include <stdint.h>
 typedef uint8_t u8;
@@ -21,9 +16,6 @@ typedef uint32_t u32;
 typedef int32_t i32;
 typedef uint64_t u64;
 typedef int64_t i64;
-
-
-//#include "utils_misc/int_types.h"
 
 #ifndef CONFIG_LOG_DEFAULT_LEVEL
 #define CONFIG_LOG_DEFAULT_LEVEL 3

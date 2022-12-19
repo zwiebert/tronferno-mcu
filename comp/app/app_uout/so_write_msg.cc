@@ -330,22 +330,12 @@ void soMsg_pos_print_mmp(const struct TargetDesc &td, const so_arg_mmp_t a) {
     }
   }
   if (so_jco) {
-#ifdef USE_PCT_ARRAY
-    char buf[] = "pct255";
-    itoa(a.p, buf+3, 10);
-    td.sj().add_array(buf);
-    for (auto it = a.mm->begin(1); it; ++it) {
-      td.sj().add_value_d(it.getG() * 10 + it.getM());
-    }
-    td.sj().close_array();
-#else
     for (auto it = a.mm->begin(1); it; ++it) {
       char buf[] = "00";
       buf[0] += it.getG();
       buf[1] += it.getM();
       td.sj().add_key_value_pair_d(buf, a.p);
     }
-#endif
   }
 
 }
@@ -353,19 +343,15 @@ void soMsg_pos_print_mmp(const struct TargetDesc &td, const so_arg_mmp_t a) {
 void soMsg_pos_begin(const struct TargetDesc &td) {
   if (so_cco)
     td.write("U:position:start;\n");
-#ifndef USE_PCT_ARRAY
   if (so_jco)
     td.sj().add_object("pct");
-#endif
 }
 
 void soMsg_pos_end(const struct TargetDesc &td) {
   if (so_cco)
     td.write("U:position:end;\n");
-#ifndef USE_PCT_ARRAY
   if (so_jco)
     td.sj().close_object();
-#endif
 }
 
 void soMsg_pair_begin(const struct TargetDesc &td) {
