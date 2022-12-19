@@ -89,26 +89,6 @@ static int ws_write(void *req, const char *s, ssize_t s_len = -1, bool final = t
   return len;
 }
 
-/*
- * async send function, which we put into the httpd work queue
- */
-static void ws_async_send(void *arg)
-{
-  ESP_LOGI(TAG, "ws_async_send");
-    static const char * data = "Async data";
-    struct async_resp_arg *resp_arg = static_cast<struct async_resp_arg *>(arg);
-    httpd_handle_t hd = resp_arg->hd;
-    int fd = resp_arg->fd;
-    httpd_ws_frame_t ws_pkt;
-    memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
-    ws_pkt.payload = (uint8_t*)data;
-    ws_pkt.len = strlen(data);
-    ws_pkt.type = HTTPD_WS_TYPE_TEXT;
-    ws_pkt.final = true;
-
-    httpd_ws_send_frame_async(hd, fd, &ws_pkt);
-    free(resp_arg);
-}
 #endif
 /////////////////////////////////////////////////////////////////////////
 int ht_write(void *req, const char *s, size_t len) {

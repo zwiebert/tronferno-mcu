@@ -43,9 +43,9 @@ constexpr u64 CBM_cc1101 = BIT64(CB_CC1101_CONFIG) | BIT64(CB_RF_TRX) | BIT64(CB
 constexpr u64 CBM_rf_repeater = BIT64(CB_RF_REPEATER);
 
 
-class AppSettings: public Settings<configAppItem, CBA_size - CB_size, CB_size> {
+class AppSettings: public Settings<configAppItem, (i8)CBA_size - (i8)CB_size, CB_size> {
 public:
-  using Base = Settings<configAppItem, CBA_size - CB_size, CB_size>;
+  using Base = Settings<configAppItem, (i8)CBA_size - (i8)CB_size, CB_size>;
   using Item = configAppItem;
   using storeFunT = void (*)(configAppItem item, const char *val);
 public:

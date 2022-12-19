@@ -20,7 +20,9 @@
 #include "esp_event.h"
 #include "driver/gpio.h"
 #include <hal/gpio_types.h>
+
 #include "string.h"
+#include <atomic>
 
 #define printf ets_uart_printf
 
@@ -39,7 +41,7 @@ static struct cfg_gpio *gpio_cfg;
 uint64_t inputGpioUsable;
 uint64_t outputGpioUsable;
 static u64 pins_in_use, pins_not_cli;
-volatile uint64_t pin_int_mask;
+static volatile std::atomic<std::uint64_t> pin_int_mask;
 
 #define gpioUsableHigh
 

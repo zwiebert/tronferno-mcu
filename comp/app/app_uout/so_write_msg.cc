@@ -53,10 +53,10 @@ void soMsg_mcu_run_time(const struct TargetDesc &td) {
 
 }
 #ifdef MCU_ESP32
-#include "esp_ota_ops.h"
+#include "esp_app_desc.h"
 void soMsg_mcu_version(const struct TargetDesc &td) {
   char buf[64];
-  const esp_app_desc_t *ad = esp_ota_get_app_description();
+  const esp_app_desc_t *ad = esp_app_get_description();
 
   td.so().print("chip", MCU_TYPE);
   td.so().print("firmware", (csu_copy_cat(buf, ad->project_name, "-", ad->version), buf));

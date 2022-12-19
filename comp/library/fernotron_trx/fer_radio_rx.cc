@@ -28,16 +28,14 @@ enum fer_error {
 
 #endif
 
-static void IRAM_ATTR db_toggleTxPin() {
 #ifndef DISTRIBUTION
+void IRAM_ATTR db_toggleTxPin() {
   static bool lvl;
   lvl = !lvl;
   void ftrx_testSetOutputLevel(bool level);
   ftrx_testSetOutputLevel(lvl);
-#endif
-
 }
-
+#endif
 
 #ifdef FTRX_TEST_LOOP_BACK
 bool ftrx_testLoopBack_getRxPin();
@@ -145,7 +143,7 @@ static void IRAM_ATTR fer_rx_recv_decodeByte(u8 *dst) {
 static bool  IRAM_ATTR fer_rx_is_stopBit(unsigned len, unsigned nedge) {
   return ((US2TCK(FER_STP_WIDTH_MIN_US) <= len && len <= US2TCK(FER_STP_WIDTH_MAX_US)) && (US2TCK(FER_STP_NEDGE_MIN_US) <= nedge && nedge <= US2TCK(FER_STP_NEDGE_MAX_US)));
 }
-
+#if 0
 static bool  IRAM_ATTR fer_rx_is_endCmdBit(unsigned len, unsigned nedge) {
   return ((US2TCK(FER_STP_WIDTH_MIN_US) <= len) && (US2TCK(FER_STP_NEDGE_MIN_US) <= nedge && nedge <= US2TCK(FER_STP_NEDGE_MAX_US)));
 }
@@ -153,7 +151,7 @@ static bool  IRAM_ATTR fer_rx_is_endCmdBit(unsigned len, unsigned nedge) {
 static bool  IRAM_ATTR fer_rx_is_pre_bit(unsigned len, unsigned nedge) {
   return ((US2TCK(FER_PRE_WIDTH_MIN_US) <= len && len <= US2TCK(FER_PRE_WIDTH_MAX_US)) && (US2TCK(FER_PRE_NEDGE_MIN_US) <= nedge && nedge <= US2TCK(FER_PRE_NEDGE_MAX_US)));
 }
-
+#endif
 static bool  IRAM_ATTR fer_rx_is_dataBitOne(unsigned len, unsigned nedge) {
   return len > (2 * nedge);
 }

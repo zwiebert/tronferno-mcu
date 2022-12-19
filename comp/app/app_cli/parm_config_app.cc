@@ -74,18 +74,6 @@ static bool ids_areValid(const char *ids) {
   return true;
 }
 
-static int ids_count(const char *ids) {
-  const int len = strlen(ids);
-
-  if (len == 0)
-    return 0;
-  if (len % 6)
-    return -1;
-
-  const int count = len / 6;
-  return count;
-}
-
 bool process_parmConfig_get_app(otok kt, const char *val, const struct TargetDesc &td) {
   switch (kt) {
 

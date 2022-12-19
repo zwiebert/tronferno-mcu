@@ -15,18 +15,11 @@
 #include "fernotron_trx/isr_timer_config.h"
 #include <fernotron_trx/fer_trx_api.hh>
 #include "txtio/inout.h"
-
-#include "driver/timer.h"
-#include "esp_sleep.h"
-#include "driver/gptimer.h"
-#include "esp_types.h"
-#include "esp_intr_alloc.h"
-#include "hal/timer_types.h"
 #include "utils_misc/int_types.h"
-#include "sdkconfig.h"
-#include "soc/timer_group_struct.h"
-#include <esp32/rom/ets_sys.h>
 
+#include "sdkconfig.h"
+
+#include "driver/gptimer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"

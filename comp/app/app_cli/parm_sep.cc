@@ -29,8 +29,6 @@ const char cli_help_parmSep[] = "'sep' sets roller shutter end positions\n\n"
     "request-auth=(button)\n"
     "auth-key=N\n"
     "enable=(on|off)\n"
-    "timeout=N\n"
-
 ;
 
 #define is_kt(k) (kt == otok:: k)
@@ -41,20 +39,15 @@ typedef bool (*move_funT)(u32 auth_key);
 
 int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
-  int i;
   bool enable = false;
-  bool disable = false;
   bool request_auth = false;
   bool request_unauth = false;
   u32 auth_key = 0;
   move_funT move_fun = 0;
-  bool move_stop = false;
-
 
   so_object<void> cfgObj(&soMsg_sep_obj_begin, &soMsg_sep_obj_end, td);
 
   u32 addr = fer_config.cu;
-  int timeout = fer_sep_TIMEOUT;
   u8 g = 0, m = 0;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
@@ -87,15 +80,6 @@ int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
           fer_sep_disable();
         } else if (is_val("on")) {
           enable = true;
-        }
-      }
-        break;
-
-      case otok::k_timeout: {
-        if (is_val("?")) {
-
-        } else {
-          timeout = atoi(val);
         }
       }
         break;
