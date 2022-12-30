@@ -24,6 +24,75 @@ static int t2m(int hour, int minute) {
   return hour * 60 + minute;
 }
 
+static void test_timer_event5() {
+  fer_stor_timerData_erase(0, 0);
+  Fer_TimerData t1;
+  t1.putDaily("07001801");
+  fer_stor_timerData_save(&t1, 1, 1);
+  t1.putDaily("07001802");
+  fer_stor_timerData_save(&t1, 1, 2);
+  t1.putDaily("07001803");
+  fer_stor_timerData_save(&t1, 1, 3);
+
+  Fer_TimerEvent tevt;
+
+  {
+    struct tm now_tm = { .tm_sec = 0, .tm_min = 0, .tm_hour = 6, .tm_mday = 22, .tm_mon = 0, // January
+        .tm_year = 120, .tm_wday = 3, };
+    time_t now_time = mktime(&now_tm);
+    tevt.fer_am_updateTimerEvent(now_time);
+
+    TEST_ASSERT_FALSE(tevt.fer_am_loop(now_time));
+  }
+
+  {
+    struct tm now_tm = { .tm_sec = 0, .tm_min = 0, .tm_hour = 7, .tm_mday = 22, .tm_mon = 0, // January
+        .tm_year = 120, .tm_wday = 3, };
+    time_t now_time = mktime(&now_tm);
+
+    TEST_ASSERT_TRUE(tevt.fer_am_loop(now_time));
+    tevt.fer_am_updateTimerEvent(now_time);
+  }
+
+  {
+    struct tm now_tm = { .tm_sec = 0, .tm_min = 1, .tm_hour = 18, .tm_mday = 22, .tm_mon = 0, // January
+        .tm_year = 120, .tm_wday = 3, };
+    time_t now_time = mktime(&now_tm);
+
+    TEST_ASSERT_TRUE(tevt.fer_am_loop(now_time));
+    tevt.fer_am_updateTimerEvent(now_time);
+
+  }
+
+  {
+    struct tm now_tm = { .tm_sec = 0, .tm_min = 2, .tm_hour = 18, .tm_mday = 22, .tm_mon = 0, // January
+        .tm_year = 120, .tm_wday = 3, };
+    time_t now_time = mktime(&now_tm);
+
+    TEST_ASSERT_TRUE(tevt.fer_am_loop(now_time));
+    tevt.fer_am_updateTimerEvent(now_time);
+
+  }
+  {
+    struct tm now_tm = { .tm_sec = 0, .tm_min = 3, .tm_hour = 18, .tm_mday = 22, .tm_mon = 0, // January
+        .tm_year = 120, .tm_wday = 3, };
+    time_t now_time = mktime(&now_tm);
+
+    TEST_ASSERT_TRUE(tevt.fer_am_loop(now_time));
+    tevt.fer_am_updateTimerEvent(now_time);
+
+  }
+  {
+    struct tm now_tm = { .tm_sec = 0, .tm_min = 4, .tm_hour = 18, .tm_mday = 22, .tm_mon = 0, // January
+        .tm_year = 120, .tm_wday = 3, };
+    time_t now_time = mktime(&now_tm);
+
+    TEST_ASSERT_FALSE(tevt.fer_am_loop(now_time));
+    tevt.fer_am_updateTimerEvent(now_time);
+
+  }
+}
+
 static void test_timer_event4() {
   fer_stor_timerData_erase(0,0);
   Fer_TimerData t1;
@@ -46,13 +115,12 @@ static void test_timer_event4() {
 
   time_t now_time = mktime(&now_tm);
   Fer_TimerEvent tevt;
-  fer_am_get_next_timer_event(&tevt, &now_time);
+  tevt.fer_am_get_next_timer_event(&now_time);
 
-  TEST_ASSERT_EQUAL(t2m(20,54), tevt.next_event); // astro time
+  TEST_ASSERT_EQUAL(t2m(20,54), tevt.te_getEventMinute()); // astro time
   Fer_GmSet test1;
   test1[1] = fer_usedMemberMask[1]&0x02;
-  TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
-
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *tevt.te_getMaskDown(), 8);
 }
 
 
@@ -78,12 +146,12 @@ static void test_timer_event3() {
 
   time_t now_time = mktime(&now_tm);
   Fer_TimerEvent tevt;
-  fer_am_get_next_timer_event(&tevt, &now_time);
+  tevt.fer_am_get_next_timer_event(&now_time);
 
-  TEST_ASSERT_EQUAL(t2m(6,54), tevt.next_event);
+  TEST_ASSERT_EQUAL(t2m(6,54), tevt.te_getEventMinute());
   Fer_GmSet test1;
   test1[1] = fer_usedMemberMask[1]&0x02;
-  TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskUp(&tevt), 8);
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *tevt.te_getMaskUp(), 8);
 
 }
 
@@ -110,12 +178,12 @@ static void test_timer_event2() {
 
   time_t now_time = mktime(&now_tm);
   Fer_TimerEvent tevt;
-  fer_am_get_next_timer_event(&tevt, &now_time);
+  tevt.fer_am_get_next_timer_event(&now_time);
 
-  TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
+  TEST_ASSERT_EQUAL(t2m(21,23), tevt.te_getEventMinute());
   Fer_GmSet test1;
   test1[1] = fer_usedMemberMask[1]&0xfc;
-  TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *te_getMaskDown(&tevt), 8);
+  TEST_ASSERT_EQUAL_HEX8_ARRAY(test1, *tevt.te_getMaskDown(), 8);
 
   now_tm = tm {
        .tm_sec = 0,
@@ -129,8 +197,8 @@ static void test_timer_event2() {
 
   now_time = mktime(&now_tm);
 
-  fer_am_get_next_timer_event(&tevt, &now_time);
-  TEST_ASSERT_EQUAL(t2m(23,45), tevt.next_event);
+  tevt.fer_am_get_next_timer_event(&now_time);
+  TEST_ASSERT_EQUAL(t2m(23,45), tevt.te_getEventMinute());
 
 }
 
@@ -196,9 +264,9 @@ static void test_timer_event() {
   time_t now_time = mktime(&now_tm);
 
   static Fer_TimerEvent tevt;
-  fer_am_get_next_timer_event(&tevt, &now_time);
+  tevt.fer_am_get_next_timer_event(&now_time);
 
-  TEST_ASSERT_EQUAL(t2m(21,23), tevt.next_event);
+  TEST_ASSERT_EQUAL(t2m(21,23), tevt.te_getEventMinute());
 
   now_tm = tm {
        .tm_sec = 0,
@@ -212,8 +280,8 @@ static void test_timer_event() {
 
   now_time = mktime(&now_tm);
 
-  fer_am_get_next_timer_event(&tevt, &now_time);;
-  TEST_ASSERT_EQUAL(t2m(23,45), tevt.next_event);
+  tevt.fer_am_get_next_timer_event(&now_time);;
+  TEST_ASSERT_EQUAL(t2m(23,45), tevt.te_getEventMinute());
 }
 
 
@@ -359,6 +427,7 @@ TEST_CASE("timer next event", "[fernotron/auto]") {
   test_timer_event2();
   test_timer_event3();
   test_timer_event4();
+  test_timer_event5();
 }
 
 #ifdef TEST_HOST

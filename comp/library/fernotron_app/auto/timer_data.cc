@@ -16,7 +16,9 @@
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 static inline void fer_au_timer_data_change_cb() {
-  mainLoop_callFun(fer_am_updateTimerEvent);
+  mainLoop_callFun([]() {
+    fer_am_updateTimerEvent(time(NULL));
+  });
 }
 
 #ifdef CONFIG_APP_USE_TIMER_DATA_KVS

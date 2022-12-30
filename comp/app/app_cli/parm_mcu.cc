@@ -134,14 +134,16 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 
       Fer_TimerEvent tevt;
       time_t now_time = time(NULL);
-      fer_am_get_next_timer_event(&tevt, &now_time);
-      io_putd(tevt.next_event), io_putlf();
-      for (k = 0; k < 2; ++k) {
-        for (i = 0; i < 8; ++i) {
-          io_print_hex_8(tevt.member_mask[k][i], true);
-        }
-        io_putlf();
+      tevt.fer_am_get_next_timer_event(&now_time);
+      io_putd(tevt.te_getEventMinute()), io_putlf();
+      for (i = 0; i < 8; ++i) {
+        io_print_hex_8((*tevt.te_getMaskUp())[i], true);
       }
+      io_putlf();
+      for (i = 0; i < 8; ++i) {
+        io_print_hex_8((*tevt.te_getMaskDown())[i], true);
+      }
+      io_putlf();
     }
       break;
 #ifdef CONFIG_APP_USE_PAIRINGS

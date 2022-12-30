@@ -2,15 +2,16 @@ TODO
 ====
 
 
-* TODO: Update stored automatic data with received data from the 2411
-* TODO: SET function progress bar: terminate it when receiving an RF command
+* TODO: Write received auto data from 2411 (via RF) to storage in MCU
+* TODO: Terminate SET progress bar in web-app when an RF command (e.g. STOP) is received
 * FIXME: newly added groups/receivers will not give positiom/pct feedback until MCU restart
-* FIXME: astro predictions lags one day behind sometimes (april-5)
+* FIXME: astro predictions lags one day behind sometimes (e.g. april-5)
 * FIXME: New WLAN-only-ESP32 starts with default network=lan (maybe only in the developer version)
 * XXX: E07-MD1101D V2.0 (with long antenna) needs different AGC (05-00-92) than Neuftech CC1101 (07-00-90)
 * TODO: Separate web-interface between admin and users
 * TODO: Restart webserver after disconnect/reconnect ethernet
 * TODO: Check reload after OTA in distribution
+* FIXME: ISO time in auto tab of web-app using wrong time zonen (UTC?)
 
 
 DONE
@@ -24,6 +25,10 @@ DONE
 * DONE: CRLF
 * FIXED: 2021-03: Our Timer-Interupt is blocked every 100ms if WLAN is enabled (Ethernet is ok)
 * DONE: timer flag i should report state after (not before) saving timer data (k flag)
+* FIXED: sometimes astro movements are not registered (may depend on ntp sync)
+ntpd synced: 16:36:24 (FHEM Server time)
+astro movement registered: 21, 23, 25 / -2, +2, 0 / 16:34, 16:38, 16:36 (31 / 16:51) (11 ... 15 /16:36)
+astro movement ignored: 22, 24,/ -1, +1 / 16:35, 16:37
 
 
 

@@ -44,8 +44,10 @@ void tmr_checkNetwork_start() {
 
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb([](struct timeval *tv) {
-    ets_printf("ntp synced: %ld\n", time(0));
-    mainLoop_callFun(fer_am_updateTimerEvent);
+    ets_printf("ntp synced: %llu\n", (long unsigned long) time(NULL));
+    mainLoop_callFun([]() {
+      fer_am_updateTimerEvent(time(NULL));
+    });
   });
   config_setup_ntpClient();
 }
@@ -108,7 +110,7 @@ void mcu_init() {
 #else
 #error
 #endif
-  fer_am_updateTimerEvent();
+  fer_am_updateTimerEvent(time(NULL));
   mainLoop_callFun(fer_am_loop, 1000, true);
 
 #ifdef CONFIG_APP_USE_GPIO_PINS
