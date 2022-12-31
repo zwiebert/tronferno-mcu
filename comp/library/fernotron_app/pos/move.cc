@@ -41,8 +41,6 @@
 
 
 static bool fer_pos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts);
-static void fer_pos_mvCheck_mvi(struct Fer_Move *Fer_Move, bool publish);
-static int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts, bool publish);
 
 struct shutter_timings st_def = { DEF_MV_UP_10, DEF_MV_DOWN_10, DEF_MV_SUN_DOWN_10 };
 
@@ -73,48 +71,44 @@ u8 fer_pos_mGetSunPct(u8 g, u8 m) {
 }
 
 // check if a moving shutter has reached its end position
-static int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts, bool publish) {
-  u8 pct;
-  int stopped_count = 0;
-
-  u16 duration_ts = now_ts - Fer_Move->start_time;
-
-  for (Fer_Gm_Counter it; it; ++it) {
-    const gT g = it.getG();
-    const mT m = it.getM();
-    if (!Fer_Move->mask.getMember(g, m))
-      continue;
-
-    pct = fer_simPos_getPct_afterDuration(g, m, direction_isUp(Fer_Move->dir), duration_ts);
-
-    if (direction_isEndPos(Fer_Move->dir, pct) // end-position reached
-    || (Fer_Move->dir == DIRECTION_SUN_DOWN && fer_pos_shouldStop_sunDown(g, m, duration_ts)) // sun-position reached
-        ) {
-      fer_pos_stop_mv(Fer_Move, g, m, pct);
-      ++stopped_count;
-
-    } else if (publish) {
-      uoApp_publish_pctChange_gmp(so_arg_gmp_t { g, m, pct });
-
-    }
-  }
-  return stopped_count;
-}
-
-
-static void fer_pos_mvCheck_mvi(struct Fer_Move *Fer_Move, bool publish) {
-  if (fer_pos_mvCheck_mv(Fer_Move, get_now_time_ts(), publish))
-    if (Fer_Move->mask.isAllClear())
-      fer_mv_free(Fer_Move);
-}
-
-
 void fer_pos_checkStatus_whileMoving() {
+  u32 now_ts = get_now_time_ts();
   static unsigned last_call_ts;
   bool publish = periodic_ts(10, &last_call_ts);
 
+  so_arg_gmp_t pcts[50];
+  int pcts_count = 0;
+
   for (struct Fer_Move *Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {
-    fer_pos_mvCheck_mvi(Fer_Move, publish);
+    u16 duration_ts = now_ts - Fer_Move->start_time;
+    int stopped_count = 0;
+    for (Fer_Gm_Counter it; it; ++it) {
+      const gT g = it.getG();
+      const mT m = it.getM();
+      if (!Fer_Move->mask.getMember(g, m))
+        continue;
+
+      u8 pct = fer_simPos_getPct_afterDuration(g, m, direction_isUp(Fer_Move->dir), duration_ts);
+
+      if (direction_isEndPos(Fer_Move->dir, pct) // end-position reached
+      || (Fer_Move->dir == DIRECTION_SUN_DOWN && fer_pos_shouldStop_sunDown(g, m, duration_ts)) // sun-position reached
+          ) {
+        fer_pos_stop_mv(Fer_Move, g, m, pct);
+        ++stopped_count;
+
+      } else if (publish) {
+        pcts[pcts_count++] = so_arg_gmp_t { .g = g, .m = m, .p = pct };
+      }
+    }
+
+    if (stopped_count && Fer_Move->mask.isAllClear()) {
+      fer_mv_free(Fer_Move); // freeing is OK here, because of how its implemented. fer_mv_getNext(Fer_Move) in loop head will still work fine
+      continue;
+    }
+  }
+
+  if (pcts_count) {
+    uoApp_publish_pctChange_gmp(pcts, pcts_count);
   }
 }
 
