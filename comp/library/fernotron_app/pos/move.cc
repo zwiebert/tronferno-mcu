@@ -40,6 +40,9 @@
 #endif
 
 
+static bool fer_pos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts);
+static void fer_pos_mvCheck_mvi(struct Fer_Move *Fer_Move, bool publish);
+static int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts, bool publish);
 
 struct shutter_timings st_def = { DEF_MV_UP_10, DEF_MV_DOWN_10, DEF_MV_SUN_DOWN_10 };
 
@@ -70,11 +73,9 @@ u8 fer_pos_mGetSunPct(u8 g, u8 m) {
 }
 
 // check if a moving shutter has reached its end position
-int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts) {
+static int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts, bool publish) {
   u8 pct;
   int stopped_count = 0;
-  static unsigned last_call_ts;
-  bool publish = periodic_ts(10, &last_call_ts);
 
   u16 duration_ts = now_ts - Fer_Move->start_time;
 
@@ -101,16 +102,19 @@ int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts) {
 }
 
 
-void fer_pos_mvCheck_mvi(struct Fer_Move *Fer_Move) {
-  if (fer_pos_mvCheck_mv(Fer_Move, get_now_time_ts()))
+static void fer_pos_mvCheck_mvi(struct Fer_Move *Fer_Move, bool publish) {
+  if (fer_pos_mvCheck_mv(Fer_Move, get_now_time_ts(), publish))
     if (Fer_Move->mask.isAllClear())
       fer_mv_free(Fer_Move);
 }
 
 
 void fer_pos_checkStatus_whileMoving() {
+  static unsigned last_call_ts;
+  bool publish = periodic_ts(10, &last_call_ts);
+
   for (struct Fer_Move *Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {
-    fer_pos_mvCheck_mvi(Fer_Move);
+    fer_pos_mvCheck_mvi(Fer_Move, publish);
   }
 }
 
@@ -121,7 +125,7 @@ void fer_pos_checkStatus_whileMoving_periodic(int interval_ts) {
   }
 }
 
-bool fer_pos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts) {
+static bool fer_pos_shouldStop_sunDown(u8 g, u8 m, u16 duration_ts) {
   struct shutter_timings st;
   fer_pos_mGetSt(&st, g, m);
 
