@@ -73,6 +73,8 @@ u8 fer_pos_mGetSunPct(u8 g, u8 m) {
 int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts) {
   u8 pct;
   int stopped_count = 0;
+  static unsigned last_call_ts;
+  bool publish = periodic_ts(10, &last_call_ts);
 
   u16 duration_ts = now_ts - Fer_Move->start_time;
 
@@ -89,11 +91,10 @@ int fer_pos_mvCheck_mv(struct Fer_Move *Fer_Move, unsigned now_ts) {
         ) {
       fer_pos_stop_mv(Fer_Move, g, m, pct);
       ++stopped_count;
-    } else {
-      static unsigned last_call_ts;
-      if (periodic_ts(10, &last_call_ts)) {
-        uoApp_publish_pctChange_gmp(so_arg_gmp_t { g, m, pct });
-      }
+
+    } else if (publish) {
+      uoApp_publish_pctChange_gmp(so_arg_gmp_t { g, m, pct });
+
     }
   }
   return stopped_count;

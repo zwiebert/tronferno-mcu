@@ -29,6 +29,8 @@ DONE
 ntpd synced: 16:36:24 (FHEM Server time)
 astro movement registered: 21, 23, 25 / -2, +2, 0 / 16:34, 16:38, 16:36 (31 / 16:51) (11 ... 15 /16:36)
 astro movement ignored: 22, 24,/ -1, +1 / 16:35, 16:37
+* FIXED: when moving multiple shutters by automatic, only the first one genereates dynamic movement events (MQTT/Websocket/Telnet). Only after movement is done, the position is reportet for all shutters.
+
 
 
 
