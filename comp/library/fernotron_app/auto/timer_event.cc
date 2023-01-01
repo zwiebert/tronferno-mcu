@@ -35,8 +35,7 @@ void Fer_TimerEvent::fer_am_updateTimerEvent(const time_t &now_time) {
   fer_am_updateTimerEventTime(now_time);
 }
 
-// new loop (ESP32)
-bool Fer_TimerEvent::fer_am_loop(const time_t &now_time) {
+bool Fer_TimerEvent::te_isEventNow(const time_t &now_time) {
 
   if (te_isDisabled()) {
     return false; // there is no more event today

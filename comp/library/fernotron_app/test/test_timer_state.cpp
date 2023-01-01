@@ -42,7 +42,7 @@ static void test_timer_event5() {
     time_t now_time = mktime(&now_tm);
     tevt.fer_am_updateTimerEvent(now_time);
 
-    TEST_ASSERT_FALSE(tevt.fer_am_loop(now_time));
+    TEST_ASSERT_FALSE(tevt.te_isEventNow(now_time));
   }
 
   {
@@ -50,7 +50,7 @@ static void test_timer_event5() {
         .tm_year = 120, .tm_wday = 3, };
     time_t now_time = mktime(&now_tm);
 
-    TEST_ASSERT_TRUE(tevt.fer_am_loop(now_time));
+    TEST_ASSERT_TRUE(tevt.te_isEventNow(now_time));
     tevt.fer_am_updateTimerEvent(now_time);
   }
 
@@ -59,7 +59,7 @@ static void test_timer_event5() {
         .tm_year = 120, .tm_wday = 3, };
     time_t now_time = mktime(&now_tm);
 
-    TEST_ASSERT_TRUE(tevt.fer_am_loop(now_time));
+    TEST_ASSERT_TRUE(tevt.te_isEventNow(now_time));
     tevt.fer_am_updateTimerEvent(now_time);
 
   }
@@ -69,7 +69,7 @@ static void test_timer_event5() {
         .tm_year = 120, .tm_wday = 3, };
     time_t now_time = mktime(&now_tm);
 
-    TEST_ASSERT_TRUE(tevt.fer_am_loop(now_time));
+    TEST_ASSERT_TRUE(tevt.te_isEventNow(now_time));
     tevt.fer_am_updateTimerEvent(now_time);
 
   }
@@ -78,7 +78,7 @@ static void test_timer_event5() {
         .tm_year = 120, .tm_wday = 3, };
     time_t now_time = mktime(&now_tm);
 
-    TEST_ASSERT_TRUE(tevt.fer_am_loop(now_time));
+    TEST_ASSERT_TRUE(tevt.te_isEventNow(now_time));
     tevt.fer_am_updateTimerEvent(now_time);
 
   }
@@ -87,7 +87,7 @@ static void test_timer_event5() {
         .tm_year = 120, .tm_wday = 3, };
     time_t now_time = mktime(&now_tm);
 
-    TEST_ASSERT_FALSE(tevt.fer_am_loop(now_time));
+    TEST_ASSERT_FALSE(tevt.te_isEventNow(now_time));
     tevt.fer_am_updateTimerEvent(now_time);
 
   }

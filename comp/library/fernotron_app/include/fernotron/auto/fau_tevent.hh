@@ -45,8 +45,10 @@ public:
   void fer_am_updateTimerEvent(const time_t &now);
 
   /**
-   * \brief     Do work.
+   * \brief     Test if there is an event NOW.
    * \note      Call it periodically from main loop
+   * \param now Use this time to compare the next event too. If the next event is older than NOW, call \ref fer_am_updateTimerEvent and return false
+   * \return    true if there is an event this minute
    */
-  bool fer_am_loop(const time_t &now);
+  bool te_isEventNow(const time_t &now);
 };
