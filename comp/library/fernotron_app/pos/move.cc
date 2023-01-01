@@ -24,7 +24,7 @@
 #include "utils_time/periodic.h"
 #include "utils_time/run_time.h"
 
-#include "move.h"
+#include "move.hh"
 
 #ifdef DISTRIBUTION
 #define D(x)

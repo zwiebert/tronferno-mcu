@@ -20,7 +20,7 @@
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
 
-#include "move.h"
+#include "move.hh"
 #include "move_buf.h"
 
 void fer_pos_stop_mv(struct Fer_Move *Fer_Move, u8 g, u8 m, u8 pct) {

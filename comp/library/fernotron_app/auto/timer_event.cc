@@ -1,6 +1,6 @@
 #include "app_config/proj_app_cfg.h"
 
-#include "fernotron/auto/fau_tevent.h"
+#include <fernotron/auto/fau_tevent.hh>
 #include "fernotron/auto/fau_tdata_store.h"
 #include "fernotron_trx/astro.h"
 #include "fernotron/fer_main.h"
@@ -15,8 +15,6 @@
 
 #define MAX_GRP 7
 #define MAX_MBR 7
-
-Fer_TimerEvent next_event_te;
 
 static time_t fer_au_timeFromMints(const time_t *now_time, int mints) {
   struct tm *tm = localtime(now_time);
@@ -182,16 +180,3 @@ bool Fer_TimerEvent::fer_am_get_next_timer_event(const time_t *now_time) {
 
   return true;
 }
-
-
-
-
-void fer_am_loop(void) {
-  const time_t now_time = time(NULL);
-  if (next_event_te.fer_am_loop(now_time)) {
-    fer_simPos_registerMovingShutters(next_event_te.te_getMaskUp(), fer_if_cmd_UP);
-    fer_simPos_registerMovingShutters(next_event_te.te_getMaskDown(), fer_if_cmd_DOWN);
-    next_event_te.fer_am_updateTimerEvent(now_time);
-  }
-}
-

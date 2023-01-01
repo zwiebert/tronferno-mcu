@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "move.h"
+#include "move.hh"
 #include "move_buf.h"
 
 #include "stdbool.h"

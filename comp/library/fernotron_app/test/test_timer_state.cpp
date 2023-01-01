@@ -9,7 +9,7 @@
 #include <test_runner.h>
 #endif
 #include "fernotron/auto/fau_tdata_store.h"
-#include "fernotron/auto/fau_tevent.h"
+#include "../include/fernotron/auto/fau_tevent.hh"
 #include "fernotron_trx/astro.h"
 #include <time.h>
 #include <fernotron/fer_pct.h>

@@ -8,7 +8,7 @@
 #include "stdbool.h"
 #include <stdint.h>
 #include "fernotron/fer_pct.h"
-#include "move.h"
+#include "move.hh"
 
 enum direction {
   DIRECTION_NONE = 0, DIRECTION_UP = 0x01, DIRECTION_DOWN = 0x02, DIRECTION_SUN_UP = 0x05, DIRECTION_SUN_DOWN = 0x06, DIRECTION_STOP = 0x08

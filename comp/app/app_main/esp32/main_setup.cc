@@ -9,7 +9,7 @@
 #include "app_misc/timer.h"
 #include "app_settings/config.h"
 #include "app_settings/app_settings.hh"
-#include "fernotron/auto/fau_tevent.h"
+#include "fernotron/auto/fau_next_event.hh"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "fernotron/sep/set_endpos.h"
@@ -46,7 +46,7 @@ void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb([](struct timeval *tv) {
     ets_printf("ntp synced: %llu\n", (long unsigned long) time(NULL));
     mainLoop_callFun([]() {
-      fer_am_updateTimerEvent(time(NULL));
+      next_event_te.fer_am_updateTimerEvent(time(NULL));
     });
   });
   config_setup_ntpClient();
@@ -110,7 +110,7 @@ void mcu_init() {
 #else
 #error
 #endif
-  fer_am_updateTimerEvent(time(NULL));
+  next_event_te.fer_am_updateTimerEvent(time(NULL));
   mainLoop_callFun(fer_am_loop, 1000, true);
 
 #ifdef CONFIG_APP_USE_GPIO_PINS

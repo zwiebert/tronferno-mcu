@@ -18,7 +18,7 @@
 #include "utils_time/periodic.h"
 #include "main_loop/main_queue.hh"
 
-#include "move.h"
+#include "move.hh"
 
 #ifndef DISTRIBUTION
 #define DB_INFO 0

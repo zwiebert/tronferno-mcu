@@ -14,7 +14,7 @@
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
 
-#include "move.h"
+#include "move.hh"
 
 #ifndef DISTRIBUTION
 #define DB_INFO 0

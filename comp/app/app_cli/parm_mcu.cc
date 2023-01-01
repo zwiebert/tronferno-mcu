@@ -10,7 +10,7 @@
 #include "gpio/pin.h"
 #include "app_uout/status_output.h"
 #include <app_uout/so_msg.h>
-#include "fernotron/auto/fau_tevent.h"
+#include <fernotron/auto/fau_tevent.hh>
 #include "fernotron/auto/fau_tdata_store.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/bcd.h"

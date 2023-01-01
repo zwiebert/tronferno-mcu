@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 #include "app_config/proj_app_cfg.h"
-#include "fernotron/auto/fau_tevent.h"
+#include <fernotron/auto/fau_next_event.hh>
 #include "timer_data_fs.h"
 #include "timer_data_kvs.h"
 #include "fernotron/auto/fau_tdata_store.h"
@@ -17,7 +17,7 @@
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 static inline void fer_au_timer_data_change_cb() {
   mainLoop_callFun([]() {
-    fer_am_updateTimerEvent(time(NULL));
+    next_event_te.fer_am_updateTimerEvent(time(NULL));
   });
 }
 

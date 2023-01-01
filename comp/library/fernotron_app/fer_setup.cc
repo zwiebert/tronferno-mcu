@@ -5,7 +5,7 @@
 #include "debug/dbg.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron_trx/astro.h"
-#include "fernotron/auto/fau_tevent.h"
+#include <fernotron/auto/fau_tevent.hh>
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "fernotron_trx/fer_trx_c_api.h"
 #include "fernotron_trx/raw/fer_fsb.h"
