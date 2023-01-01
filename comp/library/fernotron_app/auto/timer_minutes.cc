@@ -127,3 +127,16 @@ fer_au_get_earliest_from_timer_minutes(Fer_TimerMinutes *timi, fer_au_minutesT n
   return last;
 }
 
+
+time_t fer_au_timeFromMints(const time_t *now_time, int mints) {
+  struct tm *tm = localtime(now_time);
+  tm->tm_sec = 0;
+  tm->tm_min = mints % 60;
+  tm->tm_hour = mints / 60;
+  return mktime(tm);
+}
+
+fer_au_minutesT fer_au_mintsFromTime(const time_t *timer) {
+  const struct tm *tm = localtime(timer);
+  return fer_au_mintsFromTm(tm);
+}

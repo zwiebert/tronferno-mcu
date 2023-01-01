@@ -53,6 +53,15 @@ fer_au_minutesT fer_au_mintsNow();
  */
 fer_au_minutesT fer_au_mintsFromTime(const time_t *timer);
 
+/**
+ * \brief            Modify the time (hh:mm:ss) of a given time while keeping the date intact
+ * \param timer      Base time (e.g. current time)
+ * \param mints      Current time-of-day as minutes since midnight. (Seconds are assumed zero)
+ * \return           Return modified time
+ */
+time_t fer_au_timeFromMints(const time_t *timer, int mints);
+
+
 
 // return minute offsets of todays timer events in parameter *result
 // offsets are minutes after 00:00 hour.

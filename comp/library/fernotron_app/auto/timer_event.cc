@@ -16,19 +16,6 @@
 #define MAX_GRP 7
 #define MAX_MBR 7
 
-static time_t fer_au_timeFromMints(const time_t *now_time, int mints) {
-  struct tm *tm = localtime(now_time);
-  tm->tm_sec = 0;
-  tm->tm_min = mints % 60;
-  tm->tm_hour = mints / 60;
-  return mktime(tm);
-}
-
-fer_au_minutesT fer_au_mintsFromTime(const time_t *timer) {
-  const struct tm *tm = localtime(timer);
-  return fer_au_mintsFromTm(tm);
-}
-
 void Fer_TimerEvent::fer_am_updateTimerEventTime(const time_t &now_time) {
   const fer_au_minutesT next_min = next_event;
   const fer_au_minutesT now_min = fer_au_mintsFromTime(&now_time);
