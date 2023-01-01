@@ -72,9 +72,9 @@ u8 fer_pos_mGetSunPct(u8 g, u8 m) {
 
 // check if a moving shutter has reached its end position
 void fer_pos_checkStatus_whileMoving() {
-  u32 now_ts = get_now_time_ts();
+  const u32 now_ts = get_now_time_ts();
   static unsigned last_call_ts;
-  bool publish = periodic_ts(10, &last_call_ts);
+  const bool publish = periodic_ts(10, &last_call_ts);
 
   so_arg_gmp_t pcts[50];
   int pcts_count = 0;
