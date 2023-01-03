@@ -30,7 +30,7 @@ static void fer_alias_enable_disable_cb(bool enable) {
   static void *tmr;
 
   if (enable && !tmr) {
-    tmr = mainLoop_callFun(fer_alias_auto_set_check_timeout, 100, true);
+    tmr = mainLoop_callFunByTimer(fer_alias_auto_set_check_timeout, 100, true);
   }
   if (!enable && tmr) {
     mainLoop_stopFun(tmr);

@@ -29,7 +29,7 @@ static void run_tx_worker_loop_main_thread(u32 when_to_transmit_ts) {
   // message sent time lies in future
 
   const u32 delay_ms = (when_to_transmit_ts - now_ts) * 100;
-  if (!mainLoop_callFun(fer_tx_loop, delay_ms)) {
+  if (!mainLoop_callFunByTimer(fer_tx_loop, delay_ms)) { //FIXME: memory leak, timer must be deleted after use
     printf("TxWorker Timer start error");
   }
 }
@@ -155,11 +155,16 @@ inline bool fer_rx_clear_to_send() {
 }
 
 void fer_tx_loop() {
+  static void *tmr;
   if (fer_tx_isTransmitterBusy() || !fer_rx_clear_to_send()) {
-    mainLoop_callFun(fer_tx_loop, 100);
+    if (!tmr)
+      tmr = mainLoop_callFunByTimer(fer_tx_loop, 100, true);
     return;
   }
-
+  if (tmr) {
+    mainLoop_stopFun(tmr);
+    tmr = NULL;
+  }
   struct sf *msg = fer_tx_nextMsg();
 
   if (msg && msg->when_to_transmit_ts <= get_now_time_ts()) {

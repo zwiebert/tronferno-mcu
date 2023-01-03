@@ -41,7 +41,7 @@ static Fer_Pos_Map pos_map;
 void fer_pos_POSITIONS_SAVE_cb(bool has_unsaved) {
   static void *tmr;
   if (has_unsaved && !tmr) {
-    tmr = mainLoop_callFun([]() {pos_map.autoSavePositions();}, 10000, true);
+    tmr = mainLoop_callFunByTimer([]() {pos_map.autoSavePositions();}, 10000, true);
   }
   if (!has_unsaved && tmr) {
     mainLoop_stopFun(tmr);

@@ -45,7 +45,7 @@ struct Fer_Move* fer_mv_calloc() {
     SET_BIT(moving_mask, mvi);
     moving[mvi] = (struct Fer_Move ) { };
     if (!moving_timer) {
-      moving_timer = mainLoop_callFun(fer_pos_checkStatus_whileMoving, 200, true);
+      moving_timer = mainLoop_callFunByTimer(fer_pos_checkStatus_whileMoving, 200, true);
     }
     return &moving[mvi];
   }

@@ -33,7 +33,7 @@
 
 #ifdef CONFIG_APP_USE_WLAN_AP
 void tmr_checkNetwork_start() {
-  if (!mainLoop_callFun([]() {
+  if (!mainLoop_callFunByTimer([]() {
     if (!ipnet_isConnected())
       lfa_createWifiAp();
   }, pdMS_TO_TICKS(1000 * CHECK_NETWORK_INTERVAL))) {
@@ -111,7 +111,7 @@ void mcu_init() {
 #error
 #endif
   next_event_te.fer_am_updateTimerEvent(time(NULL));
-  mainLoop_callFun(fer_am_loop, 1000, true);
+  mainLoop_callFunByTimer(fer_am_loop, 1000, true);
 
 #ifdef CONFIG_APP_USE_GPIO_PINS
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it

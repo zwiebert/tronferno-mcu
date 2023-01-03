@@ -287,7 +287,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
         break;
       }
 
-
+#ifndef TEST_HOST
       if (strcmp(key, "free-heap-size") == 0) {
         if (*val == '?') {
           const uint32_t fhs = esp_get_free_heap_size();
@@ -295,7 +295,7 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
         }
         break;
       }
-
+#endif
       cli_warning_optionUnknown(td, key);
       break;
     } // switch
