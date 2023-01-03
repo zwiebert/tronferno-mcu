@@ -1,4 +1,10 @@
-set(srcs esp32/timer.cc esp32/kvstore.cc rtc.cc  opt_map_consteval.cc) 
+set(srcs  esp32/kvstore.cc rtc.cc  opt_map_consteval.cc) 
+
+if(CONFIG_APP_USE_TIMER_TASK)
+     list(APPEND srcs "esp32/timer_task.cc")
+else()
+     list(APPEND srcs "esp32/timer.cc")
+endif()
 
 idf_component_register(
     SRCS ${srcs}

@@ -60,4 +60,10 @@ config APP_USE_MDR_TIME
   bool "Activate USE_MDR_TIME"
   default n
   
+config APP_USE_TIMER_TASK
+  bool "Split timer ISR into ISR and high priority task"
+  default n
+  help
+      Instead of calling the RF-transceiver tick functions directly from timer ISR, move these calls to a high priority task, and only do sampling and setting the GPIO RX/TX pins in the ISR
+  
   endmenu
