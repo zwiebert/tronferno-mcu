@@ -38,7 +38,7 @@ bool fer_cmd_moveShutterToPct(u32 a, u8 g, u8 m, u8 pct_arg, u8 repeats) {
 
   if (is_our_cu && m == 0) {
     Fer_GmSet gm;
-    gm[g] = 0xfe;
+    gm[g] = fer_usedMemberMask[g];
     return fer_if_cmd_moveShuttersToPct(a, &gm, pct, repeats);
   }
 

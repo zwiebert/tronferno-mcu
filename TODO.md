@@ -12,49 +12,6 @@ TODO
 * TODO: Restart webserver after disconnect/reconnect ethernet
 * TODO: Check reload after OTA in distribution
 
-* FIXME: Sometimes when moving a group with PCT slider, unused group members get RF commands too
-   Example: Moving group 70 down with used members 71,72,73,74.  Unused member 75,76,77 also come up in the log:
-{"sc":{"type":"central","a":"80495d","g":7,"m":1,"c":"down"}}
-{"from":"tfmcu","pct":{"71":73}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":2,"c":"down"}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":3,"c":"down"}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":4,"c":"down"}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":5,"c":"down"}}
-{"from":"tfmcu","pct":{"71":68,"72":68,"73":67,"74":70}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":6,"c":"down"}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":7,"c":"up"}}
-{"from":"tfmcu","pct":{"71":63,"72":63,"73":62,"74":66}}
-{"from":"tfmcu","pct":{"71":58,"72":58,"73":58,"74":61}}
-{"from":"tfmcu","pct":{"71":53,"72":54,"73":53,"74":56}}
-{"from":"tfmcu","pct":{"71":49,"72":49,"73":48,"74":51}}
-{"from":"tfmcu","pct":{"71":44,"72":44,"73":43,"74":46}}
-{"from":"tfmcu","pct":{"71":39,"72":39,"73":38,"74":42}}
-{"from":"tfmcu","pct":{"71":34,"72":34,"73":34,"74":37}}
-{"from":"tfmcu","pct":{"71":29,"72":30,"73":29,"74":32}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":6,"c":"stop"}}
-{"from":"tfmcu","pct":{"71":25,"72":25,"73":24,"74":27}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":3,"c":"stop"}}
-{"from":"tfmcu","pct":{"73":20,"70":59}}
-{"from":"tfmcu","pct":{"71":20,"72":20,"74":22}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":2,"c":"stop"}}
-{"from":"tfmcu","pct":{"72":18,"70":45}}
-{"from":"tfmcu","pct":{"71":15,"74":18}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":4,"c":"stop"}}
-{"from":"tfmcu","pct":{"74":16,"70":31}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":1,"c":"stop"}}
-{"from":"tfmcu","pct":{"71":11,"70":16}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":5,"c":"stop"}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":7,"c":"down"}}
-{"sc":{"type":"central","a":"80495d","g":7,"m":7,"c":"stop"}}
-
-
-
-
-
-
-
-
-
 DONE
 ====
 * FIXED: ISO time in auto tab of web-app using wrong time zonen (UTC?)
