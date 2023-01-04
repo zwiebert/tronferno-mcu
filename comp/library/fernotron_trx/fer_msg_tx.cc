@@ -19,21 +19,6 @@
 
 void (*fer_tx_READY_TO_TRANSMIT_cb)(uint32_t when_to_transmit_ts);
 
-static void run_tx_worker_loop_main_thread(u32 when_to_transmit_ts) {
-  const u32 now_ts = get_now_time_ts();
-  if (now_ts >= when_to_transmit_ts) {
-    mainLoop_callFun(fer_tx_loop);
-    return;
-  }
-
-  // message sent time lies in future
-
-  const u32 delay_ms = (when_to_transmit_ts - now_ts) * 100;
-  if (!mainLoop_callFunByTimer(fer_tx_loop, delay_ms)) { //FIXME: memory leak, timer must be deleted after use
-    printf("TxWorker Timer start error");
-  }
-}
-
 static inline void fer_tx_ready_to_transmit_cb(uint32_t time_ts) {
   if (fer_tx_READY_TO_TRANSMIT_cb)
     fer_tx_READY_TO_TRANSMIT_cb(time_ts);
@@ -48,7 +33,7 @@ static void fer_send_checkQuedState() {
 
   if ((msg = fer_tx_nextMsg())) {
     fer_tx_ready_to_transmit_cb(msg->when_to_transmit_ts);
-    run_tx_worker_loop_main_thread(msg->when_to_transmit_ts);
+    mainLoop_callFun(fer_tx_loop);
   }
 }
 
@@ -154,30 +139,53 @@ inline bool fer_rx_clear_to_send() {
   return last_rx_ts + 5 <= get_now_time_ts(); // TODO: we could use RSSI with CC1101 here. For now just check if nothing was received in the last 500ms
 }
 
-void fer_tx_loop() {
+static bool wait_tx_available() {
   static void *tmr;
+
+  // Wait for transmitter to become available
   if (fer_tx_isTransmitterBusy() || !fer_rx_clear_to_send()) {
     if (!tmr)
       tmr = mainLoop_callFunByTimer(fer_tx_loop, 100, true);
-    return;
+    return false;
   }
   if (tmr) {
     mainLoop_stopFun(tmr);
     tmr = NULL;
   }
-  struct sf *msg = fer_tx_nextMsg();
+  return true;
+}
 
-  if (msg && msg->when_to_transmit_ts <= get_now_time_ts()) {
-    // enable transmitter
+static bool wait_tx_when_to_transmit(u32 now_ts, u32 when_ts) {
+  const u32 delay_ms = (when_ts - now_ts) * 100;
+  static void *tmr;
+  if (tmr) {
+    mainLoop_stopFun(tmr);
+    tmr = NULL;
+  }
+  tmr = mainLoop_callFunByTimer(fer_tx_loop, delay_ms);
+
+  return tmr != NULL;
+}
+
+void fer_tx_loop() {
+  if (!wait_tx_available())
+    return;
+
+  struct sf *const msg = fer_tx_nextMsg();
+  const u32 now_ts = get_now_time_ts();
+
+  if (!msg) {
+    fer_trx_direction(false);
+    fer_send_checkQuedState();
+  } else if (msg->when_to_transmit_ts <= now_ts) {
     fer_trx_direction(true);
     if (fer_send_queued_msg(msg)) {
       fer_tx_popMsg();
     }
+    //fer_send_checkQuedState();
   } else {
-    // enable receiver
     fer_trx_direction(false);
+    wait_tx_when_to_transmit(now_ts, msg->when_to_transmit_ts);
   }
-
-  fer_send_checkQuedState();
 }
 

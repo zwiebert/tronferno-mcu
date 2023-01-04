@@ -33,7 +33,7 @@
 
 #ifdef CONFIG_APP_USE_WLAN_AP
 void tmr_checkNetwork_start() {
-  if (!mainLoop_callFunByTimer([]() {
+  if (!mainLoop_callFunByTimer([]() { // FIXME: timer should be deleted later (memory leak)
     if (!ipnet_isConnected())
       lfa_createWifiAp();
   }, pdMS_TO_TICKS(1000 * CHECK_NETWORK_INTERVAL))) {
