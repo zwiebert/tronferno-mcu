@@ -60,6 +60,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
     }
   }
 
+#ifdef CONFIG_TRONFERNO_PUBLISH_PCT_AS_TXT
   flags.fmt.json = false;
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
@@ -69,6 +70,8 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
       uoCb_publish(idxs, buf, flags);
     }
   }
+#endif
+
 }
 
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
@@ -100,6 +103,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
     }
   }
 
+#ifdef CONFIG_TRONFERNO_PUBLISH_PCT_AS_TXT
   flags.fmt.json = false;
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
@@ -107,6 +111,8 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
     snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;", a.g, a.m, a.p);
     uoCb_publish(idxs, buf, flags);
   }
+#endif
+
 }
 
 void uoApp_publish_timer_json(const char *json, bool fragment) {
@@ -312,6 +318,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
   if (!ci.cs)
     return; // unsupported command
 
+#ifdef CONFIG_TRONFERNO_PUBLISH_TRX_AS_TXT
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[80];
@@ -322,6 +329,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
     }
     uoCb_publish(idxs, buf, flags);
   }
+#endif
 
   flags.fmt.txt = false;
   flags.fmt.json = true;
@@ -348,6 +356,7 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
   if (!ci.cs)
     return; // unsupported command
 
+#ifdef CONFIG_TRONFERNO_PUBLISH_TRX_AS_TXT
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[64];
@@ -358,6 +367,7 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
     }
     uoCb_publish(idxs, buf, flags);
   }
+#endif
 
   flags.fmt.txt = false;
   flags.fmt.json = true;
@@ -382,6 +392,7 @@ void uoApp_publish_fer_msgRtcReceived(const Fer_MsgPlainCmd &c, const struct fer
 
   const int rssi = Fer_Trx_API::get_rssi();
 
+#ifdef CONFIG_TRONFERNO_PUBLISH_TRX_AS_TXT
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[80];
@@ -389,6 +400,7 @@ void uoApp_publish_fer_msgRtcReceived(const Fer_MsgPlainCmd &c, const struct fer
     snprintf(buf, sizeof buf, "RC:type=central: a=%06x g=%d m=%d c=rtc rssi=%d t=%02x-%02xT%02x:%02x:%02x;", c.a, c.g, c.m, rssi, r.mont, r.mday, r.hour, r.mint, r.secs);
     uoCb_publish(idxs, buf, flags);
   }
+#endif
 
   flags.fmt.txt = false;
   flags.fmt.json = true;
@@ -428,6 +440,7 @@ void uoApp_publish_fer_msgAutoReceived(const struct Fer_MsgPlainCmd &c, const st
       }
     }
 
+#ifdef CONFIG_TRONFERNO_PUBLISH_TRX_AS_TXT
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[80];
@@ -436,6 +449,7 @@ void uoApp_publish_fer_msgAutoReceived(const struct Fer_MsgPlainCmd &c, const st
         r.mint, r.secs, af);
     uoCb_publish(idxs, buf, flags);
   }
+#endif
 
   flags.fmt.txt = false;
   flags.fmt.json = true;
@@ -457,6 +471,7 @@ void uoApp_publish_fer_msgRtcSent(const struct Fer_MsgPlainCmd &c, const struct 
 
   const struct fer_rtc_sd &r = m.rtc.sd;
 
+#ifdef CONFIG_TRONFERNO_PUBLISH_TRX_AS_TXT
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[80];
@@ -464,6 +479,7 @@ void uoApp_publish_fer_msgRtcSent(const struct Fer_MsgPlainCmd &c, const struct 
     snprintf(buf, sizeof buf, "SC:type=central: a=%06x g=%d m=%d c=rtc t=%02x-%02xT%02x:%02x:%02x;", c.a, c.g, c.m, r.mont, r.mday, r.hour, r.mint, r.secs);
     uoCb_publish(idxs, buf, flags);
   }
+#endif
 
   flags.fmt.txt = false;
   flags.fmt.json = true;
@@ -502,6 +518,7 @@ void uoApp_publish_fer_msgAutoSent(const struct Fer_MsgPlainCmd &c, const struct
       }
     }
 
+#ifdef CONFIG_TRONFERNO_PUBLISH_TRX_AS_TXT
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[80];
@@ -510,6 +527,7 @@ void uoApp_publish_fer_msgAutoSent(const struct Fer_MsgPlainCmd &c, const struct
         r.secs, af);
     uoCb_publish(idxs, buf, flags);
   }
+#endif
 
   flags.fmt.txt = false;
   flags.fmt.json = true;
