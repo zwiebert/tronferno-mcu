@@ -21,8 +21,6 @@ typedef int64_t i64;
 #define CHECK_NETWORK_INTERVAL 15
 #define LOOP_PERIODIC_INTERVAL_MS 100
 #define LOOP_INTERVAL_MS 25
-#define WIFI_AP_SSID "tronferno"
-#define WIFI_AP_PASSWD "tronferno"
 #define TD_FS_TO_KVS
 
 #if defined TEST_HOST
@@ -36,11 +34,6 @@ typedef int64_t i64;
 #error "no supported MCU"
 #define MCU_ESP32
 #endif
-
-#define USE_REPEATER
-
-#define MY_MQTT_CLIENT_ID "tfmcu"
-#define MY_MQTT_ROOT_TOPIC "tfmcu"
 
 #ifdef __cplusplus
 #include <utils_misc/cstring_utils.hh>

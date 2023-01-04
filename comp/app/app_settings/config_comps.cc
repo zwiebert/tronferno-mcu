@@ -135,10 +135,9 @@ const char* config_read_rf_repeater(char *d, unsigned d_size) {
 #if 1
 void config_setup_global() {
   kvshT h;
-  C = config { .mcu_serialBaud = MY_MCU_UART_BAUD_RATE, .app_rtcAdjust = 0, .app_recv = recvTick, .app_transm = transmTick, .app_rtc = rtcAvrTime,
-      .app_configPassword = { 0 }, .app_expertPassword = { 0 }, };
-  STRLCPY(C.app_configPassword, MY_APP_CONFIG_PASSWORD, sizeof C.app_configPassword);
-  STRLCPY(C.app_expertPassword, MY_APP_EXPERT_PASSWORD, sizeof C.app_expertPassword);
+  C = config { .mcu_serialBaud = CONFIG_APP_UART_BAUD_RATE, .app_rtcAdjust = 0, .app_recv = recvTick, .app_transm = transmTick, .app_rtc = rtcAvrTime,
+      .app_configPassword = { 0 }, };
+  STRLCPY(C.app_configPassword, CONFIG_APP_SETTINGS_PASSWORD, sizeof C.app_configPassword);
 
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
 
@@ -148,7 +147,7 @@ void config_setup_global() {
   }
 }
 uint32_t config_read_used_members() {
-  return config_read_item(CB_USED_MEMBERS, MY_FER_GM_USE);
+  return config_read_item(CB_USED_MEMBERS, CONFIG_APP_FER_GM_USE);
 }
 
 #endif
@@ -168,7 +167,7 @@ struct cfg_astro* config_read_astro(struct cfg_astro *c) {
 #ifndef CONFIG_APP_USE_POSIX_TIME
       kvsRb(CI(CB_TIZO), c->geo_timezone);
 #else
-    char tz[64] = MY_GEO_TZ;
+    char tz[64] = CONFIG_APP_GEO_TZ;
     kvsRs(CI(CB_TZ), tz);
     c->geo_timezone = tz2offset(tz);
 #endif

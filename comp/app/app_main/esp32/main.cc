@@ -26,7 +26,7 @@ void lfa_createWifiAp() {
 
   if (!wifi_ap_active) {
     wifi_ap_active = true;
-    wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
+    wifiAp_setup(CONFIG_APP_WIFI_AP_SSID, CONFIG_APP_WIFI_AP_PASSWORD);
 
 #ifdef CONFIG_APP_USE_TCPS_TASK
     struct cfg_tcps cfg_tcps = { .enable = true }; // XXX: user-flags not set

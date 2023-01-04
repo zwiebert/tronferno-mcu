@@ -11,7 +11,7 @@
 #include "app_settings/app_settings.hh"
 #include "config_kvs.h"
 #include <app_settings/config.h>
-#include "app_settings/config_defaults.h"
+
 
 #include "utils_misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
@@ -53,7 +53,7 @@ bool config_item_modified(enum configAppItem item) {
     kvs_close(h);
   }
   if (ferCfg_isModified)
-     fer_main_setup({ config_read_item(CB_CUID, MY_FER_CENTRAL_UNIT_ID), config_read_item(CB_USED_MEMBERS, MY_FER_GM_USE)}, true);
+     fer_main_setup({ config_read_item(CB_CUID, (unsigned long)CONFIG_APP_FER_CENTRAL_UNIT_ID), config_read_item(CB_USED_MEMBERS, (unsigned long) CONFIG_APP_FER_GM_USE)}, true);
 
   return true;
 }

@@ -65,5 +65,38 @@ config APP_USE_TIMER_TASK
   default n
   help
       Instead of calling the RF-transceiver tick functions directly from timer ISR, move these calls to a high priority task, and only do sampling and setting the GPIO RX/TX pins in the ISR
+      
+config APP_MQTT_CLIENT_ID
+  string "Default ID of MQTT client"
+  default "tfmcu"
+
+config APP_MQTT_ROOT_TOPIC
+  string "Default root topic of MQTT client"
+  default "tfmcu"
+ 
+config APP_GEO_TZ
+  string "POSIX TZ string"
+  default "CET-1CEST-2,M3.5.0,M10.5.0"
+  
+config APP_SETTINGS_PASSWORD
+  string "password for MCU settings"
+  default ""
+  
+config APP_FER_CENTRAL_UNIT_ID
+  hex "Default ID of programming centre"
+  default 0x801234
+  
+config APP_FER_GM_USE
+  hex "Default active groups/receivers"
+  default 0x7777777
+  
+config APP_WIFI_AP_SSID
+  string "WIFI/WLAN access-point SSID "
+  default "tronferno"
+  
+config APP_WIFI_AP_PASSWORD
+  string "WIFI/WLAN access-point password"
+  default "tronferno"
+  
   
 endmenu

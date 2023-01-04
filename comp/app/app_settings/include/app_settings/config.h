@@ -67,7 +67,6 @@ typedef struct {
    */
 //  uint32_t fer_usedMembers;
   char app_configPassword[16];
-  char app_expertPassword[16];
 } config;
 
 extern config C;

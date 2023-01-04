@@ -7,11 +7,6 @@
 
 //#include <sdkconfig.h>
 
-//////////////////////////////////////////////////////
-#include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
 
 #define CONFIG_GPIO_SIZE 40
 
