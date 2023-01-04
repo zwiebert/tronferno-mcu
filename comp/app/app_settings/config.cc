@@ -31,7 +31,7 @@ const char* config_read_tz(char *d, unsigned d_size) {
   return config_read_item((CB_TZ), d, d_size, MY_GEO_TZ);
 }
 #endif
-#ifdef MDR_TIME
+#ifdef CONFIG_APP_USE_MDR_TIME
 float config_read_timezone() {
   return config_read_item((CB_TIZO), MY_GEO_TIMEZONE);
 }

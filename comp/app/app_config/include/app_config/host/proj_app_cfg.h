@@ -44,13 +44,7 @@
 #undef CONFIG_APP_USE_MDR_TIME
 ///////////////////////////////////////////////
 
-#undef MDR_TIME
-
 #define IRAM_ATTR
-#define NO_SPIFFS
-#define MY_RFOUT_GPIO -1
-#define MY_RFIN_GPIO -1
-#define MY_SETBUTTON_GPIO -1
-#define ISO_BUILD_TIME (__DATE__ "T" __TIME__)
+
 #define MY_RF_TRX rfTrxNone
 

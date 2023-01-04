@@ -13,5 +13,5 @@ config TRONFERNO_PUBLISH_PCT_AS_TXT
       We now publish messages in JSON format.  The plain text format is for backwards compatibility with old versions for FHEM tronferno_mcu module and Android app
 
   
-   endmenu
+endmenu
   

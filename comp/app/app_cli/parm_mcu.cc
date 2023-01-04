@@ -34,9 +34,6 @@
 
 const char cli_help_parmMcu[] = "'mcu' handles special commands and data\n\n"
     "print=(rtc|cu|reset-info)\n"
-#ifndef NO_SPIFFS
-        "spiffs=(format|test)\n"
-#endif
 #ifdef CONFIG_GPIO_SIZE
     "gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N\n"
 #endif
@@ -86,18 +83,6 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
     case otok::k_print: {
     }
       break;
-
-#ifndef NO_SPIFFS
-    case otok::k_spiffs: {
-
-      if (is_val("format")) {
-        spiffs_format_fs (fs_A);
-      } else if (is_val("test")) {
-        spiffs_test();
-      }
-    }
-      break;
-#endif
 
     case otok::k_tm: {
 

@@ -22,7 +22,7 @@ CB_TIZO,
 #else
   CB_TZ,
 #endif
-#ifdef MDR_TIME
+#ifdef CONFIG_APP_USE_MDR_TIME
   CB_DST,
 #endif
   CB_ASTRO_CORRECTION,

@@ -75,7 +75,7 @@ int app_safeMode_increment(bool reset) {
 
 void config_setup_gpio() {
   const auto trx = config_read_rf_trx();
-  struct cfg_gpio c = { .gpio_in_use = 0, .out_rf = MY_RFOUT_GPIO, .in_rf = MY_RFIN_GPIO, .in_setButton = MY_SETBUTTON_GPIO };
+  struct cfg_gpio c = { .gpio_in_use = 0, .out_rf = -1, .in_rf = -1, .in_setButton = -1 };
 
   if (!app_safe_mode)
     config_read_gpio(&c);
@@ -101,13 +101,13 @@ void config_setup_gpio() {
 }
 
 int8_t config_read_rfout_gpio() {
-  return config_read_item((CB_RFOUT_GPIO), MY_RFOUT_GPIO);
+  return config_read_item((CB_RFOUT_GPIO), -1);
 }
 int8_t config_read_rfin_gpio() {
-  return config_read_item((CB_RFIN_GPIO), MY_RFIN_GPIO);
+  return config_read_item((CB_RFIN_GPIO), -1);
 }
 int8_t config_read_setbutton_gpio() {
-  return config_read_item((CB_SETBUTTON_GPIO), MY_SETBUTTON_GPIO);
+  return config_read_item((CB_SETBUTTON_GPIO), -1);
 }
 
 int8_t config_read_rf_trx() {

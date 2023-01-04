@@ -7,8 +7,6 @@
 
 #include "app_config/proj_app_cfg.h"
 
-#define USE_GPTIMER
-
 #include "app_misc/rtc.h"
 #include "app_misc/timer.h"
 #include "app_settings/config.h"

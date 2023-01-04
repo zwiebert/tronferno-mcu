@@ -66,4 +66,4 @@ config APP_USE_TIMER_TASK
   help
       Instead of calling the RF-transceiver tick functions directly from timer ISR, move these calls to a high priority task, and only do sampling and setting the GPIO RX/TX pins in the ISR
   
-  endmenu
+endmenu

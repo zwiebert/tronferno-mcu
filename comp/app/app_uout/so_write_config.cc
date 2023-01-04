@@ -77,7 +77,7 @@ void soCfg_TIMEZONE(const struct TargetDesc &td) {
 }
 
 void soCfg_DST(const struct TargetDesc &td) {
-#ifdef MDR_TIME
+#ifdef CONFIG_APP_USE_MDR_TIME
   {
     enum dst geo_dst = config_read_dst();
     const char *dst = (geo_dst == dstEU ? "eu" : (geo_dst == dstNone ? "0" : "1"));

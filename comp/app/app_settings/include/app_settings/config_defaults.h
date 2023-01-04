@@ -98,32 +98,6 @@
 #endif
 #define MY_NETWORK_CONNECTION_OLD_USERS nwWlanSta
 
-#ifndef MY_RFOUT_GPIO
-#ifdef MCU_ESP32
-#ifndef CONFIG_APP_USE_LAN
-#define MY_RFOUT_GPIO 22
-#else
-#define MY_RFOUT_GPIO -1
-#endif
-#endif
-#endif
-
-#ifndef MY_RFIN_GPIO
-#ifdef MCU_ESP32
-#ifndef CONFIG_APP_USE_LAN
-#define MY_RFIN_GPIO 17
-#else
-#define MY_RFIN_GPIO -1 //XXX: GPIO15 is used by JTAG
-#endif
-#endif
-#endif
-
-#ifndef MY_SETBUTTON_GPIO
-#ifdef MCU_ESP32
-#define MY_SETBUTTON_GPIO -1
-#endif
-#endif
-
 
 #define MY_RF_TRX rfTrxRxTx
 

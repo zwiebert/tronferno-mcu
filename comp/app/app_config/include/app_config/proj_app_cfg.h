@@ -5,8 +5,6 @@
 
 #pragma once
 
-#define MDR_TIME
-
 #include <stdint.h>
 typedef uint8_t u8;
 typedef int8_t i8;
@@ -40,10 +38,6 @@ typedef int64_t i64;
 #endif
 
 #define USE_REPEATER
-
-#ifdef CONFIG_APP_USE_MDR_TIME
-#define MDR_TIME
-#endif
 
 #define MY_MQTT_CLIENT_ID "tfmcu"
 #define MY_MQTT_ROOT_TOPIC "tfmcu"

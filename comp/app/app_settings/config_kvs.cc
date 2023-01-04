@@ -38,7 +38,7 @@ bool config_item_modified(enum configAppItem item) {
     case CB_BAUD:
       kvsR(i8, item, C.mcu_serialBaud);
       break;
-#ifdef MDR_TIME
+#ifdef CONFIG_APP_USE_MDR_TIME
     case CB_DST:
       kvsR(u32, item, C.geo_dST);
       break;

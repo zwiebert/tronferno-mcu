@@ -8,4 +8,4 @@ config APP_USE_FER_RECEIVER
   bool "Activate FER_RECEIVER"
   default y
   
-  endmenu
+endmenu
