@@ -111,7 +111,7 @@ int8_t config_read_setbutton_gpio() {
 }
 
 int8_t config_read_rf_trx() {
-  return config_read_item(CB_RF_TRX, MY_RF_TRX);
+  return config_read_item(CB_RF_TRX, rfTrxRxTx);
 }
 
 int8_t config_read_rfsck_gpio() {

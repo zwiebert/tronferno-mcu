@@ -115,17 +115,15 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 #endif
 
     case otok::k_te: {
-      int i, k;
-
       Fer_TimerEvent tevt;
       time_t now_time = time(NULL);
       tevt.fer_am_get_next_timer_event(&now_time);
       io_putd(tevt.te_getEventMinute()), io_putlf();
-      for (i = 0; i < 8; ++i) {
+      for (int i = 0; i < 8; ++i) {
         io_print_hex_8((*tevt.te_getMaskUp())[i], true);
       }
       io_putlf();
-      for (i = 0; i < 8; ++i) {
+      for (int i = 0; i < 8; ++i) {
         io_print_hex_8((*tevt.te_getMaskDown())[i], true);
       }
       io_putlf();

@@ -10,6 +10,3 @@
 
 #define IRAM_ATTR
 #undef CONFIG_APP_USE_GPIO_PINS
-
-#define MY_RF_TRX rfTrxNone
-

@@ -1,63 +1,51 @@
 menu "Tronferno Project Configuration"
 
     config APP_USE_JSON
-        bool "Activate JSON"
+        bool "Compile with JSON support"
         default y
 
     config APP_USE_POSIX_TIME
-        bool "Activate POSIX_TIME"
-        default y
-
-    config APP_USE_SERIAL
-        bool "Activate SERIAL"
-        default y
-
-    config APP_USE_WDG
-        bool "Activate WDG"
-        default y
-
-    config APP_USE_FS
-        bool "Activate FS"
+        bool "Compile with Posix time support"
         default y
 
     config APP_USE_OTA
-        bool "Activate OTA"
-        default y
-
-    config APP_USE_STM32OTA
-        bool "Activate STM32OTA"
+        bool "Compile with over-the-air update support"
         default y
 
     config APP_USE_WS
-        bool "Activate WS"
+        bool "Compile with web socket support"
         default y
 
     config APP_USE_MUTEX
-        bool "Activate MUTEX"
+        bool "Compile with MUTEX support"
         default y
+        help
+            If disabled, use a dummy instead of a real Mutex
+            Note: Disable it only for testing/debugging purposes
 
     config APP_USE_CLI_TASK
-        bool "Activate CLI_TASK"
-        default y
-
-    config APP_USE_CONFIG_KVS
-        bool "Activate CONFIG_KVS"
+        bool "Run CLI in its own task"
         default y
 
     config APP_USE_ESP_GET_TIME
-        bool "Activate ESP_GET_TIME"
+        bool "Get up-time from esp_timer_get_time()"
         default y
+        help
+            Don't count up-time in our own timer-ISR.
+            Use esp_timer_get_time() instead
 
     config APP_USE_GPIO_PINS
-        bool "Activate USE_GPIO_PINS"
+        bool "Compile with support for user defined GPIOs"
         default y
+        help
+            The user can define GPIOs from CLI/web-app, which then can be read or set via MQTT
 
     config APP_USE_FREERTOS
-        bool "Activate USE_FREERTOS"
+        bool "Compile FreeRTOS-dependent code in common modules"
         default y
 
     config APP_USE_MDR_TIME
-        bool "Activate USE_MDR_TIME"
+        bool "Compile support for MDR time library (obsolete)"
         default n
 
     config APP_USE_TIMER_TASK

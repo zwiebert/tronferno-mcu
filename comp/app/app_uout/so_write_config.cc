@@ -23,8 +23,6 @@
 #include <app_uout/so_config.h>
 #include <cc1101_ook/trx.hh>
 
-//#include "utils_misc/int_macros.h"
-
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
