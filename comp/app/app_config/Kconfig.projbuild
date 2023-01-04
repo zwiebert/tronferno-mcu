@@ -1,102 +1,104 @@
 menu "Tronferno Project Configuration"
- 
-config APP_USE_JSON
-  bool "Activate JSON"
-  default y
 
-config APP_USE_POSIX_TIME
-  bool "Activate POSIX_TIME"
-  default y
+    config APP_USE_JSON
+        bool "Activate JSON"
+        default y
 
-config APP_USE_SERIAL
-  bool "Activate SERIAL"
-  default y
+    config APP_USE_POSIX_TIME
+        bool "Activate POSIX_TIME"
+        default y
 
-config APP_USE_WDG
-  bool "Activate WDG"
-  default y
+    config APP_USE_SERIAL
+        bool "Activate SERIAL"
+        default y
 
-config APP_USE_FS
-  bool "Activate FS"
-  default y
+    config APP_USE_WDG
+        bool "Activate WDG"
+        default y
 
-config APP_USE_OTA
-  bool "Activate OTA"
-  default y
+    config APP_USE_FS
+        bool "Activate FS"
+        default y
 
-config APP_USE_STM32OTA
-  bool "Activate STM32OTA"
-  default y
+    config APP_USE_OTA
+        bool "Activate OTA"
+        default y
 
-config APP_USE_WS
-  bool "Activate WS"
-  default y
+    config APP_USE_STM32OTA
+        bool "Activate STM32OTA"
+        default y
 
-config APP_USE_MUTEX
-  bool "Activate MUTEX"
-  default y
+    config APP_USE_WS
+        bool "Activate WS"
+        default y
 
-config APP_USE_CLI_TASK
-  bool "Activate CLI_TASK"
-  default y
+    config APP_USE_MUTEX
+        bool "Activate MUTEX"
+        default y
 
-config APP_USE_CONFIG_KVS
-  bool "Activate CONFIG_KVS"
-  default y
-  
-config APP_USE_ESP_GET_TIME
-  bool "Activate ESP_GET_TIME"
-  default y
+    config APP_USE_CLI_TASK
+        bool "Activate CLI_TASK"
+        default y
 
-config APP_USE_GPIO_PINS
-  bool "Activate USE_GPIO_PINS"
-  default y 
- 
-config APP_USE_FREERTOS
-  bool "Activate USE_FREERTOS"
-  default y
+    config APP_USE_CONFIG_KVS
+        bool "Activate CONFIG_KVS"
+        default y
 
-config APP_USE_MDR_TIME
-  bool "Activate USE_MDR_TIME"
-  default n
-  
-config APP_USE_TIMER_TASK
-  bool "Split timer ISR into ISR and high priority task"
-  default n
-  help
-      Instead of calling the RF-transceiver tick functions directly from timer ISR, move these calls to a high priority task, and only do sampling and setting the GPIO RX/TX pins in the ISR
-      
-config APP_MQTT_CLIENT_ID
-  string "Default ID of MQTT client"
-  default "tfmcu"
+    config APP_USE_ESP_GET_TIME
+        bool "Activate ESP_GET_TIME"
+        default y
 
-config APP_MQTT_ROOT_TOPIC
-  string "Default root topic of MQTT client"
-  default "tfmcu"
- 
-config APP_GEO_TZ
-  string "POSIX TZ string"
-  default "CET-1CEST-2,M3.5.0,M10.5.0"
-  
-config APP_SETTINGS_PASSWORD
-  string "password for MCU settings"
-  default ""
-  
-config APP_FER_CENTRAL_UNIT_ID
-  hex "Default ID of programming centre"
-  default 0x801234
-  
-config APP_FER_GM_USE
-  hex "Default active groups/receivers"
-  default 0x7777777
-  
-config APP_WIFI_AP_SSID
-  string "WIFI/WLAN access-point SSID "
-  default "tronferno"
-  
-config APP_WIFI_AP_PASSWORD
-  string "WIFI/WLAN access-point password"
-  default "tronferno"
-  
-  
+    config APP_USE_GPIO_PINS
+        bool "Activate USE_GPIO_PINS"
+        default y
+
+    config APP_USE_FREERTOS
+        bool "Activate USE_FREERTOS"
+        default y
+
+    config APP_USE_MDR_TIME
+        bool "Activate USE_MDR_TIME"
+        default n
+
+    config APP_USE_TIMER_TASK
+        bool "Split timer ISR into ISR and high priority task"
+        default n
+        help
+            Instead of calling the RF-transceiver tick functions directly from timer ISR,
+            move these calls to a high priority task, and only do sampling
+            and setting the GPIO RX/TX pins in the ISR
+
+    config APP_MQTT_CLIENT_ID
+        string "Default ID of MQTT client"
+        default "tfmcu"
+
+    config APP_MQTT_ROOT_TOPIC
+        string "Default root topic of MQTT client"
+        default "tfmcu"
+
+    config APP_GEO_TZ
+        string "POSIX TZ string"
+        default "CET-1CEST-2,M3.5.0,M10.5.0"
+
+    config APP_SETTINGS_PASSWORD
+        string "password for MCU settings"
+        default ""
+
+    config APP_FER_CENTRAL_UNIT_ID
+        hex "Default ID of programming centre"
+        default 0x801234
+
+    config APP_FER_GM_USE
+        hex "Default active groups/receivers"
+        default 0x7777777
+
+    config APP_WIFI_AP_SSID
+        string "WIFI/WLAN access-point SSID"
+        default "tronferno"
+
+    config APP_WIFI_AP_PASSWORD
+        string "WIFI/WLAN access-point password"
+        default "tronferno"
+
+
 endmenu

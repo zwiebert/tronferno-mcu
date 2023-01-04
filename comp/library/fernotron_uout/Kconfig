@@ -1,17 +1,19 @@
 menu "zwiebert: Tronferno UOUT"
-    
-config TRONFERNO_PUBLISH_PCT_AS_TXT
-  bool "publish PCT (also) as text in terminal"
-  default n
-  help
-      We now publish messages in JSON format.  The plain text format is for backwards compatibility with old versions for FHEM tronferno_mcu module and Android app
-  
-  config TRONFERNO_TRONFERNO_PUBLISH_TRX_AS_TXT
-  bool "publish sent/received RF messages (also) as text in terminal"
-  default n
-  help
-      We now publish messages in JSON format.  The plain text format is for backwards compatibility with old versions for FHEM tronferno_mcu module and Android app
 
-  
+    config TRONFERNO_PUBLISH_PCT_AS_TXT
+        bool "publish PCT (also) as text in terminal"
+        default n
+        help
+            We now publish messages in JSON format.  The plain text format is for backwards
+            compatibility with old versions for FHEM tronferno_mcu module and Android app
+
+    config TRONFERNO_TRONFERNO_PUBLISH_TRX_AS_TXT
+        bool "publish sent/received RF messages (also) as text in terminal"
+        default n
+        help
+            We now publish messages in JSON format.  The plain text format is for backwards
+            compatibility with old versions for FHEM tronferno_mcu module and Android app
+
+
 endmenu
-  
+
