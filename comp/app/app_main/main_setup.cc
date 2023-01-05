@@ -15,5 +15,5 @@ void main_setup() {
 
   config_setup_cc1101();
   config_setup_repeater();
-  fer_main_setup({ config_read_item(CB_CUID, (unsigned long)CONFIG_APP_FER_CENTRAL_UNIT_ID), config_read_item(CB_USED_MEMBERS, (unsigned long)CONFIG_APP_FER_GM_USE)});
+  fer_main_setup({ config_read_item(CB_CUID, (uint32_t)CONFIG_APP_FER_CENTRAL_UNIT_ID), config_read_item(CB_USED_MEMBERS, (uint32_t)CONFIG_APP_FER_GM_USE)});
 }

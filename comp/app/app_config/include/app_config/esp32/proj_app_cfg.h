@@ -3,9 +3,7 @@
  *
  */
 #pragma once
-#define MCU_TYPE "esp32"
 
-#include "esp_attr.h"
 
 
 
