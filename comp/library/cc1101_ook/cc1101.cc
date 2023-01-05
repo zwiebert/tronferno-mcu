@@ -318,7 +318,7 @@ bool cc1101_ook_updConfig_fromSparse(const char *rs) {
     rvs[1] = rs[i + 1];
     rvs[2] = '\0';
 
-    u8 rv = static_cast<uint8_t>(strtol(rvs, nullptr, 16));
+    uint8_t rv = static_cast<uint8_t>(strtol(rvs, nullptr, 16));
     Write_CC_Config(i / 2, rv);
   }
 

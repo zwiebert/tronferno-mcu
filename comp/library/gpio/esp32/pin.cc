@@ -88,14 +88,14 @@ bool is_gpio_number_usable(int gpio_number, bool cli) {
   return (gpioUsable & (1ULL << gpio_number)) != 0;
 }
 
-void IRAM_ATTR mcu_put_txPin(u8 level) {
+void IRAM_ATTR mcu_put_txPin(uint8_t level) {
   if (const auto pin = RFOUT_GPIO; pin >= 0) {
     level = !!level == !gpio_cfg->out_rf_inv;
     GPIO_OUTPUT_SET(pin, level);
   }
 }
 
-u8 IRAM_ATTR mcu_get_rxPin() {
+uint8_t IRAM_ATTR mcu_get_rxPin() {
   if (const auto pin = RFIN_GPIO; pin >= 0) {
     return GPIO_INPUT_GET(pin);
   }
@@ -252,7 +252,7 @@ void (*gpio_INPUT_PIN_CHANGED_ISR_cb)();
 void pin_notify_input_change() {
   uint64_t mask = pin_int_mask;
   pin_int_mask = 0;
-  for (u8 i = 0; mask; ++i, (mask >>= 1)) {
+  for (uint8_t i = 0; mask; ++i, (mask >>= 1)) {
     if (!(mask & 1))
       continue;
     bool level = gpio_get_level(static_cast<gpio_num_t>(i));

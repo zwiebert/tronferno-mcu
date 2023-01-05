@@ -28,13 +28,13 @@ static inline void fer_au_timer_data_change_cb() {
 #endif
 
 
-bool fer_stor_timerData_save(Fer_TimerData *p, u8 g, u8 m) {
+bool fer_stor_timerData_save(Fer_TimerData *p, uint8_t g, uint8_t m) {
   bool result = save_timer_data_fs(p, g, m);
   fer_au_timer_data_change_cb();
   return result;
 }
 
-bool fer_stor_timerData_erase(u8 g, u8 m) {
+bool fer_stor_timerData_erase(uint8_t g, uint8_t m) {
   if (erase_timer_data_fs(g, m)) {
     fer_au_timer_data_change_cb();
     return true;
@@ -42,7 +42,7 @@ bool fer_stor_timerData_erase(u8 g, u8 m) {
   return false;
 }
 
-bool fer_stor_timerData_load(Fer_TimerData *p, u8 *g, u8 *m, bool wildcard) {
+bool fer_stor_timerData_load(Fer_TimerData *p, uint8_t *g, uint8_t *m, bool wildcard) {
   bool result = read_timer_data_fs(p, g, m, wildcard);
   return result;
 }

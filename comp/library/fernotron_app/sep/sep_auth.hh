@@ -24,7 +24,7 @@ public:
   }
   //sep_auth.restart_timeout();
 public:
-  bool authenticate(u32 auth_key, unsigned auth_timeout_secs = fer_sep_TIMEOUT, unsigned auth_button_timeout_secs = SEP_AUTH_BUTTON_TIMEOUT_SECS) {
+  bool authenticate(uint32_t auth_key, unsigned auth_timeout_secs = fer_sep_TIMEOUT, unsigned auth_button_timeout_secs = SEP_AUTH_BUTTON_TIMEOUT_SECS) {
     if (!m_auth_key)
       setKey(auth_key);
     else if (!isKeyMatched(auth_key))
@@ -36,7 +36,7 @@ public:
     return true;
   }
 
-  bool deauthenticate(u32 auth_key) {
+  bool deauthenticate(uint32_t auth_key) {
     if (!isKeyMatched(auth_key))
       return false;
     m_auth_button.log_out();
@@ -63,7 +63,7 @@ public:
     return false;
   }
 
-  bool isKeyMatched(u32 auth_key) const {
+  bool isKeyMatched(uint32_t auth_key) const {
     if (!m_auth_key)
       return false;
     if (auth_key != m_auth_key)
@@ -71,7 +71,7 @@ public:
     return true;
   }
 
-  bool isAuthenticated(u32 auth_key) const {
+  bool isAuthenticated(uint32_t auth_key) const {
     if (!isKeyMatched(auth_key))
       return false;
 
@@ -80,16 +80,16 @@ public:
     return true;
   }
 
-  u32 getAuthKey() const {
+  uint32_t getAuthKey() const {
     return m_auth_key;
   }
 private:
-  void setKey(u32 auth_key) {
+  void setKey(uint32_t auth_key) {
     m_auth_key = auth_key;
   }
 private:
-  u32 m_auth_key = 0;
+  uint32_t m_auth_key = 0;
   Auth_Button m_auth_button;
   Time_Out_Secs m_auth_timeout;
-  i16 m_auth_timeout_secs = 0;
+  int16_t m_auth_timeout_secs = 0;
 };

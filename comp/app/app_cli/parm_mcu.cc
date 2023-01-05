@@ -96,8 +96,8 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       break;
     case otok::k_am: {
       if (strlen(val) == 2) {
-        u8 g = val[0] - '0';
-        u8 m = val[1] - '0';
+        uint8_t g = val[0] - '0';
+        uint8_t m = val[1] - '0';
         Fer_TimerMinutes tmi;
         if (Fer_TimerData tid; fer_stor_timerData_load(&tid, &g, &m, true) && fer_au_get_timer_minutes_from_timer_data_tm(&tmi, &tid)) {
           soMsg_astro_minutes_print(td, tmi.minutes[FER_MINTS_ASTRO]);
@@ -213,9 +213,9 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
               return -1;
             }
           error = mcu_access_pin(gpio_number, &ps_result, ps);
-          i8 level = (ps_result == PIN_STATE_none) ? -1 :
+          int8_t level = (ps_result == PIN_STATE_none) ? -1 :
                      (ps_result == PIN_CLEAR) ? 0 : 1;
-          soMsg_gpio_pin(td, so_arg_pch_t {u8(gpio_number), level != 0, level});
+          soMsg_gpio_pin(td, so_arg_pch_t {uint8_t(gpio_number), level != 0, level});
           }
           }
           break;

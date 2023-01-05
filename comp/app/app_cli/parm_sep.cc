@@ -35,20 +35,20 @@ const char cli_help_parmSep[] = "'sep' sets roller shutter end positions\n\n"
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
-typedef bool (*move_funT)(u32 auth_key);
+typedef bool (*move_funT)(uint32_t auth_key);
 
 int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
   bool enable = false;
   bool request_auth = false;
   bool request_unauth = false;
-  u32 auth_key = 0;
+  uint32_t auth_key = 0;
   move_funT move_fun = 0;
 
   so_object<void> cfgObj(&soMsg_sep_obj_begin, &soMsg_sep_obj_end, td);
 
-  u32 addr = fer_config.cu;
-  u8 g = 0, m = 0;
+  uint32_t addr = fer_config.cu;
+  uint8_t g = 0, m = 0;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -85,7 +85,7 @@ int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
         break;
 
       case otok::k_a: {
-        u32 tmp = val ? strtol(val, NULL, 16) : 0;
+        uint32_t tmp = val ? strtol(val, NULL, 16) : 0;
         if (tmp) {
           addr = tmp;
           if (*val == '0')

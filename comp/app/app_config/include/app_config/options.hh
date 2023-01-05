@@ -6,6 +6,7 @@
 #pragma once
 #include "proj_app_cfg.h"
 #include <stdint.h>
+#include <stddef.h>
 
 typedef const char *const_cstringT;
 

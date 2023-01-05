@@ -36,6 +36,6 @@ bool fer_stor_timerData_load(Fer_TimerData *p, uint8_t *g, uint8_t *m, bool wild
  * \param g,m          Group/members. Each one can be 0, which will match any. (e.g. g0,m0 will erase all stored timers).
  * \return             true on success
  */
-bool fer_stor_timerData_erase(u8 g, u8 m);
+bool fer_stor_timerData_erase(uint8_t g, uint8_t m);
 
 

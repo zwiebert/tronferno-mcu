@@ -35,12 +35,12 @@ int
 process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
 
-  u32 addr = fer_config.cu;
-  u8 g = 0, m = 0;
+  uint32_t addr = fer_config.cu;
+  uint8_t g = 0, m = 0;
   fer_if_cmd cmd = fer_if_cmd_None;
-  u8 repeats = FER_SB_PLAIN_REPEATS;
+  uint8_t repeats = FER_SB_PLAIN_REPEATS;
   bool has_requested_position = false;
-  i8 pct = -1;
+  int8_t pct = -1;
 #define has_pct (pct >= 0)
 #define has_cmd (cmd != fer_if_cmd_None)
 
@@ -55,7 +55,7 @@ process_parmSend(clpar p[], int len, const struct TargetDesc &td) {
     if (kt != otok::NONE) {
       switch (kt) {
       case otok::k_a: {
-        u32 tmp = val ? strtol(val, NULL, 16) : 0;
+        uint32_t tmp = val ? strtol(val, NULL, 16) : 0;
         if (tmp) {
           addr = tmp;
           if (*val == '0')

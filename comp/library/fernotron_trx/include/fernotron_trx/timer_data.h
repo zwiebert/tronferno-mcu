@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <utils_misc/cstring_utils.hh>
 #include <debug/dbg.h>
 
 /// Vocabulary type to represent Fernotron automatic movements

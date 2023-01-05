@@ -34,7 +34,7 @@ void print_timer_event_minute(const char *label, fer_au_minutesT mins) {
     io_putc('='), io_putd(mins), io_putlf();
 }
 
-void  so_print_timer_event_minutes(u8 g, u8 m) {
+void  so_print_timer_event_minutes(uint8_t g, uint8_t m) {
   Fer_TimerMinutes tm;
   if (Fer_TimerData tid; fer_stor_timerData_load(&tid, &g, &m, true) && fer_au_get_timer_minutes_from_timer_data_tm(&tm, &tid)) {
     print_timer_event_minute("astro-down", tm.minutes[0]);
@@ -46,7 +46,7 @@ void  so_print_timer_event_minutes(u8 g, u8 m) {
 }
 
 void  so_print_gmbitmask(Fer_GmSet *mm) {
-  u8 g;
+  uint8_t g;
 
   for (g = 0; g < 8; ++g) {
     io_putx8(mm->getGroup(g));
@@ -56,7 +56,7 @@ void  so_print_gmbitmask(Fer_GmSet *mm) {
 }
 
 void so_gmbitmask_to_str(char *dst, Fer_GmSet *mm) {
-  i8 g;
+  int8_t g;
   bool leading_zeros = true;
 
   for (g = 7; g >= 0; --g) {

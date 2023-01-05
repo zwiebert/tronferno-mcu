@@ -84,7 +84,7 @@ config_transmitter(const char *val) {
   return true;
 }
 
-bool asc2u8(const char *s, u8 *n, u8 limit) {
+bool asc2u8(const char *s, uint8_t *n, uint8_t limit) {
   if (s) {
     int g = atoi(s);
     if (0 <= g && g <= limit) {

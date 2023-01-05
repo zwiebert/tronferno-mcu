@@ -23,7 +23,7 @@
 
 static bool pras_active;
 static time_t end_time;
-static u8 pras_g, pras_m;
+static uint8_t pras_g, pras_m;
 static fer_alias_cmds pras_c;
 
 static void fer_alias_enable_disable_cb(bool enable) {
@@ -46,7 +46,7 @@ static inline void fer_alias_DISABLE_cb() {
 }
 
 
-bool  fer_alias_auto_set(u8 g, u8 m, fer_alias_cmds c, u16 id, unsigned timeout_secs) {
+bool  fer_alias_auto_set(uint8_t g, uint8_t m, fer_alias_cmds c, uint16_t id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
 
@@ -74,7 +74,7 @@ void fer_alias_auto_set_check_timeout(void) {
   }
 }
 
-bool fer_alias_auto_set_check(const u32 a) {
+bool fer_alias_auto_set_check(const uint32_t a) {
   if (end_time == 0)
     return false;
   {

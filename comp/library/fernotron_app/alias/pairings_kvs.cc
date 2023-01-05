@@ -138,7 +138,7 @@ bool fer_alias_rmController(uint32_t a) {
 }
 
 
-bool fer_alias_controller(u32 controller, u8 g, u8 m, bool unpair) {
+bool fer_alias_controller(uint32_t controller, uint8_t g, uint8_t m, bool unpair) {
   D(ets_printf("%s: g=%d, m=%d, unpair=%d\n", __func__, (int)g, (int)m, (int)unpair));
   precond((controller & 0xff000000) == 0);
   precond(g <= 7 && m <= 7);
@@ -165,7 +165,7 @@ bool fer_alias_controller(u32 controller, u8 g, u8 m, bool unpair) {
 }
 
 
-bool fer_alias_getControllerPairings(u32 a, Fer_GmSet *gm) {
+bool fer_alias_getControllerPairings(uint32_t a, Fer_GmSet *gm) {
   precond(gm && (a & 0xff000000) == 0);
 
   a2key(a);

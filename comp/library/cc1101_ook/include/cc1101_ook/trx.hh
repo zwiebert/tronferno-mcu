@@ -5,6 +5,7 @@
 
 #pragma once
 #include <stdint.h>
+#include <stddef.h>
 
 /**
  * \brief             Set CC1101's state to RX or TX

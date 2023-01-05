@@ -33,7 +33,7 @@
 
 static inline bool cfg_isMemberUnused(gT g, mT m) { return !fer_usedMemberMask.getMember(g, m); };
 
-static char *g_to_name(u8 g, char *buf);
+static char *g_to_name(uint8_t g, char *buf);
 
 
 static Fer_Pos_Map pos_map;
@@ -50,7 +50,7 @@ void fer_pos_POSITIONS_SAVE_cb(bool has_unsaved) {
 }
 
 
-Pct fer_statPos_getPct(u8 g, u8 m) {
+Pct fer_statPos_getPct(uint8_t g, uint8_t m) {
   precond(g <= 7 && m <= 7);
 
   if (g == 0) {
@@ -63,7 +63,7 @@ Pct fer_statPos_getPct(u8 g, u8 m) {
   return Pct{};
 }
 
-bool fer_statPos_isSunPos(u8 g, u8 m) {
+bool fer_statPos_isSunPos(uint8_t g, uint8_t m) {
   precond(g <= 7 && m <= 7);
 
   if (g == 0 || m == 0) {
@@ -71,7 +71,7 @@ bool fer_statPos_isSunPos(u8 g, u8 m) {
   }
    return pos_map.isSunPos(g, m);
 }
-static void set_state(u32 a, u8 g, u8 m, int position, bool isSunPos) {
+static void set_state(uint32_t a, uint8_t g, uint8_t m, int position, bool isSunPos) {
   DT(db_printf("%s: a=%x, g=%d, m=%d, position=%d\n", __func__, a, g, m, position));
   precond(g <= 7 && m <= 7);
   precond(0 <= position && position <= 100);
@@ -84,7 +84,7 @@ static void set_state(u32 a, u8 g, u8 m, int position, bool isSunPos) {
 }
 
 void
-fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct, bool isSunPos) {
+fer_statPos_setPct(uint32_t a, uint8_t g, uint8_t m, uint8_t pct, bool isSunPos) {
   precond(g <= 7 && m <= 7);
 
 #ifndef TEST_HOST
@@ -113,14 +113,14 @@ fer_statPos_setPct(u32 a, u8 g, u8 m, u8 pct, bool isSunPos) {
   if (pct <= 100) {
     if (a == 0 || a == fer_config.cu) {
 
-      so_arg_gmp_t gmp[2] = { { g, m, pct }, { g, 0, (u8) pos_map.getPct(g, 0) } };
+      so_arg_gmp_t gmp[2] = { { g, m, pct }, { g, 0, (uint8_t) pos_map.getPct(g, 0) } };
       uoApp_publish_pctChange_gmp(gmp, 2);
     }
   }
 #endif
 }
 
-void fer_statPos_setPcts(Fer_GmSet *mm, u8 p) {
+void fer_statPos_setPcts(Fer_GmSet *mm, uint8_t p) {
   for (Fer_Gm_Counter it(1, 1, true); it; ++it) {
     const gT g = it.getG();
     const mT m = it.getM();
@@ -155,7 +155,7 @@ void fer_pos_loop() {
 }
 
 void fer_pos_init() {
-  for (u8 g = 0; g < 8; ++g) {
+  for (uint8_t g = 0; g < 8; ++g) {
     pos_map.load_group_positions(g);
   }
 }

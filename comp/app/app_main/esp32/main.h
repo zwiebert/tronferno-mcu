@@ -18,7 +18,7 @@
 
 #define KEY_BOOT_COUNTER "BOOT_CT"
 
-extern i32 boot_counter;
+extern int32_t boot_counter;
 extern bool wifi_ap_active;
 
 void lfa_createWifiAp(void);
@@ -28,7 +28,7 @@ void tmr_checkNetwork_start();
 void tmr_loopPeriodic100ms_start();
 void tmr_pingLoop_start();
 void loop_eventBits_setup();
-u32 loop_eventBits_wait();
+uint32_t loop_eventBits_wait();
 
 void mcu_delayedRestart(unsigned delay_ms);
 

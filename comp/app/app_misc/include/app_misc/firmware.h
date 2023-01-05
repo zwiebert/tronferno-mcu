@@ -5,8 +5,11 @@
 
 #pragma once
 #include <app_config/proj_app_cfg.h>
+#include <stdint.h>
+
 #ifdef CONFIG_APP_USE_OTA
 #include "firmware_update/ota.h"
+
 
 
 #define OTA_FWURL_MASTER "https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/master/firmware/esp32/tronferno-mcu.bin"
@@ -32,7 +35,7 @@ inline bool app_doFirmwareUpdate(const char *url, const char *cert = ca_cert_pem
  * \brief       delay program or suspend task for a given time
  * \param us    duration in microseconds
  */
-void mcu_delay_us(u16 us);
+void mcu_delay_us(uint16_t us);
 
 /// \brief      doing a clean MCU restart
 void mcu_restart(void);

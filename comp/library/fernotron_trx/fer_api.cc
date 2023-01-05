@@ -8,7 +8,7 @@
 #include <string.h>
 
 bool
-timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
+timerString2bcd(const char *src, uint8_t *dst, uint16_t size_dst) {
   char buf[3];
   int i;
 
@@ -58,7 +58,7 @@ bool fer_fill_rtc_buf(time_t rtc) {
   return true;
 }
 
-bool fer_fill_timer_buf(u32 a, time_t rtc, const Fer_TimerData *tdr) {
+bool fer_fill_timer_buf(uint32_t a, time_t rtc, const Fer_TimerData *tdr) {
 
   fer_msg_raw_init(fer_tx_msg, MSG_TYPE_TIMER);
 
@@ -66,14 +66,14 @@ bool fer_fill_timer_buf(u32 a, time_t rtc, const Fer_TimerData *tdr) {
 
 
   if (tdr->hasWeekly()) {
-    u8 weekly_data[FER_FPR_TIMER_STAMP_WIDTH * 7];
+    uint8_t weekly_data[FER_FPR_TIMER_STAMP_WIDTH * 7];
     if (!timerString2bcd(tdr->getWeekly(), weekly_data, sizeof weekly_data))
       return false;
     fer_msg_raw_from_weeklyTimer(fer_tx_msg, weekly_data);
   }
 
   if (tdr->hasDaily()) {
-    u8 daily_data[FER_FPR_TIMER_STAMP_WIDTH];
+    uint8_t daily_data[FER_FPR_TIMER_STAMP_WIDTH];
     if (!timerString2bcd(tdr->getDaily(), daily_data, sizeof daily_data))
       return false;
     fer_msg_raw_from_dailyTimer(fer_tx_msg, daily_data);

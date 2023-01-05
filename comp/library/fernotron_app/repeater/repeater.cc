@@ -13,10 +13,10 @@
 
 const unsigned REP_DELAY_TS = 1;
 
-static u32 *known_ids;
+static uint32_t *known_ids;
 static int known_ids_count;
 
-static bool ferRep_isKnownId(u32 id) {
+static bool ferRep_isKnownId(uint32_t id) {
 
   for (int i = 0; i < known_ids_count; ++i) {
     if (known_ids[i] == id)
@@ -39,7 +39,7 @@ bool ferRep_repeatCommand(struct Fer_Cmd cmd) {
     return false;
 
   struct sf
-  msg { .when_to_transmit_ts = (u32) get_now_time_ts() + REP_DELAY_TS, .fsb = { .sd = cmd }, .rf_repeater = true, .mt = MSG_TYPE_PLAIN, .repeats = 0 };
+  msg { .when_to_transmit_ts = (uint32_t) get_now_time_ts() + REP_DELAY_TS, .fsb = { .sd = cmd }, .rf_repeater = true, .mt = MSG_TYPE_PLAIN, .repeats = 0 };
 
   fer_tx_pushMsg (&msg);
   fer_tx_loop();
@@ -57,7 +57,7 @@ bool ferRep_setup(const char *senders) {
   void *storage = realloc(known_ids, known_ids_count * sizeof(*known_ids));
   if (!storage)
     return false;
-  known_ids = static_cast<u32*>(storage);
+  known_ids = static_cast<uint32_t*>(storage);
 
   for (int i = 0; i < known_ids_count; ++i) {
     char id[7];

@@ -22,7 +22,7 @@ void test_config_keys2() {
   TEST_ASSERT_EQUAL_STRING("C_VERBOSE", settings_get_kvsKey(CB_VERBOSE));
   TEST_ASSERT_EQUAL(CBT_u32, settings_get_kvsType(CB_CUID));
 
-  u32 cu = config_read_item(CB_CUID, 0x80abcd);
+  uint32_t cu = config_read_item(CB_CUID, 0x80abcd);
 
 }
 

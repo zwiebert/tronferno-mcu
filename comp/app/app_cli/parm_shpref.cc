@@ -7,6 +7,7 @@
 #include "utils_misc/int_types.h"
 #include "debug/dbg.h"
 #include <string.h>
+#include <utils_misc/cstring_utils.hh>
 #include <alloca.h>
 #include <stdlib.h>
 
@@ -57,11 +58,11 @@ static void output_message_kvd(const struct TargetDesc &td, const char *key, int
 int process_parmShpref(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
   int err_ct = 0;
-  u8 g = 0, m = 0;
+  uint8_t g = 0, m = 0;
 
   bool haveStStore = false, haveStLoad = false;
   union {
-    u16 sta[3];
+    uint16_t sta[3];
     struct shutter_timings sts;
   } st = { .sta = { } };
 

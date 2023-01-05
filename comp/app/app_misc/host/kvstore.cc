@@ -16,11 +16,11 @@ bool kvs_get_string(const char *key, char *buf, size_t buf_size) {
   return false;
 }
 
-bool kvs_store_int32(const char *key, i32 val) {
+bool kvs_store_int32(const char *key, int32_t val) {
   return false;
 }
 
-bool kvs_get_int32(const char *key, i32 *dest) {
+bool kvs_get_int32(const char *key, int32_t *dest) {
   return false;
 }
 

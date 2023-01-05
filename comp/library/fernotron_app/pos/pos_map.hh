@@ -19,7 +19,7 @@ enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 
 #define CONFIG_APP_CFG_NAMESPACE "Tronferno"
 
-static inline char *g_to_name(u8 g, char *buf) {
+static inline char *g_to_name(uint8_t g, char *buf) {
   STRCPY(buf, "GMBM_PMAP_Gx");
   buf[11] = '0' + g;
   return buf;
@@ -38,11 +38,11 @@ class Fer_Pos_Map {
     bool sun : 1;
   };
   posDataT allPos_[8][8];
-  u8 changedGroupMask_ = 0;
+  uint8_t changedGroupMask_ = 0;
 
 public:
   Fer_Pos_Map() {
-    u8 g, m;
+    uint8_t g, m;
 
     for (g=0; g < 8; ++g) {
       allPos_[g][0].pct = pm_GROUP_UNUSED;
@@ -54,38 +54,38 @@ public:
 
 
 public:
-  u8 getChangedGroups()  { u8 result = changedGroupMask_; changedGroupMask_ = 0; return result; }
+  uint8_t getChangedGroups()  { uint8_t result = changedGroupMask_; changedGroupMask_ = 0; return result; }
 
-  u8 getPct(u8 g, u8 m) {
-       u8 result = (allPos_[g][m] + 0);
+  uint8_t getPct(uint8_t g, uint8_t m) {
+       uint8_t result = (allPos_[g][m] + 0);
        if (result == pm_INVALID && m == 0) {
          allPos_[g][0].pct = result = getAvgPctGroup(g);
        }
        return result;
   }
 
-  bool isSunPos(u8 g, u8 m) {
+  bool isSunPos(uint8_t g, uint8_t m) {
        return allPos_[g][m].isSunPos();
   }
 
-  void setPct(u8 g, u8 m, u8 pct, bool  isSunPos = false) {
+  void setPct(uint8_t g, uint8_t m, uint8_t pct, bool  isSunPos = false) {
     allPos_[g][m].pct = (pct);
     allPos_[g][m].sun = isSunPos;
     SET_BIT(changedGroupMask_, g);
     allPos_[g][0].pct = pm_INVALID;
   }
-  void setMemberUnused(u8 g, u8 m) {
+  void setMemberUnused(uint8_t g, uint8_t m) {
     setPct(g, m, pm_MEMBER_UNUSED);
     SET_BIT(changedGroupMask_, g);
   }
-  bool isMemberUnused(u8 g, u8 m) {
+  bool isMemberUnused(uint8_t g, uint8_t m) {
     return (getPct(g, m) == pm_MEMBER_UNUSED);
   }
-  void setGroupUnused(u8 g) {
+  void setGroupUnused(uint8_t g) {
     setPct(g, 0, pm_GROUP_UNUSED);
     SET_BIT(changedGroupMask_, g);
   }
-  bool isGroupUnused(u8 g) {
+  bool isGroupUnused(uint8_t g) {
     return (getPct(g, 0) == pm_GROUP_UNUSED);
   }
 
@@ -93,9 +93,9 @@ public:
     DT(ets_printf("%s: \n", __func__, interval_ts));
 
     fer_pos_POSITIONS_SAVE_cb(false);
-    u8 mask = changedGroupMask_;
+    uint8_t mask = changedGroupMask_;
     changedGroupMask_ = 0;
-    u8 g;
+    uint8_t g;
     for (g = 0; mask; ++g, (mask >>= 1)) {
       if ((mask & 1) == 0)
         continue;
@@ -110,7 +110,7 @@ public:
   void autoSavePositions_iv(int interval_ts) {
     DT(ets_printf("%s: interval_tx=%d\n", __func__, interval_ts));
     static unsigned next_save_pos;
-    u8 mask = changedGroupMask_;
+    uint8_t mask = changedGroupMask_;
     if (mask && periodic_ts(interval_ts, &next_save_pos)) {
       autoSavePositions();
       next_save_pos = 0;
@@ -122,18 +122,18 @@ public:
   static bool store_load(const char *name, posDataT *gm);
   static bool store_save(const char *name, const posDataT *gm);
 
-  bool load_group_positions(u8 g) {
+  bool load_group_positions(uint8_t g) {
     char buf[16];
     return store_load(g_to_name(g, buf), allPos_[g]);
   }
 
-  bool store_group_positions(u8 g) {
+  bool store_group_positions(uint8_t g) {
     char buf[16];
     return store_save(g_to_name(g, buf), allPos_[g]);
   }
 
-  u8 getAvgPctGroup(u8 g) {
-    u8 m;
+  uint8_t getAvgPctGroup(uint8_t g) {
+    uint8_t m;
     int count=0, sum=0;
     for (m = 1; m <= MBR_MAX; ++m) {
       if (isMemberUnused(g, m))
@@ -150,7 +150,7 @@ public:
   }
 
   void updateAvgPcts(bool force = false) {
-    for (u8 g = 0; g <= GRP_MAX; ++g) {
+    for (uint8_t g = 0; g <= GRP_MAX; ++g) {
       if (!force && !GET_BIT(changedGroupMask_, g))
         continue;
           setPct(g, 0, getAvgPctGroup(g));
@@ -187,7 +187,7 @@ public:
       if (seen.getMember(g, m))
         continue; // was already processed by a previous pass
 
-      u8 pct = getPct(g, m);
+      uint8_t pct = getPct(g, m);
       Fer_GmSet same_pct;
       for (auto it = all.begin(g); it; ++it) {
         const gT g2 = it.getG();

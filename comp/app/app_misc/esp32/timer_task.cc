@@ -104,7 +104,7 @@ static bool rxTxTask_setup() {
 
 //////////////////////////////////////////////////////////////////////////
 #ifndef CONFIG_APP_USE_ESP_GET_TIME
-volatile u32 run_time_s_, run_time_ts_;
+volatile uint32_t run_time_s_, run_time_ts_;
 #endif
 
 static bool IRAM_ATTR intTimer_isr(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_data) {
@@ -146,7 +146,7 @@ static bool IRAM_ATTR intTimer_isr(gptimer_handle_t timer, const gptimer_alarm_e
 
 #ifndef CONFIG_APP_USE_ESP_GET_TIME
   {
-    static u32 s10_ticks = TICK_FREQ_HZ / 10;
+    static uint32_t s10_ticks = TICK_FREQ_HZ / 10;
     static int8_t s_ticks = 10;
 
     if (s10_ticks-- == 0) {

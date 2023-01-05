@@ -30,7 +30,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 #ifndef CONFIG_APP_USE_ESP_GET_TIME
-volatile u32 run_time_s_, run_time_ts_;
+volatile uint32_t run_time_s_, run_time_ts_;
 #endif
 
 static void IRAM_ATTR intTimer_isr_work() {
@@ -70,7 +70,7 @@ static void IRAM_ATTR intTimer_isr_work() {
 
 #ifndef CONFIG_APP_USE_ESP_GET_TIME
   {
-    static u32 s10_ticks = TICK_FREQ_HZ / 10;
+    static uint32_t s10_ticks = TICK_FREQ_HZ / 10;
     static int8_t s_ticks = 10;
 
     if (s10_ticks-- == 0) {

@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 
-static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard); //XXX
+static void print_timer(const struct TargetDesc &td, uint8_t g, uint8_t m, bool wildcard); //XXX
 
 #define FLAG_NONE -2
 #define FLAG_ERROR -1
@@ -54,16 +54,16 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   int i;
   bool f_disableWeekly = false, f_disableDaily = false, f_disableAstro = false, f_disableManu = false;
   bool f_enableManu = false;
-  u8 parm_g = 0, parm_m = 0;
-  u32 addr = fer_config.cu;
+  uint8_t parm_g = 0, parm_m = 0;
+  uint32_t addr = fer_config.cu;
   bool has_parm_Random = false, has_parm_SunAuto = false;
-  i8 flag_rtc_only = FLAG_NONE;
+  int8_t flag_rtc_only = FLAG_NONE;
   time_t timer = time(NULL);
   bool f_modify = false;
   bool f_no_send = false;
   Fer_TimerData tdr;
   Fer_TimerData tda;
-  u8 rs = 0; // ==1: return timer data (like f=i).  ==2 return wildcard timer data (like f=I)
+  uint8_t rs = 0; // ==1: return timer data (like f=i).  ==2 return wildcard timer data (like f=I)
 
   for (i = 1; i < len; ++i) {
     const char *key = p[i].key, *val = p[i].val;
@@ -105,7 +105,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
       flag_rtc_only = asc2bool(val);
       break;
       case otok::k_a: {
-        u32 tmp = val ? strtol(val, NULL, 16) : 0;
+        uint32_t tmp = val ? strtol(val, NULL, 16) : 0;
         if (tmp)
           addr = tmp;
         else if (!is_val("0"))
@@ -219,7 +219,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
 
   // use (parts of) previously saved data
   if (need_reload_td) {
-    u8 g = parm_g, m = parm_m;
+    uint8_t g = parm_g, m = parm_m;
     // fill in missing parts from stored timer data
     if (fer_stor_timerData_load(&tdr, &g, &m, true)) {
       if (!f_disableDaily && !tda.hasDaily() && tdr.hasDaily()) {
@@ -266,7 +266,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
     }
   } else if (f_manual_changed) {
     Fer_TimerData tdb;
-    u8 rg = parm_g, rm = parm_m;
+    uint8_t rg = parm_g, rm = parm_m;
     if (fer_stor_timerData_load(&tdb, &rg, &rm, true)) {
       uoApp_publish_timer_json(rg, rm, &tda);
     }
@@ -282,10 +282,10 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   return 0;
 }
 
-static void print_timer(const struct TargetDesc &td, u8 g, u8 m, bool wildcard) {
+static void print_timer(const struct TargetDesc &td, uint8_t g, uint8_t m, bool wildcard) {
   Fer_TimerData tdr;
 
-  u8 g_res = g, m_res = m;
+  uint8_t g_res = g, m_res = m;
 
   if (fer_stor_timerData_load(&tdr, &g_res, &m_res, wildcard)) {
     soMsg_timer_begin(td, so_arg_gm_t { g, m });

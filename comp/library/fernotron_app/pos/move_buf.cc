@@ -26,7 +26,7 @@ struct Fer_Move* fer_mv_getNext(struct Fer_Move *pred) {
     return 0;
 
   int mvi = pred ? std::distance(moving.begin(), pred) + 1 : 0;
-  u8 msk = moving_mask >> mvi;
+  uint8_t msk = moving_mask >> mvi;
 
   for (; msk; ++mvi, (msk >>= 1)) {
     if (msk & 0x01)
@@ -36,7 +36,7 @@ struct Fer_Move* fer_mv_getNext(struct Fer_Move *pred) {
 }
 
 struct Fer_Move* fer_mv_calloc() {
-  u8 mvi;
+  uint8_t mvi;
 
   for (mvi = 0; mvi < fer_mv_SIZE; ++mvi) {
     if (GET_BIT(moving_mask, mvi))

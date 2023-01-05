@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #endif
 #include <string.h>
+#include <utils_misc/cstring_utils.hh>
 
 // 0123456789012345678
 //"YYYY-MM-DDThh:mm:ss"
@@ -74,20 +75,20 @@ rtc_set_by_string(const char *dateTimeString) {
   return false;
 }
 
-i16 
-eu_dst(const time_t *timer, i32 * z) {
-  u32 t = *timer;
-  if ((u8) (t >> 24) >= 194)
+int16_t 
+eu_dst(const time_t *timer, int32_t * z) {
+  uint32_t t = *timer;
+  if ((uint8_t) (t >> 24) >= 194)
     t -= 3029443200U;
   t = (t + 655513200) / 604800 * 28;
-  if ((u16) (t % 1461) < 856)
+  if ((uint16_t) (t % 1461) < 856)
     return 3600;
   else
     return 0;
 }
 
-i16 
-always_dst(const time_t *timer, i32 * z) {
+int16_t 
+always_dst(const time_t *timer, int32_t * z) {
   return 3600;
 }
 

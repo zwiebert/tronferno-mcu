@@ -53,7 +53,7 @@ bool Fer_TimerEvent::te_isEventNow(const time_t &now_time) {
   return te_matchMinute(now_time);
 }
 
-static int set_earliest(u8 g, u8 m, fer_au_minutesT *earliest, const struct tm *tm_now, fer_au_minutesT minutes_now, Fer_GmSet *gm) {
+static int set_earliest(uint8_t g, uint8_t m, fer_au_minutesT *earliest, const struct tm *tm_now, fer_au_minutesT minutes_now, Fer_GmSet *gm) {
   Fer_TimerData td;
   if (!fer_stor_timerData_load(&td, &g, &m, false))
     return 0;
@@ -80,7 +80,7 @@ static int set_earliest(u8 g, u8 m, fer_au_minutesT *earliest, const struct tm *
 
 static bool fer_am_get_next_timer_event_earliest(Fer_GmSet *mask_result, fer_au_minutesT *earliest_result, const struct tm *tm_now,
     fer_au_minutesT minutes_now) {
-  u8 g;
+  uint8_t g;
   fer_au_minutesT earliest = MINUTES_DISABLED;
   bool result = false;
 
@@ -97,7 +97,7 @@ static bool fer_am_get_next_timer_event_earliest(Fer_GmSet *mask_result, fer_au_
   }
 
   for (auto it = fer_usedMemberMask.begin(1); it; ++it) {
-    u8 g = it.getG(), m = it.getM();
+    uint8_t g = it.getG(), m = it.getM();
     if (manual_bits.getMember(g, m))
       continue;
 
@@ -140,12 +140,12 @@ bool Fer_TimerEvent::fer_am_get_next_timer_event(const time_t *now_time) {
   next_event = earliest;
 
   for (auto it = fer_usedMemberMask.begin(); it; ++it) {
-    u8 g = it.getG(), m = it.getM();
+    uint8_t g = it.getG(), m = it.getM();
     if (manual_bits.getMember(g, m))
       continue;
 
     Fer_TimerMinutes timi;
-    u8 g2 = g, m2 = m;
+    uint8_t g2 = g, m2 = m;
     Fer_TimerData td;
     if (!(fer_stor_timerData_load(&td, &g2, &m2, true) && fer_au_get_timer_minutes_from_timer_data_tm(&timi, &td, &tm_now))) {
       continue; // should not happen

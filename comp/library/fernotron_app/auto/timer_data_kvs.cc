@@ -30,7 +30,7 @@ const char TD_KVS_NAMESPACE[] = "auto_td";
 
 class TdKey {
 public:
-  constexpr TdKey(u8 g, u8 m) {
+  constexpr TdKey(uint8_t g, uint8_t m) {
     myKey[2] += g;
     myKey[3] += m;
   }
@@ -40,7 +40,7 @@ private:
   char myKey[5] = "td00";
 };
 
-static int delete_shadowded_kv(u8 group, u8 memb) {
+static int delete_shadowded_kv(uint8_t group, uint8_t memb) {
   int result = 0;
   DB2(printf("delete shadowed files(group=%d, memb=%d)\n", (int)group, (int)memb));
 
@@ -66,12 +66,12 @@ static int delete_shadowded_kv(u8 group, u8 memb) {
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 
-bool erase_timer_data_kvs(u8 g, u8 m) {
+bool erase_timer_data_kvs(uint8_t g, uint8_t m) {
   precond (g <= 7 && m <= 7);
   return delete_shadowded_kv(g, m) > 0;
 }
 
-bool  save_timer_data_kvs(Fer_TimerData *p, u8 g, u8 m) {
+bool  save_timer_data_kvs(Fer_TimerData *p, uint8_t g, uint8_t m) {
   bool success = false;
   precond(p && g <= 7 && m <= 7);
 
@@ -87,7 +87,7 @@ bool  save_timer_data_kvs(Fer_TimerData *p, u8 g, u8 m) {
 
 }
 
-bool  read_timer_data_kvs(Fer_TimerData *p, u8 *gp, u8 *mp, bool wildcard) {
+bool  read_timer_data_kvs(Fer_TimerData *p, uint8_t *gp, uint8_t *mp, bool wildcard) {
   bool success = false;
   precond(p && gp && mp && *gp <= 7 && *mp <= 7);
 

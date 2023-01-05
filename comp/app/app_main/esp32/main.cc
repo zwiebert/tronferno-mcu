@@ -19,7 +19,7 @@
 #include <cstdio>
 
 
-i32 boot_counter;
+int32_t boot_counter;
 
 void lfa_createWifiAp() {
   static bool wifi_ap_active;

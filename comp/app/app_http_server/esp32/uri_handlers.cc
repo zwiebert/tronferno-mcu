@@ -47,7 +47,7 @@ struct ws_send_arg {
 
 static void ws_async_broadcast(void *arg) {
   auto a = static_cast<ws_send_arg *>(arg);
-  httpd_ws_frame_t ws_pkt = {  .final = true, .type = HTTPD_WS_TYPE_TEXT, .payload = (u8*)a->json, .len = a->json_len };
+  httpd_ws_frame_t ws_pkt = {  .final = true, .type = HTTPD_WS_TYPE_TEXT, .payload = (uint8_t*)a->json, .len = a->json_len };
 
   for (int fd = 0; fd < ws_nfds; ++fd) {
     if (!FD_ISSET(fd, &ws_fds))
@@ -80,7 +80,7 @@ void ws_send_json(const char *json, ssize_t len) {
 static int ws_write(void *req, const char *s, ssize_t s_len = -1, bool final = true) {
   const size_t len = s_len < 0 ? strlen(s) : (size_t)s_len;
 
-  httpd_ws_frame_t ws_pkt = {  .final = final, .type = HTTPD_WS_TYPE_TEXT, .payload = (u8*)s, .len = len };
+  httpd_ws_frame_t ws_pkt = {  .final = final, .type = HTTPD_WS_TYPE_TEXT, .payload = (uint8_t*)s, .len = len };
   if (auto res = httpd_ws_send_frame((httpd_req_t *)req, &ws_pkt); res != ESP_OK) {
     ESP_LOGE(TAG, "httpd_ws_send_frame failed with %d (%s)", res, esp_err_to_name(res));
     return -1;
@@ -132,7 +132,7 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 
 
 
-struct file_map { const char *uri, *type, *file; u32 file_size; };
+struct file_map { const char *uri, *type, *file; uint32_t file_size; };
 
 const struct file_map uri_file_map[] =  {
         { .uri = "/f/cli/help/send", .file = cli_help_parmSend }, //

@@ -23,6 +23,7 @@
 //#include "utils_misc/int_macros.h"
 
 #include <string.h>
+#include <utils_misc/cstring_utils.hh>
 #include <stdio.h>
 #include <time.h>
 
@@ -122,7 +123,7 @@ void soMsg_mcu_ota_state(const struct TargetDesc &td) {
 
 void soMsg_mcu_boot_count(const struct TargetDesc &td) {
 #ifndef TEST_HOST
-  extern i32 boot_counter;
+  extern int32_t boot_counter;
   td.so().print("boot-count", boot_counter);
 #else
   td.so().print("boot-count", 0);

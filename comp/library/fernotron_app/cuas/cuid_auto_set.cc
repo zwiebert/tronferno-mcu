@@ -8,6 +8,7 @@
 #include <string.h>
 #include "app_config/proj_app_cfg.h"
 
+
 #include "fernotron/cuas/cuid_auto_set.h"
 
 #include "fernotron/fer_main.h"
@@ -16,6 +17,7 @@
 #include <utils_time/run_time.h>
 #include "fernotron_trx/fer_trx_c_api.h"
 
+#include <stdint.h>
 
 void (*fer_cuas_enable_disable_cb)(bool enable, uint32_t cu);
 
@@ -37,7 +39,7 @@ fer_cuas_state_T fer_cuas_getState() {
 static bool fer_cuas_active;
 static time_t end_time;
 
-bool fer_cuas_set(u16 id, unsigned timeout_secs) {
+bool fer_cuas_set(uint16_t id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
 
@@ -64,7 +66,7 @@ void fer_cuas_set_check_timeout() {
   }
 }
 
-bool fer_cuas_set_check(const u32 cu) {
+bool fer_cuas_set_check(const uint32_t cu) {
   if (end_time == 0)
     return false;
 

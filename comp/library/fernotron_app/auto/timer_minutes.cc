@@ -59,7 +59,7 @@ bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const F
   int i;
 
   // weekly strings starts with monday, not sunday
-  u8 weekday = (tm->tm_wday == 0) ? 6 : tm->tm_wday - 1;
+  uint8_t weekday = (tm->tm_wday == 0) ? 6 : tm->tm_wday - 1;
 
   for (i = 0; i < FER_MINTS_size; ++i)
     timi->minutes[i] = MINUTES_DISABLED;
@@ -116,7 +116,7 @@ bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const F
 
 fer_au_minutesT
 fer_au_get_earliest_from_timer_minutes(Fer_TimerMinutes *timi, fer_au_minutesT now) {
-  u8 i;
+  uint8_t i;
   fer_au_minutesT last = MINUTES_DISABLED;
   for (i=0; i < FER_MINTS_size; ++i) {
     if (timi->minutes[i] <= now)

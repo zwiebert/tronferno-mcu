@@ -5,7 +5,7 @@
 #include <fernotron_trx/raw/fer_msg_tx.h>
 
 static void
-fer_init_plain(fer_sbT *fsb, u32 a) {
+fer_init_plain(fer_sbT *fsb, uint32_t a) {
   FER_SB_PUT_DEVID(fsb, a);
   fsb->sd.memb = fer_memb_FromPlainSender;
   fsb->sd.grp = fer_grp_Broadcast;
@@ -13,7 +13,7 @@ fer_init_plain(fer_sbT *fsb, u32 a) {
 }
 
 void 
-fer_init_sender(fer_sbT *fsb, u32 devID) {
+fer_init_sender(fer_sbT *fsb, uint32_t devID) {
 
   fer_init_plain(fsb, devID);
 
@@ -47,9 +47,9 @@ fer_init_sender(fer_sbT *fsb, u32 devID) {
 Stop key hold down on central unit (-1): (...,1,2,3,4,5,6,7,8,9,a,b,c,d,e,1,2,...)
 Up/Down key hold down on central unit (unchanged) (...,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,...)
 */
-u8 
-fer_tglNibble_ctUp(u8 toggle_nibble, int step) {
-  u8 result = (toggle_nibble) & 0x0f;
+uint8_t 
+fer_tglNibble_ctUp(uint8_t toggle_nibble, int step) {
+  uint8_t result = (toggle_nibble) & 0x0f;
   while(step-- > 0) {
     result = (result + 1) & 0x0f;
     if (result == 0)

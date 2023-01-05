@@ -26,7 +26,7 @@
 ////////////////// private ///////////////////////////////////////////////////////////////
 
 static char * 
-gm_to_file_name (u8 g, u8 m) {
+gm_to_file_name (uint8_t g, uint8_t m) {
   precond (g <= 7 && m <= 7);
   static char file_name[] = "tdxx.bin";
 
@@ -45,7 +45,7 @@ static bool  read_data2(Fer_TimerData *p, const char *file_name) {
   return stor_fileRead(file_name, p, sizeof (Fer_TimerData));
 }
 
-static int delete_shadowded_files(u8 group, u8 memb) {
+static int delete_shadowded_files(uint8_t group, uint8_t memb) {
   int result = 0;
   DB2(printf("delete shadowed files(group=%d, memb=%d)\n", (int)group, (int)memb));
   for (Fer_Gm_Counter it; it; ++it) {
@@ -65,12 +65,12 @@ static int delete_shadowded_files(u8 group, u8 memb) {
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 
-bool erase_timer_data_fs(u8 g, u8 m) {
+bool erase_timer_data_fs(uint8_t g, uint8_t m) {
   precond (g <= 7 && m <= 7);
   return delete_shadowded_files(g, m) > 0;
 }
 
-bool  save_timer_data_fs(Fer_TimerData *p, u8 g, u8 m) {
+bool  save_timer_data_fs(Fer_TimerData *p, uint8_t g, uint8_t m) {
   bool result = false;
   precond(p && g <= 7 && m <= 7);
 
@@ -80,7 +80,7 @@ bool  save_timer_data_fs(Fer_TimerData *p, u8 g, u8 m) {
   return result;
 }
 
-bool  read_timer_data_fs(Fer_TimerData *p, u8 *g, u8 *m, bool wildcard) {
+bool  read_timer_data_fs(Fer_TimerData *p, uint8_t *g, uint8_t *m, bool wildcard) {
   bool result;
   precond(p && g && m && *g <= 7 && *m <= 7);
 

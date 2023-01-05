@@ -14,5 +14,5 @@
 
 bool save_timer_data_fs(Fer_TimerData *p, uint8_t group, uint8_t member);
 bool read_timer_data_fs(Fer_TimerData *p, uint8_t *group, uint8_t *member, bool wildcard);
-bool erase_timer_data_fs(u8 g, u8 m);
+bool erase_timer_data_fs(uint8_t g, uint8_t m);
 

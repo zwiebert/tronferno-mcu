@@ -17,8 +17,8 @@
 #include "debug/dbg.h"
 
 struct ftrx_counter {
-  u16 Words;
-  u16 Ticks, Bits;
+  uint16_t Words;
+  uint16_t Ticks, Bits;
 };
 #define US2DCK(us) FER_TX_US_TO_TCK(us)
 
@@ -26,7 +26,7 @@ struct ftrx_counter {
 /////////////////////////// transmitter /////////////////////////
 static struct ftrx_counter ftxCount;
 static bool output_level;   // output line
-volatile u16 fer_tx_messageToSend_wordCount; ///< Telling the transmitter the size of the message to send
+volatile uint16_t fer_tx_messageToSend_wordCount; ///< Telling the transmitter the size of the message to send
 volatile bool fer_tx_messageToSend_isReady;
 static fer_rawMsg *fer_tx_buf;
 
@@ -76,7 +76,7 @@ static bool IRAM_ATTR fer_tx_send_message() {
   static enum {
     state_lead_in, state_preamble, state_data_stop_bit, state_data_word, state_lead_out,
   } fer_tx_state;
-  static u16 word_buffer;
+  static uint16_t word_buffer;
 
   if (fer_tx_state == state_lead_in) {
     fer_tx_update_output_lead_in();

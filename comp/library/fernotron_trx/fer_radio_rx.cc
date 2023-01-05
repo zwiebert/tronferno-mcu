@@ -53,17 +53,17 @@ static inline void fer_rx_msg_received_isr_cb() {
 
 
 struct fer_rx_counter {
-  u16 Words, stopBits;
-  u8 Bits, preBits;
-  u8 errors; u8 recovered;
+  uint16_t Words, stopBits;
+  uint8_t Bits, preBits;
+  uint8_t errors; uint8_t recovered;
 };
 static bool input_level, input_edge_pos, input_edge_neg;
-static u16 aTicks, pTicks, nTicks;
-static u16 wordsToReceive;
+static uint16_t aTicks, pTicks, nTicks;
+static uint16_t wordsToReceive;
 // flags
 volatile fer_msg_type fer_rx_messageReceived;
 static bool fer_rx_messageReceived_flag;
-static u16 word_pair_buffer[2];
+static uint16_t word_pair_buffer[2];
 static struct fer_rx_counter frxCount;
 
 
@@ -82,10 +82,10 @@ void fer_rx_getQuality(struct fer_rx_quality *dst) {
 #define ct_incrementP(ctp, limit) ((++*ctp, *ctp %= limit) == 0)
 
 
-static fer_error IRAM_ATTR fer_rx_extract_Byte(const u16 *src, u8 *dst) {
+static fer_error IRAM_ATTR fer_rx_extract_Byte(const uint16_t *src, uint8_t *dst) {
   bool match = ((0xff & src[0]) == (0xff & src[1]));
   unsigned count = 0;
-  u8 out_byte = 0x77;
+  uint8_t out_byte = 0x77;
 
   if (fer_word_parity_p(src[0], 0)) {
     out_byte = src[0];
@@ -108,9 +108,9 @@ static fer_error IRAM_ATTR fer_rx_extract_Byte(const u16 *src, u8 *dst) {
   return fer_BAD_WORD_PARITY;
 }
 
-static fer_error  IRAM_ATTR fer_rx_verify_cmd(const u8 *dg) {
+static fer_error  IRAM_ATTR fer_rx_verify_cmd(const uint8_t *dg) {
   int i;
-  u8 checksum = 0;
+  uint8_t checksum = 0;
   bool all_null = true;
 
   for (i = 0; i < FER_CMD_BYTE_CT - 1; ++i) {
@@ -125,7 +125,7 @@ static fer_error  IRAM_ATTR fer_rx_verify_cmd(const u8 *dg) {
   return (checksum == dg[i] ? fer_OK : fer_BAD_CHECKSUM);
 }
 
-static void IRAM_ATTR fer_rx_recv_decodeByte(u8 *dst) {
+static void IRAM_ATTR fer_rx_recv_decodeByte(uint8_t *dst) {
   switch (fer_rx_extract_Byte(word_pair_buffer, dst)) {
   case fer_PAIR_NOT_EQUAL:
     ++frxCount.recovered;

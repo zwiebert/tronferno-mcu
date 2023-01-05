@@ -12,7 +12,7 @@
 #include <config_kvs/settings.hh>
 #include <assert.h>
 
-enum configAppItem : i8 {
+enum configAppItem : int8_t {
   CBA_NONE = -1,
   CBA_start = CB_size - 1, //
   CB_RECV, CB_TRANSM, CB_CUID, CB_USED_MEMBERS, CB_BAUD, CB_GPIO, CB_CFG_PASSWD, CB_LONGITUDE, CB_LATITUDE,
@@ -37,15 +37,15 @@ CB_TIZO,
   CBA_size
 };
 
-constexpr u32 CBM_gpio = BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO) | BIT(CB_SETBUTTON_GPIO) | BIT(CB_GPIO) | BIT(CB_RF_TRX);
-constexpr u32 CBM_geo = BIT(CB_LONGITUDE) | BIT(CB_LATITUDE) | BIT(CB_TZ) | BIT(CB_ASTRO_CORRECTION);
+constexpr uint32_t CBM_gpio = BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO) | BIT(CB_SETBUTTON_GPIO) | BIT(CB_GPIO) | BIT(CB_RF_TRX);
+constexpr uint32_t CBM_geo = BIT(CB_LONGITUDE) | BIT(CB_LATITUDE) | BIT(CB_TZ) | BIT(CB_ASTRO_CORRECTION);
 constexpr u64 CBM_cc1101 = BIT64(CB_CC1101_CONFIG) | BIT64(CB_RF_TRX) | BIT64(CB_RFSCK_GPIO) | BIT64(CB_RFMISO_GPIO) | BIT64(CB_RFMOSI_GPIO) | BIT64(CB_RFSS_GPIO) | BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO);
 constexpr u64 CBM_rf_repeater = BIT64(CB_RF_REPEATER);
 
 
-class AppSettings: public Settings<configAppItem, (i8)CBA_size - (i8)CB_size, CB_size> {
+class AppSettings: public Settings<configAppItem, (int8_t)CBA_size - (int8_t)CB_size, CB_size> {
 public:
-  using Base = Settings<configAppItem, (i8)CBA_size - (i8)CB_size, CB_size>;
+  using Base = Settings<configAppItem, (int8_t)CBA_size - (int8_t)CB_size, CB_size>;
   using Item = configAppItem;
   using storeFunT = void (*)(configAppItem item, const char *val);
 public:

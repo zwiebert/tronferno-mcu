@@ -19,12 +19,12 @@
 #include <fernotron_trx/fer_trx_c_api.h>
 #include <fernotron_trx/fer_trx_api.hh>
 
-typedef uint8_t u8;
-typedef int8_t i8;
-typedef uint16_t u16;
-typedef int16_t i16;
-typedef uint32_t u32;
-typedef int32_t i32;
+typedef uint8_t uint8_t;
+typedef int8_t int8_t;
+typedef uint16_t uint16_t;
+typedef int16_t int16_t;
+typedef uint32_t uint32_t;
+typedef int32_t int32_t;
 
 
 // diagnostic output
@@ -43,7 +43,7 @@ static void frb_printPacket(const union fer_cmd_row *cmd) {
 }
 
 static void
-printTimerStamp(u8 d[18][9], int row, int col) {
+printTimerStamp(uint8_t d[18][9], int row, int col) {
   LockGuard lock(txtio_mutex);
 
   printBCD(d[row][col+1]);
@@ -51,7 +51,7 @@ printTimerStamp(u8 d[18][9], int row, int col) {
   printBCD(d[row][col]);
 }
 
-static void  fpr_printPrgPacketInfo(u8 d[FER_PRG_PACK_CT][FER_PRG_BYTE_CT], bool rtc_only) {
+static void  fpr_printPrgPacketInfo(uint8_t d[FER_PRG_PACK_CT][FER_PRG_BYTE_CT], bool rtc_only) {
   LockGuard lock(txtio_mutex);
 
   int row, col;
@@ -110,8 +110,8 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 }
 
 //cast data (message after cmd) to byte array
-#define fer_msg_get_data(msg) ((u8(*)[FER_PRG_BYTE_CT])(msg)->rtc.bd)
-typedef u8(*fer_msg_data)[FER_PRG_BYTE_CT];
+#define fer_msg_get_data(msg) ((uint8_t(*)[FER_PRG_BYTE_CT])(msg)->rtc.bd)
+typedef uint8_t(*fer_msg_data)[FER_PRG_BYTE_CT];
 
 void  fer_msg_print(const char *tag, const fer_rawMsg *msg, fer_msg_kindT t, bool verbose) {
   LockGuard lock(txtio_mutex);
@@ -148,7 +148,7 @@ void  fer_msg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fer_msg_k
 
 
   fer_if_cmd c = (fer_if_cmd)FER_SB_GET_CMD(fsb);
-  u32 id = FER_SB_GET_DEVID(fsb);
+  uint32_t id = FER_SB_GET_DEVID(fsb);
 
   const char *cs = 0;
   const char *fdt = 0;
@@ -197,8 +197,8 @@ void  fer_msg_print_as_cmdline(const char *tag, const fer_rawMsg *msg, fer_msg_k
   io_puts("type="), io_puts(fdt),
   io_puts(" a="), io_print_hex(id, false);
   if (FER_SB_ADDR_IS_CENTRAL(fsb)) {
-    u8 g = FER_SB_GET_GRP(fsb);
-    u8 m = FER_SB_GET_MEMB(fsb);
+    uint8_t g = FER_SB_GET_GRP(fsb);
+    uint8_t m = FER_SB_GET_MEMB(fsb);
     if (g != 0) {
       io_puts(" g="), io_putd(g);
       if (m != 0) {

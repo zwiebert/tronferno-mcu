@@ -25,7 +25,7 @@
 
 
 void   test_set_get_pct() {
-  u8 pct;
+  uint8_t pct;
   fer_statPos_setPct(0, 2, 3, 42);
   pct = fer_statPos_getPct(2, 3);
   TEST_ASSERT_EQUAL(42,pct);
@@ -39,7 +39,7 @@ void   test_set_get_pct() {
 
 
 void tst_dynamicPos() {
-  u8 pct;
+  uint8_t pct;
 
   uint8_t pcts[] { 50, 46, 42, 38, 34, 30, 26, 22, 18, 14, 10 };
 
@@ -77,7 +77,7 @@ void tst_dynamicPos() {
 
 
 void tst_dynamicPos_stop() {
-  u8 pct;
+  uint8_t pct;
 
   uint8_t pcts[] { 50, 46, 42, 38, 34, 30, 26, 22, 18, 14, 10 };
 

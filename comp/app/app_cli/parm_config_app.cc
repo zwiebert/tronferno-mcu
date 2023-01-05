@@ -103,7 +103,7 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, const str
       fer_cuas_set(cli_msgid, 60);
       cli_replySuccess(td);
     } else {
-      u32 cu = strtoul(val, NULL, 16);
+      uint32_t cu = strtoul(val, NULL, 16);
 
       if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
         return cli_replyFailure(td);

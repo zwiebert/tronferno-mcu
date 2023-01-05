@@ -20,6 +20,7 @@
 #include "cc1101_ook/trx.hh"
 
 #include <string.h>
+#include <utils_misc/cstring_utils.hh>
 
 unsigned tfmcu_error_mask;
 void tfmcu_put_error(tfmcu_errorT error_code, bool value) {
@@ -40,7 +41,7 @@ struct cfg_gpio* config_read_gpio(struct cfg_gpio *c) {
 #endif
     kvs_close(h);
 
-    const i8 rfTrx = config_read_rf_trx();
+    const int8_t rfTrx = config_read_rf_trx();
     c->out_rf_inv = rfTrx == rfTrxCc1101 || rfTrx == rfTrxRxItx;
   }
   return c;

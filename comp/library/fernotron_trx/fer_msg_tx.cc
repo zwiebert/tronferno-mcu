@@ -37,7 +37,7 @@ static void fer_send_checkQuedState() {
   }
 }
 
-bool fer_send_msg_with_stop(const fer_sbT *fsb, u16 delay, u16 stopDelay, i8 repeats) {
+bool fer_send_msg_with_stop(const fer_sbT *fsb, uint16_t delay, uint16_t stopDelay, int8_t repeats) {
   precond(fsb);
   precond(stopDelay > 0);
 
@@ -50,11 +50,11 @@ bool fer_send_msg_with_stop(const fer_sbT *fsb, u16 delay, u16 stopDelay, i8 rep
   return false;
 }
 
-bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, i8 repeats, u16 delay) {
+bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, int8_t repeats, uint16_t delay) {
   precond(fsb);
   precond (msgType == MSG_TYPE_PLAIN || msgType == MSG_TYPE_TIMER);
 
-  struct sf msg = { .when_to_transmit_ts = (delay + (u32)get_now_time_ts()), .fsb = *fsb, .mt = msgType, .repeats = repeats };
+  struct sf msg = { .when_to_transmit_ts = (delay + (uint32_t)get_now_time_ts()), .fsb = *fsb, .mt = msgType, .repeats = repeats };
   if (!fer_tx_pushMsg(&msg))
     return false;
 
@@ -62,10 +62,10 @@ bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, i8 repeats, u16 dela
   return true;
 }
 
-bool fer_send_msg_rtc(const fer_sbT *fsb, time_t rtc, i8 repeats) {
+bool fer_send_msg_rtc(const fer_sbT *fsb, time_t rtc, int8_t repeats) {
   precond(fsb);
 
-  struct sf msg = { .when_to_transmit_ts = (u32)get_now_time_ts(), .fsb = *fsb, .rtc = rtc, .mt = MSG_TYPE_RTC, .repeats = repeats };
+  struct sf msg = { .when_to_transmit_ts = (uint32_t)get_now_time_ts(), .fsb = *fsb, .rtc = rtc, .mt = MSG_TYPE_RTC, .repeats = repeats };
 
   if (!fer_tx_pushMsg(&msg))
     return false;
@@ -75,7 +75,7 @@ bool fer_send_msg_rtc(const fer_sbT *fsb, time_t rtc, i8 repeats) {
 }
 
 static bool fer_send_queued_msg(struct sf *msg) {
-  static u8 sf_toggle;
+  static uint8_t sf_toggle;
   precond(!fer_tx_isTransmitterBusy());
   precond(msg);
 
@@ -110,7 +110,7 @@ static bool fer_send_queued_msg(struct sf *msg) {
   return false;
 }
 
-fer_sbT fer_construct_fsb(u32 a, u8 g, u8 m, fer_cmd cmd) {
+fer_sbT fer_construct_fsb(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd) {
   fer_sbT fsb;
   fer_init_sender(&fsb, a);
 
@@ -155,8 +155,8 @@ static bool wait_tx_available() {
   return true;
 }
 
-static bool wait_tx_when_to_transmit(u32 now_ts, u32 when_ts) {
-  const u32 delay_ms = (when_ts - now_ts) * 100;
+static bool wait_tx_when_to_transmit(uint32_t now_ts, uint32_t when_ts) {
+  const uint32_t delay_ms = (when_ts - now_ts) * 100;
   static void *tmr;
 
   mainLoop_stopFun(tmr);
@@ -170,7 +170,7 @@ void fer_tx_loop() {
     return;
 
   struct sf *const msg = fer_tx_nextMsg();
-  const u32 now_ts = get_now_time_ts();
+  const uint32_t now_ts = get_now_time_ts();
 
   if (!msg) {
     fer_trx_direction(false);

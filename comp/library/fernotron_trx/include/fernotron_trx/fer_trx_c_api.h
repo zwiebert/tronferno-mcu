@@ -31,7 +31,7 @@ inline bool FER_U32_TEST_TYPE(uint32_t a, unsigned t) {
 /// \brief Fernotron command codes.
 typedef enum
 #ifdef __cplusplus
-: u8
+: uint8_t
 #endif
   {
   fer_if_cmd_None,
@@ -54,36 +54,36 @@ typedef enum
 
 /// \brief Vocabulary type of a plain command message
 struct Fer_MsgPlainCmd {
-  u32 a; ///< ID/address of device
-  u8 g; ///< group number (if central unit device)
-  u8 m;  ///< group-member number (if central unit device)
+  uint32_t a; ///< ID/address of device
+  uint8_t g; ///< group number (if central unit device)
+  uint8_t m;  ///< group-member number (if central unit device)
   fer_if_cmd cmd; ///< Fernotron command code
 };
 
 /// \brief Vocabulary type of a plain command message with values to control the transmitting
 struct Fer_MsgCmd {
-  u32 a; ///< ID/address of device
-  u8 g; ///< group number (if central unit device)
-  u8 m;  ///< group-member number (if central unit device)
+  uint32_t a; ///< ID/address of device
+  uint8_t g; ///< group number (if central unit device)
+  uint8_t m;  ///< group-member number (if central unit device)
   fer_if_cmd cmd; ///< Fernotron command code.
-  u8 repeats; ///< Repeat the transmission REPEATS times.
-  u16 delay;  ///< Delay the transmission by DELAY (in s/10).
-  u16 stopDelay; ///< Send a STOP command after STOP_DELAY (in s/10).
+  uint8_t repeats; ///< Repeat the transmission REPEATS times.
+  uint16_t delay;  ///< Delay the transmission by DELAY (in s/10).
+  uint16_t stopDelay; ///< Send a STOP command after STOP_DELAY (in s/10).
 };
 
 /// \brief Vocabulary type of a message to set the RTC
 struct Fer_MsgRtc  {
-  u32 a; ///< ID/address of device
-  u8 g; ///< group number (if central unit device)
-  u8 m;  ///< group-member number (if central unit device)
+  uint32_t a; ///< ID/address of device
+  uint8_t g; ///< group number (if central unit device)
+  uint8_t m;  ///< group-member number (if central unit device)
   time_t rtc; ///< time value to set the built-in RTC
 };
 
 /// \brief Vocabulary type of a message to set the RTC and any automatics/timers
 struct Fer_MsgTimer {
-  u32 a; ///< ID/address of device
-  u8 g; ///< group number (if central unit device)
-  u8 m;  ///< group-member number (if central unit device)
+  uint32_t a; ///< ID/address of device
+  uint8_t g; ///< group number (if central unit device)
+  uint8_t m;  ///< group-member number (if central unit device)
   time_t rtc; ///< time value to set the built-in RTC
   const struct Fer_TimerData *td; ///< automatics/timer data
 };

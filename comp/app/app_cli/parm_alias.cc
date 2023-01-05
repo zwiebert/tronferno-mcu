@@ -45,9 +45,9 @@ process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
 
   so_object<void> cfgObj(&soMsg_pair_begin, &soMsg_pair_end, td);
 
-  u32 addr = 0;
+  uint32_t addr = 0;
   const char *addr_as_string = "";
-  u8 g = 0, m = 0;
+  uint8_t g = 0, m = 0;
   fer_alias_cmds c = PC_none;
   Fer_GmSet mm ;
   bool has_mm = false;

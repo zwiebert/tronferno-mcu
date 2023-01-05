@@ -38,7 +38,7 @@ bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, int8_t repeats, uint
  * \param repeats  Repeat sending the message N times
  * \return         true for success
  */
-bool fer_send_msg_rtc(const fer_sbT *fsb, time_t rtc, i8 repeats);
+bool fer_send_msg_rtc(const fer_sbT *fsb, time_t rtc, int8_t repeats);
 
 
 

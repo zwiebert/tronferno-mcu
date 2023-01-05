@@ -24,6 +24,8 @@
 #include <cc1101_ook/trx.hh>
 
 #include <string.h>
+#include <utils_misc/cstring_utils.hh>
+
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
