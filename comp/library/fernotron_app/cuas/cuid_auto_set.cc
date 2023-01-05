@@ -6,7 +6,7 @@
  */
 
 #include <string.h>
-#include "app_config/proj_app_cfg.h"
+
 
 
 #include "fernotron/cuas/cuid_auto_set.h"

@@ -4,7 +4,7 @@
  *  Created on: Feb 25, 2021
  *      Author: bertw
  */
-#include "app_config/proj_app_cfg.h"
+
 
 #include "cc1101_ook/spi.hh"
 #include "cc1101_ook/trx.hh"

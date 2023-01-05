@@ -1,7 +1,7 @@
 idf_component_register(SRC_DIRS "."
                        INCLUDE_DIRS "." ../include 
                        PRIV_INCLUDE_DIRS ../include/fernotron
-                       PRIV_REQUIRES fernotron_trx fernotron_app fernotron_app app_config app_settings utils_debug utils_misc txtio utils_time 
+                       PRIV_REQUIRES fernotron_trx fernotron_app fernotron_app  app_settings utils_debug utils_misc txtio utils_time 
                                      unity
                        #REQUIRES 
                        #app_misc unity txtio  fernotron_trx fernotron_app

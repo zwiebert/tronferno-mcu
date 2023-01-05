@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+
 #include <fernotron_trx/raw/fer_radio_trx.h>
 #include "fer_trx_impl.hh"
 #include "fer_radio_parity.h"

@@ -1,11 +1,11 @@
-#include "app_config/proj_app_cfg.h"
+
 
 #include <string.h>
 #include "fernotron/fer_main.h"
 #include "fernotron/pos/commands.h"
 #include "fernotron/pos/shutter_pct.h"
 #include "txtio/inout.h"
-#include "app_config/proj_app_cfg.h"
+
 #include "fernotron/auto/fau_tminutes.h"
 #include "utils_misc/bcd.h"
 #include "cli_imp.h"

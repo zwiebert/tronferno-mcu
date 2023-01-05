@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+
 
 #include <fernotron/auto/fau_next_event.hh>
 #include <fernotron_trx/fer_trx_api.hh>

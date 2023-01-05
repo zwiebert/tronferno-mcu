@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+
 #include "pos_map.hh"
 #include <string.h>
 

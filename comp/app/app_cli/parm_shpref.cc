@@ -1,5 +1,5 @@
 
-#include "app_config/proj_app_cfg.h"
+
 #include "fernotron/pos/shutter_prefs.h"
 #include "cli_imp.h"
 #include "app_misc/opt_map.hh"

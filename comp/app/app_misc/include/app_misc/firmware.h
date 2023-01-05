@@ -4,7 +4,7 @@
  */
 
 #pragma once
-#include <app_config/proj_app_cfg.h>
+
 #include <stdint.h>
 
 #ifdef CONFIG_APP_USE_OTA

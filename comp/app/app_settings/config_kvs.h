@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "app_config/proj_app_cfg.h"
+
 #include "app_settings/config.h"
 #include "app_settings/app_settings.hh"
 

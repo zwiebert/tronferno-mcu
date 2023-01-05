@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+
 
 #include <fernotron/auto/fau_tevent.hh>
 #include "fernotron/auto/fau_tdata_store.h"

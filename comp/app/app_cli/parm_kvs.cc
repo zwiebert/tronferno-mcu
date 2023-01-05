@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+
 #include "app_uout/status_output.h"
 #include "app_settings/config.h"
 #include "app_misc/rtc.h"

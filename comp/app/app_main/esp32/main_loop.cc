@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+
 
 #include "main.h"
 #include "main_loop/main_queue.hh"

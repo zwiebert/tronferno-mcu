@@ -1,6 +1,6 @@
 #include "parm_config.h"
 
-#include "app_config/proj_app_cfg.h"
+
 
 #include "cli_config.h"
 #include "app_misc/opt_map.hh"
@@ -9,7 +9,7 @@
 #include "fernotron/sep/set_endpos.h"
 #include "app_uout/status_output.h"
 #include "fernotron/cuas/cuid_auto_set.h"
-#include "app_config/proj_app_cfg.h"
+
 #include "app_settings/config.h"
 #include "app_settings/app_settings.hh"
 #include "app_misc/rtc.h"

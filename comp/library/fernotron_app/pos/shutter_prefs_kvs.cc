@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+
 #include "fernotron/pos/shutter_prefs.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"

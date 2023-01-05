@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+
 #include "main.h"
 #include "app_cli/cli_app.h"
 #include "app_settings/config.h"

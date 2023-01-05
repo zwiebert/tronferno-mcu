@@ -3,7 +3,7 @@
 #include "fernotron/pos/shutter_pct.h"
 #include "fernotron/pos/shutter_prefs.h"
 
-#include "app_config/proj_app_cfg.h"
+
 
 #include "fernotron/fer_main.h"
 #include "debug/dbg.h"

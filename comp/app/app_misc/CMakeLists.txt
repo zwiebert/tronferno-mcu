@@ -10,7 +10,7 @@ idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS "./include"
     REQUIRES  utils_time firmware_update
-    PRIV_REQUIRES   app_settings app_config key_value_store nvs_flash
+    PRIV_REQUIRES   app_settings  key_value_store nvs_flash
                     driver #PRIV_ESP_IDF
     #EMBED_TXTFILES ./ca_cert.pem
 )

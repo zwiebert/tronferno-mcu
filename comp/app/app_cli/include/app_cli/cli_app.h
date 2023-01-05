@@ -5,7 +5,7 @@
 
 
 #pragma once
-#include "app_config/proj_app_cfg.h"
+
 #include "cli/cli.h"
 
 extern const char cli_help_parmSend[]; ///< help text for CLI command

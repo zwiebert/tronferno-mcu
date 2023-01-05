@@ -9,7 +9,7 @@
 #pragma once
 
 #include "stdbool.h"
-#include "app_config/proj_app_cfg.h"
+
 #include <fernotron_trx/fer_trx_c_api.h>
 
 /**

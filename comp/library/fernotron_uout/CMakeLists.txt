@@ -5,7 +5,7 @@ idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS "./include" 
     REQUIRES utils_misc
-    PRIV_REQUIRES app_config app_uout utils_debug  txtio uout fernotron_trx fernotron_app
+    PRIV_REQUIRES  app_uout utils_debug  txtio uout fernotron_trx fernotron_app
      )
 
 component_compile_options(${comp_compile_opts})

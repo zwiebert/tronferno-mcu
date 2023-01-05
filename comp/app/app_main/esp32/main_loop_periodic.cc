@@ -2,7 +2,7 @@
  * \file   app_main/esp32/main_loop_periodic.h
  * \brief  Run events in main task by setting event bits from periodic 100ms timer
  */
-#include "app_config/proj_app_cfg.h"
+
 
 #include "main_loop_periodic.h"
 

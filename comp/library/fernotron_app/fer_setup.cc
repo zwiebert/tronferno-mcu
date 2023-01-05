@@ -1,6 +1,6 @@
 
 
-#include "app_config/proj_app_cfg.h"
+
 
 #include "debug/dbg.h"
 #include "fernotron/alias/pairings.h"

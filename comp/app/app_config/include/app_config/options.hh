@@ -4,7 +4,7 @@
  */
 
 #pragma once
-#include "proj_app_cfg.h"
+
 #include <stdint.h>
 #include <stddef.h>
 

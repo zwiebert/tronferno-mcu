@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+
 
 #include "fernotron/alias/pairings.h"
 #include <stdio.h>

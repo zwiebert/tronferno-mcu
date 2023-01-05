@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 #include "stdbool.h"
-#include "app_config/proj_app_cfg.h"
+
 #include "fer_msg_attachment.h"
 #include <fernotron_trx/fer_trx_c_api.h>
 

@@ -1,6 +1,6 @@
 #include "parm_config.h"
 
-#include "app_config/proj_app_cfg.h"
+
 #include "cli_imp.h"
 
 #include <utils_misc/mutex.hh>

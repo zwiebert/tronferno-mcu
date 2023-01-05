@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+
 #include "app_misc/kvstore.h"
 
 bool kvs_store_string(const char *key, const char *val) {

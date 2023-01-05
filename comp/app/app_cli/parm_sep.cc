@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+
 
 #include <string.h>
 #include "fernotron/fer_main.h"

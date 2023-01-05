@@ -7,7 +7,7 @@
 #pragma once
 
 #include "fernotron/fer_pct.h"
-#include "app_config/proj_app_cfg.h"
+
 
 #include <stdlib.h>
 #include "stdbool.h"

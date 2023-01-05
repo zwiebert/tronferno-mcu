@@ -4,7 +4,7 @@
  *  Created on: 08.09.2018
  *      Author: bertw
  */
-#include "app_config/proj_app_cfg.h"
+
 #include <fernotron/auto/fau_next_event.hh>
 #include "timer_data_fs.h"
 #include "timer_data_kvs.h"

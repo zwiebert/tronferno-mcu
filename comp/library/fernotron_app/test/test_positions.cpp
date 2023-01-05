@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+
 #include "fernotron/pos/shutter_pct.h"
 #include "../pos/move.hh"
 #include "fernotron/fer_main.h"

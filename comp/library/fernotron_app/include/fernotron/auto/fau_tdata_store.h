@@ -11,7 +11,7 @@
 #pragma once
 
 #include "fernotron_trx/timer_data.h"
-#include "app_config/proj_app_cfg.h"
+
 
 /**
  * \brief         Store timer data

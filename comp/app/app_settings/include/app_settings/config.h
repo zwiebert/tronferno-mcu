@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "app_config/proj_app_cfg.h"
+
 #include "config_kvs/config.h"
 #include "txtio/inout.h"
 #include "fernotron/fer_pct.h"

@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+
 
 #include "app_misc/rtc.h"
 #include "app_misc/timer.h"

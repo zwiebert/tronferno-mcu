@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+
 
 #include "fernotron/auto/fau_tminutes.h"
 #include "fernotron/auto/fau_tdata_store.h"

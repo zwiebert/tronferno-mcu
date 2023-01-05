@@ -4,7 +4,7 @@
  *  Created on: 08.09.2018
  *      Author: bertw
  */
-#include "app_config/proj_app_cfg.h"
+
 #include "timer_data_kvs.h"
 #include "fernotron/fer_main.h"
 #include "key_value_store/kvs_wrapper.h"

@@ -1,5 +1,5 @@
 
-#include "app_config/proj_app_cfg.h"
+
 #include "so_out.h"
 
 #include "utils_misc/int_types.h"

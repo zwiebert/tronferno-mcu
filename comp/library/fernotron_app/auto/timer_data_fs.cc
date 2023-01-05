@@ -4,7 +4,7 @@
  *  Created on: 08.09.2018
  *      Author: bertw
  */
-#include "app_config/proj_app_cfg.h"
+
 #include "timer_data_fs.h"
 #include "fernotron/fer_main.h"
 #include "storage/storage.h"
