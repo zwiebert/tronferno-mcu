@@ -48,3 +48,4 @@
 #define CONFIG_APP_USE_WS 1
 #define CONFIG_APP_WIFI_PASSWORD ""
 #define CONFIG_APP_WIFI_SSID ""
+#define CONFIG_APP_CFG_NAMESPACE "Tronferno"

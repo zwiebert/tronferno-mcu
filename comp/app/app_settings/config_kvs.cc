@@ -36,11 +36,11 @@ bool config_item_modified(enum configAppItem item) {
       ferCfg_isModified = true;
       break;
     case CB_BAUD:
-      kvsR(i8, item, C.mcu_serialBaud);
+      kvsRead_i8(h, item, C.mcu_serialBaud);
       break;
 #ifdef CONFIG_APP_USE_MDR_TIME
     case CB_DST:
-      kvsR(u32, item, C.geo_dST);
+      kvsRead_u32(h, item, C.geo_dST);
       break;
 #endif
     case CB_VERBOSE:
@@ -64,9 +64,9 @@ bool config_gpio_setPinMode(unsigned gpio_number, mcu_pin_mode ps, mcu_pin_level
   kvshT h;
   if ((h = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ_WRITE))) {
     struct cfg_gpio c = {};
-    kvsRb(CB_GPIO, c.gpio);
+    kvsRead_blob(h, CB_GPIO, c.gpio);
     gpioCfg_setPin(&c, gpio_number, ps, pl);
-    result = (kvsWb(CB_GPIO, c.gpio) == sizeof c.gpio);
+    result = kvsWrite_blob(h, CB_GPIO, c.gpio);
     kvs_commit(h);
     kvs_close(h);
   }

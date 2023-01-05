@@ -32,11 +32,11 @@ void tfmcu_put_error(tfmcu_errorT error_code, bool value) {
 struct cfg_gpio* config_read_gpio(struct cfg_gpio *c) {
   kvshT h;
   if ((h = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ))) {
-    kvsR(i8, CB_RFOUT_GPIO, c->out_rf);
-    kvsR(i8, CB_RFIN_GPIO, c->in_rf);
-    kvsR(i8, CB_SETBUTTON_GPIO, c->in_setButton);
+    kvsRead_i8(h, CB_RFOUT_GPIO, c->out_rf);
+    kvsRead_i8(h, CB_RFIN_GPIO, c->in_rf);
+    kvsRead_i8(h, CB_SETBUTTON_GPIO, c->in_setButton);
 #ifdef CONFIG_APP_USE_GPIO_PINS
-    kvsRb(CB_GPIO, c->gpio);
+    kvsRead_blob(h, CB_GPIO, c->gpio);
 #endif
     kvs_close(h);
 
@@ -141,8 +141,8 @@ void config_setup_global() {
 
   if ((h = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ))) {
 
-    //XXX-ignore kvsR(i8, CB_TRANSM, C.app_transm);
-    kvsR(u32, CB_BAUD, C.mcu_serialBaud);
+    //XXX-ignore kvsRead_i8(h, CB_TRANSM, C.app_transm);
+    kvsRead_u32(h, CB_BAUD, C.mcu_serialBaud);
     kvs_close(h);
   }
 }
@@ -160,15 +160,15 @@ struct cfg_astro* config_read_astro(struct cfg_astro *c) {
   if ((h = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ))) {
 //#define kvsR(DT, cb, val)  do { val = kvs_get_##DT(h, settings_get_kvsKey(cb), val, 0); } while(0)
 
-    kvsRb(CB_LONGITUDE, c->geo_longitude);
-    kvsRb(CB_LATITUDE, c->geo_latitude);
-    kvsRead(i8, astroCorrection, CB_ASTRO_CORRECTION, c->astroCorrection);
+    kvsRead_blob(h, CB_LONGITUDE, c->geo_longitude);
+    kvsRead_blob(h, CB_LATITUDE, c->geo_latitude);
+    kvsRead_i8(h, CB_ASTRO_CORRECTION, c->astroCorrection);
 
 #ifndef CONFIG_APP_USE_POSIX_TIME
-      kvsRb(CI(CB_TIZO), c->geo_timezone);
+      kvsRead_blob(h, CI(CB_TIZO), c->geo_timezone);
 #else
     char tz[64] = CONFIG_APP_GEO_TZ;
-    kvsRs(CI(CB_TZ), tz);
+    kvsRead_charArray(h, CI(CB_TZ), tz);
     c->geo_timezone = tz2offset(tz);
 #endif
     kvs_close(h);
@@ -208,10 +208,10 @@ struct cc1101_settings* config_read_cc1101(struct cc1101_settings *c) {
   kvshT h;
   if ((h = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ))) {
 
-    kvsRead(i8, i8, CB_RFSCK_GPIO, c->sclk);
-    kvsRead(i8, i8, CB_RFSS_GPIO, c->ss);
-    kvsRead(i8, i8, CB_RFMISO_GPIO, c->miso);
-    kvsRead(i8, i8, CB_RFMOSI_GPIO, c->mosi);
+    kvsRead_i8(h, CB_RFSCK_GPIO, c->sclk);
+    kvsRead_i8(h, CB_RFSS_GPIO, c->ss);
+    kvsRead_i8(h, CB_RFMISO_GPIO, c->miso);
+    kvsRead_i8(h, CB_RFMOSI_GPIO, c->mosi);
     kvs_close(h);
     c->enable = config_read_rf_trx() == rfTrxCc1101;
     return c;
