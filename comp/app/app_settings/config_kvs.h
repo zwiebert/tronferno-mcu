@@ -11,8 +11,8 @@
 #include "app_settings/config.h"
 #include "app_settings/app_settings.hh"
 
-#ifndef CFG_NAMESPACE
-#define CFG_NAMESPACE "config"
+#ifndef CONFIG_APP_CFG_NAMESPACE
+#define CONFIG_APP_CFG_NAMESPACE "config"
 #endif
 
 #if 1

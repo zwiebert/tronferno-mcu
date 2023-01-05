@@ -33,10 +33,13 @@
 
 #ifdef CONFIG_APP_USE_WLAN_AP
 void tmr_checkNetwork_start() {
-  if (!mainLoop_callFunByTimer([]() { // FIXME: timer should be deleted later (memory leak)
+  static void *tmr;
+
+  mainLoop_stopFun(tmr);
+  if (!(tmr = mainLoop_callFunByTimer([]() {
     if (!ipnet_isConnected())
       lfa_createWifiAp();
-  }, pdMS_TO_TICKS(1000 * CHECK_NETWORK_INTERVAL))) {
+  }, pdMS_TO_TICKS(1000 * CONFIG_NETWORK_CHECK_LOOP_PERIOD_S)))) {
     printf("CheckNetworkTimer start error");
   }
 }

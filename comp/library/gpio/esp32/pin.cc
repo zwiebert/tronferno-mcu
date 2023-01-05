@@ -314,7 +314,7 @@ void setup_pin(const struct cfg_gpio *c) {
   }
 
 #ifdef CONFIG_APP_USE_GPIO_PINS
-  for (int i = 0; i < CONFIG_GPIO_SIZE; ++i) {
+  for (int i = 0; i < CONFIG_APP_GPIO_NUMBER_OF_GPIOS; ++i) {
     if (gpioCfg_getPinMode(gpio_cfg, i) == PIN_DEFAULT)
       continue;
     pin_set_mode(i, gpioCfg_getPinMode(gpio_cfg, i), gpioCfg_getPinLevel(gpio_cfg, i));

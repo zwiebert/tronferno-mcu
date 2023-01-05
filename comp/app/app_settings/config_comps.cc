@@ -31,7 +31,7 @@ void tfmcu_put_error(tfmcu_errorT error_code, bool value) {
 #include "gpio/pin.h"
 struct cfg_gpio* config_read_gpio(struct cfg_gpio *c) {
   kvshT h;
-  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
+  if ((h = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ))) {
     kvsR(i8, CB_RFOUT_GPIO, c->out_rf);
     kvsR(i8, CB_RFIN_GPIO, c->in_rf);
     kvsR(i8, CB_SETBUTTON_GPIO, c->in_setButton);
@@ -139,7 +139,7 @@ void config_setup_global() {
       .app_configPassword = { 0 }, };
   STRLCPY(C.app_configPassword, CONFIG_APP_SETTINGS_PASSWORD, sizeof C.app_configPassword);
 
-  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
+  if ((h = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ))) {
 
     //XXX-ignore kvsR(i8, CB_TRANSM, C.app_transm);
     kvsR(u32, CB_BAUD, C.mcu_serialBaud);
@@ -157,7 +157,7 @@ uint32_t config_read_used_members() {
 double tz2offset(const char *tz);
 struct cfg_astro* config_read_astro(struct cfg_astro *c) {
   kvshT h;
-  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
+  if ((h = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ))) {
 //#define kvsR(DT, cb, val)  do { val = kvs_get_##DT(h, settings_get_kvsKey(cb), val, 0); } while(0)
 
     kvsRb(CB_LONGITUDE, c->geo_longitude);
@@ -206,7 +206,7 @@ void config_setup_mqttAppClient() {
 
 struct cc1101_settings* config_read_cc1101(struct cc1101_settings *c) {
   kvshT h;
-  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
+  if ((h = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ))) {
 
     kvsRead(i8, i8, CB_RFSCK_GPIO, c->sclk);
     kvsRead(i8, i8, CB_RFSS_GPIO, c->ss);

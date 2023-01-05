@@ -29,7 +29,7 @@ bool config_item_modified(enum configItem item) {
 bool config_item_modified(enum configAppItem item) {
   kvshT h;
   bool ferCfg_isModified = false;
-  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
+  if ((h = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ))) {
     switch ((int)item) {
     case CB_CUID:
     case CB_USED_MEMBERS:
@@ -62,7 +62,7 @@ bool config_item_modified(enum configAppItem item) {
 bool config_gpio_setPinMode(unsigned gpio_number, mcu_pin_mode ps, mcu_pin_level pl) {
   bool result = false;
   kvshT h;
-  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ_WRITE))) {
+  if ((h = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ_WRITE))) {
     struct cfg_gpio c = {};
     kvsRb(CB_GPIO, c.gpio);
     gpioCfg_setPin(&c, gpio_number, ps, pl);

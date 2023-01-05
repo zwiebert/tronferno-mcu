@@ -88,5 +88,30 @@ menu "Tronferno Project Configuration"
         string "WIFI/WLAN access-point password"
         default "tronferno"
 
+    config APP_CFG_NAMESPACE
+        string "Namespace for kvs configuration storage"
+        default "Tronferno"
+        help
+            Note: When changed, the previous configuration data will become inacessible
+
+    config APP_GPIO_NUMBER_OF_GPIOS
+        int "Number of available GPIOs"
+        default 40
+        help
+            Number of GPIOs whe have on this MCU
+
+    config MAIN_LOOP_PERIOD_MS
+        int "main loop period in milliseconds"
+        default 100
+        help
+            How frequently the main loop is called by timer
+
+    config NETWORK_CHECK_LOOP_PERIOD_S
+        int "network check loop period in seconds"
+        default 15
+        help
+            How frequently the network connection is checked for appearing while disconnected
+
+
 
 endmenu

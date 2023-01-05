@@ -172,7 +172,7 @@ void soCfg_GPIO_MODES(const struct TargetDesc &td) {
     int gpio_number;
     char key[10] = "gpio";
     char pin_level_args[] = "mhl";
-    for (gpio_number = 0; gpio_number < CONFIG_GPIO_SIZE; ++gpio_number) {
+    for (gpio_number = 0; gpio_number < CONFIG_APP_GPIO_NUMBER_OF_GPIOS; ++gpio_number) {
       STRCPY(key + 4, itoa(gpio_number, buf, 10));
       char ps[3] = "x";
       if (is_gpio_number_usable(gpio_number, true)) {
@@ -194,9 +194,9 @@ void soCfg_GPIO_MODES_AS_STRING(const struct TargetDesc &td) {
 #ifdef CONFIG_APP_USE_GPIO_PINS
   {
     int gpio_number;
-    char val[CONFIG_GPIO_SIZE + 1];
-    val[CONFIG_GPIO_SIZE] = '\0';
-    for (gpio_number = 0; gpio_number < CONFIG_GPIO_SIZE; ++gpio_number) {
+    char val[CONFIG_APP_GPIO_NUMBER_OF_GPIOS + 1];
+    val[CONFIG_APP_GPIO_NUMBER_OF_GPIOS] = '\0';
+    for (gpio_number = 0; gpio_number < CONFIG_APP_GPIO_NUMBER_OF_GPIOS; ++gpio_number) {
       if (is_gpio_number_usable(gpio_number, true)) {
         enum mcu_pin_mode mps = pin_getPinMode(gpio_number);
         val[gpio_number] = pin_mode_args[mps];

@@ -22,7 +22,7 @@
 
 #define NVS_BUG_WA
 
-#define CFG_NAMESPACE "Tronferno"
+#define CONFIG_APP_CFG_NAMESPACE "Tronferno"
 #define CFG_PARTNAME "nvs"
 #define CPAIR_KEY_PREFIX "cpair_"
 #define CPAIR_KEY_PREFIX_LEN (sizeof CPAIR_KEY_PREFIX - 1)
@@ -33,9 +33,9 @@
 static void  fixController(const char *key, Fer_GmSet *gm) {
   // there seems to be existing keys which cannot be found by iteration.
   // to fix this: erase and create them new here.
-  if (!kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, key, 0, 0)) {
+  if (!kvs_foreach(CONFIG_APP_CFG_NAMESPACE, KVS_TYPE_BLOB, key, 0, 0)) {
     kvshT handle;
-    if ((handle = kvs_open(CFG_NAMESPACE, kvs_WRITE))) {
+    if ((handle = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_WRITE))) {
       kvs_erase_key(handle, key);
       kvs_rw_blob(handle, key, gm, sizeof(*gm), true);
       kvs_commit(handle);
@@ -47,7 +47,7 @@ static void  fixController(const char *key, Fer_GmSet *gm) {
 
 static bool read_controller(Fer_GmSet *gm, const char *key) {
   bool success = false;
-  kvshT handle = kvs_open(CFG_NAMESPACE, kvs_READ);
+  kvshT handle = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ);
   if (handle) {
     success = kvs_rw_blob(handle, key, gm, sizeof *gm, false) == sizeof *gm;
     kvs_close(handle);
@@ -61,7 +61,7 @@ add_rm_controller(const char *key, Fer_GmSet mm, bool remove) {
   kvshT handle;
   bool result = false;
 
-  handle = kvs_open(CFG_NAMESPACE, kvs_READ_WRITE);
+  handle = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ_WRITE);
   if (handle) {
     Fer_GmSet gm;
     if (!kvs_rw_blob(handle, key, &gm, sizeof gm, false)) {
@@ -105,7 +105,7 @@ bool fer_alias_setControllerPairings(uint32_t controller, Fer_GmSet *mm) {
   bool success = false;
   a2key(controller);
 
-  kvshT handle = kvs_open(CFG_NAMESPACE, kvs_WRITE);
+  kvshT handle = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_WRITE);
   if (handle) {
     if (mm->isAllClear()) {
       success = kvs_erase_key(handle, key) && kvs_commit(handle);
@@ -129,7 +129,7 @@ bool fer_alias_rmController(uint32_t a) {
 
   a2key(a);
 
-  handle = kvs_open(CFG_NAMESPACE, kvs_READ_WRITE);
+  handle = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ_WRITE);
   if (handle) {
     success = kvs_erase_key(handle, key) && kvs_commit(handle);
     kvs_close(handle);
@@ -231,7 +231,7 @@ bool fer_alias_so_output_all_pairings(const struct TargetDesc &td) {
 
   soMsg_pair_all_begin(td);
 
-  kvs_foreach(CFG_NAMESPACE, KVS_TYPE_BLOB, CPAIR_KEY_PREFIX, kvs_foreach_cb, (void*)&td);
+  kvs_foreach(CONFIG_APP_CFG_NAMESPACE, KVS_TYPE_BLOB, CPAIR_KEY_PREFIX, kvs_foreach_cb, (void*)&td);
 
   soMsg_pair_all_end(td);
   return true;

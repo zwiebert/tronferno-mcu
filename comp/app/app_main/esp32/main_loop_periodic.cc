@@ -29,7 +29,7 @@
 lfPerFlags mainLoop_PeriodicFlags;
 
 void tmr_loopPeriodic100ms_start() {
-  const int interval = pdMS_TO_TICKS(LOOP_PERIODIC_INTERVAL_MS);
+  const int interval = pdMS_TO_TICKS(CONFIG_MAIN_LOOP_PERIOD_MS);
   TimerHandle_t tmr = xTimerCreate("PerLoop100ms", interval, pdTRUE, nullptr, [](TimerHandle_t xTimer) {
     static uint32_t count;
     ++count;

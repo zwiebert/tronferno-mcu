@@ -34,7 +34,7 @@
 
 const char cli_help_parmMcu[] = "'mcu' handles special commands and data\n\n"
     "print=(rtc|cu|reset-info)\n"
-#ifdef CONFIG_GPIO_SIZE
+#ifdef CONFIG_APP_GPIO_NUMBER_OF_GPIOS
     "gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N\n"
 #endif
         "up-time=?\n"

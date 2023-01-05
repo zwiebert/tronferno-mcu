@@ -17,7 +17,7 @@ enum { pm_GROUP_UNUSED=101, pm_MEMBER_UNUSED, pm_INVALID };
 #define DT(x)
 #define D(x)
 
-#define CFG_NAMESPACE "Tronferno"
+#define CONFIG_APP_CFG_NAMESPACE "Tronferno"
 
 static inline char *g_to_name(u8 g, char *buf) {
   STRCPY(buf, "GMBM_PMAP_Gx");

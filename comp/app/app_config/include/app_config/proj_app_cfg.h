@@ -15,14 +15,6 @@ typedef int32_t i32;
 typedef uint64_t u64;
 typedef int64_t i64;
 
-#ifndef CONFIG_LOG_DEFAULT_LEVEL
-#define CONFIG_LOG_DEFAULT_LEVEL 3
-#endif
-#define CHECK_NETWORK_INTERVAL 15
-#define LOOP_PERIODIC_INTERVAL_MS 100
-#define LOOP_INTERVAL_MS 25
-#define TD_FS_TO_KVS
-
 #if defined TEST_HOST
 #include "app_config/host/proj_app_cfg.h"
 

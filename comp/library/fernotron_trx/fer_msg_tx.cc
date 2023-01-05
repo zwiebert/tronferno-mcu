@@ -158,10 +158,8 @@ static bool wait_tx_available() {
 static bool wait_tx_when_to_transmit(u32 now_ts, u32 when_ts) {
   const u32 delay_ms = (when_ts - now_ts) * 100;
   static void *tmr;
-  if (tmr) {
-    mainLoop_stopFun(tmr);
-    tmr = NULL;
-  }
+
+  mainLoop_stopFun(tmr);
   tmr = mainLoop_callFunByTimer(fer_tx_loop, delay_ms);
 
   return tmr != NULL;
