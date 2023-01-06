@@ -5,7 +5,9 @@
 #include "net/ipnet.h"
 #include "net/tcp_cli_server.h"
 #include "net/wifi_ap_setup.h"
+#ifdef CONFIG_APP_USE_HTTP
 #include "net_http_server/http_server_setup.h"
+#endif
 #include "net/tcp_cli_server_setup.hh"
 #include "../app_private.h"
 #include "cc1101_ook/spi.hh"
@@ -34,9 +36,10 @@ void lfa_createWifiAp() {
     cfg_tcps.flags.evt.uo_evt_flag_rfMsgReceived = true;
     tcpCli_setup_task(&cfg_tcps);
 #endif
-
+#ifdef CONFIG_APP_USE_HTTP
     struct cfg_http cfg_http = { .enable = true };
     hts_setup(&cfg_http);
+#endif
   }
 }
 

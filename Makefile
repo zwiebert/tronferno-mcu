@@ -103,7 +103,7 @@ HOST_TEST_BUILD_PATH=$(BUILD_BASE)/../host/test
 test.cm.configure:
 	rm -fr $(HOST_TEST_BUILD_PATH)
 	mkdir -p $(HOST_TEST_BUILD_PATH)/config
-	cp $(THIS_ROOT)/src/host_test/sdkconfig.h $(HOST_TEST_BUILD_PATH)/config/
+	cp $(THIS_ROOT)/src/host_test/sdkconfig.h $(THIS_ROOT)/src/host_test/sdkconfig.cmake $(HOST_TEST_BUILD_PATH)/config/
 	cmake -B $(HOST_TEST_BUILD_PATH) -D BUILD_HOST_TESTS=ON -S $(realpath .) #-G Ninja
 
 cm_build := make -C $(HOST_TEST_BUILD_PATH) -k -j  -s --no-print-dir $(make_verbose_opts)

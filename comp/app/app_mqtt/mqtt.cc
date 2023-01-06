@@ -7,7 +7,6 @@
 
 
 #include "app_mqtt/mqtt.h"
-#include "net_mqtt/mqtt_imp.h"
 
 #include "mqtt_private.h"
 #include "net_mqtt/mqtt.hh"

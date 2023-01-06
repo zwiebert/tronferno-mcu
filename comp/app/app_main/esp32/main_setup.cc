@@ -4,7 +4,9 @@
 #include "app_settings/config.h"
 #include "utils_time/run_time.h"
 #include "key_value_store/kvs_wrapper.h"
+#ifdef CONFIG_APP_USE_HTTP
 #include "app_http_server/setup.h"
+#endif
 #include "utils_misc/int_types.h"
 #include "app_misc/timer.h"
 #include "app_settings/config.h"

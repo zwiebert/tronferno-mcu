@@ -12,7 +12,6 @@
 #include <uout/cli_out.h>
 #include "cli_imp.h"
 #include "app_cli/cli_app.h"
-#include "app_mqtt/mqtt.h"
 #include "app_misc/kvstore.h"
 #include "debug/dbg.h"
 #include <ctype.h>

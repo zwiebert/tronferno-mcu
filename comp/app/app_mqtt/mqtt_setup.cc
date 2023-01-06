@@ -6,9 +6,7 @@
  */
 
 
-#include "app_mqtt/mqtt.h"
 #include "net_mqtt/mqtt.hh"
-#include "net_mqtt/mqtt_imp.h"
 #include "mqtt_private.h"
 
 void io_mqttApp_setup(const char *topic_root) {

@@ -1,5 +1,13 @@
 menu "Tronferno Project Configuration"
 
+    config APP_USE_HTTP
+        bool "Activate HTTP"
+        default y
+
+    config APP_USE_MQTT
+        bool "Activate MQTT"
+        default y
+
     config APP_USE_JSON
         bool "Compile with JSON support"
         default y

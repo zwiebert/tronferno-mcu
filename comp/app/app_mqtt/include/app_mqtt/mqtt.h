@@ -6,7 +6,7 @@
 #pragma once
 
 
-#include "net_mqtt/mqtt.h"
+#include "net_mqtt/mqtt.hh"
 
 /**
  * \brief setup the component. Will not call the setup of the MQTT client (\link io_mqtt_setup \endlink). FIXME:?!
