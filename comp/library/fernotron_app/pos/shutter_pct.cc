@@ -8,7 +8,7 @@
 #include "fernotron/fer_main.h"
 #include "debug/dbg.h"
 #include "utils_misc/int_macros.h"
-#include "app_uout/status_output.h"
+//#include "app_uout/status_output.h"
 #include "fernotron_uout/fer_uo_publish.h"
 #include "uout/status_json.hh"
 #include "uout/cli_out.h"

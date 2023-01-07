@@ -85,12 +85,11 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       break;
 
     case otok::k_tm: {
-
+      void so_print_timer_event_minutes(uint8_t g, uint8_t m);
       if (strlen(val) == 2) {
-        so_arg_gm_t gm;
-        gm.g = val[0] - '0';
-        gm.m = val[1] - '0';
-        soMsg_timer_event_print(td, gm);
+        const uint8_t g = val[0] - '0';
+        const uint8_t m = val[1] - '0';
+        so_print_timer_event_minutes(g, m);
       }
     }
       break;

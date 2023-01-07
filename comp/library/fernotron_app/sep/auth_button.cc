@@ -1,5 +1,6 @@
 #include "auth_button.hh"
-#include "app_uout/status_output.h"
+//#include "app_uout/status_output.h"
+#include "fernotron_uout/fer_uo_publish.h"
 
 constexpr unsigned BUTTON_PRE_TEST_SECS = 5;
 
