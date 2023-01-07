@@ -2,7 +2,7 @@ set(srcs esp32/pin.cc)
 
 idf_component_register(SRCS ${srcs} 
     INCLUDE_DIRS "./include" 
-    PRIV_REQUIRES txtio  app_misc utils_debug app_uout
+    PRIV_REQUIRES txtio  utils_debug uout
                   driver  esp_wifi #PRIV_ESP_IDF
 )
 

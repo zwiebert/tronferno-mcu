@@ -10,7 +10,7 @@ set(EXTRA_COMPONENT_DIRS
   ${CMAKE_CURRENT_LIST_DIR}/../../comp/library)
 
 
-set(COMPONENTS app_main 
+set(COMPONENTS tronferno 
                bootloader
                esptool_py
                partition_table
