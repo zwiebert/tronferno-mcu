@@ -32,7 +32,7 @@ endif()
 
 include(comp/external/components-mcu/components/test_host/host_test.cmake)
 
-add_subdirectory(comp/app/app_main)
+add_subdirectory(comp/app/tronferno)
 #add_subdirectory(comp/external/components-mcu/components/test_host)
 
 

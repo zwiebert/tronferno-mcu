@@ -3,8 +3,8 @@
 #include <test_runner.h>
 #endif
 
-#include "../parm_config.h"
-#include "../cli_imp.h"
+#include "../app_cli/parm_config.h"
+#include "../app_cli/cli_imp.h"
 #include "app_cli/cli_app.h"
 
 #include <uout/so_target_desc.hh>
