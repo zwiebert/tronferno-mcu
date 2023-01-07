@@ -39,7 +39,7 @@ const char cli_help_parmMcu[] = "'mcu' handles special commands and data\n\n"
 #endif
         "up-time=?\n"
         "version=full\n"
-        "ota=(github-beta|github-master|tag-XXX|?)  Fetch and install firmware from github. ? gets status info\n"
+        "ota=(tag:beta|tag:master|tag:XXX|?)  Fetch and install firmware from github. ? gets status info\n"
         "cc1101-config=(?|HEX-STRING) Get or set configuration registers\n"
         "cc1101-status=?   Get status registers\n"
 
@@ -155,19 +155,16 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       break;
 #ifdef CONFIG_APP_USE_OTA
     case otok::k_ota: {
+      constexpr char TAG_KEY[] = "tag:";
+      constexpr char URL_HEAD[] = CONFIG_APP_OTA_URL_HEAD;
+      constexpr char URL_TAIL[] = CONFIG_APP_OTA_URL_TAIL;
       if (is_val("?")) {
         soMsg_mcu_ota_state(td);
-      } else if (is_val("github-master")) {
-        soMsg_mcu_ota(td, OTA_FWURL_MASTER);
-        app_doFirmwareUpdate(OTA_FWURL_MASTER);
-      } else if (is_val("github-beta")) {
-        soMsg_mcu_ota(td, OTA_FWURL_BETA);
-        app_doFirmwareUpdate(OTA_FWURL_BETA);
-      } else if (0 == strncmp(val, OTA_FWURL_TAG_COOKIE, strlen(OTA_FWURL_TAG_COOKIE))) {
-        const char *tag = val + strlen(OTA_FWURL_TAG_COOKIE);
-        const size_t url_len = strlen(OTA_FWURL_TAG_HEAD) + strlen(OTA_FWURL_TAG_TAIL) + strlen(tag);
+      } else if (0 == strncmp(val, TAG_KEY, strlen(TAG_KEY))) {
+        const char *tag = val + strlen(TAG_KEY);
+        const size_t url_len = strlen(URL_HEAD) + strlen(URL_TAIL) + strlen(tag);
         char url[url_len + 1];
-        csu_copy_cat(url, url_len, OTA_FWURL_TAG_HEAD, tag, OTA_FWURL_TAG_TAIL);
+        csu_copy_cat(url, url_len, URL_HEAD, tag, URL_TAIL);
         app_doFirmwareUpdate(url);
       } else {
 #ifdef DISTRIBUTION

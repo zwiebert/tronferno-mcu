@@ -73,7 +73,7 @@ static esp_err_t ws_trigger_send(httpd_handle_t handle, const char *json, size_t
   return httpd_queue_work(handle, ws_async_broadcast, arg);
 }
 
-void ws_send_json(const char *json, ssize_t len) {
+static void ws_send_json(const char *json, ssize_t len) {
   ws_trigger_send(hts_server, json, len >= 0 ? len : strlen(json));
 }
 
@@ -268,11 +268,6 @@ void hts_register_uri_handlers(httpd_handle_t server) {
 
 }
 
-static void ws_send_json_cb(const uoCb_msgT msg) {
-  if (auto json = uoCb_jsonFromMsg(msg))
-    ws_send_json(json, -1);
-}
-
 void hts_setup_content() {
   hts_register_uri_handlers_cb = hts_register_uri_handlers;
 #ifdef CONFIG_APP_USE_WS
@@ -285,7 +280,10 @@ void hts_setup_content() {
   flags.evt.gen_app_log_message = true;
   flags.evt.async_http_resp = true;
   flags.fmt.json = true;
-  uoCb_subscribe(ws_send_json_cb, flags);
+  uoCb_subscribe([](const uoCb_msgT msg) {
+    if (auto json = uoCb_jsonFromMsg(msg))
+      ws_send_json(json, -1);
+  }, flags);
 #endif
 }
 

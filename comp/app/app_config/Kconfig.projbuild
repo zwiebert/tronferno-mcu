@@ -1,12 +1,46 @@
 menu "Tronferno Project Configuration"
 
-    config APP_USE_HTTP
-        bool "Activate HTTP"
+    config APP_USE_NETWORK
+        bool "Compile NETWORK support"
         default y
 
-    config APP_USE_MQTT
-        bool "Activate MQTT"
+    config APP_USE_HTTP
+        depends on APP_USE_NETWORK
+        bool "Compile HTTP server "
         default y
+
+    config APP_USE_WS
+        depends on APP_USE_HTTP
+        bool "Compile with Websocket support"
+        default y
+        
+    config APP_USE_MQTT
+        depends on APP_USE_NETWORK
+        bool "Compile MQTT client"
+        default y
+   
+    config APP_MQTT_CLIENT_ID
+        string
+        default "tfmcu"
+
+    config APP_MQTT_ROOT_TOPIC
+        string
+        default "tfmcu"
+              
+    config APP_USE_OTA
+        depends on APP_USE_NETWORK
+        bool "Compile with over-the-air update support"
+        default y
+        
+    config APP_OTA_URL_HEAD
+        depends on APP_USE_OTA
+        string "Firmware URL for repository"
+        default "https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/"
+
+    config APP_OTA_URL_TAIL
+        depends on APP_USE_OTA
+        string "Firmware URL file path after branch or tag name"
+        default "/firmware/esp32/tronferno-mcu.bin"
 
     config APP_USE_JSON
         bool "Compile with JSON support"
@@ -14,14 +48,6 @@ menu "Tronferno Project Configuration"
 
     config APP_USE_POSIX_TIME
         bool "Compile with Posix time support"
-        default y
-
-    config APP_USE_OTA
-        bool "Compile with over-the-air update support"
-        default y
-
-    config APP_USE_WS
-        bool "Compile with web socket support"
         default y
 
     config APP_USE_MUTEX
@@ -64,14 +90,6 @@ menu "Tronferno Project Configuration"
             move these calls to a high priority task, and only do sampling
             and setting the GPIO RX/TX pins in the ISR
 
-    config APP_MQTT_CLIENT_ID
-        string "Default ID of MQTT client"
-        default "tfmcu"
-
-    config APP_MQTT_ROOT_TOPIC
-        string "Default root topic of MQTT client"
-        default "tfmcu"
-
     config APP_GEO_TZ
         string "POSIX TZ string"
         default "CET-1CEST-2,M3.5.0,M10.5.0"
@@ -106,7 +124,7 @@ menu "Tronferno Project Configuration"
         int "Number of available GPIOs"
         default 40
         help
-            Number of GPIOs whe have on this MCU
+            Number of GPIOs this MCU has (ESP32: 40)
 
     config MAIN_LOOP_PERIOD_MS
         int "main loop period in milliseconds"
@@ -119,7 +137,5 @@ menu "Tronferno Project Configuration"
         default 15
         help
             How frequently the network connection is checked for appearing while disconnected
-
-
 
 endmenu

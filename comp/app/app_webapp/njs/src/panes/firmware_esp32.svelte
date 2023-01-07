@@ -12,7 +12,7 @@
     name: $_("firmware.latest_master"),
     input: "none",
     get_ota_name: () => {
-      return "github-master";
+      return "tag:master";
     },
   };
 
@@ -20,7 +20,7 @@
     name: $_("firmware.latest_beta"),
     input: "none",
     get_ota_name: () => {
-      return "github-beta";
+      return "tag:beta";
     },
   };
 
