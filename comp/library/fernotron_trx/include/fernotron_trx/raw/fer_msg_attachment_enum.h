@@ -35,7 +35,7 @@ enum fer_rtc_wday {
 
 /// \brief values of fpr0_FlagBits.
 enum fer_fpr00_FlagBitsValues {
-  flag_Random, ///<  shutter opens/closes at random times (theft protection during longer absence). (FIXME: ignored ???)
+  flag_Random, ///<  enables random offset to timers (burglar protection)
   flag_1,  ///< ?
   flag_DST,  ///<  daylight saving time. if set, the shutter will add 1 hour to its saved astro time table. (never ignored)
   flag_3,  ///< ?

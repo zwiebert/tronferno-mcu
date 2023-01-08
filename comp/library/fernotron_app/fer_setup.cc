@@ -1,11 +1,11 @@
 
 
-#include "app_config/proj_app_cfg.h"
+
 
 #include "debug/dbg.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron_trx/astro.h"
-#include "fernotron/auto/fau_tevent.h"
+#include <fernotron/auto/fau_tevent.hh>
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "fernotron_trx/fer_trx_c_api.h"
 #include "fernotron_trx/raw/fer_fsb.h"
@@ -33,7 +33,7 @@ public:
     if (is_centralUnit()) {
       fer_cuas_set_check(msg.a);
     } else {
-#ifdef USE_PAIRINGS
+#ifdef CONFIG_APP_USE_PAIRINGS
      fer_alias_auto_set_check(msg.a);
 #endif
     }
@@ -49,7 +49,7 @@ public:
     if (msg_type == MSG_TYPE_PLAIN || msg_type == MSG_TYPE_PLAIN_DOUBLE) {
       fer_msg_print("R:", fer_rx_msg, msg_type, TXTIO_IS_VERBOSE(vrbDebug));
      // fer_msg_print_as_cmdline((msg_type == MSG_TYPE_PLAIN_DOUBLE ? "Rc:" : "RC:"), fer_rx_msg, msg_type);
-#ifdef USE_REPEATER
+#ifdef CONFIG_APP_USE_REPEATER
       ferRep_repeatCommand(fer_rx_msg->cmd.sd.cmd);
 #endif
     }
@@ -57,6 +57,14 @@ public:
 #ifndef FER_RECEIVER_MINIMAL
     if (msg_type == MSG_TYPE_RTC || msg_type == MSG_TYPE_TIMER) {
       fer_msg_print("timer frame received\n", fer_rx_msg, msg_type, TXTIO_IS_VERBOSE(vrbDebug));
+    }
+
+    if (msg_type == MSG_TYPE_RTC) {
+      Fer_MsgPlainCmd plain_msg = get_msg();
+      uoApp_publish_fer_msgRtcReceived(plain_msg, *fer_rx_msg);
+    } else if (msg_type == MSG_TYPE_TIMER) {
+      Fer_MsgPlainCmd plain_msg = get_msg();
+      uoApp_publish_fer_msgAutoReceived(plain_msg, *fer_rx_msg);
     }
 #endif
 
@@ -81,6 +89,15 @@ public:
   virtual void event_any_message_will_be_sent() { // first + repeats
     auto msg_type = get_msgKind();
     const fer_rawMsg *fer_tx_msg = static_cast<const fer_rawMsg*>(get_raw());
+
+    if (msg_type == MSG_TYPE_RTC) {
+      Fer_MsgPlainCmd plain_msg = get_msg();
+      uoApp_publish_fer_msgRtcSent(plain_msg, *fer_tx_msg);
+    } else if (msg_type == MSG_TYPE_TIMER) {
+      Fer_MsgPlainCmd plain_msg = get_msg();
+      uoApp_publish_fer_msgAutoSent(plain_msg, *fer_tx_msg);
+    }
+
 
     if (TXTIO_IS_VERBOSE(vrb1)) {
       auto t = TXTIO_IS_VERBOSE(vrb2) ? msg_type : fer_msg_kindT::MSG_TYPE_PLAIN;

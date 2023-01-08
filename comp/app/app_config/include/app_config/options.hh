@@ -4,23 +4,24 @@
  */
 
 #pragma once
-#include "proj_app_cfg.h"
+
 #include <stdint.h>
+#include <stddef.h>
 
 typedef const char *const_cstringT;
 
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
 constexpr const_cstringT pin_mode_args = "diqQoO";
 constexpr const_cstringT pin_level_args = "lh";
 constexpr const_cstringT pin_state_args = "?01t";
 #endif
 
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
 using cfg_args_networkT = const char *[4];
 constexpr cfg_args_networkT cfg_args_network = { "none", "wlan", "ap", "lan" };
 #endif
 
-#ifdef USE_LAN
+#ifdef CONFIG_APP_USE_LAN
 using cfg_args_lanPhyT = const char *[4];
 constexpr cfg_args_lanPhyT cfg_args_lanPhy = { "none", "lan8720", "rtl8201", "ip101", };
 #endif

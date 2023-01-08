@@ -38,7 +38,7 @@ static void test_save_and_restore() {
   TEST_ASSERT_EQUAL(0, save_and_restore_gm(6,0));
   TEST_ASSERT_EQUAL_MEMORY(&tde, &td, sizeof tde);
 
-  u8 g = 6, m = 3;
+  uint8_t g = 6, m = 3;
   TEST_ASSERT_TRUE(fer_stor_timerData_load(&td, &g, &m, true));
   TEST_ASSERT_EQUAL(6,g);
   TEST_ASSERT_EQUAL(0,m);

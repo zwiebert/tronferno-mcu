@@ -27,7 +27,7 @@
    setenv("TZ", "UTC+0", 1);
    struct tm *tm = localtime(&tim);
    struct fer_rtc_sd rtc{};
-   fer_msg_rtc_from_time(&rtc, tim, true);
+   fer_msg_rtc_from_time(&rtc, tim, MSG_TYPE_RTC);
    TEST_ASSERT_EQUAL(tm->tm_mon+1, bcd2dec(rtc.mont));
    TEST_ASSERT_EQUAL(tm->tm_mday, bcd2dec(rtc.mday));
    TEST_ASSERT_EQUAL(tm->tm_hour, bcd2dec(rtc.hour));
@@ -46,7 +46,7 @@
    time_t tim = 1593605594; //2020-07-01T12:13:14+00:00 (Wednesday)
    setenv("TZ", "CET-1CEST-2,M3.5.0,M10.5.0", 1);
    struct fer_rtc_sd rtc{};
-   fer_msg_rtc_from_time(&rtc, tim, true);
+   fer_msg_rtc_from_time(&rtc, tim, MSG_TYPE_RTC);
    TEST_ASSERT_EQUAL(7, bcd2dec(rtc.mont));
    TEST_ASSERT_EQUAL(1, bcd2dec(rtc.mday));
    TEST_ASSERT_EQUAL(14, bcd2dec(rtc.hour));
@@ -71,7 +71,7 @@ static struct fer_raw_msg  test_msg = {
         { 0x30, 0x09, 0x00, 0x05, 0xff, 0x0f, 0xff, 0x0f, 0x66 },
     }},
 
-    .astro = {
+    .astro = {.bd = {
         { 0x34, 0x15, 0x36, 0x15, 0x36, 0x15, 0x38, 0x15, 0xf8 },
         { 0x40, 0x15, 0x44, 0x15, 0x48, 0x15, 0x52, 0x15, 0x62 },
         { 0x58, 0x15, 0x04, 0x16, 0x10, 0x16, 0x16, 0x16, 0x9d },
@@ -85,16 +85,16 @@ static struct fer_raw_msg  test_msg = {
         { 0x06, 0x20, 0x10, 0x20, 0x14, 0x20, 0x18, 0x20, 0xc0 },
         { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x80 },
 
-    },
+    }},
     .last = { 0x00, 0x80, 0x49, 0x5d, 0x53, 0x00, 0x10, 0x00, 0x05 },
 
 };
 
-const u8 testdat_wtimer[] =
+const uint8_t testdat_wtimer[] =
   { 0x56, 0x06, 0x45, 0x19, 0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x12, 0x07, 0x34, 0x21, 0x56,
       0x06, 0x45, 0x19, 0x0 };
-const u8 testdat_dtimer[] = { };
-extern const u8 astro_data[12][8];
+const uint8_t testdat_dtimer[] = { };
+extern const uint8_t astro_data[12][8];
 
 #include "app_settings/config.h"
 
@@ -122,23 +122,23 @@ static void test_ferMsg_writeChecksums() {
 }
 
 static void test_ferMsg_writeData() {
-  fer_msg_rtc_from_time(&test_msg.rtc.sd, time(NULL), false);
+  fer_msg_raw_from_time(&test_msg, time(NULL), MSG_TYPE_TIMER);
   fer_msg_raw_from_weeklyTimer(&test_msg, testdat_wtimer);
   fer_msg_raw_from_dailyTimer(&test_msg, testdat_wtimer);
-  fer_astro_write_data(test_msg.astro, 0);
+  fer_msg_raw_from_astro(&test_msg, 0);
 }
 
 static void test_ferMsg_modData_andVerifyCS() {
   bool result;
 
-  ++test_msg.astro[1][8];
+  ++test_msg.astro.bd[1][8];
   result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);
   TEST_ASSERT_TRUE(result);
   result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_RTC);
   TEST_ASSERT_TRUE(result);
   result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_TIMER);
   TEST_ASSERT_FALSE(result);
-  --test_msg.astro[1][8];
+  --test_msg.astro.bd[1][8];
 
   ++test_msg.wdtimer.bd[1][8];
   result = fer_msg_raw_checksumsVerify(&test_msg, MSG_TYPE_PLAIN);

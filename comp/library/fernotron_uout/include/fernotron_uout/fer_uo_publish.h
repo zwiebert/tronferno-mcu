@@ -4,7 +4,6 @@
  */
 #pragma once
 #include <uout/uo_callbacks.h>
-
 #include <type_traits>
 #include <stdint.h>
 #include <stddef.h>
@@ -13,6 +12,10 @@
 #define uo_evt_flag_CUAS uo_evt_flag_E
 #define uo_evt_flag_msgSent uo_evt_flag_D
 #define uo_evt_flag_SEP uo_evt_flag_C
+#define uo_evt_flag_pctChange uo_evt_flag_B
+#define uo_evt_flag_rfMsgReceived uo_evt_flag_A
+#define uo_evt_flag_timerChange uo_evt_flag_10
+
 
 
 
@@ -76,6 +79,7 @@ typedef struct {
 } so_arg_sep_t;
 
 
+#include "so_msg.h"
 
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags = {});
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT tgtFlags = {});
@@ -83,11 +87,14 @@ void uoApp_publish_timer_json(const char *json, bool fragment = true);
 struct Fer_TimerData;
 void uoApp_publish_timer_json(uint8_t g, uint8_t m, struct Fer_TimerData *tda);
 void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg);
+void uoApp_publish_fer_msgRtcReceived(const struct Fer_MsgPlainCmd &c, const struct fer_raw_msg &m);
+void uoApp_publish_fer_msgAutoReceived(const struct Fer_MsgPlainCmd &c, const struct fer_raw_msg &m);
 void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg);
+void uoApp_publish_fer_msgRtcSent(const struct Fer_MsgPlainCmd &c, const struct fer_raw_msg &m);
+void uoApp_publish_fer_msgAutoSent(const struct Fer_MsgPlainCmd &c, const struct fer_raw_msg &m);
 void uoApp_publish_fer_prasState(const so_arg_pras_t args);
 void uoApp_publish_fer_cuasState(const so_arg_cuas_t args);
 void uoApp_publish_fer_sepState(const so_arg_sep_t args, char tag = '\0');
-
 
 inline const so_arg_pch_t *uoCb_pchFromMsg(const uoCb_msgT msg) {
   if (msg.flags.evt.pin_change && msg.flags.fmt.raw)
@@ -95,7 +102,8 @@ inline const so_arg_pch_t *uoCb_pchFromMsg(const uoCb_msgT msg) {
   return nullptr;
 }
 inline const so_arg_gmp_t *uoCb_gmpFromMsg(const uoCb_msgT msg) {
-  if (msg.flags.evt.pct_change && msg.flags.fmt.raw)
+  if (msg.flags.evt.uo_evt_flag_pctChange && msg.flags.fmt.raw)
     return static_cast<const so_arg_gmp_t *>(msg.cptr);
   return nullptr;
 }
+

@@ -436,7 +436,7 @@ class CC1101
      * Reset CC1101
      */
     void reset(void);
-    
+
     /**
      * init
      * 
@@ -485,7 +485,7 @@ class CC1101
      * 'freq'	New carrier frequency
      */
     void setCarrierFreq(byte freq);
-    
+
     /**
      * setChannel
      * 
@@ -502,7 +502,7 @@ class CC1101
      * Put CC1101 into power-down state
      */
     void setPowerDownState();
-    
+
     /**
      * sendData
      * 

@@ -5,9 +5,10 @@
 // app
 #include <fernotron_trx/fer_trx_api.hh>
 #include <fernotron_trx/timer_data.h>
+#include "fernotron_trx/raw/fer_fsb.h"
+#include "fernotron_trx/raw/fer_msg_attachment.h"
 #include <fernotron/fer_main.h>
 #include <fernotron/auto/fau_tminutes.h>
-#include <app_uout/so_msg.h>
 
 // shared
 #include <utils_misc/int_macros.h>
@@ -21,7 +22,7 @@
 
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT tgtFlags) {
   uo_flagsT flags;
-  flags.evt.pct_change = true;
+  flags.evt.uo_evt_flag_pctChange = true;
   flags.evt.gen_app_state_change = true;
 
   flags.fmt.raw = true;
@@ -52,12 +53,13 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
 
       uo_flagsT flags;
       flags.fmt.json = true;
-      flags.evt.pct_change = true;
+      flags.evt.uo_evt_flag_pctChange = true;
 
       uoCb_publish(idxs, sj.get_json(), flags);
     }
   }
 
+#ifdef CONFIG_TRONFERNO_PUBLISH_PCT_AS_TXT
   flags.fmt.json = false;
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
@@ -67,11 +69,13 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
       uoCb_publish(idxs, buf, flags);
     }
   }
+#endif
+
 }
 
 void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
   uo_flagsT flags;
-  flags.evt.pct_change = true;
+  flags.evt.uo_evt_flag_pctChange = true;
   flags.evt.gen_app_state_change = true;
 
   flags.fmt.raw = true;
@@ -98,6 +102,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
     }
   }
 
+#ifdef CONFIG_TRONFERNO_PUBLISH_PCT_AS_TXT
   flags.fmt.json = false;
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
@@ -105,11 +110,13 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
     snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;", a.g, a.m, a.p);
     uoCb_publish(idxs, buf, flags);
   }
+#endif
+
 }
 
 void uoApp_publish_timer_json(const char *json, bool fragment) {
   uo_flagsT flags;
-  flags.evt.timer_change = true;
+  flags.evt.uo_evt_flag_timerChange = true;
   flags.evt.gen_app_state_change = true;
 
   flags.fmt.json = true;
@@ -130,7 +137,12 @@ void uoApp_publish_timer_json(const char *json, bool fragment) {
 }
 
 static void timer_json(TargetDesc &td, uint8_t g, uint8_t m, struct Fer_TimerData &tdr) {
-  soMsg_timer_begin(td, so_arg_gm_t { g, m });
+  {
+    char dict[] = "autoGM";
+    dict[4] = '0' + g;
+    dict[5] = '0' + m;
+    td.sj().add_object(dict);
+  }
 
   {
     bool f_manual = manual_bits.getMember(g, m);
@@ -142,31 +154,31 @@ static void timer_json(TargetDesc &td, uint8_t g, uint8_t m, struct Fer_TimerDat
     *p++ = tdr.hasDaily() ? 'D' : 'd';
     *p++ = tdr.hasWeekly() ? 'W' : 'w';
     *p++ = '\0';
-    soMsg_kv(td, "f", flags);
+    td.so().print("f", flags);
   }
 
   if (tdr.hasDaily()) {
-    soMsg_kv(td, "daily", tdr.getDaily());
+    td.so().print("daily", tdr.getDaily());
   }
 
   if (tdr.hasWeekly()) {
-    soMsg_kv(td, "weekly", tdr.getWeekly());
+    td.so().print("weekly", tdr.getWeekly());
   }
 
   if (tdr.hasAstro()) {
-    soMsg_kv(td, "astro", tdr.getAstro());
+    td.so().print("astro", tdr.getAstro());
 
     Fer_TimerMinutes tmi;
     fer_au_get_timer_minutes_from_timer_data_tm(&tmi, &tdr);
-    soMsg_kv(td, "asmin", tmi.minutes[FER_MINTS_ASTRO]);
+    td.so().print("asmin", tmi.minutes[FER_MINTS_ASTRO]);
   }
 
-  soMsg_timer_end(td);
+  td.so().x_close();
 }
 
 void uoApp_publish_timer_json(uint8_t g, uint8_t m, struct Fer_TimerData *tda) {
   uo_flagsT flags;
-  flags.evt.timer_change = true;
+  flags.evt.uo_evt_flag_timerChange = true;
   flags.evt.gen_app_state_change = true;
 
   flags.fmt.json = true;
@@ -245,6 +257,61 @@ static cmdInfo cmdString_fromPlainCmd(const Fer_MsgPlainCmd &m) {
   return r;
 }
 
+void uoApp_publish_fer_msgSent(const struct Fer_MsgTimer *msg) {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_msgSent = true;
+  flags.evt.gen_app_state_change = true;
+
+  const Fer_MsgTimer &m = *msg;
+  if (!FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit))
+    return;
+
+  flags.fmt.txt = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[80];
+
+    snprintf(buf, sizeof buf, "SA:type=central: a=%06x g=%d m=%d;", m.a, m.g, m.m);
+    uoCb_publish(idxs, buf, flags);
+  }
+
+  flags.fmt.txt = false;
+  flags.fmt.json = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[80];
+
+    snprintf(buf, sizeof buf, "{\"sa\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d}}", m.a, m.g, m.m);
+    uoCb_publish(idxs, buf, flags);
+  }
+}
+
+void uoApp_publish_fer_msgSent(const struct Fer_MsgRtc *msg) {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_msgSent = true;
+  flags.evt.gen_app_state_change = true;
+
+  const Fer_MsgRtc &m = *msg;
+  if (!FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit))
+    return;
+
+  flags.fmt.txt = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[80];
+
+    snprintf(buf, sizeof buf, "ST:type=central: a=%06x g=%d m=%d;", m.a, m.g, m.m);
+    uoCb_publish(idxs, buf, flags);
+  }
+
+  flags.fmt.txt = false;
+  flags.fmt.json = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[80];
+
+    snprintf(buf, sizeof buf, "{\"st\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d}}", m.a, m.g, m.m);
+    uoCb_publish(idxs, buf, flags);
+  }
+}
+
+
 void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
   uo_flagsT flags;
   flags.evt.uo_evt_flag_msgSent = true;
@@ -255,6 +322,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
   if (!ci.cs)
     return; // unsupported command
 
+#ifdef CONFIG_TRONFERNO_PUBLISH_TRX_AS_TXT
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[80];
@@ -265,6 +333,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
     }
     uoCb_publish(idxs, buf, flags);
   }
+#endif
 
   flags.fmt.txt = false;
   flags.fmt.json = true;
@@ -281,7 +350,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
 
 void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
   uo_flagsT flags;
-  flags.evt.rf_msg_received = true;
+  flags.evt.uo_evt_flag_rfMsgReceived = true;
   flags.evt.gen_app_state_change = true;
 
   const int rssi = Fer_Trx_API::get_rssi();
@@ -291,6 +360,7 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
   if (!ci.cs)
     return; // unsupported command
 
+#ifdef CONFIG_TRONFERNO_PUBLISH_TRX_AS_TXT
   flags.fmt.txt = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[64];
@@ -301,6 +371,7 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
     }
     uoCb_publish(idxs, buf, flags);
   }
+#endif
 
   flags.fmt.txt = false;
   flags.fmt.json = true;
@@ -311,6 +382,164 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
     } else {
       snprintf(buf, sizeof buf, "{\"rc\":{\"type\":\"%s\",\"a\":\"%06x\",\"c\":\"%s\",\"rssi\":%d}}", ci.fdt, m.a, ci.cs, rssi);
     }
+    uoCb_publish(idxs, buf, flags);
+  }
+}
+
+void uoApp_publish_fer_msgRtcReceived(const Fer_MsgPlainCmd &c, const struct fer_raw_msg &m) {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_msgSent = true;
+  flags.evt.gen_app_state_change = true;
+
+
+  const struct fer_rtc_sd &r = m.rtc.sd;
+
+  const int rssi = Fer_Trx_API::get_rssi();
+
+#ifdef CONFIG_TRONFERNO_PUBLISH_TRX_AS_TXT
+  flags.fmt.txt = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[80];
+
+    snprintf(buf, sizeof buf, "RC:type=central: a=%06x g=%d m=%d c=rtc rssi=%d t=%02x-%02xT%02x:%02x:%02x;", c.a, c.g, c.m, rssi, r.mont, r.mday, r.hour, r.mint, r.secs);
+    uoCb_publish(idxs, buf, flags);
+  }
+#endif
+
+  flags.fmt.txt = false;
+  flags.fmt.json = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[128];
+
+    snprintf(buf, sizeof buf, "{\"rc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"rtc\",\"rssi\":%d,\"t\":\"%02x-%02xT%02x:%02x:%02x\"}}", c.a, c.g, c.m, rssi, r.mont, r.mday, r.hour, r.mint, r.secs);
+    uoCb_publish(idxs, buf, flags);
+  }
+
+}
+
+void uoApp_publish_fer_msgAutoReceived(const struct Fer_MsgPlainCmd &c, const struct fer_raw_msg &m) {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_msgSent = true;
+  flags.evt.gen_app_state_change = true;
+
+
+  const struct fer_rtc_sd &r = m.rtc.sd;
+  const int rssi = Fer_Trx_API::get_rssi();
+
+  char af[] = "rsdw";
+
+  if (r.flags.bits.random)
+    af[0] = 'R';
+  if (r.flags.bits.sunAuto)
+    af[1] = 'S';
+
+  for (int i = 0; i < 4; ++i)
+    for (int k = 0; k < 8; k += 2) {
+      if (m.wdtimer.bd[i][k] != 0xff) {
+        if (i == 3 && k >= 4) {
+          af[2] = 'D';
+        } else {
+          af[3] = 'W';
+        }
+      }
+    }
+
+#ifdef CONFIG_TRONFERNO_PUBLISH_TRX_AS_TXT
+  flags.fmt.txt = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[80];
+
+    snprintf(buf, sizeof buf, "RC:type=central: a=%06x g=%d m=%d c=auto rssi=%d t=%02x-%02xT%02x:%02x:%02x f=%s;", c.a, c.g, c.m, rssi, r.mont, r.mday, r.hour,
+        r.mint, r.secs, af);
+    uoCb_publish(idxs, buf, flags);
+  }
+#endif
+
+  flags.fmt.txt = false;
+  flags.fmt.json = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[128];
+
+    snprintf(buf, sizeof buf,
+        "{\"rc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"auto\",\"rssi\":%d,\"t\":\"%02x-%02xT%02x:%02x:%02x\",\"f\":\"%s\"}}", c.a, c.g,
+        c.m, rssi, r.mont, r.mday, r.hour, r.mint, r.secs, af);
+    uoCb_publish(idxs, buf, flags);
+  }
+
+}
+
+void uoApp_publish_fer_msgRtcSent(const struct Fer_MsgPlainCmd &c, const struct fer_raw_msg &m) {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_msgSent = true;
+  flags.evt.gen_app_state_change = true;
+
+  const struct fer_rtc_sd &r = m.rtc.sd;
+
+#ifdef CONFIG_TRONFERNO_PUBLISH_TRX_AS_TXT
+  flags.fmt.txt = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[80];
+
+    snprintf(buf, sizeof buf, "SC:type=central: a=%06x g=%d m=%d c=rtc t=%02x-%02xT%02x:%02x:%02x;", c.a, c.g, c.m, r.mont, r.mday, r.hour, r.mint, r.secs);
+    uoCb_publish(idxs, buf, flags);
+  }
+#endif
+
+  flags.fmt.txt = false;
+  flags.fmt.json = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[128];
+
+    snprintf(buf, sizeof buf, "{\"sc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"rtc\",\"t\":\"%02x-%02xT%02x:%02x:%02x\"}}", c.a, c.g, c.m, r.mont,
+        r.mday, r.hour, r.mint, r.secs);
+    uoCb_publish(idxs, buf, flags);
+  }
+
+}
+
+void uoApp_publish_fer_msgAutoSent(const struct Fer_MsgPlainCmd &c, const struct fer_raw_msg &m) {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_msgSent = true;
+  flags.evt.gen_app_state_change = true;
+
+  const struct fer_rtc_sd &r = m.rtc.sd;
+
+  char af[] = "rsdw";
+
+  if (r.flags.bits.random)
+    af[0] = 'R';
+  if (r.flags.bits.sunAuto)
+    af[1] = 'S';
+
+  for (int i = 0; i < 4; ++i)
+    for (int k = 0; k < 8; k += 2) {
+      if (m.wdtimer.bd[i][k] != 0xff) {
+        if (i == 3 && k >= 4) {
+          af[2] = 'D';
+        } else {
+          af[3] = 'W';
+        }
+      }
+    }
+
+#ifdef CONFIG_TRONFERNO_PUBLISH_TRX_AS_TXT
+  flags.fmt.txt = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[80];
+
+    snprintf(buf, sizeof buf, "SC:type=central: a=%06x g=%d m=%d c=auto t=%02x-%02xT%02x:%02x:%02x f=%s;", c.a, c.g, c.m, r.mont, r.mday, r.hour, r.mint,
+        r.secs, af);
+    uoCb_publish(idxs, buf, flags);
+  }
+#endif
+
+  flags.fmt.txt = false;
+  flags.fmt.json = true;
+  if (auto idxs = uoCb_filter(flags); idxs.size) {
+    char buf[128];
+
+    snprintf(buf, sizeof buf, "{\"sc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"auto\",\"t\":\"%02x-%02xT%02x:%02x:%02x\",\"f\":\"%s\"}}",
+        c.a, c.g, c.m, r.mont, r.mday, r.hour, r.mint, r.secs, af);
     uoCb_publish(idxs, buf, flags);
   }
 }

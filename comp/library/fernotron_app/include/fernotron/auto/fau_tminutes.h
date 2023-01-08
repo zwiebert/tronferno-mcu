@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "fernotron/types.h"
+#include "fernotron/fer_pct.h"
 #include "fernotron_trx/timer_data.h"
 
 #include <stdint.h>
@@ -53,6 +53,15 @@ fer_au_minutesT fer_au_mintsNow();
  */
 fer_au_minutesT fer_au_mintsFromTime(const time_t *timer);
 
+/**
+ * \brief            Modify the time (hh:mm:ss) of a given time while keeping the date intact
+ * \param timer      Base time (e.g. current time)
+ * \param mints      Current time-of-day as minutes since midnight. (Seconds are assumed zero)
+ * \return           Return modified time
+ */
+time_t fer_au_timeFromMints(const time_t *timer, int mints);
+
+
 
 // return minute offsets of todays timer events in parameter *result
 // offsets are minutes after 00:00 hour.
@@ -63,7 +72,7 @@ fer_au_minutesT fer_au_mintsFromTime(const time_t *timer);
  * \param timi   Caller provided memory where the created object will be stored
  * \param tdp    Data to convert from
  * \param tm     The point of time.  This determines which will be the next event.  NULL for current time.
- * \return       false if an error occurred (will never happen)  XXX
+ * \return       false if an error occurred
  */
 bool fer_au_get_timer_minutes_from_timer_data_tm(Fer_TimerMinutes *timi, const Fer_TimerData *tdp, const struct tm *tm = NULL);
 

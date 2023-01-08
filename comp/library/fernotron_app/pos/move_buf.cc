@@ -5,13 +5,13 @@
  *      Author: bertw
  */
 
-#include "move.h"
+#include "move.hh"
 #include "move_buf.h"
 
 #include "stdbool.h"
 #include <stdint.h>
 #include <array>
-#include "fernotron/types.h"
+#include "fernotron/fer_pct.h"
 #include "utils_misc/int_macros.h"
 #include "utils_misc/int_types.h"
 #include "main_loop/main_queue.hh"
@@ -26,7 +26,7 @@ struct Fer_Move* fer_mv_getNext(struct Fer_Move *pred) {
     return 0;
 
   int mvi = pred ? std::distance(moving.begin(), pred) + 1 : 0;
-  u8 msk = moving_mask >> mvi;
+  uint8_t msk = moving_mask >> mvi;
 
   for (; msk; ++mvi, (msk >>= 1)) {
     if (msk & 0x01)
@@ -36,7 +36,7 @@ struct Fer_Move* fer_mv_getNext(struct Fer_Move *pred) {
 }
 
 struct Fer_Move* fer_mv_calloc() {
-  u8 mvi;
+  uint8_t mvi;
 
   for (mvi = 0; mvi < fer_mv_SIZE; ++mvi) {
     if (GET_BIT(moving_mask, mvi))
@@ -45,7 +45,7 @@ struct Fer_Move* fer_mv_calloc() {
     SET_BIT(moving_mask, mvi);
     moving[mvi] = (struct Fer_Move ) { };
     if (!moving_timer) {
-      moving_timer = mainLoop_callFun(fer_pos_checkStatus_whileMoving, 200, true);
+      moving_timer = mainLoop_callFunByTimer(fer_pos_checkStatus_whileMoving, 200, true);
     }
     return &moving[mvi];
   }

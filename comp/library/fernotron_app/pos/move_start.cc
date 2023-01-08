@@ -3,18 +3,19 @@
 #include "fernotron/pos/shutter_pct.h"
 #include "fernotron/pos/shutter_prefs.h"
 
-#include "app_config/proj_app_cfg.h"
+
 
 #include "fernotron/fer_main.h"
 #include "debug/dbg.h"
 #include "utils_misc/int_macros.h"
 #include "utils_time/run_time.h"
-#include "app_uout/status_output.h"
+//#include "app_uout/status_output.h"
+#include "fernotron_uout/fer_uo_publish.h"
 #include "uout/status_json.hh"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
 
-#include "move.h"
+#include "move.hh"
 
 #ifndef DISTRIBUTION
 #define DB_INFO 0
@@ -43,7 +44,7 @@ static int fer_pos_filter_mm(Fer_GmSet *mm, struct filter *filter) {
 
 
     for (auto it = mm->begin(); it; ++it) {
-      u8 g = it.getG(), m = it.getM();
+      uint8_t g = it.getG(), m = it.getM();
 
     if (filter->sun_not_ready_to_move_down && !fer_pos_shouldMove_sunDown(g, m))
       goto filter_out;
@@ -53,7 +54,7 @@ static int fer_pos_filter_mm(Fer_GmSet *mm, struct filter *filter) {
 
 
     if (filter->destination_already_reached) {
-      u8 currPct = fer_statPos_getPct(g, m);
+      uint8_t currPct = fer_statPos_getPct(g, m);
       if ((direction_isUp(filter->dir) && currPct == PCT_UP) || (direction_isDown(filter->dir) && currPct == PCT_DOWN))
         goto filter_out;
     }
@@ -69,7 +70,7 @@ static int fer_pos_filter_mm(Fer_GmSet *mm, struct filter *filter) {
     struct Fer_Move *Fer_Move;
     for (Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {
       for (auto it = mm->begin(); it; ++it) {
-        u8 g = it.getG(), m = it.getM();
+        uint8_t g = it.getG(), m = it.getM();
         if (!Fer_Move->mask.getMember(g, m))
           continue;
 
@@ -90,8 +91,8 @@ static int fer_pos_filter_mm(Fer_GmSet *mm, struct filter *filter) {
 }
 
 
-static void fer_pos_createMovement_mm(struct Fer_Move *Fer_Move, Fer_GmSet *mm, u32 now_ts, enum direction dir) {
-  u8 g;
+static void fer_pos_createMovement_mm(struct Fer_Move *Fer_Move, Fer_GmSet *mm, uint32_t now_ts, enum direction dir) {
+  uint8_t g;
 
   for (g = 1; g <= GRP_MAX; ++g) {
     Fer_Move->mask[g] = mm->getGroup(g);
@@ -101,8 +102,8 @@ static void fer_pos_createMovement_mm(struct Fer_Move *Fer_Move, Fer_GmSet *mm, 
   Fer_Move->dir = dir;
 }
 
-struct Fer_Move *fer_pos_addToMovement_mm(Fer_GmSet *mm, u32 now_ts, enum direction dir) {
-  u8 g;
+struct Fer_Move *fer_pos_addToMovement_mm(Fer_GmSet *mm, uint32_t now_ts, enum direction dir) {
+  uint8_t g;
   struct Fer_Move *Fer_Move;
 
   for (Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {
@@ -117,7 +118,7 @@ struct Fer_Move *fer_pos_addToMovement_mm(Fer_GmSet *mm, u32 now_ts, enum direct
   return 0;
 }
 
-static struct Fer_Move* add_to_new_movement_mm(Fer_GmSet *mm, u32 now_ts, enum direction dir) {
+static struct Fer_Move* add_to_new_movement_mm(Fer_GmSet *mm, uint32_t now_ts, enum direction dir) {
   struct Fer_Move *Fer_Move = fer_mv_calloc();
 
   if (Fer_Move) {
@@ -128,7 +129,7 @@ static struct Fer_Move* add_to_new_movement_mm(Fer_GmSet *mm, u32 now_ts, enum d
 
 // register moving related commands sent to a shutter to keep track of its changing position
 bool fer_simPos_registerMovingShutters(Fer_GmSet *mm, fer_if_cmd cmd) {
-  u32 now_ts = get_now_time_ts();
+  uint32_t now_ts = get_now_time_ts();
 
   *mm &= fer_usedMemberMask;  // filter out unused members
 
@@ -185,11 +186,11 @@ bool fer_simPos_registerMovingShutters(Fer_GmSet *mm, fer_if_cmd cmd) {
 }
 
 
-bool fer_simPos_registerMovingShutter(u32 a, u8 g, u8 m, fer_if_cmd cmd) {
+bool fer_simPos_registerMovingShutter(uint32_t a, uint8_t g, uint8_t m, fer_if_cmd cmd) {
   precond(g <= 7 && m <= 7);
 
   DT(ets_printf("%s: a=%lx, g=%d, m=%d, cmd=%d\n", __func__, a, (int)g, (int)m, (int)cmd));
-#ifdef USE_PAIRINGS
+#ifdef CONFIG_APP_USE_PAIRINGS
   if (!(a == 0 || a == fer_config.cu)) {
     Fer_GmSet gm;
     if (fer_alias_getControllerPairings(a, &gm))

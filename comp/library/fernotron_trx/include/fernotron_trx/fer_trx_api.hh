@@ -49,17 +49,17 @@ public:
   /// get data from current received message. Use it in event functions.
   Fer_MsgPlainCmd get_msg() const;
   /// get data from current received message. Use it in event functions.
-  u32 get_a() const;
+  uint32_t get_a() const;
   /// get data from current received message. Use it in event functions.
-  u8 get_g() const;
+  uint8_t get_g() const;
   /// get data from current received message. Use it in event functions.
-  u8 get_m() const;
+  uint8_t get_m() const;
   /// get data from current received message. Use it in event functions.
   fer_if_cmd get_cmd() const;
   /// get data from current received message. Use it in event functions.
   MsgKind get_msgKind() const;
   /// get data from current received message. Use it in event functions.
-  const void * get_raw() const;
+  const struct fer_raw_msg * get_raw() const;
   /// get data from current received message. Use it in event functions.
   bool is_centralUnit() const;
 
@@ -100,29 +100,28 @@ public:
   /// push a message to the RF send queue.
   static bool send_cmd(const Fer_MsgCmd &msg);
   /// push a message to the RF send queue.
-  static bool send_cmd(u32 a, u8 g, u8 m, fer_if_cmd cmd, u8 repeats = 0, u16 delay = 0, u16 stopDelay = 0);
+  static bool send_cmd(uint32_t a, uint8_t g, uint8_t m, fer_if_cmd cmd, uint8_t repeats = 0, uint16_t delay = 0, uint16_t stopDelay = 0);
 
   /// push a message to the RF send queue.
   static bool send_rtc(const Fer_MsgRtc &msg);
   /// push a message to the RF send queue.
-  static bool send_rtc(u32 a, u8 g, u8 m, time_t rtc);
+  static bool send_rtc(uint32_t a, uint8_t g, uint8_t m, time_t rtc);
 
   /// push a message to the RF send queue.
   static bool send_timer(const Fer_MsgTimer &msg);
   /// push a message to the RF send queue.
-  static bool send_timer(u32 a, u8 g, u8 m, time_t rtc, const Fer_TimerData &td);
+  static bool send_timer(uint32_t a, uint8_t g, uint8_t m, time_t rtc, const Fer_TimerData &td);
 
   /// push a message to the RF send queue.
   static bool send_empty_timer(const Fer_MsgRtc &msg);
   /// push a message to the RF send queue.
-  static bool send_empty_timer(u32 a, u8 g, u8 m, time_t rtc);
+  static bool send_empty_timer(uint32_t a, uint8_t g, uint8_t m, time_t rtc);
 
 public:
   ////////////////////////////////////////////////////////////////
   ///////// timer interrupt for RF transceiver ///////////////////
   ////////////////////////////////////////////////////////////////
-  static void isr_sample_rx_pin(bool level);  ///< call this on top of timer ISR
-  static void isr_handle_rx(); ///< call this from timer ISR every (200/INTR_TICK_FREQ_MULT)us
+  static void isr_handle_rx(bool rx_pin_lvl); ///< call this from timer ISR every (200/INTR_TICK_FREQ_MULT)us
 
   static bool isr_get_tx_level(); ///< call this son top of timer ISR
   static void isr_handle_tx();  ///< call this from timer ISR every 200us

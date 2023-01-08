@@ -34,10 +34,18 @@
       <span class="text-red-300">{msg.date.toLocaleTimeString() + ': ' + msg.log.tag + ': ' + msg.log.txt}<br /></span>
     {:else if showRc && 'rc' in msg}
       <span
-        class="text-green-300">{msg.date.toLocaleTimeString() + ': ' + 'rx: ' + msg.rc.type + ': ' + msg.rc.a + (msg.rc.type === 'central' ? '-' + msg.rc.g + msg.rc.m : '') + ' ' + msg.rc.c + (msg.rc.rssi ? (':rssi=' + msg.rc.rssi) : '')}<br /></span>
+        class="text-green-300">{msg.date.toLocaleTimeString() + ': ' + 'rx: ' + msg.rc.type + ': ' + msg.rc.a
+         + (msg.rc.type === 'central' ? '-' + msg.rc.g + msg.rc.m : '') + ' ' + msg.rc.c
+         + (msg.rc.c === 'rtc' ? ' (' + msg.rc.t + ')' : '')
+         + (msg.rc.c === 'auto' ? ' (' + msg.rc.t + ',' + msg.rc.f + ')' : '')
+         + (msg.rc.rssi ? (':rssi=' + msg.rc.rssi) : '')}<br /></span>
     {:else if showSc && 'sc' in msg}
       <span
-        class="text-blue-300">{msg.date.toLocaleTimeString() + ': ' + 'tx: ' + msg.sc.type + ': ' + msg.sc.a + (msg.sc.type === 'central' ? '-' + msg.sc.g + msg.sc.m : '') + ' ' + msg.sc.c}<br /></span>
+        class="text-blue-300">{msg.date.toLocaleTimeString() + ': ' + 'tx: ' + msg.sc.type + ': ' + msg.sc.a 
+        + (msg.sc.type === 'central' ? '-' + msg.sc.g + msg.sc.m : '') + ' ' + msg.sc.c
+        + (msg.sc.c === 'rtc' ? ' (' + msg.sc.t + ')' : '')
+        + (msg.sc.c === 'auto' ? ' (' + msg.sc.t + ',' + msg.sc.f + ')' : '')
+        }<br /></span>
     {/if}
   {/each}
 </div>

@@ -32,6 +32,17 @@ extern volatile bool fer_tx_messageToSend_isReady;
 bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, int8_t repeats, uint16_t delay = 0);
 
 /**
+ * \brief          Push an RTC message to send queue
+ * \param fsb      raw plain part of the message
+ * \param rtc      RTC data to set as timestamp (will be converted just before transmitting)
+ * \param repeats  Repeat sending the message N times
+ * \return         true for success
+ */
+bool fer_send_msg_rtc(const fer_sbT *fsb, time_t rtc, int8_t repeats);
+
+
+
+/**
  * \brief           Push the plain message to send queue and also a delayed STOP message
  * \param fsb       Plain message
  * \param delay     To delay the actual sending of message (in s/10)

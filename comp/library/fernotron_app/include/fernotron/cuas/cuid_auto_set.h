@@ -6,8 +6,10 @@
  */
 #pragma once
 
+
+
 #include "stdbool.h"
-#include "app_config/proj_app_cfg.h"
+#include <stdint.h>
 
 /**
  * \brief          Event callback: CUAS-mode had been enabled or disabled
@@ -45,7 +47,7 @@ void fer_cuas_set_check_timeout(void);
  * \param cu           3-byte-address extracted from the received RF message
  * \return             true on success
  */
-bool fer_cuas_set_check(const u32 cu);
+bool fer_cuas_set_check(const uint32_t cu);
 
 /**
  * \brief     Get current state of this module by polling

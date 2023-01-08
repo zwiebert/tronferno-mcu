@@ -42,7 +42,7 @@ build/wapp.html: build build/wapp.css ./wapp_dev.html
 $(bundle_out): build
 
 njs/node_modules:
-	test-d njs/node_modules || cd njs && npm install
+	test -d njs/node_modules || cd njs && npm install
 
 .PHONY: clean
 clean:

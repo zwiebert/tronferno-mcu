@@ -17,9 +17,9 @@ struct cfg_astro {
 };
 
 /**
- * \brief            Calculate todays time the astro timer event occurs
- *                   Note: the result may be incorrect if the global astro-table differs from the one uploaded to the motor (XXX)
- *                   Note: the result may be off, because sometimes the wrong table entry is picket (FIXME: This is a bug)
+ * \brief            Calculate when the astro timer event occurs today
+ *                   Note: the result may be incorrect if the global astro-table differs from the one which was transmitted to the receiver
+ *                   Note/FIXME: the result may be off on some days, because we predict wrong which table index the receiver uses for a given date
  * \param tm         Provide tm_mon, tm_mday, tm_isdst.  The other members of TM are ignored
  * \return minutes   Return the calculated event time in minutes according to TM and the current global astro-table.
  */
@@ -37,9 +37,3 @@ int astroTableIndex_from_tm(const struct tm *tm);
  * \param cfg_astro  configuration data
  */
 void fer_astro_init_and_reinit(const struct cfg_astro *cfg_astro);
-
-
-/**
- * \brief Get persistent setting of astro_correction FIXME: This function should be declared in app-settings, where it's defined
- */
-enum astroCorrection config_read_astro_correction();

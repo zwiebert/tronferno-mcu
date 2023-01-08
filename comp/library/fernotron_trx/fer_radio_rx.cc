@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+
 #include <fernotron_trx/raw/fer_radio_trx.h>
 #include "fer_trx_impl.hh"
 #include "fer_radio_parity.h"
@@ -25,6 +25,16 @@ enum fer_error {
 
 #ifndef DISTRIBUTION
 //#define FTRX_TEST_LOOP_BACK
+
+#endif
+
+#ifndef DISTRIBUTION
+void IRAM_ATTR db_toggleTxPin() {
+  static bool lvl;
+  lvl = !lvl;
+  void ftrx_testSetOutputLevel(bool level);
+  ftrx_testSetOutputLevel(lvl);
+}
 #endif
 
 #ifdef FTRX_TEST_LOOP_BACK
@@ -32,7 +42,7 @@ bool ftrx_testLoopBack_getRxPin();
 #define mcu_get_rxPin ftrx_testLoopBack_getRxPin
 #endif
 
-#if defined FER_RECEIVER
+#if defined CONFIG_APP_USE_FER_RECEIVER
 
 void (*fer_rx_MSG_RECEIVED_ISR_cb)(void);
 
@@ -43,17 +53,17 @@ static inline void fer_rx_msg_received_isr_cb() {
 
 
 struct fer_rx_counter {
-  u16 Words, stopBits;
-  u8 Bits, preBits;
-  u8 errors; u8 recovered;
+  uint16_t Words, stopBits;
+  uint8_t Bits, preBits;
+  uint8_t errors; uint8_t recovered;
 };
 static bool input_level, input_edge_pos, input_edge_neg;
-static u16 aTicks, pTicks, nTicks;
-static u16 wordsToReceive;
+static uint16_t aTicks, pTicks, nTicks;
+static uint16_t wordsToReceive;
 // flags
 volatile fer_msg_type fer_rx_messageReceived;
 static bool fer_rx_messageReceived_flag;
-static u16 word_pair_buffer[2];
+static uint16_t word_pair_buffer[2];
 static struct fer_rx_counter frxCount;
 
 
@@ -72,10 +82,10 @@ void fer_rx_getQuality(struct fer_rx_quality *dst) {
 #define ct_incrementP(ctp, limit) ((++*ctp, *ctp %= limit) == 0)
 
 
-static fer_error IRAM_ATTR fer_rx_extract_Byte(const u16 *src, u8 *dst) {
+static fer_error IRAM_ATTR fer_rx_extract_Byte(const uint16_t *src, uint8_t *dst) {
   bool match = ((0xff & src[0]) == (0xff & src[1]));
   unsigned count = 0;
-  u8 out_byte = 0x77;
+  uint8_t out_byte = 0x77;
 
   if (fer_word_parity_p(src[0], 0)) {
     out_byte = src[0];
@@ -98,9 +108,9 @@ static fer_error IRAM_ATTR fer_rx_extract_Byte(const u16 *src, u8 *dst) {
   return fer_BAD_WORD_PARITY;
 }
 
-static fer_error  IRAM_ATTR fer_rx_verify_cmd(const u8 *dg) {
+static fer_error  IRAM_ATTR fer_rx_verify_cmd(const uint8_t *dg) {
   int i;
-  u8 checksum = 0;
+  uint8_t checksum = 0;
   bool all_null = true;
 
   for (i = 0; i < FER_CMD_BYTE_CT - 1; ++i) {
@@ -115,12 +125,13 @@ static fer_error  IRAM_ATTR fer_rx_verify_cmd(const u8 *dg) {
   return (checksum == dg[i] ? fer_OK : fer_BAD_CHECKSUM);
 }
 
-static void IRAM_ATTR fer_rx_recv_decodeByte(u8 *dst) {
+static void IRAM_ATTR fer_rx_recv_decodeByte(uint8_t *dst) {
   switch (fer_rx_extract_Byte(word_pair_buffer, dst)) {
   case fer_PAIR_NOT_EQUAL:
     ++frxCount.recovered;
     break;
   case fer_BAD_WORD_PARITY:
+    //db_toggleTxPin();
     ++frxCount.errors;
     break;
   case fer_OK:
@@ -132,11 +143,15 @@ static void IRAM_ATTR fer_rx_recv_decodeByte(u8 *dst) {
 static bool  IRAM_ATTR fer_rx_is_stopBit(unsigned len, unsigned nedge) {
   return ((US2TCK(FER_STP_WIDTH_MIN_US) <= len && len <= US2TCK(FER_STP_WIDTH_MAX_US)) && (US2TCK(FER_STP_NEDGE_MIN_US) <= nedge && nedge <= US2TCK(FER_STP_NEDGE_MAX_US)));
 }
+#if 0
+static bool  IRAM_ATTR fer_rx_is_endCmdBit(unsigned len, unsigned nedge) {
+  return ((US2TCK(FER_STP_WIDTH_MIN_US) <= len) && (US2TCK(FER_STP_NEDGE_MIN_US) <= nedge && nedge <= US2TCK(FER_STP_NEDGE_MAX_US)));
+}
 
 static bool  IRAM_ATTR fer_rx_is_pre_bit(unsigned len, unsigned nedge) {
   return ((US2TCK(FER_PRE_WIDTH_MIN_US) <= len && len <= US2TCK(FER_PRE_WIDTH_MAX_US)) && (US2TCK(FER_PRE_NEDGE_MIN_US) <= nedge && nedge <= US2TCK(FER_PRE_NEDGE_MAX_US)));
 }
-
+#endif
 static bool  IRAM_ATTR fer_rx_is_dataBitOne(unsigned len, unsigned nedge) {
   return len > (2 * nedge);
 }
@@ -150,13 +165,15 @@ static bool  IRAM_ATTR fer_rx_is_dataBit(unsigned len, unsigned nedge) {
   return FER_BIT_WIDTH_MIN_US <= len && len <= FER_BIT_WIDTH_MAX_US;
 }
 
-
-#define E1 1 // if 1 use experimental receiver code
-#define E2 0 // if 1 use tx-output-pin to signal frxCount.stopBits > 0
-
-
-#if E1 == 1
 static bool IRAM_ATTR fer_rx_wait_and_sample(void) {
+#if 0
+  if (wordsToReceive && wordsToReceive == (frxCount.stopBits)) {
+    if (US2TCK(FER_STP_NEDGE_MIN_US) <= pTicks && pTicks <= US2TCK(FER_STP_NEDGE_MIN_US) && nTicks > US2TCK(FER_STP_WIDTH_MAX_US)) {
+     return true;
+    }
+  }
+#endif
+
   if (!input_edge_pos)
     return false;
 
@@ -165,11 +182,12 @@ static bool IRAM_ATTR fer_rx_wait_and_sample(void) {
   const bool isDataBitOne = fer_rx_is_dataBitOne(aTicks, pTicks);
   const bool isDataBitZero = fer_rx_is_dataBitZero(aTicks, pTicks);
 
+
+
   if (isStopBit) {
     if (frxCount.stopBits == 0) {
       fer_rx_clear();
     }
-    frxCount.Words = frxCount.stopBits;
     ++frxCount.stopBits;
     return false;
   }
@@ -178,6 +196,7 @@ static bool IRAM_ATTR fer_rx_wait_and_sample(void) {
     return false;
 
   if (!isDataBit && !(isDataBitOne || isDataBitZero)) {
+    //db_toggleTxPin();
     fer_rx_clear();
     return false;
   }
@@ -185,32 +204,7 @@ static bool IRAM_ATTR fer_rx_wait_and_sample(void) {
   PUT_BIT(word_pair_buffer[frxCount.Words & 1], frxCount.Bits, isDataBitOne);
   return true;
 }
-#else
-static bool IRAM_ATTR fer_rx_wait_and_sample(void) {
-  if (!input_edge_pos)
-    return false;
 
-  if (frxCount.preBits < 5) {
-    if (fer_rx_is_pre_bit(aTicks, pTicks))
-      ++frxCount.preBits;
-
-    return false;
-  }
-
-
-  if (frxCount.stopBits < 1) {
-    if (fer_rx_is_stopBit(aTicks, pTicks))
-      ++frxCount.stopBits;
-    if (frxCount.stopBits == 0 && frxCount.Words)
-      fer_rx_clear();
-    return false;
-  }
-
-
-  PUT_BIT(word_pair_buffer[frxCount.Words & 1], frxCount.Bits, pTicks < nTicks);
-  return true;
-}
-#endif
 
 static int IRAM_ATTR fer_rx_receive_message(void) {
 
@@ -221,15 +215,15 @@ static int IRAM_ATTR fer_rx_receive_message(void) {
         // word pair complete
         fer_rx_recv_decodeByte(rxbuf_current_byte());
       }
-      frxCount.Words = frxCount.stopBits;
+
+      //if (frxCount.Words)  db_toggleTxPin();
+
+
+      ++frxCount.Words;
 
       return frxCount.Words;
     }
   }
-#if E2 == 1
-  void ftrx_testSetOutputLevel(bool level);
-  ftrx_testSetOutputLevel(frxCount.stopBits > 0);
-#endif
   return 0;  // continue
 }
 
@@ -244,6 +238,7 @@ static void IRAM_ATTR fer_rx_tick_receive_message() {
   switch (fer_rx_receive_message()) {
 
   case WORDS_MSG_PLAIN:
+   //db_toggleTxPin();
     if (frxCount.errors || fer_OK != fer_rx_verify_cmd(fer_rx_msg->cmd.bd)) {
       fer_rx_clear();
       break;
@@ -258,6 +253,7 @@ static void IRAM_ATTR fer_rx_tick_receive_message() {
     break;
 
   case WORDS_MSG_RTC:
+    //db_toggleTxPin();
     if (frxCount.errors) {
       fer_rx_clear();
       break;
@@ -272,6 +268,7 @@ static void IRAM_ATTR fer_rx_tick_receive_message() {
     break;
 
   case WORDS_MSG_TIMER:
+   // db_toggleTxPin();
     if (frxCount.errors) {
       fer_rx_clear();
       break;
@@ -286,7 +283,7 @@ static void IRAM_ATTR fer_rx_tick_receive_message() {
   }
 }
 
-void IRAM_ATTR fer_rx_sampleInput(bool pin_level) {
+static void IRAM_ATTR fer_rx_sampleInput(bool pin_level) {
 
   input_edge_pos = input_edge_neg = false;
   if (input_level != pin_level) {
@@ -299,7 +296,9 @@ void IRAM_ATTR fer_rx_sampleInput(bool pin_level) {
   input_level = pin_level;
 }
 
-void IRAM_ATTR fer_rx_tick() {
+void IRAM_ATTR fer_rx_tick(bool pin_level) {
+
+  fer_rx_sampleInput(pin_level);
 
   if ((input_level && nTicks > veryLongPauseLow_Len)) {
     fer_rx_clear();

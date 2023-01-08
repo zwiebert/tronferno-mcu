@@ -89,7 +89,7 @@ public:
     int g, m;
     clear();
     for (g = 0; g < 8; ++g, (um >>= 4)) {
-      u8 u = um & 0x07;
+      uint8_t u = um & 0x07;
       for (m = 1; m <= u; ++m) {
         setMember(g, m);
       }
@@ -188,11 +188,11 @@ public:
    * \note    All Previous content of this set will be deleted.
    * \param um  each nibble except of nibble 0 contains a count (1-7) of members of a group to set
    */
-  void fromNibbleCounters(u32 um) {
+  void fromNibbleCounters(uint32_t um) {
     int g, m;
     clear();
     for (g = 0; g < 8; ++g, (um >>= 4)) {
-      u8 u = um & 0x07;
+      uint8_t u = um & 0x07;
       for (m = 1; m <= u; ++m) {
         setMember(g, m);
       }

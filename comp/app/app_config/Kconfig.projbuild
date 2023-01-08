@@ -1,136 +1,137 @@
 menu "Tronferno Project Configuration"
-    
-config APP_USE_HTTP
-  bool "Activate HTTP"
-  default y
 
-config APP_USE_LAN
-  bool "Activate LAN"
-  default y
+    config APP_USE_NETWORK
+        bool "Compile NETWORK support"
+        default y
 
-config APP_USE_WLAN
-  bool "Activate WLAN"
-  default y
+    config APP_USE_HTTP
+        depends on APP_USE_NETWORK
+        bool "Compile HTTP server "
+        default y
 
-config APP_USE_WLAN_AP
-  bool "Activate WLAN_AP"
-  default y
+    config APP_USE_WS
+        depends on APP_USE_HTTP
+        bool "Compile with Websocket support"
+        default y
 
-config APP_USE_NTP
-  bool "Activate NTP"
-  default y
- 
-config APP_USE_JSON
-  bool "Activate JSON"
-  default y
+    config APP_USE_MQTT
+        depends on APP_USE_NETWORK
+        bool "Compile MQTT client"
+        default y
 
-config APP_USE_MQTT
-  bool "Activate MQTT"
-  default y
+    config APP_MQTT_CLIENT_ID
+        string
+        default "tfmcu"
 
-config APP_USE_POSIX_TIME
-  bool "Activate POSIX_TIME"
-  default y
+    config APP_MQTT_ROOT_TOPIC
+        string
+        default "tfmcu"
 
-config APP_USE_SERIAL
-  bool "Activate SERIAL"
-  default y
+    config APP_USE_OTA
+        depends on APP_USE_NETWORK
+        bool "Compile with over-the-air update support"
+        default y
 
-config APP_USE_WDG
-  bool "Activate WDG"
-  default y
+    config APP_OTA_URL_HEAD
+        depends on APP_USE_OTA
+        string "Firmware URL for repository"
+        default "https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/"
 
-config APP_USE_FS
-  bool "Activate FS"
-  default y
+    config APP_OTA_URL_TAIL
+        depends on APP_USE_OTA
+        string "Firmware URL file path after branch or tag name"
+        default "/firmware/esp32/tronferno-mcu.bin"
 
-config APP_USE_HTTP_CLIENT
-  bool "Activate HTTP_CLIENT"
-  default y
+    config APP_USE_POSIX_TIME
+        bool "Compile with Posix time support"
+        default y
 
-config APP_USE_OTA
-  bool "Activate OTA"
-  default y
+    config APP_USE_MUTEX
+        bool "Compile with MUTEX support"
+        default y
+        help
+            If disabled, use a dummy instead of a real Mutex
+            Note: Disable it only for testing/debugging purposes
 
-config APP_USE_STM32OTA
-  bool "Activate STM32OTA"
-  default y
+    config APP_USE_CLI_TASK
+        bool "Run CLI in its own task"
+        default y
 
-config APP_USE_CUAS
-  bool "Activate CUAS"
-  default y
+    config APP_USE_ESP_GET_TIME
+        bool "Get up-time from esp_timer_get_time()"
+        default y
+        help
+            Don't count up-time in our own timer-ISR.
+            Use esp_timer_get_time() instead
 
-config APP_USE_TCPS
-  bool "Activate TCPS (non task)"
-  default n
-    
-config APP_USE_TCPS_TASK
-  bool "Activate TCPS_TASK"
-  default y
+    config APP_USE_GPIO_PINS
+        bool "Compile with support for user defined GPIOs"
+        default y
+        help
+            The user can define GPIOs from CLI/web-app, which then can be read or set via MQTT
 
-config APP_USE_SEP
-  bool "Activate SEP"
-  default y
+    config APP_USE_FREERTOS
+        bool "Compile FreeRTOS-dependent code in common modules"
+        default y
 
-config APP_USE_WS
-  bool "Activate WS"
-  default y
+    config APP_USE_MDR_TIME
+        bool "Compile support for MDR time library (obsolete)"
+        default n
 
-config APP_USE_MUTEX
-  bool "Activate MUTEX"
-  default y
+    config APP_USE_TIMER_TASK
+        bool "Split timer ISR into ISR and high priority task"
+        default n
+        help
+            Instead of calling the RF-transceiver tick functions directly from timer ISR,
+            move these calls to a high priority task, and only do sampling
+            and setting the GPIO RX/TX pins in the ISR
 
-config APP_USE_CLI_TASK
-  bool "Activate CLI_TASK"
-  default y
-  
-config APP_USE_NETWORK
-  bool "Activate NETWORK"
-  default y
+    config APP_GEO_TZ
+        string "POSIX TZ string"
+        default "CET-1CEST-2,M3.5.0,M10.5.0"
 
-config APP_USE_AP_FALLBACK
-  bool "Activate AP_FALLBACK"
-  default y
-  
-  
-config APP_USE_CONFIG_KVS
-  bool "Activate CONFIG_KVS"
-  default y
-  
-config APP_USE_ESP_GET_TIME
-  bool "Activate ESP_GET_TIME"
-  default y
+    config APP_SETTINGS_PASSWORD
+        string "password for MCU settings"
+        default ""
 
-config APP_USE_FER_TRANSMITTER
-  bool "Activate FER_TRANSMITTER"
-  default y
- 
-config APP_USE_FER_RECEIVER
-  bool "Activate FER_RECEIVER"
-  default y
+    config APP_FER_CENTRAL_UNIT_ID
+        hex "Default ID of programming centre"
+        default 0x801234
 
-config APP_USE_PAIRINGS
-  bool "Activate USE_PAIRINGS"
-  default y 
- 
-config APP_USE_GPIO_PINS
-  bool "Activate USE_GPIO_PINS"
-  default y 
- 
-config APP_USE_TIMER_DATA_FS
-  bool "Activate USE_TIMER_DATA_FS"
-  default n
-  
-config APP_USE_TIMER_DATA_KVS
-  bool "Activate USE_TIMER_DATA_KVS"
-  default y
- 
-config APP_USE_FREERTOS
-  bool "Activate USE_FREERTOS"
-  default y
+    config APP_FER_GM_USE
+        hex "Default active groups/receivers"
+        default 0x7777777
 
-config APP_USE_MDR_TIME
-  bool "Activate USE_MDR_TIME"
-  default n
-  
-  endmenu
+    config APP_WIFI_AP_SSID
+        string "WIFI/WLAN access-point SSID"
+        default "tronferno"
+
+    config APP_WIFI_AP_PASSWORD
+        string "WIFI/WLAN access-point password"
+        default "tronferno"
+
+    config APP_CFG_NAMESPACE
+        string "Namespace for kvs configuration storage"
+        default "Tronferno"
+        help
+            Note: When changed, the previous configuration data will become inacessible
+
+    config APP_GPIO_NUMBER_OF_GPIOS
+        int "Number of available GPIOs"
+        default 40
+        help
+            Number of GPIOs this MCU has (ESP32: 40)
+
+    config MAIN_LOOP_PERIOD_MS
+        int "main loop period in milliseconds"
+        default 100
+        help
+            How frequently the main loop is called by timer
+
+    config NETWORK_CHECK_LOOP_PERIOD_S
+        int "network check loop period in seconds"
+        default 15
+        help
+            How frequently the network connection is checked for appearing while disconnected
+
+endmenu

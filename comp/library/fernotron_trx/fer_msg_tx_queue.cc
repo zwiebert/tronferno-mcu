@@ -11,14 +11,14 @@
 
 #define sf_SIZE 16
 static struct sf sf[sf_SIZE];
-static u8 sf_head_, sf_tail_;
+static uint8_t sf_head_, sf_tail_;
 
 #define sf_head (sf_head_+0)
 #define sf_tail (sf_tail_+0)
 #define sf_incrHead() ((void)(sf_head_ = ((sf_head+1) & (sf_SIZE-1))))
 #define sf_incrTail() ((void)(sf_tail_ = ((sf_tail+1) & (sf_SIZE-1))))
-#define sf_Pred(a) ((((u8)(a))-1) & (sf_SIZE-1))
-#define sf_Succ(a) ((((u8)(a))+1) & (sf_SIZE-1))
+#define sf_Pred(a) ((((uint8_t)(a))-1) & (sf_SIZE-1))
+#define sf_Succ(a) ((((uint8_t)(a))+1) & (sf_SIZE-1))
 #define sf_isEmpty() (sf_head_ == sf_tail)
 #define sf_isFull()  (sf_head_ == (((sf_tail+1) & (sf_SIZE-1))))
 
@@ -32,8 +32,8 @@ static bool comp_fun(const T *a, const T *b) {
 static bool sf_append(const T *msg) {
   if (sf_isFull())
     return false;
-  u8 i = sf_tail;
-  u8 k = sf_Pred(i);
+  uint8_t i = sf_tail;
+  uint8_t k = sf_Pred(i);
   sf_incrTail();
 
   while (i != sf_head) {

@@ -5,7 +5,8 @@
  *      Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+
+#include "rom/gpio.h"
 #include "gpio/pin.h"
 
 #include "txtio/inout.h"
@@ -19,7 +20,9 @@
 #include "esp_event.h"
 #include "driver/gpio.h"
 #include <hal/gpio_types.h>
+
 #include "string.h"
+#include <atomic>
 
 #define printf ets_uart_printf
 
@@ -38,11 +41,11 @@ static struct cfg_gpio *gpio_cfg;
 uint64_t inputGpioUsable;
 uint64_t outputGpioUsable;
 static u64 pins_in_use, pins_not_cli;
-volatile uint64_t pin_int_mask;
+static volatile std::atomic<std::uint64_t> pin_int_mask;
 
 #define gpioUsableHigh
 
-#ifdef USE_GPIO_PINS
+#ifdef CONFIG_APP_USE_GPIO_PINS
 enum mcu_pin_mode pin_getPinMode(unsigned gpio_number) {
   if (gpio_number >= sizeof gpio_cfg->gpio)
     return PIN_MODE_none;
@@ -85,14 +88,14 @@ bool is_gpio_number_usable(int gpio_number, bool cli) {
   return (gpioUsable & (1ULL << gpio_number)) != 0;
 }
 
-void IRAM_ATTR mcu_put_txPin(u8 level) {
+void IRAM_ATTR mcu_put_txPin(uint8_t level) {
   if (const auto pin = RFOUT_GPIO; pin >= 0) {
     level = !!level == !gpio_cfg->out_rf_inv;
     GPIO_OUTPUT_SET(pin, level);
   }
 }
 
-u8 IRAM_ATTR mcu_get_rxPin() {
+uint8_t IRAM_ATTR mcu_get_rxPin() {
   if (const auto pin = RFIN_GPIO; pin >= 0) {
     return GPIO_INPUT_GET(pin);
   }
@@ -249,7 +252,7 @@ void (*gpio_INPUT_PIN_CHANGED_ISR_cb)();
 void pin_notify_input_change() {
   uint64_t mask = pin_int_mask;
   pin_int_mask = 0;
-  for (u8 i = 0; mask; ++i, (mask >>= 1)) {
+  for (uint8_t i = 0; mask; ++i, (mask >>= 1)) {
     if (!(mask & 1))
       continue;
     bool level = gpio_get_level(static_cast<gpio_num_t>(i));
@@ -310,8 +313,8 @@ void setup_pin(const struct cfg_gpio *c) {
     pin_setup_input_handler(static_cast<gpio_num_t>(BUTTON_GPIO));
   }
 
-#ifdef USE_GPIO_PINS
-  for (int i = 0; i < CONFIG_GPIO_SIZE; ++i) {
+#ifdef CONFIG_APP_USE_GPIO_PINS
+  for (int i = 0; i < CONFIG_APP_GPIO_NUMBER_OF_GPIOS; ++i) {
     if (gpioCfg_getPinMode(gpio_cfg, i) == PIN_DEFAULT)
       continue;
     pin_set_mode(i, gpioCfg_getPinMode(gpio_cfg, i), gpioCfg_getPinLevel(gpio_cfg, i));

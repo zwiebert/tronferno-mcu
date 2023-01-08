@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 #include "stdbool.h"
-#include "app_config/proj_app_cfg.h"
+
 #include "fer_msg_attachment.h"
 #include <fernotron_trx/fer_trx_c_api.h>
 
@@ -32,12 +32,8 @@ extern volatile bool fer_tx_messageToSend_isReady;
 
 #define fer_rx_hasNewMsg() (!!fer_rx_messageReceived)
 #define fer_tx_isTransmitterBusy() (!!fer_tx_messageToSend_isReady)
-
-#if 0 //def DISTRIBUTION  /// XXX: enable receiving messages sent by ourself (to diagnose bad transmitter modules. IMPROVE THIS CODE)
-#define fer_rx_isReceiverBlocked() (fer_rx_messageReceived || fer_tx_messageToSend_isReady)
-#else
 #define fer_rx_isReceiverBlocked() (fer_rx_messageReceived)
-#endif
+
 
 //
 /**

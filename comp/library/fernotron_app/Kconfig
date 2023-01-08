@@ -1,0 +1,25 @@
+menu "zwiebert: Tronferno App Library"
+
+    config APP_USE_CUAS
+        bool "Activate CUAS"
+        default y
+
+    config APP_USE_SEP
+        bool "Activate SEP"
+        default y
+
+    config APP_USE_TIMER_DATA_FS
+        bool "Activate USE_TIMER_DATA_FS"
+        default n
+
+    config APP_USE_TIMER_DATA_KVS
+        bool "Activate USE_TIMER_DATA_KVS"
+        default y
+
+    config APP_USE_PAIRINGS
+        bool "Activate USE_PAIRINGS"
+        default y
+
+
+endmenu
+

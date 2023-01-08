@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "app_config/proj_app_cfg.h"
+
 #include "fernotron/auto/fau_tminutes.h"
 #include "fernotron_trx/fer_trx_c_api.h"
 #include "utils_misc/bcd.h"
@@ -23,13 +23,14 @@
 
 static bool pras_active;
 static time_t end_time;
-static u8 pras_g, pras_m;
+static uint8_t pras_g, pras_m;
 static fer_alias_cmds pras_c;
 
 static void fer_alias_enable_disable_cb(bool enable) {
   static void *tmr;
+
   if (enable && !tmr) {
-    tmr = mainLoop_callFun(fer_alias_auto_set_check_timeout, 100, true);
+    tmr = mainLoop_callFunByTimer(fer_alias_auto_set_check_timeout, 100, true);
   }
   if (!enable && tmr) {
     mainLoop_stopFun(tmr);
@@ -45,7 +46,7 @@ static inline void fer_alias_DISABLE_cb() {
 }
 
 
-bool  fer_alias_auto_set(u8 g, u8 m, fer_alias_cmds c, u16 id, unsigned timeout_secs) {
+bool  fer_alias_auto_set(uint8_t g, uint8_t m, fer_alias_cmds c, uint16_t id, unsigned timeout_secs) {
   if (end_time != 0)
     return false;
 
@@ -73,7 +74,7 @@ void fer_alias_auto_set_check_timeout(void) {
   }
 }
 
-bool fer_alias_auto_set_check(const u32 a) {
+bool fer_alias_auto_set_check(const uint32_t a) {
   if (end_time == 0)
     return false;
   {

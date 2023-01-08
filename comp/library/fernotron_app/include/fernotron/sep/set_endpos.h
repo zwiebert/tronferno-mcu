@@ -9,7 +9,7 @@
 #pragma once
 
 #include "stdbool.h"
-#include "app_config/proj_app_cfg.h"
+
 #include <fernotron_trx/fer_trx_c_api.h>
 
 /**
@@ -23,24 +23,25 @@ const int fer_sep_BUTTON_TIMEOUT = 3; // timeout to send stop if no movement fun
 const int SEP_AUTH_TIMEOUT_SECS = 320;
 const int SEP_AUTH_BUTTON_TIMEOUT_SECS = 60;
 
-bool fer_sep_authenticate(const struct TargetDesc &td, u32 auth_key, int auth_timeout_secs = SEP_AUTH_TIMEOUT_SECS, int button_timeout_secs =
+bool fer_sep_authenticate(const struct TargetDesc &td, uint32_t auth_key, int auth_timeout_secs = SEP_AUTH_TIMEOUT_SECS, int button_timeout_secs =
     SEP_AUTH_BUTTON_TIMEOUT_SECS);
-bool fer_sep_deauthenticate(const struct TargetDesc &td, u32 auth_key);
+bool fer_sep_deauthenticate(const struct TargetDesc &td, uint32_t auth_key);
 
 /**
  * \brief          Enable set-end-position-mode
- * \param a        Address of motor to set position to (XXX: we should only use motor addresses here, because all others addresses could address more than one motor)
- * \param g,m      FIXME: this should better not be used
- * \param cmd      FIXME: xUP=set upper end position, xDOWN=set lower end position
+ * \param a        Radio code or central-unit-ID. WARNING: Only the radio code is always unique, while more than one motor can be registered under the same receiver number.
+ * \param g,m      Group/receiver number if A is a central-unit-ID.
+ * \param enable_timeout_secs  timeout to switch off SEP mode
+ * \param button_timeout_secs  timeout to send stop if no movement function was called repeatedly.
  * \return         true for success
  */
-bool fer_sep_enable(const struct TargetDesc &td, u32 auth_key, u32 a, u8 g = 0, u8 m = 0, int enable_timeout_secs = fer_sep_TIMEOUT, int button_timeout_secs =
+bool fer_sep_enable(const struct TargetDesc &td, uint32_t auth_key, uint32_t a, uint8_t g = 0, uint8_t m = 0, int enable_timeout_secs = fer_sep_TIMEOUT, int button_timeout_secs =
     fer_sep_BUTTON_TIMEOUT);
 
-bool fer_sep_move_up(u32 auth_key = 0);
-bool fer_sep_move_down(u32 auth_key = 0);
-bool fer_sep_move_continue(u32 auth_key = 0);
-bool fer_sep_move_stop(u32 auth_key = 0);
+bool fer_sep_move_up(uint32_t auth_key = 0);
+bool fer_sep_move_down(uint32_t auth_key = 0);
+bool fer_sep_move_continue(uint32_t auth_key = 0);
+bool fer_sep_move_stop(uint32_t auth_key = 0);
 bool fer_sep_move_test();
 
 /**

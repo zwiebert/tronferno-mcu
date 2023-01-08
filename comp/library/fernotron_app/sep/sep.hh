@@ -34,13 +34,14 @@
 
 
 #include "sep_auth.hh"
+#include "sep_enable.hh"
 
 class Sep {
   struct Agm {
-    u32 a;
-    u8 g, m;
+    uint32_t a;
+    uint8_t g, m;
 
-    Fer_MsgCmd make_cmd(fer_if_cmd cmd, u8 repeats = 0) const {
+    Fer_MsgCmd make_cmd(fer_if_cmd cmd, uint8_t repeats = 0) const {
       return Fer_MsgCmd { .a = a, .g = g, .m = m, .cmd = cmd, .repeats = repeats };
     }
   };
@@ -68,7 +69,7 @@ public:
 
 public:
 
-  bool move_up(u32 auth_key) {
+  bool move_up(uint32_t auth_key) {
     if (!m_sep_auth.isAuthenticated(auth_key))
       return false;
     if (!fer_sep_is_enabled())
@@ -86,7 +87,7 @@ public:
     }
     return true;
   }
-  bool move_down(u32 auth_key) {
+  bool move_down(uint32_t auth_key) {
     if (!m_sep_auth.isAuthenticated(auth_key))
       return false;
     if (!fer_sep_is_enabled())
@@ -104,7 +105,7 @@ public:
     }
     return true;
   }
-  bool move_continue(u32 auth_key) {
+  bool move_continue(uint32_t auth_key) {
     if (!m_sep_auth.isAuthenticated(auth_key))
       return false;
     if (!fer_sep_is_enabled())
@@ -115,7 +116,7 @@ public:
     restart_timeout();
     return true;
   }
-  bool move_stop(u32 auth_key) {
+  bool move_stop(uint32_t auth_key) {
 #if 0
     if (!m_sep_auth.isAuthenticated(auth_key))
       return false;
@@ -133,7 +134,7 @@ public:
     return true;
   }
 
-  bool authenticate(u32 auth_key, int sep_mode_timeout_secs, int button_timeout_secs) {
+  bool authenticate(uint32_t auth_key, int sep_mode_timeout_secs, int button_timeout_secs) {
     if (!m_sep_auth.authenticate(auth_key, sep_mode_timeout_secs, button_timeout_secs))
       return false;
 
@@ -141,7 +142,7 @@ public:
     return true;
   }
 
-  bool deauthenticate(u32 auth_key) {
+  bool deauthenticate(uint32_t auth_key) {
     if (!m_sep_auth.deauthenticate(auth_key))
       return false;
     uoApp_publish_fer_sepState( { .auth_terminated = 1 });
@@ -157,14 +158,14 @@ public:
     }
   }
 
-  bool enable(u32 auth_key, const u32 a, const u8 g, const u8 m,  int enabled_timeout_secs, int button_timeout_secs) {
+  bool enable(uint32_t auth_key, const uint32_t a, const uint8_t g, const uint8_t m,  int enabled_timeout_secs, int button_timeout_secs) {
     if (!m_sep_auth.isAuthenticated(auth_key))
       return false;
     if (fer_sep_is_enabled()) {
       return false;
     }
 
-    // check for possible broadcast  XXX: should we also forbid any non motor address (FER_ADDR_TYPE_Receiver)?
+    // check for possible broadcast
     if (FER_U32_TEST_TYPE(a, FER_ADDR_TYPE_CentralUnit) && !((1 <= m && m <= 7) && (1 <= g && g <= 7))) {
       return false; // no broadcast allowed
     }
@@ -214,7 +215,7 @@ private:
   Sep_Auth m_sep_auth;
   Time_Out_Secs m_button_timeout, m_enabled_timeout;
   Agm m_agm;
-  u16 m_button_timeout_secs = 0, m_enabled_timeout_secs = 0;
+  uint16_t m_button_timeout_secs = 0, m_enabled_timeout_secs = 0;
   bool m_buttons_enabled = false;
   bool m_up_pressed = false;
   bool m_down_pressed = false;

@@ -8,7 +8,7 @@
 #include <string.h>
 
 bool
-timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
+timerString2bcd(const char *src, uint8_t *dst, uint16_t size_dst) {
   char buf[3];
   int i;
 
@@ -54,26 +54,26 @@ timerString2bcd(const char *src, u8 *dst, u16 size_dst) {
 
 bool fer_fill_rtc_buf(time_t rtc) {
   fer_msg_raw_init(fer_tx_msg, MSG_TYPE_RTC);
-  fer_msg_rtc_from_time(&fer_tx_msg->rtc.sd, rtc, true);
+  fer_msg_raw_from_time(fer_tx_msg, rtc, MSG_TYPE_RTC);
   return true;
 }
 
-bool fer_fill_timer_buf(u32 a, time_t rtc, const Fer_TimerData *tdr) {
+bool fer_fill_timer_buf(uint32_t a, time_t rtc, const Fer_TimerData *tdr) {
 
   fer_msg_raw_init(fer_tx_msg, MSG_TYPE_TIMER);
 
-  fer_msg_rtc_from_time(&fer_tx_msg->rtc.sd, rtc, false);
+  fer_msg_raw_from_time(fer_tx_msg, rtc, MSG_TYPE_TIMER);
 
 
   if (tdr->hasWeekly()) {
-    u8 weekly_data[FER_FPR_TIMER_STAMP_WIDTH * 7];
+    uint8_t weekly_data[FER_FPR_TIMER_STAMP_WIDTH * 7];
     if (!timerString2bcd(tdr->getWeekly(), weekly_data, sizeof weekly_data))
       return false;
     fer_msg_raw_from_weeklyTimer(fer_tx_msg, weekly_data);
   }
 
   if (tdr->hasDaily()) {
-    u8 daily_data[FER_FPR_TIMER_STAMP_WIDTH];
+    uint8_t daily_data[FER_FPR_TIMER_STAMP_WIDTH];
     if (!timerString2bcd(tdr->getDaily(), daily_data, sizeof daily_data))
       return false;
     fer_msg_raw_from_dailyTimer(fer_tx_msg, daily_data);
@@ -108,7 +108,7 @@ bool fer_trx_send_cmd(const Fer_MsgCmd *msg) {
 }
 bool fer_trx_send_rtc(const Fer_MsgRtc *msg) {
   fer_sbT fsb = fer_construct_fsb(msg->a, msg->g, msg->m, fer_cmd_Program);
-  return fer_fill_rtc_buf(msg->rtc) && fer_send_msg(&fsb, MSG_TYPE_RTC, 0);
+  return fer_send_msg_rtc(&fsb, msg->rtc, 0);
 }
 
 bool fer_trx_send_timer(const Fer_MsgTimer *msg) {
@@ -120,7 +120,7 @@ bool fer_trx_send_empty_timer(const Fer_MsgRtc *msg) {
   fer_sbT fsb = fer_construct_fsb(msg->a, msg->g, msg->m, fer_cmd_Program);
 
   Fer_TimerData tde;
-  return fer_fill_timer_buf(msg->a, msg->rtc, &tde) && fer_send_msg(&fsb, MSG_TYPE_TIMER, 0); // XXX: wasteful
+  return fer_fill_timer_buf(msg->a, msg->rtc, &tde) && fer_send_msg(&fsb, MSG_TYPE_TIMER, 0);
 }
 
 

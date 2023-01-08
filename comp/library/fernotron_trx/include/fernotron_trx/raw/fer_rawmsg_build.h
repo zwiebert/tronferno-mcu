@@ -15,7 +15,7 @@
  * \param m   Message pointer
  * \param t   Message kind
  */
-void fer_msg_raw_checksumsCreate(fer_rawMsg *m, fer_msg_type t);
+void fer_msg_raw_checksumsCreate(struct fer_raw_msg *m, fer_msg_type t);
 
 /**
  * \brief     Verify all checksums
@@ -23,32 +23,24 @@ void fer_msg_raw_checksumsCreate(fer_rawMsg *m, fer_msg_type t);
  * \param t   Message kind
  * \return    true if checksums are valid
  */
-bool fer_msg_raw_checksumsVerify(const fer_rawMsg *m, fer_msg_type t);
+bool fer_msg_raw_checksumsVerify(const struct fer_raw_msg *m, fer_msg_type t);
 
 /**
  * \brief     Initialize an empty message
  * \param msg Message pointer to a buffer with type T
  * \param t   Message type
  */
-void fer_msg_raw_init(fer_rawMsg *msg, fer_msg_type t);
+void fer_msg_raw_init(struct fer_raw_msg *msg, fer_msg_type t);
+
 
 /**
  * \brief          Build the RTC part of message
  * \param msg      Message pointer to a buffer with MSG_TYPE_RTC or MSG_TYPE_TIMER
  * \param now      Current time to set the internal RTC of a device
- * \param rtc_only True if MSG_TYPE_RTC (XXX)
+ * \param t        Message type (MSG_TYPE_RTC or MSG_TYPE_TIMER)
  */
-void fer_msg_rtc_from_time(fer_rtc_sd *msg, time_t now, bool rtc_only);
+void fer_msg_raw_from_time(fer_rawMsg *msg, time_t now, fer_msg_type t);
 
-/**
- * \brief          Build the RTC part of message
- * \param msg      Message pointer to a buffer with MSG_TYPE_RTC or MSG_TYPE_TIMER
- * \param now      Current time to set the internal RTC of a device
- * \param rtc_only True if MSG_TYPE_RTC (XXX)
- */
-inline void fer_msg_raw_from_rtc(fer_rawMsg *msg, time_t now, bool rtc_only) {
-  fer_msg_rtc_from_time(&msg->rtc.sd, now, rtc_only);
-}
 
 /**
  * \brief          Set/Clear options in message
@@ -78,3 +70,46 @@ void fer_msg_raw_from_astro(fer_rawMsg *msg, int mint_offset);
  * \param a       device address (central unit)
  */
 void fer_msg_raw_footerCreate(fer_rawMsg *msg, uint32_t a);
+
+
+
+
+
+#ifdef TEST_HOST
+
+/**
+ * \brief          Build the RTC part of message
+ * \param msg      Message pointer to a buffer with MSG_TYPE_RTC or MSG_TYPE_TIMER
+ * \param now      Current time to set the internal RTC of a device
+ * \param t        Message type (MSG_TYPE_RTC or MSG_TYPE_TIMER)
+ */
+void fer_msg_rtc_from_time(struct fer_rtc_sd *msg, time_t now,  fer_msg_type t);
+
+/**
+ * \brief          Set/Clear options in rtc line of message
+ * \param flags    \link fer_fpr00_FlagBitsValues  \endlink (e.g flag_Random, flag_SunAuto)
+ * \param mask     Bit mask of the flags to set or clear
+ */
+void fer_msg_from_flags(struct fer_rtc_sd *msg, uint8_t flags, uint8_t mask);
+/**
+ * \brief         Copy data to timer
+ *                Note: this splits the data to leave room for the checksum bytes
+ * \param msg     destination
+ * \param data    source
+ */
+void fer_msg_from_weeklyTimer(union fer_wdtimer *msg, const uint8_t *wtimer_data);
+/**
+ * \brief         Copy data to timer
+ *                Note: this splits the data to leave room for the checksum bytes
+ * \param msg     destination
+ * \param data    source
+ */
+void fer_msg_from_dailyTimer(union fer_wdtimer *msg, const uint8_t *dtimer_data);
+/**
+ * \brief         Copy data to timer
+ *                Note: this splits the data to leave room for the checksum bytes
+ * \param msg     destination
+ * \param data    source
+ */
+void fer_msg_from_astro(union fer_astro *msg, int mint_offset);
+#endif

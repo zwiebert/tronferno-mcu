@@ -4,7 +4,7 @@
  *  Created on: 16.04.2020
  *      Author: bertw
  */
-#include "app_config/proj_app_cfg.h"
+
 #include <fernotron_trx/raw/fer_radio_trx.h>
 #include "fer_radio_parity.h"
 #include "fer_trx_impl.hh"
@@ -17,16 +17,16 @@
 #include "debug/dbg.h"
 
 struct ftrx_counter {
-  u16 Words;
-  u16 Ticks, Bits;
+  uint16_t Words;
+  uint16_t Ticks, Bits;
 };
 #define US2DCK(us) FER_TX_US_TO_TCK(us)
 
-#ifdef FER_TRANSMITTER
+#ifdef CONFIG_APP_USE_FER_TRANSMITTER
 /////////////////////////// transmitter /////////////////////////
 static struct ftrx_counter ftxCount;
 static bool output_level;   // output line
-volatile u16 fer_tx_messageToSend_wordCount; ///< Telling the transmitter the size of the message to send
+volatile uint16_t fer_tx_messageToSend_wordCount; ///< Telling the transmitter the size of the message to send
 volatile bool fer_tx_messageToSend_isReady;
 static fer_rawMsg *fer_tx_buf;
 
@@ -63,70 +63,20 @@ static_assert(250 == US2DCK(FER_INIT_WIDTH_US));
 
 #define advanceWordCounter() (ct_incr(ftxCount.Words, fer_tx_messageToSend_wordCount))
 
-#define advanceLeadOutCounter() (ct_incr(ftxCount.Ticks, 18)) // XXX: add pause after done (usefulness?)
+#define advanceLeadOutCounter() (ct_incr(ftxCount.Ticks,  US2DCK(FER_LEAD_OUT_WIDTH_US * 3)))
+#define fer_tx_update_output_lead_out() (output_level = (ftxCount.Ticks < US2DCK(FER_LEAD_OUT_NEDGE_US)))
 
 static inline void IRAM_ATTR fer_tx_msg_transmitted_isr_cb() {
   if (fer_tx_MSG_TRANSMITTED_ISR_cb)
     fer_tx_MSG_TRANSMITTED_ISR_cb();
 }
 
-#if 0 // compiler bug
-// XXX: this crashes because somehow the switch() statement uses inaccessible memory (0x3f40_xxxx) for jumping to case labels
-// XXX: workaround: GCC option -fno-jump-tables or using if/else
-#pragma GCC push_options
-#pragma GCC optimize ("O0")
-
-static bool IRAM_ATTR fer_tx_send_message() {
-  static enum {    state_lead_in, state_preamble, state_data_stop_bit, state_data_word, state_lead_out,  } fer_tx_state;
-  static u16 word_buffer;
-
-  switch (fer_tx_state) {
-  case state_lead_in:
-    fer_tx_update_output_lead_in();
-    if (advanceLeadIntCounter())
-      fer_tx_state = state_preamble;
-    break;
-
-  case state_preamble:
-    fer_tx_update_output_preamble();
-    if (advancePreambleCounter())
-      fer_tx_state = state_data_stop_bit;
-    break;
-
-  case state_data_stop_bit:
-    fer_tx_update_output_stop_bit();
-    if (advanceStopBitCounter()) {
-      fer_tx_state = state_data_word;
-      word_buffer = fer_add_word_parity(fer_tx_buf->cmd.bd[ftxCount.Words / 2], ftxCount.Words);
-    }
-    break;
-
-  case state_data_word:
-    fer_tx_update_output_data(word_buffer);
-    if (advanceWordBitCounter())
-      fer_tx_state = advanceWordCounter() ? state_lead_out : state_data_stop_bit;
-    break;
-
-  case state_lead_out:
-    output_level = 0;
-    if (advanceLeadOutCounter()) {
-      fer_tx_state = state_lead_in;
-      return true;
-    }
-
-  }
-
-return false; // continue
-}
-#pragma GCC pop_options
-
-#else
 
 static bool IRAM_ATTR fer_tx_send_message() {
   static enum {
     state_lead_in, state_preamble, state_data_stop_bit, state_data_word, state_lead_out,
   } fer_tx_state;
-  static u16 word_buffer;
+  static uint16_t word_buffer;
 
   if (fer_tx_state == state_lead_in) {
     fer_tx_update_output_lead_in();
@@ -151,7 +101,7 @@ static bool IRAM_ATTR fer_tx_send_message() {
       fer_tx_state = advanceWordCounter() ? state_lead_out : state_data_stop_bit;
 
   } else if (fer_tx_state == state_lead_out) {
-    output_level = 0;
+    fer_tx_update_output_lead_out();
     if (advanceLeadOutCounter()) {
       fer_tx_state = state_lead_in;
       return true;
@@ -161,7 +111,6 @@ static bool IRAM_ATTR fer_tx_send_message() {
 
 return false; // continue
 }
-#endif
 
 static void IRAM_ATTR fer_tx_dck_send_message() {
 

@@ -38,7 +38,7 @@ static bool ferCmd_isEqual(const Fer_Cmd a, const Fer_Cmd b) {
 
 
 void fer_rx_loop() {
-#ifdef FER_RECEIVER
+#ifdef CONFIG_APP_USE_FER_RECEIVER
   static fer_sbT last_received_sender;
 
   if (fer_rx_messageReceived != MSG_TYPE_NONE) {

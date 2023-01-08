@@ -70,5 +70,5 @@ TEST_CASE("tx: repeats and queue", "[fernotron]")
 uint32_t run_time_ts() { return 0; }
 uint32_t run_time_s() { return 0; }
 bool mcu_get_rxPin() { return false; }
-void mcu_delay_us(u32 us) {}
+void mcu_delay_us(uint32_t us) {}
 #endif

@@ -19,21 +19,6 @@
 
 void (*fer_tx_READY_TO_TRANSMIT_cb)(uint32_t when_to_transmit_ts);
 
-static void run_tx_worker_loop_main_thread(u32 when_to_transmit_ts) {
-  const u32 now_ts = get_now_time_ts();
-  if (now_ts >= when_to_transmit_ts) {
-    mainLoop_callFun(fer_tx_loop);
-    return;
-  }
-
-  // message sent time lies in future
-
-  const u32 delay_ms = (when_to_transmit_ts - now_ts) * 100;
-  if (!mainLoop_callFun(fer_tx_loop, delay_ms)) {
-    printf("TxWorker Timer start error");
-  }
-}
-
 static inline void fer_tx_ready_to_transmit_cb(uint32_t time_ts) {
   if (fer_tx_READY_TO_TRANSMIT_cb)
     fer_tx_READY_TO_TRANSMIT_cb(time_ts);
@@ -48,11 +33,11 @@ static void fer_send_checkQuedState() {
 
   if ((msg = fer_tx_nextMsg())) {
     fer_tx_ready_to_transmit_cb(msg->when_to_transmit_ts);
-    run_tx_worker_loop_main_thread(msg->when_to_transmit_ts);
+    mainLoop_callFun(fer_tx_loop);
   }
 }
 
-bool fer_send_msg_with_stop(const fer_sbT *fsb, u16 delay, u16 stopDelay, i8 repeats) {
+bool fer_send_msg_with_stop(const fer_sbT *fsb, uint16_t delay, uint16_t stopDelay, int8_t repeats) {
   precond(fsb);
   precond(stopDelay > 0);
 
@@ -65,10 +50,23 @@ bool fer_send_msg_with_stop(const fer_sbT *fsb, u16 delay, u16 stopDelay, i8 rep
   return false;
 }
 
-bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, i8 repeats, u16 delay) {
+bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, int8_t repeats, uint16_t delay) {
+  precond(fsb);
+  precond (msgType == MSG_TYPE_PLAIN || msgType == MSG_TYPE_TIMER);
+
+  struct sf msg = { .when_to_transmit_ts = (delay + (uint32_t)get_now_time_ts()), .fsb = *fsb, .mt = msgType, .repeats = repeats };
+  if (!fer_tx_pushMsg(&msg))
+    return false;
+
+  fer_send_checkQuedState();
+  return true;
+}
+
+bool fer_send_msg_rtc(const fer_sbT *fsb, time_t rtc, int8_t repeats) {
   precond(fsb);
 
-  struct sf msg = { .when_to_transmit_ts = (delay + (u32)get_now_time_ts()), .fsb = *fsb, .mt = msgType, .repeats = repeats };
+  struct sf msg = { .when_to_transmit_ts = (uint32_t)get_now_time_ts(), .fsb = *fsb, .rtc = rtc, .mt = MSG_TYPE_RTC, .repeats = repeats };
+
   if (!fer_tx_pushMsg(&msg))
     return false;
 
@@ -77,7 +75,7 @@ bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, i8 repeats, u16 dela
 }
 
 static bool fer_send_queued_msg(struct sf *msg) {
-  static u8 sf_toggle;
+  static uint8_t sf_toggle;
   precond(!fer_tx_isTransmitterBusy());
   precond(msg);
 
@@ -93,8 +91,11 @@ static bool fer_send_queued_msg(struct sf *msg) {
       Fer_Trx_API::push_event(&evt);
     }
   }
-
+  if (msg->mt == MSG_TYPE_RTC) {
+    fer_msg_raw_from_time(fer_tx_msg, msg->rtc, MSG_TYPE_RTC);
+  }
   memcpy(fer_tx_msg->cmd.bd, msg->fsb.data, 5);
+
   fer_msg_raw_checksumsCreate(fer_tx_msg, msg->mt);
 
   evt.first = false;
@@ -109,7 +110,7 @@ static bool fer_send_queued_msg(struct sf *msg) {
   return false;
 }
 
-fer_sbT fer_construct_fsb(u32 a, u8 g, u8 m, fer_cmd cmd) {
+fer_sbT fer_construct_fsb(uint32_t a, uint8_t g, uint8_t m, fer_cmd cmd) {
   fer_sbT fsb;
   fer_init_sender(&fsb, a);
 
@@ -138,25 +139,51 @@ inline bool fer_rx_clear_to_send() {
   return last_rx_ts + 5 <= get_now_time_ts(); // TODO: we could use RSSI with CC1101 here. For now just check if nothing was received in the last 500ms
 }
 
-void fer_tx_loop() {
+static bool wait_tx_available() {
+  static void *tmr;
+
+  // Wait for transmitter to become available
   if (fer_tx_isTransmitterBusy() || !fer_rx_clear_to_send()) {
-    mainLoop_callFun(fer_tx_loop, 100);
-    return;
+    if (!tmr)
+      tmr = mainLoop_callFunByTimer(fer_tx_loop, 100, true);
+    return false;
   }
+  if (tmr) {
+    mainLoop_stopFun(tmr);
+    tmr = NULL;
+  }
+  return true;
+}
 
-  struct sf *msg = fer_tx_nextMsg();
+static bool wait_tx_when_to_transmit(uint32_t now_ts, uint32_t when_ts) {
+  const uint32_t delay_ms = (when_ts - now_ts) * 100;
+  static void *tmr;
 
-  if (msg && msg->when_to_transmit_ts <= get_now_time_ts()) {
-    // enable transmitter
+  mainLoop_stopFun(tmr);
+  tmr = mainLoop_callFunByTimer(fer_tx_loop, delay_ms);
+
+  return tmr != NULL;
+}
+
+void fer_tx_loop() {
+  if (!wait_tx_available())
+    return;
+
+  struct sf *const msg = fer_tx_nextMsg();
+  const uint32_t now_ts = get_now_time_ts();
+
+  if (!msg) {
+    fer_trx_direction(false);
+    fer_send_checkQuedState();
+  } else if (msg->when_to_transmit_ts <= now_ts) {
     fer_trx_direction(true);
     if (fer_send_queued_msg(msg)) {
       fer_tx_popMsg();
     }
+    //fer_send_checkQuedState();
   } else {
-    // enable receiver
     fer_trx_direction(false);
+    wait_tx_when_to_transmit(now_ts, msg->when_to_transmit_ts);
   }
-
-  fer_send_checkQuedState();
 }
 

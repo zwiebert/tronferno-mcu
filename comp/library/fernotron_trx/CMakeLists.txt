@@ -7,7 +7,7 @@ idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS "./include" 
     REQUIRES utils_misc utils_debug 
-    PRIV_REQUIRES main_loop app_config  utils_time utils_misc cc1101_ook 
+    PRIV_REQUIRES main_loop   utils_time utils_misc cc1101_ook 
      )
 
 component_compile_options(${comp_compile_opts})

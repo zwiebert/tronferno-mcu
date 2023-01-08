@@ -31,7 +31,7 @@ inline bool FER_U32_TEST_TYPE(uint32_t a, unsigned t) {
 /// \brief Fernotron command codes.
 typedef enum
 #ifdef __cplusplus
-: u8
+: uint8_t
 #endif
   {
   fer_if_cmd_None,
@@ -54,36 +54,36 @@ typedef enum
 
 /// \brief Vocabulary type of a plain command message
 struct Fer_MsgPlainCmd {
-  u32 a; ///< ID/address of device
-  u8 g; ///< group number (if central unit device)
-  u8 m;  ///< group-member number (if central unit device)
+  uint32_t a; ///< ID/address of device
+  uint8_t g; ///< group number (if central unit device)
+  uint8_t m;  ///< group-member number (if central unit device)
   fer_if_cmd cmd; ///< Fernotron command code
 };
 
 /// \brief Vocabulary type of a plain command message with values to control the transmitting
 struct Fer_MsgCmd {
-  u32 a; ///< ID/address of device
-  u8 g; ///< group number (if central unit device)
-  u8 m;  ///< group-member number (if central unit device)
+  uint32_t a; ///< ID/address of device
+  uint8_t g; ///< group number (if central unit device)
+  uint8_t m;  ///< group-member number (if central unit device)
   fer_if_cmd cmd; ///< Fernotron command code.
-  u8 repeats; ///< Repeat the transmission REPEATS times.
-  u16 delay;  ///< Delay the transmission by DELAY (in s/10).
-  u16 stopDelay; ///< Send a STOP command after STOP_DELAY (in s/10).
+  uint8_t repeats; ///< Repeat the transmission REPEATS times.
+  uint16_t delay;  ///< Delay the transmission by DELAY (in s/10).
+  uint16_t stopDelay; ///< Send a STOP command after STOP_DELAY (in s/10).
 };
 
 /// \brief Vocabulary type of a message to set the RTC
 struct Fer_MsgRtc  {
-  u32 a; ///< ID/address of device
-  u8 g; ///< group number (if central unit device)
-  u8 m;  ///< group-member number (if central unit device)
+  uint32_t a; ///< ID/address of device
+  uint8_t g; ///< group number (if central unit device)
+  uint8_t m;  ///< group-member number (if central unit device)
   time_t rtc; ///< time value to set the built-in RTC
 };
 
 /// \brief Vocabulary type of a message to set the RTC and any automatics/timers
 struct Fer_MsgTimer {
-  u32 a; ///< ID/address of device
-  u8 g; ///< group number (if central unit device)
-  u8 m;  ///< group-member number (if central unit device)
+  uint32_t a; ///< ID/address of device
+  uint8_t g; ///< group number (if central unit device)
+  uint8_t m;  ///< group-member number (if central unit device)
   time_t rtc; ///< time value to set the built-in RTC
   const struct Fer_TimerData *td; ///< automatics/timer data
 };
@@ -151,13 +151,6 @@ void fer_tx_loop(void);
 void fer_rx_loop(void);
 
 /**
- * \brief            Sample input pin and store the value in the receiver
- * \param pin_level  Current level of input pin
- * \note             Call this from top of a precise timer ISR handler
- */
-void fer_rx_sampleInput(bool pin_level);
-
-/**
  * \brief           Set RF output pin according to the state in the transmitter
  * \note            Calls this from the top of a precise timer ISR.
  */
@@ -165,11 +158,10 @@ bool fer_tx_setOutput(void);
 
 /**
  * \brief            Do some work in receiving a message
+ * \param rx_pin_lvl Level of RX pin sampled at begin of timer ISR callback
  * \note             Call this from timer ISR with 200us / FREQ_MULT (= 5kHz * FREQ_MULT).
- * \note             Because the sampling was done by \link fer_rx_sampleInput \endlink earlier, the timing is not so critical.
- *                   So it can be called at the end of the ISR or maybe even after the ISR (yield from ISR) XXX
  */
-void fer_rx_tick(void);
+void fer_rx_tick(bool rx_pin_lvl);
 
 
 /**

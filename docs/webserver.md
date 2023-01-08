@@ -28,3 +28,11 @@ See [configuration](mcu_config.md)
 
 ![ScreenShot](img/tfmcu_pos.png)
 <hr>
+* Change Rotation Direction
+
+![ScreenShot](img/rot_dir.png)
+<hr>
+* Set End Positions
+
+![ScreenShot](img/end_pos.png)
+<hr>

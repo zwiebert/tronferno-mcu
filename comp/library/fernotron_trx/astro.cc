@@ -23,24 +23,21 @@
 #include <string.h>
 
 
-#define E1  // XXX: correct astro table index (off by one sometimes)
-
-
 static struct cfg_astro astro_config;
 #define astro_cfg (&astro_config)
 
 /*
  *
- * force_even_minutes  - if true, no odd number will be outputted in dstMinutes
+ * force_even_minutes  - if true, no odd minute numbers will be generated
  */
 static void 
-time_to_bcd(u8 *bcdMinutes, u8 *bcdHours, double time, bool force_even_minutes) {
+time_to_bcd(uint8_t *bcdMinutes, uint8_t *bcdHours, double time, bool force_even_minutes) {
   double integral, fractional;
 
   fractional = modf(time, &integral);
 
-  u8 hours = (u8) integral;
-  u8 minutes = (u8) (fractional * 60);
+  uint8_t hours = (uint8_t) integral;
+  uint8_t minutes = (uint8_t) (fractional * 60);
 
   if (force_even_minutes && minutes == 59) {
     ++hours;
@@ -53,12 +50,12 @@ time_to_bcd(u8 *bcdMinutes, u8 *bcdHours, double time, bool force_even_minutes) 
   }
 
   if (bcdMinutes) {
-    *bcdMinutes = dec2bcd_special((force_even_minutes ? ~1 : ~0) & (1+(u8) minutes));
+    *bcdMinutes = dec2bcd_special((force_even_minutes ? ~1 : ~0) & (1+(uint8_t) minutes));
   }
 
 }
 
-static u16 astro_minutes[48];
+static uint16_t astro_minutes[48];
 
 int astroTableIndex_from_tm_OLD(const struct tm *tm) {
   const int m = tm->tm_mon;
@@ -79,22 +76,17 @@ int astroTableIndex_from_tm(const struct tm *tm) {
   const int d = tm->tm_mday;
 
   int feb = m > 1 ? -2 : 0; // february has only 28 days
-#ifndef E1
-  int idx = (m * 30 + feb + d + 2) / 4 + 2;
 
-  if (idx < 0 || idx > 47)
-    idx = abs(((6 - m) * 30 - d + 1) / 4 + 48 - 5);
-#else
   int idx = (m * 30 + feb + d + 3) / 4 + 2;
 
   if (idx < 0 || idx > 47)
     idx = abs(((6 - m) * 30 - d + 1) / 4 + 48 - 5);
-#endif
+
   return idx;
 }
 
 void astro_populate_astroMinutes_from_astroBcd() {
-  u8 row, col, midx=0;
+  uint8_t row, col, midx=0;
 
   fer_astro_byte_data bcds;
 
@@ -102,21 +94,19 @@ void astro_populate_astroMinutes_from_astroBcd() {
 
   for (row = 0; row < FER_FPR_ASTRO_HEIGHT; ++row) {
     for (col = 0; (col+1) < FER_FPR_ASTRO_WIDTH; col += 2) {
-      u8 min = bcd2dec(bcds[row][col]);
-      u8 hour = bcd2dec(bcds[row][col+1]);
+      uint8_t min = bcd2dec(bcds[row][col]);
+      uint8_t hour = bcd2dec(bcds[row][col+1]);
      astro_minutes[midx++] = hour * 60 + min;
     }
   }
 }
 
-u16 fer_astro_calc_minutes(const struct tm *tm) {
+uint16_t fer_astro_calc_minutes(const struct tm *tm) {
   int idx = astroTableIndex_from_tm(tm);
   assert(0 <= idx && idx <= 47);
   return astro_minutes[idx] + (tm->tm_isdst ? 60 : 0);
 }
 
-
-#if 1
 
 /*
  *  Calculate civil dusk for configured location on earth and fill in "astro"/dusk table ready to send to Fernotron receiver
@@ -173,92 +163,11 @@ math_write_astro(fer_astro_byte_data dst, int mint_offset) {
     }
   }
 }
-#elif 1
 
-
-#if 0
-u16 fer_astro_calc_minutes(const struct tm *tm) {
-  double dusk;
-  i16 old_yd, yd = old_yd = (tm->tm_mon * 30 + tm->tm_mday);
-  i16 idx;
-
-
-
-  if (1 <= yd && yd <= 173) {
-    idx = (yd + 2) / 4 + 2;
-    yd = 352 - (4 * idx);
-  } else {
-    idx = abs((352 - yd) / 4);
-    yd = yd / 4 * 4;
-  }
-
-  ets_printf("idx: %d, yd: %d (old: %d)\n", idx, yd, old_yd);
-
-  assert(0 <= idx && idx <= 47);
-
-  double dayofy = yd * 1.0139;
-  sun_calculateDuskDawn(NULL, &dusk, astro_cfg->geo_timezone + (tm->tm_isdst ? 1 : 0), dayofy, astro_cfg->geo_longitude, astro_cfg->geo_latitude, CIVIL_TWILIGHT_RAD);
-  u16 minutes = dusk * 60;
-  return minutes;
-}
-#endif
-
-static void 
-math_write_astro(fer_astro_byte_data dst, int mint_offset) {
-  int i, j, yd;
-
-  for (i = 0, yd=88; i < FER_FPR_ASTRO_HEIGHT; ++i) { // 4*88=352
-    for (j = 0; j < 4; ++j) {
-    double dusk;
-    double dayofy = (4 * yd--) * 1.0139; // 360 => 365 days per year
-
-    sun_calculateDuskDawn(NULL, &dusk, astro_cfg->geo_timezone + (mint_offset / 60.0f), dayofy, astro_cfg->geo_longitude, astro_cfg->geo_latitude, CIVIL_TWILIGHT_RAD);
-    time_to_bcd(&dst[i][j * 2], &dst[i][j * 2 + 1], dusk, true);
-    }
-  }
- }
-
-#else
-
-// experimental code
-
-static int get_yday(int mon, int day)
-{
-    static const int days[13] = {
-        0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334,
-    };
-    return days[mon] + day;
-}
-
-
-static void 
-math_write_astro(fer_astro_byte_data dst, int mint_offset) {
-  int i, j, month, mday;
-  double sunset = 17.0;
-
-  month = 12;
-  mday = 20;
-
-  for (i = 0; i < FER_FPR_ASTRO_HEIGHT; ++i) {
-    for (j = 0; j < 4; ++j) {
-      sun_calculateDuskDawn(NULL, &sunset, astro_cfg->geo_timezone + (mint_offset / 60.0f), get_yday(month, mday), astro_cfg->geo_longitude, astro_cfg->geo_latitude, CIVIL_TWILIGHT_RAD);
-
-      time_to_bcd(&dst[i][j * 2], &dst[i][j * 2 + 1], sunset, true);
-
-      mday -= 4;
-      if (mday < 2) {
-        month -= 1;
-        mday = (month == 9 || month == 6) ? 28 : 30;
-      }
-    }
-  }
-}
-
-#endif
 /////////////////////////////////////////////////////////////////////////////////////
 
 
-void  fer_astro_write_data(u8 d[FER_FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
+void  fer_astro_write_data(uint8_t d[FER_FPR_ASTRO_HEIGHT][FER_PRG_BYTE_CT], int mint_offset) {
   math_write_astro(d, mint_offset);
 }
 
@@ -281,7 +190,7 @@ void fer_astro_init_and_reinit(const struct cfg_astro *cfg_astro) {
 // table generated by original hardware for berlin, germany
 // table should contain only even minutes
 // each table entry should be greater or equal than its predecessor
-const u8 ad_plz_10[12][8]  = {
+const uint8_t ad_plz_10[12][8]  = {
 //
 {0x34, 0x16, 0x36, 0x16, 0x36, 0x16, 0x38, 0x16, }, // jan1, dec2
 //

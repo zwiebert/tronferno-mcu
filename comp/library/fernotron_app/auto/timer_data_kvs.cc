@@ -4,7 +4,7 @@
  *  Created on: 08.09.2018
  *      Author: bertw
  */
-#include "app_config/proj_app_cfg.h"
+
 #include "timer_data_kvs.h"
 #include "fernotron/fer_main.h"
 #include "key_value_store/kvs_wrapper.h"
@@ -30,7 +30,7 @@ const char TD_KVS_NAMESPACE[] = "auto_td";
 
 class TdKey {
 public:
-  constexpr TdKey(u8 g, u8 m) {
+  constexpr TdKey(uint8_t g, uint8_t m) {
     myKey[2] += g;
     myKey[3] += m;
   }
@@ -40,7 +40,7 @@ private:
   char myKey[5] = "td00";
 };
 
-static int delete_shadowded_kv(u8 group, u8 memb) {
+static int delete_shadowded_kv(uint8_t group, uint8_t memb) {
   int result = 0;
   DB2(printf("delete shadowed files(group=%d, memb=%d)\n", (int)group, (int)memb));
 
@@ -66,12 +66,12 @@ static int delete_shadowded_kv(u8 group, u8 memb) {
 
 ////////////////////////////////// public ////////////////////////////////////////////////////////////////////
 
-bool erase_timer_data_kvs(u8 g, u8 m) {
+bool erase_timer_data_kvs(uint8_t g, uint8_t m) {
   precond (g <= 7 && m <= 7);
   return delete_shadowded_kv(g, m) > 0;
 }
 
-bool  save_timer_data_kvs(Fer_TimerData *p, u8 g, u8 m) {
+bool  save_timer_data_kvs(Fer_TimerData *p, uint8_t g, uint8_t m) {
   bool success = false;
   precond(p && g <= 7 && m <= 7);
 
@@ -87,7 +87,7 @@ bool  save_timer_data_kvs(Fer_TimerData *p, u8 g, u8 m) {
 
 }
 
-bool  read_timer_data_kvs(Fer_TimerData *p, u8 *gp, u8 *mp, bool wildcard) {
+bool  read_timer_data_kvs(Fer_TimerData *p, uint8_t *gp, uint8_t *mp, bool wildcard) {
   bool success = false;
   precond(p && gp && mp && *gp <= 7 && *mp <= 7);
 
@@ -108,42 +108,4 @@ bool  read_timer_data_kvs(Fer_TimerData *p, u8 *gp, u8 *mp, bool wildcard) {
     kvs_close(handle);
   }
   return success;
-}
-
-////////////////////////// transition: fs to kvs ////////////////////////////////////////////
-
-#include "timer_data_fs.h"
-
-int timer_data_transition_fs_to_kvs() {
-  u8 result = 0;
-  bool error = false;
-
-  kvshT handle = 0;
-  for (Fer_Gm_Counter it; it; ++it) {
-    gT g = it.getG();
-    mT m = it.getM();
-    Fer_TimerData td;
-    if (read_timer_data_fs(&td, &g, &m, false)) {
-      if (handle || (handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE))) {
-        if (!kvs_rw_blob(handle,  TdKey(g, m), &td, sizeof(td), true)) {
-          error = true;
-          continue;
-        }DB2(printf("copied timer data from fs to kvs: g=%d, m=%d\n", (int)g, (int)m));
-        ++result;
-      } else {
-        postcond(!"kvs");
-      }
-    }
-
-  }
-
-  if (handle) {
-    kvs_commit(handle);
-    kvs_close(handle);
-  }
-
-  if (result && !error)
-    erase_timer_data_fs(0, 0);
-
-  return result;
 }

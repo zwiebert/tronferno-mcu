@@ -5,10 +5,11 @@
 
 
 #pragma once
-#include <app_config/proj_app_cfg.h>
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <utils_misc/cstring_utils.hh>
 #include <debug/dbg.h>
 
 /// Vocabulary type to represent Fernotron automatic movements

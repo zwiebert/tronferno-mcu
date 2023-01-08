@@ -16,7 +16,7 @@ void Fer_Trx_API::setup_astro(const struct cfg_astro *cfg_astro) {
   fer_astro_init_and_reinit(cfg_astro);
 }
 
-const void *Fer_Trx_API::get_raw() const {
+const struct fer_raw_msg *Fer_Trx_API::get_raw() const {
   return myEvt->raw;
 }
 

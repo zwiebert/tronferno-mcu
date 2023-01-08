@@ -5,12 +5,13 @@
  *      Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+
 #include "fernotron/pos/shutter_prefs.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
 #include <alloca.h>
 #include <string.h>
+#include <utils_misc/cstring_utils.hh>
 
 #define SHPREF_KVS_NAMESPACE "shref"
 #define ST_PREFIX "st"
@@ -49,7 +50,7 @@ bool fer_pos_prefByM_load(struct shutter_timings *dst, uint8_t g, uint8_t m) {
 
 #define sts_key_len(tag) (strlen(tag)+sizeof(STS_PREFIX)-1 + 2)
 
-static char* sts_make_key(char *key, const char *tag, u8 g, u8 m) {
+static char* sts_make_key(char *key, const char *tag, uint8_t g, uint8_t m) {
   char gm[] = "00";
   gm[0] += g;
   gm[1] += m;

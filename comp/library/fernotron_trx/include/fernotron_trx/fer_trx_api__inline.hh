@@ -2,7 +2,7 @@
  * \file fernotron_trx/fer_trx_api__inline.hh
  * \brief Private implementation
  */
-#include <app_config/proj_app_cfg.h>
+
 
 ////////////////////// loop /////////////////////////
 inline void Fer_Trx_API::loop_rx() {
@@ -38,33 +38,30 @@ inline bool Fer_Trx_API::send_empty_timer(const Fer_MsgRtc &msg) {
   return fer_trx_send_empty_timer(&msg);
 }
 
-inline bool Fer_Trx_API::send_cmd(u32 a, u8 g, u8 m, fer_if_cmd cmd, u8 repeats, u16 delay, u16 stopDelay) {
+inline bool Fer_Trx_API::send_cmd(uint32_t a, uint8_t g, uint8_t m, fer_if_cmd cmd, uint8_t repeats, uint16_t delay, uint16_t stopDelay) {
   Fer_MsgCmd msg { a, g, m, cmd, repeats, delay, stopDelay };
   return fer_trx_send_cmd(&msg);
 }
 
-inline bool Fer_Trx_API::send_rtc(u32 a, u8 g, u8 m, time_t rtc) {
+inline bool Fer_Trx_API::send_rtc(uint32_t a, uint8_t g, uint8_t m, time_t rtc) {
   Fer_MsgRtc msg { a, g, m, rtc };
   return fer_trx_send_rtc(&msg);
 }
 
-inline bool Fer_Trx_API::send_timer(u32 a, u8 g, u8 m, time_t rtc, const Fer_TimerData &td) {
+inline bool Fer_Trx_API::send_timer(uint32_t a, uint8_t g, uint8_t m, time_t rtc, const Fer_TimerData &td) {
   Fer_MsgTimer msg { a, g, m, rtc, &td };
   return fer_trx_send_timer(&msg);
 }
 
-inline bool Fer_Trx_API::send_empty_timer(u32 a, u8 g, u8 m, time_t rtc) {
+inline bool Fer_Trx_API::send_empty_timer(uint32_t a, uint8_t g, uint8_t m, time_t rtc) {
   Fer_MsgRtc msg { a, g, m, rtc };
   return fer_trx_send_empty_timer(&msg);
 }
 
 
 ///////////////// ISR //////////////////////////////
-inline void IRAM_ATTR Fer_Trx_API::isr_sample_rx_pin(bool level) {
-  fer_rx_sampleInput(level);
-}
-inline void IRAM_ATTR Fer_Trx_API::isr_handle_rx() {
-  fer_rx_tick();
+inline void IRAM_ATTR Fer_Trx_API::isr_handle_rx(bool rx_pin_level) {
+  fer_rx_tick(rx_pin_level);
 }
 
 inline bool IRAM_ATTR Fer_Trx_API::isr_get_tx_level() {
@@ -80,15 +77,15 @@ inline Fer_MsgPlainCmd Fer_Trx_API::get_msg() const {
   return myMsg;
 }
 
-inline u32 Fer_Trx_API::get_a() const {
+inline uint32_t Fer_Trx_API::get_a() const {
   return myMsg.a;
 }
 
-inline u8 Fer_Trx_API::get_g() const {
+inline uint8_t Fer_Trx_API::get_g() const {
   return myMsg.g;
 }
 
-inline u8 Fer_Trx_API::get_m() const {
+inline uint8_t Fer_Trx_API::get_m() const {
   return myMsg.m;
 }
 
