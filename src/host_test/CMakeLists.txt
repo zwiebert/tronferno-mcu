@@ -8,11 +8,13 @@ option(GPROF "enable gprof" OFF)
 if (BUILD_HOST_TESTS)
 project(tfmcu-test)
 
+set(proj_src_dir "${CMAKE_SOURCE_DIR}/../..")
+
 add_compile_definitions(USE_JSON) 
 
+set(COMPONENT_DIRECTORIES comp/external/components-mcu/components  comp/library comp/app)
+list(TRANSFORM COMPONENT_DIRECTORIES PREPEND   "${proj_src_dir}/")
 
-set(COMPONENT_DIRECTORIES comp/app comp/external/components-mcu/components comp/library)
-#list(TRANSFORM COMPONENT_DIRECTORIES PREPEND ${CMAKE_CURRENT_LIST_DIR})
 set(comp_compile_feats cxx_std_20)
 set(comp_compile_opts 
 "-Wno-error=format=" "-Wno-format" # Workaround IDF-5.0
@@ -30,20 +32,19 @@ if(ASAN)
   add_compile_options(-fsanitize=address -fstack-protector-all)
 endif()
 
-include(comp/external/components-mcu/components/test_host/host_test.cmake)
+include(${proj_src_dir}/comp/external/components-mcu/components/test_host/host_test.cmake)
 
-add_subdirectory(comp/app/tronferno)
+add_subdirectory(${proj_src_dir}/comp/app/tronferno ${CMAKE_BINARY_DIR}/${BIN_COMP_ROOT}/tronferno)
 #add_subdirectory(comp/external/components-mcu/components/test_host)
 
-
+message("all_inc_dirs: ${COMPONENT_LIBS_INC_DIRS}")
 message("all_libs: ${COMPONENT_LIBS}")
 message("all_tests: ${TEST_EXECUTABLES}")
 
 doxy_create_input()
 
-endif()
+endif() # BUILD_HOST_TESTS
 
 if (BUILD_DOXY)
  message("config: ${DOXY_CONFIG}")
-
 endif()

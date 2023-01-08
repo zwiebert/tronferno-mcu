@@ -15,19 +15,22 @@ set(srcs
     app_cli/parm_shpref.cc
     app_cli/parm_kvs.cc
 
-    app_http_server/esp32/uri_handlers.cc
     
     app_main/main_setup.cc app_main/esp32/main.cc app_main/esp32/main_setup.cc app_main/esp32/main_loop.cc app_main/esp32/main_loop_periodic.cc app_main/esp32/unity_setup.cc
 
     app_misc/esp32/kvstore.cc app_misc/rtc.cc  app_misc/opt_map_consteval.cc
 
-    app_mqtt/mqtt.cc app_mqtt/mqtt_setup.cc
-
     app_settings/config.cc app_settings/config_kvs.cc app_settings/config_comps.cc
 
     app_uout/so_print.cc app_uout/so_write_msg.cc app_uout/so_write_config.cc )
 
+if(CONFIG_APP_USE_MQTT)
+ list(APPEND srcs app_mqtt/mqtt.cc app_mqtt/mqtt_setup.cc)
+ endif()
 
+ if(CONFIG_APP_USE_HTTP)
+ list(APPEND srcs  app_http_server/esp32/uri_handlers.cc)
+ endif()
 
 if(CONFIG_APP_USE_TIMER_TASK)
  list(APPEND srcs "app_misc/esp32/timer_task.cc")
