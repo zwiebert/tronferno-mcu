@@ -42,10 +42,6 @@ menu "Tronferno Project Configuration"
         string "Firmware URL file path after branch or tag name"
         default "/firmware/esp32/tronferno-mcu.bin"
 
-    config APP_USE_JSON
-        bool "Compile with JSON support"
-        default y
-
     config APP_USE_POSIX_TIME
         bool "Compile with Posix time support"
         default y

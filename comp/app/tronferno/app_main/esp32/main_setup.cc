@@ -113,7 +113,7 @@ void mcu_init() {
 #ifdef CONFIG_APP_USE_CLI_TASK
   cli_setup_task(true);
 #else
-#error
+#error "currently unsupported" // FIXME: support CLI without its own task, or remove that APP_USE_CLI_TASK kconfig option
 #endif
   next_event_te.fer_am_updateTimerEvent(time(NULL));
   mainLoop_callFunByTimer(fer_am_loop, 1000, true);
