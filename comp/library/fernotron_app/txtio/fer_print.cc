@@ -106,7 +106,7 @@ const char *wdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
     }
     io_putlf();
   }
-  
+
 }
 
 //cast data (message after cmd) to byte array

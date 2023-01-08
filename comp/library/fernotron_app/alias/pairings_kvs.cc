@@ -30,7 +30,7 @@
 #define CPAIR_KEY_LEN (CPAIR_KEY_PREFIX_LEN + 6)
 
 
-  
+
 static void  fixController(const char *key, Fer_GmSet *gm) {
   // there seems to be existing keys which cannot be found by iteration.
   // to fix this: erase and create them new here.

@@ -28,7 +28,7 @@ fer_init_sender(fer_sbT *fsb, uint32_t devID) {
 
     case FER_CentralUnit:
     break;
-    
+
     case FER_Receiver:
     	FER_SB_PUT_MEMB(fsb, fer_memb_ToReceiver);
     break;

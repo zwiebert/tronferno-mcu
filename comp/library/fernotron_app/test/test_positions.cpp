@@ -90,9 +90,9 @@ void tst_dynamicPos_stop() {
 
     pct = fer_simPos_getPct_whileMoving(2, 3);
     std::cout << '\r' << i << "pct: " << (int) pct << " run_time_ts: " << run_time_ts() << std::flush;
-    
+
     fer_pos_loop();
-    
+
         if (i == 7) {
           fer_simPos_registerMovingShutter(a, 2, 3, fer_if_cmd_STOP);
           fer_pos_loop();
