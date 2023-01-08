@@ -13,12 +13,12 @@ menu "Tronferno Project Configuration"
         depends on APP_USE_HTTP
         bool "Compile with Websocket support"
         default y
-        
+
     config APP_USE_MQTT
         depends on APP_USE_NETWORK
         bool "Compile MQTT client"
         default y
-   
+
     config APP_MQTT_CLIENT_ID
         string
         default "tfmcu"
@@ -26,12 +26,12 @@ menu "Tronferno Project Configuration"
     config APP_MQTT_ROOT_TOPIC
         string
         default "tfmcu"
-              
+
     config APP_USE_OTA
         depends on APP_USE_NETWORK
         bool "Compile with over-the-air update support"
         default y
-        
+
     config APP_OTA_URL_HEAD
         depends on APP_USE_OTA
         string "Firmware URL for repository"
