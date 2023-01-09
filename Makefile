@@ -118,7 +118,7 @@ test.cm.ctest: test.cm.build
 	cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure
 	
 test.cm.ctest.current: test.cm.build
-	(cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure -R "test.app_mqtt.test_")
+	(cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure -R "test.config_kvs.test_")
 
 
 host-test-all:

@@ -23,7 +23,8 @@ ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++2a>" -Wno-missing-fiel
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 add_compile_definitions(MCU_ESP32 MCU_TYPE="esp32")
-add_compile_options(-include esp_attr.h)
+add_compile_options("SHELL:-include esp_attr.h") # "SHELL:-include esp_log.h")
+#add_compile_options(-include esp_log.h)
 #add_compile_definitions(MQTT_SUPPORTED_FEATURE_TRANSPORT_ERR_REPORTING)
 
 if(DEFINED ENV{DISTRO})
