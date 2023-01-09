@@ -79,7 +79,7 @@ bool  save_timer_data_kvs(Fer_TimerData *p, uint8_t g, uint8_t m) {
 
   kvshT handle = kvs_open(TD_KVS_NAMESPACE, kvs_WRITE);
   if (handle) {
-    success = kvs_rw_blob(handle, TdKey(g, m), p, sizeof(*p), true);
+    success = kvs_set_object(handle, TdKey(g, m), *p);
     kvs_commit(handle);
     kvs_close(handle);
   }
@@ -94,14 +94,14 @@ bool  read_timer_data_kvs(Fer_TimerData *p, uint8_t *gp, uint8_t *mp, bool wildc
 
   kvshT handle = kvs_open(TD_KVS_NAMESPACE, kvs_READ);
   if (handle) {
-    success = kvs_rw_blob(handle,  TdKey(*gp, *mp), p, sizeof(*p), false);
+    success = kvs_get_object(handle,  TdKey(*gp, *mp), *p);
 
     if (!success && wildcard) {
-      if ((success = kvs_rw_blob(handle, TdKey(*gp, 0), p, sizeof(*p), false))) {
+      if ((success = kvs_get_object(handle, TdKey(*gp, 0), *p))) {
         *mp = 0;
-      } else if ((success = kvs_rw_blob(handle, TdKey(0, *mp), p, sizeof(*p), false))) {
+      } else if ((success = kvs_get_object(handle, TdKey(0, *mp), *p))) {
         *gp = 0;
-      }  else if ((success = kvs_rw_blob(handle, TdKey(0, 0), p, sizeof(*p), false))) {
+      }  else if ((success = kvs_get_object(handle, TdKey(0, 0), *p))) {
         *mp = *gp = 0;
       }
     }
