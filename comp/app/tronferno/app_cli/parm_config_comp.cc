@@ -17,7 +17,7 @@
 #include <net_http_server/http_server_setup.h>
 #endif
 #ifdef CONFIG_APP_USE_NTP
-#include <net/ntp_client_setup.h>
+#include <net/ntp_client_setup.hh>
 #endif
 
 #include "main_loop/main_queue.hh"

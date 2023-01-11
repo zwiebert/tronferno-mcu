@@ -5,12 +5,6 @@
  *      Author: bertw
  */
 
-#if 1
-#define CONFIG_APP_CFG_NAMESPACE "Tronferno" // XXX: should rename, but don't want to lose existing data for now
-#else
-#define CONFIG_APP_CFG_NAMESPACE "tf_gmbm"   // dedicated file, so all objects are same size
-#endif
-
 
 #include "fernotron/pos/shutter_pct.h"
 #include "debug/dbg.h"

@@ -24,7 +24,7 @@
 #include "net_http_server/http_server_setup.h"
 #endif
 #ifdef CONFIG_APP_USE_NTP
-#include "net/ntp_client_setup.h"
+#include "net/ntp_client_setup.hh"
 #endif
 #include "fernotron_trx/astro.h"
 #include <fernotron_trx/fer_trx_c_api.h>
