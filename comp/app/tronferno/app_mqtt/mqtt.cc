@@ -95,7 +95,7 @@ void AppNetMqtt::connected ()  {
   publish(topic, "connected"); // for autocreate (ok???)
 
   // subscribe to uout-component
-  uo_flagsT flags {};
+  uo_flagsT flags { };
   flags.tgt.mqtt = true;
   flags.evt.pin_change = true;
   flags.evt.uo_evt_flag_pctChange = true;
@@ -105,10 +105,18 @@ void AppNetMqtt::connected ()  {
   uoCb_subscribe(io_mqttApp_uoutPublish_cb, flags);
 
   // publish shutter positions
+  bool groups[8] = { };
+
   for (auto it = fer_usedMemberMask.begin(1); it; ++it) {
-    const so_arg_gmp_t gmp = { .g = it.getG(), .m = it.getM(), .p = fer_simPos_getPct_whileMoving(it.getG(), it.getM())};
+    const so_arg_gmp_t gmp = { .g = it.getG(), .m = it.getM(), .p = fer_simPos_getPct_whileMoving(it.getG(), it.getM()) };
     publish_gmp(gmp);
+    groups[gmp.g] = true;
   }
+
+  for (uint8_t i = 0; i < 8; ++i)
+    if (groups[i]) {
+      publish_gmp(so_arg_gmp_t { .g = i, .p = fer_simPos_getPct_whileMoving(i, 0) });
+    }
 }
 
 void AppNetMqtt::disconnected ()  {
