@@ -1,7 +1,7 @@
 TODO
 ====
 
-
+* FIXME: Modify our subscriptions at MQTT server after changing MQTT root topic in settings
 * TODO: Write received auto data from 2411 (via RF) to storage in MCU
 * TODO: Terminate SET progress bar in web-app when an RF command (e.g. STOP) is received
 * FIXME: newly added groups/receivers will not give positiom/pct feedback until MCU restart
