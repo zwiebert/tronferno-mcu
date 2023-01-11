@@ -112,6 +112,7 @@ TEST_CASE("mqtt_receive", "[app_mqtt]")
 
 
 void setUp() {
-  io_mqttApp_setup("tfmcu");
+  cfg_mqtt c;
+  io_mqttApp_setup(&c);
   cliApp_setup();
 }

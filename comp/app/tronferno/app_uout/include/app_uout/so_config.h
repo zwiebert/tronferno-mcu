@@ -52,6 +52,7 @@ void soCfg_WLAN_PASSWORD(const struct TargetDesc &td);
 void soCfg_NTP_SERVER(const struct TargetDesc &td);
 #endif
 #ifdef CONFIG_APP_USE_MQTT
+void soCfg_MQTT(const struct TargetDesc &td);
 void soCfg_MQTT_ENABLE(const struct TargetDesc &td);
 void soCfg_MQTT_URL(const struct TargetDesc &td);
 void soCfg_MQTT_USER(const struct TargetDesc &td);
@@ -61,6 +62,7 @@ void soCfg_MQTT_ROOT_TOPIC(const struct TargetDesc &td);
 #endif
 
 #ifdef CONFIG_APP_USE_HTTP
+void soCfg_HTTP(const struct TargetDesc &td);
 void soCfg_HTTP_ENABLE(const struct TargetDesc &td);
 void soCfg_HTTP_USER(const struct TargetDesc &td);
 void soCfg_HTTP_PASSWORD(const struct TargetDesc &td);

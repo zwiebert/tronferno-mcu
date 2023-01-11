@@ -237,12 +237,7 @@ void soCfg_all_net(const struct TargetDesc &td) {
   soCfg_LAN_PWR_GPIO(td);
 #endif
 #ifdef CONFIG_APP_USE_MQTT
-  soCfg_MQTT_ENABLE(td);
-  soCfg_MQTT_URL(td);
-  soCfg_MQTT_USER(td);
-  soCfg_MQTT_PASSWORD(td);
-  soCfg_MQTT_CLIENT_ID(td);
-  soCfg_MQTT_ROOT_TOPIC(td);
+  soCfg_MQTT(td);
 #endif
 #ifdef CONFIG_APP_USE_HTTP
   soCfg_HTTP_ENABLE(td);
