@@ -32,12 +32,17 @@ ifneq "$(V)" "0"
 esp32_build_opts += -v
 endif
 
+IDF_PY = $(IDF_PYTHON_ENV_PATH)/bin/python $(IDF_PATH)/tools/idf.py
+
+env:
+	env | grep IDF
+
 THIS_ROOT := $(realpath .)
 BUILD_BASE ?= $(THIS_ROOT)/build/$(flavor)
 esp32_build_dir := $(BUILD_BASE)
 esp32_src_dir := $(THIS_ROOT)/src/$(flavor)
 
-esp32_build_cmd := idf.py -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
+esp32_build_cmd := $(IDF_PY) -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
 esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
 
 ######### ESP32 Targets ##################
