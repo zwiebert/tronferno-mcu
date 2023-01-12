@@ -1,4 +1,3 @@
-#include "stdbool.h"
 #include "storage/storage.h"
 #include "app_settings/config.h"
 

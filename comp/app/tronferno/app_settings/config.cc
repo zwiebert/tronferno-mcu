@@ -6,7 +6,6 @@
 #include "utils_misc/int_types.h"
 #include <ctype.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #define CI(cb) static_cast<configItem>(cb)
 

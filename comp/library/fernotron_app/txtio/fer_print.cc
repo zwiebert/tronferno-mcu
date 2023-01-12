@@ -9,7 +9,6 @@
 
 
 #include <stdint.h>
-#include "stdbool.h"
 
 #include "fernotron_trx/raw/fer_fsb.h"
 #include "fernotron_trx/raw/fer_msg_attachment.h"

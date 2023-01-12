@@ -9,7 +9,6 @@
 #include <fernotron_trx/raw/fer_msg_attachment.h>
 #include <stdlib.h>
 #include <math.h>
-#include "stdbool.h"
 
 #include "fer_app_cfg.h"
 #include "fer_api.h"

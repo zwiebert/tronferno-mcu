@@ -8,7 +8,6 @@
 #include "move.hh"
 #include "move_buf.h"
 
-#include "stdbool.h"
 #include <stdint.h>
 #include <array>
 #include "fernotron/fer_pct.h"

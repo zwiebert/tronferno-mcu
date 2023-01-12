@@ -17,7 +17,6 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
 #include "utils_misc/stof.h"
-#include <stdbool.h>
 
 #define D(x) 
 
