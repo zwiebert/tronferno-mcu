@@ -12,7 +12,7 @@ set(proj_src_dir "${CMAKE_SOURCE_DIR}/../..")
 
 add_compile_definitions(USE_JSON) 
 
-set(COMPONENT_DIRECTORIES comp/components-mcu/components  comp/library comp/app comp/config)
+set(COMPONENT_DIRECTORIES comp/components-mcu  comp/library comp/app comp/config)
 list(TRANSFORM COMPONENT_DIRECTORIES PREPEND   "${proj_src_dir}/")
 
 set(comp_compile_feats cxx_std_20)
@@ -32,10 +32,10 @@ if(ASAN)
   add_compile_options(-fsanitize=address -fstack-protector-all)
 endif()
 
-include(${proj_src_dir}/comp/components-mcu/components/test_host/host_test.cmake)
+include(${proj_src_dir}/comp/components-mcu/test_host/host_test.cmake)
 
 add_subdirectory(${proj_src_dir}/comp/app/tronferno ${CMAKE_BINARY_DIR}/${BIN_COMP_ROOT}/tronferno)
-#add_subdirectory(comp/components-mcu/components/test_host)
+#add_subdirectory(comp/components-mcu/test_host)
 
 message("all_inc_dirs: ${COMPONENT_LIBS_INC_DIRS}")
 message("all_libs: ${COMPONENT_LIBS}")
