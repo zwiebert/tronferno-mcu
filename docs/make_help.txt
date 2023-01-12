@@ -1,45 +1,72 @@
-To build and flash ESP32/esp-idf:
+How to build on ESP32
+=====================
 
-  $ make esp32-flash port=/dev/ttyUSBx
+Make Variables
+==============
 
-To build and flash ESP8266/nonos:
-
-  $ make esp8266-flash ESPPORT=/dev/ttyUSBx
-
-
-Variables:
-
-port=  ESP32 USB port to flash to (default: /dev/ttyUSB0)
-ESPPORT= ESP8266 port to flash to (default: /dev/ttyUSB0)
-ESPTOOL= ESP8266 path to esptool.py  (dfault: esptool.py)
-
-BUILD_DIR_BASE=  build dir for esp32 or esp8266
-TEST_BUILD_DIR_BASE=  build dir for esp32 unit tests
+port=                ESP32 USB port to flash to (default: port=/dev/ttyUSB0)
+BUILD_BASE           base directory for builds (default: BUILD_BASE=build)
+flavor               selects a subfolder in ./src directory. (default: esp32)
+IPADDR               ip4 address of a running tronferno-esp32 (default: 192.168.1.65)
 
 
-Targets:
+Make Targets
+============
 
-clean:
-all:
-http_proxy: start HTTP proxy for developing HTTP content and updating FHEM modules
+Note: Targets prefixed esp32- are mostly the same like in idf.py (without the "esp32-" prefix)
 
-esp32-all:   build esp32 firmware
-esp32-clean: delete built esp32 files
-esp32-lan:   build esp32 firmware with LAN support
-esp32-flash: write flash
+Configuring
+-----------
+esp32-menuconfig:    interactive configuration before compiling
 
-esp32-ocd: run openocd server
-esp32-ocd-loop: run openocd server in a loop, so it will wait and restart after e.g. flash-ocd is done
-esp32-flash-ocd: kill running openocd server and openocd to write to flash
-esp32-flash-ocd: ...like above, but write app-image only
+Building Firmware
+-----------------
+esp32-all:           compile to build/esp32 directory (with non-interactive configuration)
+esp32-app:           compile app only
 
-esp32-test-build: build test firmware
-esp32-test-flash: build and flash test firmware
-esp32-test-run: run python script to check test results
-esp32-test-all: build, flash and run tests
+Flashing Binaries
+-----------------
+esp32-flash:         flash binary files to the ESP32 device via serial port
+esp32-flash-ocd:     flash binary files to the esp32 via openocd (JTAG)
+esp32-flash-app-ocd: flash app-binary file to the esp32 via openocd (JTAG)
 
+Clean up
+--------
+esp32-clean:         delete built esp32 files
+esp32-fullclean:     delete built esp32 and configuration files
+clean:               delete any built files
 
+Web development
+---------------
+http_proxy:          run http proxy for webapp development
+http_proxy2:
+http_clean:          clean built webapp files
+env:                 print IDF environment variables
 
-esp8266-erase:       optional erases flash. any configuration data and stored files are lost
-esp8266-flashinit:   required after erase. rewrites some calibration and blank data (can fix a boot-loop)
-esp8266-flash:       build and flash
+Documentation
+-------------
+
+help:                print this help text
+doxy-XXX-build:      build documentation using doxygen.  XXX can be one of: usr, dev, api
+doxy-XXX-view        build and view documentation in browser
+
+Debugging
+---------
+esp32-monitor:       open serial monitor of ESP_IDF
+esp32-ocd:           run openocd server for debugging
+esp32-ocd-loop:      run openocd server in a loop, so it will wait and restart after e.g. flash-ocd is done
+telnet:              connect to CLI of a running tronferno-ESP32 via telnet
+
+Testing on Host
+---------------
+test.cm.configure:   configure host tests
+test.cm.build:       compile host test
+host-test-all:       run all host tests
+
+On-Chip-Testing
+---------------
+Note: on chip testing ist currently not working at all
+esp32-test-build:    build test firmware
+esp32-test-flash:    build and flash test firmware
+esp32-test-run:      run python script to check test results
+esp32-test-all:      build, flash and run tests

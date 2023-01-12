@@ -4,14 +4,14 @@ flavors = esp32 esp32wlan esp32lan esp32test
 
 flavor ?= esp32
 
-default: print-help
+default: help
 
-clean : esp32-test-clean esp32-fullclean esp8266-clean http_clean
+clean : esp32-test-clean esp32-fullclean http_clean
 	make -C test/esp32 clean
 
 
-print-help:
-	@cat docs/make_help.txt
+help:
+	@less docs/make_help.txt
 
 .PHONY: http_proxy http_clean
 http_proxy:
@@ -174,22 +174,8 @@ doxy-%-view: doxy-%-build FORCE
 	
 FORCE:
 
-############# TCP Terminal ##############
+############# CLI Terminal ##############
 IPADDR ?= 192.168.1.65
 
-tcpterm:
-	socat -d -d -v pty,link=/tmp/ttyVirtual0,raw,echo=0,unlink-close,waitslave tcp:$(IPADDR):7777,forever,reuseaddr&
-	gtkterm -p /tmp/ttyVirtual0 -c tcpterm
-
-	
-	####### ESP8266 ######################
-esp8266_build_cmd := make -C src/esp8266
-esp8266_tgts_auto := all clean flash app-flash flashinit flasherase spiffs
-
-define GEN_RULE
-.PHONY: esp8266-$(1)
-esp8266-$(1):
-	$(esp8266_build_cmd) $(1)
-endef
-$(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
-	
+telnet:
+	telnet $(IPADDR) 7777
