@@ -15,7 +15,7 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/bcd.h"
 #include "app_misc/rtc.h"
-#include "cli_imp.h"
+#include "cli_internal.hh"
 #include "app_misc/opt_map.hh"
 #include <app_settings/config.h>
 #include <cc1101_ook/trx.hh>

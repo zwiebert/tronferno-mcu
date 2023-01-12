@@ -10,7 +10,7 @@
 #include <utils_misc/int_macros.h>
 
 
-#include "main.h"
+#include "main.hh"
 #include <cli/cli.h>
 
 #include <app_settings/config.h>

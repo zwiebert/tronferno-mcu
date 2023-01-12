@@ -11,7 +11,7 @@
 #include "utils_misc/int_types.h"
 #include "app_misc/firmware.h"
 #include "app_misc/rtc.h"
-#include "app_misc/kvstore.h"
+#include "../app_misc/include/app_misc/kvstore.hh"
 #include "app_settings/config.h"
 #include "net/ipnet.h"
 #include "txtio/inout.h"

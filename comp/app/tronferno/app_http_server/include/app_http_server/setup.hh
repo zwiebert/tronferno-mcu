@@ -1,6 +1,6 @@
 /**
  * \file   app_http_server/setup.h
- * \brief  Setup the moodule.
+ * \brief  Setup the module.
  */
 
 #pragma once

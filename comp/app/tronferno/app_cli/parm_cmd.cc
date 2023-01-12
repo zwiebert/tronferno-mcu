@@ -8,10 +8,10 @@
 
 #include "fernotron/auto/fau_tminutes.h"
 #include "utils_misc/bcd.h"
-#include "cli_imp.h"
+#include "cli_internal.hh"
 #include "app_uout/status_output.h"
 #include "app_settings/config.h"
-#include "cli_fer.h"
+#include "cli_fernotron.hh"
 #include "app_misc/opt_map.hh"
 #include <stdlib.h>
 #include <fernotron_trx/fer_trx_c_api.h>

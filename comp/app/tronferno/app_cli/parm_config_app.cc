@@ -1,44 +1,44 @@
-#include "parm_config.h"
+#include "parm_config.hh"
+#include "cli_internal.hh"
 
-
-
-#include "cli_config.h"
-#include "app_misc/opt_map.hh"
-#include <string.h>
-
-#include "fernotron/sep/set_endpos.h"
+#include "app_config/options.hh"
 #include "app_uout/status_output.h"
-#include "fernotron/cuas/cuid_auto_set.h"
-
+#include "app_misc/opt_map.hh"
 #include "app_settings/config.h"
 #include "app_settings/app_settings.hh"
 #include "app_misc/rtc.h"
-#include "utils_misc/bcd.h"
-#include "cli_imp.h"
-#include "utils_misc/stof.h"
-#include "utils_misc/cstring_utils.h"
+#include "app_uout/status_output.h"
 #ifdef CONFIG_APP_USE_MQTT
 #include "app_mqtt/mqtt.h"
 #endif
+
+#include "fernotron/sep/set_endpos.h"
+#include "fernotron/cuas/cuid_auto_set.h"
+#include "fernotron_trx/astro.h"
+#include <fernotron_trx/fer_trx_c_api.h>
+#include <cc1101_ook/trx.hh>
+#include "gpio/pin.h"
+
+#include "main_loop/main_queue.hh"
+
+
 #ifdef CONFIG_APP_USE_HTTP
 #include "net_http_server/http_server_setup.h"
 #endif
 #ifdef CONFIG_APP_USE_NTP
 #include "net/ntp_client_setup.hh"
 #endif
-#include "fernotron_trx/astro.h"
-#include <fernotron_trx/fer_trx_c_api.h>
-#include <cc1101_ook/trx.hh>
 
-#include "utils_misc/int_types.h"
-#include "utils_misc/int_types.h"
-#include "gpio/pin.h"
 #include <utils_misc/mutex.hh>
+
+#include "utils_misc/bcd.h"
+#include "utils_misc/stof.h"
+#include "utils_misc/cstring_utils.h"
+#include "utils_misc/int_types.h"
 #include <utils_misc/int_macros.h>
 
-#include "main_loop/main_queue.hh"
-
 #include <stdlib.h>
+#include <string.h>
 #include <iterator>
 #include <algorithm>
 

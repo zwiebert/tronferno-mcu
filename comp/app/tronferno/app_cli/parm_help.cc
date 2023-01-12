@@ -11,7 +11,7 @@ extern "C++" {
 }
 #include "txtio/inout.h"
 #include "debug/dbg.h"
-#include "cli_imp.h"
+#include "cli_internal.hh"
 #include <string.h>
 
 int process_parmHelp(clpar p[], int len, const struct TargetDesc &td) {

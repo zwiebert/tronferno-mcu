@@ -1,14 +1,11 @@
-/*
- * kvstore.h
- *
- *  Created on: 12.06.2019
- *      Author: bertw
+/**
+ * \file     app_misc/kvs_store.hh
+ * \brief    store some key/value pairs hassle free (without open/close/commit/...)
  */
 
-#ifndef MAIN_KVSTORE_H_
-#define MAIN_KVSTORE_H_
 
-#include <stdbool.h>
+#pragma once
+
 #include <stddef.h>
 #include "utils_misc/int_types.h"
 
@@ -20,4 +17,4 @@ bool kvs_get_int32(const char *key, int32_t *dest);
 
 bool kvs_erase_key(const char *key);
 
-#endif /* MAIN_KVSTORE_H_ */
+

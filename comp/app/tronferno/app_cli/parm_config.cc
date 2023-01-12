@@ -1,7 +1,7 @@
-#include "parm_config.h"
+#include "parm_config.hh"
 
 
-#include "cli_imp.h"
+#include "cli_internal.hh"
 
 #include <utils_misc/mutex.hh>
 #include <utils_misc/int_macros.h>

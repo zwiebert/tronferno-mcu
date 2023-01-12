@@ -1,7 +1,7 @@
 
 
 #include "fernotron/pos/shutter_prefs.h"
-#include "cli_imp.h"
+#include "cli_internal.hh"
 #include "app_misc/opt_map.hh"
 #include "app_uout/status_output.h"
 #include "utils_misc/int_types.h"

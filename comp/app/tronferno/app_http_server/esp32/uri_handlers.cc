@@ -8,7 +8,7 @@
 #include "uout/status_json.hh"
 #include "fernotron_uout/fer_uo_publish.h"
 #include "app_settings/config.h"
-#include "app_cli/cli_app.h"
+#include "../../app_cli/include/app_cli/cli_app.hh"
 #include "utils_misc/int_types.h"
 #include "cli/mutex.hh"
 #include "net_http_server/esp32/http_server_esp32.h"

@@ -1,10 +1,10 @@
-#include "parm_config.h"
+#include "parm_config.hh"
 
 
 #include <app_settings/config.h>
 #include <app_settings/app_settings.hh>
 #include <app_misc/rtc.h>
-#include "cli_imp.h"
+#include "cli_internal.hh"
 #include <app_uout/so_config.h>
 #include <config_kvs/comp_settings.hh>
 #include <config_kvs/config.h>

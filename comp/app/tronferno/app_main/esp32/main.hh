@@ -1,7 +1,4 @@
-
 #pragma once
-
-
 
 #include "main_loop_periodic.h"
 
@@ -14,6 +11,7 @@
 #include <esp_system.h>
 #include <esp_wifi.h>
 #include <esp_sntp.h>
+
 #include <string.h>
 
 #define KEY_BOOT_COUNTER "BOOT_CT"

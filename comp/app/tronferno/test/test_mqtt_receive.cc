@@ -5,7 +5,7 @@
 
 #include "../mqtt_private.h"
 #include "app_mqtt/mqtt.h"
-#include "app_cli/cli_app.h"
+#include "../app_cli/include/app_cli/cli_app.hh"
 
 #include <string.h>
 

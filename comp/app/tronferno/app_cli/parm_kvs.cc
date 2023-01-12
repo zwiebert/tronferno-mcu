@@ -10,9 +10,9 @@
 #include "app_settings/config.h"
 #include "app_misc/rtc.h"
 #include <uout/cli_out.h>
-#include "cli_imp.h"
-#include "app_cli/cli_app.h"
-#include "app_misc/kvstore.h"
+#include "cli_internal.hh"
+#include "include/app_cli/cli_app.hh"
+#include "../app_misc/include/app_misc/kvstore.hh"
 #include "debug/dbg.h"
 #include <ctype.h>
 #include <string.h>

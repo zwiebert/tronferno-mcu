@@ -1,11 +1,11 @@
 
-#include "main.h"
-#include "app_cli/cli_app.h"
+#include "main.hh"
+#include <app_cli/cli_app.hh>
 #include "app_settings/config.h"
 #include "utils_time/run_time.h"
 #include "key_value_store/kvs_wrapper.h"
 #ifdef CONFIG_APP_USE_HTTP
-#include "app_http_server/setup.h"
+#include "app_http_server/setup.hh"
 #endif
 #include "utils_misc/int_types.h"
 #include "app_misc/timer.h"
@@ -29,7 +29,7 @@
 #include "config_kvs/config.h"
 #include "app_uout/status_output.h"
 #include "uout/uo_callbacks.h"
-#include "../app_private.h"
+#include "../app_private.hh"
 #include "fernotron/fer_pct.h"
 #include "main_loop/main_queue.hh"
 

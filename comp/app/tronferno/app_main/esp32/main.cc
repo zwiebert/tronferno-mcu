@@ -1,6 +1,6 @@
 
 
-#include "main.h"
+#include "main.hh"
 #include "utils_misc/int_types.h"
 #include "net/ipnet.h"
 #include "net/tcp_cli_server.h"
@@ -9,7 +9,7 @@
 #include "net_http_server/http_server_setup.h"
 #endif
 #include "net/tcp_cli_server_setup.hh"
-#include "../app_private.h"
+#include "../app_private.hh"
 #include "cc1101_ook/spi.hh"
 #include "main_loop/main_queue.hh"
 #include <fernotron_uout/fer_uo_publish.h>

@@ -10,8 +10,8 @@
 #include "app_settings/config.h"
 #include "app_settings/app_settings.hh"
 #include "utils_misc/bcd.h"
-#include "cli_imp.h"
-#include "app_cli/cli_app.h"
+#include "cli_internal.hh"
+#include <app_cli/cli_app.hh>
 #include "uout/status_json.hh"
 #include "cli/cli.h"
 #include "app_uout/status_output.h"

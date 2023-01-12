@@ -3,9 +3,9 @@
 #include <test_runner.h>
 #endif
 
-#include "../app_cli/parm_config.h"
-#include "../app_cli/cli_imp.h"
-#include "app_cli/cli_app.h"
+#include "../app_cli/parm_config.hh"
+#include "../app_cli/cli_internal.hh"
+#include "../app_cli/include/app_cli/cli_app.hh"
 
 #include <uout/so_target_desc.hh>
 #include <array>
