@@ -96,8 +96,6 @@ const uint8_t testdat_wtimer[] =
 const uint8_t testdat_dtimer[] = { };
 extern const uint8_t astro_data[12][8];
 
-#include "app_settings/config.h"
-
 static void test_ferMsg_size() {
   TEST_ASSERT_EQUAL(FER_CMD_BYTE_CT - 1, sizeof test_msg.cmd.sd.cmd);
   TEST_ASSERT_EQUAL(FER_CMD_BYTE_CT, sizeof test_msg.cmd);

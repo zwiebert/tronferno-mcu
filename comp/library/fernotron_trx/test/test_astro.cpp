@@ -18,7 +18,6 @@
 #include "debug/dbg.h"
 #include "fernotron_trx/raw/fer_rawmsg_build.h"
 #include "utils_misc/bcd.h"
-#include "app_settings/config.h"
 #include <fernotron_trx/fer_trx_api.hh>
 
 

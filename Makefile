@@ -160,10 +160,10 @@ doxy-api-view: doxy-api-build
 
 /tmp/doxy_input_dev: FORCE
 	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
-	cd comp/external/components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/comp/external/components-mcu/~" >> $@
+	cd comp/components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/comp/components-mcu/~" >> $@
 /tmp/doxy_input_api: FORCE
 	git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
-	cd comp/external/components-mcu && git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~INPUT += $(THIS_ROOT)/comp/external/components-mcu/~" >> $@
+	cd comp/components-mcu && git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~INPUT += $(THIS_ROOT)/comp/components-mcu/~" >> $@
 
 /tmp/doxy_input_usr: FORCE
 	echo "" > $@

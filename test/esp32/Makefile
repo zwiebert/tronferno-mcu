@@ -11,7 +11,7 @@ unity_dir = $(build_dir)/unity
 
 COMP_LIB_DIR=comp/library
 COMP_APP_DIR=comp/app
-COMP_EXT_COMPMCU_DIR=comp/external/components-mcu/components
+COMP_EXT_COMPMCU_DIR=comp/components-mcu/components
 COMP_DIRS = $(realpath $(addprefix ../../,$(COMP_LIB_DIR) $(COMP_APP_DIR) $(COMP_EXT_COMPMCU_DIR)))
 COMPS := $(foreach dir,$(COMP_DIRS),$(shell cd $(dir) && ls))
 
