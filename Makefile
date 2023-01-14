@@ -1,6 +1,6 @@
 .PHONY: clean all test rebuild http_data print-help
 
-flavors = esp32 esp32wlan esp32lan esp32test
+flavors = esp32 esp32dbg esp32wlan esp32lan esp32test
 
 flavor ?= esp32
 
@@ -78,14 +78,14 @@ $(esp32_build_dir)/tfmcu.dot: FORCE
 
 FORCE:
 ########### OpenOCD ###################
-esp32_ocd_sh :=  sh $(realpath ./src/esp32/esp32_ocd.sh)
+esp32_ocd_sh :=  $(realpath ./src/esp32/esp32_ocd.sh) $(esp32_src_dir) $(esp32_build_dir)
 
 esp32-flash-ocd:
-	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash)
+	$(esp32_ocd_sh) flash
 esp32-flash-app-ocd:
-	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash_app)
+	$(esp32_ocd_sh) flash_app
 esp32-ocd:
-	$(esp32_ocd_sh) server
+	$(esp32_ocd_sh)  server
 esp32-ocd-loop:
 	$(esp32_ocd_sh) server_loop
 

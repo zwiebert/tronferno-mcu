@@ -152,7 +152,7 @@ bool process_parmConfig_comp(otok kt, const char *key, const char *val, const st
     set_opt(i8, val, CB_LAN_PWR_GPIO);
   }
     break;
-#endif // USE_LAN
+#endif // CONFIG_APP_USE_LAN
 
     ////////////////////////////////////////////////////////////////
 

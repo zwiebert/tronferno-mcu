@@ -189,7 +189,7 @@ void mcu_init() {
 
   }
 
-#endif // USE_NETWORK
+#endif // CONFIG_APP_USE_NETWORK
 
    if (auto smCt = app_safeMode_increment(); smCt > 6) {
      app_safe_mode = true;
