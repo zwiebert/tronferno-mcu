@@ -18,9 +18,9 @@ struct shutter_timings {
 
 bool fer_shPref_strByM_store(const char *s, const char *tag, uint8_t g, uint8_t m);
 bool fer_shPref_strByM_load(char *d, unsigned size, const char *tag, uint8_t g, uint8_t m);
-typedef void (*fer_shPref_strCallBackT)(const struct TargetDesc &td, const char *tag, const char *val);
-int fer_shPref_strByM_forEach(const struct TargetDesc &td, const char *tag, uint8_t g, uint8_t m, fer_shPref_strCallBackT callback);
-bool fer_shPref_strByM_forOne(const struct TargetDesc &td, const char *tag, uint8_t g, uint8_t m, fer_shPref_strCallBackT callback);
+typedef void (*fer_shPref_strCallBackT)(const class UoutWriter &td, const char *tag, const char *val);
+int fer_shPref_strByM_forEach(const class UoutWriter &td, const char *tag, uint8_t g, uint8_t m, fer_shPref_strCallBackT callback);
+bool fer_shPref_strByM_forOne(const class UoutWriter &td, const char *tag, uint8_t g, uint8_t m, fer_shPref_strCallBackT callback);
 
 bool fer_pos_prefByM_store(struct shutter_timings *src, uint8_t g, uint8_t m);
 bool fer_pos_prefByM_load(struct shutter_timings *dst, uint8_t g, uint8_t m);

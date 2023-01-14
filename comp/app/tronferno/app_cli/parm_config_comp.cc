@@ -31,7 +31,7 @@
 #include <iterator>
 #include <algorithm>
 
-bool process_parmConfig_get_comp(otok kt, const char *val, const struct TargetDesc &td) {
+bool process_parmConfig_get_comp(otok kt, const char *val, const class UoutWriter &td) {
   switch (kt) {
 
   case otok::k_all: {
@@ -127,7 +127,7 @@ SettData get_settingsData(otok kt, u64 &changed_mask) {
   return settData;
 }
 
-bool process_parmConfig_comp(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u64 &changed_mask) {
+bool process_parmConfig_comp(otok kt, const char *key, const char *val, const class UoutWriter &td, int &errors, u64 &changed_mask) {
   switch (kt) {
 #if ENABLE_RESTART
   case otok::k_restart:

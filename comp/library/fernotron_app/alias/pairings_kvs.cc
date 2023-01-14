@@ -211,7 +211,7 @@ static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     return kvsCb_noMatch;
   }
 
-    auto td = static_cast<struct TargetDesc *>(args);
+    auto td = static_cast<class UoutWriter *>(args);
     Fer_GmSet gm {};
     so_arg_kmm_t arg { .key =  key + CPAIR_KEY_PREFIX_LEN, .mm = &gm };
 
@@ -228,7 +228,7 @@ static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     return kvsCb_match;
 }
 
-bool fer_alias_so_output_all_pairings(const struct TargetDesc &td) {
+bool fer_alias_so_output_all_pairings(const class UoutWriter &td) {
 
   soMsg_pair_all_begin(td);
 

@@ -46,14 +46,14 @@ const char cli_help_parmMcu[] = "'mcu' handles special commands and data\n\n"
 ;
 
 static void kvs_print_keys(const char *name_space);
-void cc1101_printCfg_asString(const struct TargetDesc &td);
+void cc1101_printCfg_asString(const class UoutWriter &td);
 
 #define is_kt(k) (kt == otok::k_##k)
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
 //TODO: add IP address query option
-int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
+int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
   int arg_idx;
 
   so_object<void> soObj(soMsg_mcu_begin, soMsg_mcu_end, td);

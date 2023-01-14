@@ -38,7 +38,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
   flags.fmt.json = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char sj_buf[128];
-    StatusJsonT sj = { sj_buf, sizeof sj_buf };
+    UoutBuilderJson sj = { sj_buf, sizeof sj_buf };
 
     if (sj.open_root_object("tfmcu")) {
       sj.add_object("pct");
@@ -87,7 +87,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
   flags.fmt.json = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char sj_buf[128];
-    StatusJsonT sj = { sj_buf, sizeof sj_buf };
+    UoutBuilderJson sj = { sj_buf, sizeof sj_buf };
 
     if (sj.open_root_object("tfmcu")) {
       sj.add_object("pct");
@@ -136,7 +136,7 @@ void uoApp_publish_timer_json(const char *json, bool fragment) {
   }
 }
 
-static void timer_json(TargetDesc &td, uint8_t g, uint8_t m, struct Fer_TimerData &tdr) {
+static void timer_json(UoutWriter &td, uint8_t g, uint8_t m, struct Fer_TimerData &tdr) {
   {
     char dict[] = "autoGM";
     dict[4] = '0' + g;
@@ -183,7 +183,7 @@ void uoApp_publish_timer_json(uint8_t g, uint8_t m, struct Fer_TimerData *tda) {
 
   flags.fmt.json = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    TargetDesc td { SO_TGT_HTTP | SO_TGT_FLAG_JSON };
+    UoutWriter td { SO_TGT_HTTP | SO_TGT_FLAG_JSON };
     td.sj().open_root_object("tfmcu.publish");
     td.sj().add_object("auto");
     timer_json(td, g, m, *tda);
@@ -560,7 +560,7 @@ void uoApp_publish_fer_prasState(const so_arg_pras_t args) {
     char a_hex[20];
     ltoa(args.a, a_hex, 16);
     char sj_buf[128];
-    StatusJsonT sj = { sj_buf, sizeof sj_buf };
+    UoutBuilderJson sj = { sj_buf, sizeof sj_buf };
 
     if (sj.open_root_object("tfmcu")) {
 
@@ -596,7 +596,7 @@ void uoApp_publish_fer_cuasState(const so_arg_cuas_t args) {
     ltoa(args.a, a_hex, 16);
 
     char sj_buf[128];
-    StatusJsonT sj = { sj_buf, sizeof sj_buf };
+    UoutBuilderJson sj = { sj_buf, sizeof sj_buf };
 
     if (sj.open_root_object("tfmcu")) {
       sj.add_object("cuas");
@@ -641,7 +641,7 @@ void uoApp_publish_fer_sepState(const so_arg_sep_t args, char tag) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
 
     char sj_buf[128];
-    StatusJsonT sj = { sj_buf, sizeof sj_buf };
+    UoutBuilderJson sj = { sj_buf, sizeof sj_buf };
 
     if (sj.open_root_object("tfmcu")) {
       sj.add_object("sep");

@@ -10,7 +10,7 @@ void main_setup() {
   rtc_setup();
 
   config_setup_astro();
-  TargetDescCon td { SO_TGT_CLI };
+  UoutWriterConsole td { SO_TGT_CLI };
   soMsg_fw_start_msg_print(td);
 
   config_setup_cc1101();

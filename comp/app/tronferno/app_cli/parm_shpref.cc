@@ -39,14 +39,14 @@ static const char *const opts_kvd[] = {"mvut", "mvdt", "mvspdt"};
 #define OPTS_KVD_SIZE (sizeof opts_kvd / sizeof opts_kvd[0])
 #define OPTS_CLEAR_KEY() (p[arg_idx].key = "")
 
-static void output_message_kvs(const struct TargetDesc &td, const char *tag, const char *val) {
+static void output_message_kvs(const class UoutWriter &td, const char *tag, const char *val) {
   size_t key_size = strlen(tag) + sizeof PARM_OPT_TAG_PREFIX;
   char key[key_size];
   csu_copy_cat(key, key_size - 1, PARM_OPT_TAG_PREFIX, tag);
   so_arg_kvs_t arg = { .key = key, .val = val };
   soMsg_print_kvs(td, arg);
 }
-static void output_message_kvd(const struct TargetDesc &td, const char *key, int val) {
+static void output_message_kvd(const class UoutWriter &td, const char *key, int val) {
   so_arg_kvd_t arg = { .key = key, .val = val };
   soMsg_print_kvd(td, arg);
 }
@@ -55,7 +55,7 @@ static void output_message_kvd(const struct TargetDesc &td, const char *key, int
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
-int process_parmShpref(clpar p[], int len, const struct TargetDesc &td) {
+int process_parmShpref(clpar p[], int len, const class UoutWriter &td) {
   int arg_idx;
   int err_ct = 0;
   uint8_t g = 0, m = 0;

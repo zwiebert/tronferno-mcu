@@ -10,16 +10,16 @@
 #include <uout/so_target_desc.hh>
 #include <array>
 
-struct TargetDescTest final : public TargetDesc {
+class UoutWriterTest final : public UoutWriter {
   typedef int (*writeReq_fnT)(void *req, const char *s, ssize_t len, bool final);
 
 public:
-  TargetDescTest(so_target_bits tgt = (SO_TGT_FLAG_TXT | SO_TGT_FLAG_JSON | SO_TGT_ANY)) :
-      TargetDesc(tgt) {
+  UoutWriterTest(so_target_bits tgt = (SO_TGT_FLAG_TXT | SO_TGT_FLAG_JSON | SO_TGT_ANY)) :
+      UoutWriter(tgt) {
   }
 
-  TargetDescTest(const TargetDescCon&) = delete;
-  virtual ~TargetDescTest() {
+  UoutWriterTest(const UoutWriterConsole&) = delete;
+  virtual ~UoutWriterTest() {
   }
 
 public:
@@ -46,7 +46,7 @@ public:
 };
 
 void tst_parm_config_empty() {
-  TargetDescTest td;
+  UoutWriterTest td;
   const char *txt = &td.wbuf_[0];
 
   clpar parm[] = { { "config", nullptr }, };
@@ -59,7 +59,7 @@ void tst_parm_config_empty() {
 }
 
 void tst_parm_config_cu() {
-  TargetDescTest td;
+  UoutWriterTest td;
   const char *txt = &td.wbuf_[0];
 
   clpar parm[] = { { "config", nullptr }, { "cu", "806789" }, { "cu", "?" } };
@@ -72,7 +72,7 @@ void tst_parm_config_cu() {
 }
 
 void tst_parm_config_tz() {
-  TargetDescTest td;
+  UoutWriterTest td;
   const char *txt = &td.wbuf_[0];
 
   clpar parm[] = { { "config", nullptr }, { "tz", "CET" }, { "tz", "?" } };
@@ -84,7 +84,7 @@ void tst_parm_config_tz() {
   TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{\"tz\":\"CET\"}}", td.sj().get_json());
 }
 void tst_parm_config_verbose() {
-  TargetDescTest td;
+  UoutWriterTest td;
   const char *txt = &td.wbuf_[0];
 
   clpar parm[] = { { "config", nullptr }, { "verbose", "3" }, { "verbose", "?" } };
@@ -97,7 +97,7 @@ void tst_parm_config_verbose() {
 }
 
 void tst_parm_config_longitude() {
-  TargetDescTest td;
+  UoutWriterTest td;
   const char *txt = &td.wbuf_[0];
 
   clpar parm[] = { { "config", nullptr }, { "longitude", "13.45" }, { "longitude", "?" } };
@@ -110,7 +110,7 @@ void tst_parm_config_longitude() {
 }
 
 void tst_parm_config_latitude() {
-  TargetDescTest td;
+  UoutWriterTest td;
   const char *txt = &td.wbuf_[0];
 
   clpar parm[] = { { "config", nullptr }, { "latitude", "53.21" }, { "latitude", "?" } };

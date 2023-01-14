@@ -23,9 +23,9 @@ const int fer_sep_BUTTON_TIMEOUT = 3; // timeout to send stop if no movement fun
 const int SEP_AUTH_TIMEOUT_SECS = 320;
 const int SEP_AUTH_BUTTON_TIMEOUT_SECS = 60;
 
-bool fer_sep_authenticate(const struct TargetDesc &td, uint32_t auth_key, int auth_timeout_secs = SEP_AUTH_TIMEOUT_SECS, int button_timeout_secs =
+bool fer_sep_authenticate(const class UoutWriter &td, uint32_t auth_key, int auth_timeout_secs = SEP_AUTH_TIMEOUT_SECS, int button_timeout_secs =
     SEP_AUTH_BUTTON_TIMEOUT_SECS);
-bool fer_sep_deauthenticate(const struct TargetDesc &td, uint32_t auth_key);
+bool fer_sep_deauthenticate(const class UoutWriter &td, uint32_t auth_key);
 
 /**
  * \brief          Enable set-end-position-mode
@@ -35,7 +35,7 @@ bool fer_sep_deauthenticate(const struct TargetDesc &td, uint32_t auth_key);
  * \param button_timeout_secs  timeout to send stop if no movement function was called repeatedly.
  * \return         true for success
  */
-bool fer_sep_enable(const struct TargetDesc &td, uint32_t auth_key, uint32_t a, uint8_t g = 0, uint8_t m = 0, int enable_timeout_secs = fer_sep_TIMEOUT, int button_timeout_secs =
+bool fer_sep_enable(const class UoutWriter &td, uint32_t auth_key, uint32_t a, uint8_t g = 0, uint8_t m = 0, int enable_timeout_secs = fer_sep_TIMEOUT, int button_timeout_secs =
     fer_sep_BUTTON_TIMEOUT);
 
 bool fer_sep_move_up(uint32_t auth_key = 0);

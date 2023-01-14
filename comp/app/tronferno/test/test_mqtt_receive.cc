@@ -12,7 +12,7 @@
 static char *Line;
 extern char *Topic, *Data;
 
-static void my_process_cmdline(char *line, const TargetDesc &td) {
+static void my_process_cmdline(char *line, const UoutWriter &td) {
   free(Line);
   Line = strdup(line);
 }
