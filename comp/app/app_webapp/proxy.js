@@ -1,32 +1,39 @@
 #!/usr/bin/env node
-
 'use strict';
 
 const path = require('path');
 const express = require('express');
 const httpProxy = require('http-proxy');
-var expressWs = require('express-ws')
+const expressWs = require('express-ws')
+const livereload = require("livereload");
 
-var args = process.argv.slice(2);
+const args = process.argv.slice(2);
 const ipaddr = args[1] || '192.168.1.69';
 const port = args[2] || 3000;
 
-let proj_dir=path.dirname(path.dirname(path.dirname(__dirname)));
-let tff_dir=path.dirname(proj_dir)+"/tronferno-fhem";
-let build_dir=proj_dir+"/build/esp32dbg";
+const proj_dir=path.dirname(path.dirname(path.dirname(__dirname)));
+const tff_dir=path.dirname(proj_dir)+"/tronferno-fhem";
+const build_dir=proj_dir+"/build/esp32dbg";
 const njs_build_dir=args[0] || __dirname + '/njs/build_dev';
-let cont_dir=__dirname
+const cont_dir=__dirname
 const mcu = 'http://' + ipaddr + ':80';
 const mcu_ws = 'ws://' + ipaddr + ':80';
 
-let app = express();
- expressWs(app);
-let server = require('http').createServer(app);
+
+
+// open livereload high port and start to watch public directory for changes
+const liveReloadServer = livereload.createServer();
+liveReloadServer.watch(njs_build_dir);
+
+const app = express();
+
+expressWs(app);
+const server = require('http').createServer(app);
 
 
 
 // forward any requests to MCU
-let proxy = httpProxy.createProxyServer({ ws: true });
+const proxy = httpProxy.createProxyServer({ ws: true });
 
 app.all("/*.json", (req, res) => {
     proxy.web(req, res, { target: mcu });
@@ -108,6 +115,8 @@ app.get("/fernotron-fhem/CHANGED", (req, res) => {
 app.get("/fernotron-fhem/FHEM/10_Fernotron.pm", (req, res) => {
     res.sendFile(tff_dir + '/modules/sduino/FHEM/10_Fernotron.pm');
 });
+
+
 
 
 server.listen(port);

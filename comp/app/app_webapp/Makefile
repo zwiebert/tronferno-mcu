@@ -89,12 +89,8 @@ $(BUILD_DIR)/%.c:$(BUILD_DIR)/%
    echo "const char $${name}[] = {" > $@; \
    hexdump -ve '1/1 "0x%x,"' $< >>$@; \
    echo "}; const unsigned $${name}_len = sizeof $${name};" >> $@)
-	
-#   xxd -i  $< | sed -e 1d -e /.*_len.*/d >> $@;
 
-$(BUILD_DIR)/wapp.html: $(BUILD_DIR) ./wapp_dev.html
-	cp -p "./wapp_dev.html" "$(BUILD_DIR)/wapp.html"
-	
+
 $(bundle_out): $(BUILD_DIR) $(bundle_files)
 
 $(BUILD_DIR):
