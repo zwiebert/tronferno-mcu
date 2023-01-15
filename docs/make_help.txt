@@ -7,8 +7,8 @@ Make Variables
 port=                ESP32 USB port to flash to (default: port=/dev/ttyUSB0)
 BUILD_BASE           base directory for builds (default: BUILD_BASE=build)
 flavor               selects a subfolder in ./src directory. (default: esp32)
-IPADDR               ip4 address of a running tronferno-esp32 (default: 192.168.1.65)
-
+MCU_IP_ADDR          ip4 address of a running tronferno-esp32 (default: 192.168.1.69). Used for telnet and http_proxy
+PROXY_TCP_PORT       TCP port of the HTTP proxy server. (default: 3000).  URL: http://localhost:3000/
 
 Make Targets
 ============

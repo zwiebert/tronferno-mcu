@@ -17,7 +17,7 @@ component_compile_features(${comp_compile_feats})
 
 add_custom_command(
      OUTPUT ${srcs} ${COMPONENT_DIR}/_force.h   
-     COMMAND make all -C ${COMPONENT_DIR}
+     COMMAND make BUILD_DIR=${CMAKE_BINARY_DIR}/app_webapp deb all -C ${COMPONENT_DIR} 
      VERBATIM)
 
 add_custom_target(content_files ALL  DEPENDS ${COMPONENT_DIR}/_force.h )

@@ -13,13 +13,13 @@ clean : esp32-test-clean esp32-fullclean http_clean
 help:
 	@less docs/make_help.txt
 
+#PROXY (env: MCU_IP_ADDR, PROXY_TCP_PORT)
+#==========================================
 .PHONY: http_proxy http_clean
 http_proxy:
-	cd comp/app/app_webapp && make proxy
-http_proxy2:
-	cd comp/app/app_webapp && make proxy2
+	cd comp/app/app_webapp && make BUILD_DIR=$(BUILD_BASE)/app_webapp proxy
 http_clean:
-	cd comp/app/app_webapp && make clean
+	cd comp/app/app_webapp && make BUILD_DIR=$(BUILD_BASE)/app_webapp clean
 
 
 ####### ESP32 build command ############
@@ -175,7 +175,7 @@ doxy-%-view: doxy-%-build FORCE
 FORCE:
 
 ############# CLI Terminal ##############
-IPADDR ?= 192.168.1.65
+MCU_IP_ADDR ?= 192.168.1.69
 
 telnet:
-	telnet $(IPADDR) 7777
+	telnet $(MCU_IP_ADDR) 7777

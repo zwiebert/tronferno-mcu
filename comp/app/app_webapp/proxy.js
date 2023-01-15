@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/bin/node
 
 'use strict';
 
@@ -7,13 +7,17 @@ const express = require('express');
 const httpProxy = require('http-proxy');
 var expressWs = require('express-ws')
 
+var args = process.argv.slice(2);
+const ipaddr = args[1] || '192.168.1.69';
+const port = args[2] || 3000;
 
 let proj_dir=path.dirname(path.dirname(path.dirname(__dirname)));
 let tff_dir=path.dirname(proj_dir)+"/tronferno-fhem";
-let build_dir=proj_dir+"/build/esp32";
+let build_dir=proj_dir+"/build/esp32dbg";
+const njs_build_dir=args[0] || __dirname + '/njs/build_dev';
 let cont_dir=__dirname
-let mcu = 'http://192.168.1.69:80';
-let mcu_ws = 'ws://192.168.1.69:80';
+const mcu = 'http://' + ipaddr + ':80';
+const mcu_ws = 'ws://' + ipaddr + ':80';
 
 let app = express();
  expressWs(app);
@@ -44,22 +48,20 @@ server.on('upgrade', function (req, socket, head) {
 
 
 // static files of MCU HTTP server
-app.get("/index.html", (req, res) => {
+app.get("/", (req, res) => {
     res.sendFile(cont_dir + '/wapp_dev.html');
 });
 app.get("/wapp_dev.html", (req, res) => {
     res.sendFile(cont_dir + '/wapp_dev.html');
 });
-app.get("/wapp.html", (req, res) => {
-    res.sendFile(cont_dir + '/build/wapp.html');
-});
+
 app.get("/f/js/wapp.js", (req, res) => {
     //res.sendFile(cont_dir + '/wapp_dev.js');
-    res.sendFile(cont_dir + '/njs/build_dev/wapp.js');
+    res.sendFile(njs_build_dir+'/wapp.js');
 });
 app.get("/f/js/wapp.js.map", (req, res) => {
     //res.sendFile(cont_dir + '/wapp_dev.js');
-    res.sendFile(cont_dir + '/njs/build_dev/wapp.js.map');
+    res.sendFile(njs_build_dir+'/wapp.js.map');
 });
 app.get("/f/css/global.css", (req, res) => {
     //res.sendFile(cont_dir + '/wapp_dev.js');
@@ -67,11 +69,11 @@ app.get("/f/css/global.css", (req, res) => {
 });
 app.get("/f/css/wapp.css", (req, res) => {
     //res.sendFile(cont_dir + '/wapp_dev.js');
-    res.sendFile(cont_dir + '/njs/build_dev/wapp.css');
+    res.sendFile(njs_build_dir+'/wapp.css');
 });
 app.get("/f/css/wapp.css.map", (req, res) => {
     //res.sendFile(cont_dir + '/wapp_dev.js');
-    res.sendFile(cont_dir + '/njs/build_dev/wapp.css.map');
+    res.sendFile(njs_build_dir+'/wapp.css.map');
 });
 app.get("/src/", (req, res) => {
     //res.sendFile(cont_dir + '/wapp_dev.js');
@@ -108,7 +110,7 @@ app.get("/fernotron-fhem/FHEM/10_Fernotron.pm", (req, res) => {
 });
 
 
-server.listen(3000);
+server.listen(port);
 
 
 /*

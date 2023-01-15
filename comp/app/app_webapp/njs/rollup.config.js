@@ -13,6 +13,7 @@ import css from "rollup-plugin-css-only";
 
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDistro = process.env.DISTRO === "1";
+const build_directory = process.env.BUILD_DIR || "build";
 
 console.log("isProduction:", isProduction, "isDistro:", isDistro);
 
@@ -41,7 +42,7 @@ export default {
     ...(!isProduction
       ? [
           {
-            file: "build_dev/wapp.js",
+            file: build_directory + "/wapp.js",
             sourcemap: true,
             format: "iife",
             name: "wapp",
@@ -51,7 +52,7 @@ export default {
         ]
       : [
           {
-            file: "build/wapp.js",
+            file: build_directory + "/wapp.js",
             format: "iife",
             name: "wapp",
             sourcemap: true,
