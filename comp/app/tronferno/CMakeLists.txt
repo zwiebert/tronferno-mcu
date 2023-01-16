@@ -29,7 +29,7 @@ if(CONFIG_APP_USE_MQTT)
  endif()
 
  if(CONFIG_APP_USE_HTTP)
- list(APPEND srcs  app_http_server/esp32/uri_handlers.cc)
+ list(APPEND srcs  app_http_server/web_content.cc app_http_server/esp32/uri_handlers.cc)
  endif()
 
 if(CONFIG_APP_USE_TIMER_TASK)

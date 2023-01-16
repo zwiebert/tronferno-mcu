@@ -16,13 +16,13 @@
 		"eslint-plugin-svelte3": "^4.0.0",
 		"postcss": "^8.4.21",
 		"postcss-load-config": "^4.0.1",
-		"rollup": "^3.9.1",
+		"rollup": "^3.10.0",
 		"rollup-plugin-css-only": "^4.3.0",
 		"rollup-plugin-eslint": "^7.0.0",
 		"rollup-plugin-livereload": "^2.0.5",
 		"rollup-plugin-svelte": "^7.1.0",
 		"sass": "^1.57.1",
-		"svelte": "^3.55.0",
+		"svelte": "^3.55.1",
 		"svelte-i18n": "^3.0.0",
 		"svelte-preprocess": "^5.0.0",
 		"tailwindcss": "^3.2.4"
@@ -48,6 +48,8 @@
 	"dependencies": {
 		"@rollup/plugin-replace": "^5.0.2",
 		"autoprefixer": "^10.4.13",
+		"cssnano": "^5.1.14",
+		"jshint": "^2.13.6",
 		"svelte-icons": "^2.1.0",
 		"sveltejs-tippy": "^3.0.0"
 	}

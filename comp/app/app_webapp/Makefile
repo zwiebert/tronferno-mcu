@@ -16,15 +16,16 @@ JS_SRC_DIR := $(THIS_ROOT)/njs/src
 
 
 SRC_DIRS      := $(addprefix $(THIS_ROOT)/njs/,. src src/store src/net src/styles)
-SRC_JS        := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.js))
+SRC_JS        := $(shell find njs/src -name '*.js')
 SRC_ALL       += $(SRC_JS)
-SRC_SVELTE    := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.svelte))
+SRC_SVELTE    := $(shell find njs/src -name '*.svelte')
 SRC_ALL       += $(SRC_SVELTE)
-SRC_CSS       := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.css))
+SRC_CSS       := $(shell find njs/src -name '*.css')
 SRC_ALL       += $(SRC_CSS)
-SRC_SCSS      := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.css))
+SRC_SCSS      :=$(shell find njs/src -name '*.scss')
 SRC_ALL       += $(SRC_SCSS)
-SRC_ALL       :=  $(shell find njs/src -name '*.svelte' -or -name '*.js' -or -name '*.css')
+
+BUILDERS      := ./Makefile ./CMakeLists.txt $(wildcard ./njs/*.js)
 
 autobuild_src := $(SRC_ALL) njs/node_modules
 autobuild_out := $(addprefix $(JS_BLD_DIR_DEV)/wapp,.js .css .js.map) #.css.map
@@ -32,13 +33,13 @@ build_src     :=  $(SRC_ALL) njs/node_modules
 build_out     := $(addprefix $(JS_BLD_DIR)/wapp,.js .css .js.map) #.css.map
 
 
-bundle_out    := $(addprefix $(BUILD_DIR)/wapp,.js .js.map .css .html)
-bundle_files  := $(addprefix $(JS_BLD_DIR)/wapp,.js .js.map .css)
-bundle_z      := $(addprefix $(BUILD_DIR)/wapp,.html.gz .js.gz .js.map.gz .js.map.br .css.gz)
-bundle_c      := $(addsuffix .c,$(bundle_z)) #.css.map.gz.c .css.map.br.c
+bundle_names  := $(addprefix wapp,.js .js.map .css)
+bundle_out    := $(addprefix $(BUILD_DIR)/,$(bundle_names) wapp.html)
+bundle_files  := $(addprefix $(JS_BLD_DIR)/,$(bundle_names))
+bundle_z      := $(addsuffix .gz,$(bundle_out)) $(addsuffix .br,$(bundle_out))
+bundle_c      := $(addsuffix .c,$(bundle_z))
 
-src_dirs      := $(shell find njs/src -type d)
-src_files     := $(shell find njs/src -name '*.svelte' -or -name '*.js') ./Makefile
+
 
 
 
@@ -49,7 +50,7 @@ all: $(bundle_c)
 deb:
 	echo "bundle_c=$(bundle_c)"
 	echo "BUILD_DIR=$(BUILD_DIR)"
-	echo "src_files=$(src_files)"
+	echo "src_files=$(SRC_ALL)"
 	echo "==================================================="
 	echo "build_src=$(build_src)"
 
@@ -60,7 +61,7 @@ bundle_c: $(bundle_c)
 build_out:
 	make $(build_out)
 
-$(build_out): $(build_src) $(src_files)
+$(build_out): $(build_src) $(SRC_ALL) $(BUILDERS)
 	cd njs && env BUILD_DIR=$(JS_BLD_DIR) NODE_ENV=production npm run build
 
 xxx:
@@ -70,10 +71,12 @@ yyy:
 	make $(BUILD_DIR)/wapp.js
 
 	
-$(autobuild_out): $(autobuild_src)
+$(autobuild_out): $(autobuild_src) $(BUILDERS)
 	cd njs && env BUILD_DIR=$(JS_BLD_DIR_DEV) NODE_ENV=development npm run autobuild
 
 
+$(BUILD_DIR)/wapp.html: ./wapp.html
+	cp -p "$<" "$@"
 
 $(BUILD_DIR)/wapp.%: $(JS_BLD_DIR)/wapp.%
 	cp -p "$<" "$@"  
@@ -85,10 +88,23 @@ $(BUILD_DIR)/%.gz:$(BUILD_DIR)/%
 $(BUILD_DIR)/%.br:$(BUILD_DIR)/%
 	brotli --keep --force --best $<
 $(BUILD_DIR)/%.c:$(BUILD_DIR)/%
+	(name=$(shell echo "$(notdir $<)" | tr "." "_"); \
+	 echo > $@ "static const char content[] = {" && \
+   hexdump >>$@ -ve '1/1 "0x%x,"' $< && \
+   echo >>$@ "};" && \
+   echo >>$@ "static const char * const content_encoding = \"$(shell echo $(suffix $<) | sed -e s/.gz/gzip/ -e s/.br/br/)\";" && \
+	 echo >>$@ "static const unsigned content_len = sizeof content;" && \
+   echo >>$@ "struct web_content { const char *content, *content_encoding; unsigned content_size;  }" && \
+	 echo >>$@ "const $${name}_fm = { .content = content, .content_encoding = content_encoding, .content_size = content_len,  };" \
+   )
+
+XXX$(BUILD_DIR)/%.c:$(BUILD_DIR)/%
 	(name=$(shell echo "build_$(notdir $<)" | tr "." "_"); \
    echo "const char $${name}[] = {" > $@; \
    hexdump -ve '1/1 "0x%x,"' $< >>$@; \
-   echo "}; const unsigned $${name}_len = sizeof $${name};" >> $@)
+   echo "};\nconst unsigned $${name}_len = sizeof $${name};" >> $@; \
+   echo "const char * $${name}_name_ext = \"$(subst .,,$(suffix $<))\";" >> $@; \
+   )
 
 
 $(bundle_out): $(BUILD_DIR) $(bundle_files)

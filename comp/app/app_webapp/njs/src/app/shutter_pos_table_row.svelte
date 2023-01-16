@@ -9,7 +9,7 @@
   const gm = g.toString() + m.toString();
 
   $: pct = $Pcts[gm] || 0;
-  $: name = gm + ($Names[gm] ? " " + $Names[gm] : "");
+  $: name = g.toString() + (m ? m.toString() : "A") + ($Names[gm] ? " " + $Names[gm] : "");
   $: selected = $G === 0 || ($G === g && ($M0 === m || $M0 === 0));
 
   let sliderElement;
@@ -40,8 +40,8 @@
 
 </style>
 
-<tr class={$GM === gm ? 'is-selected' : ''}>
-  <th class="text-left" on:click={set_gm}>{name}</th>
+<tr class={$GM === gm ? 'is-selected' : '' + (m ? '' : '')}>
+  <th class={'text-left'} on:click={set_gm}>{name}</th>
   <td>{pct}%</td>
   <td>
     <input

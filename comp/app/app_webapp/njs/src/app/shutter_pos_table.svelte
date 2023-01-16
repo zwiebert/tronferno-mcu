@@ -2,25 +2,16 @@
   import * as httpFetch from "app/fetch.js";
   import { Gmu } from "stores/mcu_config.js";
   import ShutterPosTableRow from "app/shutter_pos_table_row.svelte";
-  import { onMount, onDestroy } from "svelte";
+  import { onMount } from "svelte";
 
-  let on_destroy = [];
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_GMU | httpFetch.FETCH_ALL_POS);
   });
-  onDestroy(() => {
-    for (const fn of on_destroy) {
-      fn();
-    }
-  });
+
 
   $: gmu = $Gmu;
 
 </script>
-
-<style lang="scss">
-
-</style>
 
 <div id="postablediv">
   <table class="top_table">
