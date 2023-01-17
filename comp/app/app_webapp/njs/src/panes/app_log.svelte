@@ -1,5 +1,5 @@
 <script>
-  import { AppLog } from "stores/app_log.js";
+  import { AppLog } from "../store/app_log.js";
 
   export let rxonly = false;
 

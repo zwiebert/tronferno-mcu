@@ -1,12 +1,12 @@
 <script>
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import { GuiAcc } from "stores/app_state";
-  import McuFirmwareUpd from "app/mcu_firmware_upd.svelte";
-  import McuFirmwareInfo from "app/mcu_firmware_info.svelte";
-  import * as misc from "app/misc.js";
+  import { GuiAcc } from "../store/app_state";
+  import McuFirmwareUpd from "../app/mcu_firmware_upd.svelte";
+  import McuFirmwareInfo from "../app/mcu_firmware_info.svelte";
+  import * as misc from "../app/misc.js";
 
-  import { McuGitTagNames, McuGitTagNameLatestMaster, McuGitTagNameLatestBeta } from "stores/mcu_firmware";
+  import { McuGitTagNames, McuGitTagNameLatestMaster, McuGitTagNameLatestBeta } from "../store/mcu_firmware";
 
   let fw_master = {
     name: $_("firmware.latest_master"),

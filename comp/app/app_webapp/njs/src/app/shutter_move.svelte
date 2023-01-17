@@ -1,6 +1,6 @@
 <script>
   "use strict";
-  import * as httpFetch from "app/fetch.js";
+  import * as httpFetch from "../app/fetch.js";
 
   function hClick_Stop() {
     httpFetch.http_postShutterCommand("stop");

@@ -1,21 +1,21 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import { GuiAcc, TabIdx } from "stores/app_state";
-  import NavTabs from "app/nav_tabs.svelte";
-  import ShutterGM from "app/shutter_gm.svelte";
-  import PaneShutterAuto from "panes/shutter_auto.svelte";
+  import { GuiAcc, TabIdx } from "../store/app_state";
+  import NavTabs from "../app/nav_tabs.svelte";
+  import ShutterGM from "../app/shutter_gm.svelte";
+  import PaneShutterAuto from "../panes/shutter_auto.svelte";
 
-  import PaneShutterName from "panes/shutter_name.svelte";
+  import PaneShutterName from "../panes/shutter_name.svelte";
 
-  import PaneShutterSetMode from "panes/shutter_set_mode.svelte";
-  import PaneShutterRegisterGm from "panes/shutter_register_gm.svelte";
-  import PaneShutterRegisterTx from "panes/shutter_register_tx.svelte";
+  import PaneShutterSetMode from "../panes/shutter_set_mode.svelte";
+  import PaneShutterRegisterGm from "../panes/shutter_register_gm.svelte";
+  import PaneShutterRegisterTx from "../panes/shutter_register_tx.svelte";
 
-  import PaneShutterDirection from "panes/shutter_direction.svelte";
-  import PaneShutterEndpos from "panes/shutter_end_pos.svelte";
-  import PaneShutterDurations from "panes/shutter_durations.svelte";
+  import PaneShutterDirection from "../panes/shutter_direction.svelte";
+  import PaneShutterEndpos from "../panes/shutter_end_pos.svelte";
+  import PaneShutterDurations from "../panes/shutter_durations.svelte";
 
   $: tabIdxRx = $TabIdx["receiver"] || 0;
   $: tabIdxSet = $TabIdx["set"] || 0;

@@ -1,10 +1,10 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import { G, M0, Name } from "stores/curr_shutter.js";
-  import { GuiAcc } from "stores/app_state";
-  import * as httpFetch from "app/fetch.js";
-  import { Names } from "stores/shutters.js";
+  import { _ } from "../services/i18n";
+  import { G, M0, Name } from "../store/curr_shutter.js";
+  import { GuiAcc } from "../store/app_state";
+  import * as httpFetch from "../app/fetch.js";
+  import { Names } from "../store/shutters.js";
   import tippy from "sveltejs-tippy";
   
   $: GMName = $Name || "";

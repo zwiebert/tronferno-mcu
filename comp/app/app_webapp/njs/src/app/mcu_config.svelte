@@ -1,30 +1,30 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import { GuiAcc, TabIdx } from "stores/app_state";
-  import { McuConfig, McuConfigKeys, Gmu } from "stores/mcu_config.js";
-  import { McuDocs_cliHelpConfig } from "stores/mcu_docs.js";
-  import * as httpFetch from "app/fetch.js";
-  import * as cuas from "app/cuas.js";
-  import * as misc from "app/misc.js";
+  import { GuiAcc, TabIdx } from "../store/app_state";
+  import { McuConfig, McuConfigKeys, Gmu } from "../store/mcu_config.js";
+  import { McuDocs_cliHelpConfig } from "../store/mcu_docs.js";
+  import * as httpFetch from "../app/fetch.js";
+  import * as cuas from "../app/cuas.js";
+  import * as misc from "../app/misc.js";
   import { onMount, onDestroy } from "svelte";
-  import { ReloadProgress } from "stores/app_state.js";
-  import NavTabs from "app/nav_tabs.svelte";
-  import { McuErrorMask } from "stores/mcu_firmware.js";
+  import { ReloadProgress } from "../store/app_state.js";
+  import NavTabs from "../app/nav_tabs.svelte";
+  import { McuErrorMask } from "../store/mcu_firmware.js";
 
-  import McuConfigGpio from "components/mcu_config/gpio.svelte";
-  import McuConfigGpioSelect from "components/mcu_config/gpio_select.svelte";
-  import McuConfigNetwork from "components/mcu_config/network.svelte";
-  import McuConfigLanPhy from "components/mcu_config/lan_phy.svelte";
-  import McuConfigNumber from "components/mcu_config/number.svelte";
-  import McuConfigEnable from "components/mcu_config/enable.svelte";
-  import McuConfigAstroCorrection from "components/mcu_config/astro_correction.svelte";
-  import McuConfigUsedMembers from "components/mcu_config/used_members.svelte";
-  import McuRfTrx from "components/mcu_config/rf_trx.svelte";
-  import GpioLevel from "components/gpio_level.svelte";
-  import CC1101 from "panes/cc1101.svelte";
-  import AppLog from "panes/app_log.svelte";
+  import McuConfigGpio from "../components/mcu_config/gpio.svelte";
+  import McuConfigGpioSelect from "../components/mcu_config/gpio_select.svelte";
+  import McuConfigNetwork from "../components/mcu_config/network.svelte";
+  import McuConfigLanPhy from "../components/mcu_config/lan_phy.svelte";
+  import McuConfigNumber from "../components/mcu_config/number.svelte";
+  import McuConfigEnable from "../components/mcu_config/enable.svelte";
+  import McuConfigAstroCorrection from "../components/mcu_config/astro_correction.svelte";
+  import McuConfigUsedMembers from "../components/mcu_config/used_members.svelte";
+  import McuRfTrx from "../components/mcu_config/rf_trx.svelte";
+  import GpioLevel from "../components/gpio_level.svelte";
+  import CC1101 from "../panes/cc1101.svelte";
+  import AppLog from "../panes/app_log.svelte";
 
   let on_destroy = [];
 

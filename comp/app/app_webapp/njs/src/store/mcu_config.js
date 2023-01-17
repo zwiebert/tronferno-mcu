@@ -1,5 +1,5 @@
 "use strict";
-import { _ } from "services/i18n";
+import { _ } from "../services/i18n";
 import { writable, derived } from "svelte/store";
 import { OptionStore, PersistentValStore } from "./custom_stores.js";
 

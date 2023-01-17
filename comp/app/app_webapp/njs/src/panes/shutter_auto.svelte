@@ -1,7 +1,7 @@
 <script>
   "use strict";
-  import ShutterGM from "app/shutter_gm.svelte";
-  import ShutterAuto from "app/shutter_auto.svelte";
+  import ShutterGM from "../app/shutter_gm.svelte";
+  import ShutterAuto from "../app/shutter_auto.svelte";
 </script>
 
 <div class="main-area">

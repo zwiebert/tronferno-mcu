@@ -1,11 +1,11 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import * as appDebug from "app/app_debug.js";
-  import * as httpFetch from "app/fetch.js";
-  import { GuiAcc } from "stores/app_state";
-  import { AutoData, AutoSunEnabled, G, M, M0, GM, GMH } from "stores/curr_shutter.js";
+  import * as appDebug from "../app/app_debug.js";
+  import * as httpFetch from "../app/fetch.js";
+  import { GuiAcc } from "../store/app_state";
+  import { AutoData, AutoSunEnabled, G, M, M0, GM, GMH } from "../store/curr_shutter.js";
   import { onMount } from "svelte";
 
   onMount(() => {});

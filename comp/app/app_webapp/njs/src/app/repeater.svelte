@@ -1,9 +1,9 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import * as httpFetch from "app/fetch.js";
-  import { SelectedId, TxNames } from "stores/id.js";
-  import { McuConfig } from "stores/mcu_config.js";
+  import { _ } from "../services/i18n";
+  import * as httpFetch from "../app/fetch.js";
+  import { SelectedId, TxNames } from "../store/id.js";
+  import { McuConfig } from "../store/mcu_config.js";
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
 

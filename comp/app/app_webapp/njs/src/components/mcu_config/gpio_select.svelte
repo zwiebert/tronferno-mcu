@@ -1,5 +1,5 @@
 <script>
-  import { McuGpiosFree } from "stores/mcu_config.js";
+  import { McuGpiosFree } from "../../store/mcu_config.js";
 
   export let name;
   export let value = -1;

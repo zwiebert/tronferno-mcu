@@ -4,7 +4,6 @@ import json from "@rollup/plugin-json";
 import strip from "@rollup/plugin-strip";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
-import alias from "@rollup/plugin-alias";
 import svelte from "rollup-plugin-svelte";
 import sveltePreprocess from "svelte-preprocess";
 import { terser } from "@wwa/rollup-plugin-terser";
@@ -16,20 +15,6 @@ export const isDistro = process.env.DISTRO === "1";
 const build_directory = process.env.BUILD_DIR || "/tmp/tronferno-mcu/njs/build";
 
 console.log("isProduction:", isProduction, "isDistro:", isDistro);
-
-let wdir = __dirname + "/";
-
-const aliases = alias({
-  resolve: [".svelte", ".js"], //optional, by default this will just look for .js files or folders
-  entries: [
-    { find: "components", replacement: wdir + "src/components" },
-    { find: "services", replacement: wdir + "src/services" },
-    { find: "stores", replacement: wdir + "src/store" },
-    { find: "panes", replacement: wdir + "src/panes" },
-    { find: "app", replacement: wdir + "src/app" },
-    { find: "main", replacement: wdir + "src" },
-  ],
-});
 
 export default {
   onwarn(warning, rollupWarn) {
@@ -93,7 +78,6 @@ export default {
         isProduction ? "production" : "development"
       ),
     }),
-    aliases,
     json(),
     ...(isProduction
       ? [

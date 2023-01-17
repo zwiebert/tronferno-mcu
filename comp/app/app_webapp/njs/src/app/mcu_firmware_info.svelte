@@ -1,8 +1,8 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import { McuBootCount, McuErrorMask, McuFirmwareBuildDate, McuChipId, McuFirmwareVersion } from "stores/mcu_firmware.js";
-  import * as httpFetch from "app/fetch.js";
+  import { _ } from "../services/i18n";
+  import { McuBootCount, McuErrorMask, McuFirmwareBuildDate, McuChipId, McuFirmwareVersion } from "../store/mcu_firmware.js";
+  import * as httpFetch from "../app/fetch.js";
   import { onMount } from "svelte";
 
   onMount(() => {

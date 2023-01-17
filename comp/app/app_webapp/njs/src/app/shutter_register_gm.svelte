@@ -1,9 +1,9 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import { SetModeDstG, SetModeDstM } from "stores/shutter_set_mode.js";
-  import * as httpFetch from "app/fetch.js";
+  import { SetModeDstG, SetModeDstM } from "../store/shutter_set_mode.js";
+  import * as httpFetch from "../app/fetch.js";
 
   $: transmitCountDown = 0;
 

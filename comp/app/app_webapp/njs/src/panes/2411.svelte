@@ -1,8 +1,8 @@
 <script>
-  import Ui2411 from "app/ui2411.svelte";
-  import { GuiAcc } from "stores/app_state";
-  import { MenuCount } from "stores/ui2411.js";
-  import ShutterAuto from "app/shutter_auto.svelte";
+  import Ui2411 from "../app/ui2411.svelte";
+  import { GuiAcc } from "../store/app_state";
+  import { MenuCount } from "../store/ui2411.js";
+  import ShutterAuto from "../app/shutter_auto.svelte";
 </script>
 
 <style>

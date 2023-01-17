@@ -1,6 +1,6 @@
 <script>
   "use strict";
-  import { TabIdx } from "stores/app_state.js";
+  import { TabIdx } from "../store/app_state.js";
 
   export let name = "nav_tab";
   export let nav_tabs = [];

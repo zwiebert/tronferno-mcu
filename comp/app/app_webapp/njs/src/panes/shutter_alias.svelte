@@ -1,9 +1,9 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import IdSelector from "app/id_selector.svelte";
-  import ShutterAlias from "app/shutter_alias.svelte";
-  import ShutterAliasRf from "app/shutter_alias_rf.svelte";
+  import { _ } from "../services/i18n";
+  import IdSelector from "../app/id_selector.svelte";
+  import ShutterAlias from "../app/shutter_alias.svelte";
+  import ShutterAliasRf from "../app/shutter_alias_rf.svelte";
   import tippy from "sveltejs-tippy";
 </script>
 

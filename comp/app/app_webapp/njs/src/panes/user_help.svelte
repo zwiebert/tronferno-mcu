@@ -1,10 +1,10 @@
 <script>
   "use strict";
 
-  import { _ } from "services/i18n";
-  import { SepMode } from "stores/sep";
-  import { GuiUserLevel } from "stores/app_state";
-  import * as misc from "app/misc.js";
+  import { _ } from "../services/i18n";
+  import { SepMode } from "../store/sep";
+  import { GuiUserLevel } from "../store/app_state";
+  import * as misc from "../app/misc.js";
 </script>
 
 

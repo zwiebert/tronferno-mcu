@@ -1,14 +1,14 @@
 <script>
   "use strict";
-  import ShutterSelectGM from "components/shutter_select_gm.svelte";
-  import { _ } from "services/i18n";
+  import ShutterSelectGM from "../components/shutter_select_gm.svelte";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import { GuiAcc } from "stores/app_state";
-  import { Address, Name } from "stores/curr_shutter.js";
-  import { SetModeSrcRadio, SetModeSrcProgress } from "stores/shutter_set_mode.js";
-  import IdSelector from "app/id_selector.svelte";
-  import { SelectedId, SelectedIdIsValid } from "stores/id.js";
-  import * as httpFetch from "app/fetch.js";
+  import { GuiAcc } from "../store/app_state";
+  import { Address, Name } from "../store/curr_shutter.js";
+  import { SetModeSrcRadio, SetModeSrcProgress } from "../store/shutter_set_mode.js";
+  import IdSelector from "../app/id_selector.svelte";
+  import { SelectedId, SelectedIdIsValid } from "../store/id.js";
+  import * as httpFetch from "../app/fetch.js";
 
   $: name = $Name || "";
 

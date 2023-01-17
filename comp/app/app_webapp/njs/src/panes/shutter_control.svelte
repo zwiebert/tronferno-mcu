@@ -1,12 +1,12 @@
 <script>
   "use strict";
   import { onMount } from "svelte";
-  import * as httpFetch from "app/fetch.js";
-  import ShutterGM from "app/shutter_gm.svelte";
-  import ShutterMove from "app/shutter_move.svelte";
-  import ShutterSun from "app/shutter_sun.svelte";
-  import ShutterPct from "app/shutter_pct.svelte";
-  import { M0, GM, AutoSunEnabled, RadioCodeEnabled } from "stores/curr_shutter.js";
+  import * as httpFetch from "../app/fetch.js";
+  import ShutterGM from "../app/shutter_gm.svelte";
+  import ShutterMove from "../app/shutter_move.svelte";
+  import ShutterSun from "../app/shutter_sun.svelte";
+  import ShutterPct from "../app/shutter_pct.svelte";
+  import { M0, GM, AutoSunEnabled, RadioCodeEnabled } from "../store/curr_shutter.js";
 
 
   onMount(() => {

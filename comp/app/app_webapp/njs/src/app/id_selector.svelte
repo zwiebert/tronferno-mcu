@@ -1,14 +1,14 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import * as httpFetch from "app/fetch.js";
-  import { GuiAcc } from "stores/app_state";
-  import { G, M0 } from "stores/curr_shutter.js";
-  import ShutterGM from "app/shutter_gm.svelte";
-  import TransmitterNames from "app/transmitter_names.svelte";
-  import { SelectedId, SelectedIdIsValid, TxNames } from "stores/id.js";
-  import { Aliases } from "stores/shutters.js";
-  import { ReceivedAddresses } from "stores/alias.js";
+  import { _ } from "../services/i18n";
+  import * as httpFetch from "../app/fetch.js";
+  import { GuiAcc } from "../store/app_state";
+  import { G, M0 } from "../store/curr_shutter.js";
+  import ShutterGM from "../app/shutter_gm.svelte";
+  import TransmitterNames from "../app/transmitter_names.svelte";
+  import { SelectedId, SelectedIdIsValid, TxNames } from "../store/id.js";
+  import { Aliases } from "../store/shutters.js";
+  import { ReceivedAddresses } from "../store/alias.js";
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
 

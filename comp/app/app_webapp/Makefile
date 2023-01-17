@@ -87,23 +87,19 @@ $(BUILD_DIR)/%.gz:$(BUILD_DIR)/%
 	gzip --keep --force --best $< 
 $(BUILD_DIR)/%.br:$(BUILD_DIR)/%
 	brotli --keep --force --best $<
-$(BUILD_DIR)/%.c:$(BUILD_DIR)/%
+$(BUILD_DIR)/%.c:$(BUILD_DIR)/% $(BUILDERS)
 	(name=$(shell echo "$(notdir $<)" | tr "." "_"); \
-	 echo > $@ "static const char content[] = {" && \
-   hexdump >>$@ -ve '1/1 "0x%x,"' $< && \
-   echo >>$@ "};" && \
-   echo >>$@ "static const char * const content_encoding = \"$(shell echo $(suffix $<) | sed -e s/.gz/gzip/ -e s/.br/br/)\";" && \
-	 echo >>$@ "static const unsigned content_len = sizeof content;" && \
-   echo >>$@ "struct web_content { const char *content, *content_encoding; unsigned content_size;  }" && \
-	 echo >>$@ "const $${name}_fm = { .content = content, .content_encoding = content_encoding, .content_size = content_len,  };" \
-   )
-
-XXX$(BUILD_DIR)/%.c:$(BUILD_DIR)/%
-	(name=$(shell echo "build_$(notdir $<)" | tr "." "_"); \
-   echo "const char $${name}[] = {" > $@; \
-   hexdump -ve '1/1 "0x%x,"' $< >>$@; \
-   echo "};\nconst unsigned $${name}_len = sizeof $${name};" >> $@; \
-   echo "const char * $${name}_name_ext = \"$(subst .,,$(suffix $<))\";" >> $@; \
+	 echo     >$@ "static const char content[] = {" && \
+   hexdump >>$@ -ve '1/1 "0x%X,"' $< && \
+   echo    >>$@ "\n\
+}; \n\
+struct web_content { \n\
+  const char *content, *content_encoding; unsigned content_size; \n\
+} const $${name}_fm = { \n\
+	 .content = content, \n\
+	 .content_encoding = \"$(shell echo $(suffix $<) | sed -e s/.gz/gzip/ -e s/.br/br/)\", \n\
+	 .content_size = sizeof content, \n\
+};" \
    )
 
 
@@ -117,7 +113,7 @@ njs/node_modules:
 
 .PHONY: clean
 clean:
-	-rm $(BUILD_DIR)/* $(JS_BLD_DIR)/*
+	-rm -r $(BUILD_DIR)/* $(JS_BLD_DIR)/* ./build
 
 #HTTP PROXY
 #==========
@@ -126,7 +122,7 @@ MCU_IP_ADDR ?= 192.168.1.69
 PROXY_TCP_PORT ?= 3000
 
 proxy:
-	(while true; do ./proxy.js $(JS_BLD_DIR_DEV) $(MCU_IP_ADDR) $(PROXY_TCP_PORT); done)
+	(while true; do mkdir -p $(JS_BLD_DIR_DEV) && ./proxy.js $(JS_BLD_DIR_DEV) $(MCU_IP_ADDR) $(PROXY_TCP_PORT); done)
 
 build:
 	mkdir -p build
