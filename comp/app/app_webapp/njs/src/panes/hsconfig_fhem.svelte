@@ -5,6 +5,7 @@
   import { Names } from "../store/shutters.js";
   import { McuConfig, Gmu } from "../store/mcu_config.js";
   import { onMount } from "svelte";
+  import * as misc from "../app/misc.js";
 
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_GMU | httpFetch.FETCH_CONFIG_P2);
@@ -19,6 +20,8 @@
 
   $: {
     $Gmu;
+    $Names;
+    root_topic;
     mqttText = genText_mqtt($Gmu);
     moduleText = genText_module($Gmu);
   }
@@ -48,9 +51,9 @@
   function genText_mqtt(gmu) {
     let txt = "# Configuration for mqtt server\n" + "# Copy and paste it into a raw definition window in FHEM-Web and execute it\n\n";
 
-    for (let g = 1; g < gmu.length; ++g) {
+    for (let g = 0; g < gmu.length; ++g) {
+      if (g === 0 || gmu[g])
       for (let m = 0; m <= gmu[g]; ++m) {
-        const devName = get_devName(g, m);
         txt +=
           `defmod ${get_devName(g, m)} MQTT2_DEVICE ${clientId}\n` +
           `attr ${get_devName(g, m)} alias ${get_alias(g, m)}\n` +
@@ -79,7 +82,8 @@
   function genText_module(gmu) {
     let txt = "# Configuration for tronferno-mcu module\n" + "# Copy and paste it into a raw definition window in FHEM-Web and execute it\n\n";
 
-    for (let g = 1; g < gmu.length; ++g) {
+    for (let g = 0; g < gmu.length; ++g) {
+      if (g === 0 || gmu[g])
       for (let m = 0; m <= gmu[g]; ++m) {
         const devName = get_devName(g, m);
         txt +=
@@ -103,7 +107,7 @@
   <div>
     <button
       on:click={() => {
-        navigator.clipboard.writeText(mqttText);
+        misc.textToClipboard(mqttText);
       }}>Copy MQTT definitions to clipboard</button
     ><br />
     <textarea value={mqttText} cols={80} rows={25} disabled={true} />
@@ -112,7 +116,7 @@
   <div>
     <button
       on:click={() => {
-        navigator.clipboard.writeText(moduleText);
+        misc.textToClipboard(moduleText);
       }}>Copy FHEM module definitions to clipboard</button
     ><br />
     <textarea value={moduleText} cols={80} rows={25}  disabled={true} />
