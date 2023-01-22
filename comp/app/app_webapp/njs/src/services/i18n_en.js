@@ -38,9 +38,9 @@ export const en = {
           tab: "OTA",
         },
       },
-  
+
       guiacc: {
-       tab: "",
+        tab: "",
       },
     },
 
@@ -96,9 +96,6 @@ export const en = {
         },
       },
     },
-
-
-
   },
 
   panes: {
@@ -190,12 +187,28 @@ First check the current direction with arrow buttons. If wrong, then reverse the
       },
     },
 
+    hs_config: {
+      home_assistant: {
+        header: "Home Assistant Configuration",
+        tt: {
+          header: "Generates a configuration for Home Assistant for copy-and-paste",
+        },
+      },
+      fhem: {
+        header: "FHEM Configuration",
+        tt: {
+          header: "Generates a configuration for FHEM home-server for copy-and-paste. Configurations are generated for both MQTT and the FHEM-module \"tronferno-mcu\"",
+        },
+      },
+    },
+
     guiacc: {
       header: "GUI Access restriction",
       tt: {
-        header: "Experimental/Unfinished work: Reduce user level to hide inappropriate user interface areas (e.g. most configuration areas need at least admin level)",
-      }
-    }
+        header:
+          "Experimental/Unfinished work: Reduce user level to hide inappropriate user interface areas (e.g. most configuration areas need at least admin level)",
+      },
+    },
   },
 
   app: {

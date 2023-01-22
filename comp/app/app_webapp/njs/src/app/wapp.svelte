@@ -21,6 +21,8 @@
   import PaneUserLevel from "../panes/user_level.svelte";
   import PaneUserHelp from "../panes/user_help.svelte";
   import PaneFirmwareEsp32 from "../panes/firmware_esp32.svelte";
+  import PaneHSConfigHomeAssistant from "../panes/hsconfig_home_assistant.svelte";
+  import PaneHSConfigFHEM from "../panes/hsconfig_fhem.svelte";
   import * as httpFetch from "../app/fetch.js";
   import { onMount, onDestroy } from "svelte";
 
@@ -39,6 +41,8 @@
   $: tabIdxSender = $TabIdx["sender"] || 0;
   $: tabIdxPositions = $TabIdx["positions"] || 0;
   $: tabIdxUserHelp = $TabIdx["user_help"] || 0;
+  $: tabIdxHSConfig = $TabIdx["hs_config"] || 0;
+
   function getUserLevelHeader(ul) {
     return ul < 0
       ? $_("navTab.main.user_level.developer")
@@ -137,10 +141,29 @@
     <PaneUserLevel />
   {:else if tabIdxMain === 7}
     <div class="navtab-sub">
-      <NavTabs nav_tabs={[...($GuiAcc.ota ? [{ name: $_("navTab.help.ota.tab"), idx: 0 }] : [])]} name="user_help" />
+      <NavTabs nav_tabs={
+      [
+        ...($GuiAcc.ota ? [{ name: $_("navTab.help.ota.tab"), idx: 0 },] : []),
+        { name: $_("HSC"), idx: 1 },
+      ]}
+       name="user_help" />
     </div>
     {#if !tabIdxUserHelp}
       <PaneFirmwareEsp32 />
+    {:else if tabIdxUserHelp === 1}
+    <div class="navtab-sub">
+      <NavTabs nav_tabs={
+      [
+        { name: "Home Assistant", idx: 0 },
+        { name: "FHEM", idx: 1 },
+      ]}
+       name="hs_config" />
+    </div>
+      {#if !tabIdxHSConfig}
+        <PaneHSConfigHomeAssistant />
+      {:else if tabIdxHSConfig === 1}
+        <PaneHSConfigFHEM />
+      {/if}
     {/if}
   {:else if !misc.DISTRO && tabIdxMain === 6}
     <PaneDeveloper />

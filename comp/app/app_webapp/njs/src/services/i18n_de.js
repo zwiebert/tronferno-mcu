@@ -176,6 +176,14 @@ export const de = {
         header: "Namen für Sender für bessere Übersichtlichkeit. Ein Name könnte z.B. den genauen Stand-Ort des Senders beschreiben.",
       },
     },
+    hs_config: {
+      home_assistant: {
+        header: "Home Assistant Konfiguration",
+        tt: {
+          header: 'Erzeugt eine Konfiguraion zum Einfügen in die Konfigurationsdatei des "Home Assistant" Home-Server',
+        },
+      },
+    },
     register: {
       header: "Sender Anmelden",
       tt: {

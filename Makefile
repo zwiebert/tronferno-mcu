@@ -63,7 +63,7 @@ esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui recon
 define GEN_RULE
 .PHONY: esp32-$(1)
 esp32-$(1):
-	$(esp32_build_cnd) $(1) 
+	$(esp32_build_cmd) $(1)
 endef
 $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
