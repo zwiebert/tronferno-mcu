@@ -76,11 +76,15 @@ int process_parmTimer(clpar p[], int len, const class UoutWriter &td) {
     switch (kt) {
       case otok::k_weekly:
       NODEFAULT();
-      tda.putWeekly(val);
+      if (!tda.putWeekly(val)) {
+        return cli_replyFailure(td);
+      }
       break;
       case otok::k_daily:
       NODEFAULT();
-      tda.putDaily(val);
+      if (!tda.putDaily(val)) {
+        return cli_replyFailure(td);
+      }
       break;
       case otok::k_astro:
       tda.putAstro(val ? atoi(val) : 0);
