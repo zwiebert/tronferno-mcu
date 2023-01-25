@@ -67,6 +67,7 @@ export function set_gui_access_level(al) {
     set_mode: al < user,
     debug: al < expert,
     ota: al < user,
+    hsc: al < user,
   });
 }
 

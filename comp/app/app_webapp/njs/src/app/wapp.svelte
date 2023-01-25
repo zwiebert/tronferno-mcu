@@ -144,13 +144,13 @@
       <NavTabs nav_tabs={
       [
         ...($GuiAcc.ota ? [{ name: $_("navTab.help.ota.tab"), idx: 0 },] : []),
-        { name: $_("HSC"), idx: 1 },
+        ...($GuiAcc.hsc ? [{ name: $_("HSC"), idx: 1 },] : []),
       ]}
        name="user_help" />
     </div>
     {#if !tabIdxUserHelp}
       <PaneFirmwareEsp32 />
-    {:else if tabIdxUserHelp === 1}
+    {:else if $GuiAcc.hsc && tabIdxUserHelp === 1}
     <div class="navtab-sub">
       <NavTabs nav_tabs={
       [
