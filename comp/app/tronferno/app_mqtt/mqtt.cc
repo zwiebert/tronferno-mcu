@@ -61,7 +61,7 @@ void AppNetMqtt::publishPinChange(int gpio_num, bool level) {
   char topic[64];
   const char *data = level ? "1" : "0";
   snprintf(topic, 64, "%sgpi/%d/level", TOPIC_ROOT, gpio_num);
-  publish(topic, data);
+  publish(topic, data, true);
 }
 
 
@@ -73,7 +73,7 @@ static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
     MyMqtt.publish_gmp(*gmp);
   if (auto json = uoCb_jsonFromMsg(msg)) {
     if (msg.flags.evt.uo_evt_flag_timerChange)
-      MyMqtt.publish("tfmcu/timer_out", json);
+      MyMqtt.publish("tfmcu/timer_out", json, true);
   }
 }
 
