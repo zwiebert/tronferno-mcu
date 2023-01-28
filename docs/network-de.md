@@ -7,16 +7,19 @@
 
 ### Tronferno einrichten zum Verbinden mit WLAN Router
 * Einrichten über Weboberfläche
-  * Config->MCU->Netzwerk->Verbindung: "Existing WLAN"
-  * Config->MCU->Netzwerk->WLAN-Station->SSID: Die SSID deines WLANs
-  * Config->MCU->Netzwerk->WLAN-Station->Passwort: Das Passwort deines WLANs
-  * Config->MCU->Netzwerk->Webserver: Webserver hier einschalten um die Weboberfläche später nutzen zu können
+  * Navigation: Zahnrad->MCU->Netzwerk
+     * Der Sprechblasen-Hilfe für die Optionen folgen (Mouseover oder Touch der Option-Namen)
+     * Verbindung: "Existing WLAN"
+     * WLAN-Station->SSID: Die SSID deines WLANs
+     * WLAN-Station->Passwort: Das Passwort deines WLANs
+     * Webserver->Ein/Aus: Webserver hier einschalten um die Weboberfläche später nutzen zu können
 * Einrichten über [Kommandozeilenoptionen](mcu_config_cli-de.md)
   * <pre>config network=wlan wlan-user=XXX wlan-password=XXX http-enable=1;</pre>
 
 ### Tronferno einrichten zum verbinden mit LAN (Ethernet)
 * Einrichten über Weboberfläche
-  * Navigation: Config->MCU->Netzwerk
+  * Navigation: Zahnrad->MCU->Netzwerk
+     * Der Sprechblasen-Hilfe für die Optionen folgen (Mouseover oder Touch der Option-Namen)
      * Verbindung: "Ethernet"
      * LAN/Ethernet->lan-phy: LAN8720 ist getestet (ungetestet: RTL8201, IP101)
      * LAN/Ethernet->Power-ON/OFF-GPIO: boardabhängig, dieser GPIO schaltet die Stromversorgung für Ethernet auf dem Board ein/aus.
@@ -27,13 +30,17 @@
 
 ### Webserver einrichten
   * Einrichten über Weboberfläche:
-     * Navigation: Config->MCU->Netzwerk
-         * Webserver->Ein/Aus: Webserver hier einschalten um die Weboberfläche später nutzen zu können
-         * Webserver->Auth-Name, Webserver->Auth-Passwort: Optional: Wenn nicht leer, dann ist ein Login zur Nutzung der Weboberfläche nötig
+     * Navigation: Zahnrad->MCU->Netzwerk
+       * Der Sprechblasen-Hilfe für die Optionen folgen (Mouseover oder Touch der Option-Namen)
   * Einrichten über [Kommandozeilenoptionen](mcu_config_cli-de.md)
      * <pre>config http-enable=1 http-user=XXX http-password=XXX;</pre>
  
-
+### MQTT Klient einrichten
+  * Einrichten über Weboberfläche:
+     * Navigation: Zahnrad->MCU->Netzwerk
+            * Der Sprechblasen-Hilfe für die Optionen folgen (Mouseover oder Touch der Option-Namen)
+  * Einrichten über [Kommandozeilenoptionen](mcu_config_cli-de.md)
+     * <pre>config mqtt-enable=1 mqtt-url="mqtt://192.168.1.XX:1883" mqtt-user=XXX mqtt-password=XXX mqtt-root-topic=tfmcu mqtt-client-id=Rollo;</pre>
   
 #### Mehr Info
   * [MCU configuration](mcu_config.md)

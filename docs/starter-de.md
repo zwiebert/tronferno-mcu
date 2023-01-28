@@ -10,18 +10,18 @@ Die [Hardware](hardware-de.md) besteht aus nur einem ESP32-Board und einem oder 
 * [Schaltbild Tronferno-MCU mit einem ESP32-Board und zwei Funkmodulen](schematic.pdf)
 
 #### Installation der Firmware
-Die Tronferno-Firmware wird erstmalig via USB auf das ESP32-Board installiert. Spätere Updates können bequem online durchgeführt werden (Updates liegen auf dem GitHUB-Server).
-* [Tronferno-Firmware erstmalig flashen](starter_flash-de.md)
+* Nach dem Zusammenbau der Hardware muss die Tronferno-Firmware installiert (geflasht werden).
+   * Die Firmware und die Flash-Tools sind
+   * Die Tronferno-Firmware wird erstmalig via USB auf das ESP32-Board installiert.
+      * [Tronferno-Firmware erstmalig flashen](starter_flash-de.md)
+   * Neuere Versionen der Firmware (Updates) können nach Einrichtung des Netzwerks dann über die Weboberfläche online installiert werden (OTA-Update).
+      * Navigation: ?->OTA
 
 #### Netzwerkzugang einrichten
 
-Beim Start versucht der Microcontroller eine Netzwerkverbindung aufzubauen. Schlägt dies fehl wird [WLAN Accesspoint](network-de.md) eingerichtet.
+* Beim Start versucht der Microcontroller eine Netzwerkverbindung aufzubauen. Schlägt dies fehl wird ein [WLAN Accesspoint](network-de.md) gestartet.
 Man kann sein Laptop oder Smartphone mit diesem WLAN verbinden und dann die Weboberfläche über [http://192.168.4.1](http://192.168.4.1) erreichen.
-Dort dann das gewünschte Netzwerk einrichten.
-
-
-#### Webserver aktivieren
-
+Dort dann das gewünschte [Netzwerk einrichten](network-de.md).
 
 
 #### Weboberfläche verwenden
@@ -45,9 +45,14 @@ Dort dann das gewünschte Netzwerk einrichten.
 
 #### Homeserver-Integration
 
-Für den FHEM-Homeserver existiert ein spezilelles Tronferno-Modul. Andere Homeserver (aber auch FHEM, falls man das Modul nicht benutzen möchte) können via MQTT mit Tronferno kommunizieren.
+* HomeServer werden idR einfach über [MQTT](mqtt.md) angebunden
+* Für FHEM existiert neben MQTT spezielle Module die  mehr Funktionalität bieten.
+   * [FHEM-Homeserver Modul (USB oder TCP/IP)](https://github.com/zwiebert/tronferno-fhem)
+* Auf Grund der Tronferno-Konfiguration automatisch erzeugte Copy&Paste-Konfigurationen für HomeServer findest du in der Weboberfläche.
+   * Navigation: ?->HSC
+      * HomeAssistant: Konfiguration für mqtt-cover
+      * FHEM: Konfiguration für tronferno-fhem für MQTT2
 
-* [FHEM-Homeserver Modul (USB oder TCP/IP)](https://github.com/zwiebert/tronferno-fhem)
 
 
 #### Mehr Information
