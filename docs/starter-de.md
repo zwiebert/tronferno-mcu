@@ -11,7 +11,6 @@ Die [Hardware](hardware-de.md) besteht aus nur einem ESP32-Board und einem oder 
 
 #### Installation der Firmware
 * Nach dem Zusammenbau der Hardware muss die Tronferno-Firmware installiert (geflasht werden).
-   * Die Firmware und die Flash-Tools sind
    * Die Tronferno-Firmware wird erstmalig via USB auf das ESP32-Board installiert.
       * [Tronferno-Firmware erstmalig flashen](starter_flash-de.md)
    * Neuere Versionen der Firmware (Updates) können nach Einrichtung des Netzwerks dann über die Weboberfläche online installiert werden (OTA-Update).
@@ -19,10 +18,14 @@ Die [Hardware](hardware-de.md) besteht aus nur einem ESP32-Board und einem oder 
 
 #### Netzwerkzugang einrichten
 
-* Beim Start versucht der Microcontroller eine Netzwerkverbindung aufzubauen. Schlägt dies fehl wird ein [WLAN Accesspoint](network-de.md) gestartet.
-Man kann sein Laptop oder Smartphone mit diesem WLAN verbinden und dann die Weboberfläche über [http://192.168.4.1](http://192.168.4.1) erreichen.
-Dort dann das gewünschte [Netzwerk einrichten](network-de.md).
-
+* Der Netzwerkzugang kann wahlweise über WLAN-Accesspoint per Webbrowser oder über Kommandozeile/FHEM/MenuTool eingerichtet werden
+* WLAN-Accespoint: 
+    * Beim Start versucht der Microcontroller eine Netzwerkverbindung aufzubauen. Schlägt dies fehl wird stattdessen ein [WLAN Accesspoint](network-de.md) gestartet.
+    * Du kannst einen Laptop oder Smartphone mit diesem WLAN verbinden und dann die Weboberfläche über [http://192.168.4.1](http://192.168.4.1) erreichen.
+        * Über diese Weboberfläche dann das gewünschte [Netzwerk einrichten](network-de.md) und dann neu starten.
+* USB:
+   * [Kommandozeilenoptionen benutzen](mcu_config_cli-de.md)
+   * [Netzwerk einrichten](network-de.md)
 
 #### Weboberfläche verwenden
 
