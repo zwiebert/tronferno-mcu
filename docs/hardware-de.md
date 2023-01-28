@@ -11,7 +11,7 @@
 
   * Kombiniertes Sende- und Empfangsmodul
   
-     * Neuftech CC1101: getestet und funktioniert gut.
+     * CC1101 433MHz Modul
          * Es werden neben Senden und Empfangen vier zusätzliche GPIOs belegt für das SPI-Interface welches den CC1101 steuert.
          * Alle sechs für den CC1101 benötigten GPIOs sind in der Weboberfläche frei konfiguriertbar.
          * Benutzt man die GPIOs des SPI2-Interfaces des ESP32, so sollte man mit dem efuse-Programm die Spannung des Flash-Speichers fest einstellen, falls es Probleme mit GPIO12 gibt, welcher (als Bootstrapping-Pin) bei der Verbindung mit dem CC1101-Modul das Booten und Flashen verhindern kann, bei Flash-Speicher mit 3.3V statt 1.8V. Im Zweifel lieber auf die Benutzung von GPIO12 verzichten. Der ESP32 kann beliebige Pins für SPI verwenden.
@@ -36,7 +36,7 @@
         * Es kann mit 5V gespeist werden, welche das ESP32 Board bereitstellt
         * Es wird dafür ein GPI-Pin benötigt der in der Weboberfläche ausgewählt werden kann.  
      * RX470C-V01: getestet und funktioniert.
-        * Es kann mit 5V gespeist werden, welche das ESP32 Board bereitstellt
+        * Es kann mit 3.3V (2.2 ... 5V) gespeist werden, welche das ESP32 Board bereitstellt
         * Es wird dafür ein GPI-Pin benötigt der in der Weboberfläche ausgewählt werden kann.
       
 

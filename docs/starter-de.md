@@ -3,27 +3,38 @@
 
 #### Aufbau der Hardware
 
-Die [Hardware](hardware-de.md) kann leicht selber zusammen gebaut werden, und besteht aus einem ESP32-Board und einem oder zwei Funkmodulen für die Funkfrequenz von 433.92 MHz.
+Die [Hardware](hardware-de.md) besteht aus nur einem ESP32-Board und einem oder zwei 433.92 MHz Funkmodulen.
 
 * [Benötigte Hardware](hardware-de.md)
-* [Bauanleitung mit Olimex-ESP32-Gateway und Neuftech-CC1101](esp32gw_cc1101-de.md)
+* [Bauanleitung mit Olimex-ESP32-Gateway und CC1101 Board](esp32gw_cc1101-de.md)
 * [Schaltbild Tronferno-MCU mit einem ESP32-Board und zwei Funkmodulen](schematic.pdf)
 
 #### Installation der Firmware
 Die Tronferno-Firmware wird erstmalig via USB auf das ESP32-Board installiert. Spätere Updates können bequem online durchgeführt werden (Updates liegen auf dem GitHUB-Server).
 * [Tronferno-Firmware erstmalig flashen](starter_flash-de.md)
 
-#### Netzwerkzugang und Webinterface konfigurieren
+#### Netzwerkzugang einrichten
 
-Die erstmalige Konfiguration kann über einen WLAN-Accesspoint durchgeführt werden (oder auch mit dem menutool Programm, direkt nach dem Flashen).  Dabei sollten die WLAN Zugangsdaten eingerichtet werden. Wenn das Board LAN unterstützt, kann dieses anstelle von WLAN benutzt werden.  Die weitere Konfiguration sollte dann nach und nach über diesen Webserver durchgeführt werden.  Außerdem sollte der integrierte Webserver aktiviert werden und bei Bedarf Benutzername und Passwort um den Zugriff auf die Weboberfläche einzuschränken.
+Beim Start versucht der Microcontroller eine Netzwerkverbindung aufzubauen. Schlägt dies fehl wird [WLAN Accesspoint](network-de.md) eingerichtet.
+Man kann sein Laptop oder Smartphone mit diesem WLAN verbinden und dann die Weboberfläche über [http://192.168.4.1](http://192.168.4.1) erreichen.
+Dort dann das gewünschte Netzwerk einrichten.
 
-#### Weboberfläche öffnen
 
- Zum Aufruf der Weboberfläche wird die vom Router vergebene IP-Adresse benötigt. In der Fritz-Box-Oberfläche findet sich  diese unter Heimnetzwerk und dem Gerätenamen "tronferno" (vor 0.12.1.4: "espressif").  Wenn über USB mit einem FHEM-Server verbunden, taucht die IP Adresse außerdem als Reading im Modul TronfernoMCU auf.
+#### Webserver aktivieren
+
+
+
+#### Weboberfläche verwenden
+
+* Der Webserver sollte  vom User bei der [Einrichtung des Netzwerkzugangs](network-de.md) aktiviert werden 
+    * (CLI: http-enable=1)
+
+* Zum Aufruf der Weboberfläche wird die vom Router vergebene IP-Adresse benötigt.
+    * In der Fritz-Box-Oberfläche findet sich  diese unter Heimnetzwerk und dem Gerätenamen "tronferno" (vor 0.12.1.4: "espressif").
+    * Wenn über USB mit einem FHEM-Server verbunden, taucht die IP Adresse außerdem als Reading im Modul TronfernoMCU (tfmcu) auf.
  
-Das Webinterface erlaubt Konfiguration des Tronferno-Controllers und die Steuerung und Programmierung der Rollladenmotore.
-
-* [webserver](webserver.md)
+* Das Webinterface erlaubt Konfiguration des Tronferno-Controllers und die Steuerung und Programmierung der Fernotron Empfänger.
+    * [webserver](webserver.md)
 
 #### Weitere Konfiguration über die Weboberfläche
 
