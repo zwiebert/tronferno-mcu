@@ -32,18 +32,26 @@ export const en = {
           kid: "Kid",
         },
       },
-      help: {
-        tab: "?",
-        ota: {
-          tab: "OTA",
-        },
-      },
+
 
       guiacc: {
         tab: "",
       },
     },
 
+    help: {
+      tab: "?",
+      ota: {
+        tab: "OTA",
+      },
+      hsc: {
+        tab: "HSC",
+      },
+      doc: {
+        tab: "Docu",
+      }
+    },
+    
     cfg: {
       mcu: {
         tab: "MCU",
@@ -103,6 +111,23 @@ export const en = {
       header: "OTA Firmware Update",
       tt: {
         header: "Firmware information and Over the Air firmware update from GitHub zwiebert/tronferno-mcu-bin repository",
+      },
+    },
+
+    help_doc: {
+      header: "Online Documentation",
+      starter: {
+        url: "docs/starter-de.md",
+        txt: "Getting Started",
+      },
+      starter_faq: {
+        url: "docs/starter_faq-de.md",
+        txt: "Starter FAQ",
+      },
+
+      mqtt: {
+        url: "docs/mqtt.md",
+        txt: "MQTT Client",
       },
     },
 

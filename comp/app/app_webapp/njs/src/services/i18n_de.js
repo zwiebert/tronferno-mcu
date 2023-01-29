@@ -105,6 +105,22 @@ export const de = {
       },
     },
 
+    help_doc: {
+      header: "Online Documentation",
+      starter: {
+        url: "docs/starter-de.md",
+        txt: "Schnellstart Anleitung",
+      },
+      starter_faq: {
+        url: "docs/starter_faq-de.md",
+        txt: "FAQ Liste",
+      },
+
+      mqtt: {
+        url: "docs/mqtt-de.md",
+        txt: "MQTT Klient",
+      },
+    },
     mcu: {
       network: { header: "Netzwerk-Verbindungen und -Dienste", tt: { header: "--" } },
       misc: { header: "Allgemeine Konfiguration", tt: { header: "--" } },

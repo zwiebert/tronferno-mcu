@@ -20,6 +20,7 @@
   import PaneDeveloper from "../panes/developer.svelte";
   import PaneUserLevel from "../panes/user_level.svelte";
   import PaneUserHelp from "../panes/user_help.svelte";
+  import PaneHelpDoc from "../panes/help_doc.svelte";
   import PaneFirmwareEsp32 from "../panes/firmware_esp32.svelte";
   import PaneHSConfigHomeAssistant from "../panes/hsconfig_home_assistant.svelte";
   import PaneHSConfigFHEM from "../panes/hsconfig_fhem.svelte";
@@ -65,7 +66,7 @@
         { name: $_("navTab.main.percent"), idx: 2 },
         ...($GuiAcc.shutter_auto ? [{ name: $_("navTab.main.auto"), idx: 3 }] : []),
         ...($GuiAcc.cfg ? [{ name: $_("navTab.main.config"), idx: 4 }] : []),
-        { name: $_("navTab.main.help.tab"), idx: 7 },
+        { name: $_("navTab.help.tab"), idx: 7 },
         { name: getUserLevelHeader($GuiUserLevel), idx: 5 },
         ...($GuiAcc.debug ? [{ name: "Test", idx: 6 }] : []),
       ]}
@@ -144,7 +145,8 @@
       <NavTabs nav_tabs={
       [
         ...($GuiAcc.ota ? [{ name: $_("navTab.help.ota.tab"), idx: 0 },] : []),
-        ...($GuiAcc.hsc ? [{ name: $_("HSC"), idx: 1 },] : []),
+        ...($GuiAcc.hsc ? [{ name: $_("navTab.help.hsc.tab"), idx: 1 },] : []),
+        { name: $_("navTab.help.doc.tab"), idx: 2 },
       ]}
        name="user_help" />
     </div>
@@ -164,6 +166,8 @@
       {:else if tabIdxHSConfig === 1}
         <PaneHSConfigFHEM />
       {/if}
+    {:else if tabIdxUserHelp === 2}
+      <PaneHelpDoc />
     {/if}
   {:else if !misc.DISTRO && tabIdxMain === 6}
     <PaneDeveloper />
