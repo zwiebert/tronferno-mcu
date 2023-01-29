@@ -1,5 +1,38 @@
 ## Tronferno FAQ Liste
-  
+
+#### Kann ich zwei oder mehr Tronferno-MCU im selben Haus verwenden
+
+Das ist möglich, aber sie werden nicht zusammenarbeiten sondern sind unabhängig voneinander.
+
+Gründe für mehrere TronfernoMCUs:
+
+  * Verwalten von mehr als 7 Gruppen / 49 Empfängern (Limit pro Programmierzentralen-ID)
+  * Bewusstes Aufteilen von Gruppen auf getrennte Zentralen
+  * Verwendung eines TronfernoMCUs als Programmierzentrale und zusätzlich einen/mehrere als reinen Repeater/Funksignalverstärer.
+
+#### Wie konfiguriere ich den Repeater/Funksignalverstärker?
+Der Repeater benötigt eine Senderliste ("White-List") von Funksender-IDd die er verstärken soll. Steht ein Funksender nicht auf der Senderliste wird er ignoriert.
+Soll z.B. ein Sonnensensor mit der ID 201234 repeatet werden, muss diese ID in die Senderliste eingetragen werden.
+Wird nun ein Kommando empfangen was von diesem Sonnensensor gesendet wurde, dann wird eine exakte Kopie dieses Kommando unmittelbar darauf
+vom am Tronferno angeschlossenen Sender erneut ausgesendet.
+Gibt es mehrere Repeater, dann darf ein Sender nicht bei mehreren Repeatern auf der Senderliste stehen, sondern nur bei genau einem.
+
+#### Kann ein TronfernoMCU gleichzeitig Programmierzentrale und Repeater sein?
+Ja. Dieses bietet sich an, wenn der Standort von Programmierzentrale und Repeater sowieso am gleichen Ort wäre.
+
+#### Welche Mindes-Konfiguration benötigt ein Tronferno der ausschließlich als Repeater verwendet werden soll?
+Wenn ein eigenständiger Repeater benötigt wird, dann beschränkt sich die Konfiguration auf:
+
+* Funkempfänger und Funksender GPIOs (Zahnrad->MCU->Allgemein->Elekrische_Ein_und_Ausgänge)
+* Senderliste mit Funksender-IDs (Zahnrad->Sender->Repeater->Senderliste)
+* Netzwerkzugang um die Senderliste per Weboberfläche bearbeiten zu können.
+* Ohne Netzwerk wird die Senderliste über folgende undokumentierte (provisorische) Kommandozeilen-Option gesetzt oder abgefragt:
+      * <pre>config rf-repeater=(ID-Liste|?)</pre>
+      *  Beispiel für Senderliste mit drei IDs 10abcd, 201234 und 20abcd:
+       <pre>config rf-repeater="10abcd20123420abcd";</pre>
+* Alle anderen Funktionen können soweit möglich deaktiviert werden oder können auf Defaultwerten verbleiben.
+* In späteren Versionen lassen sich eventuell noch weitere zum repeaten unnötige Funktionen abschalten
+
 
 #### Welche GPIOs muss ich in der Konfiguration einstellen?
 In der Regel können relativ beliebige GPIOs in der Schaltung angeschlossen und entsprechend in der Konfiguration zugewiesen werden, solange diese vom verwendeten ESP32-Board nicht anderweitig beansprucht werden (z.B. von einem Ethernet Baustein auf dem Board).
