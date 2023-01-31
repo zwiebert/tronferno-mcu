@@ -18,12 +18,12 @@ export const en = {
       auto: "Auto",
       firmware: "OTA",
       user_level: {
-        developer: ">>",
+        developer: "\uD83D\uDDA5\uD83D\uDDA5",
         all: "$#",
-        expert: "##>",
-        admin: "#>",
-        user: "$>",
-        kid: "@>",
+        expert: "\uD83D\uDCBB",
+        admin: "\uD83D\uDEE1",
+        user: "\u2602",
+        kid: "\uD83D\uDEB8",
         name: {
           developer: "Developer",
           expert: "Expert",
@@ -40,15 +40,15 @@ export const en = {
     },
 
     help: {
-      tab: "?",
+      tab: "\u2753",
       ota: {
         tab: "OTA",
       },
       hsc: {
-        tab: "HSC",
+        tab: "\uD83C\uDFE0",
       },
       doc: {
-        tab: "Docu",
+        tab: "\uD83D\uDCD6",
       }
     },
     
@@ -116,6 +116,9 @@ export const en = {
 
     help_doc: {
       header: "Online Documentation",
+      tt: {
+        header: "Access documentation on GitHub",
+      },
       starter: {
         url: "docs/starter-de.md",
         txt: "Getting Started",
@@ -223,6 +226,12 @@ First check the current direction with arrow buttons. If wrong, then reverse the
         header: "FHEM Configuration",
         tt: {
           header: "Generates a configuration for FHEM home-server for copy-and-paste. Configurations are generated for both MQTT and the FHEM-module \"tronferno-mcu\"",
+        },
+      },
+      openhab: {
+        header: "OpenHAB Configuration",
+        tt: {
+          header: "Generates a configuration for OpenHAB home-server for copy-and-paste. Configurations are generated for MQTT-Generic-Thing",
         },
       },
     },

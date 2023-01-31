@@ -24,6 +24,7 @@
   import PaneFirmwareEsp32 from "../panes/firmware_esp32.svelte";
   import PaneHSConfigHomeAssistant from "../panes/hsconfig_home_assistant.svelte";
   import PaneHSConfigFHEM from "../panes/hsconfig_fhem.svelte";
+  import PaneHSConfigOpenHAB from "../panes/hsconfig_openhab.svelte";
   import * as httpFetch from "../app/fetch.js";
   import { onMount, onDestroy } from "svelte";
 
@@ -158,6 +159,7 @@
       [
         { name: "Home Assistant", idx: 0 },
         { name: "FHEM", idx: 1 },
+        { name: "OpenHAB", idx: 2 },
       ]}
        name="hs_config" />
     </div>
@@ -165,6 +167,8 @@
         <PaneHSConfigHomeAssistant />
       {:else if tabIdxHSConfig === 1}
         <PaneHSConfigFHEM />
+      {:else if tabIdxHSConfig === 2}
+        <PaneHSConfigOpenHAB />
       {/if}
     {:else if tabIdxUserHelp === 2}
       <PaneHelpDoc />
