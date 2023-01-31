@@ -20,8 +20,8 @@ void tst_publish_pinChange() {
 
 void tst_publish_Pct() {
   MyMqtt.publish_gmp({4,2,56});
-  TEST_ASSERT_EQUAL_STRING("tfmcu/42/pct_out", Topic);
-  TEST_ASSERT_EQUAL_STRING("56", Data);
+  TEST_ASSERT_EQUAL_STRING("tfmcu/42/ipct_out", Topic);
+  TEST_ASSERT_EQUAL_STRING("44", Data); // 100-56
 }
 
 
