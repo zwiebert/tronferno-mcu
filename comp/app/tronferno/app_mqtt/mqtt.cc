@@ -29,6 +29,7 @@ AppNetMqtt MyMqtt;
 
 #define TOPIC_ROOT io_mqtt_topic_root
 #define TOPIC_PCT_END "/pct"
+#define TOPIC_IPCT_END "/ipct"
 #define TOPIC_CMD_END "/cmd"
 #define TOPIC_CLI_END "/cli"
 #define TOPIC_GPI_MID "gpi/"
@@ -53,7 +54,10 @@ void AppNetMqtt::publish_gmp(const so_arg_gmp_t gmp) {
 
   snprintf(topic, 64, "%s%u%u/pct_out", TOPIC_ROOT, gmp.g, gmp.m);
   snprintf(data, 16, "%u", gmp.p);
+  publish(topic, data, true);
 
+  snprintf(topic, 64, "%s%u%u/ipct_out", TOPIC_ROOT, gmp.g, gmp.m);
+  snprintf(data, 16, "%u", 100 - gmp.p);
   publish(topic, data, true);
 }
 
@@ -84,6 +88,8 @@ void AppNetMqtt::connected ()  {
   snprintf(topic, sizeof topic, "%scli", TOPIC_ROOT);
   subscribe(topic, 0);
   snprintf(topic, sizeof topic, "%s+/pct", TOPIC_ROOT);
+  subscribe(topic, 0);
+  snprintf(topic, sizeof topic, "%s+/ipct", TOPIC_ROOT);
   subscribe(topic, 0);
   snprintf(topic, sizeof topic, "%s+/cmd", TOPIC_ROOT);
   subscribe(topic, 0);
@@ -250,7 +256,27 @@ void AppNetMqtt::received_cmdl(const char *topic, int topic_len, const char *dat
            fer_cmd_moveShutterToPct(agm.a, agm.g, agm.m, pct, 2);
         }
       }
+    } else if (topic_endsWith(topic, topic_len, TOPIC_IPCT_END)) {
+      const char *addr = topic + strlen(TOPIC_ROOT);
+      int addr_len = topic_len - (strlen(TOPIC_ROOT) + (sizeof TOPIC_IPCT_END - 1));
 
+      auto agm = topic_to_Agm(addr, addr_len);
+      if (!agm.a)
+        return;
+
+      if (strncmp("?", data, data_len) == 0) {
+        if (agm.a != fer_config.cu)
+          return;
+        if (Pct pos = fer_simPos_getPct_whileMoving(agm.g, agm.m)) {
+          publish_gmp({agm.g, agm.m, pos});
+        }
+      } else {
+        int pct = -1;
+        if (auto res = std::from_chars(data, data + data_len, pct, 10); res.ec == std::errc()) {
+           pct = 100 - pct;
+           fer_cmd_moveShutterToPct(agm.a, agm.g, agm.m, pct, 2);
+        }
+      }
     } else if (topic_endsWith(topic, topic_len, TOPIC_CMD_END)) {
       const char *addr = topic + strlen(TOPIC_ROOT);
       int addr_len = topic_len - (strlen(TOPIC_ROOT) + (sizeof TOPIC_CMD_END - 1));
