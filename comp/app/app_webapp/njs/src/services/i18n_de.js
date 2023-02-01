@@ -196,7 +196,7 @@ export const de = {
       home_assistant: {
         header: "Home Assistant Konfiguration",
         tt: {
-          header: 'Erzeugt eine Konfiguraion zum Einfügen in die Konfigurationsdatei des "Home Assistant" Home-Server',
+          header: '1) Konfiguriert HomeAssistant via MQTT oder 2) Erzeugt eine Konfiguraion zum Einfügen in die Konfigurationsdatei des "Home Assistant" Home-Server',
         },
       },
     },

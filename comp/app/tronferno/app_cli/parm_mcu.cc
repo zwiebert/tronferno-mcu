@@ -3,6 +3,8 @@
 #include <string.h>
 
 #include "app_misc/firmware.h"
+#include "app_mqtt/mqtt.h"
+#include "fernotron/fer_main.h"
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/shutter_pct.h"
 #include <fernotron/alias/pairings.h>
@@ -183,6 +185,30 @@ int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
         ets_printf("echo: <%s>\n", val);
         break;
       }
+      if (strcmp(key, "test1") == 0) {
+        io_mqttApp_test1();
+        break;
+      }
+
+      if (strcmp(key, "hs-hass-send-config") == 0) {
+        if (*val)
+          io_mqttApp_HassConfig(fer_usedMemberMask, false, val);
+        else
+          io_mqttApp_HassConfig(fer_usedMemberMask);
+        break;
+      }
+
+      if (strcmp(key, "hs-hass-remove-config") == 0) {
+        if (*val)
+          io_mqttApp_HassConfig(fer_usedMemberMask, true, val);
+        else
+          io_mqttApp_HassConfig(fer_usedMemberMask, true);
+        break;
+      }
+
+
+
+
 #ifdef CONFIG_APP_USE_GPIO_PINS
     if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);

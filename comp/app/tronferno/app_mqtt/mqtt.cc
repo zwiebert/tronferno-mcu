@@ -20,6 +20,7 @@
 #include <fernotron_uout/fer_uo_publish.h>
 #include <fernotron/fer_main.h>
 #include <fernotron/pos/commands.h>
+#include <fernotron/pos/shutter_prefs.h>
 
 #include <stdlib.h>
 #include <charconv>
@@ -301,8 +302,69 @@ void AppNetMqtt::received_cmdl(const char *topic, int topic_len, const char *dat
   }
 }
 
+void io_mqttApp_test1() {
+  const char *topic = "homeassistant/cover/shutter25/config";
+  const char *data = "{"
+      "\"uniq_id\":\"tronferno25ad\","
+      "\"name\":\"AD 25 Erker\","
+      "\"cmd_t\":\"tfmcu23/25/cmd\",\"pos_t\":\"tfmcu23/25/pct_out\",\"set_pos_t\":\"tfmcu23/25/pct\","
+      "\"qos\":1,"
+      "\"pl_open\":\"up\",\"pl_close\":\"down\",\"pl_stop\":\"stop\""
+      "}";
+  MyMqtt.publish(topic, data);
+}
+
+#define UNIQUE_ID "tronferno%s"
+
+bool io_mqttApp_HassConfig(const class Fer_GmSet &gmSet, bool remove, const char *hass_root_topic) {
 
 
+  for (auto it = gmSet.begin(1); it; ++it) {
+    uint8_t g = it.getG();
+    uint8_t m = it.getM();
+    const char gm[] = { char('0' + g), char('0' + m), '\0' };
 
+    char name[32] = "";
+    fer_shPref_strByM_load(name, sizeof name, "NAME", g, m);
+
+
+    const char topic_fmt[] = "%s/cover/" UNIQUE_ID "/config";
+    const size_t topic_size = (sizeof topic_fmt) + strlen(hass_root_topic) + strlen(gm);
+    char topic[topic_size];
+    if (topic_size <= snprintf(topic, topic_size, topic_fmt, hass_root_topic, gm))
+      return false;
+
+    if (remove) {
+      MyMqtt.publish(topic, "", true);
+    } else {
+      const char data_fmt[] = "{"
+          "\"uniq_id\":\"" UNIQUE_ID "\"," // 1
+          "\"name\":\"Rollo %s %s\","// 2
+          "\"~\": \"%s%s\","// 3
+          //////////////////////////////////////////
+          "\"cmd_t\":\"~/cmd\","//
+          "\"pos_t\":\"~/pct_out\","//
+          "\"set_pos_t\":\"~/pct\","//
+          "\"qos\":1,"//
+          "\"dev_cla\":\"shutter\","//
+          "\"pl_open\":\"up\","//
+          "\"pl_cls\":\"down\","//
+          "\"pl_stop\":\"stop\""//
+          "}";
+      const size_t data_size = (sizeof data_fmt) + strlen(gm)*3 + strlen(name) + strlen(TOPIC_ROOT);
+      char data[data_size];
+      if (data_size <= snprintf(data, data_size, data_fmt //
+          , gm // 1
+          , gm, name // 2
+          , TOPIC_ROOT, gm // 3
+          )) {
+        return false;
+      }
+      MyMqtt.publish(topic, data, true);
+    }
+  }
+
+  return true;
+}
 
 

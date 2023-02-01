@@ -219,7 +219,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
       home_assistant: {
         header: "Home Assistant Configuration",
         tt: {
-          header: "Generates a configuration for Home Assistant for copy-and-paste",
+          header: "1) Configures Home Assistant via MQTT discover or 2) Generates a configuration for Home Assistant for copy-and-paste",
         },
       },
       fhem: {
