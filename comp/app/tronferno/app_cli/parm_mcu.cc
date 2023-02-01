@@ -178,6 +178,11 @@ int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
 #endif
 
     default:
+      // Echo parameter to test quoting in command lines
+      if (strcmp(key, "echo") == 0) {
+        ets_printf("echo: <%s>\n", val);
+        break;
+      }
 #ifdef CONFIG_APP_USE_GPIO_PINS
     if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
