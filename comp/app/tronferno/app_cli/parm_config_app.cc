@@ -12,6 +12,7 @@
 #include "app_mqtt/mqtt.h"
 #endif
 
+#include <fernotron/fer_main.h>
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/cuas/cuid_auto_set.h"
 #include "fernotron_trx/astro.h"
@@ -243,6 +244,14 @@ break;
 }
 
 void parmConfig_reconfig_app(uint64_t changed_mask) {
+
+  if (GET_BIT64(changed_mask, CB_USED_MEMBERS)) {
+    mainLoop_callFun([]() {
+      const uint32_t usedMembers = config_read_item(CB_USED_MEMBERS, (unsigned long) CONFIG_APP_FER_GM_USE);
+      fer_usedMemberMask.fromNibbleCounters(usedMembers);
+    });
+  }
+
   if (changed_mask & CBM_geo) {
     mainLoop_callFun(config_setup_astro);
   }
