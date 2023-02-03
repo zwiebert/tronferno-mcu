@@ -20,6 +20,9 @@ menu "zwiebert: Tronferno App Library"
         bool "Activate USE_PAIRINGS"
         default y
 
+    config APP_USE_REPEATER
+        bool "Compile with RF Repeater suppport"
+        default y
 
 endmenu
 
