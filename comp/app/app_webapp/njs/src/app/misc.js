@@ -4,6 +4,7 @@ import { ReloadProgress } from "../store/app_state.js";
 //import { set } from "svelte/store";
 import { GuiAcc } from "../store/app_state";
 import * as httpFetch from "../app/fetch.js";
+import { sdkconfig } from "config/sdkconfig.js"
 
 export const NODE_ENV_DEV = true;
 export const PROD = false;
@@ -68,6 +69,7 @@ export function set_gui_access_level(al) {
     debug: al < expert,
     ota: al < user,
     hsc: al < user,
+    rf_repeater: sdkconfig.APP_USE_REPEATER,
   });
 }
 

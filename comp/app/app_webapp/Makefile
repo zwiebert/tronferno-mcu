@@ -12,7 +12,24 @@ else
 endif
 
 JS_SRC_DIR := $(THIS_ROOT)/njs/src
+NJS_DIR :=$(THIS_ROOT)/njs
 
+
+SDKCONFIG_JSON = $(BUILD_DIR)/../config/sdkconfig.json
+
+
+
+ifneq ("$(wildcard $(SDKCONFIG_JSON))","")
+export SDKCONFIG_JS_DIR = $(BUILD_DIR)
+SDKCONFIG_JS = $(SDKCONFIG_JS_DIR)/sdkconfig.js
+
+$(SDKCONFIG_JS): FORCE
+	(echo "export const sdkconfig = "; cat $(SDKCONFIG_JSON); echo ";") > $(SDKCONFIG_JS)
+
+else
+SDKCONFIG_JS_DIR = 
+SDKCONFIG_JS = 
+endif
 
 
 SRC_DIRS      := $(addprefix $(THIS_ROOT)/njs/,. src src/store src/net src/styles)
@@ -25,11 +42,11 @@ SRC_ALL       += $(SRC_CSS)
 SRC_SCSS      :=$(shell find njs/src -name '*.scss')
 SRC_ALL       += $(SRC_SCSS)
 
-BUILDERS      := ./Makefile ./CMakeLists.txt $(wildcard ./njs/*.js)
+BUILDERS      := ./Makefile ./CMakeLists.txt $(wildcard ./njs/*.js) $(wildcard ./njs/*.mjs)
 
-autobuild_src := $(SRC_ALL) njs/node_modules
+autobuild_src := $(SRC_ALL) $(NJS_DIR)/node_modules
 autobuild_out := $(addprefix $(JS_BLD_DIR_DEV)/wapp,.js .css .js.map) #.css.map
-build_src     :=  $(SRC_ALL) njs/node_modules 
+build_src     := $(SRC_ALL) $(NJS_DIR)/node_modules 
 build_out     := $(addprefix $(JS_BLD_DIR)/wapp,.js .css .js.map) #.css.map
 
 
@@ -61,8 +78,8 @@ bundle_c: $(bundle_c)
 build_out:
 	make $(build_out)
 
-$(build_out): $(build_src) $(SRC_ALL) $(BUILDERS)
-	cd njs && env BUILD_DIR=$(JS_BLD_DIR) NODE_ENV=production npm run build
+$(build_out): $(build_src) $(SRC_ALL) $(BUILDERS) $(SDKCONFIG_JS)
+	cd njs && BUILD_DIR=$(JS_BLD_DIR) NODE_ENV=production npm run build
 
 xxx:
 	make $(JS_BLD_DIR)/wapp.js
@@ -71,8 +88,8 @@ yyy:
 	make $(BUILD_DIR)/wapp.js
 
 	
-$(autobuild_out): $(autobuild_src) $(BUILDERS)
-	cd njs && env BUILD_DIR=$(JS_BLD_DIR_DEV) NODE_ENV=development npm run autobuild
+$(autobuild_out): $(autobuild_src) $(BUILDERS) $(SDKCONFIG_JS)
+	cd njs && BUILD_DIR=$(JS_BLD_DIR_DEV) NODE_ENV=development npm run autobuild
 
 
 $(BUILD_DIR)/wapp.html: ./wapp.html
@@ -108,8 +125,9 @@ $(bundle_out): $(BUILD_DIR) $(bundle_files)
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR) $(JS_BLD_DIR) $(JS_BLD_DIR_DEV)
 
-njs/node_modules:
-	test -d njs/node_modules || cd njs && npm install
+
+$(NJS_DIR)/node_modules:
+	test -d $(NJS_DIR)/node_modules || cd $(NJS_DIR) && npm install
 
 .PHONY: clean
 clean:

@@ -128,10 +128,12 @@ int8_t config_read_rfss_gpio() {
   return config_read_item((CB_RFSS_GPIO), -1);
 }
 
+#ifdef CONFIG_APP_USE_REPEATER
 const char* config_read_rf_repeater(char *d, unsigned d_size) {
   const char *s =  config_read_item(CB_RF_REPEATER, d, d_size, "");
   return s;
 }
+#endif
 
 #if 1
 void config_setup_global() {

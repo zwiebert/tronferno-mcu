@@ -45,7 +45,9 @@ public:
     initField(CB_RFMOSI_GPIO, "C_SETRFMOSI", otok::k_rf_mosi_pin, CBT_i8, soCfg_GPIO_RFMOSI, STF_direct);
     initField(CB_RFSS_GPIO, "C_SETRFSS", otok::k_rf_ss_pin, CBT_i8, soCfg_GPIO_RFSS, STF_direct);
     initField(CB_CC1101_CONFIG, "C_CC1101_CFG", otok::k_cc1101_config, CBT_str, soCfg_CC1101_CONFIG, STF_direct);
+#ifdef CONFIG_APP_USE_REPEATER
     initField(CB_RF_REPEATER, "C_RF_REP", otok::k_rf_repeater, CBT_str, soCfg_RF_REPEATER);
+#endif
   }
 
 };

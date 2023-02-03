@@ -35,7 +35,9 @@ CB_TIZO,
   CB_RFOUT_GPIO, CB_RFIN_GPIO, CB_SETBUTTON_GPIO,
   CB_RFMISO_GPIO, CB_RFMOSI_GPIO, CB_RFSCK_GPIO, CB_RFSS_GPIO,
   CB_CC1101_CONFIG,
+#ifdef CONFIG_APP_USE_REPEATER
   CB_RF_REPEATER,
+#endif
 //-----------
   CBA_size
 };
@@ -46,7 +48,9 @@ extern const SettingsBase<configAppItem> &app_sett;
 constexpr uint32_t CBM_gpio = BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO) | BIT(CB_SETBUTTON_GPIO) | BIT(CB_GPIO) | BIT(CB_RF_TRX);
 constexpr uint32_t CBM_geo = BIT(CB_LONGITUDE) | BIT(CB_LATITUDE) | BIT(CB_TZ) | BIT(CB_ASTRO_CORRECTION);
 constexpr u64 CBM_cc1101 = BIT64(CB_CC1101_CONFIG) | BIT64(CB_RF_TRX) | BIT64(CB_RFSCK_GPIO) | BIT64(CB_RFMISO_GPIO) | BIT64(CB_RFMOSI_GPIO) | BIT64(CB_RFSS_GPIO) | BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO);
+#ifdef CONFIG_APP_USE_REPEATER
 constexpr u64 CBM_rf_repeater = BIT64(CB_RF_REPEATER);
+#endif
 
 
 bool config_item_modified(enum configAppItem item);

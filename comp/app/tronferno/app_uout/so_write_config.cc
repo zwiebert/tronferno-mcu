@@ -106,10 +106,12 @@ void soCfg_RF_TRX(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_RF_TRX), cfg_args_rfTrx[config_read_rf_trx()]);
 }
 
+#ifdef CONFIG_APP_USE_REPEATER
 void soCfg_RF_REPEATER(const class UoutWriter &td) {
   char buf[80];
   td.so().print(settings_get_optKeyStr(CB_RF_REPEATER), config_read_rf_repeater(buf, sizeof buf));
 }
+#endif
 
 void soCfg_GPIO_RFSCK(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_RFSCK_GPIO), config_read_rfsck_gpio());

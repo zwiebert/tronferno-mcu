@@ -8,13 +8,21 @@ import svelte from "rollup-plugin-svelte";
 import sveltePreprocess from "svelte-preprocess";
 import { terser } from "@wwa/rollup-plugin-terser";
 import css from "rollup-plugin-css-only";
-
+import alias from "@rollup/plugin-alias";
 
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDistro = process.env.DISTRO === "1";
 const build_directory = process.env.BUILD_DIR || "/tmp/tronferno-mcu/njs/build";
+const sdkconfig_js_dir = process.env.SDKCONFIG_JS_DIR || "./src/config";
 
 console.log("isProduction:", isProduction, "isDistro:", isDistro);
+
+const aliases = alias({
+  resolve: [".svelte", ".js"], //optional, by default this will just look for .js files or folders
+  entries: [
+    { find: "config", replacement: sdkconfig_js_dir },
+  ],
+});
 
 export default {
   onwarn(warning, rollupWarn) {
@@ -78,6 +86,7 @@ export default {
         isProduction ? "production" : "development"
       ),
     }),
+    aliases,
     json(),
     ...(isProduction
       ? [
@@ -92,7 +101,7 @@ export default {
     svelte({
       preprocess: sveltePreprocess({
         postcss: true,
-        replace: [          
+        replace: [        
           ["misc.NODE_ENV_DEV", isProduction ? "false" : "true"],
           ["misc.PROD", isProduction ? "true" : "false"],
           ["misc.DISTRO", isDistro ? "true" : "false"],

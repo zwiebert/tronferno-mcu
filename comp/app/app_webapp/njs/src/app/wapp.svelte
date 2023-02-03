@@ -104,7 +104,7 @@
           nav_tabs={[
             ...($GuiAcc.edit_transmitter_names ? [{ name: $_("navTab.cfg.transmitter.names.tab"), idx: 0 }] : []),
             { name: $_("navTab.cfg.transmitter.register.tab"), idx: 1 },
-            { name: $_("navTab.cfg.transmitter.repeater.tab"), idx: 2 },
+            ...($GuiAcc.rf_repeater ? [{ name: $_("navTab.cfg.transmitter.repeater.tab"), idx: 2 }] : []),
             // { name: $_("navTab.cfg.transmitter.transmit"), idx: 2 },
           ]}
           name="sender"

@@ -131,6 +131,7 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, const cla
   }
     break;
 
+#ifdef CONFIG_APP_USE_REPEATER
   case otok::k_rf_repeater: {
     NODEFAULT();
 
@@ -179,6 +180,7 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, const cla
     }
   }
     break;
+#endif
 
 #ifdef CONFIG_APP_USE_GPIO_PINS
 case otok::k_gpio:
@@ -259,8 +261,9 @@ void parmConfig_reconfig_app(uint64_t changed_mask) {
     mainLoop_callFun(config_setup_gpio);
     mainLoop_callFun(config_setup_cc1101);
   }
-
+#ifdef CONFIG_APP_USE_REPEATER
   if (changed_mask & CBM_rf_repeater) {
     mainLoop_callFun (config_setup_repeater);
   }
+#endif
 }

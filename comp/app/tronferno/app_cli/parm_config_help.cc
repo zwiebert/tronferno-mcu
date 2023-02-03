@@ -62,6 +62,8 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
     "rf-mosi-pin=N        CC1101 SPI MOSI GPIO pin\n"
     "rf-miso-pin=N        CC1101 SPI MISO GPI pin\n"
     "rf-trx=(none|rx-tx|rx-itx|cc1101)   Which RF hardware is connected\n"
+#ifdef CONFIG_APP_USE_REPEATER
     "rf-repeater=(+ID|-ID|IDs|) Add or Remove IDs (6digit Hex) for RF-repeater\n"
+#endif
 //  "set-expert-password=\n"
 ;
