@@ -12,6 +12,9 @@
 #include <config_kvs/settings_template.hh>
 #include <assert.h>
 
+
+
+
 enum configAppItem : int8_t {
   CBA_NONE = -1,
   CBA_start = CB_size - 1, //
@@ -37,36 +40,31 @@ CB_TIZO,
   CBA_size
 };
 
+extern const SettingsBase<configAppItem> &app_sett;
+
+
 constexpr uint32_t CBM_gpio = BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO) | BIT(CB_SETBUTTON_GPIO) | BIT(CB_GPIO) | BIT(CB_RF_TRX);
 constexpr uint32_t CBM_geo = BIT(CB_LONGITUDE) | BIT(CB_LATITUDE) | BIT(CB_TZ) | BIT(CB_ASTRO_CORRECTION);
 constexpr u64 CBM_cc1101 = BIT64(CB_CC1101_CONFIG) | BIT64(CB_RF_TRX) | BIT64(CB_RFSCK_GPIO) | BIT64(CB_RFMISO_GPIO) | BIT64(CB_RFMOSI_GPIO) | BIT64(CB_RFSS_GPIO) | BIT(CB_RFIN_GPIO) | BIT(CB_RFOUT_GPIO);
 constexpr u64 CBM_rf_repeater = BIT64(CB_RF_REPEATER);
 
-extern SettingsBase<configAppItem> &app_settings;
 
-constexpr const char* settings_get_kvsKey(configAppItem item) {
-  return app_settings.get_kvsKey(item);
-}
-constexpr KvsType settings_get_kvsType(configAppItem item) {
-  return app_settings.get_kvsType(item);
-}
-constexpr otok settings_get_optKey(configAppItem item) {
-  return app_settings.get_optKey(item);
-}
-constexpr const char* settings_get_optKeyStr(configAppItem item) {
-  return app_settings.get_optKeyStr(item);
-}
-constexpr SettingsBase<configAppItem>::soCfgFunT settings_get_soCfgFun(configAppItem item) {
-  return app_settings.get_soCfgFun(item);
-}
-constexpr SettingsBase<configAppItem>::soCfgFunT settings_get_soCfgFun(otok opt_key) {
-  if (auto res = app_settings.get_soCfgFun(opt_key))
-    return res;
-  return comp_settings.get_soCfgFun(opt_key);
-}
-constexpr StoreFun settings_get_storeFunOk(otok opt_key) {
-  if (auto res = app_settings.get_storeFun(opt_key))
-    return res;
-  return comp_settings.get_storeFun(opt_key);
-}
 bool config_item_modified(enum configAppItem item);
+
+/// overloaded function for template usage
+constexpr auto settings_get_kvsKey(configAppItem item) {
+  return app_sett.get_kvsKey(item);
+}
+/// overloaded function for template usage
+constexpr auto settings_get_kvsType(configAppItem item) {
+  return app_sett.get_kvsType(item);
+}
+/// overloaded function for template usage
+constexpr auto settings_get_optKey(configAppItem item) {
+  return app_sett.get_optKey(item);
+}
+/// overloaded function for template usage
+constexpr auto settings_get_optKeyStr(configAppItem item) {
+  return app_sett.get_optKeyStr(item);
+}
+

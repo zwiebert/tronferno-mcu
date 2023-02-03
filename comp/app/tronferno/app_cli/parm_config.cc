@@ -8,6 +8,7 @@
 #include <utils_misc/cstring_utils.h>
 #include <app_uout/status_output.h>
 #include <app_misc/opt_map.hh>
+#include "app_settings/all_settings.hh"
 
 int process_parmConfig(clpar p[], int len, const class UoutWriter &td) {
   // static RecMutex settings_mutex;
@@ -47,8 +48,9 @@ int process_parmConfig(clpar p[], int len, const class UoutWriter &td) {
             if (process_parmConfig_get_comp(kt, val, td))
               continue;
           } else {
-            if (SettData settData = get_settingsData(kt, changed_mask); settData.storeFun != STF_none) {
-              if (int res = process_parmConfig_assign(settData.kvsType, settData.kvsKey, settData.storeFun, val)) {
+            if (auto sd = all_settings.get_SettingsData(kt); sd && sd->store_fun != STF_none) {
+              SET_BIT64(changed_mask, sd->id_bit);
+              if (int res = process_parmConfig_assign(sd->kvs_type, sd->kvs_key, sd->store_fun, val)) {
                 if (res < 0)
                   ++errors;
                 continue;

@@ -50,6 +50,6 @@ public:
 
 };
 
-static AppSettings app_settings_obj;
-SettingsBase<configAppItem> &app_settings = app_settings_obj;
+static constexpr AppSettings app_settings_obj;
+const SettingsBase<configAppItem> &app_sett = app_settings_obj;
 

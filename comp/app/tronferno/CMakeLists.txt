@@ -20,7 +20,7 @@ set(srcs
 
     app_misc/esp32/kvstore.cc app_misc/rtc.cc  app_misc/opt_map_consteval.cc
 
-    app_settings/config.cc app_settings/config_kvs.cc app_settings/config_comps.cc app_settings/app_settings.cc
+    app_settings/config.cc app_settings/config_kvs.cc app_settings/config_comps.cc app_settings/app_settings.cc app_settings/all_settings.cc
 
     app_uout/so_print.cc app_uout/so_write_msg.cc app_uout/so_write_config.cc )
 

@@ -2,7 +2,7 @@
 
 
 #include <app_settings/config.h>
-#include <app_settings/app_settings.hh>
+#include <app_settings/all_settings.hh>
 #include <app_misc/rtc.h>
 #include "cli_internal.hh"
 #include <app_uout/so_config.h>
@@ -57,8 +57,8 @@ bool process_parmConfig_get_comp(otok kt, const char *val, const class UoutWrite
     return true;
 
   default: {
-    if (auto fun = settings_get_soCfgFun(kt)) {
-      fun(td);
+    if (auto sd = all_settings.get_SettingsData(kt); sd && sd->so_cfg_fun) {
+      sd->so_cfg_fun(td);
       return true;
     }
 
@@ -113,18 +113,6 @@ int process_parmConfig_assign(KvsType kvsType, const char *kvsKey, StoreFun stor
     }
   }
   return 0;
-}
-
-SettData get_settingsData(otok kt, u64 &changed_mask) {
-  SettData settData { };
-  if (auto item = comp_settings.get_item(kt); item != CBC_NONE) {
-    settData = settings_getData(comp_settings, item);
-    SET_BIT64(changed_mask, item);
-  } else if (auto appItem = app_settings.get_item(kt); appItem != CBA_NONE) {
-    settData = settings_getData(app_settings, appItem);
-    SET_BIT64(changed_mask, appItem);
-  }
-  return settData;
 }
 
 bool process_parmConfig_comp(otok kt, const char *key, const char *val, const class UoutWriter &td, int &errors, u64 &changed_mask) {
