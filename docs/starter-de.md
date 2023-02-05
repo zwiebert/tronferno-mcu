@@ -23,6 +23,10 @@ Die [Hardware](hardware-de.md) besteht aus nur einem ESP32-Board und einem oder 
     * Beim Start versucht der Microcontroller eine Netzwerkverbindung aufzubauen. Schlägt dies fehl wird stattdessen ein [WLAN Accesspoint](network-de.md) gestartet.
     * Du kannst einen Laptop oder Smartphone mit diesem WLAN verbinden und dann die Weboberfläche über [http://192.168.4.1](http://192.168.4.1) erreichen.
         * Über diese Weboberfläche dann das gewünschte [Netzwerk einrichten](network-de.md) und dann neu starten.
+        * Achtung: PCs funktionieren problemlos, aber auf manchem Android-10 oder neuer (Xiaomi)-Smartphones kann es Probleme geben den Webserver des ESP32 zu erreichen:
+           * Mobile Datenverbindung des Smartphones deaktivieren
+           * In den WLAN-Einstellungen von "tronferno" von DHCP auf statische IP-Adresse (192.168.4.x) umstellen
+               * Chrome funktioniert nun. Firefox nicht. 
 * USB:
    * [Kommandozeilenoptionen benutzen](mcu_config_cli-de.md)
    * [Netzwerk einrichten](network-de.md)
