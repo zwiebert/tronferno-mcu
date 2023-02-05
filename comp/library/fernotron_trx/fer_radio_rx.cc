@@ -298,6 +298,12 @@ static void IRAM_ATTR fer_rx_sampleInput(bool pin_level) {
 
 void IRAM_ATTR fer_rx_tick(bool pin_level) {
 
+   // prevent receiving our own transmitter
+   // which would lead to ping pong in repeater function
+  extern volatile bool fer_tx_messageToSend_isReady;
+  if (fer_tx_messageToSend_isReady)
+   return;
+
   fer_rx_sampleInput(pin_level);
 
   if ((input_level && nTicks > veryLongPauseLow_Len)) {
