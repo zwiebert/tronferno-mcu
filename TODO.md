@@ -1,6 +1,7 @@
 TODO
 ====
 
+* TODO: Configure tcp terminal/telnet and maybe allow user settings
 * TODO: Write received auto data from 2411 (via RF) to storage in MCU
 * TODO: Terminate SET progress bar in web-app when an RF command (e.g. STOP) is received
 * FIXME: astro predictions lags one day behind sometimes (e.g. april-5)

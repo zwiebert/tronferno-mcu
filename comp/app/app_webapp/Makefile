@@ -25,6 +25,7 @@ SDKCONFIG_JS = $(SDKCONFIG_JS_DIR)/sdkconfig.js
 
 $(SDKCONFIG_JS): FORCE
 	(echo "export const sdkconfig = "; cat $(SDKCONFIG_JSON); echo ";") > $(SDKCONFIG_JS)
+	touch -r $(SDKCONFIG_JSON) $(SDKCONFIG_JS)
 
 else
 SDKCONFIG_JS_DIR = 
