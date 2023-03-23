@@ -24,6 +24,7 @@ void soCfg_GPIO_RFIN(const UoutWriter &td);
 void soCfg_GPIO_SETBUTTON(const UoutWriter &td);
 void soCfg_RF_TRX(const class UoutWriter &td);
 void soCfg_RF_REPEATER(const class UoutWriter &td);
+void soCfg_RTC_AUTO_UPD(const class UoutWriter &td);
 void soCfg_GPIO_RFSCK(const UoutWriter &td);
 void soCfg_GPIO_RFMOSI(const UoutWriter &td);
 void soCfg_GPIO_RFMISO(const UoutWriter &td);

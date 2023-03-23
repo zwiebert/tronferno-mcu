@@ -447,6 +447,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
     cu: "Central-Unit-ID",
     "astro-correction": "Astro Correction",
     rtc: "Date/Time",
+    "rtc-auto-upd-enable": "RTC auto updates",
     tz: "Timezone (POSIX)",
     "Van-phy": "PHY-Chip",
     "lan-pwr-gpio": "Power-ON/OFF GPIO",

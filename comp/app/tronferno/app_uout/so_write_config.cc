@@ -113,6 +113,12 @@ void soCfg_RF_REPEATER(const class UoutWriter &td) {
 }
 #endif
 
+#ifdef CONFIG_APP_USE_RTC_AUTO_UPD
+void soCfg_RTC_AUTO_UPD(const class UoutWriter &td) {
+  td.so().print(settings_get_optKeyStr(CB_RTC_AUTO_UPD), config_read_rtc_auto_upd());
+}
+#endif
+
 void soCfg_GPIO_RFSCK(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_RFSCK_GPIO), config_read_rfsck_gpio());
 }
@@ -254,6 +260,9 @@ void soCfg_all_misc(const class UoutWriter &td) {
   soCfg_RF_TRX(td);
 #if 0 // disabled, becuase reading resgisters via SPI is not reentrant. It did crash when accessing config from FHEM and fetch registers periodically from Web-Browser.
   soCfg_CC1101_CONFIG(td);
+#endif
+#ifdef CONFIG_APP_USE_RTC_AUTO_UPD
+  soCfg_RTC_AUTO_UPD(td);
 #endif
 }
 

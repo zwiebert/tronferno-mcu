@@ -38,6 +38,9 @@ CB_TIZO,
 #ifdef CONFIG_APP_USE_REPEATER
   CB_RF_REPEATER,
 #endif
+#ifdef CONFIG_APP_USE_RTC_AUTO_UPD
+  CB_RTC_AUTO_UPD,
+#endif
 //-----------
   CBA_size
 };

@@ -85,6 +85,7 @@ int8_t config_read_rfmosi_gpio();
 int8_t config_read_rfmiso_gpio();
 int8_t config_read_rfss_gpio();
 const char* config_read_rf_repeater(char *d, unsigned d_size);
+int8_t config_read_rtc_auto_upd();
 
 void config_setup_global();
 uint32_t config_read_used_members();

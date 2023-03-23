@@ -48,6 +48,9 @@ public:
 #ifdef CONFIG_APP_USE_REPEATER
     initField(CB_RF_REPEATER, "C_RF_REP", otok::k_rf_repeater, CBT_str, soCfg_RF_REPEATER);
 #endif
+#ifdef CONFIG_APP_USE_RTC_AUTO_UPD
+  initField(CB_RTC_AUTO_UPD, "C_RTC_AUPD", otok::k_rtc_aupd, CBT_i8, soCfg_RTC_AUTO_UPD, STF_direct);
+#endif
   }
 
 };

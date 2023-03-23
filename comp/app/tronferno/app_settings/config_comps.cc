@@ -135,6 +135,12 @@ const char* config_read_rf_repeater(char *d, unsigned d_size) {
 }
 #endif
 
+#ifdef CONFIG_APP_USE_RTC_AUTO_UPD
+int8_t config_read_rtc_auto_upd() {
+  return config_read_item((CB_RTC_AUTO_UPD), 1);
+}
+#endif
+
 #if 1
 void config_setup_global() {
   kvshT h;

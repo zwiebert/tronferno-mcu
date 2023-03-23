@@ -5,8 +5,11 @@
 const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
     "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID\n"
     "rtc=(ISO_TIME|?)   set local time if NTP not working\n"
+#ifdef CONFIG_APP_USE_RTC_AUTO_UPD
+    "rtc-auto-upd-enable=(0|1|?)   enable automatic updating reveiver's RTC (when DST changes)\n"
+#endif
 #ifndef MCU_ESP32
-                                   "baud=(N|?)         serial baud rate\n"
+    "baud=(N|?)         serial baud rate\n"
 #endif
 #ifdef CONFIG_APP_USE_WLAN
     "wlan-ssid=(SSID|?)\n"

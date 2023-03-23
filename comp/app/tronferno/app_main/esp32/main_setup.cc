@@ -9,6 +9,7 @@
 #endif
 #include "utils_misc/int_types.h"
 #include "app_misc/timer.h"
+#include "app_misc/rtc.h"
 #include "app_settings/config.h"
 #include "app_settings/app_settings.hh"
 #include "fernotron/auto/fau_next_event.hh"
@@ -52,6 +53,7 @@ void ntpApp_setup(void) {
     ets_printf("ntp synced: %llu\n", (long unsigned long) time(NULL));
     mainLoop_callFun([]() {
       next_event_te.fer_am_updateTimerEvent(time(NULL));
+      dst_init();
     });
   });
   config_setup_ntpClient();

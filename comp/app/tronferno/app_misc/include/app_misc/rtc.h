@@ -45,6 +45,17 @@ void rtc_setup(void);
 
 
 
+/**
+ * \brief           store current state of tm_isdst
+ * \param  reinit   if false, do nothing on subsequent calls
+ */
+void dst_init(struct tm *tmp = nullptr, bool reinit = false);
+
+/**
+ * \brief check if tm_isdst has changed since last call to dst_init
+ * \return  true if tm_isdst has changed. If true, you should call dst_init(true) to update the internal state
+ */
+bool dst_hasChanged(struct tm *tmp = nullptr);
 
 
 
