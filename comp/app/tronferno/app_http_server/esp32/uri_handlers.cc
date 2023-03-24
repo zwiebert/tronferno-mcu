@@ -18,6 +18,8 @@
 #include <esp_log.h>
 #include <esp_system.h>
 
+#include <fcntl.h>
+
 static const char *TAG="APP";
 
 #ifdef CONFIG_APP_USE_WS
@@ -128,15 +130,56 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 
 
 static esp_err_t respond_file(httpd_req_t *req, const struct file_map *fm) {
+  esp_err_t result = ESP_OK;
+
   if (fm->type)
     httpd_resp_set_type(req, fm->type);
   if (fm->wc.content_encoding)
     httpd_resp_set_hdr(req, "content-encoding", fm->wc.content_encoding);
-  if (fm->wc.content_length)
-    httpd_resp_send(req, fm->wc.content, fm->wc.content_length);
-  else
-    httpd_resp_sendstr(req, fm->wc.content);
-  return ESP_OK;
+
+  if (fm->wc.content_length == ~0U) {
+    // send an vfs-file
+    const char *file_name = fm->wc.content;
+    if (int fd = ::open(file_name, O_RDONLY); fd >= 0) {
+      ESP_LOGI("respond_file", "fd=%d", fd);
+      for (int i = 0; result == ESP_OK; ++i) {
+        char buf[256];
+
+        if (const auto bytes_read = ::read(fd, buf, sizeof buf); bytes_read >= 0) {
+          ESP_LOGI("respond_file", "read_data=<%*s>", bytes_read, buf);
+
+          if (bytes_read == sizeof buf) {
+            httpd_resp_send_chunk(req, buf, bytes_read);
+            if (fm->type)
+              result = httpd_resp_set_type(req, fm->type);
+            if (fm->wc.content_encoding)
+              httpd_resp_set_hdr(req, "content-encoding", fm->wc.content_encoding);
+          } else {
+            if (i) {
+              result = httpd_resp_send_chunk(req, buf, bytes_read);
+              httpd_resp_send_chunk(req, buf, 0);
+            } else {
+              result = httpd_resp_send(req, buf, bytes_read);
+            }
+            break;
+          }
+        } else {
+          ESP_LOGE("respond_file", "read error");
+          result = ESP_FAIL;
+          break;
+        }
+      }
+      ::close(fd);
+    } else {
+      ESP_LOGE("respond_file", "cannot open file: <%s>", file_name);
+      result = ESP_ERR_NOT_FOUND;
+    }
+  } else if (fm->wc.content_length) {
+    result = httpd_resp_send(req, fm->wc.content, fm->wc.content_length);
+  } else {
+    result = httpd_resp_sendstr(req, fm->wc.content);
+  }
+  return result;
 }
 
 

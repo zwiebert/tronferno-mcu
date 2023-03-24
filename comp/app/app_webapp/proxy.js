@@ -42,6 +42,10 @@ app.all("/f/cli/*", (req, res) => {
     proxy.web(req, res, { target: mcu });
 });
 
+app.all("/f/backup/*", (req, res) => {
+    proxy.web(req, res, { target: mcu });
+});
+
 app.ws("/ws", (req, res) => {
     proxy.web(req, res, { target: mcu_ws });
 });

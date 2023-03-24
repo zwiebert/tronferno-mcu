@@ -22,7 +22,10 @@ static const struct file_map uri_file_map[] = { //
         { .uri = "/f/cli/help/pair", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmPair } }, //
         { .uri = "/f/cli/help/shpref", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmShpref } }, //
         { .uri = "/f/cli/help/help", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmHelp } }, //
-    };
+
+        { .uri = "/f/backup/settings.json", .type = "application/json", .wc = { .content = "/spiffs/settings.json", .content_length = ~0U } }, //
+
+};
 
 
 

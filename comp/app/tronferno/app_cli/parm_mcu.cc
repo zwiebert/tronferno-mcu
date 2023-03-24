@@ -261,6 +261,14 @@ int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
     }
 #endif
 
+
+    if (strcmp(key, "test-sj") == 0) {
+      void appSett_jsonSave_test();
+      appSett_jsonSave_test();
+      break;
+    }
+
+
       if (strcmp(key, "kvs-pk") == 0) {
         kvs_print_keys(val);
         break;

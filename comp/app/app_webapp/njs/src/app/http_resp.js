@@ -13,7 +13,7 @@ import {
 } from "../store/mcu_firmware.js";
 import { TxNames } from "../store/id.js";
 import * as cuas from "../app/cuas.js";
-import { McuConfig, Gmu, Cc1101Config, Cc1101Status } from "../store/mcu_config.js";
+import { McuConfig, Gmu, Cc1101Config, Cc1101Status, Backup } from "../store/mcu_config.js";
 import { Pcts, Prefs, Aliases, Autos, Names } from "../store/shutters.js";
 import { McuDocs } from "../store/mcu_docs.js";
 import { Gpios } from "../store/gpio.js";
@@ -60,6 +60,10 @@ export function http_handleResponses(obj) {
       return old;
     });
   }
+
+  if ("backup" in obj){
+     Backup.set(obj.backup);
+  } 
 
   if ("config" in obj) {
     let config = obj.config;

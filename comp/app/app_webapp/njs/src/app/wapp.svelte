@@ -20,6 +20,7 @@
   import PaneDeveloper from "../panes/developer.svelte";
   import PaneUserLevel from "../panes/user_level.svelte";
   import PaneUserHelp from "../panes/user_help.svelte";
+  import PaneBackup from "../panes/backup.svelte";
   import PaneHelpDoc from "../panes/help_doc.svelte";
   import PaneFirmwareEsp32 from "../panes/firmware_esp32.svelte";
   import PaneHSConfigHomeAssistant from "../panes/hsconfig_home_assistant.svelte";
@@ -147,7 +148,8 @@
       [
         ...($GuiAcc.ota ? [{ name: $_("navTab.help.ota.tab"), idx: 0 },] : []),
         ...($GuiAcc.hsc ? [{ name: $_("navTab.help.hsc.tab"), idx: 1 },] : []),
-        { name: $_("navTab.help.doc.tab"), idx: 2 },
+        ...($GuiAcc.bak ? [{ name: $_("navTab.help.backup.tab"), idx: 2 },] : []),
+        { name: $_("navTab.help.doc.tab"), idx: 3 },
       ]}
        name="user_help" />
     </div>
@@ -171,6 +173,8 @@
         <PaneHSConfigOpenHAB />
       {/if}
     {:else if tabIdxUserHelp === 2}
+      <PaneBackup />
+    {:else if tabIdxUserHelp === 3}
       <PaneHelpDoc />
     {/if}
   {:else if !misc.DISTRO && tabIdxMain === 6}

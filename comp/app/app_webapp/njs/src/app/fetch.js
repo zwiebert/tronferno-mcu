@@ -100,6 +100,27 @@ export function getFile(url) {
   });
 }
 
+
+export function getJson(url) {
+  const fetch_data = {
+    method: "GET",
+    cache: "no-cache",
+    headers: {},
+    referrer: "no-referrer",
+  };
+
+  return fetch(url, fetch_data).then((response) => {
+    if (response.ok) {
+      response.json()
+      .then((json) => httpResp.http_handleResponses(json))
+      .catch((error) => {
+        console.log("error: http_postRequest(): ", error);
+      });
+    }
+  });
+}
+
+
 export function http_postShutterCommand(c = document.getElementById("send-c").value) {
   let tfmcu = { to: "tfmcu" };
 

@@ -47,6 +47,9 @@ export const en = {
       hsc: {
         tab: "\uD83C\uDFE0",
       },
+      backup: {
+        tab: "Backup",
+      },
       doc: {
         tab: "\uD83D\uDCD6",
       }
@@ -112,6 +115,22 @@ export const en = {
       tt: {
         header: "Firmware information and Over the Air firmware update from GitHub zwiebert/tronferno-mcu-bin repository",
       },
+    },
+
+    backup: {
+      header: "Backup/Restore Settings",
+      create: "Create",
+      load: "Load",
+      restore: "Restore",
+      toClipboard: "Copy to Clipboard",
+      tt:{
+        header: `Backup: 1) Click Create button to create a backup file on MCU. 2) Click the settings.json URL to open and save it. 
+Restore: 1) Paste the content of the saved backup file into the text area 2) Click restore button`,
+        create: "Create a backup file settings.json on the MCU. It can be downloaded by the URL next to this button",
+        load: "Fetch the settings.json stored in MCU (!) and show it in the text area",
+        restore: "Overwrite the MCU Settings by the JSON data in the text area",
+        toClipboard: "Copy JSON from text area to clipboard", 
+      } 
     },
 
     help_doc: {
