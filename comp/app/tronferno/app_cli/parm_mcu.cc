@@ -185,6 +185,7 @@ int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
         ets_printf("echo: <%s>\n", val);
         break;
       }
+#ifdef CONFIG_APP_USE_MQTT
       if (strcmp(key, "test1") == 0) {
         io_mqttApp_test1();
         break;
@@ -205,7 +206,7 @@ int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
           io_mqttApp_HassConfig(fer_usedMemberMask, true);
         break;
       }
-
+#endif
 
 
 

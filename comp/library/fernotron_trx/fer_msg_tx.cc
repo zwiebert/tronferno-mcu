@@ -51,6 +51,7 @@ bool fer_send_msg_with_stop(const fer_sbT *fsb, uint16_t delay, uint16_t stopDel
 }
 
 bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, int8_t repeats, uint16_t delay) {
+#ifdef CONFIG_APP_USE_FER_TRANSMITTER
   precond(fsb);
   precond (msgType == MSG_TYPE_PLAIN || msgType == MSG_TYPE_TIMER);
 
@@ -60,9 +61,13 @@ bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, int8_t repeats, uint
 
   fer_send_checkQuedState();
   return true;
+#else
+  return false;
+#endif
 }
 
 bool fer_send_msg_rtc(const fer_sbT *fsb, time_t rtc, int8_t repeats) {
+#ifdef CONFIG_APP_USE_FER_TRANSMITTER
   precond(fsb);
 
   struct sf msg = { .when_to_transmit_ts = (uint32_t)get_now_time_ts(), .fsb = *fsb, .rtc = rtc, .mt = MSG_TYPE_RTC, .repeats = repeats };
@@ -72,6 +77,9 @@ bool fer_send_msg_rtc(const fer_sbT *fsb, time_t rtc, int8_t repeats) {
 
   fer_send_checkQuedState();
   return true;
+#else
+  return false;
+#endif
 }
 
 static bool fer_send_queued_msg(struct sf *msg) {
@@ -166,6 +174,7 @@ static bool wait_tx_when_to_transmit(uint32_t now_ts, uint32_t when_ts) {
 }
 
 void fer_tx_loop() {
+#ifdef CONFIG_APP_USE_FER_TRANSMITTER
   if (!wait_tx_available())
     return;
 
@@ -177,6 +186,7 @@ void fer_tx_loop() {
     fer_send_checkQuedState();
   } else if (msg->when_to_transmit_ts <= now_ts) {
     fer_trx_direction(true);
+
     if (fer_send_queued_msg(msg)) {
       fer_tx_popMsg();
     }
@@ -185,5 +195,6 @@ void fer_tx_loop() {
     fer_trx_direction(false);
     wait_tx_when_to_transmit(now_ts, msg->when_to_transmit_ts);
   }
+#endif
 }
 
