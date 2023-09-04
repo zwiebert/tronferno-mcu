@@ -17,8 +17,8 @@ constexpr const_cstringT pin_state_args = "?01t";
 #endif
 
 #ifdef CONFIG_APP_USE_NETWORK
-using cfg_args_networkT = const char *[4];
-constexpr cfg_args_networkT cfg_args_network = { "none", "wlan", "ap", "lan" };
+using cfg_args_networkT = const char *[5];
+constexpr cfg_args_networkT cfg_args_network = { "none", "wlan", "ap", "lan", "lan-wlan" };
 #endif
 
 #ifdef CONFIG_APP_USE_LAN

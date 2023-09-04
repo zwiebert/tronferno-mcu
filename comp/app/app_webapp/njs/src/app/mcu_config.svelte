@@ -261,8 +261,38 @@
         {/each}
       </table>
 
+      {#if mcuConfigKeysLAN.length > 0 && (mcuConfig.network === "lan" || mcuConfig.network === "lan-wlan" ) }
+      <div class="area">
+        <table class="conf-table top_table rounded-xl overflow-hidden">
+          <caption>{$_("mcuConfig.ethernet")}</caption>
+          {#each mcuConfigKeysLAN as key, i}
+            <tr>
+              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+                ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+              >
+              {#if key.endsWith("-enable")}
+                <td>
+                  <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                </td>
+              {:else if key === "lan-phy"}
+                <td>
+                  <McuConfigLanPhy name={key} bind:value={mcuConfig[key]} />
+                </td>
+              {:else if key === "lan-pwr-gpio"}
+                <td>
+                  <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="36" />
+                </td>
+              {:else}
+                <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+              {/if}
+            </tr>
+          {/each}
+        </table>
+      </div>
+      {/if}
+
       {#if mcuConfig.network !== "none"}
-        {#if mcuConfigKeysWLAN.length > 0 && mcuConfig.network === "wlan"}
+        {#if mcuConfigKeysWLAN.length > 0 && (mcuConfig.network === "wlan"  || mcuConfig.network === "lan-wlan")}
           <div class="area">
             <table class="conf-table top_table rounded-xl overflow-hidden">
               <caption>{$_("mcuConfig.wlan_station")}</caption>
@@ -274,36 +304,6 @@
                   {#if key.endsWith("-enable")}
                     <td>
                       <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-                    </td>
-                  {:else}
-                    <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-                  {/if}
-                </tr>
-              {/each}
-            </table>
-          </div>
-        {/if}
-
-        {#if mcuConfigKeysLAN.length > 0 && mcuConfig.network === "lan"}
-          <div class="area">
-            <table class="conf-table top_table rounded-xl overflow-hidden">
-              <caption>{$_("mcuConfig.ethernet")}</caption>
-              {#each mcuConfigKeysLAN as key, i}
-                <tr>
-                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-                    ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-                  >
-                  {#if key.endsWith("-enable")}
-                    <td>
-                      <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-                    </td>
-                  {:else if key === "lan-phy"}
-                    <td>
-                      <McuConfigLanPhy name={key} bind:value={mcuConfig[key]} />
-                    </td>
-                  {:else if key === "lan-pwr-gpio"}
-                    <td>
-                      <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="36" />
                     </td>
                   {:else}
                     <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>

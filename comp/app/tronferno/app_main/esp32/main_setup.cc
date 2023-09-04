@@ -34,19 +34,44 @@
 #include "fernotron/fer_pct.h"
 #include "main_loop/main_queue.hh"
 
-#ifdef CONFIG_APP_USE_WLAN_AP
-void tmr_checkNetwork_start() {
-  static void *tmr;
 
+
+void tmr_checkNetwork_Sta_start() {
+  static void *tmr;
   mainLoop_stopFun(tmr);
+
+  if (!(tmr = mainLoop_callFunByTimer([]() {
+    if (!ipnet_isConnected())
+      config_setup_wifiStation();
+  }, pdMS_TO_TICKS(1000 * 5)))) {
+    printf("CheckNetworkTimer_Sta start error");
+  }
+}
+
+#ifdef CONFIG_APP_USE_WLAN_AP
+void tmr_checkNetwork_Ap_start() {
+  static void *tmr;
+  mainLoop_stopFun(tmr);
+
   if (!(tmr = mainLoop_callFunByTimer([]() {
     if (!ipnet_isConnected())
       lfa_createWifiAp();
   }, pdMS_TO_TICKS(1000 * CONFIG_NETWORK_CHECK_LOOP_PERIOD_S)))) {
-    printf("CheckNetworkTimer start error");
+    printf("CheckNetworkTimer_Ap start error");
   }
 }
 #endif
+
+void tmr_checkNetwork_start(bool fallback_to_wlan_station, bool fallback_to_wlan_ap) {
+  if (fallback_to_wlan_station)
+    tmr_checkNetwork_Sta_start();
+
+#ifdef CONFIG_APP_USE_WLAN_AP
+  if (fallback_to_wlan_ap)
+    tmr_checkNetwork_Ap_start();
+#endif
+}
+
 
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb([](struct timeval *tv) {
@@ -182,6 +207,7 @@ void mcu_init() {
 #endif
 #ifdef CONFIG_APP_USE_LAN
     case nwLan:
+    case nwLanOrWlanSta:
       config_setup_ethernet();
 #endif
       break;
@@ -200,10 +226,13 @@ void mcu_init() {
 
   config_setup_gpio();
 
-#ifdef CONFIG_APP_USE_AP_FALLBACK
+
   //if (network != nwWlanAp) //XXX this crashes TODO FIXME
-  if (network == nwLan || network == nwWlanSta)
-    tmr_checkNetwork_start();
+  if (network == nwLan || network == nwWlanSta || network == nwLanOrWlanSta)
+#ifdef CONFIG_APP_USE_AP_FALLBACK
+    tmr_checkNetwork_start(network == nwLanOrWlanSta, true);
+#else
+  tmr_checkNetwork_start(network == nwLanOrWlanSta, false);
 #endif
   app_timerISR_setup();
   stor_setup();

@@ -42,7 +42,7 @@ enum rtclock {
 };
 
 enum nwConnection {
-  nwNone, nwWlanSta, nwWlanAp, nwLan, nwLEN,
+  nwNone, nwWlanSta, nwWlanAp, nwLan, nwLanOrWlanSta, nwLEN,
 };
 
 
