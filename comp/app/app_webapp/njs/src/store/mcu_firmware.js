@@ -5,6 +5,18 @@ export const McuBootCount = writable(0);
 export const McuErrorMask = writable(0);
 export const McuGitTagNames = writable([]);
 export const McuFirmwareVersion = writable("");
+export const McuFirmwareVersionNumber = derived(McuFirmwareVersion, (versionString) => {
+   if (!versionString) {
+     return "";
+   }
+   return versionString.substring(14);
+});
+export const McuFirmwareReleaseStatus = derived(McuFirmwareVersionNumber, (versionNumber) => {
+   if (versionNumber.match(/-/g)) { return "none"; }
+   if (versionNumber.match(/\d+\.\d+\.\d+\.\d+/)) { return "beta"; }
+   if (versionNumber.match(/\d+\.\d+\.\d+/)) { return "release"; }
+   return "none";
+});
 export const McuChipId = writable("");
 export const McuFirmwareBuildDate = writable("");
 

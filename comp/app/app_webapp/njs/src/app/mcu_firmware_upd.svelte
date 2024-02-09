@@ -2,11 +2,7 @@
   import { _ } from "../services/i18n";
   import * as httpFetch from "../app/fetch.js";
   import * as misc from "../app/misc.js";
-  import {
-    McuFirmwareUpdProgress,
-    McuFirmwareUpdState,
-    McuFirmwareUpdChip,
-  } from "../store/mcu_firmware";
+  import { McuFirmwareUpdProgress, McuFirmwareUpdState, McuFirmwareUpdChip, McuFirmwareVersionNumber, McuFirmwareReleaseStatus } from "../store/mcu_firmware";
 
   ("use strict");
   import { ReloadProgress } from "../store/app_state.js";
@@ -17,18 +13,13 @@
 
   import { onMount, onDestroy } from "svelte";
 
-  let on_destroy = [];
   onMount(() => {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_GIT_TAGS);
-  });
-  onDestroy(() => {
-    for (const fn of on_destroy) {
-      fn();
-    }
+    httpFetch.http_fetchByMask(httpFetch.FETCH_VERSION | httpFetch.FETCH_GIT_TAGS);
   });
 
   let netota_intervalID = 0;
   let netota_isInProgress = false;
+  let fw_choosen = 0;
 
   function netota_FetchFeedback() {
     let netmcu = { to: "tfmcu" };
@@ -64,6 +55,75 @@
   }
 </script>
 
+<div class="area">
+  <h5 class="text-center">Installed Firmware</h5>
+  <ul>
+    <li>{$_("firmware.version")}: {$McuFirmwareVersionNumber}</li>
+    <li>Release Status: {$McuFirmwareReleaseStatus}</li>
+  </ul>
+</div>
+
+<div class="area" id="id-fwDiv">
+  <h5 class="text-center">Download and Flash New Firmware (OTA)</h5>
+    <dl>
+      {#each fwbtns as bt, i}
+        <dt>
+          <input
+            checked={fw_choosen === i}
+            on:change={() => {
+              fw_choosen = i;
+            }}
+            type="radio"
+            name="amount"
+            value={i}
+            disabled={$McuFirmwareUpdState === 1}
+          />
+          {#if bt.input === "none"}
+            {bt.name} {bt.version}
+          {:else if bt.input === "select"}
+            {bt.name} 
+            <select bind:value={bt.value}>
+              {#each bt.values as name}
+                <option value={name}>{name}</option>
+              {/each}
+            </select>
+          {:else if bt.input === "input"}
+            URL:
+            <input type="text" id={bt.ota_name} bind:value={bt.value} />
+          {/if}
+        </dt>
+      {/each}
+    </dl>
+    <button type="button" disabled={fw_choosen === -1 || $McuFirmwareUpdState === 1} on:click={() => netFirmwareOTA(fwbtns[fw_choosen].get_ota_name())}> Start Update </button>
+
+  {#if $McuFirmwareUpdChip === chip}
+    {#if $McuFirmwareUpdState === 2}
+      <br />
+      <strong> Update failed <br /> <br /> </strong>
+    {:else if $McuFirmwareUpdState === 3}
+      <br />
+      <strong>
+        {$_("app.msg_firmwareUpdSuccess")}
+        <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}>
+          {$_("app.restartMcu")}
+        </button>
+        <br />
+        <br />
+      </strong>
+    {:else if $McuFirmwareUpdState === 1}
+      <strong>{$_("app.msg_firmwareIsUpdating")}</strong>
+      <br />
+      <br />
+      <progress value={$McuFirmwareUpdProgress} max={updSecs * 2} />
+    {/if}
+    {#if $ReloadProgress > 0}
+      <strong>{$_("app.msg_waitForMcuRestart")}</strong>
+      <br />
+      <progress value={$ReloadProgress} max="100" />
+    {/if}
+  {/if}
+</div>
+
 <style lang="scss">
   @import "../styles/app.scss";
   table,
@@ -80,67 +140,3 @@
     border-gap: 0;
   }
 </style>
-
-<div id="id-fwDiv">
-  {#if $McuFirmwareUpdState !== 1}
-    <table class="border-solid border-collapse rounded-xl overflow-hidden">
-      <th>Firmware</th>
-      <th>Action</th>
-      {#each fwbtns as bt}
-        <tr>
-          {#if bt.input === 'none'}
-            <td class="text-center">{bt.name} {bt.version}</td>
-          {:else if bt.input === 'select'}
-            <td>
-              {bt.name}
-              <select bind:value={bt.value}>
-                {#each bt.values as name}
-                  <option value={name}>{name}</option>
-                {/each}
-              </select>
-            </td>
-          {:else if bt.input === 'input'}
-            <td class="text-center">
-              URL:
-              <input type="text" id={bt.ota_name} bind:value={bt.value} />
-            </td>
-          {/if}
-          <td>
-            <button
-              type="button"
-              on:click={() => netFirmwareOTA(bt.get_ota_name())}>
-              Update
-            </button>
-          </td>
-        </tr>
-      {/each}
-    </table>
-  {/if}
-
-  {#if $McuFirmwareUpdChip === chip}
-    {#if $McuFirmwareUpdState === 2}
-      <br />
-      <strong> Update failed <br /> <br /> </strong>
-    {:else if $McuFirmwareUpdState === 3}
-      <br />
-      <strong>
-      {$_('app.msg_firmwareUpdSuccess')}
-        <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}>
-          {$_('app.restartMcu')}
-        </button>
-        <br />
-        <br />
-      </strong>
-    {:else if $McuFirmwareUpdState === 1}
-      <strong>{$_('app.msg_firmwareIsUpdating')}</strong>
-      <br />
-      <br />
-      <progress value={$McuFirmwareUpdProgress} max={updSecs * 2} />
-    {/if}
-    {#if $ReloadProgress > 0}
-      <strong>{$_('app.msg_waitForMcuRestart')}</strong>
-      <br />
-      <progress value={$ReloadProgress} max="100" />
-    {/if}
-  {/if}
-</div>
