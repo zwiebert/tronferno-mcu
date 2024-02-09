@@ -103,6 +103,13 @@ void appSett_jsonSave_test() {
     if (td.sj().add_object("backup")) {
       if (td.sj().add_object("settings")) {
 
+        // config
+        if (td.sj().add_object("config")) {
+          soCfg_all(td, true);
+          td.sj().close_object();
+          td.sj().write_some_json();
+        }
+
         // auto
         if (td.sj().add_array("auto")) {
           for (auto it = gm_set.begin(); it; ++it) {

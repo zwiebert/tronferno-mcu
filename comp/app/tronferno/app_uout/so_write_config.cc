@@ -231,11 +231,11 @@ void soCfg_end(const class UoutWriter &td) {
   td.so().x_close();
 }
 
-void soCfg_all_net(const class UoutWriter &td) {
+void soCfg_all_net(const class UoutWriter &td, bool backup) {
   soCfg_NETWORK(td);
 #ifdef CONFIG_APP_USE_WLAN
   soCfg_WLAN_SSID(td);
-  soCfg_WLAN_PASSWORD(td);
+  if (!backup) soCfg_WLAN_PASSWORD(td);
 #endif
 #ifdef CONFIG_APP_USE_NTP
   soCfg_NTP_SERVER(td);
@@ -245,16 +245,16 @@ void soCfg_all_net(const class UoutWriter &td) {
   soCfg_LAN_PWR_GPIO(td);
 #endif
 #ifdef CONFIG_APP_USE_MQTT
-  soCfg_MQTT(td);
+  soCfg_MQTT(td, backup);
 #endif
 #ifdef CONFIG_APP_USE_HTTP
   soCfg_HTTP_ENABLE(td);
   soCfg_HTTP_USER(td);
-  soCfg_HTTP_PASSWORD(td);
+  if (!backup) soCfg_HTTP_PASSWORD(td);
 #endif
 }
 
-void soCfg_all_misc(const class UoutWriter &td) {
+void soCfg_all_misc(const class UoutWriter &td, bool backup) {
   soCfg_BAUD(td);
   soCfg_VERBOSE(td);
   soCfg_RF_TRX(td);
@@ -266,7 +266,7 @@ void soCfg_all_misc(const class UoutWriter &td) {
 #endif
 }
 
-void soCfg_all_gpio(const class UoutWriter &td) {
+void soCfg_all_gpio(const class UoutWriter &td, bool backup) {
   soCfg_GPIO_RFOUT(td);
   soCfg_GPIO_RFIN(td);
   soCfg_GPIO_SETBUTTON(td);
@@ -278,7 +278,7 @@ void soCfg_all_gpio(const class UoutWriter &td) {
   soCfg_GPIO_MODES_AS_STRING(td);
 }
 
-void soCfg_all_fer(const class UoutWriter &td) {
+void soCfg_all_fer(const class UoutWriter &td, bool backup) {
   soCfg_CU(td);
   soCfg_GM_USED(td);
   soCfg_LONGITUDE(td);
@@ -286,8 +286,8 @@ void soCfg_all_fer(const class UoutWriter &td) {
   soCfg_ASTRO_CORRECTION(td);
 }
 
-void soCfg_all_time(const class UoutWriter &td) {
-  soCfg_RTC(td);
+void soCfg_all_time(const class UoutWriter &td, bool backup) {
+  if (!backup) soCfg_RTC(td);
 #ifdef CONFIG_APP_USE_POSIX_TIME
   soCfg_TZ(td);
 #else
@@ -296,7 +296,7 @@ void soCfg_all_time(const class UoutWriter &td) {
 #endif
 }
 
-typedef void (*soCfg_fnT)(const class UoutWriter &td);
+typedef void (*soCfg_fnT)(const class UoutWriter &td, bool backup);
 
 const soCfg_fnT soCfg_fns[] = {
   soCfg_all_time,
@@ -308,16 +308,16 @@ const soCfg_fnT soCfg_fns[] = {
 
 constexpr size_t soCfg_fnsCt = sizeof soCfg_fns / sizeof soCfg_fns[0];
 
-void soCfg_all(const class UoutWriter &td) {
+void soCfg_all(const class UoutWriter &td, bool backup) {
 
   soCfg_BAUD(td);
   soCfg_VERBOSE(td);
 
-  soCfg_all_fer(td);
-  soCfg_all_time(td);
-  soCfg_all_net(td);
+  soCfg_all_fer(td, backup);
+  soCfg_all_time(td, backup);
+  soCfg_all_net(td, backup);
 
-  soCfg_all_gpio(td);
+  soCfg_all_gpio(td, backup);
   soCfg_RF_TRX(td);
 }
 
@@ -327,6 +327,6 @@ void soCfg_all_part(const class UoutWriter &td, int part_num, int part_size) {
 
   for (int i = start_idx; i < end_idx; ++i) {
     if (auto fn = soCfg_fns[i]; fn)
-      fn(td);
+      fn(td, false);
   }
 }

@@ -2,12 +2,12 @@
 
 class UoutWriter;
 
-void soCfg_all(const class UoutWriter &td);
+void soCfg_all(const class UoutWriter &td, bool backup = false);
 void soCfg_all_part(const class UoutWriter &td, int part_num, int part_size);
-void soCfg_all_net(const class UoutWriter &td);
-void soCfg_all_gpio(const class UoutWriter &td);
-void soCfg_all_fer(const class UoutWriter &td);
-void soCfg_all_time(const class UoutWriter &td);
+void soCfg_all_net(const class UoutWriter &td, bool backup = false);
+void soCfg_all_gpio(const class UoutWriter &td, bool backup = false);
+void soCfg_all_fer(const class UoutWriter &td, bool backup = false);
+void soCfg_all_time(const class UoutWriter &td, bool backup = false);
 
 void soCfg_BAUD(const UoutWriter &td);
 void soCfg_RTC(const UoutWriter &td);
@@ -53,7 +53,7 @@ void soCfg_WLAN_PASSWORD(const class UoutWriter &td);
 void soCfg_NTP_SERVER(const class UoutWriter &td);
 #endif
 #ifdef CONFIG_APP_USE_MQTT
-void soCfg_MQTT(const class UoutWriter &td);
+void soCfg_MQTT(const class UoutWriter &td, bool backup = false);
 void soCfg_MQTT_ENABLE(const class UoutWriter &td);
 void soCfg_MQTT_URL(const class UoutWriter &td);
 void soCfg_MQTT_USER(const class UoutWriter &td);

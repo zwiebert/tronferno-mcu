@@ -25,6 +25,14 @@
     return JSON.stringify({ backup: backup }, undefined, 2);
   }
 
+  function post_config(obj) {
+    Object.entries(obj).forEach((el) => {
+      let cmd = { "config" : {} };
+      cmd.config[el[0]] = el[1]; 
+      httpFetch.http_postCommand(cmd);
+    });
+  }
+
   function post_auto(arr) {
     [{ f: "mrsadw" }, ...arr].forEach((el) => {
       el.f += "u";
@@ -84,6 +92,16 @@
 
     <div class="area">
       <h6 class="text-center">Partial restore</h6>
+
+      <button
+      class="text-sm"
+      use:tippy={{ content: $_("panes.backup.tt.restore") }}
+      on:click={() => {
+        const obj = parse_json_to_object(text);
+        post_config(obj.backup.settings.config);
+      }}>.config</button
+    >
+
       <button
         class="text-sm"
         use:tippy={{ content: $_("panes.backup.tt.restore") }}
