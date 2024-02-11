@@ -9,7 +9,6 @@
 
   export let fwbtns = [];
   export let chip = "";
-  export let updSecs = 30;
 
   import { onMount, onDestroy } from "svelte";
 
@@ -65,36 +64,42 @@
 
 <div class="area" id="id-fwDiv">
   <h5 class="text-center">Download and Flash New Firmware (OTA)</h5>
-    <dl>
-      {#each fwbtns as bt, i}
-        <dt>
-          <input
-            checked={fw_choosen === i}
-            on:change={() => {
-              fw_choosen = i;
-            }}
-            type="radio"
-            name="amount"
-            value={i}
-            disabled={$McuFirmwareUpdState === 1}
-          />
-          {#if bt.input === "none"}
-            {bt.name} {bt.version}
-          {:else if bt.input === "select"}
-            {bt.name} 
-            <select bind:value={bt.value}>
-              {#each bt.values as name}
-                <option value={name}>{name}</option>
-              {/each}
-            </select>
-          {:else if bt.input === "input"}
-            URL:
-            <input type="text" id={bt.ota_name} bind:value={bt.value} />
-          {/if}
-        </dt>
-      {/each}
-    </dl>
-    <button type="button" disabled={fw_choosen === -1 || $McuFirmwareUpdState === 1} on:click={() => netFirmwareOTA(fwbtns[fw_choosen].get_ota_name())}> Start Update </button>
+  <dl>
+    {#each fwbtns as bt, i}
+      <dt>
+        <input
+          checked={fw_choosen === i}
+          on:change={() => {
+            fw_choosen = i;
+          }}
+          type="radio"
+          name="amount"
+          value={i}
+          disabled={$McuFirmwareUpdState === 1}
+        />
+        {#if bt.input === "none"}
+          {bt.name} {bt.version}
+        {:else if bt.input === "select"}
+          {bt.name}
+          <select bind:value={bt.version}>
+            {#each bt.values as name}
+              <option value={name}>{name}</option>
+            {/each}
+          </select>
+        {:else if bt.input === "input"}
+          URL:
+          <input type="text" id={bt.ota_name} bind:value={bt.url} />
+        {/if}
+      </dt>
+    {/each}
+  </dl>
+  {#if $McuFirmwareVersionNumber && fwbtns[fw_choosen].version}
+    {$McuFirmwareVersionNumber} => {fwbtns[fw_choosen].version}
+  {/if}
+
+  <button type="button" disabled={fw_choosen < 0 || $McuFirmwareUpdState === 1} on:click={() => netFirmwareOTA(fwbtns[fw_choosen].get_ota_name())}>
+    Start Update
+  </button>
 
   {#if $McuFirmwareUpdChip === chip}
     {#if $McuFirmwareUpdState === 2}
@@ -111,15 +116,12 @@
         <br />
       </strong>
     {:else if $McuFirmwareUpdState === 1}
+      <div class="loader"></div>
+      <br />
       <strong>{$_("app.msg_firmwareIsUpdating")}</strong>
-      <br />
-      <br />
-      <progress value={$McuFirmwareUpdProgress} max={updSecs * 2} />
     {/if}
     {#if $ReloadProgress > 0}
       <strong>{$_("app.msg_waitForMcuRestart")}</strong>
-      <br />
-      <progress value={$ReloadProgress} max="100" />
     {/if}
   {/if}
 </div>
@@ -138,5 +140,36 @@
     margin: 0rem;
     padding: 0rem 0.25rem;
     border-gap: 0;
+  }
+
+  .loader {
+    display: inline-block;
+    vertical-align: baseline;
+    border: 6px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 6px solid #3498db;
+    width: 12px;
+    height: 12px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+  }
+
+  /* Safari */
+  @-webkit-keyframes spin {
+    0% {
+      -webkit-transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+    }
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 </style>

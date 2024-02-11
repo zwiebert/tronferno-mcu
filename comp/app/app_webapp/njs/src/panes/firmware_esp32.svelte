@@ -28,7 +28,7 @@
     name: $_("firmware.version"),
     input: "select",
     get_ota_name: () => {
-      return "tag:" + fw_version.value;
+      return "tag:" + fw_version.version;
     },
   };
 
@@ -43,16 +43,16 @@
 
   $: fw_version_value0 = $McuGitTagNames[0];
   $: {
-    fw_version.value = fw_version_value0;
+    fw_version.version = fw_version_value0;
   }
 
   if (!misc.DISTRO) {
     let fw_url = {
       name: $_("firmware.url"),
       input: "input",
-      value: "http://192.168.1.76:3005/tronferno-mcu.bin",
+      url: "http://192.168.1.76:3005/tronferno-mcu.bin",
       get_ota_name: () => {
-        return fw_url.value;
+        return fw_url.url;
       },
     };
     fwbtns.push(fw_url);
