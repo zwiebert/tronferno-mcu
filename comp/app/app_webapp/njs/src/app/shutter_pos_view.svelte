@@ -1,6 +1,6 @@
 <script>
-  import { Pcts, Names } from "stores/shutters.js";
-  import {G,M0 } from "stores/curr_shutter.js";
+  import { Pcts, Names } from "../store/shutters.js";
+  import {G,M0 } from "../store/curr_shutter.js";
 
   export let g;
   export let m;

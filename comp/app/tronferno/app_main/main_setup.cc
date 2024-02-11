@@ -10,10 +10,12 @@ void main_setup() {
   rtc_setup();
 
   config_setup_astro();
-  TargetDescCon td { SO_TGT_CLI };
+  UoutWriterConsole td { SO_TGT_CLI };
   soMsg_fw_start_msg_print(td);
 
   config_setup_cc1101();
+#ifdef CONFIG_APP_USE_REPEATER
   config_setup_repeater();
+#endif
   fer_main_setup({ config_read_item(CB_CUID, (uint32_t)CONFIG_APP_FER_CENTRAL_UNIT_ID), config_read_item(CB_USED_MEMBERS, (uint32_t)CONFIG_APP_FER_GM_USE)});
 }

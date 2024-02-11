@@ -1,7 +1,7 @@
 <script>
   import { Gpios } from "../store/gpio";
-  import { McuConfig } from "stores/mcu_config.js";
-  import * as httpFetch from "app/fetch.js";
+  import { McuConfig } from "../store/mcu_config.js";
+  import * as httpFetch from "../app/fetch.js";
   export let name;
   export let force = false;
   //export let value;

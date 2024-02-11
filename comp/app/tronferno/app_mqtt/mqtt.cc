@@ -20,6 +20,7 @@
 #include <fernotron_uout/fer_uo_publish.h>
 #include <fernotron/fer_main.h>
 #include <fernotron/pos/commands.h>
+#include <fernotron/pos/shutter_prefs.h>
 
 #include <stdlib.h>
 #include <charconv>
@@ -29,6 +30,7 @@ AppNetMqtt MyMqtt;
 
 #define TOPIC_ROOT io_mqtt_topic_root
 #define TOPIC_PCT_END "/pct"
+#define TOPIC_IPCT_END "/ipct"
 #define TOPIC_CMD_END "/cmd"
 #define TOPIC_CLI_END "/cli"
 #define TOPIC_GPI_MID "gpi/"
@@ -44,46 +46,39 @@ AppNetMqtt MyMqtt;
 #define TOPIC_PCT_OUT_END "pct_out"
 #define TOPIC_GPO_OUT_END "gpo_out"
 
-static void io_mqtt_publish_sub_topic(const char *sub_topic, const char *json) {
-  char topic[64];
-  snprintf(topic, sizeof topic, "%s%s", TOPIC_ROOT, sub_topic);
+#ifdef TEST_HOST
+char *Topic, *Data;
+#endif
 
-  Net_Mqtt::publish(topic, json);
-}
-
-static void io_mqtt_publish_sub_topic_get_json(const TargetDesc &td, const char *sub_topic) {
-  char *json = td.sj().get_json();
-  if (!json || !*json)
-    return;
-  io_mqtt_publish_sub_topic(sub_topic, json);
-}
-
-void io_mqtt_publish_gmp(const so_arg_gmp_t gmp) {
+void AppNetMqtt::publish_gmp(const so_arg_gmp_t gmp) {
   char topic[64], data[16];
 
   snprintf(topic, 64, "%s%u%u/pct_out", TOPIC_ROOT, gmp.g, gmp.m);
   snprintf(data, 16, "%u", gmp.p);
+  publish(topic, data, true);
 
-  Net_Mqtt::publish(topic, data);
+  snprintf(topic, 64, "%s%u%u/ipct_out", TOPIC_ROOT, gmp.g, gmp.m);
+  snprintf(data, 16, "%u", 100 - gmp.p);
+  publish(topic, data, true);
 }
 
-void io_mqttApp_publishPinChange(int gpio_num, bool level) {
+void AppNetMqtt::publishPinChange(int gpio_num, bool level) {
   char topic[64];
   const char *data = level ? "1" : "0";
   snprintf(topic, 64, "%sgpi/%d/level", TOPIC_ROOT, gpio_num);
-  Net_Mqtt::publish(topic, data);
+  publish(topic, data, true);
 }
 
 
 static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
   // No lock required: esp_mqtt_client_publish is thread safe
   if (auto pch = uoCb_pchFromMsg(msg))
-    io_mqttApp_publishPinChange(pch->gpio_num, pch->level);
+    MyMqtt.publishPinChange(pch->gpio_num, pch->level);
   if (auto gmp = uoCb_gmpFromMsg(msg))
-    io_mqtt_publish_gmp(*gmp);
+    MyMqtt.publish_gmp(*gmp);
   if (auto json = uoCb_jsonFromMsg(msg)) {
     if (msg.flags.evt.uo_evt_flag_timerChange)
-      Net_Mqtt::publish("tfmcu/timer_out", json);
+      MyMqtt.publish("tfmcu/timer_out", json, true);
   }
 }
 
@@ -95,6 +90,8 @@ void AppNetMqtt::connected ()  {
   subscribe(topic, 0);
   snprintf(topic, sizeof topic, "%s+/pct", TOPIC_ROOT);
   subscribe(topic, 0);
+  snprintf(topic, sizeof topic, "%s+/ipct", TOPIC_ROOT);
+  subscribe(topic, 0);
   snprintf(topic, sizeof topic, "%s+/cmd", TOPIC_ROOT);
   subscribe(topic, 0);
   snprintf(topic, sizeof topic, "%s%s+%s", TOPIC_ROOT, TOPIC_GPO_MID, TOPIC_GPO_END);
@@ -105,7 +102,7 @@ void AppNetMqtt::connected ()  {
   publish(topic, "connected"); // for autocreate (ok???)
 
   // subscribe to uout-component
-  uo_flagsT flags {};
+  uo_flagsT flags { };
   flags.tgt.mqtt = true;
   flags.evt.pin_change = true;
   flags.evt.uo_evt_flag_pctChange = true;
@@ -113,6 +110,20 @@ void AppNetMqtt::connected ()  {
   flags.fmt.raw = true;
   flags.fmt.json = true;
   uoCb_subscribe(io_mqttApp_uoutPublish_cb, flags);
+
+  // publish shutter positions
+  bool groups[8] = { };
+
+  for (auto it = fer_usedMemberMask.begin(1); it; ++it) {
+    const so_arg_gmp_t gmp = { .g = it.getG(), .m = it.getM(), .p = fer_simPos_getPct_whileMoving(it.getG(), it.getM()) };
+    publish_gmp(gmp);
+    groups[gmp.g] = true;
+  }
+
+  for (uint8_t i = 0; i < 8; ++i)
+    if (groups[i]) {
+      publish_gmp(so_arg_gmp_t { .g = i, .p = fer_simPos_getPct_whileMoving(i, 0) });
+    }
 }
 
 void AppNetMqtt::disconnected ()  {
@@ -120,14 +131,18 @@ void AppNetMqtt::disconnected ()  {
   uoCb_unsubscribe(io_mqttApp_uoutPublish_cb);
 }
 
-typedef void (*proc_cmdline_fun)(char *line, const TargetDesc &td);
+typedef void (*proc_cmdline_fun)(char *line, const UoutWriter &td);
 
-void io_mqttApp_process_cmdline(char *line, const TargetDesc &td) {
-  cli_process_cmdline(line, td);
+void io_mqttApp_process_cmdline(char *cmdline, const UoutWriter &td) {
+  if (cmdline[0] == '{') {
+    cli_process_json(cmdline, td);
+  } else {
+    cli_process_cmdline(cmdline, td);
+  }
 }
 
 void AppNetMqtt::received(const char *topic, int topic_len, const char *data, int data_len)  {
-  io_mqttApp_received(topic, topic_len, data, data_len, io_mqttApp_process_cmdline);
+  received_cmdl(topic, topic_len, data, data_len, io_mqttApp_process_cmdline);
 }
 
 
@@ -177,8 +192,20 @@ static so_arg_agm_t topic_to_Agm(const char *addr, unsigned addr_len) {
     return r;
 }
 
-void io_mqttApp_received(const char *topic, int topic_len, const char *data, int data_len, proc_cmdline_funT proc_cmdline_fun) {
-  TargetDesc td { SO_TGT_MQTT | SO_TGT_FLAG_JSON };
+static void io_mqtt_publish_sub_topic_get_json(const UoutWriter &td, const char *sub_topic) {
+  char *json = td.sj().get_json();
+  if (!json || !*json)
+    return;
+
+  char topic[64];
+  snprintf(topic, sizeof topic, "%s%s", TOPIC_ROOT, sub_topic);
+
+  MyMqtt.publish(topic, json);
+}
+
+
+void AppNetMqtt::received_cmdl(const char *topic, int topic_len, const char *data, int data_len, proc_cmdline_funT proc_cmdline_fun) {
+  UoutWriter td { SO_TGT_MQTT | SO_TGT_FLAG_JSON };
   if (!topic_startsWith(topic, topic_len, TOPIC_ROOT)) {
     return; // all topics start with this
   }
@@ -203,7 +230,7 @@ void io_mqttApp_received(const char *topic, int topic_len, const char *data, int
         mcu_pin_state result;
         if (mcu_access_pin(gpio_number, &result, PIN_READ)) {
           if (result == PIN_CLEAR || result == PIN_SET)
-            io_mqttApp_publishPinChange(gpio_number, result == PIN_SET);
+            publishPinChange(gpio_number, result == PIN_SET);
         }
       } else {
         mcu_pin_state ps = *data == '0' ? PIN_CLEAR : PIN_SET;
@@ -222,7 +249,7 @@ void io_mqttApp_received(const char *topic, int topic_len, const char *data, int
         if (agm.a != fer_config.cu)
           return;
         if (Pct pos = fer_simPos_getPct_whileMoving(agm.g, agm.m)) {
-          io_mqtt_publish_gmp({agm.g, agm.m, pos});
+          publish_gmp({agm.g, agm.m, pos});
         }
       } else {
         int pct = -1;
@@ -230,7 +257,27 @@ void io_mqttApp_received(const char *topic, int topic_len, const char *data, int
            fer_cmd_moveShutterToPct(agm.a, agm.g, agm.m, pct, 2);
         }
       }
+    } else if (topic_endsWith(topic, topic_len, TOPIC_IPCT_END)) {
+      const char *addr = topic + strlen(TOPIC_ROOT);
+      int addr_len = topic_len - (strlen(TOPIC_ROOT) + (sizeof TOPIC_IPCT_END - 1));
 
+      auto agm = topic_to_Agm(addr, addr_len);
+      if (!agm.a)
+        return;
+
+      if (strncmp("?", data, data_len) == 0) {
+        if (agm.a != fer_config.cu)
+          return;
+        if (Pct pos = fer_simPos_getPct_whileMoving(agm.g, agm.m)) {
+          publish_gmp({agm.g, agm.m, pos});
+        }
+      } else {
+        int pct = -1;
+        if (auto res = std::from_chars(data, data + data_len, pct, 10); res.ec == std::errc()) {
+           pct = 100 - pct;
+           fer_cmd_moveShutterToPct(agm.a, agm.g, agm.m, pct, 2);
+        }
+      }
     } else if (topic_endsWith(topic, topic_len, TOPIC_CMD_END)) {
       const char *addr = topic + strlen(TOPIC_ROOT);
       int addr_len = topic_len - (strlen(TOPIC_ROOT) + (sizeof TOPIC_CMD_END - 1));
@@ -255,8 +302,69 @@ void io_mqttApp_received(const char *topic, int topic_len, const char *data, int
   }
 }
 
+void io_mqttApp_test1() {
+  const char *topic = "homeassistant/cover/shutter25/config";
+  const char *data = "{"
+      "\"uniq_id\":\"tronferno25ad\","
+      "\"name\":\"AD 25 Erker\","
+      "\"cmd_t\":\"tfmcu23/25/cmd\",\"pos_t\":\"tfmcu23/25/pct_out\",\"set_pos_t\":\"tfmcu23/25/pct\","
+      "\"qos\":1,"
+      "\"pl_open\":\"up\",\"pl_close\":\"down\",\"pl_stop\":\"stop\""
+      "}";
+  MyMqtt.publish(topic, data);
+}
+
+#define UNIQUE_ID "tronferno%s"
+
+bool io_mqttApp_HassConfig(const class Fer_GmSet &gmSet, bool remove, const char *hass_root_topic) {
 
 
+  for (auto it = gmSet.begin(1); it; ++it) {
+    uint8_t g = it.getG();
+    uint8_t m = it.getM();
+    const char gm[] = { char('0' + g), char('0' + m), '\0' };
 
+    char name[32] = "";
+    fer_shPref_strByM_load(name, sizeof name, "NAME", g, m);
+
+
+    const char topic_fmt[] = "%s/cover/" UNIQUE_ID "/config";
+    const size_t topic_size = (sizeof topic_fmt) + strlen(hass_root_topic) + strlen(gm);
+    char topic[topic_size];
+    if (topic_size <= snprintf(topic, topic_size, topic_fmt, hass_root_topic, gm))
+      return false;
+
+    if (remove) {
+      MyMqtt.publish(topic, "", true);
+    } else {
+      const char data_fmt[] = "{"
+          "\"uniq_id\":\"" UNIQUE_ID "\"," // 1
+          "\"name\":\"Rollo %s %s\","// 2
+          "\"~\": \"%s%s\","// 3
+          //////////////////////////////////////////
+          "\"cmd_t\":\"~/cmd\","//
+          "\"pos_t\":\"~/pct_out\","//
+          "\"set_pos_t\":\"~/pct\","//
+          "\"qos\":1,"//
+          "\"dev_cla\":\"shutter\","//
+          "\"pl_open\":\"up\","//
+          "\"pl_cls\":\"down\","//
+          "\"pl_stop\":\"stop\""//
+          "}";
+      const size_t data_size = (sizeof data_fmt) + strlen(gm)*3 + strlen(name) + strlen(TOPIC_ROOT);
+      char data[data_size];
+      if (data_size <= snprintf(data, data_size, data_fmt //
+          , gm // 1
+          , gm, name // 2
+          , TOPIC_ROOT, gm // 3
+          )) {
+        return false;
+      }
+      MyMqtt.publish(topic, data, true);
+    }
+  }
+
+  return true;
+}
 
 

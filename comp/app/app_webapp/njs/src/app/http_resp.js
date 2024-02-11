@@ -1,6 +1,6 @@
 "use strict";
-import * as httpFetch from "app/fetch.js";
-import * as appDebug from "app/app_debug.js";
+import * as httpFetch from "../app/fetch.js";
+import * as appDebug from "../app/app_debug.js";
 import {
   McuBootCount,
   McuErrorMask,
@@ -10,16 +10,16 @@ import {
   McuFirmwareVersion,
   McuFirmwareUpdProgress,
   McuFirmwareUpdState,
-} from "stores/mcu_firmware.js";
-import { TxNames } from "stores/id.js";
-import * as cuas from "app/cuas.js";
-import { McuConfig, Gmu, Cc1101Config, Cc1101Status } from "stores/mcu_config.js";
-import { Pcts, Prefs, Aliases, Autos, Names } from "stores/shutters.js";
-import { McuDocs } from "stores/mcu_docs.js";
-import { Gpios } from "stores/gpio.js";
-import { Sep } from "stores/sep";
-import { AppLog } from "stores/app_log.js";
-import { Pras, ReceivedAddresses } from "stores/alias.js";
+} from "../store/mcu_firmware.js";
+import { TxNames } from "../store/id.js";
+import * as cuas from "../app/cuas.js";
+import { McuConfig, Gmu, Cc1101Config, Cc1101Status, Backup } from "../store/mcu_config.js";
+import { Pcts, Prefs, Aliases, Autos, Names } from "../store/shutters.js";
+import { McuDocs } from "../store/mcu_docs.js";
+import { Gpios } from "../store/gpio.js";
+import { Sep } from "../store/sep";
+import { AppLog } from "../store/app_log.js";
+import { Pras, ReceivedAddresses } from "../store/alias.js";
 
 function parse_gmu(s) {
   let sa = s ? s.split("").reverse() : [];
@@ -60,6 +60,10 @@ export function http_handleResponses(obj) {
       return old;
     });
   }
+
+  if ("backup" in obj){
+     Backup.set(obj.backup);
+  } 
 
   if ("config" in obj) {
     let config = obj.config;

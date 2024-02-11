@@ -128,10 +128,18 @@ int8_t config_read_rfss_gpio() {
   return config_read_item((CB_RFSS_GPIO), -1);
 }
 
+#ifdef CONFIG_APP_USE_REPEATER
 const char* config_read_rf_repeater(char *d, unsigned d_size) {
   const char *s =  config_read_item(CB_RF_REPEATER, d, d_size, "");
   return s;
 }
+#endif
+
+#ifdef CONFIG_APP_USE_RTC_AUTO_UPD
+int8_t config_read_rtc_auto_upd() {
+  return config_read_item((CB_RTC_AUTO_UPD), 1);
+}
+#endif
 
 #if 1
 void config_setup_global() {
@@ -199,9 +207,9 @@ enum astroCorrection config_read_astro_correction() {
 #ifdef CONFIG_APP_USE_MQTT
 #include "app_mqtt/mqtt.h"
 void config_setup_mqttAppClient() {
-  config_setup_mqttClient();
-  char buf[32];
-  io_mqttApp_setup(config_read_mqtt_root_topic(buf, sizeof buf));
+  struct cfg_mqtt c;
+  config_read_mqttClient(&c);
+  io_mqttApp_setup(&c);
 }
 #endif
 

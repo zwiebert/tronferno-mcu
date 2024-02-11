@@ -1,10 +1,10 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import * as httpFetch from "app/fetch.js";
-  import { Cc1101Config, Cc1101Status } from "stores/mcu_config.js";
+  import { _ } from "../services/i18n";
+  import * as httpFetch from "../app/fetch.js";
+  import { Cc1101Config, Cc1101Status } from "../store/mcu_config.js";
   import { onMount } from "svelte";
-  import { AppLogCountRx } from "stores/app_log.js";
+  import { AppLogCountRx } from "../store/app_log.js";
   import tippy from "sveltejs-tippy";
 
   const HTTP_FETCH_MASK = httpFetch.FETCH_CC1101_CONFIG;

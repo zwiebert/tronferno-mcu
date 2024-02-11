@@ -1,10 +1,10 @@
 <script>
   "use strict";
 
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import { GuiUserLevel } from "stores/app_state";
-  import * as misc from "app/misc.js";
+  import { GuiUserLevel } from "../store/app_state";
+  import * as misc from "../app/misc.js";
 </script>
 
 <div class="main-area text-center">

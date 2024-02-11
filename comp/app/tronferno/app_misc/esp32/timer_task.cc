@@ -78,12 +78,16 @@ static void rxTxTask_main(void *param) {
   for (;;) {
     rxTxTask_msg msg = { };
     if (pdTRUE == xQueueReceive(rxTxTask_message_queue, &msg, pdMS_TO_TICKS(60 * 1000))) {
+#ifdef CONFIG_APP_USE_FER_TRANSMITTER
       if (msg.run_tx) {
         Fer_Trx_API::isr_handle_tx();
       }
+#endif
+#ifdef CONFIG_APP_USE_FER_RECEIVER
       if (msg.run_rx) {
         Fer_Trx_API::isr_handle_rx(msg.rx_pin_level);
       }
+#endif
 
     }
   }
@@ -107,7 +111,7 @@ static bool rxTxTask_setup() {
 volatile uint32_t run_time_s_, run_time_ts_;
 #endif
 
-static bool IRAM_ATTR intTimer_isr(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_data) {
+IRAM_ATTR static bool intTimer_isr(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_data) {
   QueueHandle_t queue = (QueueHandle_t) user_data;
   rxTxTask_msg msg = { };
   static uint_fast8_t tick_count;

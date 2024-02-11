@@ -6,7 +6,7 @@
  */
 
 
-#include "app_misc/kvstore.h"
+#include "../include/app_misc/kvstore.hh"
 
 bool kvs_store_string(const char *key, const char *val) {
   return false;

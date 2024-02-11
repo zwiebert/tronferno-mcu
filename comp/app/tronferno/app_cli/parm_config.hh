@@ -22,30 +22,13 @@ extern void (*mcu_restart_cb)();
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
-struct SettData {
-  const char *kvsKey;
-  KvsType kvsType;
-  StoreFun storeFun;
-};
-
-template<class Sett, typename CfgItem>
-SettData settings_getData(const Sett &settings, CfgItem item) {
-  SettData res { };
-  res.kvsKey = settings.get_kvsKey(item);
-  res.kvsType = settings.get_kvsType(item);
-  res.storeFun = settings.get_storeFun(item);
-  return res;
-}
-
-SettData get_settingsData(otok kt, u64 &changed_mask);
-
-bool process_parmConfig_get_app(otok kt, const char *val, const struct TargetDesc &td);
-bool process_parmConfig_get_comp(otok kt, const char *val, const struct TargetDesc &td);
+bool process_parmConfig_get_app(otok kt, const char *val, const class UoutWriter &td);
+bool process_parmConfig_get_comp(otok kt, const char *val, const class UoutWriter &td);
 
 int process_parmConfig_assign(KvsType kvsType, const char *kvsKey, StoreFun storeFun, const char *val);
 
-bool process_parmConfig_comp(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u64 &changed_mask);
-bool process_parmConfig_app(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u64 &changed_mask);
+bool process_parmConfig_comp(otok kt, const char *key, const char *val, const class UoutWriter &td, int &errors, u64 &changed_mask);
+bool process_parmConfig_app(otok kt, const char *key, const char *val, const class UoutWriter &td, int &errors, u64 &changed_mask);
 
 void parmConfig_reconfig_comp(u64 changed_mask);
 void parmConfig_reconfig_app(u64 changed_mask);

@@ -1,10 +1,10 @@
 <script>
   "use strict";
-  import { G, M, M0, GM, Pct, Name } from "stores/curr_shutter.js";
-  import { Gmu } from "stores/mcu_config.js";
-  import { MenuCount, MenuCountMax } from "stores/ui2411.js";
-  import * as httpFetch from "app/fetch.js";
-  import DisplayIcons from "app/display_icons.svelte";
+  import { G, M, M0, GM, Pct, Name } from "../store/curr_shutter.js";
+  import { Gmu } from "../store/mcu_config.js";
+  import { MenuCount, MenuCountMax } from "../store/ui2411.js";
+  import * as httpFetch from "../app/fetch.js";
+  import DisplayIcons from "../app/display_icons.svelte";
 
 
 

@@ -1,5 +1,5 @@
 'use strict';
-import * as httpFetch from "app/fetch.js";
+import * as httpFetch from "../app/fetch.js";
 
 let cuas_Interval;
 let cuas_State = 0;

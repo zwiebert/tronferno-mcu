@@ -1,9 +1,9 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import * as httpFetch from "app/fetch.js";
-  import { GMH, RadioCode, RadioCodeEnabled, Address } from "stores/curr_shutter.js";
+  import * as httpFetch from "../app/fetch.js";
+  import { GMH, RadioCode, RadioCodeEnabled, Address } from "../store/curr_shutter.js";
   import FaArrowsAltV from "svelte-icons/fa/FaArrowsAltV.svelte";
 
   $: target = $RadioCodeEnabled ? $RadioCode : $GMH;

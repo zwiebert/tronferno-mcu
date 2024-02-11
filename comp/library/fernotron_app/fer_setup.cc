@@ -68,12 +68,14 @@ public:
     }
 #endif
 
+#ifdef CONFIG_APP_USE_FER_RECEIVER
     if (TXTIO_IS_VERBOSE(vrbDebug)) {
       struct fer_rx_quality q;
       fer_rx_getQuality(&q);
       if (q.bad_pair_count)
         io_printf("RI:bad_word_pairs: %d\n", q.bad_pair_count);
     }
+#endif
   }
 
 public:

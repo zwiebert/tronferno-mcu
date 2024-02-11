@@ -1,5 +1,5 @@
 <script>
-  import { Gmu } from "stores/mcu_config.js";
+  import { Gmu } from "../../store/mcu_config.js";
 
   export let caption;
   export let value;

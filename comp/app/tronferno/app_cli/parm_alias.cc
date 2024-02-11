@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "fernotron/pos/shutter_pct.h"
-#include "cli_imp.h"
-#include "cli_fer.h"
+#include "cli_internal.hh"
+#include "cli_fernotron.hh"
 #include "utils_misc/int_types.h"
 #include "fernotron/alias/pairings.h"
 #include "app_uout/status_output.h"
@@ -39,7 +39,7 @@ const char cli_help_parmPair[] = "'pair' stores information about transmitter to
 #define is_val(k) (strcmp(val, k) == 0)
 
 int 
-process_parmPair(clpar p[], int len, const struct TargetDesc &td) {
+process_parmPair(clpar p[], int len, const class UoutWriter &td) {
   int arg_idx;
   int i;
 

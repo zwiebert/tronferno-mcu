@@ -10,5 +10,6 @@
   <option value="ap">WLAN Accesspoint</option>
   {#if has_lan}
     <option value="lan">Ethernet</option>
+    <option value="lan-wlan">Ethernet or WLAN</option>
   {/if}
 </select>

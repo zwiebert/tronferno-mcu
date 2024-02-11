@@ -1,11 +1,11 @@
 <script>
   "use strict";
-  import { M0, RadioCodeEnabled } from "stores/curr_shutter.js";
-  import * as httpFetch from "app/fetch.js";
+  import { M0, RadioCodeEnabled } from "../store/curr_shutter.js";
+  import * as httpFetch from "../app/fetch.js";
 
 
-  import { GuiAcc } from "stores/app_state";
-  import { _ } from "services/i18n";
+  import { GuiAcc } from "../store/app_state";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
 
   function hClick_Sun() {

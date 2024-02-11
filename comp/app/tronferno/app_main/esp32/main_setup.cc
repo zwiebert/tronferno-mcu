@@ -1,14 +1,15 @@
 
-#include "main.h"
-#include "app_cli/cli_app.h"
+#include "main.hh"
+#include <app_cli/cli_app.hh>
 #include "app_settings/config.h"
 #include "utils_time/run_time.h"
 #include "key_value_store/kvs_wrapper.h"
 #ifdef CONFIG_APP_USE_HTTP
-#include "app_http_server/setup.h"
+#include "app_http_server/setup.hh"
 #endif
 #include "utils_misc/int_types.h"
 #include "app_misc/timer.h"
+#include "app_misc/rtc.h"
 #include "app_settings/config.h"
 #include "app_settings/app_settings.hh"
 #include "fernotron/auto/fau_next_event.hh"
@@ -29,29 +30,55 @@
 #include "config_kvs/config.h"
 #include "app_uout/status_output.h"
 #include "uout/uo_callbacks.h"
-#include "../app_private.h"
+#include "../app_private.hh"
 #include "fernotron/fer_pct.h"
 #include "main_loop/main_queue.hh"
 
-#ifdef CONFIG_APP_USE_WLAN_AP
-void tmr_checkNetwork_start() {
-  static void *tmr;
 
+
+void tmr_checkNetwork_Sta_start() {
+  static void *tmr;
   mainLoop_stopFun(tmr);
+
+  if (!(tmr = mainLoop_callFunByTimer([]() {
+    if (!ipnet_isConnected())
+      config_setup_wifiStation();
+  }, pdMS_TO_TICKS(1000 * 5)))) {
+    printf("CheckNetworkTimer_Sta start error");
+  }
+}
+
+#ifdef CONFIG_APP_USE_WLAN_AP
+void tmr_checkNetwork_Ap_start() {
+  static void *tmr;
+  mainLoop_stopFun(tmr);
+
   if (!(tmr = mainLoop_callFunByTimer([]() {
     if (!ipnet_isConnected())
       lfa_createWifiAp();
   }, pdMS_TO_TICKS(1000 * CONFIG_NETWORK_CHECK_LOOP_PERIOD_S)))) {
-    printf("CheckNetworkTimer start error");
+    printf("CheckNetworkTimer_Ap start error");
   }
 }
 #endif
+
+void tmr_checkNetwork_start(bool fallback_to_wlan_station, bool fallback_to_wlan_ap) {
+  if (fallback_to_wlan_station)
+    tmr_checkNetwork_Sta_start();
+
+#ifdef CONFIG_APP_USE_WLAN_AP
+  if (fallback_to_wlan_ap)
+    tmr_checkNetwork_Ap_start();
+#endif
+}
+
 
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb([](struct timeval *tv) {
     ets_printf("ntp synced: %llu\n", (long unsigned long) time(NULL));
     mainLoop_callFun([]() {
       next_event_te.fer_am_updateTimerEvent(time(NULL));
+      dst_init();
     });
   });
   config_setup_ntpClient();
@@ -180,6 +207,7 @@ void mcu_init() {
 #endif
 #ifdef CONFIG_APP_USE_LAN
     case nwLan:
+    case nwLanOrWlanSta:
       config_setup_ethernet();
 #endif
       break;
@@ -189,7 +217,7 @@ void mcu_init() {
 
   }
 
-#endif // USE_NETWORK
+#endif // CONFIG_APP_USE_NETWORK
 
    if (auto smCt = app_safeMode_increment(); smCt > 6) {
      app_safe_mode = true;
@@ -198,10 +226,13 @@ void mcu_init() {
 
   config_setup_gpio();
 
-#ifdef CONFIG_APP_USE_AP_FALLBACK
+
   //if (network != nwWlanAp) //XXX this crashes TODO FIXME
-  if (network == nwLan || network == nwWlanSta)
-    tmr_checkNetwork_start();
+  if (network == nwLan || network == nwWlanSta || network == nwLanOrWlanSta)
+#ifdef CONFIG_APP_USE_AP_FALLBACK
+    tmr_checkNetwork_start(network == nwLanOrWlanSta, true);
+#else
+  tmr_checkNetwork_start(network == nwLanOrWlanSta, false);
 #endif
   app_timerISR_setup();
   stor_setup();

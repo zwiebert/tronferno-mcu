@@ -1,19 +1,23 @@
 
-#include "app_cli/cli_app.h"
+#include "include/app_cli/cli_app.hh"
 
 
 const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
     "cu=(ID|auto|?)     6-digit hex ID of Central-Unit. auto: capture ID\n"
     "rtc=(ISO_TIME|?)   set local time if NTP not working\n"
+#ifdef CONFIG_APP_USE_RTC_AUTO_UPD
+    "rtc-auto-upd-enable=(0|1|?)   enable automatic updating reveiver's RTC (when DST changes)\n"
+#endif
 #ifndef MCU_ESP32
-                                   "baud=(N|?)         serial baud rate\n"
+    "baud=(N|?)         serial baud rate\n"
 #endif
 #ifdef CONFIG_APP_USE_WLAN
     "wlan-ssid=(SSID|?)\n"
     "wlan-password=PW\n"
 #endif
 #ifdef CONFIG_APP_USE_NETWORK
-    "network=(none|wlan|ap|lan) ap opens wlan access-point at 192.168.4.1 (restart required)\n"
+    "network=(none|wlan|ap|lan|lan-wlan) ap opens wlan access-point at 192.168.4.1 (restart required)\n"
+    "                                    lan-wlan  tries lan first and then wlan as fallback.\n"
 #endif
 #ifdef CONFIG_APP_USE_NTP
     "ntp-server=(gateway|dhcp|IP4ADDR|NAME) default: gateway\n"
@@ -62,6 +66,8 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
     "rf-mosi-pin=N        CC1101 SPI MOSI GPIO pin\n"
     "rf-miso-pin=N        CC1101 SPI MISO GPI pin\n"
     "rf-trx=(none|rx-tx|rx-itx|cc1101)   Which RF hardware is connected\n"
+#ifdef CONFIG_APP_USE_REPEATER
     "rf-repeater=(+ID|-ID|IDs|) Add or Remove IDs (6digit Hex) for RF-repeater\n"
+#endif
 //  "set-expert-password=\n"
 ;

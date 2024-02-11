@@ -1,12 +1,12 @@
 <script>
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import { GuiAcc } from "stores/app_state";
-  import McuFirmwareUpd from "app/mcu_firmware_upd.svelte";
-  import McuFirmwareInfo from "app/mcu_firmware_info.svelte";
-  import * as misc from "app/misc.js";
+  import { GuiAcc } from "../store/app_state";
+  import McuFirmwareUpd from "../app/mcu_firmware_upd.svelte";
+  import McuFirmwareInfo from "../app/mcu_firmware_info.svelte";
+  import * as misc from "../app/misc.js";
 
-  import { McuGitTagNames, McuGitTagNameLatestMaster, McuGitTagNameLatestBeta } from "stores/mcu_firmware";
+  import { McuGitTagNames, McuGitTagNameLatestMaster, McuGitTagNameLatestBeta } from "../store/mcu_firmware";
 
   let fw_master = {
     name: $_("firmware.latest_master"),
@@ -28,7 +28,7 @@
     name: $_("firmware.version"),
     input: "select",
     get_ota_name: () => {
-      return "tag:" + fw_version.value;
+      return "tag:" + fw_version.version;
     },
   };
 
@@ -43,16 +43,16 @@
 
   $: fw_version_value0 = $McuGitTagNames[0];
   $: {
-    fw_version.value = fw_version_value0;
+    fw_version.version = fw_version_value0;
   }
 
   if (!misc.DISTRO) {
     let fw_url = {
       name: $_("firmware.url"),
       input: "input",
-      value: "http://192.168.1.76:3005/tronferno-mcu.bin",
+      url: "http://192.168.1.76:3005/tronferno-mcu.bin",
       get_ota_name: () => {
-        return fw_url.value;
+        return fw_url.url;
       },
     };
     fwbtns.push(fw_url);
@@ -63,8 +63,8 @@
   <div class="main-area">
     <h4 class="text-center" use:tippy={{ content: $_("panes.ota.tt.header") }}>{$_("panes.ota.header")}</h4>
 
+    <McuFirmwareUpd bind:fwbtns chip="" updSecs="30" />
     <div class="area">
-      <McuFirmwareUpd bind:fwbtns chip="" updSecs="30" />
       <McuFirmwareInfo />
     </div>
   </div>

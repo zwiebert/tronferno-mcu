@@ -1,26 +1,24 @@
-#include <esp_wifi.h>
-#include <esp_event.h>
-#include <esp_log.h>
-#include <esp_system.h>
+#include "../web_content.hh"
+#include "../../app_cli/include/app_cli/cli_app.hh"
+
 #include <sys/param.h>
-#include <mbedtls/base64.h>
+
 #include "net_http_server/http_server_setup.h"
 #include "uout/status_json.hh"
 #include "fernotron_uout/fer_uo_publish.h"
 #include "app_settings/config.h"
-#include "app_cli/cli_app.h"
+
 #include "utils_misc/int_types.h"
 #include "cli/mutex.hh"
 #include "net_http_server/esp32/http_server_esp32.h"
 
-#include "webapp/content.h"
+#include <mbedtls/base64.h>
+#include <esp_wifi.h>
+#include <esp_event.h>
+#include <esp_log.h>
+#include <esp_system.h>
 
-#define URI_WAPP_HTML "/"
-#define URI_WAPP_CSS "/f/css/wapp.css"
-#define URI_WAPP_JS "/f/js/wapp.js"
-//#define URI_WAPP_JS_MAP "/f/js/wapp.js.map"
-//#define URI_WAPP_CSS_MAP "/f/css/wapp.css.map"
-//#define SERVE_BR
+#include <fcntl.h>
 
 static const char *TAG="APP";
 
@@ -116,12 +114,12 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 
     httpd_resp_set_type(req, "application/json") == ESP_OK || (result = ESP_FAIL);
 #if 0
-    TargetDesc td { req, SO_TGT_HTTP | SO_TGT_FLAG_JSON, ht_write };
+    UoutWriter td { req, SO_TGT_HTTP | SO_TGT_FLAG_JSON, ht_write };
     cli_process_json(buf, td); // parse and process received command
     td.sj().write_json() >= 0 || (result = ESP_FAIL);
     httpd_resp_send_chunk(req, 0, 0);
 #else
-    TargetDesc td { SO_TGT_HTTP | SO_TGT_FLAG_JSON};
+    UoutWriter td { SO_TGT_HTTP | SO_TGT_FLAG_JSON};
     cli_process_json(buf, td); // parse and process received command
     httpd_resp_sendstr(req, td.sj().get_json()) == ESP_OK || (result = ESP_FAIL);
 #endif
@@ -131,86 +129,68 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 }
 
 
+static esp_err_t respond_file(httpd_req_t *req, const struct file_map *fm) {
+  esp_err_t result = ESP_OK;
 
-struct file_map { const char *uri, *type, *file; uint32_t file_size; };
+  if (fm->type)
+    httpd_resp_set_type(req, fm->type);
+  if (fm->wc.content_encoding)
+    httpd_resp_set_hdr(req, "content-encoding", fm->wc.content_encoding);
 
-const struct file_map uri_file_map[] =  {
-        { .uri = "/f/cli/help/send", .file = cli_help_parmSend }, //
-        { .uri = "/f/cli/help/auto", .file = cli_help_parmTimer }, //
-        { .uri = "/f/cli/help/config", .file = cli_help_parmConfig }, //
-        { .uri = "/f/cli/help/mcu", .file = cli_help_parmMcu }, //
-        { .uri = "/f/cli/help/pair", .file = cli_help_parmPair }, //
-        { .uri = "/f/cli/help/shpref", .file = cli_help_parmShpref }, //
-        { .uri = "/f/cli/help/help", .file = cli_help_parmHelp }, //
-};
+  if (fm->wc.content_length == ~0U) {
+    // send an vfs-file
+    const char *file_name = fm->wc.content;
+    if (int fd = ::open(file_name, O_RDONLY); fd >= 0) {
+      ESP_LOGI("respond_file", "fd=%d", fd);
+      for (int i = 0; result == ESP_OK; ++i) {
+        char buf[256];
 
-static esp_err_t respond_file(httpd_req_t *req, const struct file_map *fm, const char *content_encoding) {
-  httpd_resp_set_type(req, fm->type ? fm->type : "text/plain;charset=\"UTF-8\"");
-  if (content_encoding)
-    httpd_resp_set_hdr(req, "content-encoding", content_encoding);
-  if (fm->file_size)
-    httpd_resp_send(req, fm->file, fm->file_size);
-  else
-    httpd_resp_sendstr(req, fm->file);
-  return ESP_OK;
+        if (const auto bytes_read = ::read(fd, buf, sizeof buf); bytes_read >= 0) {
+          ESP_LOGI("respond_file", "read_data=<%*s>", bytes_read, buf);
+
+          if (bytes_read == sizeof buf) {
+            httpd_resp_send_chunk(req, buf, bytes_read);
+            if (fm->type)
+              result = httpd_resp_set_type(req, fm->type);
+            if (fm->wc.content_encoding)
+              httpd_resp_set_hdr(req, "content-encoding", fm->wc.content_encoding);
+          } else {
+            if (i) {
+              result = httpd_resp_send_chunk(req, buf, bytes_read);
+              httpd_resp_send_chunk(req, buf, 0);
+            } else {
+              result = httpd_resp_send(req, buf, bytes_read);
+            }
+            break;
+          }
+        } else {
+          ESP_LOGE("respond_file", "read error");
+          result = ESP_FAIL;
+          break;
+        }
+      }
+      ::close(fd);
+    } else {
+      ESP_LOGE("respond_file", "cannot open file: <%s>", file_name);
+      result = ESP_ERR_NOT_FOUND;
+    }
+  } else if (fm->wc.content_length) {
+    result = httpd_resp_send(req, fm->wc.content, fm->wc.content_length);
+  } else {
+    result = httpd_resp_sendstr(req, fm->wc.content);
+  }
+  return result;
 }
-
-
 
 
 static esp_err_t handle_uri_get_file(httpd_req_t *req) {
   if (!check_access_allowed(req))
     return ESP_FAIL;
 
-  struct file_map fm = {};
-  const char *encoding = "gzip";
-
-  if (strcmp(req->uri, URI_WAPP_HTML) == 0) {
-    fm.file = build_wapp_html_gz;
-    fm.file_size = build_wapp_html_gz_len;
-    fm.type = "text/html";
-  } else  if (strcmp(req->uri, URI_WAPP_CSS) == 0) {
-    fm.file = build_wapp_css_gz;
-    fm.file_size = build_wapp_css_gz_len;
-    fm.type = "text/css";
-  } else  if (strcmp(req->uri, URI_WAPP_JS) == 0) {
-    fm.file = build_wapp_js_gz;
-    fm.file_size = build_wapp_js_gz_len;
-    fm.type = "text/javascript";
-#ifdef URI_WAPP_JS_MAP
-  } else  if (strcmp(req->uri, URI_WAPP_JS_MAP) == 0) {
-    fm.type = "text/javascript";
-#ifdef SERVE_BR
-    fm.file = build_wapp_js_map_br;
-    fm.file_size = build_wapp_js_map_br_len;
-    encoding = "br";
-#else
-    fm.file = build_wapp_js_map_gz;
-    fm.file_size = build_wapp_js_map_gz_len;
-#endif
-#endif
-#ifdef URI_WAPP_CSS_MAP
-  } else  if (strcmp(req->uri, URI_WAPP_CSS_MAP) == 0) {
-    fm.type = "text/css";
-#ifdef SERVE_BR
-    fm.file = build_wapp_css_map_br;
-    fm.file_size = build_wapp_css_map_br_len;
-    encoding = "br";
-#else
-    fm.file = build_wapp_css_map_gz;
-    fm.file_size = build_wapp_css_map_gz_len;
-#endif
-#endif
-  } else {
-    for (int i = 0; i < sizeof(uri_file_map) / sizeof(uri_file_map[0]); ++i) {
-      if (strcmp(req->uri, uri_file_map[i].uri) == 0)
-        return respond_file(req, &uri_file_map[i], "");
-    }
-    return ESP_FAIL;
+  if (auto fm = wc_getContent(req->uri); fm) {
+    return respond_file(req, fm);
   }
-
-  return respond_file(req, &fm, encoding);
-
+  return ESP_FAIL;
 }
 
 #ifdef CONFIG_APP_USE_WS
@@ -243,7 +223,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
 
   {
     LockGuard lock(cli_mutex);
-    TargetDescWs td { req, SO_TGT_WS | SO_TGT_FLAG_JSON, ws_write };
+    UoutWriterWebsocket td { req, SO_TGT_WS | SO_TGT_FLAG_JSON, ws_write };
     cli_process_json((char*)buf, td);// parse and process received command
   }
   return ret;

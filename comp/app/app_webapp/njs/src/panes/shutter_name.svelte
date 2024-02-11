@@ -1,9 +1,9 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import ShutterGM from "app/shutter_gm.svelte";
-  import ShutterName from "app/shutter_name.svelte";
-  import { GuiAcc } from "stores/app_state";
+  import { _ } from "../services/i18n";
+  import ShutterGM from "../app/shutter_gm.svelte";
+  import ShutterName from "../app/shutter_name.svelte";
+  import { GuiAcc } from "../store/app_state";
   import tippy from "sveltejs-tippy";
 </script>
 

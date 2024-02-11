@@ -20,6 +20,13 @@ menu "zwiebert: Tronferno App Library"
         bool "Activate USE_PAIRINGS"
         default y
 
+    config APP_USE_REPEATER
+        bool "Compile with RF Repeater suppport"
+        default y
+
+    config APP_USE_RTC_AUTO_UPD
+        bool "Compile with support to update receivers RTC automatically on daylight saving time change"
+        default y
 
 endmenu
 

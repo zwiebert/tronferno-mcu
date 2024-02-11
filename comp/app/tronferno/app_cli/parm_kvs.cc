@@ -10,9 +10,9 @@
 #include "app_settings/config.h"
 #include "app_misc/rtc.h"
 #include <uout/cli_out.h>
-#include "cli_imp.h"
-#include "app_cli/cli_app.h"
-#include "app_misc/kvstore.h"
+#include "cli_internal.hh"
+#include "include/app_cli/cli_app.hh"
+#include "../app_misc/include/app_misc/kvstore.hh"
 #include "debug/dbg.h"
 #include <ctype.h>
 #include <string.h>
@@ -23,7 +23,7 @@ const char cli_help_parmKvs[] = "'kvs' stores general key value pairs\n\n"
     "key=(value|?)      Set or get value of key\n"
     ;
 
-int process_parmKvs(clpar p[], int len, const struct TargetDesc &td) {
+int process_parmKvs(clpar p[], int len, const class UoutWriter &td) {
   int arg_idx;
   int errors = 0;
 

@@ -1,8 +1,8 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import { McuBootCount, McuErrorMask, McuFirmwareBuildDate, McuChipId, McuFirmwareVersion } from "stores/mcu_firmware.js";
-  import * as httpFetch from "app/fetch.js";
+  import { _ } from "../services/i18n";
+  import { McuBootCount, McuErrorMask, McuFirmwareBuildDate, McuChipId, McuFirmwareVersion } from "../store/mcu_firmware.js";
+  import * as httpFetch from "../app/fetch.js";
   import { onMount } from "svelte";
 
   onMount(() => {
@@ -11,6 +11,8 @@
 
   $: nu = $_("notifyUser");
 </script>
+
+
 
 <style lang="scss">
   @import "../styles/app.scss";
@@ -25,7 +27,7 @@
     border-collapse: collapse;
     margin: 0rem;
     padding: 0rem 0.25rem;
-    border-gap: 0;
+    border-spacing: 0;
   }
 </style>
 

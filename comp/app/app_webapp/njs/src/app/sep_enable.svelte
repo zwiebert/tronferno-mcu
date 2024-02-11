@@ -1,8 +1,8 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import { SepMode } from "stores/sep";
+  import { SepMode } from "../store/sep";
 
   function create_auth_key() {
     return Math.floor(Math.random() * 10000) + 1;

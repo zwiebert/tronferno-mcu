@@ -3,6 +3,8 @@
 #include <string.h>
 
 #include "app_misc/firmware.h"
+#include "app_mqtt/mqtt.h"
+#include "fernotron/fer_main.h"
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/shutter_pct.h"
 #include <fernotron/alias/pairings.h>
@@ -15,7 +17,7 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/bcd.h"
 #include "app_misc/rtc.h"
-#include "cli_imp.h"
+#include "cli_internal.hh"
 #include "app_misc/opt_map.hh"
 #include <app_settings/config.h>
 #include <cc1101_ook/trx.hh>
@@ -46,14 +48,14 @@ const char cli_help_parmMcu[] = "'mcu' handles special commands and data\n\n"
 ;
 
 static void kvs_print_keys(const char *name_space);
-void cc1101_printCfg_asString(const struct TargetDesc &td);
+void cc1101_printCfg_asString(const class UoutWriter &td);
 
 #define is_kt(k) (kt == otok::k_##k)
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
 //TODO: add IP address query option
-int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
+int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
   int arg_idx;
 
   so_object<void> soObj(soMsg_mcu_begin, soMsg_mcu_end, td);
@@ -178,6 +180,36 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 #endif
 
     default:
+      // Echo parameter to test quoting in command lines
+      if (strcmp(key, "echo") == 0) {
+        ets_printf("echo: <%s>\n", val);
+        break;
+      }
+#ifdef CONFIG_APP_USE_MQTT
+      if (strcmp(key, "test1") == 0) {
+        io_mqttApp_test1();
+        break;
+      }
+
+      if (strcmp(key, "hs-hass-send-config") == 0) {
+        if (*val)
+          io_mqttApp_HassConfig(fer_usedMemberMask, false, val);
+        else
+          io_mqttApp_HassConfig(fer_usedMemberMask);
+        break;
+      }
+
+      if (strcmp(key, "hs-hass-remove-config") == 0) {
+        if (*val)
+          io_mqttApp_HassConfig(fer_usedMemberMask, true, val);
+        else
+          io_mqttApp_HassConfig(fer_usedMemberMask, true);
+        break;
+      }
+#endif
+
+
+
 #ifdef CONFIG_APP_USE_GPIO_PINS
     if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
@@ -229,6 +261,14 @@ int process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       break;
     }
 #endif
+
+
+    if (strcmp(key, "test-sj") == 0) {
+      void appSett_jsonSave_test();
+      appSett_jsonSave_test();
+      break;
+    }
+
 
       if (strcmp(key, "kvs-pk") == 0) {
         kvs_print_keys(val);

@@ -1,27 +1,32 @@
 <script>
-  import { _ } from "services/i18n";
-  import * as misc from "app/misc.js";
-  import { GuiAcc, GuiUserLevel } from "stores/app_state";
-  import NavTabs from "app/nav_tabs.svelte";
-  import { TabIdx } from "stores/app_state.js";
+  import { _ } from "../services/i18n";
+  import * as misc from "../app/misc.js";
+  import { GuiAcc, GuiUserLevel } from "../store/app_state";
+  import NavTabs from "../app/nav_tabs.svelte";
+  import { TabIdx } from "../store/app_state.js";
 
-  import PaneShutterControl from "panes/shutter_control.svelte";
-  import PaneShuttersPct from "panes/shutters_pct.svelte";
-  import PaneShutterAuto from "panes/shutter_auto.svelte";
-  import PaneTransmitterNames from "panes/transmitter_names.svelte";
-  import PaneShutterAlias from "panes/shutter_alias.svelte";
-  import PaneRepeater from "panes/repeater.svelte";
-  import PaneShutterDurations from "panes/shutter_durations.svelte";
-  import PaneShutterName from "panes/shutter_name.svelte";
-  import PaneMcuSettings from "panes/mcu_settings.svelte";
-  import PaneReceiverProgramming from "panes/receiver_programming.svelte";
-  import Pane2411 from "panes/2411.svelte";
-  import PaneAppLog from "panes/app_log.svelte";
-  import PaneDeveloper from "panes/developer.svelte";
-  import PaneUserLevel from "panes/user_level.svelte";
-  import PaneUserHelp from "panes/user_help.svelte";
-  import PaneFirmwareEsp32 from "panes/firmware_esp32.svelte";
-  import * as httpFetch from "app/fetch.js";
+  import PaneShutterControl from "../panes/shutter_control.svelte";
+  import PaneShuttersPct from "../panes/shutters_pct.svelte";
+  import PaneShutterAuto from "../panes/shutter_auto.svelte";
+  import PaneTransmitterNames from "../panes/transmitter_names.svelte";
+  import PaneShutterAlias from "../panes/shutter_alias.svelte";
+  import PaneRepeater from "../panes/repeater.svelte";
+  import PaneShutterDurations from "../panes/shutter_durations.svelte";
+  import PaneShutterName from "../panes/shutter_name.svelte";
+  import PaneMcuSettings from "../panes/mcu_settings.svelte";
+  import PaneReceiverProgramming from "../panes/receiver_programming.svelte";
+  import Pane2411 from "../panes/2411.svelte";
+  import PaneAppLog from "../panes/app_log.svelte";
+  import PaneDeveloper from "../panes/developer.svelte";
+  import PaneUserLevel from "../panes/user_level.svelte";
+  import PaneUserHelp from "../panes/user_help.svelte";
+  import PaneBackup from "../panes/backup.svelte";
+  import PaneHelpDoc from "../panes/help_doc.svelte";
+  import PaneFirmwareEsp32 from "../panes/firmware_esp32.svelte";
+  import PaneHSConfigHomeAssistant from "../panes/hsconfig_home_assistant.svelte";
+  import PaneHSConfigFHEM from "../panes/hsconfig_fhem.svelte";
+  import PaneHSConfigOpenHAB from "../panes/hsconfig_openhab.svelte";
+  import * as httpFetch from "../app/fetch.js";
   import { onMount, onDestroy } from "svelte";
 
   let on_destroy = [];
@@ -39,6 +44,8 @@
   $: tabIdxSender = $TabIdx["sender"] || 0;
   $: tabIdxPositions = $TabIdx["positions"] || 0;
   $: tabIdxUserHelp = $TabIdx["user_help"] || 0;
+  $: tabIdxHSConfig = $TabIdx["hs_config"] || 0;
+
   function getUserLevelHeader(ul) {
     return ul < 0
       ? $_("navTab.main.user_level.developer")
@@ -61,7 +68,7 @@
         { name: $_("navTab.main.percent"), idx: 2 },
         ...($GuiAcc.shutter_auto ? [{ name: $_("navTab.main.auto"), idx: 3 }] : []),
         ...($GuiAcc.cfg ? [{ name: $_("navTab.main.config"), idx: 4 }] : []),
-        { name: $_("navTab.main.help.tab"), idx: 7 },
+        { name: $_("navTab.help.tab"), idx: 7 },
         { name: getUserLevelHeader($GuiUserLevel), idx: 5 },
         ...($GuiAcc.debug ? [{ name: "Test", idx: 6 }] : []),
       ]}
@@ -98,7 +105,7 @@
           nav_tabs={[
             ...($GuiAcc.edit_transmitter_names ? [{ name: $_("navTab.cfg.transmitter.names.tab"), idx: 0 }] : []),
             { name: $_("navTab.cfg.transmitter.register.tab"), idx: 1 },
-            { name: $_("navTab.cfg.transmitter.repeater.tab"), idx: 2 },
+            ...($GuiAcc.rf_repeater ? [{ name: $_("navTab.cfg.transmitter.repeater.tab"), idx: 2 }] : []),
             // { name: $_("navTab.cfg.transmitter.transmit"), idx: 2 },
           ]}
           name="sender"
@@ -137,10 +144,38 @@
     <PaneUserLevel />
   {:else if tabIdxMain === 7}
     <div class="navtab-sub">
-      <NavTabs nav_tabs={[...($GuiAcc.ota ? [{ name: $_("navTab.help.ota.tab"), idx: 0 }] : [])]} name="user_help" />
+      <NavTabs nav_tabs={
+      [
+        ...($GuiAcc.ota ? [{ name: $_("navTab.help.ota.tab"), idx: 0 },] : []),
+        ...($GuiAcc.hsc ? [{ name: $_("navTab.help.hsc.tab"), idx: 1 },] : []),
+        ...($GuiAcc.bak ? [{ name: $_("navTab.help.backup.tab"), idx: 2 },] : []),
+        { name: $_("navTab.help.doc.tab"), idx: 3 },
+      ]}
+       name="user_help" />
     </div>
     {#if !tabIdxUserHelp}
       <PaneFirmwareEsp32 />
+    {:else if $GuiAcc.hsc && tabIdxUserHelp === 1}
+    <div class="navtab-sub">
+      <NavTabs nav_tabs={
+      [
+        { name: "Home Assistant", idx: 0 },
+        { name: "FHEM", idx: 1 },
+        { name: "OpenHAB", idx: 2 },
+      ]}
+       name="hs_config" />
+    </div>
+      {#if !tabIdxHSConfig}
+        <PaneHSConfigHomeAssistant />
+      {:else if tabIdxHSConfig === 1}
+        <PaneHSConfigFHEM />
+      {:else if tabIdxHSConfig === 2}
+        <PaneHSConfigOpenHAB />
+      {/if}
+    {:else if tabIdxUserHelp === 2}
+      <PaneBackup />
+    {:else if tabIdxUserHelp === 3}
+      <PaneHelpDoc />
     {/if}
   {:else if !misc.DISTRO && tabIdxMain === 6}
     <PaneDeveloper />

@@ -125,4 +125,45 @@ rtc_setup() {
 #endif
 }
 
+static struct {
+  bool initialized;
+  bool isdst;
+} dst_data;
 
+void dst_init(struct tm *tmp, bool reinit) {
+  if (!reinit && dst_data.initialized)
+    return;
+
+  struct tm t;
+
+  if (!tmp) {
+    time_t timer = time(NULL);
+    tmp = localtime_r(&timer, &t);
+  }
+
+  if (!tmp)
+    return;
+
+  dst_data.initialized = true;
+  dst_data.isdst = tmp->tm_isdst;
+}
+
+bool dst_hasChanged(struct tm *tmp) {
+  bool result = false;
+  struct tm t;
+
+  if (!dst_data.initialized)
+    return false;
+
+  if (!tmp) {
+    time_t timer = time(NULL);
+    tmp = localtime_r(&timer, &t);
+  }
+
+  if (!tmp)
+    return false;
+
+  result = dst_data.isdst != tmp->tm_isdst;
+
+  return result;
+}

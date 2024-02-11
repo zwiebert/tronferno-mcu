@@ -9,6 +9,16 @@ menu "Tronferno Project Configuration"
         bool "Compile HTTP server "
         default y
 
+    config APP_USE_HTTP_SERVE_JS_MAP
+        depends on APP_USE_HTTP
+        bool "Serve wapp.js.map file"
+        default y
+
+    config APP_USE_HTTP_SERVE_CSS_MAP
+        depends on APP_USE_HTTP
+        bool "Serve wapp.css.map file"
+        default n
+
     config APP_USE_WS
         depends on APP_USE_HTTP
         bool "Compile with Websocket support"

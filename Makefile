@@ -1,25 +1,25 @@
 .PHONY: clean all test rebuild http_data print-help
 
-flavors = esp32 esp32wlan esp32lan esp32test
+flavors = esp32 esp32dbg esp32wlan esp32lan esp32test
 
 flavor ?= esp32
 
-default: print-help
+default: help
 
-clean : esp32-test-clean esp32-fullclean esp8266-clean http_clean
+clean : esp32-test-clean esp32-fullclean http_clean
 	make -C test/esp32 clean
 
 
-print-help:
-	@cat docs/make_help.txt
+help:
+	@less docs/make_help.txt
 
+#PROXY (env: MCU_IP_ADDR, PROXY_TCP_PORT)
+#==========================================
 .PHONY: http_proxy http_clean
 http_proxy:
-	cd comp/app/app_webapp && make proxy
-http_proxy2:
-	cd comp/app/app_webapp && make proxy2
+	cd comp/app/app_webapp && make BUILD_DIR=$(BUILD_BASE)/app_webapp proxy
 http_clean:
-	cd comp/app/app_webapp && make clean
+	cd comp/app/app_webapp && make BUILD_DIR=$(BUILD_BASE)/app_webapp clean
 
 
 ####### ESP32 build command ############
@@ -32,16 +32,28 @@ ifneq "$(V)" "0"
 esp32_build_opts += -v
 endif
 
+# Add the python binary of python-venv to the path to make idf.py work in Eclipse
+# XXX: maybe its better to do this from the shell script which starts Eclipse (which runs export.sh anyway)
+export PATH := $(IDF_PYTHON_ENV_PATH)/bin:$(PATH) 
+
+env:
+	env | grep IDF
+
 THIS_ROOT := $(realpath .)
 BUILD_BASE ?= $(THIS_ROOT)/build/$(flavor)
 esp32_build_dir := $(BUILD_BASE)
 esp32_src_dir := $(THIS_ROOT)/src/$(flavor)
+tmp_build_dir := /tmp/tronferno-mcu/build
 
-esp32_build_cmd := idf.py -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
-esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
+esp32_cmake_generator := -G Ninja
+
+esp32_build_args := $(esp32_cmake_generator) -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
+esp32_build_cmd := idf.py $(esp32_build_args)
+esp32_cmake_cmd := /usr/bin/cmake -S $(esp32_src_dir) -B $(esp32_build_dir) $(esp32_cmake_generator)
+
 
 ######### ESP32 Targets ##################
-esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui
+esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui reconfigure
 
 .PHONY: esp32-all-force esp32-rebuild
 .PHONY: esp32-all esp32-flash esp32-flash-ocd
@@ -51,7 +63,7 @@ esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui
 define GEN_RULE
 .PHONY: esp32-$(1)
 esp32-$(1):
-	$(esp32_build_cmd) $(1) 
+	$(esp32_build_cmd) $(1)
 endef
 $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
@@ -61,26 +73,37 @@ esp32-all:
 	$(esp32_build_cmd) reconfigure all
 
 
-esp32-png: $(esp32_build_dir)/tfmcu.png
-esp32-dot: $(esp32_build_dir)/tfmcu.dot
+############ Graphviz ######################
+gv_build_dir := $(tmp_build_dir)
+gv_dot_file := $(gv_build_dir)/tfmcu.dot
+gv_png_file :=  $(gv_build_dir)/tfmcu.png
 
-$(esp32_build_dir)/tfmcu.dot: FORCE
-	$(esp32_cmake_cmd) --graphviz=$(esp32_build_dir)/tfmcu.dot
-	
+
+esp32-png: $(gv_png_file)
+esp32-dot: $(gv_dot_file)
+
+esp32-png-view: $(gv_png_file)
+	xdg-open $(gv_png_file)
+
+$(gv_dot_file): FORCE $(gv_build_dir)
+	$(esp32_cmake_cmd) --graphviz=$(gv_dot_file)
 	
 %.png:%.dot
 	dot -Tpng -o $@ $<
 
-FORCE:
+$(gv_build_dir):
+	mkdir -p $@
+	
+.PHONY: FORCE
 ########### OpenOCD ###################
-esp32_ocd_sh :=  sh $(realpath ./src/esp32/esp32_ocd.sh)
+esp32_ocd_sh :=  $(realpath ./src/esp32/esp32_ocd.sh) $(esp32_src_dir) $(esp32_build_dir)
 
 esp32-flash-ocd:
-	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash)
+	$(esp32_ocd_sh) flash
 esp32-flash-app-ocd:
-	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash_app)
+	$(esp32_ocd_sh) flash_app
 esp32-ocd:
-	$(esp32_ocd_sh) server
+	$(esp32_ocd_sh)  server
 esp32-ocd-loop:
 	$(esp32_ocd_sh) server_loop
 
@@ -155,10 +178,10 @@ doxy-api-view: doxy-api-build
 
 /tmp/doxy_input_dev: FORCE
 	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
-	cd comp/external/components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/comp/external/components-mcu/~" >> $@
+	cd comp/components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/comp/components-mcu/~" >> $@
 /tmp/doxy_input_api: FORCE
 	git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
-	cd comp/external/components-mcu && git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~INPUT += $(THIS_ROOT)/comp/external/components-mcu/~" >> $@
+	cd comp/components-mcu && git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~INPUT += $(THIS_ROOT)/comp/components-mcu/~" >> $@
 
 /tmp/doxy_input_usr: FORCE
 	echo "" > $@
@@ -169,22 +192,8 @@ doxy-%-view: doxy-%-build FORCE
 	
 FORCE:
 
-############# TCP Terminal ##############
-IPADDR ?= 192.168.1.65
+############# CLI Terminal ##############
+MCU_IP_ADDR ?= 192.168.1.69
 
-tcpterm:
-	socat -d -d -v pty,link=/tmp/ttyVirtual0,raw,echo=0,unlink-close,waitslave tcp:$(IPADDR):7777,forever,reuseaddr&
-	gtkterm -p /tmp/ttyVirtual0 -c tcpterm
-
-	
-	####### ESP8266 ######################
-esp8266_build_cmd := make -C src/esp8266
-esp8266_tgts_auto := all clean flash app-flash flashinit flasherase spiffs
-
-define GEN_RULE
-.PHONY: esp8266-$(1)
-esp8266-$(1):
-	$(esp8266_build_cmd) $(1)
-endef
-$(foreach tgt,$(esp8266_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
-	
+telnet:
+	telnet $(MCU_IP_ADDR) 7777

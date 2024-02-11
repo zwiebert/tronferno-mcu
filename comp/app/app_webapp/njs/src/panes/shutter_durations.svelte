@@ -1,8 +1,8 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import ShutterGM from "app/shutter_gm.svelte";
-  import ShutterPrefs from "app/shutter_prefs.svelte";
+  import { _ } from "../services/i18n";
+  import ShutterGM from "../app/shutter_gm.svelte";
+  import ShutterPrefs from "../app/shutter_prefs.svelte";
   import tippy from "sveltejs-tippy";
 </script>
 

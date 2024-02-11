@@ -1,10 +1,10 @@
 "use strict";
-import * as appDebug from "app/app_debug.js";
-import * as httpResp from "app/http_resp.js";
-import { G, M0, Address } from "stores/curr_shutter.js";
-import { Gmu } from "stores/mcu_config.js";
+import * as appDebug from "../app/app_debug.js";
+import * as httpResp from "../app/http_resp.js";
+import { G, M0, Address } from "../store/curr_shutter.js";
+import { Gmu } from "../store/mcu_config.js";
 import { get } from "svelte/store";
-import { ws_isOpen, ws_sendObject } from "main/net/conn_ws";
+import { ws_isOpen, ws_sendObject } from "../net/conn_ws";
 import { RadioCodeEnabled } from "../store/curr_shutter";
 
 let b = 0;
@@ -99,6 +99,27 @@ export function getFile(url) {
     }
   });
 }
+
+
+export function getJson(url) {
+  const fetch_data = {
+    method: "GET",
+    cache: "no-cache",
+    headers: {},
+    referrer: "no-referrer",
+  };
+
+  return fetch(url, fetch_data).then((response) => {
+    if (response.ok) {
+      response.json()
+      .then((json) => httpResp.http_handleResponses(json))
+      .catch((error) => {
+        console.log("error: http_postRequest(): ", error);
+      });
+    }
+  });
+}
+
 
 export function http_postShutterCommand(c = document.getElementById("send-c").value) {
   let tfmcu = { to: "tfmcu" };

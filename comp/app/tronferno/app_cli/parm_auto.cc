@@ -11,8 +11,8 @@
 #include "fernotron/fer_main.h"
 #include "app_misc/rtc.h"
 #include "utils_misc/bcd.h"
-#include "cli_imp.h"
-#include "cli_fer.h"
+#include "cli_internal.hh"
+#include "cli_fernotron.hh"
 #include "app_misc/opt_map.hh"
 #include "fernotron/auto/fau_tdata_store.h"
 #include "app_settings/config.h"
@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 
-static void print_timer(const struct TargetDesc &td, uint8_t g, uint8_t m, bool wildcard); //XXX
+static void print_timer(const class UoutWriter &td, uint8_t g, uint8_t m, bool wildcard); //XXX
 
 #define FLAG_NONE -2
 #define FLAG_ERROR -1
@@ -50,7 +50,7 @@ const char cli_help_parmTimer[] = "'auto' programs the built-in automatic moveme
     "  s|S sun automatic\n"
     "  r|R random timer\n";
 
-int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
+int process_parmTimer(clpar p[], int len, const class UoutWriter &td) {
   int i;
   bool f_disableWeekly = false, f_disableDaily = false, f_disableAstro = false, f_disableManu = false;
   bool f_enableManu = false;
@@ -76,11 +76,15 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
     switch (kt) {
       case otok::k_weekly:
       NODEFAULT();
-      tda.putWeekly(val);
+      if (!tda.putWeekly(val)) {
+        return cli_replyFailure(td);
+      }
       break;
       case otok::k_daily:
       NODEFAULT();
-      tda.putDaily(val);
+      if (!tda.putDaily(val)) {
+        return cli_replyFailure(td);
+      }
       break;
       case otok::k_astro:
       tda.putAstro(val ? atoi(val) : 0);
@@ -282,7 +286,7 @@ int process_parmTimer(clpar p[], int len, const struct TargetDesc &td) {
   return 0;
 }
 
-static void print_timer(const struct TargetDesc &td, uint8_t g, uint8_t m, bool wildcard) {
+static void print_timer(const class UoutWriter &td, uint8_t g, uint8_t m, bool wildcard) {
   Fer_TimerData tdr;
 
   uint8_t g_res = g, m_res = m;

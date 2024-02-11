@@ -38,7 +38,7 @@ static void  fixController(const char *key, Fer_GmSet *gm) {
     kvshT handle;
     if ((handle = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_WRITE))) {
       kvs_erase_key(handle, key);
-      kvs_rw_blob(handle, key, gm, sizeof(*gm), true);
+      kvs_set_object(handle, key, *gm);
       kvs_commit(handle);
       kvs_close(handle);
     }
@@ -50,7 +50,7 @@ static bool read_controller(Fer_GmSet *gm, const char *key) {
   bool success = false;
   kvshT handle = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ);
   if (handle) {
-    success = kvs_rw_blob(handle, key, gm, sizeof *gm, false) == sizeof *gm;
+    success = kvs_get_object(handle, key, *gm);
     kvs_close(handle);
   }
   return success;
@@ -65,7 +65,7 @@ add_rm_controller(const char *key, Fer_GmSet mm, bool remove) {
   handle = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_READ_WRITE);
   if (handle) {
     Fer_GmSet gm;
-    if (!kvs_rw_blob(handle, key, &gm, sizeof gm, false)) {
+    if (!kvs_get_object(handle, key, gm)) {
       gm.clear();
     }
 
@@ -77,7 +77,7 @@ add_rm_controller(const char *key, Fer_GmSet mm, bool remove) {
     bool not_empty = !gm.isAllClear();
 
     if (not_empty) {
-      success = kvs_rw_blob(handle, key, &gm, sizeof gm, true);
+      success = kvs_set_object(handle, key, gm);
     } else {
       success = kvs_erase_key(handle, key);
     }
@@ -111,7 +111,7 @@ bool fer_alias_setControllerPairings(uint32_t controller, Fer_GmSet *mm) {
     if (mm->isAllClear()) {
       success = kvs_erase_key(handle, key) && kvs_commit(handle);
     } else {
-      success = kvs_rw_blob(handle, key, mm, sizeof *mm, true) == sizeof *mm && kvs_commit(handle);
+      success = kvs_set_object(handle, key, *mm) && kvs_commit(handle);
     }
     kvs_close(handle);
 #ifdef NVS_BUG_WA
@@ -211,7 +211,7 @@ static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     return kvsCb_noMatch;
   }
 
-    auto td = static_cast<struct TargetDesc *>(args);
+    auto td = static_cast<class UoutWriter *>(args);
     Fer_GmSet gm {};
     so_arg_kmm_t arg { .key =  key + CPAIR_KEY_PREFIX_LEN, .mm = &gm };
 
@@ -228,7 +228,7 @@ static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     return kvsCb_match;
 }
 
-bool fer_alias_so_output_all_pairings(const struct TargetDesc &td) {
+bool fer_alias_so_output_all_pairings(const class UoutWriter &td) {
 
   soMsg_pair_all_begin(td);
 

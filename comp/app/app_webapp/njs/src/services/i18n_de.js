@@ -105,6 +105,22 @@ export const de = {
       },
     },
 
+    help_doc: {
+      header: "Online Documentation",
+      starter: {
+        url: "docs/starter-de.md",
+        txt: "Schnellstart Anleitung",
+      },
+      starter_faq: {
+        url: "docs/starter_faq-de.md",
+        txt: "FAQ Liste",
+      },
+
+      mqtt: {
+        url: "docs/mqtt-de.md",
+        txt: "MQTT Klient",
+      },
+    },
     mcu: {
       network: { header: "Netzwerk-Verbindungen und -Dienste", tt: { header: "--" } },
       misc: { header: "Allgemeine Konfiguration", tt: { header: "--" } },
@@ -174,6 +190,14 @@ export const de = {
       input: "Name",
       tt: {
         header: "Namen für Sender für bessere Übersichtlichkeit. Ein Name könnte z.B. den genauen Stand-Ort des Senders beschreiben.",
+      },
+    },
+    hs_config: {
+      home_assistant: {
+        header: "Home Assistant Konfiguration",
+        tt: {
+          header: '1) Konfiguriert HomeAssistant via MQTT oder 2) Erzeugt eine Konfiguraion zum Einfügen in die Konfigurationsdatei des "Home Assistant" Home-Server',
+        },
       },
     },
     register: {

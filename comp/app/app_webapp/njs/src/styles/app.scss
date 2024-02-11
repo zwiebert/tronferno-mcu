@@ -48,6 +48,11 @@ $color_border: darken($color_b, 5%);
   color: $color_fg_select;
 }
 
+.bg-pct-groupXX {
+  padding: 0;
+  background-color: darken($color_bg_area, 10%);
+}
+
 .navtab-main {
   border-radius: .5rem;
   padding: 0;

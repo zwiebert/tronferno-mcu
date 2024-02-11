@@ -1,30 +1,30 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import { GuiAcc, TabIdx } from "stores/app_state";
-  import { McuConfig, McuConfigKeys, Gmu } from "stores/mcu_config.js";
-  import { McuDocs_cliHelpConfig } from "stores/mcu_docs.js";
-  import * as httpFetch from "app/fetch.js";
-  import * as cuas from "app/cuas.js";
-  import * as misc from "app/misc.js";
+  import { GuiAcc, TabIdx } from "../store/app_state";
+  import { McuConfig, McuConfigKeys, Gmu } from "../store/mcu_config.js";
+  import { McuDocs_cliHelpConfig } from "../store/mcu_docs.js";
+  import * as httpFetch from "../app/fetch.js";
+  import * as cuas from "../app/cuas.js";
+  import * as misc from "../app/misc.js";
   import { onMount, onDestroy } from "svelte";
-  import { ReloadProgress } from "stores/app_state.js";
-  import NavTabs from "app/nav_tabs.svelte";
-  import { McuErrorMask } from "stores/mcu_firmware.js";
+  import { ReloadProgress } from "../store/app_state.js";
+  import NavTabs from "../app/nav_tabs.svelte";
+  import { McuErrorMask } from "../store/mcu_firmware.js";
 
-  import McuConfigGpio from "components/mcu_config/gpio.svelte";
-  import McuConfigGpioSelect from "components/mcu_config/gpio_select.svelte";
-  import McuConfigNetwork from "components/mcu_config/network.svelte";
-  import McuConfigLanPhy from "components/mcu_config/lan_phy.svelte";
-  import McuConfigNumber from "components/mcu_config/number.svelte";
-  import McuConfigEnable from "components/mcu_config/enable.svelte";
-  import McuConfigAstroCorrection from "components/mcu_config/astro_correction.svelte";
-  import McuConfigUsedMembers from "components/mcu_config/used_members.svelte";
-  import McuRfTrx from "components/mcu_config/rf_trx.svelte";
-  import GpioLevel from "components/gpio_level.svelte";
-  import CC1101 from "panes/cc1101.svelte";
-  import AppLog from "panes/app_log.svelte";
+  import McuConfigGpio from "../components/mcu_config/gpio.svelte";
+  import McuConfigGpioSelect from "../components/mcu_config/gpio_select.svelte";
+  import McuConfigNetwork from "../components/mcu_config/network.svelte";
+  import McuConfigLanPhy from "../components/mcu_config/lan_phy.svelte";
+  import McuConfigNumber from "../components/mcu_config/number.svelte";
+  import McuConfigEnable from "../components/mcu_config/enable.svelte";
+  import McuConfigAstroCorrection from "../components/mcu_config/astro_correction.svelte";
+  import McuConfigUsedMembers from "../components/mcu_config/used_members.svelte";
+  import McuRfTrx from "../components/mcu_config/rf_trx.svelte";
+  import GpioLevel from "../components/gpio_level.svelte";
+  import CC1101 from "../panes/cc1101.svelte";
+  import AppLog from "../panes/app_log.svelte";
 
   let on_destroy = [];
 
@@ -95,7 +95,7 @@
   );
   $: mcuConfigKeysCU = $McuConfigKeys.filter((val) => val === "cu");
   $: mcuConfigKeysAstro = $McuConfigKeys.filter((val) => val === "longitude" || val === "latitude" || val.startsWith("astro-"));
-  $: mcuConfigKeysTime = $McuConfigKeys.filter((val) => val === "rtc" || val === "tz");
+  $: mcuConfigKeysTime = $McuConfigKeys.filter((val) => val === "rtc" || val.startsWith("rtc-") || val === "tz");
   $: mcuConfigKeysCc1101Pin = mcuConfig["rf-trx"] === "cc1101" ? $McuConfigKeys.filter((val) => val.startsWith("rf-") && val.endsWith("-pin")) : [];
   $: mcuConfigKeysIgnore = ["rf-repeater"];
 
@@ -261,8 +261,38 @@
         {/each}
       </table>
 
+      {#if mcuConfigKeysLAN.length > 0 && (mcuConfig.network === "lan" || mcuConfig.network === "lan-wlan" ) }
+      <div class="area">
+        <table class="conf-table top_table rounded-xl overflow-hidden">
+          <caption>{$_("mcuConfig.ethernet")}</caption>
+          {#each mcuConfigKeysLAN as key, i}
+            <tr>
+              <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
+                ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
+              >
+              {#if key.endsWith("-enable")}
+                <td>
+                  <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
+                </td>
+              {:else if key === "lan-phy"}
+                <td>
+                  <McuConfigLanPhy name={key} bind:value={mcuConfig[key]} />
+                </td>
+              {:else if key === "lan-pwr-gpio"}
+                <td>
+                  <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="36" />
+                </td>
+              {:else}
+                <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
+              {/if}
+            </tr>
+          {/each}
+        </table>
+      </div>
+      {/if}
+
       {#if mcuConfig.network !== "none"}
-        {#if mcuConfigKeysWLAN.length > 0 && mcuConfig.network === "wlan"}
+        {#if mcuConfigKeysWLAN.length > 0 && (mcuConfig.network === "wlan"  || mcuConfig.network === "lan-wlan")}
           <div class="area">
             <table class="conf-table top_table rounded-xl overflow-hidden">
               <caption>{$_("mcuConfig.wlan_station")}</caption>
@@ -274,36 +304,6 @@
                   {#if key.endsWith("-enable")}
                     <td>
                       <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-                    </td>
-                  {:else}
-                    <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
-                  {/if}
-                </tr>
-              {/each}
-            </table>
-          </div>
-        {/if}
-
-        {#if mcuConfigKeysLAN.length > 0 && mcuConfig.network === "lan"}
-          <div class="area">
-            <table class="conf-table top_table rounded-xl overflow-hidden">
-              <caption>{$_("mcuConfig.ethernet")}</caption>
-              {#each mcuConfigKeysLAN as key, i}
-                <tr>
-                  <td use:tippy={{ content: $McuDocs_cliHelpConfig[key] }}
-                    ><label class="config-label {mcuConfig[key] !== $McuConfig[key] ? 'font-bold' : ''}" for="cfg_{key}">{mcuConfigNames[key]}</label></td
-                  >
-                  {#if key.endsWith("-enable")}
-                    <td>
-                      <McuConfigEnable name={key} bind:value={mcuConfig[key]} />
-                    </td>
-                  {:else if key === "lan-phy"}
-                    <td>
-                      <McuConfigLanPhy name={key} bind:value={mcuConfig[key]} />
-                    </td>
-                  {:else if key === "lan-pwr-gpio"}
-                    <td>
-                      <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="36" />
                     </td>
                   {:else}
                     <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>

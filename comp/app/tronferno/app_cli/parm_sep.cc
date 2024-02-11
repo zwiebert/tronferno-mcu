@@ -3,8 +3,8 @@
 #include <string.h>
 #include "fernotron/fer_main.h"
 #include "fernotron/pos/shutter_pct.h"
-#include "cli_imp.h"
-#include "cli_fer.h"
+#include "cli_internal.hh"
+#include "cli_fernotron.hh"
 #include "utils_misc/int_types.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/sep/set_endpos.h"
@@ -37,7 +37,7 @@ const char cli_help_parmSep[] = "'sep' sets roller shutter end positions\n\n"
 
 typedef bool (*move_funT)(uint32_t auth_key);
 
-int process_parmSep(clpar p[], int len, const struct TargetDesc &td) {
+int process_parmSep(clpar p[], int len, const class UoutWriter &td) {
   int arg_idx;
   bool enable = false;
   bool request_auth = false;

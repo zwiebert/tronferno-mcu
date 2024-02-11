@@ -8,10 +8,8 @@
 
 #include "net_mqtt/mqtt.hh"
 
-/**
- * \brief setup the component. Will not call the setup of the MQTT client (\link io_mqtt_setup \endlink). FIXME:?!
- */
-void io_mqttApp_setup(const char *topic_root = CONFIG_APP_MQTT_ROOT_TOPIC);
+void io_mqttApp_setup(struct cfg_mqtt *cp);
 
+void io_mqttApp_test1();
 
-
+bool io_mqttApp_HassConfig(const class Fer_GmSet &gmSet, bool remove = false, const char *hass_root_topic = "homeassistant");

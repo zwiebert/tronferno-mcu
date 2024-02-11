@@ -118,10 +118,11 @@ public:
   }
 
 
+private:
+  static bool store_load(const char *name, posDataT (&gm)[8]);
+  static bool store_save(const char *name, const posDataT (&gm)[8]);
 
-  static bool store_load(const char *name, posDataT *gm);
-  static bool store_save(const char *name, const posDataT *gm);
-
+public:
   bool load_group_positions(uint8_t g) {
     char buf[16];
     return store_load(g_to_name(g, buf), allPos_[g]);

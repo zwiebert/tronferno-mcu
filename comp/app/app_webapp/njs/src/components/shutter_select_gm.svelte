@@ -1,11 +1,11 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import { GMR, G, M, GM, GMH, RadioCode, RadioCodeEnabled } from "stores/curr_shutter.js";
-  import { Names } from "stores/shutters.js";
-  import { Gmu } from "stores/mcu_config.js";
-  import { GuiAcc } from "stores/app_state";
-  import * as httpFetch from "app/fetch.js";
+  import { _ } from "../services/i18n";
+  import { GMR, G, M, GM, GMH, RadioCode, RadioCodeEnabled } from "../store/curr_shutter.js";
+  import { Names } from "../store/shutters.js";
+  import { Gmu } from "../store/mcu_config.js";
+  import { GuiAcc } from "../store/app_state";
+  import * as httpFetch from "../app/fetch.js";
 
   export let radio = true;
   export let groups = true;

@@ -1,5 +1,5 @@
 <script>
-  import Testing from "main/test/testing.svelte";
+  import Testing from "../test/testing.svelte";
 </script>
 
 <div class="area">

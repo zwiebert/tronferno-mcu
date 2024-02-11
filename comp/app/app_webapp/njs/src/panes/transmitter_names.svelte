@@ -1,15 +1,15 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import IdSelector from "app/id_selector.svelte";
-  import TransmitterNames from "app/transmitter_names.svelte";
-  import { GuiAcc } from "stores/app_state";
+  import { _ } from "../services/i18n";
+  import IdSelector from "../app/id_selector.svelte";
+  import TransmitterNames from "../app/transmitter_names.svelte";
+  import { GuiAcc } from "../store/app_state";
   import tippy from "sveltejs-tippy";
 
-  import { Aliases } from "stores/shutters.js";
-  import { G, M0 } from "stores/curr_shutter.js";
-  import { SelectedId, SelectedIdIsValid } from "stores/id.js";
-  import { Gmu, GmuMaxM } from "stores/mcu_config.js";
+  import { Aliases } from "../store/shutters.js";
+  import { G, M0 } from "../store/curr_shutter.js";
+  import { SelectedId, SelectedIdIsValid } from "../store/id.js";
+  import { Gmu, GmuMaxM } from "../store/mcu_config.js";
 
   $: AliasesPairedKeys = Object.keys($Aliases).filter((key) => alias_isKeyPairedToM(key, $G, $M0));
 

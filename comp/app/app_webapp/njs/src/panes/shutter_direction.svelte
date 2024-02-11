@@ -1,9 +1,9 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import ShutterGM from "app/shutter_gm.svelte";
-  import ShutterDirection from "components/shutter_direction.svelte";
+  import ShutterGM from "../app/shutter_gm.svelte";
+  import ShutterDirection from "../components/shutter_direction.svelte";
 </script>
 
 <h4 class="text-center" use:tippy={{ content: $_("panes.rot_dir.tt.header") }}>{$_("panes.rot_dir.header")}</h4>

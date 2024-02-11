@@ -1,4 +1,4 @@
-##  Baunaleitung: Tronferno mit Olimex-ESP32-Gateway + Neuftech CC1101
+##  Baunanleitung: Tronferno mit Olimex-ESP32-Gateway + Neuftech CC1101
 
 
 #### 1. Das ESP32 Mikrocontroller Board
@@ -35,7 +35,10 @@ Um das Board immer problemlos über USB flashen zu können, sollte ein Elektroly
 
 #### 2. Das CC1101 Funkmodul
 
-Es sollte jedes Modul funktionieren welches für 433 MHz gedacht ist. 866 MHz Module sind ungeignet. Ich verwende hier ein CC1101 Modul der "Marke" Neuftech für ca 7 EUR bei Amazon.
+Es sollte jedes Modul funktionieren welches für 433 MHz gedacht ist. 866 MHz Module sind ungeignet.
+Ich verwende hier ein CC1101 Modul der "Marke" Neuftech für ca 7 EUR bei Amazon, was aber etwas abweicht bei der Frequenz.
+Ähnlich aussehende Boards neuerer Version (V2.0) von Aliexpress scheinen genauer, wobei ich  der Praxis hier beide gleich gut funktionieren.
+ 
 
 In der Weboberfläche kann jedem der sechs benötigten CC1101 Anschlüsse ein beliebiger GPIO zugewiesen werden.
 
@@ -62,7 +65,7 @@ Für Gateway bis Revision E:
    1. CC1101-CSN: GW-SD-Card-Pin-3 (GPIO15)
    1. CC1101-VCC: GW-SD-Card-Pin-4  oder GW-Pin-1 (3.3V)
    1. CC1101-GND: GW-SD-Card-Pin-6  oder GW-Pin-2 (GND)
-   1. CC1101-GO0: GW-Pin-10 (GPIO16)
+   1. CC1101-GO0: GW-Pin-11 (GPIO16)
    1. CC1101-GO2: GW-Pin-18 (GPI39)
    1. Taster: GW-Pin-15 (GPI34) und GW-Pin-2 (GND)
    1. 10uF Elektrolytkondensator: (-) an GW-Pin-2 (GND) und (+) an GW-Pin-3 (ESP_EN)
@@ -74,7 +77,7 @@ Für Gateway ab Revision F:
    1. CC1101-CSN: GW-Pin-10 (GPIO15)
    1. CC1101-VCC: GW-Pin-1 (3.3V)
    1. CC1101-GND: GW-Pin-2 (GND)
-   1. CC1101-GO0: GW-Pin-10 (GPIO16)
+   1. CC1101-GO0: GW-Pin-11 (GPIO16)
    1. CC1101-GO2: GW-Pin-18 (GPI39)
    1. Taster: GW-Pin-15 (GPI34) und GW-Pin-2 (GND)
    1. 10uF Elektrolytkondensator: (-) an GW-Pin-2 (GND) und (+) an GW-Pin-3 (ESP_EN)

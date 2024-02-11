@@ -33,7 +33,7 @@
 volatile uint32_t run_time_s_, run_time_ts_;
 #endif
 
-static void IRAM_ATTR intTimer_isr_work() {
+IRAM_ATTR static void intTimer_isr_work() {
   static uint_fast8_t tick_count;
   ++tick_count;
   const bool isTxTick = (0 == (tick_count & ((FER_ISR_FMULT / FER_TX_FMULT) - 1)));
@@ -89,7 +89,7 @@ static void IRAM_ATTR intTimer_isr_work() {
 #endif
 }
 
-static bool IRAM_ATTR intTimer_isr(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_ctx) {
+IRAM_ATTR static bool  intTimer_isr(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_ctx) {
   intTimer_isr_work();
   return false;
 }

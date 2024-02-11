@@ -1,33 +1,48 @@
 #!/usr/bin/env node
-
 'use strict';
 
 const path = require('path');
 const express = require('express');
 const httpProxy = require('http-proxy');
-var expressWs = require('express-ws')
+const expressWs = require('express-ws')
+const livereload = require("livereload");
+
+const args = process.argv.slice(2);
+const ipaddr = args[1] || '192.168.1.69';
+const port = args[2] || 3000;
+
+const proj_dir=path.dirname(path.dirname(path.dirname(__dirname)));
+const tff_dir=path.dirname(proj_dir)+"/tronferno-fhem";
+const build_dir=proj_dir+"/build/esp32dbg";
+const njs_build_dir=args[0] || __dirname + '/njs/build_dev';
+const cont_dir=__dirname
+const mcu = 'http://' + ipaddr + ':80';
+const mcu_ws = 'ws://' + ipaddr + ':80';
 
 
-let proj_dir=path.dirname(path.dirname(path.dirname(__dirname)));
-let tff_dir=path.dirname(proj_dir)+"/tronferno-fhem";
-let build_dir=proj_dir+"/build/esp32";
-let cont_dir=__dirname
-let mcu = 'http://192.168.1.69:80';
-let mcu_ws = 'ws://192.168.1.69:80';
 
-let app = express();
- expressWs(app);
-let server = require('http').createServer(app);
+// open livereload high port and start to watch public directory for changes
+const liveReloadServer = livereload.createServer();
+liveReloadServer.watch(njs_build_dir);
+
+const app = express();
+
+expressWs(app);
+const server = require('http').createServer(app);
 
 
 
 // forward any requests to MCU
-let proxy = httpProxy.createProxyServer({ ws: true });
+const proxy = httpProxy.createProxyServer({ ws: true });
 
 app.all("/*.json", (req, res) => {
     proxy.web(req, res, { target: mcu });
 });
 app.all("/f/cli/*", (req, res) => {
+    proxy.web(req, res, { target: mcu });
+});
+
+app.all("/f/backup/*", (req, res) => {
     proxy.web(req, res, { target: mcu });
 });
 
@@ -44,22 +59,20 @@ server.on('upgrade', function (req, socket, head) {
 
 
 // static files of MCU HTTP server
-app.get("/index.html", (req, res) => {
+app.get("/", (req, res) => {
     res.sendFile(cont_dir + '/wapp_dev.html');
 });
 app.get("/wapp_dev.html", (req, res) => {
     res.sendFile(cont_dir + '/wapp_dev.html');
 });
-app.get("/wapp.html", (req, res) => {
-    res.sendFile(cont_dir + '/build/wapp.html');
-});
+
 app.get("/f/js/wapp.js", (req, res) => {
     //res.sendFile(cont_dir + '/wapp_dev.js');
-    res.sendFile(cont_dir + '/njs/build_dev/wapp.js');
+    res.sendFile(njs_build_dir+'/wapp.js');
 });
 app.get("/f/js/wapp.js.map", (req, res) => {
     //res.sendFile(cont_dir + '/wapp_dev.js');
-    res.sendFile(cont_dir + '/njs/build_dev/wapp.js.map');
+    res.sendFile(njs_build_dir+'/wapp.js.map');
 });
 app.get("/f/css/global.css", (req, res) => {
     //res.sendFile(cont_dir + '/wapp_dev.js');
@@ -67,11 +80,11 @@ app.get("/f/css/global.css", (req, res) => {
 });
 app.get("/f/css/wapp.css", (req, res) => {
     //res.sendFile(cont_dir + '/wapp_dev.js');
-    res.sendFile(cont_dir + '/njs/build_dev/wapp.css');
+    res.sendFile(njs_build_dir+'/wapp.css');
 });
 app.get("/f/css/wapp.css.map", (req, res) => {
     //res.sendFile(cont_dir + '/wapp_dev.js');
-    res.sendFile(cont_dir + '/njs/build_dev/wapp.css.map');
+    res.sendFile(njs_build_dir+'/wapp.css.map');
 });
 app.get("/src/", (req, res) => {
     //res.sendFile(cont_dir + '/wapp_dev.js');
@@ -108,7 +121,9 @@ app.get("/fernotron-fhem/FHEM/10_Fernotron.pm", (req, res) => {
 });
 
 
-server.listen(3000);
+
+
+server.listen(port);
 
 
 /*

@@ -1,9 +1,10 @@
 'use strict';
 
-import { ReloadProgress } from "stores/app_state.js";
+import { ReloadProgress } from "../store/app_state.js";
 //import { set } from "svelte/store";
-import { GuiAcc } from "stores/app_state";
-import * as httpFetch from "app/fetch.js";
+import { GuiAcc } from "../store/app_state";
+import * as httpFetch from "../app/fetch.js";
+import { sdkconfig } from "config/sdkconfig.js"
 
 export const NODE_ENV_DEV = true;
 export const PROD = false;
@@ -67,5 +68,40 @@ export function set_gui_access_level(al) {
     set_mode: al < user,
     debug: al < expert,
     ota: al < user,
+    hsc: al < user,
+    bak: al < admin,
+    rf_repeater: sdkconfig.APP_USE_REPEATER,
   });
 }
+
+  // return a promise
+  function copyToClipboard(textToCopy) {
+    // navigator clipboard api needs a secure context (https)
+    if (navigator.clipboard && window.isSecureContext) {
+        // navigator clipboard api method'
+        return navigator.clipboard.writeText(textToCopy);
+    } else {
+        // text area method
+        let textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+        // make the textarea out of viewport
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        return new Promise((res, rej) => {
+            // here the magic happens
+            document.execCommand('copy') ? res() : rej();
+            textArea.remove();
+        });
+    }
+}
+
+export function textToClipboard(txt) {
+  copyToClipboard(txt)
+    .then(() => console.log('text copied !'))
+    .catch(() => console.log('error'));
+}
+

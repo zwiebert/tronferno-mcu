@@ -1,5 +1,5 @@
 <script>
-  import PrefApp from "app/pref_app.svelte";
+  import PrefApp from "../app/pref_app.svelte";
 </script>
 
 <div class="area">

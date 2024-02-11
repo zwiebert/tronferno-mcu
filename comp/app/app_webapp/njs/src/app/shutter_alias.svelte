@@ -1,12 +1,12 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import * as httpFetch from "app/fetch.js";
-  import { G, M0 } from "stores/curr_shutter.js";
-  import { SelectedId, SelectedIdIsValid, TxName } from "stores/id.js";
-  import { Gmu, GmuMaxM } from "stores/mcu_config.js";
-  import { Aliases } from "stores/shutters.js";
-  import { Pras } from "stores/alias.js";
+  import { _ } from "../services/i18n";
+  import * as httpFetch from "../app/fetch.js";
+  import { G, M0 } from "../store/curr_shutter.js";
+  import { SelectedId, SelectedIdIsValid, TxName } from "../store/id.js";
+  import { Gmu, GmuMaxM } from "../store/mcu_config.js";
+  import { Aliases } from "../store/shutters.js";
+  import { Pras } from "../store/alias.js";
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
 

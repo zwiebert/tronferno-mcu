@@ -10,7 +10,7 @@
 #include "txtio/inout.h"
 #include "fernotron/fer_pct.h"
 #include "fernotron_trx/astro.h"
-//#include "net/ethernet_setup.h"
+//#include "net/ethernet_setup.hh"
 #include "gpio/pin.h"
 #include "stdbool.h"
 
@@ -42,7 +42,7 @@ enum rtclock {
 };
 
 enum nwConnection {
-  nwNone, nwWlanSta, nwWlanAp, nwLan, nwLEN,
+  nwNone, nwWlanSta, nwWlanAp, nwLan, nwLanOrWlanSta, nwLEN,
 };
 
 
@@ -85,6 +85,7 @@ int8_t config_read_rfmosi_gpio();
 int8_t config_read_rfmiso_gpio();
 int8_t config_read_rfss_gpio();
 const char* config_read_rf_repeater(char *d, unsigned d_size);
+int8_t config_read_rtc_auto_upd();
 
 void config_setup_global();
 uint32_t config_read_used_members();

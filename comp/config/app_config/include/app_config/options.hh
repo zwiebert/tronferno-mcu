@@ -17,8 +17,8 @@ constexpr const_cstringT pin_state_args = "?01t";
 #endif
 
 #ifdef CONFIG_APP_USE_NETWORK
-using cfg_args_networkT = const char *[4];
-constexpr cfg_args_networkT cfg_args_network = { "none", "wlan", "ap", "lan" };
+using cfg_args_networkT = const char *[5];
+constexpr cfg_args_networkT cfg_args_network = { "none", "wlan", "ap", "lan", "lan-wlan" };
 #endif
 
 #ifdef CONFIG_APP_USE_LAN
@@ -46,6 +46,7 @@ enum class otok : otokBaseT  {
       k_rf_miso_pin, k_rf_mosi_pin, k_rf_sclk_pin, k_rf_ss_pin, // CC1101 SPI
       k_cc1101_config,
       k_rf_repeater,
+      k_rtc_aupd,
       ///////////// end of config keys /////////////////
 
   k_a, k_g, k_m, k_mm, k_c, //
@@ -76,6 +77,7 @@ constexpr const_cstringT otok_strings[] = {
     "rf-miso-pin", "rf-mosi-pin", "rf-sclk-pin", "rf-ss-pin", //CC1101 SPI
     "cc1101-config",
     "rf-repeater" ,
+    "rtc-auto-upd-enable",
     ///////////// end of config keys /////////////////
     "a", "g", "m", "mm", "c",  //
     "restart", "all", "cuas", "set-pw", "receiver", "transmitter", "rf-trx", // config

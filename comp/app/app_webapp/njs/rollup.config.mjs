@@ -4,29 +4,23 @@ import json from "@rollup/plugin-json";
 import strip from "@rollup/plugin-strip";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
-import alias from "@rollup/plugin-alias";
 import svelte from "rollup-plugin-svelte";
 import sveltePreprocess from "svelte-preprocess";
 import { terser } from "@wwa/rollup-plugin-terser";
 import css from "rollup-plugin-css-only";
-
+import alias from "@rollup/plugin-alias";
 
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDistro = process.env.DISTRO === "1";
+const build_directory = process.env.BUILD_DIR || "/tmp/tronferno-mcu/njs/build";
+const sdkconfig_js_dir = process.env.SDKCONFIG_JS_DIR || "./src/config";
 
 console.log("isProduction:", isProduction, "isDistro:", isDistro);
-
-let wdir = __dirname + "/";
 
 const aliases = alias({
   resolve: [".svelte", ".js"], //optional, by default this will just look for .js files or folders
   entries: [
-    { find: "components", replacement: wdir + "src/components" },
-    { find: "services", replacement: wdir + "src/services" },
-    { find: "stores", replacement: wdir + "src/store" },
-    { find: "panes", replacement: wdir + "src/panes" },
-    { find: "app", replacement: wdir + "src/app" },
-    { find: "main", replacement: wdir + "src" },
+    { find: "config", replacement: sdkconfig_js_dir },
   ],
 });
 
@@ -41,7 +35,7 @@ export default {
     ...(!isProduction
       ? [
           {
-            file: "build_dev/wapp.js",
+            file: build_directory + "/wapp.js",
             sourcemap: true,
             format: "iife",
             name: "wapp",
@@ -51,7 +45,7 @@ export default {
         ]
       : [
           {
-            file: "build/wapp.js",
+            file: build_directory + "/wapp.js",
             format: "iife",
             name: "wapp",
             sourcemap: true,
@@ -107,7 +101,7 @@ export default {
     svelte({
       preprocess: sveltePreprocess({
         postcss: true,
-        replace: [          
+        replace: [        
           ["misc.NODE_ENV_DEV", isProduction ? "false" : "true"],
           ["misc.PROD", isProduction ? "true" : "false"],
           ["misc.DISTRO", isDistro ? "true" : "false"],

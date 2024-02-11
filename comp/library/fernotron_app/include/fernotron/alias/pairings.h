@@ -52,7 +52,7 @@ bool fer_alias_rmController(uint32_t controller);
  * \param td           Target descriptor for output
  * \return             true on success
  */
-bool fer_alias_so_output_all_pairings(const struct TargetDesc &td);
+bool fer_alias_so_output_all_pairings(const class UoutWriter &td);
 
 /**
  * \brief              Start listening on RF receiver for controller to pair/unpair

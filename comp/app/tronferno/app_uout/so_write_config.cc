@@ -32,51 +32,51 @@
 
 #define D(x)
 
-void soCfg_BAUD(const struct TargetDesc &td) {
+void soCfg_BAUD(const class UoutWriter &td) {
 #ifndef MCU_ESP32
   td.so().print(settings_get_optKeyStr(CB_BAUD), config_read_baud());
 #endif
 }
 
-void soCfg_RTC(const struct TargetDesc &td) {
+void soCfg_RTC(const class UoutWriter &td) {
   char buf[64];
   if (rtc_get_by_string(buf)) {
     td.so().print(otok_strings[(int) otok::k_rtc], buf);
   }
 }
 
-void soCfg_CU(const struct TargetDesc &td) {
+void soCfg_CU(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_CUID), fer_config.cu, 16);
 }
 
-void soCfg_NETWORK(const struct TargetDesc &td) {
+void soCfg_NETWORK(const class UoutWriter &td) {
 #ifdef CONFIG_APP_USE_NETWORK
   td.so().print(settings_get_optKeyStr(CB_NETWORK_CONNECTION), cfg_args_network[config_read_network_connection()]);
 #endif
 }
 
-void soCfg_TZ(const struct TargetDesc &td) {
+void soCfg_TZ(const class UoutWriter &td) {
 #ifdef CONFIG_APP_USE_POSIX_TIME
   char buf[64];
   td.so().print(settings_get_optKeyStr(CB_TZ), config_read_tz(buf, sizeof buf));
 #endif
 }
 
-void soCfg_LONGITUDE(const struct TargetDesc &td) {
+void soCfg_LONGITUDE(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_LONGITUDE), config_read_longitude(), 2);
 }
 
-void soCfg_LATITUDE(const struct TargetDesc &td) {
+void soCfg_LATITUDE(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_LATITUDE), config_read_latitude(), 2);
 }
 
-void soCfg_TIMEZONE(const struct TargetDesc &td) {
+void soCfg_TIMEZONE(const class UoutWriter &td) {
 #ifndef CONFIG_APP_USE_POSIX_TIME
   td.so().print(settings_get_optKeyStr(CB_TIMEZONE), config_read_timezone(), 5);
 #endif
 }
 
-void soCfg_DST(const struct TargetDesc &td) {
+void soCfg_DST(const class UoutWriter &td) {
 #ifdef CONFIG_APP_USE_MDR_TIME
   {
     enum dst geo_dst = config_read_dst();
@@ -86,50 +86,58 @@ void soCfg_DST(const struct TargetDesc &td) {
 #endif
 }
 
-void soCfg_GM_USED(const struct TargetDesc &td) {
+void soCfg_GM_USED(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_USED_MEMBERS), config_read_used_members(), 16);
 }
 
-void soCfg_GPIO_RFOUT(const struct TargetDesc &td) {
+void soCfg_GPIO_RFOUT(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_RFOUT_GPIO), config_read_rfout_gpio());
 }
 
-void soCfg_GPIO_RFIN(const struct TargetDesc &td) {
+void soCfg_GPIO_RFIN(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_RFIN_GPIO), config_read_rfin_gpio());
 }
 
-void soCfg_GPIO_SETBUTTON(const struct TargetDesc &td) {
+void soCfg_GPIO_SETBUTTON(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_SETBUTTON_GPIO), config_read_setbutton_gpio());
 }
 
-void soCfg_RF_TRX(const struct TargetDesc &td) {
+void soCfg_RF_TRX(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_RF_TRX), cfg_args_rfTrx[config_read_rf_trx()]);
 }
 
-void soCfg_RF_REPEATER(const struct TargetDesc &td) {
+#ifdef CONFIG_APP_USE_REPEATER
+void soCfg_RF_REPEATER(const class UoutWriter &td) {
   char buf[80];
   td.so().print(settings_get_optKeyStr(CB_RF_REPEATER), config_read_rf_repeater(buf, sizeof buf));
 }
+#endif
 
-void soCfg_GPIO_RFSCK(const struct TargetDesc &td) {
+#ifdef CONFIG_APP_USE_RTC_AUTO_UPD
+void soCfg_RTC_AUTO_UPD(const class UoutWriter &td) {
+  td.so().print(settings_get_optKeyStr(CB_RTC_AUTO_UPD), config_read_rtc_auto_upd());
+}
+#endif
+
+void soCfg_GPIO_RFSCK(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_RFSCK_GPIO), config_read_rfsck_gpio());
 }
 
-void soCfg_GPIO_RFMISO(const struct TargetDesc &td) {
+void soCfg_GPIO_RFMISO(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_RFMISO_GPIO), config_read_rfmiso_gpio());
 }
 
-void soCfg_GPIO_RFMOSI(const struct TargetDesc &td) {
+void soCfg_GPIO_RFMOSI(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_RFMOSI_GPIO), config_read_rfmosi_gpio());
 }
 
-void soCfg_GPIO_RFSS(const struct TargetDesc &td) {
+void soCfg_GPIO_RFSS(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_RFSS_GPIO), config_read_rfss_gpio());
 }
 
 
 // TODO: should this show the current registers or the saved ones (if none are saved, how to get the default ones?).
-void soCfg_CC1101_CONFIG(const struct TargetDesc &td) {
+void soCfg_CC1101_CONFIG(const class UoutWriter &td) {
   uint8_t regFile[48];
   size_t regFileSize = sizeof regFile;
   if (cc1101_ook_dump_config(regFile, &regFileSize)) {
@@ -141,7 +149,7 @@ void soCfg_CC1101_CONFIG(const struct TargetDesc &td) {
   }
 }
 
-void soCfg_CC1101_CONFIG_xxx(const struct TargetDesc &td) { // TODO:
+void soCfg_CC1101_CONFIG_xxx(const class UoutWriter &td) { // TODO:
   char cc1101_config[97];
   if (config_read_cc1101_config(cc1101_config, sizeof cc1101_config)) {
       td.so().print("cc1101-config", cc1101_config);
@@ -151,7 +159,7 @@ void soCfg_CC1101_CONFIG_xxx(const struct TargetDesc &td) { // TODO:
 }
 
 
-void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
+void soCfg_GPIO_PIN(const class UoutWriter &td, const int gpio_number) {
 #ifdef CONFIG_APP_USE_GPIO_PINS
   {
     char buf[64];
@@ -167,7 +175,7 @@ void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
 #endif
 }
 
-void soCfg_GPIO_MODES(const struct TargetDesc &td) {
+void soCfg_GPIO_MODES(const class UoutWriter &td) {
 #ifdef CONFIG_APP_USE_GPIO_PINS
   {
     char buf[64];
@@ -192,7 +200,7 @@ void soCfg_GPIO_MODES(const struct TargetDesc &td) {
 #endif
 }
 
-void soCfg_GPIO_MODES_AS_STRING(const struct TargetDesc &td) {
+void soCfg_GPIO_MODES_AS_STRING(const class UoutWriter &td) {
 #ifdef CONFIG_APP_USE_GPIO_PINS
   {
     int gpio_number;
@@ -211,23 +219,23 @@ void soCfg_GPIO_MODES_AS_STRING(const struct TargetDesc &td) {
 #endif
 }
 
-void soCfg_ASTRO_CORRECTION(const struct TargetDesc &td) {
+void soCfg_ASTRO_CORRECTION(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_ASTRO_CORRECTION), config_read_astro_correction());
 }
 
-void soCfg_begin(const struct TargetDesc &td) {
+void soCfg_begin(const class UoutWriter &td) {
   td.so().x_open("config");
 }
 
-void soCfg_end(const struct TargetDesc &td) {
+void soCfg_end(const class UoutWriter &td) {
   td.so().x_close();
 }
 
-void soCfg_all_net(const struct TargetDesc &td) {
+void soCfg_all_net(const class UoutWriter &td, bool backup) {
   soCfg_NETWORK(td);
 #ifdef CONFIG_APP_USE_WLAN
   soCfg_WLAN_SSID(td);
-  soCfg_WLAN_PASSWORD(td);
+  if (!backup) soCfg_WLAN_PASSWORD(td);
 #endif
 #ifdef CONFIG_APP_USE_NTP
   soCfg_NTP_SERVER(td);
@@ -237,30 +245,28 @@ void soCfg_all_net(const struct TargetDesc &td) {
   soCfg_LAN_PWR_GPIO(td);
 #endif
 #ifdef CONFIG_APP_USE_MQTT
-  soCfg_MQTT_ENABLE(td);
-  soCfg_MQTT_URL(td);
-  soCfg_MQTT_USER(td);
-  soCfg_MQTT_PASSWORD(td);
-  soCfg_MQTT_CLIENT_ID(td);
-  soCfg_MQTT_ROOT_TOPIC(td);
+  soCfg_MQTT(td, backup);
 #endif
 #ifdef CONFIG_APP_USE_HTTP
   soCfg_HTTP_ENABLE(td);
   soCfg_HTTP_USER(td);
-  soCfg_HTTP_PASSWORD(td);
+  if (!backup) soCfg_HTTP_PASSWORD(td);
 #endif
 }
 
-void soCfg_all_misc(const struct TargetDesc &td) {
+void soCfg_all_misc(const class UoutWriter &td, bool backup) {
   soCfg_BAUD(td);
   soCfg_VERBOSE(td);
   soCfg_RF_TRX(td);
 #if 0 // disabled, becuase reading resgisters via SPI is not reentrant. It did crash when accessing config from FHEM and fetch registers periodically from Web-Browser.
   soCfg_CC1101_CONFIG(td);
 #endif
+#ifdef CONFIG_APP_USE_RTC_AUTO_UPD
+  soCfg_RTC_AUTO_UPD(td);
+#endif
 }
 
-void soCfg_all_gpio(const struct TargetDesc &td) {
+void soCfg_all_gpio(const class UoutWriter &td, bool backup) {
   soCfg_GPIO_RFOUT(td);
   soCfg_GPIO_RFIN(td);
   soCfg_GPIO_SETBUTTON(td);
@@ -272,7 +278,7 @@ void soCfg_all_gpio(const struct TargetDesc &td) {
   soCfg_GPIO_MODES_AS_STRING(td);
 }
 
-void soCfg_all_fer(const struct TargetDesc &td) {
+void soCfg_all_fer(const class UoutWriter &td, bool backup) {
   soCfg_CU(td);
   soCfg_GM_USED(td);
   soCfg_LONGITUDE(td);
@@ -280,8 +286,8 @@ void soCfg_all_fer(const struct TargetDesc &td) {
   soCfg_ASTRO_CORRECTION(td);
 }
 
-void soCfg_all_time(const struct TargetDesc &td) {
-  soCfg_RTC(td);
+void soCfg_all_time(const class UoutWriter &td, bool backup) {
+  if (!backup) soCfg_RTC(td);
 #ifdef CONFIG_APP_USE_POSIX_TIME
   soCfg_TZ(td);
 #else
@@ -290,7 +296,7 @@ void soCfg_all_time(const struct TargetDesc &td) {
 #endif
 }
 
-typedef void (*soCfg_fnT)(const struct TargetDesc &td);
+typedef void (*soCfg_fnT)(const class UoutWriter &td, bool backup);
 
 const soCfg_fnT soCfg_fns[] = {
   soCfg_all_time,
@@ -302,25 +308,25 @@ const soCfg_fnT soCfg_fns[] = {
 
 constexpr size_t soCfg_fnsCt = sizeof soCfg_fns / sizeof soCfg_fns[0];
 
-void soCfg_all(const struct TargetDesc &td) {
+void soCfg_all(const class UoutWriter &td, bool backup) {
 
   soCfg_BAUD(td);
   soCfg_VERBOSE(td);
 
-  soCfg_all_fer(td);
-  soCfg_all_time(td);
-  soCfg_all_net(td);
+  soCfg_all_fer(td, backup);
+  soCfg_all_time(td, backup);
+  soCfg_all_net(td, backup);
 
-  soCfg_all_gpio(td);
+  soCfg_all_gpio(td, backup);
   soCfg_RF_TRX(td);
 }
 
-void soCfg_all_part(const struct TargetDesc &td, int part_num, int part_size) {
+void soCfg_all_part(const class UoutWriter &td, int part_num, int part_size) {
   const int start_idx = part_num * part_size;
   const int end_idx = MIN(start_idx + part_size, soCfg_fnsCt);
 
   for (int i = start_idx; i < end_idx; ++i) {
     if (auto fn = soCfg_fns[i]; fn)
-      fn(td);
+      fn(td, false);
   }
 }

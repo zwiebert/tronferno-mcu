@@ -18,12 +18,12 @@ export const en = {
       auto: "Auto",
       firmware: "OTA",
       user_level: {
-        developer: ">>",
+        developer: "\uD83D\uDDA5\uD83D\uDDA5",
         all: "$#",
-        expert: "##>",
-        admin: "#>",
-        user: "$>",
-        kid: "@>",
+        expert: "\uD83D\uDCBB",
+        admin: "\uD83D\uDEE1",
+        user: "\u2602",
+        kid: "\uD83D\uDEB8",
         name: {
           developer: "Developer",
           expert: "Expert",
@@ -32,18 +32,29 @@ export const en = {
           kid: "Kid",
         },
       },
-      help: {
-        tab: "?",
-        ota: {
-          tab: "OTA",
-        },
-      },
-  
+
+
       guiacc: {
-       tab: "",
+        tab: "",
       },
     },
 
+    help: {
+      tab: "\u2753",
+      ota: {
+        tab: "OTA",
+      },
+      hsc: {
+        tab: "\uD83C\uDFE0",
+      },
+      backup: {
+        tab: "Backup",
+      },
+      doc: {
+        tab: "\uD83D\uDCD6",
+      }
+    },
+    
     cfg: {
       mcu: {
         tab: "MCU",
@@ -96,9 +107,6 @@ export const en = {
         },
       },
     },
-
-
-
   },
 
   panes: {
@@ -106,6 +114,42 @@ export const en = {
       header: "OTA Firmware Update",
       tt: {
         header: "Firmware information and Over the Air firmware update from GitHub zwiebert/tronferno-mcu-bin repository",
+      },
+    },
+
+    backup: {
+      header: "Backup/Restore Settings",
+      create: "Create",
+      load: "Load",
+      restore: "Restore",
+      toClipboard: "Copy to Clipboard",
+      tt:{
+        header: `Backup: 1) Click Create button to create a backup file on MCU. 2) Click the settings.json URL to open and save it. 
+Restore: 1) Paste the content of the saved backup file into the text area 2) Click restore button`,
+        create: "Create a backup file settings.json on the MCU. It can be downloaded by the URL next to this button",
+        load: "Fetch the settings.json stored in MCU (!) and show it in the text area",
+        restore: "Overwrite the MCU Settings by the JSON data in the text area",
+        toClipboard: "Copy JSON from text area to clipboard", 
+      } 
+    },
+
+    help_doc: {
+      header: "Online Documentation",
+      tt: {
+        header: "Access documentation on GitHub",
+      },
+      starter: {
+        url: "docs/starter-de.md",
+        txt: "Getting Started",
+      },
+      starter_faq: {
+        url: "docs/starter_faq-de.md",
+        txt: "Starter FAQ",
+      },
+
+      mqtt: {
+        url: "docs/mqtt.md",
+        txt: "MQTT Client",
       },
     },
 
@@ -190,12 +234,34 @@ First check the current direction with arrow buttons. If wrong, then reverse the
       },
     },
 
+    hs_config: {
+      home_assistant: {
+        header: "Home Assistant Configuration",
+        tt: {
+          header: "1) Configures Home Assistant via MQTT discover or 2) Generates a configuration for Home Assistant for copy-and-paste",
+        },
+      },
+      fhem: {
+        header: "FHEM Configuration",
+        tt: {
+          header: "Generates a configuration for FHEM home-server for copy-and-paste. Configurations are generated for both MQTT and the FHEM-module \"tronferno-mcu\"",
+        },
+      },
+      openhab: {
+        header: "OpenHAB Configuration",
+        tt: {
+          header: "Generates a configuration for OpenHAB home-server for copy-and-paste. Configurations are generated for MQTT-Generic-Thing",
+        },
+      },
+    },
+
     guiacc: {
       header: "GUI Access restriction",
       tt: {
-        header: "Experimental/Unfinished work: Reduce user level to hide inappropriate user interface areas (e.g. most configuration areas need at least admin level)",
-      }
-    }
+        header:
+          "Experimental/Unfinished work: Reduce user level to hide inappropriate user interface areas (e.g. most configuration areas need at least admin level)",
+      },
+    },
   },
 
   app: {
@@ -400,6 +466,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
     cu: "Central-Unit-ID",
     "astro-correction": "Astro Correction",
     rtc: "Date/Time",
+    "rtc-auto-upd-enable": "RTC auto updates",
     tz: "Timezone (POSIX)",
     "Van-phy": "PHY-Chip",
     "lan-pwr-gpio": "Power-ON/OFF GPIO",

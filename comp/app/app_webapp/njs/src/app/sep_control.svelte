@@ -1,13 +1,13 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import * as httpFetch from "app/fetch.js";
-  import { G, M0, Address, RadioCode, RadioCodeEnabled } from "stores/curr_shutter.js";
+  import * as httpFetch from "../app/fetch.js";
+  import { G, M0, Address, RadioCode, RadioCodeEnabled } from "../store/curr_shutter.js";
   import { onMount, onDestroy } from "svelte";
-  import ShutterGM from "app/shutter_gm.svelte";
-  import ShutterMove from "app/shutter_move.svelte";
-  import { Sep, SepMode } from "stores/sep";
+  import ShutterGM from "../app/shutter_gm.svelte";
+  import ShutterMove from "../app/shutter_move.svelte";
+  import { Sep, SepMode } from "../store/sep";
 
   $: upDown_enabled = false;
   let Button_Interval = null;

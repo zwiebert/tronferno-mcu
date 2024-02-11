@@ -1,15 +1,4 @@
-/*
- * fer_misc.c
- *
- * Created: 12.09.2017 01:40:05
- *  Author: bertw
- */ 
-
-
-
-
 #include <stdint.h>
-#include "stdbool.h"
 
 #include "fernotron_trx/raw/fer_fsb.h"
 #include "fernotron_trx/raw/fer_msg_attachment.h"
@@ -18,13 +7,6 @@
 #include "txtio/txtio_mutex.hh"
 #include <fernotron_trx/fer_trx_c_api.h>
 #include <fernotron_trx/fer_trx_api.hh>
-
-typedef uint8_t uint8_t;
-typedef int8_t int8_t;
-typedef uint16_t uint16_t;
-typedef int16_t int16_t;
-typedef uint32_t uint32_t;
-typedef int32_t int32_t;
 
 
 // diagnostic output

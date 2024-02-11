@@ -9,12 +9,42 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ctype.h>
 #include <utils_misc/cstring_utils.hh>
 #include <debug/dbg.h>
 
 /// Vocabulary type to represent Fernotron automatic movements
 struct Fer_TimerData {
   enum { DAILY_MAX_LEN = (8), WEEKLY_MAX_LEN = (8 * 7)};
+
+  static bool validateTime(const char *t) {
+    if (strlen(t) < 4)
+      return false;
+    const int h10 = t[0] - '0';
+    const int h1 = t[1] - '0';
+    const int m10 = t[2] - '0';
+    const int m1 = t[3] - '0';
+
+    return (0 <= h10 && h10 <= 2) && (0 <= h1 && h1 <= 9) && (h10 != 2 || h1 <= 3) //
+        && (0 <= m10 && m10 <= 5) && (0 <= m1 && m1 <= 9);
+  }
+
+  static bool validateTimePair(const char *tp) {
+    if (strncmp(tp, "--", 2) == 0)
+      return false;
+    if (strlen(tp) < 5)
+      return false;
+
+
+    if (tp[0] == '-') {
+      return validateTime(tp+1);
+    }
+    if (!validateTime(tp))
+      return false;
+
+    return tp[4] == '-' || validateTime(tp + 4);
+  }
+
   /**
    * \brief Set daily timer.
    *
@@ -25,12 +55,17 @@ struct Fer_TimerData {
    * timer daily=-2000;      not up,   down 20:00
    */
 
-  void putDaily(const char *dt) {
+  bool putDaily(const char *dt) {
     precond(!dt || strlen(dt) <= DAILY_MAX_LEN);
-    if (!dt)
+    if (!dt || !*dt || strcmp(dt, "null") == 0  || strcmp(dt, "--") == 0) {
       daily[0] = '\0';
-    else
-      STRLCPY(daily, dt, sizeof daily);
+      return true;
+    }
+    if (!validateDaily(dt))
+      return false;
+
+    STRLCPY(daily, dt, sizeof daily);
+    return true;
   }
   bool hasDaily() const {
     return daily[0] != '\0';
@@ -38,6 +73,37 @@ struct Fer_TimerData {
   const char* getDaily() const {
     return daily;
   }
+
+  bool validateDaily(const char *dt) {
+    int count_minus = 0;
+    int count_digit = 0;
+
+    int i = 0;
+    for (const char *p = dt; *p; ++p, ++i) {
+      if (*p == '-') {
+        ++count_minus;
+      } else if (isdigit(*p)) {
+        if ((count_digit & 3) == 0 && !validateTime(p))
+          return false;
+
+        ++count_digit;
+      } else {
+        return false;
+      }
+    }
+    if (DAILY_MAX_LEN != (count_digit + 4 * count_minus))
+      return false;
+
+    if (count_digit == 0)
+      return false;
+
+    if (!validateTimePair(dt))
+      return false;
+
+    return true;
+  }
+
+
 
   /**
    * \brief Set weekly timer.
@@ -50,18 +116,54 @@ struct Fer_TimerData {
    *
    *
    */
-  void putWeekly(const char *wt) {
+  bool putWeekly(const char *wt) {
     precond(!wt || strlen(wt) <= WEEKLY_MAX_LEN);
-    if (!wt)
+
+    if (!wt || !*wt || strcmp(wt, "null") == 0 || strcmp(wt, "--++++++") == 0) {
       weekly[0] = '\0';
-    else
-      STRLCPY(weekly, wt, sizeof weekly);
+      return true;
+    }
+
+    if (!validateWeekly(wt))
+      return false;
+
+    STRLCPY(weekly, wt, sizeof weekly);
+    return true;
   }
+  
   bool hasWeekly() const {
     return weekly[0] != '\0';
   }
   const char* getWeekly() const {
     return weekly;
+  }
+  bool validateWeekly(const char *wt) {
+    int count_minus = 0;
+    int count_plus = 0;
+    int count_digit = 0;
+
+
+    int i = 0;
+    for (const char *p = wt; *p; ++p, ++i) {
+      if (*p == '-') {
+        ++count_minus;
+      } else if (*p == '+') {
+        if (i == 0)
+         return false;
+        else if ((count_digit + 4 * count_minus) & 7)
+         return false;
+
+        ++count_plus;
+      } else if (isdigit(*p)) {
+        ++count_digit;
+      } else {
+        return false;
+      }
+    }
+    if (WEEKLY_MAX_LEN != (count_digit + 4 * count_minus + 8 * count_plus))
+      return false;
+
+    return true;
   }
 
   /**
@@ -110,6 +212,7 @@ struct Fer_TimerData {
   bool getSunAuto() const {
     return flags.enableSunAuto;
   }
+
 
 private:
   int16_t astro = 20000;      // minute offset of civil dusk, or 20000 for disables astro

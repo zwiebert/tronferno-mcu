@@ -170,35 +170,35 @@ FULL_PATH_NAMES        = YES
 # will be relative from the directory where doxygen is started.
 # This tag requires that the tag FULL_PATH_NAMES is set to YES.
 
-STRIP_FROM_PATH        = comp/app/app_cli/include \
-                         comp/app/app_config/include \
-                         comp/app/app_http_server/include \
-                         comp/app/app_main/include \
-                         comp/app/app_misc/include \
-                         comp/app/app_mqtt/include \
-                         comp/app/app_settings/include \
-                         comp/app/app_uout/include \
-                         comp/app/app_webapp/include \
+STRIP_FROM_PATH        = comp/app/tronferno/app_cli/include \
+                         comp/config/app_config/include \
+                         comp/app/tronferno/app_http_server/include \
+                         comp/app/tronferno/app_main/include \
+                         comp/app/tronferno/app_misc/include \
+                         comp/app/tronferno/app_mqtt/include \
+                         comp/app/tronferno/app_settings/include \
+                         comp/app/tronferno/app_uout/include \
+                         comp/app/tronferno/app_webapp/include \
                          comp/library/fernotron_app/include \
                          comp/library/fernotron_lib/include \
                          comp/library/fernotron_trx/include \
                          comp/library/gpio/include \
-                         comp/external/components-mcu/components/cli/include \
-                         comp/external/components-mcu/components/config_kvs/include \
-                         comp/external/components-mcu/components/firmware_update/include \
-                         comp/external/components-mcu/components/jsmn/include \
-                         comp/external/components-mcu/components/key_value_store/include \
-                         comp/external/components-mcu/components/nanopb/include \
-                         comp/external/components-mcu/components/net_http_server/include \
-                         comp/external/components-mcu/components/net/include \
-                         comp/external/components-mcu/components/net_mqtt/include \
-                         comp/external/components-mcu/components/stm32/include \
-                         comp/external/components-mcu/components/storage/include \
-                         comp/external/components-mcu/components/txtio/include \
-                         comp/external/components-mcu/components/uout/include \
-                         comp/external/components-mcu/components/utils_debug/include \
-                         comp/external/components-mcu/components/utils_misc/include \
-                         comp/external/components-mcu/components/utils_time/include
+                         comp/components-mcu/cli/include \
+                         comp/components-mcu/config_kvs/include \
+                         comp/components-mcu/firmware_update/include \
+                         comp/components-mcu/jsmn/include \
+                         comp/components-mcu/key_value_store/include \
+                         comp/components-mcu/nanopb/include \
+                         comp/components-mcu/net_http_server/include \
+                         comp/components-mcu/net/include \
+                         comp/components-mcu/net_mqtt/include \
+                         comp/components-mcu/stm32/include \
+                         comp/components-mcu/storage/include \
+                         comp/components-mcu/txtio/include \
+                         comp/components-mcu/uout/include \
+                         comp/components-mcu/utils_debug/include \
+                         comp/components-mcu/utils_misc/include \
+                         comp/components-mcu/utils_time/include
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -412,7 +412,7 @@ SIP_SUPPORT            = NO
 # should set this option to NO.
 # The default value is: YES.
 
-IDL_PROPERTY_SUPPORT   = NO
+IDL_PROPERTY_SUPPORT   = YES
 
 # If member grouping is used in the documentation and the DISTRIBUTE_GROUP_DOC
 # tag is set to YES then doxygen will reuse the documentation of the first
@@ -2493,7 +2493,7 @@ DIRECTORY_GRAPH        = YES
 # The default value is: png.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_IMAGE_FORMAT       = png
+DOT_IMAGE_FORMAT       = svg
 
 # If DOT_IMAGE_FORMAT is set to svg, then this option can be set to YES to
 # enable generation of interactive SVG images that allow zooming and panning.

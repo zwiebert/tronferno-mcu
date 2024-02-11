@@ -1,10 +1,10 @@
 <script>
   'use strict';
-  import {G,M,M0,GM, Pct, Name} from "stores/curr_shutter.js";
-  import { Gmu } from "stores/mcu_config.js";
-  import * as httpFetch from "app/fetch.js";
+  import {G,M,M0,GM, Pct, Name} from "../store/curr_shutter.js";
+  import { Gmu } from "../store/mcu_config.js";
+  import * as httpFetch from "../app/fetch.js";
   import { onMount,onDestroy } from "svelte";
-  import DisplayIcons from "app/display_icons.svelte";
+  import DisplayIcons from "../app/display_icons.svelte";
 
 let on_destroy = [];
 onMount(() => {
