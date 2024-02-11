@@ -85,6 +85,7 @@
       use:tippy={{ content: $_("panes.backup.tt.restore") }}
       on:click={() => {
         const obj = parse_json_to_object(text);
+        post_config(obj.backup.settings.config);
         post_auto(obj.backup.settings.auto);
         post_shpref(obj.backup.settings.shpref);
       }}>{$_("panes.backup.restore")}</button
