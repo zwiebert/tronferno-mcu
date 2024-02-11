@@ -79,8 +79,10 @@ bundle_c: $(bundle_c)
 build_out:
 	make $(build_out)
 
+#/usr/local/bin is added to path for npm/node as a workaround because my eclipse adds "/bin" in front for some reason...
+# ...remove this later when no longer needed -bertw/2024-02
 $(build_out): $(build_src) $(SRC_ALL) $(BUILDERS) $(SDKCONFIG_JS)
-	cd njs && BUILD_DIR=$(JS_BLD_DIR) NODE_ENV=production npm run build
+	cd njs && PATH=/usr/local/bin:$(PATH) BUILD_DIR=$(JS_BLD_DIR) NODE_ENV=production npm run build
 
 xxx:
 	make $(JS_BLD_DIR)/wapp.js
