@@ -4,6 +4,7 @@
 
 #include <string.h>
 #include "fernotron/pos/shutter_pct.h"
+#include "fernotron/alias/pairings.h"
 #include "app_uout/status_output.h"
 #include "app_uout/so_msg.h"
 #include "fernotron_uout/fer_uo_publish.h"
@@ -131,6 +132,12 @@ void appSett_jsonSave_test() {
           td.sj().write_some_json();
         }
 
+        // pair
+        if (td.sj().add_object("pair")) {
+          fer_alias_so_output_all_pairings(td, true);
+          td.sj().close_object();
+          td.sj().write_some_json();
+        }
 
         td.sj().close_object(); // settings
       }

@@ -16,6 +16,11 @@
 
   let text = backup_json;
 
+  let pr_config_isChecked;
+  let pr_auto_isChecked;
+  let pr_shpref_isChecked;
+  let pr_pair_isChecked;
+
   function parse_json_to_object(text) {
     const backup = JSON.parse(text);
     return backup;
@@ -27,8 +32,18 @@
 
   function post_config(obj) {
     Object.entries(obj).forEach((el) => {
-      let cmd = { "config" : {} };
-      cmd.config[el[0]] = el[1]; 
+      let cmd = { config: {} };
+      cmd.config[el[0]] = el[1];
+      httpFetch.http_postCommand(cmd);
+    });
+  }
+
+  function post_pair(obj) {
+    Object.entries(obj).forEach((el) => {
+      let cmd = { pair: { c: "store" } };
+      cmd.pair.a = el[0];
+      cmd.pair.mm = el[1];
+
       httpFetch.http_postCommand(cmd);
     });
   }
@@ -63,6 +78,7 @@
   </div>
 
   <div class="area">
+    <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.restore") }}>JSON</h5>
     <textarea bind:value={text} wrap="hard" style="font-size:6pt" cols={56} rows={16} disabled={false} />
     <br />
 
@@ -81,43 +97,39 @@
       }}>{$_("panes.backup.toClipboard")}</button
     >
 
-    <button
-      use:tippy={{ content: $_("panes.backup.tt.restore") }}
-      on:click={() => {
-        const obj = parse_json_to_object(text);
-        post_config(obj.backup.settings.config);
-        post_auto(obj.backup.settings.auto);
-        post_shpref(obj.backup.settings.shpref);
-      }}>{$_("panes.backup.restore")}</button
-    >
-
     <div class="area">
-      <h6 class="text-center">Partial restore</h6>
+      <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.restore") }}>Restore</h5>
+
+      <dl>
+        <dt><input type="checkbox" bind:checked={pr_config_isChecked} /> .config</dt>
+        <dd>MCU configuration (network, gpios, ...)</dd>
+        <dt><input type="checkbox" bind:checked={pr_auto_isChecked} /> .auto</dt>
+        <dd>Receiver built-in automatic (timer, sun, ...)</dd>
+        <dt><input type="checkbox" bind:checked={pr_shpref_isChecked} /> .shpref</dt>
+        <dd>Receiver related config (names, run-times)</dd>
+        <dt><input type="checkbox" bind:checked={pr_pair_isChecked} /> .pair</dt>
+        <dd>Transmitter (rf-code) pairings to members of groups (bitmask)</dd>
+      </dl>
 
       <button
-      class="text-sm"
-      use:tippy={{ content: $_("panes.backup.tt.restore") }}
-      on:click={() => {
-        const obj = parse_json_to_object(text);
-        post_config(obj.backup.settings.config);
-      }}>.config</button
-    >
-
-      <button
+        disabled={!(pr_config_isChecked || pr_auto_isChecked || pr_shpref_isChecked || pr_pair_isChecked)}
         class="text-sm"
         use:tippy={{ content: $_("panes.backup.tt.restore") }}
         on:click={() => {
           const obj = parse_json_to_object(text);
-          post_auto(obj.backup.settings.auto);
-        }}>.auto</button
-      >
-
-      <button
-        use:tippy={{ content: $_("panes.backup.tt.restore") }}
-        on:click={() => {
-          const obj = parse_json_to_object(text);
-          post_shpref(obj.backup.settings.shpref);
-        }}>.shpref</button
+          if (pr_config_isChecked) {
+            post_config(obj.backup.settings.config);
+          }
+          if (pr_auto_isChecked) {
+            post_auto(obj.backup.settings.auto);
+          }
+          if (pr_shpref_isChecked) {
+            post_shpref(obj.backup.settings.shpref);
+          }
+          if (pr_pair_isChecked) {
+            post_pair(obj.backup.settings.pair);
+          }
+        }}>Restore Now!</button
       >
     </div>
   </div>

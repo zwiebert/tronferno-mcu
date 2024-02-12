@@ -1,19 +1,21 @@
 TODO
 ====
 
+* TODO: Improve web app ?->OTA tab
+* TODO: Improve web app ?->Backup tab
 * TODO: Configure tcp terminal/telnet and maybe allow user settings
 * TODO: Write received auto data from 2411 (via RF) to storage in MCU
 * TODO: Terminate SET progress bar in web-app when an RF command (e.g. STOP) is received
 * FIXME: astro predictions lags one day behind sometimes (e.g. april-5)
 * FIXME: New WLAN-only-ESP32 starts with default network=lan (maybe only in the developer version)
 * XXX: E07-MD1101D V2.0 (with long antenna) needs different AGC (05-00-92) than Neuftech CC1101 (07-00-90)
-* TODO: Separate web-interface between admin and users
 * TODO: Restart webserver after disconnect/reconnect ethernet
 * TODO: Check reload after OTA in distribution
 
 DONE
 ====
 
+* DONE: Separate web-interface between admin and users
 * FIXED: newly added groups/receivers will not give positiom/pct feedback until MCU restart
 * FIXED: Modify our subscriptions at MQTT server after changing MQTT root topic in settings
 * FIXED: ISO time in auto tab of web-app using wrong time zonen (UTC?)

@@ -228,13 +228,15 @@ static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     return kvsCb_match;
 }
 
-bool fer_alias_so_output_all_pairings(const class UoutWriter &td) {
+bool fer_alias_so_output_all_pairings(const class UoutWriter &td, bool content_only) {
 
-  soMsg_pair_all_begin(td);
+  if (!content_only)
+    soMsg_pair_all_begin(td);
 
-  kvs_foreach(CONFIG_APP_CFG_NAMESPACE, KVS_TYPE_BLOB, CPAIR_KEY_PREFIX, kvs_foreach_cb, (void*)&td);
+  kvs_foreach(CONFIG_APP_CFG_NAMESPACE, KVS_TYPE_BLOB, CPAIR_KEY_PREFIX, kvs_foreach_cb, (void*) &td);
 
-  soMsg_pair_all_end(td);
+  if (!content_only)
+    soMsg_pair_all_end(td);
   return true;
 }
 
