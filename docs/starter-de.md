@@ -3,7 +3,7 @@
 
 #### Aufbau der Hardware
 
-Die [Hardware](hardware-de.md) besteht aus nur einem ESP32-Board und einem oder zwei 433.92 MHz Funkmodulen.
+Die [Hardware](hardware-de.md) besteht aus einem ESP32-Board und einem oder zwei 433.92 MHz Funkmodulen.
 
 * [Benötigte Hardware](hardware-de.md)
 * [Bauanleitung mit Olimex-ESP32-Gateway und CC1101 Board](esp32gw_cc1101-de.md)
@@ -52,13 +52,14 @@ Die [Hardware](hardware-de.md) besteht aus nur einem ESP32-Board und einem oder 
 
 #### Homeserver-Integration
 
-* HomeServer werden idR einfach über [MQTT](mqtt.md) angebunden
-* Für FHEM existiert neben MQTT spezielle Module die  mehr Funktionalität bieten.
+* HomeServer werden idR über [MQTT](mqtt.md) angebunden
+* Für FHEM existiert neben MQTT spezielle Module die  etwas mehr Funktionalität bieten.
    * [FHEM-Homeserver Modul (USB oder TCP/IP)](https://github.com/zwiebert/tronferno-fhem)
-* Auf Grund der Tronferno-Konfiguration automatisch erzeugte Copy&Paste-Konfigurationen für HomeServer findest du in der Weboberfläche.
-   * Navigation: ?->HSC
-      * HomeAssistant: Konfiguration für mqtt-cover
-      * FHEM: Konfiguration für tronferno-fhem für MQTT2
+* Automatisch erzeugte Konfigurationen für HomeServer findest du in der Weboberfläche.
+   * Navigation: ?->[HOME]
+      * HomeAssistant
+      * FHEM
+      * OpenHAB
 
 
 
@@ -67,20 +68,7 @@ Die [Hardware](hardware-de.md) besteht aus nur einem ESP32-Board und einem oder 
 * [Oft gestellte Fragen (FAQ)](starter_faq-de.md)
 
 
-
-------------------
-  
-##### Homeserver die MQTT unterstützen (OpenHAB, FHEM, ...)
-* MQTT muss dazu (z.B. mit dem menutool oder der Weboberfläche) aktiviert und konfiguriert werden
-* [weitere Infos](https://github.com/zwiebert/tronferno-mcu-bin/blob/master/README.md)
-     
-##### Android-App Tronferno
-* GitHub: [tronferno-andro](https://github.com/zwiebert/tronferno-andro)
-           
-##### Terminal-Programm (USB oder TCP/IP Port 7777) oder Telnet (Port 7777)
-* Im Terminalprogramm werden Kommandozeilen nur mit einem Semikolon beendet
-* In Telnet werden Kommandozeilen mit Semikolon und Eingabe-Taste (Enter/Return-Taste) beendet
-     
+    
      
 #### Mehr Info
   * [GPIO pin numbers](pins.md)

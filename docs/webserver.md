@@ -8,30 +8,35 @@ See [configuration](mcu_config.md)
 <hr>
 
 * Send Commands
-
 ![ScreenShot](img/tfmcu_cmd.png)
 <hr>
 
 * Configure internal Timers/Automatics
-
 ![ScreenShot](img/tfmcu_auto.png)
 <hr>
-* Mimicking 2411 
 
+* Mimicking 2411 
 ![ScreenShot](img/tfmcu_wapp_2411.png)
 <hr>
-* Update Firmware per OTA
 
+* Back up configuration
+![ScreenShot](img/tfmcu_backup.png)
+<hr>
+
+* Update Firmware per OTA
 ![ScreenShot](img/tfmcu_fw.png)
 <hr>
+
 * View state of shutters
 
 ![ScreenShot](img/tfmcu_pos.png)
 <hr>
+
 * Change Rotation Direction
 
 ![ScreenShot](img/rot_dir.png)
 <hr>
+
 * Set End Positions
 
 ![ScreenShot](img/end_pos.png)
