@@ -244,7 +244,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
       fhem: {
         header: "FHEM Configuration",
         tt: {
-          header: "Generates a configuration for FHEM home-server for copy-and-paste. Configurations are generated for both MQTT and the FHEM-module \"tronferno-mcu\"",
+          header: "Generates device definitions for FHEM home-server. Definitions are generated for generic MQTT or the dedicated tronferno-fhem module. Paste the generated definitions into FHEMWEB and execute them there",
         },
       },
       openhab: {
