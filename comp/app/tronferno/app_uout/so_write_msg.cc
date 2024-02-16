@@ -398,7 +398,8 @@ void soMsg_repeater_end(const class UoutWriter &td) {
 void soMsg_inet_print_address(const class UoutWriter &td) {
   char buf[20];
   ipnet_addr_as_string(buf, 20);
-  td.write("tf: ipaddr: "), td.write(buf), td.write(";\n");
+  td.so().print("ipaddr", buf);
+  td.write("\ntf: ipaddr: "), td.write(buf), td.write(";\n");
 
 }
 

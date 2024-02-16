@@ -314,7 +314,15 @@ int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
         }
         break;
       }
+
+      if (strcmp(key, "ipaddr") == 0) {
+        if (*val == '?') {
+          soMsg_inet_print_address(td);
+        }
+        break;
+      }
 #endif
+
       cli_warning_optionUnknown(td, key);
       break;
     } // switch

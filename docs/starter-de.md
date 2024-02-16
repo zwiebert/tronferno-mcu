@@ -65,7 +65,7 @@ Die [Hardware](hardware-de.md) besteht aus einem ESP32-Board und einem oder zwei
 
 #### Mehr Information
 
-* [Oft gestellte Fragen (FAQ)](starter_faq-de.md)
+* [Fragen und Antworten (FAQ)](starter_faq-de.md)
 
 
     
