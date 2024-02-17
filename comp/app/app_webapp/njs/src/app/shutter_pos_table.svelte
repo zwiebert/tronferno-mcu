@@ -15,7 +15,7 @@
   {#each gmu as shutterCt, g}
     {#if shutterCt > 0}
       <div class="area">
-        <table class="top_table">
+        <table class="top_table w-full">
           {#each { length: shutterCt + 1 } as _, m}
             <ShutterPosTableRow {g} {m} />
           {/each}

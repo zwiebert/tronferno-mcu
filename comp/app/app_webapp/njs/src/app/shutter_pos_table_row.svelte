@@ -6,10 +6,11 @@
   export let g;
   export let m;
 
-  const gm = g.toString() + m.toString();
+  const gm = g.toString() + m.toString()
 
   $: pct = $Pcts[gm] || 0;
-  $: name = g.toString() + (m ? m.toString() : "A") + ($Names[gm] ? " " + $Names[gm] : "");
+  $: ge = g.toString() + (m ? m.toString() : "A");
+  $: name =  ($Names[gm] ? " " + $Names[gm] : "");
   $: selected = $G === 0 || ($G === g && ($M0 === m || $M0 === 0));
 
   let sliderElement;
@@ -41,9 +42,12 @@
 </style>
 
 <tr class={$GM === gm ? 'is-selected' : '' + (m ? '' : '')}>
-  <th class={'text-left'} on:click={set_gm}>{name}</th>
-  <td>{pct}%</td>
-  <td>
+  <th>{ge}</th>
+  <td class="text-left w-full" on:click={set_gm}>{name}</td>
+  
+  <td class="text-right" style="width:4ch">{pct}</td>
+  <td class="text-right">
+    
     <input
       bind:this={sliderElement}
       type="range"
