@@ -18,7 +18,9 @@
 
   let netota_intervalID = 0;
   let netota_isInProgress = false;
-  let fw_choosen = 0;
+  $: fw_choosen = $McuFirmwareReleaseStatus === "beta" ? 1 : 0;
+  $: fw_comp = compare_version($McuFirmwareVersionNumber, fwbtns[fw_choosen].version);
+  $: fw_updown = fw_comp < 0 ? "Upgrade" : fw_comp > 0 ? "Downgrade" : fw_comp === 0 ? "Re-Install" : "Install";
 
   function netota_FetchFeedback() {
     let netmcu = { to: "tfmcu" };
@@ -38,6 +40,32 @@
     McuFirmwareUpdProgress.set(1);
     netota_intervalID = setInterval(netota_FetchFeedback, 1000);
     netota_isInProgress = true;
+  }
+
+  function compare_version(a, b) {
+    try {
+      if (!a || !b) return null;
+
+      if (a === b) return 0;
+      let as = a.split(".");
+      let bs = b.split(".");
+      for (let i = 0; i < as.length && i < bs.length; ++i) {
+        let an = parseInt(as[i]);
+        let bn = parseInt(bs[i]);
+        if (an < bn) {
+          return -1;
+        }
+        if (an > bn) {
+          return 1;
+        }
+      }
+      if (as.length < bs.length) {
+        return -1;
+      }
+    } catch (e) {
+      return null;
+    }
+    return 1;
   }
 
   $: {
@@ -81,24 +109,26 @@
           {bt.name} {bt.version}
         {:else if bt.input === "select"}
           {bt.name}
-          <select bind:value={bt.version}>
+          <select bind:value={bt.version} disabled={fw_choosen !== i}>
             {#each bt.values as name}
               <option value={name}>{name}</option>
             {/each}
           </select>
         {:else if bt.input === "input"}
           URL:
-          <input type="text" id={bt.ota_name} bind:value={bt.url} />
+          <input type="text" id={bt.ota_name} bind:value={bt.url} disabled={fw_choosen !== i} />
         {/if}
       </dt>
     {/each}
   </dl>
-  {#if $McuFirmwareVersionNumber && fwbtns[fw_choosen].version}
-    {$McuFirmwareVersionNumber} => {fwbtns[fw_choosen].version}
+  {#if fw_comp !== null}
+  <span class="block">
+    {fw_updown} {$McuFirmwareVersionNumber} => {fwbtns[fw_choosen].version}
+  </span>
   {/if}
 
   <button type="button" disabled={fw_choosen < 0 || $McuFirmwareUpdState === 1} on:click={() => netFirmwareOTA(fwbtns[fw_choosen].get_ota_name())}>
-    Start Update
+    Start Download and Installation
   </button>
 
   {#if $McuFirmwareUpdChip === chip}
