@@ -8,19 +8,19 @@
     httpFetch.http_fetchByMask(httpFetch.FETCH_GMU | httpFetch.FETCH_ALL_POS);
   });
 
-
   $: gmu = $Gmu;
-
 </script>
 
 <div id="postablediv">
-  <table class="top_table">
-    {#each gmu as shutterCt, g}
-      {#if shutterCt > 0}
-        {#each { length: shutterCt+1 } as _, m}
-          <ShutterPosTableRow {g} m={m} />
-        {/each}
-      {/if}
-    {/each}
-  </table>
+  {#each gmu as shutterCt, g}
+    {#if shutterCt > 0}
+      <div class="area">
+        <table class="top_table">
+          {#each { length: shutterCt + 1 } as _, m}
+            <ShutterPosTableRow {g} {m} />
+          {/each}
+        </table>
+      </div>
+    {/if}
+  {/each}
 </div>
