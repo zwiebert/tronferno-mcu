@@ -38,6 +38,11 @@ $color_border: darken($color_b, 5%);
   background-color: $color_bg_area;
 }
 
+
+.bg-area-selected {
+  background-color: darken($color_bg_area, 7.5%);
+}
+
 .tabbt.is-selected {
   background-color: $color_bg_select;
   color: $color_fg_select;

@@ -68,6 +68,8 @@
   <h4 class="text-center" use:tippy={{ content: $_("panes.backup.tt.header") }}>{$_("panes.backup.header")}</h4>
 
   <div class="area">
+    <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.create") }}>Create a Backup</h5>
+
     <button
       use:tippy={{ content: $_("panes.backup.tt.create") }}
       on:click={() => {
@@ -78,7 +80,7 @@
   </div>
 
   <div class="area">
-    <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.restore") }}>JSON</h5>
+    <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.restore") }}>View/Edit Backup (JSON)</h5>
     <textarea bind:value={text} wrap="hard" style="font-size:6pt" cols={56} rows={16} disabled={false} />
     <br />
 
@@ -98,7 +100,7 @@
     >
 
     <div class="area">
-      <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.restore") }}>Restore</h5>
+      <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.restore") }}>Select Parts to Restore</h5>
 
       <dl>
         <dt><input type="checkbox" bind:checked={pr_config_isChecked} /> .config</dt>
@@ -129,7 +131,7 @@
           if (pr_pair_isChecked) {
             post_pair(obj.backup.settings.pair);
           }
-        }}>Restore Now!</button
+        }}>Restore the selected parts</button
       >
     </div>
   </div>

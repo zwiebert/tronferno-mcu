@@ -6,11 +6,11 @@
   export let g;
   export let m;
 
-  const gm = g.toString() + m.toString()
+  const gm = g.toString() + m.toString();
 
   $: pct = $Pcts[gm] || 0;
   $: ge = g.toString() + (m ? m.toString() : "A");
-  $: name =  ($Names[gm] ? " " + $Names[gm] : "");
+  $: name = $Names[gm] ? " " + $Names[gm] : "";
   $: selected = $G === 0 || ($G === g && ($M0 === m || $M0 === 0));
 
   let sliderElement;
@@ -35,21 +35,14 @@
     G.set(g);
     M.set(m);
   }
-
 </script>
 
+<tr class="align-middle" on:click={set_gm}>
+  <th class="{selected ? 'bg-area-selected' : ''}">{ge}</th>
+  <td class="text-left w-full">{name}</td>
 
-<style lang="scss">
-//.is-selected {background-color:azure;}
-</style>
-
-<tr class="align-middle {$GM === gm ? 'is-selected' : '' + (m ? '' : '')}">
-  <th>{ge}</th>
-  <td class="text-left w-full" on:click={set_gm}>{name}</td>
-  
-  <td class="text-right" style="width:4ch">{pct}</td>
+  <td class="text-right " style="width:4ch">{pct}</td>
   <td class="text-right">
-    
     <input
       class="align-middle"
       bind:this={sliderElement}
@@ -58,7 +51,12 @@
       max="100"
       value={pct}
       on:change={hChange_Pos}
-      on:input={(evt)=>{pct = evt.target.value; }}
-       />
+      on:input={(evt) => {
+        pct = evt.target.value;
+      }}
+    />
   </td>
 </tr>
+
+<style lang="scss">
+</style>
