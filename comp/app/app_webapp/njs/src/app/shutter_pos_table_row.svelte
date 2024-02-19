@@ -35,13 +35,15 @@
     G.set(g);
     M.set(m);
   }
+
 </script>
 
-<style lang="scss">
 
+<style lang="scss">
+//.is-selected {background-color:azure;}
 </style>
 
-<tr class={$GM === gm ? 'is-selected' : '' + (m ? '' : '')}>
+<tr class="align-middle {$GM === gm ? 'is-selected' : '' + (m ? '' : '')}">
   <th>{ge}</th>
   <td class="text-left w-full" on:click={set_gm}>{name}</td>
   
@@ -49,11 +51,14 @@
   <td class="text-right">
     
     <input
+      class="align-middle"
       bind:this={sliderElement}
       type="range"
       min="0"
       max="100"
       value={pct}
-      on:change={hChange_Pos} />
+      on:change={hChange_Pos}
+      on:input={(evt)=>{pct = evt.target.value; }}
+       />
   </td>
 </tr>

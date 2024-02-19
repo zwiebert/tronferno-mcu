@@ -8,17 +8,16 @@
   import ShutterPct from "../app/shutter_pct.svelte";
   import { M0, GM, AutoSunEnabled, RadioCodeEnabled } from "../store/curr_shutter.js";
 
-
   onMount(() => {
-    setTimeout(()=> {httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);}, 500);
+    setTimeout(() => {
+      httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
+    }, 500);
   });
 
   $: {
     $GM;
     httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
   }
-
-
 </script>
 
 <div class="main-area">
@@ -28,17 +27,13 @@
 
   <div class="area">
     <ShutterMove />
-  </div>
 
-  {#if !$RadioCodeEnabled}
-  <div class="area">
-    <ShutterPct />
-  </div>
-  {/if}
+    {#if !$RadioCodeEnabled}
+      <ShutterPct />
+    {/if}
 
-  {#if $AutoSunEnabled || !$M0 || $RadioCodeEnabled}
-    <div class="area">
+    {#if $AutoSunEnabled || !$M0 || $RadioCodeEnabled}
       <ShutterSun />
-    </div>
-  {/if}
+    {/if}
+  </div>
 </div>
