@@ -30,10 +30,8 @@
 
     {#if !$RadioCodeEnabled}
       <ShutterPct />
-    {/if}
 
-    {#if $AutoSunEnabled || !$M0 || $RadioCodeEnabled}
-      <ShutterSun />
+      <ShutterSun disabled={!$AutoSunEnabled && $M0} />
     {/if}
   </div>
 </div>
