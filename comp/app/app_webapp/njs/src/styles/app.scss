@@ -188,13 +188,14 @@ h3 {
 
 select,
 button,
-input {
+input,
+.file_input {
   background-color: $color_bg;
   border: thin solid darken($color_bg_area, 5%);
   ;
 }
 
-button {
+button, .file_input {
   background-color: lighten($color_bg_area, 10%);
   padding: .5rem;
   margin: .5rem;

@@ -76,28 +76,48 @@
         let tfmcu = { mcu: { "test-sj": 0 } };
         httpFetch.http_postCommand(tfmcu);
       }}>{$_("panes.backup.create")}</button
-    > <a href="/f/backup/settings.json">/f/backup/settings.json</a><br />
+    > <a href="/f/backup/settings.json">Open in Browser</a><br />
   </div>
 
   <div class="area">
     <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.restore") }}>View/Edit Backup (JSON)</h5>
-    <textarea bind:value={text} wrap="hard" style="font-size:6pt" cols={56} rows={16} disabled={false} />
-    <br />
 
-    <button
-      use:tippy={{ content: $_("panes.backup.tt.load") }}
-      on:click={() => {
-        text = backup_json;
-        httpFetch.getJson("/f/backup/settings.json");
-      }}>{$_("panes.backup.load")}</button
-    >
+    <div class="mr-2">
+      <textarea class="w-full" bind:value={text} wrap="hard" style="font-size:6pt" cols={56} rows={16} disabled={false} />
+    </div>
+    <div class="flex flex-row">
+      <label class="file_input whitespace-nowrap" use:tippy={{ content: $_("panes.backup.tt.open") }}>
+        {$_("panes.backup.open")}
+        <input
+          class="hidden"
+          type="file"
+          accept=".json"
+          on:change={(e) => {
+            e.target.files[0].text().then((txt) => {
+              text = stringify_object_to_json(parse_json_to_object(txt));
+            });
+          }}
+        />
+      </label>
 
-    <button
-      use:tippy={{ content: $_("panes.backup.tt.toClipboard") }}
-      on:click={() => {
-        misc.textToClipboard(text);
-      }}>{$_("panes.backup.toClipboard")}</button
-    >
+      <div class="w-full flex flex-row-reverse">
+        <button
+          class=""
+          use:tippy={{ content: $_("panes.backup.tt.toClipboard") }}
+          on:click={() => {
+            misc.textToClipboard(text);
+          }}>{$_("panes.backup.toClipboard")}</button
+        >
+        <button
+          class=""
+          use:tippy={{ content: $_("panes.backup.tt.load") }}
+          on:click={() => {
+            text = backup_json;
+            httpFetch.getJson("/f/backup/settings.json");
+          }}>{$_("panes.backup.load")}</button
+        >
+      </div>
+    </div>
 
     <div class="area">
       <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.restore") }}>Select Parts to Restore</h5>
@@ -110,7 +130,7 @@
         <dt><input type="checkbox" bind:checked={pr_shpref_isChecked} /> .shpref</dt>
         <dd>Receiver related config (names, run-times)</dd>
         <dt><input type="checkbox" bind:checked={pr_pair_isChecked} /> .pair</dt>
-        <dd>Transmitter (rf-code) pairings to members of groups (bitmask)</dd>
+        <dd>Transmitter (rf-code) pairings to members of groups</dd>
       </dl>
 
       <button
@@ -131,7 +151,7 @@
           if (pr_pair_isChecked) {
             post_pair(obj.backup.settings.pair);
           }
-        }}>Restore the selected parts</button
+        }}>{$_("panes.backup.restore")}</button
       >
     </div>
   </div>
