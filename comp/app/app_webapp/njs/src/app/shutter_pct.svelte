@@ -4,7 +4,7 @@
   import * as httpFetch from "../app/fetch.js";
   import { onMount, onDestroy } from "svelte";
 
-  $: pct = $Pct != null ? $Pct : 0;
+  $: pct = $Pct !== undefined ? $Pct : 0;
 
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALL_POS); // XXX: Need only one position to fetch

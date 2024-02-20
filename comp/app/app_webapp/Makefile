@@ -17,8 +17,6 @@ NJS_DIR :=$(THIS_ROOT)/njs
 
 SDKCONFIG_JSON = $(BUILD_DIR)/../config/sdkconfig.json
 
-
-
 ifneq ("$(wildcard $(SDKCONFIG_JSON))","")
 export SDKCONFIG_JS_DIR = $(BUILD_DIR)
 SDKCONFIG_JS = $(SDKCONFIG_JS_DIR)/sdkconfig.js
@@ -26,10 +24,9 @@ SDKCONFIG_JS = $(SDKCONFIG_JS_DIR)/sdkconfig.js
 $(SDKCONFIG_JS): FORCE
 	(echo "export const sdkconfig = "; cat $(SDKCONFIG_JSON); echo ";") > $(SDKCONFIG_JS)
 	touch -r $(SDKCONFIG_JSON) $(SDKCONFIG_JS)
-
 else
-SDKCONFIG_JS_DIR = 
-SDKCONFIG_JS = 
+export SDKCONFIG_JS_DIR = $(NJS_DIR)/src/config
+SDKCONFIG_JS = $(SDKCONFIG_JS_DIR)/sdkconfig.js 
 endif
 
 

@@ -14,15 +14,15 @@ module.exports = {
   rules: {
     // override/add rules settings here, such as:
     // 'svelte/rule-name': 'error'
-    "css-unused-selector": "off",
-    "a11y-no-onchange": "off",
+    //"svelte/css-unused-selector": "off",
+    //"svelte/a11y-no-onchange": "off",
     "no-var": "error",
-    semi: "error",
     "max-params": ["error", 4],
     eqeqeq: "error",
   },
   settings: {
     // ...
+    
   },
   extends: [
     // add more generic rule sets here, such as:

@@ -39,4 +39,4 @@
   <div class="pvbar" id="pv{gm}" style="height:{100 - pct}%" />
 </div>
 <br />
-<span class="{selected ? "pvname-sel" : "pvname-unsel"}">{name}</label>
+<span class="{selected ? "pvname-sel" : "pvname-unsel"}">{name}</span>

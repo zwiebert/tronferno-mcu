@@ -698,6 +698,5 @@
     border-collapse: collapse;
     margin: 0rem;
     padding: 0rem 0.25rem;
-    border-gap: 0;
   }
 </style>
