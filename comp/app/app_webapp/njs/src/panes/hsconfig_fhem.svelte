@@ -178,7 +178,7 @@
       }}>Copy definitions to clipboard</button
     >
 
-    <textarea class="block" value={defmodText} style="font-size:6pt" cols={56} rows={16} disabled={true} />
+    <textarea class="hscfg" value={defmodText} cols={60} rows={16} disabled={true} />
 
     <h5 class="text-left">Generated Device Deletions</h5>
     <button
@@ -188,6 +188,7 @@
       }}>Copy deletions to clipboard</button
     >
 
-    <textarea class="block" value={deleteText} style="font-size:6pt" cols={56} rows={16} disabled={true} />
+    <textarea class="hscfg" value={deleteText} cols={56} rows={16} disabled={true} />
   </div>
 </div>
+

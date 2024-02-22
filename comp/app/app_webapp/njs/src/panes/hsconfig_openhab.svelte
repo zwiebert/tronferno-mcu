@@ -167,7 +167,7 @@
         misc.textToClipboard(mqttTextGm);
       }}>Copy configuration of {$GM} to clipboard</button
     ><br />
-    <textarea value={mqttTextGm} style="font-size:6pt" cols={56} rows={16} disabled={true} />
+    <textarea class="hscfg" value={mqttTextGm}  cols={56} rows={16} disabled={true} />
   </div>
 
   <div class="area">
@@ -181,13 +181,13 @@
         misc.textToClipboard(mqttTextThings);
       }}>Copy all configurations to clipboard</button
     ><br />
-    <textarea value={mqttTextThings} style="font-size:6pt" cols={56} rows={16} disabled={true} />
+    <textarea class="hscfg" value={mqttTextThings}  cols={56} rows={16} disabled={true} />
 <hr>
     <button
       on:click={() => {
         misc.textToClipboard(mqttTextItems);
       }}>Copy all configurations to clipboard</button
     ><br />
-    <textarea value={mqttTextItems} style="font-size:6pt" cols={56} rows={16} disabled={true} />
+    <textarea class="hscfg" value={mqttTextItems}  cols={56} rows={16} disabled={true} />
   </div>
 </div>

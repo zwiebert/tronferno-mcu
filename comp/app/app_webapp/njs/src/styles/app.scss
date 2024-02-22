@@ -23,8 +23,9 @@ $color_border_main_area: darken($color_bg_main_area, 20%);
 $color_bg_area: lighten($color_bg_main_area, 2.5%);
 $color_bg_weekday: darken($color_bg_area, 5%);
 $color_border_area: darken($color_bg_area, 20%);
-
 $color_border: darken($color_b, 5%);
+
+$color_bg_textarea: lighten($color_bg_area, 30%);
 
 .bg-selected {
   background-color: $color_bg_select;
@@ -231,4 +232,11 @@ input {
 
 .auto-weekday {
   background-color: $color_bg_weekday;
+}
+
+textarea.hscfg {
+  width: 98%;
+  font-size:9pt;
+  color: black;
+  background-color: $color_bg_textarea;
 }
