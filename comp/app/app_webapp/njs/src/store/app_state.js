@@ -14,3 +14,6 @@ export const ShowHelp = derived(TabIdx, (opts) => (opts.showHelp ? "help-text-v1
 
 export const GuiAcc = writable();
 export const GuiUserLevel = PersistentIntStore("GuiUserLevel", 10);
+
+export const ShowAutomatic = PersistentIntStore("ShowAutomatic", true); // show auto in up/down pane
+
