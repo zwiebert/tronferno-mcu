@@ -4,6 +4,8 @@
   import ShutterPosTableRow from "../app/shutter_pos_table_row.svelte";
   import { onMount } from "svelte";
 
+  export let show_group = 0;
+
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_GMU | httpFetch.FETCH_ALL_POS);
   });
@@ -13,7 +15,7 @@
 
 <div id="postablediv">
   {#each gmu as shutterCt, g}
-    {#if shutterCt > 0}
+    {#if shutterCt > 0 && (show_group === 0 || show_group === g)}
       <div class="area">
         <table class="top_table w-full">
           {#each { length: shutterCt + 1 } as _, m}

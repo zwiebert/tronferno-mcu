@@ -12,7 +12,7 @@
 
   <div class="area">
     <div class="mt-4 p-2">
-      <ShutterGM group={false} />
+      <ShutterGM group={false} radio={false} />
     </div>
 
     <ShutterName />
