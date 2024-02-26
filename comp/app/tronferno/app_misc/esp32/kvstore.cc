@@ -14,7 +14,10 @@
 #include "nvs.h"
 #include "esp_err.h"
 
+#include "key_value_store/kvs_wrapper.h"
+
 #include "../include/app_misc/kvstore.hh"
+
 
 bool kvs_store_string(const char *key, const char *val) {
   esp_err_t err = 0;

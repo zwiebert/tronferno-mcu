@@ -20,6 +20,7 @@
   let pr_auto_isChecked;
   let pr_shpref_isChecked;
   let pr_pair_isChecked;
+  let pr_kvs_isChecked;
 
   function parse_json_to_object(text) {
     const backup = JSON.parse(text);
@@ -44,6 +45,14 @@
       cmd.pair.a = el[0];
       cmd.pair.mm = el[1];
 
+      httpFetch.http_postCommand(cmd);
+    });
+  }
+
+  function post_kvs(obj) {
+    Object.entries(obj).forEach((el) => {
+      let cmd = { kvs: { } };
+      cmd.kvs[el[0]] = el[1];
       httpFetch.http_postCommand(cmd);
     });
   }
@@ -131,10 +140,12 @@
         <dd>Receiver related config (names, run-times)</dd>
         <dt><input type="checkbox" bind:checked={pr_pair_isChecked} /> .pair</dt>
         <dd>Transmitter (rf-code) pairings to members of groups</dd>
+        <dt><input type="checkbox" bind:checked={pr_kvs_isChecked} /> .kvs</dt>
+        <dd>generic storage (transmitter names)</dd>
       </dl>
 
       <button
-        disabled={!(pr_config_isChecked || pr_auto_isChecked || pr_shpref_isChecked || pr_pair_isChecked)}
+        disabled={!(pr_config_isChecked || pr_auto_isChecked || pr_shpref_isChecked || pr_pair_isChecked || pr_kvs_isChecked)}
         class="text-sm"
         use:tippy={{ content: $_("panes.backup.tt.restore") }}
         on:click={() => {
@@ -150,6 +161,9 @@
           }
           if (pr_pair_isChecked) {
             post_pair(obj.backup.settings.pair);
+          }
+          if (pr_kvs_isChecked) {
+            post_kvs(obj.backup.settings.kvs);
           }
         }}>{$_("panes.backup.restore")}</button
       >
