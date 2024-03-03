@@ -52,7 +52,7 @@ bool config_item_modified(enum configAppItem item) {
     kvs_close(h);
   }
   if (ferCfg_isModified)
-     fer_main_setup({ config_read_item(CB_CUID, (unsigned long)CONFIG_APP_FER_CENTRAL_UNIT_ID), config_read_item(CB_USED_MEMBERS, (unsigned long) CONFIG_APP_FER_GM_USE)}, true);
+     fer_main_setup({ config_read_item(CB_CUID, (uint32_t)CONFIG_APP_FER_CENTRAL_UNIT_ID), config_read_item(CB_USED_MEMBERS, (uint32_t) CONFIG_APP_FER_GM_USE)}, true);
 
   return true;
 }
