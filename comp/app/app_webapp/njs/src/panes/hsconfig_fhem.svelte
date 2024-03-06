@@ -20,12 +20,14 @@
   $: defmodText = "";
   $: deleteText = "";
   $: radio_value = 0;
+  $: use_alexa = false;
 
   $: {
     $Gmu;
     $Names;
     room;
     name_prefix;
+    use_alexa;
     alexa_name_prefix;
     root_topic;
     deleteText = genText_delete($Gmu);
@@ -64,6 +66,7 @@
       "# This does not need any modules from tronferno-fhem\n" + //
       "# Paste it into multiline command input [+] in FHEM-Web\n" +
       `# and press button "Execute"\n\n`;
+      txt = "";
 
     for (let g = 0; g < gmu.length; ++g) {
       if (g === 0 || gmu[g])
@@ -72,11 +75,11 @@
           txt +=
             `defmod ${devName} MQTT2_DEVICE ${clientId}\n` +
             `attr ${devName} alias ${get_alias(g, m)}\n` +
-            `attr ${devName} alexaName ${get_alexaName(g, m)}\n` +
             `attr ${devName} room ${room}\n` +
             `attr ${devName} IODev mqtts\n` +
-            `attr ${devName} genericDeviceType blind\n` +
             `attr ${devName} autocreate 0\n` +
+            (use_alexa ? `attr ${devName} alexaName ${get_alexaName(g, m)}\n` +
+              `attr ${devName} genericDeviceType blind\n` : '') +
             `attr ${devName} readingList ${root_topic}status:.* status\\\n` +
             `${root_topic + get_topic_pct_out(g, m)}:.* state\\\n` +
             `${root_topic + get_topic_pct_out(g, m)}:.* pct\n` +
@@ -100,6 +103,8 @@
       "# Needs the modules Tronferno and TronfernoMCU\n" + //
       "# Paste it into multiline command input [+] in FHEM-Web\n" +
       `# and press button "Execute"\n\n`;
+
+    txt = "";
     for (let g = 0; g < gmu.length; ++g) {
       if (g === 0 || gmu[g])
         for (let m = 0; m <= gmu[g]; ++m) {
@@ -107,10 +112,10 @@
           txt +=
             `defmod ${devName} Tronferno g=${g} m=${m}\n` +
             `attr ${devName} alias ${get_alias(g, m)}\n` +
-            `attr ${devName} alexaName ${get_alexaName(g, m)}\n` +
             `attr ${devName} room ${room}\n` +
+            (use_alexa ? `attr ${devName} alexaName ${get_alexaName(g, m)}\n` +
+              `attr ${devName} genericDeviceType blind\n` : '') +
             `attr ${devName} IODev tfmcu\n` +
-            `attr ${devName} genericDeviceType blind\n` +
             `attr ${devName} webCmd up:stop:down:pct\n` +
             "\n";
         }
@@ -123,6 +128,7 @@
       "# Delete previously defined devices\n" + //
       "# Paste it into multiline command input [+] in FHEM-Web\n" +
       `# and press button "Execute"\n\n`;
+      txt = "";
     for (let g = 0; g < gmu.length; ++g) {
       if (g === 0 || gmu[g])
         for (let m = 0; m <= gmu[g]; ++m) {
@@ -163,6 +169,16 @@
         disabled={false}
       />tronferno-fhem</label
     >
+
+    <label
+    ><input
+      type="checkbox"
+      name="def_type"
+      bind:checked={use_alexa}
+      disabled={false}
+    />Use Alexa</label
+  >
+
 
     <table>
       <tr><td>Device-Name Prefix</td><td><input type="text" bind:value={name_prefix} /></td></tr>
