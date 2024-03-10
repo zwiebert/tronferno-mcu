@@ -39,7 +39,7 @@ bool ferRep_repeatCommand(struct Fer_Cmd cmd) {
     return false;
 
   struct sf
-  msg { .when_to_transmit_ts = (uint32_t) get_now_time_ts() + REP_DELAY_TS, .fsb = { .sd = cmd }, .rf_repeater = true, .mt = MSG_TYPE_PLAIN, .repeats = 0 };
+  msg { .when_to_transmit_ts = (uint32_t) run_time_ts() + REP_DELAY_TS, .fsb = { .sd = cmd }, .rf_repeater = true, .mt = MSG_TYPE_PLAIN, .repeats = 0 };
 
   fer_tx_pushMsg (&msg);
   fer_tx_loop();
