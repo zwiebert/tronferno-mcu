@@ -57,6 +57,8 @@ export const en = {
     cfg: {
       mcu: {
         tab: "MCU",
+        network: { tab: "Network" },
+        misc: { tab: "Misc" },
         cc1101: {
           tab: "CC1101",
         },
