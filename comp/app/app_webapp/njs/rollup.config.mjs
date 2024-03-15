@@ -1,4 +1,5 @@
 // rollup.config.js
+import path from 'path';
 import replace from "@rollup/plugin-replace";
 import json from "@rollup/plugin-json";
 import strip from "@rollup/plugin-strip";
@@ -39,7 +40,13 @@ export default {
             sourcemap: true,
             format: "iife",
             name: "wapp",
-            // sourcemapPathTransform: relativePath => {      return relativePath.substr(2);},
+            sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
+              // will replace relative paths with absolute paths
+              return path.resolve(
+                path.dirname(sourcemapPath),
+                relativeSourcePath
+              );
+            },
             plugins: [],
           },
         ]
@@ -49,9 +56,12 @@ export default {
             format: "iife",
             name: "wapp",
             sourcemap: true,
-            sourcemapPathTransform: (relativePath) => {
-              // will transform e.g. "src/main.js" -> "main.js"
-              return relativePath.substr(2);
+            sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
+              // will replace relative paths with absolute paths
+              return path.resolve(
+                path.dirname(sourcemapPath),
+                relativeSourcePath
+              );
             },
             plugins: [terser()],
           },
