@@ -270,7 +270,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgTimer *msg) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[80];
 
-    snprintf(buf, sizeof buf, "SA:type=central: a=%06x g=%d m=%d;", m.a, m.g, m.m);
+    snprintf(buf, sizeof buf, "SA:type=central: a=%06lx g=%d m=%d;", m.a, m.g, m.m);
     uoCb_publish(idxs, buf, flags);
   }
 
@@ -279,7 +279,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgTimer *msg) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[80];
 
-    snprintf(buf, sizeof buf, "{\"sa\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d}}", m.a, m.g, m.m);
+    snprintf(buf, sizeof buf, "{\"sa\":{\"type\":\"central\",\"a\":\"%06lx\",\"g\":%d,\"m\":%d}}", m.a, m.g, m.m);
     uoCb_publish(idxs, buf, flags);
   }
 }
@@ -297,7 +297,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgRtc *msg) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[80];
 
-    snprintf(buf, sizeof buf, "ST:type=central: a=%06x g=%d m=%d;", m.a, m.g, m.m);
+    snprintf(buf, sizeof buf, "ST:type=central: a=%06lx g=%d m=%d;", m.a, m.g, m.m);
     uoCb_publish(idxs, buf, flags);
   }
 
@@ -306,7 +306,7 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgRtc *msg) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[80];
 
-    snprintf(buf, sizeof buf, "{\"st\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d}}", m.a, m.g, m.m);
+    snprintf(buf, sizeof buf, "{\"st\":{\"type\":\"central\",\"a\":\"%06lx\",\"g\":%d,\"m\":%d}}", m.a, m.g, m.m);
     uoCb_publish(idxs, buf, flags);
   }
 }
@@ -340,9 +340,9 @@ void uoApp_publish_fer_msgSent(const struct Fer_MsgPlainCmd *msg) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[80];
     if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit)) {
-      snprintf(buf, sizeof buf, "{\"sc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"%s\"}}", m.a, m.g, m.m, ci.cs);
+      snprintf(buf, sizeof buf, "{\"sc\":{\"type\":\"central\",\"a\":\"%06lx\",\"g\":%d,\"m\":%d,\"c\":\"%s\"}}", m.a, m.g, m.m, ci.cs);
     } else {
-      snprintf(buf, sizeof buf, "{\"sc\":{\"type\":\"%s\",\"a\":\"%06x\",\"c\":\"%s\"}}", ci.fdt, m.a, ci.cs);
+      snprintf(buf, sizeof buf, "{\"sc\":{\"type\":\"%s\",\"a\":\"%06lx\",\"c\":\"%s\"}}", ci.fdt, m.a, ci.cs);
     }
     uoCb_publish(idxs, buf, flags);
   }
@@ -378,9 +378,9 @@ void uoApp_publish_fer_msgReceived(const struct Fer_MsgPlainCmd *msg) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[128];
     if (FER_U32_TEST_TYPE(m.a, FER_ADDR_TYPE_CentralUnit)) {
-      snprintf(buf, sizeof buf, "{\"rc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"%s\",\"rssi\":%d}}", m.a, m.g, m.m, ci.cs, rssi);
+      snprintf(buf, sizeof buf, "{\"rc\":{\"type\":\"central\",\"a\":\"%06lx\",\"g\":%d,\"m\":%d,\"c\":\"%s\",\"rssi\":%d}}", m.a, m.g, m.m, ci.cs, rssi);
     } else {
-      snprintf(buf, sizeof buf, "{\"rc\":{\"type\":\"%s\",\"a\":\"%06x\",\"c\":\"%s\",\"rssi\":%d}}", ci.fdt, m.a, ci.cs, rssi);
+      snprintf(buf, sizeof buf, "{\"rc\":{\"type\":\"%s\",\"a\":\"%06lx\",\"c\":\"%s\",\"rssi\":%d}}", ci.fdt, m.a, ci.cs, rssi);
     }
     uoCb_publish(idxs, buf, flags);
   }
@@ -411,7 +411,7 @@ void uoApp_publish_fer_msgRtcReceived(const Fer_MsgPlainCmd &c, const struct fer
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[128];
 
-    snprintf(buf, sizeof buf, "{\"rc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"rtc\",\"rssi\":%d,\"t\":\"%02x-%02xT%02x:%02x:%02x\"}}", c.a, c.g, c.m, rssi, r.mont, r.mday, r.hour, r.mint, r.secs);
+    snprintf(buf, sizeof buf, "{\"rc\":{\"type\":\"central\",\"a\":\"%06lx\",\"g\":%d,\"m\":%d,\"c\":\"rtc\",\"rssi\":%d,\"t\":\"%02x-%02xT%02x:%02x:%02x\"}}", c.a, c.g, c.m, rssi, r.mont, r.mday, r.hour, r.mint, r.secs);
     uoCb_publish(idxs, buf, flags);
   }
 
@@ -461,7 +461,7 @@ void uoApp_publish_fer_msgAutoReceived(const struct Fer_MsgPlainCmd &c, const st
     char buf[128];
 
     snprintf(buf, sizeof buf,
-        "{\"rc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"auto\",\"rssi\":%d,\"t\":\"%02x-%02xT%02x:%02x:%02x\",\"f\":\"%s\"}}", c.a, c.g,
+        "{\"rc\":{\"type\":\"central\",\"a\":\"%06lx\",\"g\":%d,\"m\":%d,\"c\":\"auto\",\"rssi\":%d,\"t\":\"%02x-%02xT%02x:%02x:%02x\",\"f\":\"%s\"}}", c.a, c.g,
         c.m, rssi, r.mont, r.mday, r.hour, r.mint, r.secs, af);
     uoCb_publish(idxs, buf, flags);
   }
@@ -490,7 +490,7 @@ void uoApp_publish_fer_msgRtcSent(const struct Fer_MsgPlainCmd &c, const struct 
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[128];
 
-    snprintf(buf, sizeof buf, "{\"sc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"rtc\",\"t\":\"%02x-%02xT%02x:%02x:%02x\"}}", c.a, c.g, c.m, r.mont,
+    snprintf(buf, sizeof buf, "{\"sc\":{\"type\":\"central\",\"a\":\"%06lx\",\"g\":%d,\"m\":%d,\"c\":\"rtc\",\"t\":\"%02x-%02xT%02x:%02x:%02x\"}}", c.a, c.g, c.m, r.mont,
         r.mday, r.hour, r.mint, r.secs);
     uoCb_publish(idxs, buf, flags);
   }
@@ -538,7 +538,7 @@ void uoApp_publish_fer_msgAutoSent(const struct Fer_MsgPlainCmd &c, const struct
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char buf[128];
 
-    snprintf(buf, sizeof buf, "{\"sc\":{\"type\":\"central\",\"a\":\"%06x\",\"g\":%d,\"m\":%d,\"c\":\"auto\",\"t\":\"%02x-%02xT%02x:%02x:%02x\",\"f\":\"%s\"}}",
+    snprintf(buf, sizeof buf, "{\"sc\":{\"type\":\"central\",\"a\":\"%06lx\",\"g\":%d,\"m\":%d,\"c\":\"auto\",\"t\":\"%02x-%02xT%02x:%02x:%02x\",\"f\":\"%s\"}}",
         c.a, c.g, c.m, r.mont, r.mday, r.hour, r.mint, r.secs, af);
     uoCb_publish(idxs, buf, flags);
   }
