@@ -48,6 +48,7 @@ const char cli_help_parmTimer[] = "'auto' programs the built-in automatic moveme
     "  u   don't actually send data now\n"
     "  m|M manual mode (no automatic movement)\n"
     "  s|S sun automatic\n"
+    "  a|A astro timer\n"
     "  r|R random timer\n";
 
 int process_parmTimer(clpar p[], int len, const class UoutWriter &td) {
@@ -64,6 +65,7 @@ int process_parmTimer(clpar p[], int len, const class UoutWriter &td) {
   Fer_TimerData tdr;
   Fer_TimerData tda;
   uint8_t rs = 0; // ==1: return timer data (like f=i).  ==2 return wildcard timer data (like f=I)
+  int astroOffset = 0;
 
   for (i = 1; i < len; ++i) {
     const char *key = p[i].key, *val = p[i].val;
@@ -87,7 +89,7 @@ int process_parmTimer(clpar p[], int len, const class UoutWriter &td) {
       }
       break;
       case otok::k_astro:
-      tda.putAstro(val ? atoi(val) : 0);
+      tda.putAstro((astroOffset = val ? atoi(val) : 0));
       break;
       case otok::k_random: {
         int flag = asc2bool(val);
@@ -175,7 +177,10 @@ int process_parmTimer(clpar p[], int len, const class UoutWriter &td) {
             f_disableWeekly = true;
             break;
             case 'a':
-            f_disableAstro = true;
+              f_disableAstro = true;
+              break;
+            case 'A':
+              tda.putAstro(astroOffset);
             break;
           }
         }

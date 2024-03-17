@@ -33,7 +33,6 @@ export const en = {
         },
       },
 
-
       guiacc: {
         tab: "",
       },
@@ -52,12 +51,14 @@ export const en = {
       },
       doc: {
         tab: "\uD83D\uDCD6",
-      }
+      },
     },
-    
+
     cfg: {
       mcu: {
         tab: "MCU",
+        network: { tab: "Network" },
+        misc: { tab: "Misc" },
         cc1101: {
           tab: "CC1101",
         },
@@ -119,18 +120,20 @@ export const en = {
 
     backup: {
       header: "Backup/Restore Settings",
-      create: "Create",
+      create: "Create File",
+      open: "Open File",
       load: "Load",
       restore: "Restore",
       toClipboard: "Copy to Clipboard",
-      tt:{
+      tt: {
         header: `Backup: 1) Click Create button to create a backup file on MCU. 2) Click the settings.json URL to open and save it. 
 Restore: 1) Paste the content of the saved backup file into the text area 2) Click restore button`,
         create: "Create a backup file settings.json on the MCU. It can be downloaded by the URL next to this button",
+        open: "Open a saved backup file and show it in text area",
         load: "Fetch the settings.json stored in MCU (!) and show it in the text area",
         restore: "Overwrite the MCU Settings by the JSON data in the text area",
-        toClipboard: "Copy JSON from text area to clipboard", 
-      } 
+        toClipboard: "Copy JSON from text area to clipboard",
+      },
     },
 
     help_doc: {
@@ -244,7 +247,8 @@ First check the current direction with arrow buttons. If wrong, then reverse the
       fhem: {
         header: "FHEM Configuration",
         tt: {
-          header: "Generates a configuration for FHEM home-server for copy-and-paste. Configurations are generated for both MQTT and the FHEM-module \"tronferno-mcu\"",
+          header:
+            "Generates device definitions for FHEM home-server. Definitions are generated for generic MQTT or the dedicated tronferno-fhem module. Paste the generated definitions into FHEMWEB and execute them there",
         },
       },
       openhab: {

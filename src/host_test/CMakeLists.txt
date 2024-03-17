@@ -16,10 +16,7 @@ set(COMPONENT_DIRECTORIES comp/components-mcu  comp/library comp/app comp/config
 list(TRANSFORM COMPONENT_DIRECTORIES PREPEND   "${proj_src_dir}/")
 
 set(comp_compile_feats cxx_std_20)
-set(comp_compile_opts 
-"-Wno-error=format=" "-Wno-format" # Workaround IDF-5.0
-"$<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>" -Wno-missing-field-initializers)
-set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++2a>" -O0 -ggdb  # -fanalyzer
+set(comp_compile_opts -O0 -ggdb  # -fanalyzer
 )
 
 if(${GPROF})

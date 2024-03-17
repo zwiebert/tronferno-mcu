@@ -12,6 +12,7 @@
 #include <alloca.h>
 #include <string.h>
 #include <utils_misc/cstring_utils.hh>
+#include "utils_misc/cstring_utils.h"
 
 #define SHPREF_KVS_NAMESPACE "shref"
 #define ST_PREFIX "st"
@@ -108,7 +109,7 @@ static kvs_cbrT fer_shPref_strByM_forEach_cb(const char *key, kvs_type_t type, v
 int fer_shPref_strByM_forEach(const class UoutWriter &td, const char *tag, uint8_t g, uint8_t m, fer_shPref_strCallBackT callback) {
   char *key = sts_make_key((char*)alloca(sts_key_len(tag) + 1), tag, g, m);
   struct cb_args cb_args = { .callback = callback, .td = td };
-  return kvs_foreach(STS_KVS_NAMESPACE, KVS_TYPE_STR, key, fer_shPref_strByM_forEach_cb, &cb_args);
+  return kvs_foreach(STS_KVS_NAMESPACE, KVS_TYPE_STR, csu_startsWith, key, fer_shPref_strByM_forEach_cb, &cb_args);
 }
 bool fer_shPref_strByM_forOne(const class UoutWriter &td, const char *tag, uint8_t g, uint8_t m, fer_shPref_strCallBackT callback) {
   char *key = sts_make_key((char*)alloca(sts_key_len(tag) + 1), tag, g, m);

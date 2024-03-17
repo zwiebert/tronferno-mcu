@@ -140,8 +140,9 @@ test.cm.build:
 test.cm.ctest: test.cm.build
 	cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure
 	
-test.cm.ctest.current: test.cm.build
-	(cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure -R "test.config_kvs.test_")
+TEST ?= test.weather.test_
+test.cm.ctest.regex: test.cm.build
+	(cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure -R "$(TEST)")
 
 
 host-test-all:

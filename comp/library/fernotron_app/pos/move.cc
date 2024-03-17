@@ -72,7 +72,7 @@ uint8_t fer_pos_mGetSunPct(uint8_t g, uint8_t m) {
 
 // check if a moving shutter has reached its end position
 void fer_pos_checkStatus_whileMoving() {
-  const uint32_t now_ts = get_now_time_ts();
+  const uint32_t now_ts = run_time_ts();
   static unsigned last_call_ts;
   const bool publish = periodic_ts(10, &last_call_ts);
 
@@ -207,7 +207,7 @@ Pct fer_simPos_getPct_afterDuration(uint8_t g, uint8_t m, bool direction_up, uin
 
 Pct fer_simPos_getPct_whileMoving(uint8_t g, uint8_t m) {
 
-  uint32_t now_ts = get_now_time_ts();
+  uint32_t now_ts = run_time_ts();
 
   struct Fer_Move *Fer_Move;
   for (Fer_Move = fer_mv_getFirst(); Fer_Move; Fer_Move = fer_mv_getNext(Fer_Move)) {

@@ -55,7 +55,7 @@ bool fer_send_msg(const fer_sbT *fsb, fer_msg_type msgType, int8_t repeats, uint
   precond(fsb);
   precond (msgType == MSG_TYPE_PLAIN || msgType == MSG_TYPE_TIMER);
 
-  struct sf msg = { .when_to_transmit_ts = (delay + (uint32_t)get_now_time_ts()), .fsb = *fsb, .mt = msgType, .repeats = repeats };
+  struct sf msg = { .when_to_transmit_ts = (delay + (uint32_t)run_time_ts()), .fsb = *fsb, .mt = msgType, .repeats = repeats };
   if (!fer_tx_pushMsg(&msg))
     return false;
 
@@ -70,7 +70,7 @@ bool fer_send_msg_rtc(const fer_sbT *fsb, time_t rtc, int8_t repeats) {
 #ifdef CONFIG_APP_USE_FER_TRANSMITTER
   precond(fsb);
 
-  struct sf msg = { .when_to_transmit_ts = (uint32_t)get_now_time_ts(), .fsb = *fsb, .rtc = rtc, .mt = MSG_TYPE_RTC, .repeats = repeats };
+  struct sf msg = { .when_to_transmit_ts = (uint32_t)run_time_ts(), .fsb = *fsb, .rtc = rtc, .mt = MSG_TYPE_RTC, .repeats = repeats };
 
   if (!fer_tx_pushMsg(&msg))
     return false;
@@ -144,7 +144,7 @@ inline bool fer_rx_clear_to_send() {
 #ifdef HOST_TESTING
   return true;
 #endif
-  return last_rx_ts + 5 <= get_now_time_ts(); // TODO: we could use RSSI with CC1101 here. For now just check if nothing was received in the last 500ms
+  return last_rx_ts + 5 <= run_time_ts(); // TODO: we could use RSSI with CC1101 here. For now just check if nothing was received in the last 500ms
 }
 
 static bool wait_tx_available() {
@@ -179,7 +179,7 @@ void fer_tx_loop() {
     return;
 
   struct sf *const msg = fer_tx_nextMsg();
-  const uint32_t now_ts = get_now_time_ts();
+  const uint32_t now_ts = run_time_ts();
 
   if (!msg) {
     fer_trx_direction(false);

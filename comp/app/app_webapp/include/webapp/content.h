@@ -5,10 +5,7 @@
  */
 #pragma once
 
-struct web_content {
-  const char *content, *content_encoding;
-  unsigned content_length;
-};
+#include <net_http_server/content.hh>
 
 extern const web_content wapp_html_gz_fm;
 extern const web_content wapp_js_gz_fm;

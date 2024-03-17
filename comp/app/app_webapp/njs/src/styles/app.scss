@@ -23,8 +23,9 @@ $color_border_main_area: darken($color_bg_main_area, 20%);
 $color_bg_area: lighten($color_bg_main_area, 2.5%);
 $color_bg_weekday: darken($color_bg_area, 5%);
 $color_border_area: darken($color_bg_area, 20%);
-
 $color_border: darken($color_b, 5%);
+
+$color_bg_textarea: lighten($color_bg_area, 30%);
 
 .bg-selected {
   background-color: $color_bg_select;
@@ -36,6 +37,11 @@ $color_border: darken($color_b, 5%);
 
 .bg-area {
   background-color: $color_bg_area;
+}
+
+
+.bg-area-selected {
+  background-color: darken($color_bg_area, 7.5%);
 }
 
 .tabbt.is-selected {
@@ -183,13 +189,14 @@ h3 {
 
 select,
 button,
-input {
+input,
+.file_input {
   background-color: $color_bg;
   border: thin solid darken($color_bg_area, 5%);
   ;
 }
 
-button {
+button, .file_input {
   background-color: lighten($color_bg_area, 10%);
   padding: .5rem;
   margin: .5rem;
@@ -225,4 +232,11 @@ input {
 
 .auto-weekday {
   background-color: $color_bg_weekday;
+}
+
+textarea.hscfg {
+  width: 98%;
+  font-size:9pt;
+  color: black;
+  background-color: $color_bg_textarea;
 }

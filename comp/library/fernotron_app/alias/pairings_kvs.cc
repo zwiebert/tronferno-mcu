@@ -8,6 +8,7 @@
 #include "fernotron_uout/fer_uo_publish.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
+#include "utils_misc/cstring_utils.h"
 #include "utils_misc/itoa.h"
 #include "debug/dbg.h"
 
@@ -34,7 +35,7 @@
 static void  fixController(const char *key, Fer_GmSet *gm) {
   // there seems to be existing keys which cannot be found by iteration.
   // to fix this: erase and create them new here.
-  if (!kvs_foreach(CONFIG_APP_CFG_NAMESPACE, KVS_TYPE_BLOB, key, 0, 0)) {
+  if (!kvs_foreach(CONFIG_APP_CFG_NAMESPACE, KVS_TYPE_BLOB, csu_areEqual, key)) {
     kvshT handle;
     if ((handle = kvs_open(CONFIG_APP_CFG_NAMESPACE, kvs_WRITE))) {
       kvs_erase_key(handle, key);
@@ -204,14 +205,13 @@ static void remove_key(const char *key) {
   }
 }
 
-static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
+static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, const UoutWriter &td) {
   if (!cpairKey_isValid(key)) {
     remove_key(key);  //delete this invalid key from kvs
     D(ets_printf("%s: key=<%s>, type=%d\n", __func__, key, (int)type));
     return kvsCb_noMatch;
   }
 
-    auto td = static_cast<class UoutWriter *>(args);
     Fer_GmSet gm {};
     so_arg_kmm_t arg { .key =  key + CPAIR_KEY_PREFIX_LEN, .mm = &gm };
 
@@ -224,17 +224,19 @@ static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, void *args) {
     }
 
     D(printf("key '%s', type '%d' a=%x \n", info.key, info.type, arg.a));
-    soMsg_pair_print_kmm(*td, arg);
+    soMsg_pair_print_kmm(td, arg);
     return kvsCb_match;
 }
 
-bool fer_alias_so_output_all_pairings(const class UoutWriter &td) {
+bool fer_alias_so_output_all_pairings(const class UoutWriter &td, bool content_only) {
 
-  soMsg_pair_all_begin(td);
+  if (!content_only)
+    soMsg_pair_all_begin(td);
 
-  kvs_foreach(CONFIG_APP_CFG_NAMESPACE, KVS_TYPE_BLOB, CPAIR_KEY_PREFIX, kvs_foreach_cb, (void*)&td);
+  kvs_foreach(CONFIG_APP_CFG_NAMESPACE, KVS_TYPE_BLOB, csu_startsWith, CPAIR_KEY_PREFIX, kvs_foreach_cb, td);
 
-  soMsg_pair_all_end(td);
+  if (!content_only)
+    soMsg_pair_all_end(td);
   return true;
 }
 

@@ -1,5 +1,3 @@
-
-
 #include <string.h>
 
 #include "app_misc/firmware.h"
@@ -39,11 +37,11 @@ const char cli_help_parmMcu[] = "'mcu' handles special commands and data\n\n"
 #ifdef CONFIG_APP_GPIO_NUMBER_OF_GPIOS
     "gpioN=(0|1|t|?) clear, set, toggle or read GPIO pin N\n"
 #endif
-        "up-time=?\n"
-        "version=full\n"
-        "ota=(tag:beta|tag:master|tag:XXX|?)  Fetch and install firmware from github. ? gets status info\n"
-        "cc1101-config=(?|HEX-STRING) Get or set configuration registers\n"
-        "cc1101-status=?   Get status registers\n"
+    "up-time=?\n"
+    "version=full\n"
+    "ota=(tag:beta|tag:master|tag:XXX|?)  Fetch and install firmware from github. ? gets status info\n"
+    "cc1101-config=(?|HEX-STRING) Get or set configuration registers\n"
+    "cc1101-status=?   Get status registers\n"
 
 ;
 
@@ -208,12 +206,9 @@ int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
       }
 #endif
 
-
-
 #ifdef CONFIG_APP_USE_GPIO_PINS
-    if (strncmp(key, "gpio", 4) == 0) {
-      int gpio_number = atoi(key + 4);
-
+      if (strncmp(key, "gpio", 4) == 0) {
+        int gpio_number = atoi(key + 4);
 
         const char *error = NULL;
         int psi;
@@ -222,33 +217,33 @@ int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
             break;
           }
         }
-        mcu_pin_state ps = (mcu_pin_state)psi, ps_result = PIN_STATE_none;
+        mcu_pin_state ps = (mcu_pin_state) psi, ps_result = PIN_STATE_none;
         switch (ps) {
 
-          case PIN_CLEAR:
-          case PIN_SET:
-          case PIN_TOGGLE: {
-            if (!gpio_isLevelWritable(gpio_number)) {
-              reply_message(td, "gpio:error", "gpio not writable");
-              return -1;
-            }
+        case PIN_CLEAR:
+        case PIN_SET:
+        case PIN_TOGGLE: {
+          if (!gpio_isLevelWritable(gpio_number)) {
+            reply_message(td, "gpio:error", "gpio not writable");
+            return -1;
+          }
           error = mcu_access_pin(gpio_number, NULL, ps);
           break;
 
-          case PIN_READ: {
+          case PIN_READ:
+          {
             if (!gpio_isLevelReadable(gpio_number)) {
               reply_message(td, "gpio:error", "gpio not readable");
               return -1;
             }
-          error = mcu_access_pin(gpio_number, &ps_result, ps);
-          int8_t level = (ps_result == PIN_STATE_none) ? -1 :
-                     (ps_result == PIN_CLEAR) ? 0 : 1;
-          soMsg_gpio_pin(td, so_arg_pch_t {uint8_t(gpio_number), level != 0, level});
+            error = mcu_access_pin(gpio_number, &ps_result, ps);
+            int8_t level = (ps_result == PIN_STATE_none) ? -1 : (ps_result == PIN_CLEAR) ? 0 : 1;
+            soMsg_gpio_pin(td, so_arg_pch_t { uint8_t(gpio_number), level != 0, level });
           }
-          }
+        }
           break;
 
-          default:
+        default:
           error = "invalid command";
 
         }
@@ -258,17 +253,15 @@ int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
           return -1;
         }
 
-      break;
-    }
+        break;
+      }
 #endif
 
-
-    if (strcmp(key, "test-sj") == 0) {
-      void appSett_jsonSave_test();
-      appSett_jsonSave_test();
-      break;
-    }
-
+      if (strcmp(key, "test-sj") == 0) {
+        void appSett_jsonSave_test();
+        appSett_jsonSave_test();
+        break;
+      }
 
       if (strcmp(key, "kvs-pk") == 0) {
         kvs_print_keys(val);
@@ -314,7 +307,15 @@ int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
         }
         break;
       }
+
+      if (strcmp(key, "ipaddr") == 0) {
+        if (*val == '?') {
+          soMsg_inet_print_address(td);
+        }
+        break;
+      }
 #endif
+
       cli_warning_optionUnknown(td, key);
       break;
     } // switch
@@ -323,11 +324,17 @@ int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
   return 0;
 }
 
-static kvs_cbrT kvs_print_keys_cb(const char *key, kvs_type_t type, void *args) {
-  io_printf("key: %s, type: %d\n", key, (int )type);
-  return kvsCb_match;
-}
-
 static void kvs_print_keys(const char *name_space) {
-  kvs_foreach(name_space, KVS_TYPE_ANY, 0, kvs_print_keys_cb, 0);
+  kvs_foreach(name_space, KVS_TYPE_ANY,
+
+  /// match any key name
+      [](const char*, int) -> bool {
+        return true;
+      },0,
+
+      /// print each key
+      [](const char *key, kvs_type_t type, void *args) -> kvs_cbrT {
+        io_printf("key: %s, type: %d\n", key, (int )type);
+        return kvsCb_match;
+      }, nullptr);
 }

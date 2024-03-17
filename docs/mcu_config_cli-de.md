@@ -4,6 +4,7 @@
 
 #### Konfiguration über Kommandozeilen-Terminal
   * Terminal kann über USB oder telnet genutzt werden
+  * Kommandozeilen bei telnet zusätzlich mit Enter-Taste abschließen
   * Für USB ein Terminalprogramm nutzen wie GTKTerm, ...
   * Für Telnet muss eine Netzwerkverbindung bestehen und du musst die IP4-Adresse kennen. Der Port ist 7777.
     <pre>telnet 192.168.1.69 7777</pre>

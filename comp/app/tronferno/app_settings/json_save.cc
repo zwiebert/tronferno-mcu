@@ -1,9 +1,9 @@
 #include "uout/so_target_desc.hh"
 #include "fernotron/fer_main.h"
 
-
 #include <string.h>
 #include "fernotron/pos/shutter_pct.h"
+#include "fernotron/alias/pairings.h"
 #include "app_uout/status_output.h"
 #include "app_uout/so_msg.h"
 #include "fernotron_uout/fer_uo_publish.h"
@@ -12,16 +12,16 @@
 #include "fernotron/auto/fau_tminutes.h"
 #include "fernotron/fer_main.h"
 #include "app_misc/rtc.h"
+#include "app_misc/kvstore.hh"
 #include "utils_misc/bcd.h"
+#include "utils_misc/cstring_utils.h"
 #include "app_misc/opt_map.hh"
 #include "fernotron/auto/fau_tdata_store.h"
 #include "app_settings/config.h"
 #include <fernotron/fer_main.h>
 #include <fernotron_trx/fer_trx_api.hh>
 
-
 #include <fernotron/pos/shutter_prefs.h>
-
 
 static void print_timer(const class UoutWriter &td, uint8_t g, uint8_t m, bool wildcard) {
   Fer_TimerData tdr;
@@ -131,6 +131,27 @@ void appSett_jsonSave_test() {
           td.sj().write_some_json();
         }
 
+        // pair
+        if (td.sj().add_object("pair")) {
+          fer_alias_so_output_all_pairings(td, true);
+          td.sj().close_object();
+          td.sj().write_some_json();
+        }
+
+        // kvs
+        if (td.sj().add_object("kvs")) {
+          kvs_foreach_string(csu_startsWith, "TXN.", [](const char *key, kvs_type_t type, const UoutWriter &td) -> kvs_cbrT {
+            char value[80];
+            if (type == KVS_TYPE_STR && kvs_get_string(key, value, sizeof(value))) {
+              td.so().print(key, value);
+              return kvsCb_match;
+            }
+            return kvsCb_noMatch;
+          }, td);
+
+          td.sj().close_object();
+          td.sj().write_some_json();
+        }
 
         td.sj().close_object(); // settings
       }

@@ -1,4 +1,5 @@
 // rollup.config.js
+import path from 'path';
 import replace from "@rollup/plugin-replace";
 import json from "@rollup/plugin-json";
 import strip from "@rollup/plugin-strip";
@@ -13,7 +14,7 @@ import alias from "@rollup/plugin-alias";
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDistro = process.env.DISTRO === "1";
 const build_directory = process.env.BUILD_DIR || "/tmp/tronferno-mcu/njs/build";
-const sdkconfig_js_dir = process.env.SDKCONFIG_JS_DIR || "./src/config";
+const sdkconfig_js_dir = process.env.SDKCONFIG_JS_DIR || path.resolve("./src/config");
 
 console.log("isProduction:", isProduction, "isDistro:", isDistro);
 
@@ -39,7 +40,13 @@ export default {
             sourcemap: true,
             format: "iife",
             name: "wapp",
-            // sourcemapPathTransform: relativePath => {      return relativePath.substr(2);},
+            sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
+              // will replace relative paths with absolute paths
+              return path.resolve(
+                path.dirname(sourcemapPath),
+                relativeSourcePath
+              );
+            },
             plugins: [],
           },
         ]
@@ -49,9 +56,12 @@ export default {
             format: "iife",
             name: "wapp",
             sourcemap: true,
-            sourcemapPathTransform: (relativePath) => {
-              // will transform e.g. "src/main.js" -> "main.js"
-              return relativePath.substr(2);
+            sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
+              // will replace relative paths with absolute paths
+              return path.resolve(
+                path.dirname(sourcemapPath),
+                relativeSourcePath
+              );
             },
             plugins: [terser()],
           },

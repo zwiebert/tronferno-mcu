@@ -182,7 +182,7 @@ struct Fer_TimerData {
 
   /// \brief Enable/disable civil dusk timer.
   void putAstro(bool enable, int minOffset = 0) {
-    flags.disableAstro = enable;
+    flags.disableAstro = !enable;
     astro = minOffset;
   }
   bool hasAstro() const {

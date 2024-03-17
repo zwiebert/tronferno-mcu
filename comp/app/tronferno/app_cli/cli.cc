@@ -98,7 +98,7 @@ bool asc2u8(const char *s, uint8_t *n, uint8_t limit) {
 int process_parmHelp(clpar p[], int len);
 
 const char cli_help_parmHelp[]  =
-"type 'help command;'  or 'help all;'\ncommands are: ";
+"type 'help <command>;'  or 'help all;'\nThe commands are: ";
 
 static struct parm_handler const handlers[] = { //
 #ifdef CONFIG_APP_USE_SEP

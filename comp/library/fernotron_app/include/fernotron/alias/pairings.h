@@ -50,9 +50,10 @@ bool fer_alias_rmController(uint32_t controller);
 /**
  * \brief              Print all stored parings to TD
  * \param td           Target descriptor for output
+ * \param content_only if TRUE then don't generate the "all" object and print just its contents
  * \return             true on success
  */
-bool fer_alias_so_output_all_pairings(const class UoutWriter &td);
+bool fer_alias_so_output_all_pairings(const class UoutWriter &td, bool content_only = false);
 
 /**
  * \brief              Start listening on RF receiver for controller to pair/unpair

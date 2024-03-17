@@ -1,7 +1,7 @@
 <script>
   "use strict";
   import { _ } from "../services/i18n";
-  import { GMR, G, M, GM, GMH, RadioCode, RadioCodeEnabled } from "../store/curr_shutter.js";
+  import { G, M, GM, GMH, RadioCode, RadioCodeEnabled } from "../store/curr_shutter.js";
   import { Names } from "../store/shutters.js";
   import { Gmu } from "../store/mcu_config.js";
   import { GuiAcc } from "../store/app_state";
@@ -10,13 +10,11 @@
   export let radio = true;
   export let groups = true;
 
-  let gmInit = $RadioCodeEnabled && $GuiAcc.radio_code && radio ? "RadioCode" : $GM;
-  $: {
-    $GMR = gmInit;
-  }
+  $: GMR = $GM;
+
   $: names = Object.values($Names);
   $: a = "A " + ($Names["00"] || "");
-  $: showRadioCode = $GMR === "RadioCode" && $GuiAcc.radio_code && radio;
+  $: showRadioCode = GMR === "RadioCode" && $GuiAcc.radio_code && radio;
 
   $: use_motorCode = showRadioCode;
   let motorCode = $RadioCode;
@@ -43,7 +41,7 @@
 
   $: {
     const mc = get_motorCode(motorCode);
-    const rce = $GMR === "RadioCode";
+    const rce = GMR === "RadioCode";
     $RadioCodeEnabled = rce;
     motorCode_isValid = mc !== "invalid";
 
@@ -52,15 +50,14 @@
 
   $: {
     if (!showRadioCode) {
-      $G = Number.parseInt($GMR.substr(0, 1));
-      $M = Number.parseInt($GMR.substr(1, 1));
+      $G = Number.parseInt(GMR.substr(0, 1));
+      $M = Number.parseInt(GMR.substr(1, 1));
       httpFetch.http_fetchByMask(httpFetch.FETCH_SHUTTER_NAME);
     }
   }
-
 </script>
 
-<select bind:value={$GMR}>
+<select bind:value={GMR}>
   {#if groups}
     <option value="00">{a}</option>
   {/if}

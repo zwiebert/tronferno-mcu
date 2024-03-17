@@ -16,6 +16,12 @@
 
   let text = backup_json;
 
+  let pr_config_isChecked;
+  let pr_auto_isChecked;
+  let pr_shpref_isChecked;
+  let pr_pair_isChecked;
+  let pr_kvs_isChecked;
+
   function parse_json_to_object(text) {
     const backup = JSON.parse(text);
     return backup;
@@ -27,8 +33,26 @@
 
   function post_config(obj) {
     Object.entries(obj).forEach((el) => {
-      let cmd = { "config" : {} };
-      cmd.config[el[0]] = el[1]; 
+      let cmd = { config: {} };
+      cmd.config[el[0]] = el[1];
+      httpFetch.http_postCommand(cmd);
+    });
+  }
+
+  function post_pair(obj) {
+    Object.entries(obj).forEach((el) => {
+      let cmd = { pair: { c: "store" } };
+      cmd.pair.a = el[0];
+      cmd.pair.mm = el[1];
+
+      httpFetch.http_postCommand(cmd);
+    });
+  }
+
+  function post_kvs(obj) {
+    Object.entries(obj).forEach((el) => {
+      let cmd = { kvs: { } };
+      cmd.kvs[el[0]] = el[1];
       httpFetch.http_postCommand(cmd);
     });
   }
@@ -53,71 +77,95 @@
   <h4 class="text-center" use:tippy={{ content: $_("panes.backup.tt.header") }}>{$_("panes.backup.header")}</h4>
 
   <div class="area">
+    <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.create") }}>Create a Backup</h5>
+
     <button
       use:tippy={{ content: $_("panes.backup.tt.create") }}
       on:click={() => {
         let tfmcu = { mcu: { "test-sj": 0 } };
         httpFetch.http_postCommand(tfmcu);
       }}>{$_("panes.backup.create")}</button
-    > <a href="/f/backup/settings.json">/f/backup/settings.json</a><br />
+    > <a href="/f/backup/settings.json">Open in Browser</a><br />
   </div>
 
   <div class="area">
-    <textarea bind:value={text} wrap="hard" style="font-size:6pt" cols={56} rows={16} disabled={false} />
-    <br />
+    <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.restore") }}>View/Edit Backup (JSON)</h5>
 
-    <button
-      use:tippy={{ content: $_("panes.backup.tt.load") }}
-      on:click={() => {
-        text = backup_json;
-        httpFetch.getJson("/f/backup/settings.json");
-      }}>{$_("panes.backup.load")}</button
-    >
+    <div class="mr-2">
+      <textarea class="w-full" bind:value={text} wrap="hard" style="font-size:6pt" cols={56} rows={16} disabled={false} />
+    </div>
+    <div class="flex flex-row">
+      <label class="file_input whitespace-nowrap" use:tippy={{ content: $_("panes.backup.tt.open") }}>
+        {$_("panes.backup.open")}
+        <input
+          class="hidden"
+          type="file"
+          accept=".json"
+          on:change={(e) => {
+            e.target.files[0].text().then((txt) => {
+              text = stringify_object_to_json(parse_json_to_object(txt));
+            });
+          }}
+        />
+      </label>
 
-    <button
-      use:tippy={{ content: $_("panes.backup.tt.toClipboard") }}
-      on:click={() => {
-        misc.textToClipboard(text);
-      }}>{$_("panes.backup.toClipboard")}</button
-    >
-
-    <button
-      use:tippy={{ content: $_("panes.backup.tt.restore") }}
-      on:click={() => {
-        const obj = parse_json_to_object(text);
-        post_config(obj.backup.settings.config);
-        post_auto(obj.backup.settings.auto);
-        post_shpref(obj.backup.settings.shpref);
-      }}>{$_("panes.backup.restore")}</button
-    >
+      <div class="w-full flex flex-row-reverse">
+        <button
+          class=""
+          use:tippy={{ content: $_("panes.backup.tt.toClipboard") }}
+          on:click={() => {
+            misc.textToClipboard(text);
+          }}>{$_("panes.backup.toClipboard")}</button
+        >
+        <button
+          class=""
+          use:tippy={{ content: $_("panes.backup.tt.load") }}
+          on:click={() => {
+            text = backup_json;
+            httpFetch.getJson("/f/backup/settings.json");
+          }}>{$_("panes.backup.load")}</button
+        >
+      </div>
+    </div>
 
     <div class="area">
-      <h6 class="text-center">Partial restore</h6>
+      <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.restore") }}>Select Parts to Restore</h5>
+
+      <dl>
+        <dt><input type="checkbox" bind:checked={pr_config_isChecked} /> .config</dt>
+        <dd>MCU configuration (network, gpios, ...)</dd>
+        <dt><input type="checkbox" bind:checked={pr_auto_isChecked} /> .auto</dt>
+        <dd>Receiver built-in automatic (timer, sun, ...)</dd>
+        <dt><input type="checkbox" bind:checked={pr_shpref_isChecked} /> .shpref</dt>
+        <dd>Receiver related config (names, run-times)</dd>
+        <dt><input type="checkbox" bind:checked={pr_pair_isChecked} /> .pair</dt>
+        <dd>Transmitter (rf-code) pairings to members of groups</dd>
+        <dt><input type="checkbox" bind:checked={pr_kvs_isChecked} /> .kvs</dt>
+        <dd>generic storage (transmitter names)</dd>
+      </dl>
 
       <button
-      class="text-sm"
-      use:tippy={{ content: $_("panes.backup.tt.restore") }}
-      on:click={() => {
-        const obj = parse_json_to_object(text);
-        post_config(obj.backup.settings.config);
-      }}>.config</button
-    >
-
-      <button
+        disabled={!(pr_config_isChecked || pr_auto_isChecked || pr_shpref_isChecked || pr_pair_isChecked || pr_kvs_isChecked)}
         class="text-sm"
         use:tippy={{ content: $_("panes.backup.tt.restore") }}
         on:click={() => {
           const obj = parse_json_to_object(text);
-          post_auto(obj.backup.settings.auto);
-        }}>.auto</button
-      >
-
-      <button
-        use:tippy={{ content: $_("panes.backup.tt.restore") }}
-        on:click={() => {
-          const obj = parse_json_to_object(text);
-          post_shpref(obj.backup.settings.shpref);
-        }}>.shpref</button
+          if (pr_config_isChecked) {
+            post_config(obj.backup.settings.config);
+          }
+          if (pr_auto_isChecked) {
+            post_auto(obj.backup.settings.auto);
+          }
+          if (pr_shpref_isChecked) {
+            post_shpref(obj.backup.settings.shpref);
+          }
+          if (pr_pair_isChecked) {
+            post_pair(obj.backup.settings.pair);
+          }
+          if (pr_kvs_isChecked) {
+            post_kvs(obj.backup.settings.kvs);
+          }
+        }}>{$_("panes.backup.restore")}</button
       >
     </div>
   </div>

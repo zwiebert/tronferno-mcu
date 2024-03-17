@@ -84,6 +84,6 @@
         misc.textToClipboard(mqttText);
       }}>Copy configuration to clipboard</button
     ><br />
-    <textarea value={mqttText} style="font-size:6pt" cols={56} rows={16} disabled={true} />
+    <textarea class="hscfg" value={mqttText} cols={56} rows={16} disabled={true} />
   </div>
 </div>

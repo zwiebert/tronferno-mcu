@@ -129,7 +129,7 @@ static struct Fer_Move* add_to_new_movement_mm(Fer_GmSet *mm, uint32_t now_ts, e
 
 // register moving related commands sent to a shutter to keep track of its changing position
 bool fer_simPos_registerMovingShutters(Fer_GmSet *mm, fer_if_cmd cmd) {
-  uint32_t now_ts = get_now_time_ts();
+  uint32_t now_ts = run_time_ts();
 
   *mm &= fer_usedMemberMask;  // filter out unused members
 

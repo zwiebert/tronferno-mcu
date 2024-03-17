@@ -61,7 +61,7 @@ void Fer_Trx_API::push_event(struct Fer_Trx_IncomingEvent *evt) {
       that.event_any_message_will_be_sent();
 
   } else { //rx
-    last_rx_ts = get_now_time_ts();
+    last_rx_ts = run_time_ts();
     switch (evt->kind) {
     case MSG_TYPE_PLAIN_DOUBLE:
       that.event_any_message_was_received();
