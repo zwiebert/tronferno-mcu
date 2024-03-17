@@ -24,6 +24,7 @@ list(TRANSFORM srcs APPEND .c)
  idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS "./include"
+    REQUIRES net_http_server
 )
 
 component_compile_options(${comp_compile_opts})
