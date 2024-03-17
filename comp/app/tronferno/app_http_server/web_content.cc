@@ -32,7 +32,7 @@ static const struct file_map uri_file_map[] = { //
 
 const struct file_map* wc_getContent(const char *uri) {
   for (auto it = std::begin(uri_file_map); it != std::end(uri_file_map); ++it) {
-    char *q = strstr(uri, "?");
+    const char *q = strstr(uri, "?");
     if ((q && 0 == strncmp(uri, it->uri, q - uri)) || 0 == strcmp(uri, it->uri))
       return it;
   }
