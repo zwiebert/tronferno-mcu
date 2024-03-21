@@ -20,8 +20,9 @@
 
 #include <fcntl.h>
 
-static const char *TAG="APP";
+#define D(x)
 
+static const char *logtag="http_handler";
 
 ////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
@@ -32,18 +33,37 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   if (!check_access_allowed(req))
     return ESP_FAIL;
 
-  if ((ret = httpd_req_recv(req, buf, MIN(remaining, (sizeof buf)-1))) <= 0) {
+  if ((ret = httpd_req_recv(req, buf, MIN(remaining, (sizeof buf) - 1))) <= 0) {
     return ESP_FAIL;
   }
 
-  { LockGuard lock(cli_mutex); 
-    buf[ret] = '\0';
+  {
+    LockGuard lock(cli_mutex);
 
-    httpd_resp_set_type(req, "application/json") == ESP_OK || (result = ESP_FAIL);
+    UoutWriterWebsocket td { req, SO_TGT_HTTP | SO_TGT_FLAG_JSON, [](void *req_vp, const char *src, ssize_t src_len = -1, bool is_final = true) -> int {
+      auto req = (httpd_req *)req_vp;
+      if (src_len < 0)
+        src_len = strlen(src);
 
-    UoutWriter td { SO_TGT_HTTP | SO_TGT_FLAG_JSON};
+      D(ESP_LOGW(logtag, "writer for /cmd.json: is_final=%d src_ptr=%p, src_len=%d src=<%*s>",
+          is_final, src, src_len, src_len, src));
+      // send chunks. last chunk needs to have size zero
+      if (!(ESP_OK == httpd_resp_set_type(req, "application/json")
+          && ESP_OK == httpd_resp_send_chunk(req, src, src_len)))
+        return -1;
+      if (is_final)
+        if (!(ESP_OK == httpd_resp_set_type(req, "application/json")
+            && ESP_OK == httpd_resp_send_chunk(req, src, 0)))
+          return -1;
+
+      return src_len;
+    } };
+
+    buf[ret] = '\0'; // terminate command
+    //UoutWriter td { SO_TGT_HTTP | SO_TGT_FLAG_JSON};
     cli_process_json(buf, td); // parse and process received command
-    httpd_resp_sendstr(req, td.sj().get_json()) == ESP_OK || (result = ESP_FAIL);
+    td.sj().write_json();
+    //httpd_resp_sendstr(req, td.sj().get_json()) == ESP_OK || (result = ESP_FAIL);
   }
 
   return result;
@@ -64,7 +84,7 @@ static esp_err_t handle_uri_get_file(httpd_req_t *req) {
 static esp_err_t handle_uri_ws(httpd_req_t *req) {
 
   if (req->method == HTTP_GET) {
-      ESP_LOGI(TAG, "Handshake done, the new connection was opened");
+      ESP_LOGI(logtag, "Handshake done, the new web-socket is connected");
       return ESP_OK;
   }
 
@@ -78,12 +98,12 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, (sizeof buf)-1);
 
   if (ret != ESP_OK) {
-    ESP_LOGE(TAG, "httpd_ws_recv_frame failed with %d (%s)", ret, esp_err_to_name(ret));
+    ESP_LOGE(logtag, "httpd_ws_recv_frame failed with %d (%s)", ret, esp_err_to_name(ret));
       return ret;
   }
 
   if (ws_pkt.type == HTTPD_WS_TYPE_CLOSE) { // XXX: does nothing. remove this
-    ESP_LOGI(TAG, "Close fd: %d", fd);
+    ESP_LOGI(logtag, "Closed web-socket descriptor: %d", fd);
     FD_CLR(fd, &ws_fds);
   }
 

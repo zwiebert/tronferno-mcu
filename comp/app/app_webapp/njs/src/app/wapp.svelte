@@ -31,7 +31,7 @@
 
   let on_destroy = [];
   onMount(() => {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_SHUTTER_NAMES);
+    httpFetch.http_fetchByMask(httpFetch.FETCH_SETTINGS_ALL);
   });
   onDestroy(() => {
     for (const fn of on_destroy) {

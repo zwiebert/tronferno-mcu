@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 #include <utils_misc/cstring_utils.hh>
 #include <debug/dbg.h>
 
@@ -232,4 +233,20 @@ private:
   };
   char daily[DAILY_MAX_LEN + 1] = "";    // ASCII string of one daily timer
   char weekly[WEEKLY_MAX_LEN + 1] = ""; // ASCII string of seven weekly timers
+
+public:
+  int to_json(char *dst, size_t dst_size, bool f_manual) const {
+    auto n = snprintf(dst, dst_size, //
+        R"({"f":"%c%c%c%c%c%c","daily":"%s","weekly":"%s","astro":%d})", //
+
+        f_manual ? 'M' : 'm', getRandom() ? 'R' : 'r', getSunAuto() ? 'S' : 's', //
+        hasAstro() ? 'A' : 'a', hasDaily() ? 'D' : 'd', hasWeekly() ? 'W' : 'w', //
+        daily, weekly, astro);
+
+    return n < dst_size ? n : 0;
+  }
+#if 0
+  bool from_json(const char *json);
+  bool from_json(JsmnBase::Iterator &it);
+#endif
 };

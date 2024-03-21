@@ -14,6 +14,7 @@ set(srcs
     app_cli/parm_sep.cc
     app_cli/parm_shpref.cc
     app_cli/parm_kvs.cc
+    app_cli/cli_to_json.cc
 
 
     app_main/main_setup.cc app_main/esp32/main.cc app_main/esp32/main_setup.cc app_main/esp32/main_loop.cc app_main/esp32/main_loop_periodic.cc app_main/esp32/unity_setup.cc

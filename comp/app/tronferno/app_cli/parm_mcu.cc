@@ -2,6 +2,7 @@
 
 #include "app_misc/firmware.h"
 #include "app_mqtt/mqtt.h"
+#include  <app_settings/serialize.hh>
 #include "fernotron/fer_main.h"
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/shutter_pct.h"
@@ -258,10 +259,23 @@ int process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
 #endif
 
       if (strcmp(key, "test-sj") == 0) {
-        void appSett_jsonSave_test();
-        appSett_jsonSave_test();
+        auto ftd = UoutWriterFile("/spiffs/settings.json", SO_TGT_FLAG_JSON);
+        if (ftd.sj().open_root_object("tfmcu")) {
+          if (ftd.sj().add_object("backup")) {
+            appSett_all_settings_to_json(ftd);
+            ftd.sj().close_object();
+          }
+          ftd.sj().close_root_object();
+        }
+        ftd.sj().write_json(); // finish json
         break;
       }
+
+      if (strcmp(key, "test-rj") == 0) {
+        appSett_all_settings_to_json(td);
+        break;
+      }
+
 
       if (strcmp(key, "kvs-pk") == 0) {
         kvs_print_keys(val);

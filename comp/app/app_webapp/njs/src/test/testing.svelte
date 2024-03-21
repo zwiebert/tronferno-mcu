@@ -3,6 +3,7 @@
   import * as httpFetch from "../app/fetch.js";
   import { G, M } from "../store/curr_shutter.js";
   import { onMount, onDestroy } from "svelte";
+  import * as httpResp from "../app/http_resp.js";
  
   let on_destroy = [];
   onMount(() => {});
@@ -37,7 +38,48 @@
       test_randomCmd_interval = setInterval(test_randomCmd, 1000);
     }
   }
+
+
+  export function http_postRequest(url = "", data = {}, state = { retry_count: 0 }) {
+  console.log("post-json: " + JSON.stringify(data));
+
+  const fetch_data = {
+    method: "POST",
+    cache: "no-cache",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    referrer: "no-referrer",
+    body: JSON.stringify(data),
+  };
+
+  return fetch(url, fetch_data)
+    .then((response) => {
+      if (!response.ok) {
+        console.log("error");
+        if (state.retry_count++ < MAX_RETRY_COUNT) {
+          return http_postRequest(url, data, state);
+        }
+        throw new Error("network repsonse failed");
+      }
+      return response.json();
+    })
+
+    .then((json) => httpResp.http_handleResponses(json))
+
+    .catch((error) => {
+      console.log("error: http_postRequest(): ", error);
+    });
+}
 </script>
+
+<button id="test_rpm_start" type="button" on:click={() => {
+  //httpFetch.http_fetchByMask(httpFetch.FETCH_SETTINGS_ALL);
+  http_postRequest("/cmd.json", {"mcu":{"test-rj":1}});
+}}>
+  Fetch All Settings
+</button>
+<hr>
 
 Random Periodic Movement Commands:
 <button id="test_rpm_start" type="button" on:click={() => testPressed(true)}>

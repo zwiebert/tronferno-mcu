@@ -7,6 +7,7 @@ export const Pcts = OptionStore();
 export const Gmu = PersistentValStore("gmu", [0, 7, 7, 7, 7, 7, 7, 7]);
 export const McuConfig = OptionStore();
 export const Backup = OptionStore();
+export const McuSettings = OptionStore();
 
 export const McuConfigKeys = derived(McuConfig, (mcuConfig) => Object.keys(mcuConfig).filter((key) => key !== "gpio") || []); // XXX: ordering of keys?
 

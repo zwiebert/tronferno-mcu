@@ -94,70 +94,61 @@ static bool print_shpref(const class UoutWriter &td, uint8_t g, uint8_t m, bool 
   return false;
 }
 
-void appSett_jsonSave_test() {
-  auto td = UoutWriterFile("/spiffs/settings.json", SO_TGT_FLAG_JSON);
+void appSett_all_settings_to_json(const UoutWriter &td) {
   auto gm_set = fer_usedMemberMask;
   gm_set.updateGroup();
 
-  if (td.sj().open_root_object("tfmcu")) {
-    if (td.sj().add_object("backup")) {
-      if (td.sj().add_object("settings")) {
+  if (td.sj().add_object("settings")) {
 
-        // config
-        if (td.sj().add_object("config")) {
-          soCfg_all(td, true);
-          td.sj().close_object();
-          td.sj().write_some_json();
-        }
-
-        // auto
-        if (td.sj().add_array("auto")) {
-          for (auto it = gm_set.begin(); it; ++it) {
-            uint8_t g = it.getG(), m = it.getM();
-            print_timer(td, g, m, false);
-          }
-          td.sj().close_array();
-          td.sj().write_some_json();
-        }
-
-        // shpref
-        if (td.sj().add_array("shpref")) {
-          for (auto it = gm_set.begin(); it; ++it) {
-            uint8_t g = it.getG(), m = it.getM();
-
-            print_shpref(td, g, m, false);
-          }
-          td.sj().close_array();
-          td.sj().write_some_json();
-        }
-
-        // pair
-        if (td.sj().add_object("pair")) {
-          fer_alias_so_output_all_pairings(td, true);
-          td.sj().close_object();
-          td.sj().write_some_json();
-        }
-
-        // kvs
-        if (td.sj().add_object("kvs")) {
-          kvs_foreach_string(csu_startsWith, "TXN.", [](const char *key, kvs_type_t type, const UoutWriter &td) -> kvs_cbrT {
-            char value[80];
-            if (type == KVS_TYPE_STR && kvs_get_string(key, value, sizeof(value))) {
-              td.so().print(key, value);
-              return kvsCb_match;
-            }
-            return kvsCb_noMatch;
-          }, td);
-
-          td.sj().close_object();
-          td.sj().write_some_json();
-        }
-
-        td.sj().close_object(); // settings
-      }
-      td.sj().close_object(); // backup
+    // config
+    if (td.sj().add_object("config")) {
+      soCfg_all(td, true);
+      td.sj().close_object();
+      td.sj().write_some_json();
     }
-    td.sj().close_root_object();
-    td.sj().write_json();
+
+    // auto
+    if (td.sj().add_array("auto")) {
+      for (auto it = gm_set.begin(); it; ++it) {
+        uint8_t g = it.getG(), m = it.getM();
+        print_timer(td, g, m, false);
+      }
+      td.sj().close_array();
+      td.sj().write_some_json();
+    }
+
+    // shpref
+    if (td.sj().add_array("shpref")) {
+      for (auto it = gm_set.begin(); it; ++it) {
+        uint8_t g = it.getG(), m = it.getM();
+
+        print_shpref(td, g, m, false);
+      }
+      td.sj().close_array();
+      td.sj().write_some_json();
+    }
+
+    // pair
+    if (td.sj().add_object("pair")) {
+      fer_alias_so_output_all_pairings(td, true);
+      td.sj().close_object();
+      td.sj().write_some_json();
+    }
+
+    // kvs
+    if (td.sj().add_object("kvs")) {
+      kvs_foreach_string(csu_startsWith, "TXN.", [](const char *key, kvs_type_t type, const UoutWriter &td) -> kvs_cbrT {
+        char value[80];
+        if (type == KVS_TYPE_STR && kvs_get_string(key, value, sizeof(value))) {
+          td.so().print(key, value);
+          return kvsCb_match;
+        }
+        return kvsCb_noMatch;
+      }, td);
+      td.sj().close_object();
+      td.sj().write_some_json();
+    }
+
+    td.sj().close_object(); // settings
   }
 }

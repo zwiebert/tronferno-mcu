@@ -30,6 +30,7 @@ export const FETCH_BOOT_COUNT = 1 << b++;
 export const FETCH_CONFIG_GPIO_STRING = 1 << b++;
 export const FETCH_ERROR_MASK = 1 << b++;
 export const FETCH_CC1101_CONFIG = 1 << b++;
+export const FETCH_SETTINGS_ALL = 1 << b++;
 
 const FETCHES_REPLY_BY_WS = 0;
 
@@ -159,6 +160,10 @@ export function http_fetchByMask(mask, synchron) {
   }
 
   let tfmcu = { to: "tfmcu" };
+
+  if (mask &  FETCH_SETTINGS_ALL) {
+    add_kv(tfmcu, "mcu", "test-rj", "?");
+  }
 
   if (mask & FETCH_CONFIG) {
     add_kv(tfmcu, "config", "all", "?");
