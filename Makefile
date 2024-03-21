@@ -69,6 +69,22 @@ $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
 
+
+#need bash for "source" command
+SHELL := /bin/bash
+#provide IDF_PATH if not in env
+export IDF_PATH ?= "$(HOME)/esp/esp-idf"
+.PHONY: idf_make
+#Rule for use in vscode, which does not inherit the idf exports
+#so we source $IDF_PAtH/export.sh for each run of make
+#
+#usage: make idf_target my_target=<target>
+#example: make idf_target my_target=esp32-all  (instead of make esp32-all)
+#
+idf_make:
+	(source "$(IDF_PATH)/export.sh" && make $(my_target))
+
+
 esp32-all:
 	$(esp32_build_cmd) reconfigure all
 
