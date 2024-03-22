@@ -37,6 +37,14 @@ static int response_callback(httpd_req_t *req, const char *src, ssize_t src_len,
 
   D(ESP_LOGW(logtag, "writer for /cmd.json: is_final=%d src_ptr=%p, src_len=%d src=<%*s>",
           is_final, src, src_len, src_len, src));
+
+  // send in one go
+  if (chunk_status == -1) {
+    if (!(ESP_OK == httpd_resp_set_type(req, "application/json") && ESP_OK == httpd_resp_send(req, src, src_len)))
+      return -1;
+    return src_len;
+  }
+
   // send chunks. last chunk needs to have size zero
   if (!(ESP_OK == httpd_resp_set_type(req, "application/json") && ESP_OK == httpd_resp_send_chunk(req, src, src_len)))
     return -1;
