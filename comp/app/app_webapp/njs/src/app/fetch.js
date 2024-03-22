@@ -53,6 +53,10 @@ export function http_postRequest(url = "", data = {}, state = { retry_count: 0 }
    if (ws_sendObject(data))
    return;
   }
+  http_postRequest_no_websocket(url, data, state);
+}
+
+export function http_postRequest_no_websocket(url = "", data = {}, state = { retry_count: 0 }) {
   appDebug.dbLog("post-json: " + JSON.stringify(data));
 
   const fetch_data = {
@@ -161,8 +165,9 @@ export function http_fetchByMask(mask, synchron) {
 
   let tfmcu = { to: "tfmcu" };
 
+  // XXX: avoid websocket for large data, because fragmentation does not work atm
   if (mask &  FETCH_SETTINGS_ALL) {
-    add_kv(tfmcu, "mcu", "test-rj", "?");
+    http_postRequest_no_websocket("/cmd.json", {"mcu":{"test-rj":"?"}});
   }
 
   if (mask & FETCH_CONFIG) {

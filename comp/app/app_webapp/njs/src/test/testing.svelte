@@ -74,8 +74,8 @@
 </script>
 
 <button id="test_rpm_start" type="button" on:click={() => {
-  //httpFetch.http_fetchByMask(httpFetch.FETCH_SETTINGS_ALL);
-  http_postRequest("/cmd.json", {"mcu":{"test-rj":1}});
+  httpFetch.http_fetchByMask(httpFetch.FETCH_SETTINGS_ALL);
+  //http_postRequest("/cmd.json", {"mcu":{"test-rj":1}});
 }}>
   Fetch All Settings
 </button>
