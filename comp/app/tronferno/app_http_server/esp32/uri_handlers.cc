@@ -17,14 +17,36 @@
 #include <esp_event.h>
 #include <esp_log.h>
 #include <esp_system.h>
-
+#include <functional>
 #include <fcntl.h>
 
+
+using namespace std::placeholders;
+
 #define D(x)
+
+
 
 static const char *logtag="http_handler";
 
 ////////////////////////// URI handlers /////////////////////////////////
+
+static int response_callback(httpd_req_t *req, const char *src, ssize_t src_len, int chunk_status) {
+  if (src_len < 0)
+    src_len = strlen(src);
+
+  D(ESP_LOGW(logtag, "writer for /cmd.json: is_final=%d src_ptr=%p, src_len=%d src=<%*s>",
+          is_final, src, src_len, src_len, src));
+  // send chunks. last chunk needs to have size zero
+  if (!(ESP_OK == httpd_resp_set_type(req, "application/json") && ESP_OK == httpd_resp_send_chunk(req, src, src_len)))
+    return -1;
+  if (chunk_status)
+    if (!(ESP_OK == httpd_resp_set_type(req, "application/json") && ESP_OK == httpd_resp_send_chunk(req, src, 0)))
+      return -1;
+
+  return src_len;
+}
+
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   char buf[256];
   int ret, remaining = req->content_len;
@@ -39,31 +61,10 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 
   {
     LockGuard lock(cli_mutex);
-
-    UoutWriterWebsocket td { req, SO_TGT_HTTP | SO_TGT_FLAG_JSON, [](void *req_vp, const char *src, ssize_t src_len = -1, bool is_final = true) -> int {
-      auto req = (httpd_req *)req_vp;
-      if (src_len < 0)
-        src_len = strlen(src);
-
-      D(ESP_LOGW(logtag, "writer for /cmd.json: is_final=%d src_ptr=%p, src_len=%d src=<%*s>",
-          is_final, src, src_len, src_len, src));
-      // send chunks. last chunk needs to have size zero
-      if (!(ESP_OK == httpd_resp_set_type(req, "application/json")
-          && ESP_OK == httpd_resp_send_chunk(req, src, src_len)))
-        return -1;
-      if (is_final)
-        if (!(ESP_OK == httpd_resp_set_type(req, "application/json")
-            && ESP_OK == httpd_resp_send_chunk(req, src, 0)))
-          return -1;
-
-      return src_len;
-    } };
+    auto td = UoutWriterFunction({std::bind(response_callback, req, _1, _2, _3)}, SO_TGT_HTTP | SO_TGT_FLAG_JSON);
 
     buf[ret] = '\0'; // terminate command
-    //UoutWriter td { SO_TGT_HTTP | SO_TGT_FLAG_JSON};
-    cli_process_json(buf, td); // parse and process received command
-    td.sj().write_json();
-    //httpd_resp_sendstr(req, td.sj().get_json()) == ESP_OK || (result = ESP_FAIL);
+    cli_process_json(buf, td); // parse and process command
   }
 
   return result;
@@ -110,7 +111,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
 
   {
     LockGuard lock(cli_mutex);
-    UoutWriterWebsocket td { req, SO_TGT_WS | SO_TGT_FLAG_JSON, ws_write };
+    auto td = UoutWriterFunction({std::bind(ws_write, req, _1, _2, _3)}, SO_TGT_WS | SO_TGT_FLAG_JSON);
     cli_process_json((char*)buf, td);// parse and process received command
   }
   return ret;
