@@ -63,7 +63,7 @@
   <div class="main-area">
     <h4 class="text-center" use:tippy={{ content: $_("panes.ota.tt.header") }}>{$_("panes.ota.header")}</h4>
 
-    <McuFirmwareUpd bind:fwbtns chip="" updSecs="30" />
+    <McuFirmwareUpd bind:fwbtns chip=""  />
     <div class="area">
       <McuFirmwareInfo />
     </div>

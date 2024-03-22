@@ -9,10 +9,6 @@ import { RadioCodeEnabled } from "../store/curr_shutter";
 
 let b = 0;
 export const FETCH_CONFIG = 1 << b++;
-export const FETCH_CONFIG_P0 = 1 << b++;
-export const FETCH_CONFIG_P1 = 1 << b++;
-export const FETCH_CONFIG_P2 = 1 << b++;
-export const FETCH_CONFIG_P3 = 1 << b++;
 export const FETCH_AUTO = 1 << b++;
 export const FETCH_POS = 1 << b++;
 export const FETCH_VERSION = 1 << b++;
@@ -165,25 +161,13 @@ export function http_fetchByMask(mask, synchron) {
 
   let tfmcu = { to: "tfmcu" };
 
-  // XXX: avoid websocket for large data, because fragmentation does not work atm
-  if (mask &  FETCH_SETTINGS_ALL) {
+    if (mask &  FETCH_SETTINGS_ALL) {
     http_postRequest_no_websocket("/cmd.json", {"mcu":{"test-rj":"?"}});
+    //add_kv(tfmcu, "mcu", "test-rj", "?");
   }
 
   if (mask & FETCH_CONFIG) {
     add_kv(tfmcu, "config", "all", "?");
-  }
-  if (mask & FETCH_CONFIG_P0) {
-    add_kv(tfmcu, "config", "all", "p0s2?");
-  }
-  if (mask & FETCH_CONFIG_P1) {
-    add_kv(tfmcu, "config", "all", "p1s2?");
-  }
-  if (mask & FETCH_CONFIG_P2) {
-    add_kv(tfmcu, "config", "all", "p2s2?");
-  }
-  if (mask & FETCH_CONFIG_P3) {
-    add_kv(tfmcu, "config", "all", "p3s2?");
   }
 
   if (mask & FETCH_CONFIG_GPIO_STRING) {
