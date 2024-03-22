@@ -10,7 +10,7 @@
 #include <app_misc/opt_map.hh>
 #include "app_settings/all_settings.hh"
 
-int process_parmConfig(clpar p[], int len, const class UoutWriter &td) {
+int process_parmConfig(clpar p[], int len, class UoutWriter &td) {
   // static RecMutex settings_mutex;
   // std::lock_guard<RecMutex> lock(settings_mutex);
 

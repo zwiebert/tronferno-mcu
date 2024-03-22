@@ -132,7 +132,7 @@ void fer_statPos_setPcts(Fer_GmSet *mm, uint8_t p) {
 
 
 
-void fer_statPos_printAllPcts(const class UoutWriter &td) {
+void fer_statPos_printAllPcts(class UoutWriter &td) {
   soMsg_pos_begin(td);
   if (td.tgt() | SO_TGT_FLAG_TXT) {
     pos_map.fer_statPos_forEachPct([&td](const Fer_GmSet &same_pct, uint8_t pct) {

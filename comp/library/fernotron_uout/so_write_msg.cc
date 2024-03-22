@@ -48,50 +48,50 @@ static void so_gmbitmask_to_str(char *dst, Fer_GmSet *mm) {
 
 
 /////////////////////////////////////////////////////////////////////////////////
-void soMsg_sep_enable(const class UoutWriter &td) {
+void soMsg_sep_enable(class UoutWriter &td) {
   D(td.write("sep enable\n"));
 }
-void soMsg_sep_disable(const class UoutWriter &td) {
+void soMsg_sep_disable(class UoutWriter &td) {
   D(td.write("sep disable\n"));
 }
-void soMsg_sep_button_pressed_error(const class UoutWriter &td) {
+void soMsg_sep_button_pressed_error(class UoutWriter &td) {
   td.write("error: hardware button is pressed\n");
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 static uint16_t fer_cuas_msgid;
-void soMsg_cuas_start(const class UoutWriter &td, uint16_t id) {
+void soMsg_cuas_start(class UoutWriter &td, uint16_t id) {
   fer_cuas_msgid = id;
   td.write("U: Press Stop on the Fernotron central unit\n");
 }
 
-void soMsg_cuas_timeout(const class UoutWriter &td) {
+void soMsg_cuas_timeout(class UoutWriter &td) {
   td.write("U: Nothing received\n");
   reply_id_message(td, fer_cuas_msgid, "cuas=time-out", 0);
 }
 
-void soMsg_cuas_done(const class UoutWriter &td) {
+void soMsg_cuas_done(class UoutWriter &td) {
   td.write("U: Central Unit received and stored\n");
   reply_message(td, "cuas=ok", 0);
 }
 
-void soMsg_cuas_state(const class UoutWriter &td, int state) {
+void soMsg_cuas_state(class UoutWriter &td, int state) {
   td.so().print("cuas", state);
 
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////
-int soMsg_timer_print_begin(const class UoutWriter &td, const char *tag) {
+int soMsg_timer_print_begin(class UoutWriter &td, const char *tag) {
   td.so().x_open(tag);
   return 0;
 }
 
-void soMsg_timer_print_end(const class UoutWriter &td) {
+void soMsg_timer_print_end(class UoutWriter &td) {
   td.so().x_close();
 }
 
-int soMsg_timer_begin(const class UoutWriter &td, const so_arg_gm_t a) {
+int soMsg_timer_begin(class UoutWriter &td, const so_arg_gm_t a) {
 
   if (so_cco) {
     char val[] = "0";
@@ -109,17 +109,17 @@ int soMsg_timer_begin(const class UoutWriter &td, const so_arg_gm_t a) {
   return 0;
 }
 
-void soMsg_timer_end(const class UoutWriter &td) {
+void soMsg_timer_end(class UoutWriter &td) {
   td.so().x_close();
 }
 
-void soMsg_astro_minutes_print(const class UoutWriter &td, const int am) {
+void soMsg_astro_minutes_print(class UoutWriter &td, const int am) {
     td.so().print("astro-minute", am);
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 
-void soMsg_pos_print_gmp(const class UoutWriter &td, const so_arg_gmp_t a) {
+void soMsg_pos_print_gmp(class UoutWriter &td, const so_arg_gmp_t a) {
   if (so_cco) {
     char buf[64];
     if (int n = snprintf(buf, sizeof buf, "A:position: g=%d m=%d p=%d;\n", (int)a.g, (int)a.m, (int)a.p); n > 0 && n < sizeof buf) {
@@ -137,7 +137,7 @@ void soMsg_pos_print_gmp(const class UoutWriter &td, const so_arg_gmp_t a) {
   }
 }
 
-void soMsg_pos_print_gmpa(const class UoutWriter &td, const so_arg_gmp_t *a) {
+void soMsg_pos_print_gmpa(class UoutWriter &td, const so_arg_gmp_t *a) {
   if (so_cco)
     for (int i = 0; a[i].g <= 7; ++i) {
       char buf[64];
@@ -158,7 +158,7 @@ void soMsg_pos_print_gmpa(const class UoutWriter &td, const so_arg_gmp_t *a) {
   }
 }
 
-void soMsg_pos_print_mmp(const class UoutWriter &td, const so_arg_mmp_t a) {
+void soMsg_pos_print_mmp(class UoutWriter &td, const so_arg_mmp_t a) {
   if (so_cco) {
     char buf[64];
     if (int n = snprintf(buf, sizeof buf, "U:position: p=%d mm=%02x,%02x,%02x,%02x,%02x,%02x,%02x,%02x;\n", a.p,
@@ -179,37 +179,37 @@ void soMsg_pos_print_mmp(const class UoutWriter &td, const so_arg_mmp_t a) {
 
 }
 
-void soMsg_pos_begin(const class UoutWriter &td) {
+void soMsg_pos_begin(class UoutWriter &td) {
   if (so_cco)
     td.write("U:position:start;\n");
   if (so_jco)
     td.sj().add_object("pct");
 }
 
-void soMsg_pos_end(const class UoutWriter &td) {
+void soMsg_pos_end(class UoutWriter &td) {
   if (so_cco)
     td.write("U:position:end;\n");
   if (so_jco)
     td.sj().close_object();
 }
 
-void soMsg_pair_begin(const class UoutWriter &td) {
+void soMsg_pair_begin(class UoutWriter &td) {
   td.so().x_open("pair");
 }
 
-void soMsg_pair_end(const class UoutWriter &td) {
+void soMsg_pair_end(class UoutWriter &td) {
   td.so().x_close();
 }
 
-void soMsg_pair_all_begin(const class UoutWriter &td) {
+void soMsg_pair_all_begin(class UoutWriter &td) {
   td.so().x_open("all");
 }
 
-void soMsg_pair_all_end(const class UoutWriter &td) {
+void soMsg_pair_all_end(class UoutWriter &td) {
   td.so().x_close();
 }
 
-void soMsg_pair_print_kmm(const class UoutWriter &td, const so_arg_kmm_t a) {
+void soMsg_pair_print_kmm(class UoutWriter &td, const so_arg_kmm_t a) {
   //td.write("pair a="), td.write(a.key), td.write(" mm="), so_print_gmbitmask(a.mm), td.write(";\n");
   char buf[20];
   so_gmbitmask_to_str(buf, a.mm);
@@ -217,7 +217,7 @@ void soMsg_pair_print_kmm(const class UoutWriter &td, const so_arg_kmm_t a) {
 
 }
 
-void soMsg_pair_print_kmm_single(const class UoutWriter &td, const so_arg_kmm_t a) {
+void soMsg_pair_print_kmm_single(class UoutWriter &td, const so_arg_kmm_t a) {
   //td.write("pair a="), td.write(a.key), td.write(" mm="), so_print_gmbitmask(a.mm), td.write(";\n");
   char buf[20];
   so_gmbitmask_to_str(buf, a.mm);
@@ -227,11 +227,11 @@ void soMsg_pair_print_kmm_single(const class UoutWriter &td, const so_arg_kmm_t 
 }
 
 #ifdef CONFIG_APP_USE_REPEATER
-void soMsg_repeater_begin(const class UoutWriter &td) {
+void soMsg_repeater_begin(class UoutWriter &td) {
   td.so().x_open("repeater");
 }
 
-void soMsg_repeater_end(const class UoutWriter &td) {
+void soMsg_repeater_end(class UoutWriter &td) {
   td.so().x_close();
 }
 #endif

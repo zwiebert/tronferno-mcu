@@ -131,9 +131,9 @@ void AppNetMqtt::disconnected ()  {
   uoCb_unsubscribe(io_mqttApp_uoutPublish_cb);
 }
 
-typedef void (*proc_cmdline_fun)(char *line, const UoutWriter &td);
+typedef void (*proc_cmdline_fun)(char *line, UoutWriter &td);
 
-void io_mqttApp_process_cmdline(char *cmdline, const UoutWriter &td) {
+void io_mqttApp_process_cmdline(char *cmdline, UoutWriter &td) {
   if (cmdline[0] == '{') {
     cli_process_json(cmdline, td);
   } else {
@@ -192,7 +192,7 @@ static so_arg_agm_t topic_to_Agm(const char *addr, unsigned addr_len) {
     return r;
 }
 
-static void io_mqtt_publish_sub_topic_get_json(const UoutWriter &td, const char *sub_topic) {
+static void io_mqtt_publish_sub_topic_get_json(UoutWriter &td, const char *sub_topic) {
   char *json = td.sj().get_json();
   if (!json || !*json)
     return;

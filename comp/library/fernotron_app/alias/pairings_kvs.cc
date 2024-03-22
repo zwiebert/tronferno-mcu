@@ -205,7 +205,7 @@ static void remove_key(const char *key) {
   }
 }
 
-static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, const UoutWriter &td) {
+static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, UoutWriter &td) {
   if (!cpairKey_isValid(key)) {
     remove_key(key);  //delete this invalid key from kvs
     D(ets_printf("%s: key=<%s>, type=%d\n", __func__, key, (int)type));
@@ -228,7 +228,7 @@ static kvs_cbrT kvs_foreach_cb(const char *key, kvs_type_t type, const UoutWrite
     return kvsCb_match;
 }
 
-bool fer_alias_so_output_all_pairings(const class UoutWriter &td, bool content_only) {
+bool fer_alias_so_output_all_pairings(class UoutWriter &td, bool content_only) {
 
   if (!content_only)
     soMsg_pair_all_begin(td);

@@ -22,13 +22,13 @@ extern void (*mcu_restart_cb)();
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
-bool process_parmConfig_get_app(otok kt, const char *val, const class UoutWriter &td);
-bool process_parmConfig_get_comp(otok kt, const char *val, const class UoutWriter &td);
+bool process_parmConfig_get_app(otok kt, const char *val, class UoutWriter &td);
+bool process_parmConfig_get_comp(otok kt, const char *val, class UoutWriter &td);
 
 int process_parmConfig_assign(KvsType kvsType, const char *kvsKey, StoreFun storeFun, const char *val);
 
-bool process_parmConfig_comp(otok kt, const char *key, const char *val, const class UoutWriter &td, int &errors, u64 &changed_mask);
-bool process_parmConfig_app(otok kt, const char *key, const char *val, const class UoutWriter &td, int &errors, u64 &changed_mask);
+bool process_parmConfig_comp(otok kt, const char *key, const char *val, class UoutWriter &td, int &errors, u64 &changed_mask);
+bool process_parmConfig_app(otok kt, const char *key, const char *val, class UoutWriter &td, int &errors, u64 &changed_mask);
 
 void parmConfig_reconfig_comp(u64 changed_mask);
 void parmConfig_reconfig_app(u64 changed_mask);

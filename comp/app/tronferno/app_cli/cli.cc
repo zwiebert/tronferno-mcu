@@ -144,7 +144,7 @@ const parm_handler* cli_parmHandler_find(const char *key) {
 
 /////////////// setup //////////////////
 
-static bool cliApp_checkPassword(clpar p[], int len, const class UoutWriter &td) {
+static bool cliApp_checkPassword(clpar p[], int len, class UoutWriter &td) {
   if (len < 2)
     return true;
 

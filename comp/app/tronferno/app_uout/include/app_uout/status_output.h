@@ -18,15 +18,15 @@
 #ifdef __cplusplus
 
 
-typedef void (*voidFuncP)(const class UoutWriter &td);
+typedef void (*voidFuncP)(class UoutWriter &td);
 
 template<class T>
 class so_object {
 private:
-  const class UoutWriter *my_td;
+  class UoutWriter *my_td;
   voidFuncP mEnd;
 public:
-  so_object(void (*begin)(const class UoutWriter &td, T), T args, voidFuncP end, const class UoutWriter &td) {
+  so_object(void (*begin)(class UoutWriter &td, T), T args, voidFuncP end, class UoutWriter &td) {
     my_td = &td;
     mEnd = end;
     begin(td, args);
@@ -39,10 +39,10 @@ public:
 template<>
 class so_object<void> {
 private:
-  const class UoutWriter *my_td;
+  class UoutWriter *my_td;
   voidFuncP mEnd;
 public:
-  so_object(voidFuncP begin, voidFuncP end, const class UoutWriter &td)  {
+  so_object(voidFuncP begin, voidFuncP end, class UoutWriter &td)  {
     my_td = &td;
     mEnd = end;
     begin(td);

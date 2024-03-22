@@ -23,7 +23,7 @@
 
 #include <fernotron/pos/shutter_prefs.h>
 
-static void print_timer(const class UoutWriter &td, uint8_t g, uint8_t m, bool wildcard) {
+static void print_timer(class UoutWriter &td, uint8_t g, uint8_t m, bool wildcard) {
   Fer_TimerData tdr;
 
   uint8_t g_res = g, m_res = m;
@@ -64,7 +64,7 @@ static void print_timer(const class UoutWriter &td, uint8_t g, uint8_t m, bool w
   }
 }
 
-static bool print_shpref(const class UoutWriter &td, uint8_t g, uint8_t m, bool hide_gm = false) {
+static bool print_shpref(class UoutWriter &td, uint8_t g, uint8_t m, bool hide_gm = false) {
   char name[64];
   struct shutter_timings timings;
 
@@ -94,7 +94,7 @@ static bool print_shpref(const class UoutWriter &td, uint8_t g, uint8_t m, bool 
   return false;
 }
 
-void appSett_all_settings_to_json(const UoutWriter &td) {
+void appSett_all_settings_to_json(UoutWriter &td) {
   auto gm_set = fer_usedMemberMask;
   gm_set.updateGroup();
 
@@ -137,7 +137,7 @@ void appSett_all_settings_to_json(const UoutWriter &td) {
 
     // kvs
     if (td.sj().add_object("kvs")) {
-      kvs_foreach_string(csu_startsWith, "TXN.", [](const char *key, kvs_type_t type, const UoutWriter &td) -> kvs_cbrT {
+      kvs_foreach_string(csu_startsWith, "TXN.", [](const char *key, kvs_type_t type, UoutWriter &td) -> kvs_cbrT {
         char value[80];
         if (type == KVS_TYPE_STR && kvs_get_string(key, value, sizeof(value))) {
           td.so().print(key, value);

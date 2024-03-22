@@ -41,7 +41,7 @@ public:
    */
   void publishPinChange(int gpio_num, bool level);
 
-  typedef void (*proc_cmdline_funT)(char *line, const UoutWriter &td);
+  typedef void (*proc_cmdline_funT)(char *line, UoutWriter &td);
   /**
    * \brief  Create a CLI command line from incoming topic/data
    */

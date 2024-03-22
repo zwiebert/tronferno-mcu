@@ -45,7 +45,7 @@ bool fer_statPos_isSunPos(uint8_t g, uint8_t m);
  * \brief        Output all tracked static positions to user
  * \param td     Output descriptor
  */
-void fer_statPos_printAllPcts(const class UoutWriter &td);
+void fer_statPos_printAllPcts(class UoutWriter &td);
 
 void fer_pos_loop(void);
 void fer_pos_init(void);

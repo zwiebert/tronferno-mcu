@@ -75,7 +75,7 @@ static bool ids_areValid(const char *ids) {
   return true;
 }
 
-bool process_parmConfig_get_app(otok kt, const char *val, const class UoutWriter &td) {
+bool process_parmConfig_get_app(otok kt, const char *val, class UoutWriter &td) {
   switch (kt) {
 
   case otok::k_all: {
@@ -96,7 +96,7 @@ bool process_parmConfig_get_app(otok kt, const char *val, const class UoutWriter
   }
 }
 
-bool process_parmConfig_app(otok kt, const char *key, const char *val, const class UoutWriter &td, int &errors, u64 &changed_mask) {
+bool process_parmConfig_app(otok kt, const char *key, const char *val, class UoutWriter &td, int &errors, u64 &changed_mask) {
   switch (kt) {
 
   case otok::k_cu: {

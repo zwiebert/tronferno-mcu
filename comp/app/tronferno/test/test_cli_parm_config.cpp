@@ -24,7 +24,7 @@ public:
 
 public:
 private:
-  virtual int priv_write(const char *s, ssize_t len, bool final) const {
+  virtual int priv_write(const char *s, ssize_t len, bool final) override {
     for (ssize_t i = 0; i < len; ++i, ++wbuf_idx_) {
       wbuf_[wbuf_idx_] = s[i];
     }

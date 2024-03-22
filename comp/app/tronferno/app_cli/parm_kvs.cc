@@ -23,7 +23,7 @@ const char cli_help_parmKvs[] = "'kvs' stores general key value pairs\n\n"
     "key=(value|?)      Set or get value of key\n"
     ;
 
-int process_parmKvs(clpar p[], int len, const class UoutWriter &td) {
+int process_parmKvs(clpar p[], int len, class UoutWriter &td) {
   int arg_idx;
   int errors = 0;
 

@@ -32,7 +32,7 @@ const char cli_help_parmSend[]  = "'cmd' sends a command to a receiver (or get c
 #define is_val(k) (strcmp(val, k) == 0)
 
 int
-process_parmSend(clpar p[], int len, const class UoutWriter &td) {
+process_parmSend(clpar p[], int len, class UoutWriter &td) {
   int arg_idx;
 
   uint32_t addr = fer_config.cu;

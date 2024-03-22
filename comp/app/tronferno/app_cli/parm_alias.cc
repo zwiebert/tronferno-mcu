@@ -39,7 +39,7 @@ const char cli_help_parmPair[] = "'pair' stores information about transmitter to
 #define is_val(k) (strcmp(val, k) == 0)
 
 int 
-process_parmPair(clpar p[], int len, const class UoutWriter &td) {
+process_parmPair(clpar p[], int len, class UoutWriter &td) {
   int arg_idx;
   int i;
 

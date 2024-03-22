@@ -14,7 +14,7 @@ extern "C++" {
 #include "cli_internal.hh"
 #include <string.h>
 
-int process_parmHelp(clpar p[], int len, const class UoutWriter &td) {
+int process_parmHelp(clpar p[], int len, class UoutWriter &td) {
   int i;
 
 

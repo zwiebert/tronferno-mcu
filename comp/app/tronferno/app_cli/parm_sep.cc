@@ -37,7 +37,7 @@ const char cli_help_parmSep[] = "'sep' sets roller shutter end positions\n\n"
 
 typedef bool (*move_funT)(uint32_t auth_key);
 
-int process_parmSep(clpar p[], int len, const class UoutWriter &td) {
+int process_parmSep(clpar p[], int len, class UoutWriter &td) {
   int arg_idx;
   bool enable = false;
   bool request_auth = false;
