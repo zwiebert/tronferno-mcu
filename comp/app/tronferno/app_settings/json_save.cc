@@ -104,7 +104,6 @@ void appSett_all_settings_to_json(UoutWriter &td) {
     if (td.sj().add_object("config")) {
       soCfg_all(td, true);
       td.sj().close_object();
-      td.sj().write_some_json();
     }
 
     // auto
@@ -114,7 +113,6 @@ void appSett_all_settings_to_json(UoutWriter &td) {
         print_timer(td, g, m, false);
       }
       td.sj().close_array();
-      td.sj().write_some_json();
     }
 
     // shpref
@@ -125,14 +123,12 @@ void appSett_all_settings_to_json(UoutWriter &td) {
         print_shpref(td, g, m, false);
       }
       td.sj().close_array();
-      td.sj().write_some_json();
     }
 
     // pair
     if (td.sj().add_object("pair")) {
       fer_alias_so_output_all_pairings(td, true);
       td.sj().close_object();
-      td.sj().write_some_json();
     }
 
     // kvs
@@ -146,7 +142,6 @@ void appSett_all_settings_to_json(UoutWriter &td) {
         return kvsCb_noMatch;
       }, td);
       td.sj().close_object();
-      td.sj().write_some_json();
     }
 
     td.sj().close_object(); // settings

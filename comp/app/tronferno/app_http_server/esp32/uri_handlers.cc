@@ -20,14 +20,11 @@
 #include <functional>
 #include <fcntl.h>
 
-
 using namespace std::placeholders;
 
-#define D(x)
+#define D(x) x
 
-
-
-static const char *logtag="http_handler";
+static const char *logtag = "http_handler";
 
 ////////////////////////// URI handlers /////////////////////////////////
 
@@ -35,8 +32,8 @@ static int response_callback(httpd_req_t *req, const char *src, ssize_t src_len,
   if (src_len < 0)
     src_len = strlen(src);
 
-  D(ESP_LOGW(logtag, "writer for /cmd.json: is_final=%d src_ptr=%p, src_len=%d src=<%*s>",
-          is_final, src, src_len, src_len, src));
+  D(ESP_LOGW(logtag, "writer for /cmd.json: chunk_status=%d src_ptr=%p, src_len=%d src=<%*s>",
+          chunk_status, src, src_len, src_len, src));
 
   // send in one go
   if (chunk_status == -1) {
@@ -69,7 +66,7 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 
   {
     LockGuard lock(cli_mutex);
-    auto td = UoutWriterFunction({std::bind(response_callback, req, _1, _2, _3)}, SO_TGT_HTTP | SO_TGT_FLAG_JSON);
+    auto td = UoutWriterFunction( { std::bind(response_callback, req, _1, _2, _3) }, SO_TGT_HTTP | SO_TGT_FLAG_JSON);
 
     buf[ret] = '\0'; // terminate command
     cli_process_json(buf, td); // parse and process command
@@ -77,7 +74,6 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 
   return result;
 }
-
 
 static esp_err_t handle_uri_get_file(httpd_req_t *req) {
   if (!check_access_allowed(req))
@@ -126,15 +122,12 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
 }
 #endif
 ////////////////////////// URI definitions ////////////////////////////////
-static const httpd_uri_t httpd_uris[] = {
-    { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json },
-    { .uri = "/f/*", .method = HTTP_GET, .handler = handle_uri_get_file },
-    { .uri = "/", .method = HTTP_GET, .handler = handle_uri_get_file },
+static const httpd_uri_t httpd_uris[] = { { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json }, { .uri = "/f/*", .method = HTTP_GET,
+    .handler = handle_uri_get_file }, { .uri = "/", .method = HTTP_GET, .handler = handle_uri_get_file },
 #ifdef CONFIG_APP_USE_WS
     { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true },
 #endif
-};
-
+    };
 
 ///////// public ///////////////
 void hts_register_uri_handlers(httpd_handle_t server) {

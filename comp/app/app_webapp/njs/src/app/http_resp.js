@@ -39,16 +39,7 @@ export function http_handleResponses(obj) {
   if ("mcu" in obj) {
     if ("settings" in obj.mcu) {
       McuSettings.set(obj.mcu.settings);
-      if ("shpref" in obj.mcu.settings) {
-        let names = {};
-        for(const el of obj.mcu.settings.shpref) {
-          if ("tag.NAME" in el && "g" in el && "m" in el) {
-            const key = el.g.toString() + el.m.toString();
-            names[key] = el["tag.NAME"];
-          }
-        }
-        Names.update(names);
-      }
+      handle_settings({ ...obj.mcu.settings });
     }
   }
 
@@ -77,21 +68,12 @@ export function http_handleResponses(obj) {
     });
   }
 
-  if ("backup" in obj){
-     Backup.set(obj.backup);
-  } 
+  if ("backup" in obj) {
+    Backup.set(obj.backup);
+  }
 
   if ("config" in obj) {
-    let config = obj.config;
-
-    if ("cuas" in config) {
-      cuas.cuas_handle_cuasState(config);
-    } else {
-      McuConfig.update(config);
-      if ("gm-used" in config) {
-        Gmu.set(parse_gmu(config["gm-used"]));
-      }
-    }
+    handle_config(obj.config);
   }
 
   if ("pct" in obj) {
@@ -99,17 +81,7 @@ export function http_handleResponses(obj) {
   }
 
   if ("pair" in obj) {
-    const pair = obj.pair;
-    if ("all" in pair) {
-      Aliases.set(pair.all);
-    }
-    if ("a" in pair && "mm" in pair) {
-      let key = pair.a;
-      let val = pair.mm;
-      let all = {};
-      all[key] = val;
-      Aliases.update(all);
-    }
+    handle_pair(obj.pair);
   }
 
   if ("pras" in obj) {
@@ -121,34 +93,12 @@ export function http_handleResponses(obj) {
   }
 
   if ("kvs" in obj) {
-    const kvs = obj.kvs;
-    let names = {};
-    for (const key in kvs) {
-      if (key.startsWith("TXN.")) {
-        names[key.substring(4)] = kvs[key];
-      }
-    }
-    if (names) {
-      TxNames.update(names);
-    }
-  }
-  if ("shs" in obj) {
-    let shs = obj.shs;
-    Prefs.update(shs);
-    let names = {};
-    let names_ct = 0;
-    for (const key in shs) {
-      if (key.startsWith("shs") && "tag.NAME" in shs[key]) {
-        names[key.substr(3)] = shs[key]["tag.NAME"];
-        ++names_ct;
-      }
-    }
-    if (names_ct > 0) {
-      Names.update(names);
-      console.log("names: ", JSON.stringify(names));
-    }
+    handle_kvs(obj.kvs);
   }
 
+  if ("shs" in obj) {
+    handle_shs(obj.shs);
+  }
   if ("sep" in obj) {
     Sep.update(obj.sep);
   }
@@ -195,18 +145,7 @@ export function http_handleResponses(obj) {
   }
 
   if ("auto" in obj) {
-    let autos = {};
-    let autos_count = 0;
-
-    for (const key in obj.auto) {
-      if (key.startsWith("auto")) {
-        autos[key] = obj.auto[key];
-        ++autos_count;
-      }
-    }
-    if (autos_count) {
-      Autos.update(autos);
-    }
+    handle_auto_obj(obj.auto);
   }
 }
 
@@ -228,4 +167,110 @@ export function gitTags_handleResponse(json) {
 function handleOtaState(state) {
   if (state === 1) McuFirmwareUpdProgress.update((old) => old + 1);
   else McuFirmwareUpdProgress.set(0);
+}
+
+function handle_kvs(kvs) {
+  let names = {};
+  for (const key in kvs) {
+    if (key.startsWith("TXN.")) {
+      names[key.substring(4)] = kvs[key];
+    }
+  }
+  if (names) {
+    TxNames.update(names);
+  }
+}
+
+function handle_config(config) {
+  if ("cuas" in config) {
+    cuas.cuas_handle_cuasState(config);
+  } else {
+    McuConfig.update(config);
+    if ("gm-used" in config) {
+      Gmu.set(parse_gmu(config["gm-used"]));
+    }
+  }
+}
+
+function handle_pair(pair) {
+  if ("all" in pair) {
+    Aliases.set(pair.all);
+  }
+  if ("a" in pair && "mm" in pair) {
+    let key = pair.a;
+    let val = pair.mm;
+    let all = {};
+    all[key] = { ...val };
+    Aliases.update(all);
+  }
+}
+
+function handle_auto_array(auto) {
+  let tmp = {};
+  for (const el of auto) {
+    if ("g" in el && "m" in el) {
+      const key = "auto" + el.g.toString() + el.m.toString();
+      tmp[key] = { ...el };
+      delete tmp[key].g;
+      delete tmp[key].m;
+    }
+  }
+
+  Autos.update(tmp);
+}
+
+function handle_auto_obj(auto) {
+  let tmp = {};
+
+  for (const key in auto) {
+    if (key.startsWith("auto")) {
+      tmp[key] = { ...auto[key] };
+    }
+  }
+
+  Autos.update(tmp);
+}
+
+function handle_shs(shs) {
+  Prefs.update(shs);
+  let names = {};
+  let names_ct = 0;
+  for (const key in shs) {
+    if (key.startsWith("shs") && "tag.NAME" in shs[key]) {
+      names[key.substring(3)] = shs[key]["tag.NAME"];
+      ++names_ct;
+    }
+  }
+  if (names_ct > 0) {
+    Names.update(names);
+    console.log("names: ", JSON.stringify(names));
+  }
+}
+//TODO: add the other properties like in handle_shs()
+function handle_shpref_array(shpref) {
+  let names = {};
+  for (const el of shpref) {
+    if ("tag.NAME" in el && "g" in el && "m" in el) {
+      const key = el.g.toString() + el.m.toString();
+      names[key] = el["tag.NAME"];
+    }
+  }
+  Names.update(names);
+}
+function handle_settings(settings) {
+  if ("shpref" in settings) {
+    handle_shpref_array(settings.shpref);
+  }
+
+  if ("config" in settings) {
+    handle_config(settings.config);
+  }
+
+  if ("pair" in settings) {
+    handle_pair(settings.pair);
+  }
+
+  if ("auto" in settings) {
+    handle_auto_array(settings.auto);
+  }
 }
