@@ -5,6 +5,23 @@ option(BUILD_DOXY "build doxy docs" OFF)
 option(ASAN "enable compiler sanitizer" OFF)
 option(GPROF "enable gprof" OFF)
 
+# esp-idf menuconfig
+if (NOT (BUILD_HOST_TESTS OR BUILD_DOXY))
+  set(PROJECT_NAME "tronferno-mcu")
+
+set(EXTRA_COMPONENT_DIRS comp/components-mcu comp/app comp/library comp/config)
+list(TRANSFORM EXTRA_COMPONENT_DIRS PREPEND   ${CMAKE_SOURCE_DIR}/../../)
+set(COMPONENTS tronferno)
+
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+
+function(component_compile_features)
+    target_compile_features(${COMPONENT_LIB} PRIVATE ${ARGV})
+endfunction()
+
+project(tronferno-mcu)
+endif()
+
 if (BUILD_HOST_TESTS)
 project(tfmcu-test)
 

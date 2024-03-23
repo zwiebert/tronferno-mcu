@@ -140,10 +140,18 @@ HOST_TEST_SRC_PATH=$(THIS_ROOT)/src/host_test
 
 .PHONY: test.cm.configure test.cm.build
 
+# let menuconfig generate config/sdkconfig.(cmake|h)
+# disregard the rest of build/hos_test
+# we still keep some minimal sdkconfig.(cmake|h) for automated testing where we don't have esp-idf
+test.cm.menuconfig:
+	make flavor=host_test esp32-menuconfig esp32-reconfigure
+
 test.cm.configure:
 	rm -fr $(HOST_TEST_BUILD_PATH)
 	mkdir -p $(HOST_TEST_BUILD_PATH)/config
-	cp $(THIS_ROOT)/src/host_test/sdkconfig.h $(THIS_ROOT)/src/host_test/sdkconfig.cmake $(HOST_TEST_BUILD_PATH)/config/
+	(cp $(THIS_ROOT)/build/host_test/config/sdkconfig.h $(THIS_ROOT)/build/host_test/config/sdkconfig.cmake $(HOST_TEST_BUILD_PATH)/config/ || \
+	cp $(THIS_ROOT)/src/host_test/config/sdkconfig.h $(THIS_ROOT)/src/host_test/config/sdkconfig.cmake $(HOST_TEST_BUILD_PATH)/config/)
+
 	cmake -B $(HOST_TEST_BUILD_PATH) -D BUILD_HOST_TESTS=ON -S  $(HOST_TEST_SRC_PATH) #-G Ninja)
 
 cm_build := make -C $(HOST_TEST_BUILD_PATH) -k -j  -s --no-print-dir $(make_verbose_opts)

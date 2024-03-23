@@ -25,7 +25,6 @@ menu "Tronferno Project Configuration"
         default y
 
     config APP_USE_MQTT
-        depends on APP_USE_NETWORK
         bool "Compile MQTT client"
         default y
 
