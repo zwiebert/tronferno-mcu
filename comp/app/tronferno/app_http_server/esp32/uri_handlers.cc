@@ -22,7 +22,11 @@
 
 using namespace std::placeholders;
 
+#ifdef CONFIG_NET_HTTP_SERVER_DEBUG
+#define D(x) x
+#else
 #define D(x)
+#endif
 
 static const char *logtag = "http_handler";
 

@@ -33,5 +33,3 @@ void mcu_delayedRestart(unsigned delay_ms);
 extern "C++" void main_setup_ip_dependent();
 void mcu_init();
 
-#define D(x) x
-

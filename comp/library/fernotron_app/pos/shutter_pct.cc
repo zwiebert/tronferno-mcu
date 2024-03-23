@@ -20,15 +20,17 @@
 
 #include "move.hh"
 
-#ifndef DISTRIBUTION
+#ifdef CONFIG_FERNOTRON_APP_DEBUG
+#define DEBUG
 #define DB_INFO 0
 #define DT(x)
-#define D(x) x
+#define D(x)
 #else
 #define DB_INFO 0
 #define DT(x)
 #define D(x)
 #endif
+#define logtag "ferno.app.pos"
 
 
 static inline bool cfg_isMemberUnused(gT g, mT m) { return !fer_usedMemberMask.getMember(g, m); };

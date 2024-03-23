@@ -27,7 +27,14 @@
 #include <stdio.h>
 #include <time.h>
 
+#ifdef CONFIG_TF_DEBUG
+#define DEBUG
+#define D(x) x
+#else
 #define D(x)
+#endif
+#define logtag "tf.uout"
+
 
 void soMsg_fw_start_msg_print(class UoutWriter &td) {
   static const char msg[] =

@@ -8,4 +8,8 @@ menu "zwiebert: Tronferno Transceiver"
         bool "Activate FER_RECEIVER"
         default y
 
+    config TRONFERNO_TRX_DEBUG
+      bool "Enable debug messages"
+      default n
+
 endmenu

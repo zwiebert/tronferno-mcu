@@ -20,7 +20,17 @@
 #include <stdio.h>
 #include <time.h>
 
+#ifdef CONFIG_FERNOTRON_UOUT_DEBUG
+#define DEBUG
+#define DB_INFO 0
+#define DT(x) x
+#define D(x) x
+#else
+#define DB_INFO 0
+#define DT(x)
 #define D(x)
+#endif
+#define logtag "ferno.uout"
 
 
 static void so_gmbitmask_to_str(char *dst, Fer_GmSet *mm) {

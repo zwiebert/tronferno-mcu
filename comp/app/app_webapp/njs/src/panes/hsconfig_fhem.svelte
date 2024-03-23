@@ -8,7 +8,7 @@
   import * as misc from "../app/misc.js";
 
   onMount(() => {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_GMU | httpFetch.FETCH_CONFIG_P2);
+    httpFetch.http_fetchByMask(httpFetch.FETCH_GMU | httpFetch.FETCH_CONFIG);
   });
 
   $: gmu = $Gmu;

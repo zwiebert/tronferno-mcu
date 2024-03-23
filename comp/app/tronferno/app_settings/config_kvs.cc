@@ -18,7 +18,13 @@
 #include "utils_misc/int_types.h"
 #include "utils_misc/stof.h"
 
-#define D(x) 
+#ifdef CONFIG_TF_DEBUG
+#define DEBUG
+#define D(x) x
+#else
+#define D(x)
+#endif
+#define logtag "tf"
 
 #define CFG_KEY "global.C"
 

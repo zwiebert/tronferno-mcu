@@ -28,5 +28,8 @@ menu "zwiebert: Tronferno App Library"
         bool "Compile with support to update receivers RTC automatically on daylight saving time change"
         default y
 
+    config FERNOTRON_APP_DEBUG
+      bool "Enable debug messages"
+      default n
 endmenu
 

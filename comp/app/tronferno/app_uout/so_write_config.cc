@@ -30,7 +30,14 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifdef CONFIG_TF_UOUT_DEBUG
+#define DEBUG
+#define D(x) x
+#else
 #define D(x)
+#endif
+#define logtag "tf.uout"
+
 
 void soCfg_BAUD(class UoutWriter &td) {
 #ifndef MCU_ESP32

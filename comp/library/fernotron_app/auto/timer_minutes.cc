@@ -14,16 +14,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-#ifndef DISTRIBUTION
-#define DB_INFO 0
-#define DT(x)
-#define D(x)
+#ifdef CONFIG_FERNOTRON_APP_DEBUG
+#define DEBUG
+#define D(x) x
+#define DT(x) x
+#define DP(x) (ets_printf("%s: %s\n", logtag, x))
+#define DL (ets_printf("%s:line: %d\n", logtag, (int) __LINE__))
 #else
-#define DB_INFO 0
-#define DT(x)
 #define D(x)
+#define DT(x)
+#define DP(x)
+#define DL
 #endif
+#define logtag "ferno.app.auto"
 
 static bool 
 timer_to_minutes(fer_au_minutesT *result, const char *ts) {

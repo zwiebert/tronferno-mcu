@@ -26,13 +26,15 @@
 
 #include "move.hh"
 
-#ifdef DISTRIBUTION
-#define D(x)
-#else
+#ifdef CONFIG_FERNOTRON_APP_DEBUG
+#define DEBUG
+#define DT(x) x
 #define D(x) x
-//#define NO_OPT
+#else
+#define DT(x)
+#define D(x)
 #endif
-
+#define logtag "ferno.app.pos"
 
 #ifdef NO_OPT
 #pragma GCC push_options

@@ -11,7 +11,15 @@
 
 #include "sep.hh"
 
+#ifdef CONFIG_FERNOTRON_APP_DEBUG
+#define DEBUG
+#define DT(x) x
+#define D(x) x
+#else
+#define DT(x)
 #define D(x)
+#endif
+#define logtag "ferno.app.pos"
 
 void (*fer_sep_enable_disable_cb)(bool enable);
 

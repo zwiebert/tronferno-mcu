@@ -11,15 +11,17 @@
 #include <utils_time/run_time.h>
 #include "main_loop/main_queue.hh"
 
-#if defined DISTRIBUTION || 0
+#ifdef CONFIG_FERNOTRON_APP_DEBUG
+#define DEBUG
 #define D(x) x
-#define DP(x) (ets_printf("db: %s\n", x))
-#define DL (ets_printf("db:line: %d\n", (int) __LINE__))
+#define DP(x) (ets_printf("%s: %s\n", logtag, x))
+#define DL (ets_printf("%s:line: %d\n", logtag, (int) __LINE__))
 #else
 #define D(x)
 #define DP(x)
 #define DL
 #endif
+#define logtag "ferno.app.alias"
 
 static bool pras_active;
 static time_t end_time;

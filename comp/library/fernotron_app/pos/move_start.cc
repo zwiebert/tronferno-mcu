@@ -17,7 +17,8 @@
 
 #include "move.hh"
 
-#ifndef DISTRIBUTION
+#ifdef CONFIG_FERNOTRON_APP_DEBUG
+#define DEBUG
 #define DB_INFO 0
 #define DT(x)
 #define D(x)
@@ -26,8 +27,7 @@
 #define DT(x)
 #define D(x)
 #endif
-
-
+#define logtag "ferno.app.pos"
 
 
 struct filter {
