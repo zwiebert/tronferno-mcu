@@ -173,47 +173,23 @@ host-test-all:
 	make -s --no-print-directory  test.cm.configure test.cm.ctest
 
 
+
 ############# Doxygen ###################
+doxy_flavors=usr dev api
 DOXY_BUILD_PATH=$(THIS_ROOT)/build/doxy
-
-.PHONY: FORCE
-.PHONY: doxy-usr-view  doxy-dev-view  doxy-api-view
-.PHONY: doxy-usr-build doxy-dev-build doxy-api-build 
-
-$(DOXY_BUILD_PATH)/%/html/index.html: /tmp/doxy_%_file 
-	mkdir -p $(dir $@)
-	doxygen $^
-	
-
-doxy-usr-build: $(DOXY_BUILD_PATH)/usr/html/index.html FORCE
-doxy-usr-view: doxy-usr-build
-	xdg-open $(DOXY_BUILD_PATH)/usr/html/index.html
-
-doxy-dev-build: $(DOXY_BUILD_PATH)/dev/html/index.html FORCE
-doxy-dev-view: doxy-dev-build
-	xdg-open $(DOXY_BUILD_PATH)/dev/html/index.html
-	
-doxy-api-build: $(DOXY_BUILD_PATH)/api/html/index.html FORCE
-doxy-api-view: doxy-api-build
-	xdg-open $(DOXY_BUILD_PATH)/api/html/index.html
+DOXYFILE_PATH=$(THIS_ROOT)
+include doxygen_rules.mk
 
 
-/tmp/doxy_%_file: ./Doxyfile_% /tmp/doxy_input_%
-	cat $^ > $@
+$(DOXY_BUILD_PATH)/dev/input_files: $(DOXY_BUILD_PATH)/dev FORCE
+	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~$(THIS_ROOT)/~" > $@
+	cd comp/components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~$(THIS_ROOT)/comp/components-mcu/~" >> $@
+$(DOXY_BUILD_PATH)/api/input_files: $(DOXY_BUILD_PATH)/api FORCE
+	git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/~" > $@
+	cd comp/components-mcu && git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/comp/components-mcu/~" >> $@
 
-/tmp/doxy_input_dev: FORCE
-	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
-	cd comp/components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/comp/components-mcu/~" >> $@
-/tmp/doxy_input_api: FORCE
-	git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
-	cd comp/components-mcu && git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~INPUT += $(THIS_ROOT)/comp/components-mcu/~" >> $@
-
-/tmp/doxy_input_usr: FORCE
+$(DOXY_BUILD_PATH)/usr/input_files: $(DOXY_BUILD_PATH)/usr FORCE
 	echo "" > $@
-	
-doxy-%-view: doxy-%-build FORCE
-	xdg-open $(DOXY_BUILD_PATH)/$*/html/index.html
-	
 	
 FORCE:
 
@@ -222,3 +198,5 @@ MCU_IP_ADDR ?= 192.168.1.69
 
 telnet:
 	telnet $(MCU_IP_ADDR) 7777
+
+
