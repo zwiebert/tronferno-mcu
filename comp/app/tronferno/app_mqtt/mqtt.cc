@@ -205,7 +205,7 @@ static void io_mqtt_publish_sub_topic_get_json(UoutWriter &td, const char *sub_t
 
 
 void AppNetMqtt::received_cmdl(const char *topic, int topic_len, const char *data, int data_len, proc_cmdline_funT proc_cmdline_fun) {
-  UoutWriter td { SO_TGT_MQTT | SO_TGT_FLAG_JSON };
+  UoutWriterBuilder td { SO_TGT_MQTT | SO_TGT_FLAG_JSON };
   if (!topic_startsWith(topic, topic_len, TOPIC_ROOT)) {
     return; // all topics start with this
   }

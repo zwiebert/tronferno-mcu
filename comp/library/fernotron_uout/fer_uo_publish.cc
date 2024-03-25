@@ -183,7 +183,7 @@ void uoApp_publish_timer_json(uint8_t g, uint8_t m, struct Fer_TimerData *tda) {
 
   flags.fmt.json = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    UoutWriter td { SO_TGT_HTTP | SO_TGT_FLAG_JSON };
+    UoutWriterBuilder td { SO_TGT_HTTP | SO_TGT_FLAG_JSON };
     td.sj().open_root_object("tfmcu.publish");
     td.sj().add_object("auto");
     timer_json(td, g, m, *tda);
