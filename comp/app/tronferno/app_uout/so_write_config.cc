@@ -25,6 +25,11 @@
 
 #include <string.h>
 #include <utils_misc/cstring_utils.hh>
+#include <txtio/comp_glue.hh>
+
+#include <net_http_server/comp_glue.hh>
+#include <net/comp_glue.hh>
+#include <net_mqtt/comp_glue.hh>
 
 #include <stdio.h>
 #include <time.h>

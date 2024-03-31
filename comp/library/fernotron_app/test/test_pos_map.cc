@@ -16,6 +16,8 @@
 #define sleep(s) ut_sleep(s)
 #endif
 
+//#define DEFINE_COMP_SETTINGS_OBJECT
+#include <config_kvs/register_settings.hh>
 
 void tst_posMap_1() {
   Fer_Pos_Map pm;

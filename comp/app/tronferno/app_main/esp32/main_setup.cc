@@ -33,7 +33,7 @@
 #include "../app_private.hh"
 #include "fernotron/fer_pct.h"
 #include "main_loop/main_queue.hh"
-
+#include <config_kvs/register_settings.hh>
 
 
 void tmr_checkNetwork_Sta_start() {

@@ -8,7 +8,7 @@
 #include "app_settings/config.h"
 #include "app_settings/app_settings.hh"
 #include "app_settings/config_defaults.h"
-#include "config_kvs.h"
+#include <config_kvs/config_kvs.h>
 #include <fernotron_trx/fer_trx_api.hh>
 #include <fernotron_trx/raw/fer_radio_trx.h>
 #include <fernotron/repeater/repeater.h>
@@ -19,8 +19,13 @@
 #include "cc1101_ook/spi.hh"
 #include "cc1101_ook/trx.hh"
 
-#include <string.h>
 #include <utils_misc/cstring_utils.hh>
+#include <string.h>
+
+#ifndef TEST_HOST
+#include <net/comp_glue.hh>
+#endif
+#include <txtio/comp_glue.hh>
 
 unsigned tfmcu_error_mask;
 void tfmcu_put_error(tfmcu_errorT error_code, bool value) {
@@ -205,6 +210,7 @@ enum astroCorrection config_read_astro_correction() {
 #endif
 
 #ifdef CONFIG_APP_USE_MQTT
+#include <net_mqtt/comp_glue.hh>
 #include "app_mqtt/mqtt.h"
 void config_setup_mqttAppClient() {
   struct cfg_mqtt c;

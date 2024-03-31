@@ -1,8 +1,9 @@
 idf_component_register(SRC_DIRS "."
                        INCLUDE_DIRS "." ../include 
                        PRIV_INCLUDE_DIRS ../include/fernotron
+                       REQUIRES config_kvs net_mqtt  txtio
                        PRIV_REQUIRES fernotron_trx fernotron_app fernotron_app  utils_debug utils_misc txtio utils_time 
-                                     unity
+                                     unity 
                        )
 
 

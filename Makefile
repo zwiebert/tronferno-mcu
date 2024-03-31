@@ -53,7 +53,7 @@ esp32_cmake_cmd := /usr/bin/cmake -S $(esp32_src_dir) -B $(esp32_build_dir) $(es
 
 
 ######### ESP32 Targets ##################
-esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui reconfigure
+esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui gdbtui reconfigure
 
 .PHONY: esp32-all-force esp32-rebuild
 .PHONY: esp32-all esp32-flash esp32-flash-ocd

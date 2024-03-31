@@ -9,7 +9,8 @@
 #include "fernotron/fer_main.h"
 #include "app_settings/config.h"
 #include "app_settings/app_settings.hh"
-#include "config_kvs.h"
+#include <config_kvs/config_kvs.h>
+
 #include <app_settings/config.h>
 
 

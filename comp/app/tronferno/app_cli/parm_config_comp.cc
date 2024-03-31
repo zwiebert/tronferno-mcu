@@ -9,15 +9,18 @@
 #include <config_kvs/comp_settings.hh>
 #include <config_kvs/config.h>
 #include <uout/cli_out.h>
+#include <txtio/comp_glue.hh>
 
 #ifdef CONFIG_APP_USE_MQTT
 #include <app_mqtt/mqtt.h>
 #endif
 #ifdef CONFIG_APP_USE_HTTP
 #include <net_http_server/http_server_setup.h>
+#include <net_http_server/comp_glue.hh>
 #endif
 #ifdef CONFIG_APP_USE_NTP
 #include <net/ntp_client_setup.hh>
+#include <net/comp_glue.hh>
 #endif
 
 #include "main_loop/main_queue.hh"

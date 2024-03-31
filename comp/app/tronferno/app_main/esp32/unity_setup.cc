@@ -14,7 +14,8 @@
 #include "cli/mutex.hh"
 #endif
 
- void loop_eventBits_setup();
+
+void loop_eventBits_setup();
 
 int unit_testing;
 
@@ -27,14 +28,17 @@ void mcu_init(void);
 extern "C++" void unity_suiteSetUp();
 void unity_suiteSetUp() {
   unit_testing = 1;
+  abort();
   mcu_init();
 }
 
 class UnitySuiteSetup {
 public:
   UnitySuiteSetup(): x(4) {
+  abort();
     unit_testing = 1;
     mcu_init();
+    register_settings();
   }
   int x;
 };

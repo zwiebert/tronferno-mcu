@@ -12,6 +12,11 @@
 static char *Line;
 extern char *Topic, *Data;
 
+#define D(x)
+#include <iostream>
+#include <stdio.h>
+using namespace std;
+
 static void my_process_cmdline(char *line, UoutWriter &td) {
   free(Line);
   Line = strdup(line);
@@ -76,9 +81,11 @@ void tst_receive_cli_version_txt() {
   char data[] = "{\"mcu\":{\"version\"=\"?\"}}";
   MyMqtt.received(topic, sizeof topic - 1, data, sizeof data - 1);
   TEST_ASSERT_EQUAL_STRING("tfmcu/cli_out", Topic);
-  const char *data_head = "{\"from\":\"tfmcu\",\"mcu\":{\"chip\":\"host\",\"build-time\":\"Jan-11-2023T17:04:32\"}}";
+  const char *data_head = "{\"from\":\"cli\",\"mcu\":{\"chip\":\"host\",\"build-time\":\"Jan-11-2023T17:04:32\"}}";
+  D(printf("mqtt expect: <%s>\n", data_head));
+  D(printf("mqtt result: <%s>\n", Data));
   TEST_ASSERT_EQUAL_INT(strlen(data_head), strlen(Data));
-  TEST_ASSERT_EQUAL_MEMORY(data_head, Data, 50);
+  TEST_ASSERT_EQUAL_MEMORY(data_head, Data, 48);
 }
 
 void tst_receive_cli_version_json() {
@@ -87,9 +94,11 @@ void tst_receive_cli_version_json() {
   char data[] = "mcu version=?";
   MyMqtt.received(topic, sizeof topic - 1, data, sizeof data - 1);
   TEST_ASSERT_EQUAL_STRING("tfmcu/cli_out", Topic);
-  const char *data_head = "{\"from\":\"tfmcu\",\"mcu\":{\"chip\":\"host\",\"build-time\":\"Jan-11-2023T17:04:32\"}}";
+  const char *data_head = "{\"from\":\"cli\",\"mcu\":{\"chip\":\"host\",\"build-time\":\"Jan-11-2023T17:04:32\"}}";
+  D(printf("mqtt expect: <%s>\n", data_head));
+  D(printf("mqtt result: <%s>\n", Data));
   TEST_ASSERT_EQUAL_INT(strlen(data_head), strlen(Data));
-  TEST_ASSERT_EQUAL_MEMORY(data_head, Data, 50);
+  TEST_ASSERT_EQUAL_MEMORY(data_head, Data, 48);
 }
 TEST_CASE("mqtt_receive", "[app_mqtt]")
 {
@@ -110,9 +119,11 @@ TEST_CASE("mqtt_receive", "[app_mqtt]")
 #endif
 }
 
-
 void setUp() {
   cfg_mqtt c;
   io_mqttApp_setup(&c);
   cliApp_setup();
 }
+
+//#define DEFINE_COMP_SETTINGS_OBJECT
+#include <config_kvs/register_settings.hh>

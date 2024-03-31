@@ -10,6 +10,10 @@
 #include <uout/so_target_desc.hh>
 #include <array>
 
+
+//#define DEFINE_COMP_SETTINGS_OBJECT
+#include <config_kvs/register_settings.hh>
+
 class UoutWriterTest final : public UoutWriter {
   typedef int (*writeReq_fnT)(void *req, const char *s, ssize_t len, bool final);
 

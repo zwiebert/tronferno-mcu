@@ -15,6 +15,10 @@
 #include <stdbool.h>
 #include <string.h>
 
+//#define DEFINE_COMP_SETTINGS_OBJECT
+#include <config_kvs/register_settings.hh>
+
+
 void test_config_keys2() {
   TEST_ASSERT_EQUAL_STRING("C_TZ", settings_get_kvsKey(CB_TZ));
   TEST_ASSERT_EQUAL_STRING("C_VERBOSE", settings_get_kvsKey(CB_VERBOSE));
