@@ -2,7 +2,7 @@
 
 
 #include <app_settings/config.h>
-#include <app_settings/all_settings.hh>
+#include <app_settings/app_settings.hh>
 #include <app_misc/rtc.h>
 #include "cli_internal.hh"
 #include <app_uout/so_config.h>
@@ -60,7 +60,7 @@ bool process_parmConfig_get_comp(otok kt, const char *val, class UoutWriter &td)
     return true;
 
   default: {
-    if (auto sd = all_settings.get_SettingsData(kt); sd && sd->so_cfg_fun) {
+    if (auto sd = comp_sett.get_SettingsData(kt); sd && sd->so_cfg_fun) {
       sd->so_cfg_fun(td);
       return true;
     }

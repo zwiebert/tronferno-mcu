@@ -20,9 +20,9 @@
 
 
 void test_config_keys2() {
-  TEST_ASSERT_EQUAL_STRING("C_TZ", settings_get_kvsKey(CB_TZ));
-  TEST_ASSERT_EQUAL_STRING("C_VERBOSE", settings_get_kvsKey(CB_VERBOSE));
-  TEST_ASSERT_EQUAL(CBT_u32, settings_get_kvsType(CB_CUID));
+  TEST_ASSERT_EQUAL_STRING("C_TZ", comp_sett.get_kvsKey(CB_TZ));
+  TEST_ASSERT_EQUAL_STRING("C_VERBOSE", comp_sett.get_kvsKey(CB_VERBOSE));
+  TEST_ASSERT_EQUAL(CBT_u32, comp_sett.get_kvsType(CB_CUID));
 
   uint32_t cu = config_read_item(CB_CUID, 0x80abcd);
 

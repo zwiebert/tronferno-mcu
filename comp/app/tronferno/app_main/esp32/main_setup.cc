@@ -176,7 +176,7 @@ void mcu_init() {
 #ifdef CONFIG_APP_USE_CUAS
   fer_cuas_enable_disable_cb = [] (bool enable, uint32_t cu) {
     mainLoop_PeriodicFlags.flags.lf_checkCuasTimeout = enable;
-    config_save_item_n_u32(settings_get_kvsKey(CB_CUID), cu);
+    config_save_item_n_u32(comp_sett.get_kvsKey(CB_CUID), cu);
     config_item_modified(CB_CUID);
 };
 #endif

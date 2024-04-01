@@ -2,13 +2,13 @@
 
 
 #include "cli_internal.hh"
-
+#include <config_kvs/comp_settings.hh>
 #include <utils_misc/mutex.hh>
 #include <utils_misc/int_macros.h>
 #include <utils_misc/cstring_utils.h>
 #include <app_uout/status_output.h>
 #include <app_misc/opt_map.hh>
-#include "app_settings/all_settings.hh"
+
 
 int process_parmConfig(clpar p[], int len, class UoutWriter &td) {
   // static RecMutex settings_mutex;
@@ -48,7 +48,7 @@ int process_parmConfig(clpar p[], int len, class UoutWriter &td) {
             if (process_parmConfig_get_comp(kt, val, td))
               continue;
           } else {
-            if (auto sd = all_settings.get_SettingsData(kt); sd && sd->store_fun != STF_none) {
+            if (auto sd = comp_sett.get_SettingsData(kt); sd && sd->store_fun != STF_none) {
               SET_BIT64(changed_mask, sd->id_bit);
               if (int res = process_parmConfig_assign(sd->kvs_type, sd->kvs_key, sd->store_fun, val)) {
                 if (res < 0)

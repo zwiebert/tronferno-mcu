@@ -12,19 +12,17 @@
 #include <assert.h>
 #include "app_settings/app_register_settings.hh"
 
-class AppSettings final: public Settings<configAppItem, (int8_t)CBA_size - (int8_t)CB_size, CB_size> {
+#include <config_kvs/register_settings.hh>
+#include <config_kvs/comp_settings.hh>
+class CompSettings final : public Settings<configItem, CBA_size> {
 public:
-  using Base = Settings<configAppItem, (int8_t)CBA_size - (int8_t)CB_size, CB_size>;
-  using Item = configAppItem;
-  using storeFunT = void (*)(configAppItem item, const char *val);
+  using Base = Settings<configItem, CB_size>;
 public:
-   constexpr AppSettings() {
-     app_register_settings(*this);
+  constexpr CompSettings() {
+    register_settings(*this);
+    register_app_settings(*this);
   }
 };
+static constexpr CompSettings comp_settings_obj;
+const SettingsBase<configItem> &comp_sett = comp_settings_obj;
 
-#define DEFINE_COMP_SETTINGS_OBJECT
-#include <config_kvs/register_settings.hh>
-
-static constexpr AppSettings app_settings_obj;
-const SettingsBase<configAppItem> &app_sett = app_settings_obj;

@@ -46,7 +46,7 @@
 
 void soCfg_BAUD(class UoutWriter &td) {
 #ifndef MCU_ESP32
-  td.so().print(settings_get_optKeyStr(CB_BAUD), config_read_baud());
+  td.so().print(comp_sett.get_optKeyStr(CB_BAUD), config_read_baud());
 #endif
 }
 
@@ -58,33 +58,33 @@ void soCfg_RTC(class UoutWriter &td) {
 }
 
 void soCfg_CU(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_CUID), fer_config.cu, 16);
+  td.so().print(comp_sett.get_optKeyStr(CB_CUID), fer_config.cu, 16);
 }
 
 void soCfg_NETWORK(class UoutWriter &td) {
 #ifdef CONFIG_APP_USE_NETWORK
-  td.so().print(settings_get_optKeyStr(CB_NETWORK_CONNECTION), cfg_args_network[config_read_network_connection()]);
+  td.so().print(comp_sett.get_optKeyStr(CB_NETWORK_CONNECTION), cfg_args_network[config_read_network_connection()]);
 #endif
 }
 
 void soCfg_TZ(class UoutWriter &td) {
 #ifdef CONFIG_APP_USE_POSIX_TIME
   char buf[64];
-  td.so().print(settings_get_optKeyStr(CB_TZ), config_read_tz(buf, sizeof buf));
+  td.so().print(comp_sett.get_optKeyStr(CB_TZ), config_read_tz(buf, sizeof buf));
 #endif
 }
 
 void soCfg_LONGITUDE(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_LONGITUDE), config_read_longitude(), 2);
+  td.so().print(comp_sett.get_optKeyStr(CB_LONGITUDE), config_read_longitude(), 2);
 }
 
 void soCfg_LATITUDE(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_LATITUDE), config_read_latitude(), 2);
+  td.so().print(comp_sett.get_optKeyStr(CB_LATITUDE), config_read_latitude(), 2);
 }
 
 void soCfg_TIMEZONE(class UoutWriter &td) {
 #ifndef CONFIG_APP_USE_POSIX_TIME
-  td.so().print(settings_get_optKeyStr(CB_TIMEZONE), config_read_timezone(), 5);
+  td.so().print(comp_sett.get_optKeyStr(CB_TIMEZONE), config_read_timezone(), 5);
 #endif
 }
 
@@ -93,58 +93,58 @@ void soCfg_DST(class UoutWriter &td) {
   {
     enum dst geo_dst = config_read_dst();
     const char *dst = (geo_dst == dstEU ? "eu" : (geo_dst == dstNone ? "0" : "1"));
-    td.so().print(settings_get_optKeyStr(CB_DST), dst);
+    td.so().print(comp_sett.get_optKeyStr(CB_DST), dst);
   }
 #endif
 }
 
 void soCfg_GM_USED(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_USED_MEMBERS), config_read_used_members(), 16);
+  td.so().print(comp_sett.get_optKeyStr(CB_USED_MEMBERS), config_read_used_members(), 16);
 }
 
 void soCfg_GPIO_RFOUT(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_RFOUT_GPIO), config_read_rfout_gpio());
+  td.so().print(comp_sett.get_optKeyStr(CB_RFOUT_GPIO), config_read_rfout_gpio());
 }
 
 void soCfg_GPIO_RFIN(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_RFIN_GPIO), config_read_rfin_gpio());
+  td.so().print(comp_sett.get_optKeyStr(CB_RFIN_GPIO), config_read_rfin_gpio());
 }
 
 void soCfg_GPIO_SETBUTTON(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_SETBUTTON_GPIO), config_read_setbutton_gpio());
+  td.so().print(comp_sett.get_optKeyStr(CB_SETBUTTON_GPIO), config_read_setbutton_gpio());
 }
 
 void soCfg_RF_TRX(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_RF_TRX), cfg_args_rfTrx[config_read_rf_trx()]);
+  td.so().print(comp_sett.get_optKeyStr(CB_RF_TRX), cfg_args_rfTrx[config_read_rf_trx()]);
 }
 
 #ifdef CONFIG_APP_USE_REPEATER
 void soCfg_RF_REPEATER(class UoutWriter &td) {
   char buf[80];
-  td.so().print(settings_get_optKeyStr(CB_RF_REPEATER), config_read_rf_repeater(buf, sizeof buf));
+  td.so().print(comp_sett.get_optKeyStr(CB_RF_REPEATER), config_read_rf_repeater(buf, sizeof buf));
 }
 #endif
 
 #ifdef CONFIG_APP_USE_RTC_AUTO_UPD
 void soCfg_RTC_AUTO_UPD(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_RTC_AUTO_UPD), config_read_rtc_auto_upd());
+  td.so().print(comp_sett.get_optKeyStr(CB_RTC_AUTO_UPD), config_read_rtc_auto_upd());
 }
 #endif
 
 void soCfg_GPIO_RFSCK(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_RFSCK_GPIO), config_read_rfsck_gpio());
+  td.so().print(comp_sett.get_optKeyStr(CB_RFSCK_GPIO), config_read_rfsck_gpio());
 }
 
 void soCfg_GPIO_RFMISO(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_RFMISO_GPIO), config_read_rfmiso_gpio());
+  td.so().print(comp_sett.get_optKeyStr(CB_RFMISO_GPIO), config_read_rfmiso_gpio());
 }
 
 void soCfg_GPIO_RFMOSI(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_RFMOSI_GPIO), config_read_rfmosi_gpio());
+  td.so().print(comp_sett.get_optKeyStr(CB_RFMOSI_GPIO), config_read_rfmosi_gpio());
 }
 
 void soCfg_GPIO_RFSS(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_RFSS_GPIO), config_read_rfss_gpio());
+  td.so().print(comp_sett.get_optKeyStr(CB_RFSS_GPIO), config_read_rfss_gpio());
 }
 
 
@@ -232,7 +232,7 @@ void soCfg_GPIO_MODES_AS_STRING(class UoutWriter &td) {
 }
 
 void soCfg_ASTRO_CORRECTION(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_ASTRO_CORRECTION), config_read_astro_correction());
+  td.so().print(comp_sett.get_optKeyStr(CB_ASTRO_CORRECTION), config_read_astro_correction());
 }
 
 void soCfg_begin(class UoutWriter &td) {

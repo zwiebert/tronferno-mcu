@@ -13,7 +13,7 @@
 #include <assert.h>
 
 template<typename settings_type>
-constexpr void app_register_settings(settings_type &settings){
+constexpr void register_app_settings(settings_type &settings){
     settings.initField(CB_RECV, "C_RECEIVER", otok::k_receiver, CBT_i8);
     settings.initField(CB_TRANSM, "C_TRANSM", otok::k_transmitter, CBT_i8);
     settings.initField(CB_RF_TRX, "C_RF_TRX", otok::k_rf_trx, CBT_i8, soCfg_RF_TRX);

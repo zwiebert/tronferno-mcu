@@ -58,20 +58,3 @@ constexpr u64 CBM_rf_repeater = BIT64(CB_RF_REPEATER);
 
 bool config_item_modified(enum configAppItem item);
 
-/// overloaded function for template usage
-constexpr auto settings_get_kvsKey(configAppItem item) {
-  return app_sett.get_kvsKey(item);
-}
-/// overloaded function for template usage
-constexpr auto settings_get_kvsType(configAppItem item) {
-  return app_sett.get_kvsType(item);
-}
-/// overloaded function for template usage
-constexpr auto settings_get_optKey(configAppItem item) {
-  return app_sett.get_optKey(item);
-}
-/// overloaded function for template usage
-constexpr auto settings_get_optKeyStr(configAppItem item) {
-  return app_sett.get_optKeyStr(item);
-}
-
