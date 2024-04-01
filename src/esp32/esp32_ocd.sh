@@ -7,42 +7,45 @@ CMD="$3"
 
 scripts="-f $HOME/esp/ft2232.cfg -f /usr/local/share/openocd/scripts/board/esp-wroom-32.cfg"
 scripts="-f $HOME/esp/ft2232.cfg -f target/esp32.cfg"
-
-part_ota0=0x100000
-part_ota_init=0x10000
-
 ocd_cmd="openocd $scripts"
+
+part_ota_0=$(grep ota_0 $SRCDIR/partitions.csv | sed -E 's/(.+),(.+),(.+),(.+),(.+),/\4/')
+part_ota_0_size=$(grep ota_0 $SRCDIR/partitions.csv | sed -E 's/(.+),(.+),(.+),(.+),(.+),/\5/')
+part_otadata=$(grep otadata $SRCDIR/partitions.csv | sed -E 's/(.+),(.+),(.+),(.+),(.+),/\4/')
 
 
 flash_all() {
 $ocd_cmd \
+	-c "program_esp  $BINDIR/bootloader/bootloader.bin 0x1000 verify" \
         -c "program_esp  $BINDIR/bootloader/bootloader.bin 0x1000 verify" \
         -c "program_esp  $BINDIR/partition_table/partition-table.bin 0x8000 verify" \
-        -c "program_esp  $BINDIR/tronferno-mcu.bin  $part_ota0 verify" \
-        -c "program_esp  $BINDIR/ota_data_initial.bin $part_ota_init verify reset exit"
+        -c "program_esp  $BINDIR/ota_data_initial.bin $part_otadata  verify" \
+        -c "program_esp  $BINDIR/netmcu.bin   $part_ota_0 verify reset exit"
 }
 
 
 flash_app() {
 $ocd_cmd \
-        -c "program_esp  $BINDIR/ota_data_initial.bin $part_ota_init" \
-        -c "program_esp  $BINDIR/tronferno-mcu.bin  $part_ota0 verify reset exit"
-
+        -c "program_esp  $BINDIR/ota_data_initial.bin $part_otadata" \
+        -c "program_esp  $BINDIR/netmcu.bin  $part_ota_0 reset exit"
 }
 
 run_server() {
+    echo "Run Server"
     $ocd_cmd
 }
 
 kill_server() {
+    echo "kill server"
     killall -s SIGINT openocd
 }
 
 ocd_wait() {
-        tail --pid=$(pgrep openocd) -f /dev/null
+    echo "Wait..."
+    tail --pid=$(pgrep openocd) -f /dev/null
+    echo "..done"
 
 }
-
 
 
 if [ "xxx$CMD" = "xxxflash_app" ]; then

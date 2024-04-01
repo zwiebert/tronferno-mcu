@@ -111,8 +111,8 @@ $(gv_build_dir):
 	mkdir -p $@
 	
 .PHONY: FORCE
-########### OpenOCD ###################
-esp32_ocd_sh :=  $(realpath ./src/esp32/esp32_ocd.sh) $(esp32_src_dir) $(esp32_build_dir)
+############ openocd ###################################
+esp32_ocd_sh :=  "$(esp32_src_dir)/esp32_ocd.sh" $(esp32_src_dir) $(esp32_build_dir)
 
 esp32-flash-ocd:
 	$(esp32_ocd_sh) flash
