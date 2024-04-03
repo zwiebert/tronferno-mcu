@@ -6,7 +6,7 @@
 #include <ctype.h>
 //#include "app_uout/status_output.h"
 #include "fernotron_uout/fer_uo_publish.h"
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
 #include "utils_misc/cstring_utils.h"
 #include "utils_misc/itoa.h"

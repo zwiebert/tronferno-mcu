@@ -14,7 +14,7 @@
 #include "nvs.h"
 #include "esp_err.h"
 
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 
 #include "../include/app_misc/kvstore.hh"
 

@@ -14,7 +14,7 @@
 #include <fernotron/repeater/repeater.h>
 #include <fernotron_uout/fer_uo_publish.h>
 #include "utils_misc/int_macros.h"
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
 #include "cc1101_ook/spi.hh"
 #include "cc1101_ook/trx.hh"

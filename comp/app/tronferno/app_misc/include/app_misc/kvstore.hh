@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 #include "utils_misc/int_types.h"
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 
 bool kvs_store_string(const char *key, const char *val);
 bool kvs_get_string(const char *key, char *buf, size_t buf_size);

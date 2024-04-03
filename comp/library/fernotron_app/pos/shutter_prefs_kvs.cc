@@ -7,7 +7,7 @@
 
 
 #include "fernotron/pos/shutter_prefs.h"
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
 #include <alloca.h>
 #include <string.h>

@@ -7,7 +7,7 @@
 
 #include "timer_data_kvs.h"
 #include "fernotron/fer_main.h"
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
 #include "debug/dbg.h"
 #include <alloca.h>

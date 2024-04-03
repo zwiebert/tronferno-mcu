@@ -13,7 +13,7 @@
 #include <app_uout/so_msg.h>
 #include <fernotron/auto/fau_tevent.hh>
 #include "fernotron/auto/fau_tdata_store.h"
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 #include "utils_misc/bcd.h"
 #include "app_misc/rtc.h"
 #include "cli_internal.hh"

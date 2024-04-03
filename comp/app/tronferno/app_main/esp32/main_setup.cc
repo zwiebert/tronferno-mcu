@@ -3,7 +3,7 @@
 #include <app_cli/cli_app.hh>
 #include "app_settings/config.h"
 #include "utils_time/run_time.h"
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 #ifdef CONFIG_APP_USE_HTTP
 #include "app_http_server/setup.hh"
 #endif
@@ -21,7 +21,7 @@
 #include "fernotron_trx/fer_trx_api.hh"
 #include "fernotron/fer_main.h"
 #include "fernotron/auto/fau_tdata_store.h"
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 #include "net/ipnet.h"
 #include "storage/storage.h"
 #include "txtio/inout.h"
