@@ -37,8 +37,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a[], size_t len, uo_flagsT t
   flags.fmt.raw = false;
   flags.fmt.json = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    char sj_buf[128];
-    UoutBuilderJson sj = { sj_buf, sizeof sj_buf };
+    UoutBuilderJson sj;  // use heap instead stack, because this may need up to 400 bytes, if all  possible 49 receivers are moving
 
     if (sj.open_root_object("tfmcu")) {
       sj.add_object("pct");
@@ -86,7 +85,7 @@ void uoApp_publish_pctChange_gmp(const so_arg_gmp_t a, uo_flagsT tgtFlags) {
   flags.fmt.raw = false;
   flags.fmt.json = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
-    char sj_buf[128];
+    char sj_buf[256];
     UoutBuilderJson sj = { sj_buf, sizeof sj_buf };
 
     if (sj.open_root_object("tfmcu")) {
@@ -559,7 +558,7 @@ void uoApp_publish_fer_prasState(const so_arg_pras_t args) {
   if (auto idxs = uoCb_filter(flags); idxs.size) {
     char a_hex[20];
     ltoa(args.a, a_hex, 16);
-    char sj_buf[128];
+    char sj_buf[256];
     UoutBuilderJson sj = { sj_buf, sizeof sj_buf };
 
     if (sj.open_root_object("tfmcu")) {
@@ -595,7 +594,7 @@ void uoApp_publish_fer_cuasState(const so_arg_cuas_t args) {
     char a_hex[20];
     ltoa(args.a, a_hex, 16);
 
-    char sj_buf[128];
+    char sj_buf[256];
     UoutBuilderJson sj = { sj_buf, sizeof sj_buf };
 
     if (sj.open_root_object("tfmcu")) {
@@ -640,7 +639,7 @@ void uoApp_publish_fer_sepState(const so_arg_sep_t args, char tag) {
   flags.fmt.json = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {
 
-    char sj_buf[128];
+    char sj_buf[256];
     UoutBuilderJson sj = { sj_buf, sizeof sj_buf };
 
     if (sj.open_root_object("tfmcu")) {
