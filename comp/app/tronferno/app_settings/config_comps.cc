@@ -210,7 +210,7 @@ enum astroCorrection config_read_astro_correction() {
 #endif
 
 #ifdef CONFIG_APP_USE_MQTT
-#include <net_mqtt/comp_glue.hh>
+#include <net_mqtt_client/comp_glue.hh>
 #include "app_mqtt/mqtt.h"
 void config_setup_mqttAppClient() {
   struct cfg_mqtt c;

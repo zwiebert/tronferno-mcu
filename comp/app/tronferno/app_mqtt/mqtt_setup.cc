@@ -6,7 +6,7 @@
  */
 
 
-#include "net_mqtt/mqtt.hh"
+#include "net_mqtt_client/mqtt.hh"
 #include "mqtt_private.h"
 
 void io_mqttApp_setup(struct cfg_mqtt *cp) {

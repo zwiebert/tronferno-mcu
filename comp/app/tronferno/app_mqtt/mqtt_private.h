@@ -2,7 +2,7 @@
 
 
 #include "app_uout/status_output.h"
-#include "net_mqtt/mqtt.hh"
+#include "net_mqtt_client/mqtt.hh"
 
 /**
  * \brief  Root topic allocated with malloc(3).

@@ -6,7 +6,7 @@
 #pragma once
 
 
-#include "net_mqtt/mqtt.hh"
+#include "net_mqtt_client/mqtt.hh"
 
 void io_mqttApp_setup(struct cfg_mqtt *cp);
 

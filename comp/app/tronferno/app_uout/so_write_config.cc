@@ -29,7 +29,7 @@
 
 #include <net_http_server/comp_glue.hh>
 #include <net/comp_glue.hh>
-#include <net_mqtt/comp_glue.hh>
+#include <net_mqtt_client/comp_glue.hh>
 
 #include <stdio.h>
 #include <time.h>

@@ -9,7 +9,7 @@
 #include "app_mqtt/mqtt.h"
 
 #include "mqtt_private.h"
-#include "net_mqtt/mqtt.hh"
+#include "net_mqtt_client/mqtt.hh"
 #include <string.h>
 #include <stdio.h>
 #include "cli/cli.h"

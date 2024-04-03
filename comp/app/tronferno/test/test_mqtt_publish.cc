@@ -3,10 +3,10 @@
 #include <test_runner.h>
 #endif
 
-#include "net_mqtt/mqtt.hh"
+#include "net_mqtt_client/mqtt.hh"
 #include "app_mqtt/mqtt.h"
 #include "../mqtt_private.h"
-#include "net_mqtt/host/host_mqtt.h"
+#include "net_mqtt_client/host/host_mqtt.h"
 #include <string.h>
 
 
