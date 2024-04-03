@@ -17,7 +17,7 @@
 #include "app_settings/app_settings.hh"
 #include "net/ipnet.h"
 #include "txtio/inout.h"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 #include "app_uout/status_output.h"
 #include "fernotron_trx/astro.h"
 #include <app_uout/so_config.h>

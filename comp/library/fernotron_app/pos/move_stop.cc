@@ -17,7 +17,7 @@
 #include "utils_misc/int_macros.h"
 //#include "app_uout/status_output.h"
 #include "fernotron_uout/fer_uo_publish.h"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/auto/fau_tdata_store.h"
 

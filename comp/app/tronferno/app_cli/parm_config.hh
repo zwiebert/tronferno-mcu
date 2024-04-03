@@ -1,6 +1,6 @@
 #include <app_config/options.hh>
 #include <config_kvs/settings.hh>
-#include <uout/so_target_desc.hh>
+#include <uout/uout_writer.hh>
 #include <app_uout/so_types.h>
 #include <cli/cli_types.h>
 #include <utils_misc/int_types.h>

@@ -4,7 +4,7 @@
 #include <sys/param.h>
 
 #include "net_http_server/http_server_setup.h"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 #include "fernotron_uout/fer_uo_publish.h"
 #include "app_settings/config.h"
 

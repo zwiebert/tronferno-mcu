@@ -13,7 +13,7 @@
 // shared
 #include <utils_misc/int_macros.h>
 #include <utils_misc/cstring_utils.hh>
-#include <uout/status_json.hh>
+#include <uout/uout_builder_json.hh>
 #include <debug/dbg.h>
 
 // sys

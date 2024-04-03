@@ -11,7 +11,7 @@
 #include "utils_misc/int_types.h"
 
 #include "txtio/inout.h"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 #include "uout/cli_out.h"
 
 #include <unistd.h>

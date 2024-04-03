@@ -7,7 +7,7 @@
 #include "../app_cli/cli_internal.hh"
 #include "../app_cli/include/app_cli/cli_app.hh"
 
-#include <uout/so_target_desc.hh>
+#include <uout/uout_writer.hh>
 #include <array>
 
 

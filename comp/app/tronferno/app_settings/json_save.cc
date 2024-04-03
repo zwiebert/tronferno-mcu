@@ -1,4 +1,4 @@
-#include "uout/so_target_desc.hh"
+#include "uout/uout_writer.hh"
 #include "fernotron/fer_main.h"
 
 #include <string.h>
@@ -7,7 +7,7 @@
 #include "app_uout/status_output.h"
 #include "app_uout/so_msg.h"
 #include "fernotron_uout/fer_uo_publish.h"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 
 #include "fernotron/auto/fau_tminutes.h"
 #include "fernotron/fer_main.h"

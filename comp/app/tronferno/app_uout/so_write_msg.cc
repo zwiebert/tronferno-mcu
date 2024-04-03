@@ -15,7 +15,7 @@
 #include "app_settings/config.h"
 #include "net/ipnet.h"
 #include "txtio/inout.h"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 #include "uout/cli_out.h"
 #include "app_uout/status_output.h"
 #include <unistd.h>
