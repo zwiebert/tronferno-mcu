@@ -40,7 +40,7 @@ static int response_callback(httpd_req_t *req, const char *src, ssize_t src_len,
   const bool single_chunk = chunk_status == 0;
   const bool final_chunk = 0 <= chunk_status; // 0 or total number of chunks
 
-  D(ESP_LOGW(logtag, "writer for /cmd.json: chunk_status=%d src_ptr=%p, src_len=%d src=<%*s>",
+  D(ESP_LOGW(logtag, "writer for /cmd.json: chunk_status=%d src_ptr=%p, src_len=%d src=<%.*s>",
           chunk_status, src, src_len, src_len, src));
 
   // send in one go
