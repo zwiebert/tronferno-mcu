@@ -153,6 +153,8 @@ _config:=$(THIS_ROOT)/src/host_test/sdkconfig
 
 test.cm.kconfgen $(config_h) $(config_cmake): $(_config)
 	python -m kconfgen  --kconfig  $(THIS_ROOT)/comp/config/app_config/Kconfig.projbuild --config $(_config) --output header $(config_h) --output cmake $(config_cmake)
+test.cm.copy_config:
+	cp $(THIS_ROOT)/build/host_test/config/sdkconfig.h $(THIS_ROOT)/build/host_test/config/sdkconfig.cmake $(THIS_ROOT)/src/host_test/config/
 
 
 test.cm.configure:
