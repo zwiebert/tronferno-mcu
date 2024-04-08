@@ -12,7 +12,7 @@
 static char *Line;
 extern char *Topic, *Data;
 
-#define D(x)
+#define D(x) x
 #include <iostream>
 #include <stdio.h>
 using namespace std;

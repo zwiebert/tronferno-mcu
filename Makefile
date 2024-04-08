@@ -138,13 +138,22 @@ $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 HOST_TEST_BUILD_PATH=$(BUILD_BASE)/../host/test
 HOST_TEST_SRC_PATH=$(THIS_ROOT)/src/host_test
 
-.PHONY: test.cm.configure test.cm.build
+.PHONY: test.cm.configure test.cm.build  test.cm.kconfgen
 
 # let menuconfig generate config/sdkconfig.(cmake|h)
 # disregard the rest of build/hos_test
 # we still keep some minimal sdkconfig.(cmake|h) for automated testing where we don't have esp-idf
 test.cm.menuconfig:
 	make flavor=host_test esp32-menuconfig esp32-reconfigure
+
+config_h:=$(THIS_ROOT)/src/host_test/config/sdkconfig.h
+config_cmake:=$(THIS_ROOT)/src/host_test/config/sdkconfig.cmake
+_config:=$(THIS_ROOT)/src/host_test/sdkconfig
+
+
+test.cm.kconfgen $(config_h) $(config_cmake): $(_config)
+	python -m kconfgen  --kconfig  $(THIS_ROOT)/comp/config/app_config/Kconfig.projbuild --config $(_config) --output header $(config_h) --output cmake $(config_cmake)
+
 
 test.cm.configure:
 	rm -fr $(HOST_TEST_BUILD_PATH)
