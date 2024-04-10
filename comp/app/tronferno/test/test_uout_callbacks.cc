@@ -13,7 +13,7 @@ class UoutWriterTest final : public UoutWriter {
   typedef int (*writeReq_fnT)(void *req, const char *s, ssize_t len, bool final);
 
 public:
-  UoutWriterTest(so_target_bits tgt = (SO_TGT_FLAG_TXT | SO_TGT_FLAG_JSON | SO_TGT_ANY)) :
+  UoutWriterTest(so_target_bits tgt = (SO_TGT_ANY)) :
       UoutWriter(tgt) {
   }
 
@@ -45,7 +45,7 @@ public:
 };
 
 void test_td() {
-  UoutWriterTest td;
+  UoutWriterTest td(SO_TGT_ANY);
   const char *str = &td.wbuf_[0];
 
   td.write('a');
@@ -58,15 +58,25 @@ void test_td() {
 }
 
 void test_td2() {
-  UoutWriterTest td;
-  const char *str = &td.wbuf_[0];
+  {
+  UoutWriterTest td(SO_TGT_FLAG_TXT | SO_TGT_ANY);
 
   td.so().root_open("test");
   soMsg_pos_print_gmp(td, {2,3,50});
   td.so().root_close();
 
-  TEST_ASSERT_EQUAL_STRING("A:position: g=2 m=3 p=50;\n", str);
-  TEST_ASSERT_EQUAL_STRING("{\"from\":\"test\",\"pct\":{\"23\":50}}", td.sj().get_json());
+  TEST_ASSERT_EQUAL_STRING("A:position: g=2 m=3 p=50;\n", &td.wbuf_[0]);
+  }
+  {
+  UoutWriterTest td(SO_TGT_FLAG_JSON | SO_TGT_ANY);
+
+  td.so().root_open("test");
+  soMsg_pos_print_gmp(td, {2,3,50});
+  td.so().root_close();
+  td.sj().write_json();
+
+  TEST_ASSERT_EQUAL_STRING("{\"from\":\"test\",\"pct\":{\"23\":50}}", &td.wbuf_[0]);
+  }
 
 }
 

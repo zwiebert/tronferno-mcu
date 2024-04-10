@@ -18,7 +18,7 @@ class UoutWriterTest final : public UoutWriter {
   typedef int (*writeReq_fnT)(void *req, const char *s, ssize_t len, bool final);
 
 public:
-  UoutWriterTest(so_target_bits tgt = (SO_TGT_FLAG_TXT | SO_TGT_FLAG_JSON | SO_TGT_ANY)) :
+  UoutWriterTest(so_target_bits tgt) :
       UoutWriter(tgt) {
   }
 
@@ -50,82 +50,141 @@ public:
 };
 
 void tst_parm_config_empty() {
-  UoutWriterTest td;
-  const char *txt = &td.wbuf_[0];
-
   clpar parm[] = { { "config", nullptr }, };
+  {
+  UoutWriterTest td(SO_TGT_FLAG_TXT | SO_TGT_ANY);
+
   if (td.sj().open_root_object("tfmcu")) {
     process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
     td.sj().close_root_object();
   }
-  TEST_ASSERT_EQUAL_STRING("cli_reply: ok\n", txt);
-  TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{}}", td.sj().get_json());
+  TEST_ASSERT_EQUAL_STRING("cli_reply: ok\n", &td.wbuf_[0]);
 }
+  {
+  UoutWriterTest td(SO_TGT_FLAG_JSON | SO_TGT_ANY);
 
+  if (td.sj().open_root_object("tfmcu")) {
+    process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
+    td.sj().close_root_object();
+    td.sj().write_json();
+  }
+  TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{}}", &td.wbuf_[0]);
+}
+}
 void tst_parm_config_cu() {
-  UoutWriterTest td;
-  const char *txt = &td.wbuf_[0];
-
   clpar parm[] = { { "config", nullptr }, { "cu", "806789" }, { "cu", "?" } };
+  {
+  UoutWriterTest td(SO_TGT_FLAG_TXT | SO_TGT_ANY);
+
   if (td.sj().open_root_object("tfmcu")) {
     process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
     td.sj().close_root_object();
   }
-  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: cu=806789;\ncli_reply: ok\n", txt);
-  TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{\"cu\":\"806789\"}}", td.sj().get_json());
+  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: cu=806789;\ncli_reply: ok\n", &td.wbuf_[0]);
+}
+  {
+  UoutWriterTest td(SO_TGT_FLAG_JSON | SO_TGT_ANY);
+
+  if (td.sj().open_root_object("tfmcu")) {
+    process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
+    td.sj().close_root_object();
+    td.sj().write_json();
+  }
+  TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{\"cu\":\"806789\"}}", &td.wbuf_[0]);
+}
 }
 
 void tst_parm_config_tz() {
-  UoutWriterTest td;
-  const char *txt = &td.wbuf_[0];
+  clpar parm[] = { { "config", nullptr }, { "tz", "CET" }, { "tz", "?" } };
+  {
+  UoutWriterTest td(SO_TGT_FLAG_TXT | SO_TGT_ANY);
+
+  if (td.sj().open_root_object("tfmcu")) {
+    process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
+    td.sj().close_root_object();
+  }
+  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: tz=CET;\ncli_reply: ok\n", &td.wbuf_[0]);
+  }
+  {
+  UoutWriterTest td(SO_TGT_FLAG_JSON | SO_TGT_ANY);
 
   clpar parm[] = { { "config", nullptr }, { "tz", "CET" }, { "tz", "?" } };
   if (td.sj().open_root_object("tfmcu")) {
     process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
     td.sj().close_root_object();
+    td.sj().write_json();
   }
-  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: tz=CET;\ncli_reply: ok\n", txt);
-  TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{\"tz\":\"CET\"}}", td.sj().get_json());
+  TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{\"tz\":\"CET\"}}", &td.wbuf_[0]);
+  }
 }
 void tst_parm_config_verbose() {
-  UoutWriterTest td;
-  const char *txt = &td.wbuf_[0];
-
   clpar parm[] = { { "config", nullptr }, { "verbose", "3" }, { "verbose", "?" } };
+  {
+  UoutWriterTest td(SO_TGT_FLAG_TXT | SO_TGT_ANY);
+
   if (td.sj().open_root_object("tfmcu")) {
     process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
     td.sj().close_root_object();
   }
-  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: verbose=3;\ncli_reply: ok\n", txt);
-  TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{\"verbose\":3}}", td.sj().get_json());
+  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: verbose=3;\ncli_reply: ok\n", &td.wbuf_[0]);
+  }
+  {
+  UoutWriterTest td(SO_TGT_FLAG_JSON | SO_TGT_ANY);
+
+  if (td.sj().open_root_object("tfmcu")) {
+    process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
+    td.sj().close_root_object();
+    td.sj().write_json();
+  }
+  TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{\"verbose\":3}}", &td.wbuf_[0]);
+  }
 }
 
 void tst_parm_config_longitude() {
-  UoutWriterTest td;
-  const char *txt = &td.wbuf_[0];
-
   clpar parm[] = { { "config", nullptr }, { "longitude", "13.45" }, { "longitude", "?" } };
+  {
+  UoutWriterTest td(SO_TGT_FLAG_TXT | SO_TGT_ANY);
+
   if (td.sj().open_root_object("tfmcu")) {
     process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
     td.sj().close_root_object();
   }
-  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: longitude=13.45;\ncli_reply: ok\n", txt);
-  TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{\"longitude\":13.45}}", td.sj().get_json());
+  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: longitude=13.45;\ncli_reply: ok\n", &td.wbuf_[0]);
+  }
+  {
+  UoutWriterTest td(SO_TGT_FLAG_JSON | SO_TGT_ANY);
+
+  if (td.sj().open_root_object("tfmcu")) {
+    process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
+    td.sj().close_root_object();
+    td.sj().write_json();
+  }
+  TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{\"longitude\":13.45}}", &td.wbuf_[0]);
+  }
 }
 
 void tst_parm_config_latitude() {
-  UoutWriterTest td;
-  const char *txt = &td.wbuf_[0];
-
   clpar parm[] = { { "config", nullptr }, { "latitude", "53.21" }, { "latitude", "?" } };
+  {
+  UoutWriterTest td(SO_TGT_FLAG_TXT | SO_TGT_ANY);
+
   if (td.sj().open_root_object("tfmcu")) {
     process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
     td.sj().close_root_object();
   }
-  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: latitude=53.21;\ncli_reply: ok\n", txt);
-  TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{\"latitude\":53.21}}", td.sj().get_json());
+  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: latitude=53.21;\ncli_reply: ok\n", &td.wbuf_[0]);
 }
+{
+  UoutWriterTest td(SO_TGT_FLAG_JSON | SO_TGT_ANY);
 
+  if (td.sj().open_root_object("tfmcu")) {
+    process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
+    td.sj().close_root_object();
+    td.sj().write_json();
+  }
+  TEST_ASSERT_EQUAL_STRING("{\"from\":\"tfmcu\",\"config\":{\"latitude\":53.21}}", &td.wbuf_[0]);
+}
+}
 
 TEST_CASE("parm_config", "[app_cli]")
 {

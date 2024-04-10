@@ -23,8 +23,7 @@ http_clean:
 
 
 ####### ESP32 build command ############
-PORT ?= /dev/ttyUSB1
-port ?= /dev/ttyUSB1
+PORT ?=/dev/serial/by-path/pci-0000:03:00.0-usb-0:3.1:1.0-port0
 
 V ?= 0
 
