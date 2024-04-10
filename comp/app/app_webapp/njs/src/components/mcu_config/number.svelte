@@ -6,12 +6,4 @@
   export let step;
 </script>
 
-<input
-  class="config-input number"
-  type="number"
-  id="cfg_{name}"
-  {name}
-  bind:value={value}
-  {min}
-  {max}
-  {step} />
+<input class="config-input number" type="number" id="cfg_{name}" {name} bind:value {min} {max} {step} />
