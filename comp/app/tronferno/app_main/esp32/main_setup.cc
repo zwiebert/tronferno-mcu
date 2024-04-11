@@ -76,7 +76,7 @@ void nwc_tryFallback_later() {
 
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb([](struct timeval *tv) {
-    db_loge(logtag, "ntp synced: %llu\n", (long unsigned long) time(NULL));
+    db_logi(logtag, "ntp synced: %llu\n", (long unsigned long) time(NULL));
     mainLoop_callFun([]() {
       next_event_te.fer_am_updateTimerEvent(time(NULL));
       dst_init();
@@ -126,7 +126,9 @@ void lfPer100ms_mainFun() {
 }
 
 void mcu_init() {
-  mainLoop_setup(32);
+  if(!mainLoop_setup(32))
+    abort();
+
   kvs_setup();
   config_ext_setup_txtio();
 
@@ -224,7 +226,6 @@ void mcu_init() {
 
   config_setup_gpio();
 
-  //if (network != nwWlanAp) //XXX this crashes TODO FIXME
   if (network_fallback != nwNone)
     nwc_tryFallback_later();
 

@@ -159,6 +159,7 @@
     let cfg_mod = mcuConfig_getCfgMod();
     if (cfg_mod === null) return;
 
+    McuConfig.update(mcuConfig);
     Object.keys(cfg_mod).forEach(function (key, idx) {
       if (key.startsWith("gpio") && key !== "gpio" && cfg_mod[key] === "d") {
         McuConfig.remove(key);
@@ -168,11 +169,11 @@
     httpFetch.http_postCommand({ config: cfg_mod });
 
     setTimeout(() => {
-      fetch_one_after_another();
+    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
     }, 500);
 
     setTimeout(() => {
-      fetch_one_after_another();
+    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
     }, 2500);
   }
 
