@@ -38,7 +38,7 @@ static bool nwc_init() {
     return true;
 
   if (auto res = esp_netif_init(); res != ESP_OK) {
-      db_loge(logtag, "%s: failed");
+      db_loge(logtag, "%s: failed", __func__);
       return false;
   }
   return true;

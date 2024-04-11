@@ -201,6 +201,7 @@ void mcu_init() {
     case nwLan:
 #ifdef CONFIG_APP_USE_AP_FALLBACK
       network_fallback = nwWlanAp;
+      [[fallthrough]];
 #endif
     case nwWlanAp:
       nwc_connect_default(network);
