@@ -1,4 +1,3 @@
-
 #include "main.hh"
 #include <app_cli/cli_app.hh>
 #include "app_settings/config.h"
@@ -34,48 +33,50 @@
 #include "fernotron/fer_pct.h"
 #include "main_loop/main_queue.hh"
 #include <config_kvs/register_settings.hh>
+#include <debug/log.h>
+#include <app_net/network_connection.hh>
 
+#define logtag "main"
 
-void tmr_checkNetwork_Sta_start() {
+#define CONFIG_NETWORK_WAIT_FOR_AP_LOGINS_S  120
+
+void nwc_retryDefaultConnection_later(unsigned delay_secs) {
   static void *tmr;
   mainLoop_stopFun(tmr);
 
   if (!(tmr = mainLoop_callFunByTimer([]() {
-    if (!ipnet_isConnected())
-      config_setup_wifiStation();
+    if (network_fallback == nwWlanAp && wifiAp_is_active() && wifiAp_get_connections_since_ap_start())
+      return;
+    if (ipnet_isConnected())
+      return;
+
+    nwc_connect_default();
+
+  }, pdMS_TO_TICKS(1000 * delay_secs)))) {
+    db_loge(logtag, "%s:could not get timer for delayed function call", __func__);
+  }
+}
+
+void nwc_tryFallback_later() {
+  static void *tmr;
+  mainLoop_stopFun(tmr);
+
+  if (!(tmr = mainLoop_callFunByTimer([]() {
+    if (network_default == nwWlanAp && wifiAp_is_active() && wifiAp_get_connections_since_ap_start())
+      return;
+    if (ipnet_isConnected())
+      return;
+
+    nwc_connect_fallback();
+    nwc_retryDefaultConnection_later(network_fallback == nwWlanAp ? CONFIG_NETWORK_WAIT_FOR_AP_LOGINS_S : 15);
   }, pdMS_TO_TICKS(1000 * 5)))) {
-    printf("CheckNetworkTimer_Sta start error");
+    db_loge(logtag, "%s:could not get timer for delayed function call", __func__);
   }
 }
-
-#ifdef CONFIG_APP_USE_WLAN_AP
-void tmr_checkNetwork_Ap_start() {
-  static void *tmr;
-  mainLoop_stopFun(tmr);
-
-  if (!(tmr = mainLoop_callFunByTimer([]() {
-    if (!ipnet_isConnected())
-      lfa_createWifiAp();
-  }, pdMS_TO_TICKS(1000 * CONFIG_NETWORK_CHECK_LOOP_PERIOD_S)))) {
-    printf("CheckNetworkTimer_Ap start error");
-  }
-}
-#endif
-
-void tmr_checkNetwork_start(bool fallback_to_wlan_station, bool fallback_to_wlan_ap) {
-  if (fallback_to_wlan_station)
-    tmr_checkNetwork_Sta_start();
-
-#ifdef CONFIG_APP_USE_WLAN_AP
-  if (fallback_to_wlan_ap)
-    tmr_checkNetwork_Ap_start();
-#endif
-}
-
 
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb([](struct timeval *tv) {
-    ets_printf("ntp synced: %llu\n", (long unsigned long) time(NULL));
+    db_loge(logtag, "ntp synced: %llu\n", (long unsigned long) time(NULL));
     mainLoop_callFun([]() {
       next_event_te.fer_am_updateTimerEvent(time(NULL));
       dst_init();
@@ -83,8 +84,6 @@ void ntpApp_setup(void) {
   });
   config_setup_ntpClient();
 }
-
-
 
 void main_setup_ip_dependent() {
   static int once;
@@ -105,7 +104,7 @@ void main_setup_ip_dependent() {
     config_ext_setup_cliTcpServer();
 #endif
 #ifdef CONFIG_APP_USE_HTTP
-  config_setup_httpServer();
+    config_setup_httpServer();
 #endif
 
   }
@@ -119,9 +118,9 @@ void lfPer100ms_mainFun() {
     }
 #endif
 #ifdef CONFIG_APP_USE_CUAS
-   if (mainLoop_PeriodicFlags.flags.lf_checkCuasTimeout) {
-     fer_cuas_set_check_timeout();
-   }
+    if (mainLoop_PeriodicFlags.flags.lf_checkCuasTimeout) {
+      fer_cuas_set_check_timeout();
+    }
 #endif
   }
 }
@@ -147,13 +146,15 @@ void mcu_init() {
 
 #ifdef CONFIG_APP_USE_GPIO_PINS
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
-    struct pin_change_cb {static void IRAM_ATTR cb() {
-      mainLoop_callFun_fromISR(pin_notify_input_change);}
-    };
-    gpio_INPUT_PIN_CHANGED_ISR_cb = pin_change_cb::cb;
+  struct pin_change_cb {
+    static void IRAM_ATTR cb() {
+      mainLoop_callFun_fromISR(pin_notify_input_change);
+    }
+  };
+  gpio_INPUT_PIN_CHANGED_ISR_cb = pin_change_cb::cb;
 #endif
 
-  #ifdef CONFIG_APP_USE_FER_RECEIVER
+#ifdef CONFIG_APP_USE_FER_RECEIVER
     //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
     struct msg_received_cb { static void IRAM_ATTR cb() {
       mainLoop_callFun_fromISR(fer_rx_loop);}
@@ -161,24 +162,26 @@ void mcu_init() {
     Fer_Trx_API::register_callback_msgReceived_ISR(msg_received_cb::cb);
   #endif
 
-  #ifdef CONFIG_APP_USE_FER_TRANSMITTER
+#ifdef CONFIG_APP_USE_FER_TRANSMITTER
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
-  struct msg_transmitted_cb { static void IRAM_ATTR cb() {
-    mainLoop_callFun_fromISR(fer_tx_loop);}
+  struct msg_transmitted_cb {
+    static void IRAM_ATTR cb() {
+      mainLoop_callFun_fromISR(fer_tx_loop);
+    }
   };
   Fer_Trx_API::register_callback_msgTransmitted_ISR(msg_transmitted_cb::cb);
-  #endif
+#endif
 #ifdef CONFIG_APP_USE_SEP
-  fer_sep_enable_disable_cb = [] (bool enable) {
+  fer_sep_enable_disable_cb = [](bool enable) {
     mainLoop_PeriodicFlags.flags.lf_loopFerSep = enable;
   };
 #endif
 #ifdef CONFIG_APP_USE_CUAS
-  fer_cuas_enable_disable_cb = [] (bool enable, uint32_t cu) {
+  fer_cuas_enable_disable_cb = [](bool enable, uint32_t cu) {
     mainLoop_PeriodicFlags.flags.lf_checkCuasTimeout = enable;
     config_save_item_n_u32(comp_sett.get_kvsKey(CB_CUID), cu);
     config_item_modified(CB_CUID);
-};
+  };
 #endif
 
 #ifdef CONFIG_APP_USE_NETWORK
@@ -189,27 +192,22 @@ void mcu_init() {
   if (network != nwNone)
 #endif
       {
-    esp_netif_init();
 #ifdef CONFIG_APP_USE_HTTP
     hts_setup_content();
 #endif
 
     switch (network) {
-#ifdef CONFIG_APP_USE_WLAN
     case nwWlanSta:
-      config_setup_wifiStation();
-      break;
-#endif
-#ifdef CONFIG_APP_USE_WLAN_AP
-    case nwWlanAp:
-      lfa_createWifiAp(); // XXX: Create the fall-back AP. Should we have a regular configured AP also?
-      break;
-#endif
-#ifdef CONFIG_APP_USE_LAN
     case nwLan:
-    case nwLanOrWlanSta:
-      config_setup_ethernet();
+#ifdef CONFIG_APP_USE_AP_FALLBACK
+      network_fallback = nwWlanAp;
 #endif
+    case nwWlanAp:
+      nwc_connect_default(network);
+      break;
+    case nwLanOrWlanSta:
+      network_fallback = nwWlanSta;
+      nwc_connect_default(nwLan);
       break;
     default:
       break;
@@ -219,21 +217,16 @@ void mcu_init() {
 
 #endif // CONFIG_APP_USE_NETWORK
 
-   if (auto smCt = app_safeMode_increment(); smCt > 6) {
-     app_safe_mode = true;
-   }
-
+  if (auto smCt = app_safeMode_increment(); smCt > 6) {
+    app_safe_mode = true;
+  }
 
   config_setup_gpio();
 
-
   //if (network != nwWlanAp) //XXX this crashes TODO FIXME
-  if (network == nwLan || network == nwWlanSta || network == nwLanOrWlanSta)
-#ifdef CONFIG_APP_USE_AP_FALLBACK
-    tmr_checkNetwork_start(network == nwLanOrWlanSta, true);
-#else
-  tmr_checkNetwork_start(network == nwLanOrWlanSta, false);
-#endif
+  if (network_fallback != nwNone)
+    nwc_tryFallback_later();
+
   app_timerISR_setup();
   stor_setup();
   main_setup();

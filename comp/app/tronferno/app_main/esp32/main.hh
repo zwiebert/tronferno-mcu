@@ -20,9 +20,11 @@ extern int32_t boot_counter;
 extern bool wifi_ap_active;
 
 void lfa_createWifiAp(void);
+void lfa_removeWifiAp_if_never_used(); ///<  Remove AP if there were no logins since the AP had started.
+void lfa_removeWifiAp_if_unused(); ///<  Remove AP if there is currently no user logged in.
 
 void loop(void);
-void tmr_checkNetwork_start();
+void nwc_tryFallback_later();
 void tmr_loopPeriodic100ms_start();
 void tmr_pingLoop_start();
 void loop_eventBits_setup();

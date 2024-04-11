@@ -10,6 +10,7 @@
 #include <config_kvs/config.h>
 #include <uout/cli_out.h>
 #include <txtio/comp_glue.hh>
+#include <app_net/network_connection.hh>
 
 #ifdef CONFIG_APP_USE_MQTT
 #include <app_mqtt/mqtt.h>
