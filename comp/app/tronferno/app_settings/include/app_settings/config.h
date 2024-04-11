@@ -12,7 +12,7 @@
 #include "fernotron_trx/astro.h"
 //#include "net/ethernet_setup.hh"
 #include "gpio/pin.h"
-#include <app_net/network_connection.hh>
+#include <net/network_connection.hh>
 #include "stdbool.h"
 
 

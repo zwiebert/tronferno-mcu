@@ -34,7 +34,7 @@
 #include "main_loop/main_queue.hh"
 #include <config_kvs/register_settings.hh>
 #include <debug/log.h>
-#include <app_net/network_connection.hh>
+#include <net/network_connection.hh>
 
 #define logtag "main"
 

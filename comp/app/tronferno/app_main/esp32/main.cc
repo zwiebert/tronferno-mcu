@@ -13,7 +13,7 @@
 #include "cc1101_ook/spi.hh"
 #include "main_loop/main_queue.hh"
 #include <fernotron_uout/fer_uo_publish.h>
-#include <app_net/network_connection.hh>
+#include <net/network_connection.hh>
 
 #include <esp_attr.h>
 #include <esp32/rom/ets_sys.h>
