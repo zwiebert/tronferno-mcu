@@ -499,12 +499,12 @@ First check the current direction with arrow buttons. If wrong, then reverse the
     "rf-ss-pin": "CC1101 CS0",
     "gm-used": "Receivers",
     cc1101: {
-      "rf-sclk-pin": "CC1101 SCLK",
-      "rf-miso-pin": "CC1101 SO",
-      "rf-mosi-pin": "CC1101 SI",
-      "rf-ss-pin": "CC1101 CS0",
-      "rf-tx-pin": "CC1101 GD0 (TX)",
-      "rf-rx-pin": "CC1101 GD2 (RX)",
+      "rf-sclk-pin": "CC1101 SCLK/SCK",
+      "rf-miso-pin": "CC1101 MISO",
+      "rf-mosi-pin": "CC1101 MOSI",
+      "rf-ss-pin": "CC1101 CS0/CSN",
+      "rf-tx-pin": "CC1101 GDO0",
+      "rf-rx-pin": "CC1101 GDO2",
     },
   },
 
