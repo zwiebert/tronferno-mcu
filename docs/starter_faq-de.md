@@ -1,4 +1,25 @@
 ## Tronferno FAQ Liste
+<details>
+<summary>Das OTA Update schlägt immer fehl</summary>
+
+Dies kam schon einige Male vor. Erklärungen dazu finden sich in den Issues im tronferno-mcu-bin repository auf GitHub.
+
+Lösung ist der Download der neuesten Firmware-Version und das flashen über USB. Hinterher funktioniert OTA wieder.
+FHEM User können auch ein Update über das TronfernoMCU Modul versuchen, dazu muss die MCU dort über ein USB Gerät verbunden sein, nicht über eine IP Adresse.
+
+Hinweis: Wenn das manuelle flashen irgendwie klemmnt, dann bitte solange versuchen bis es klappt. Das Löschen des Flash-Speichers hilft nicht bei diesem Problem.
+Es kann am Treiber liegen oder man muss die Boot-Taste drücken oder eventuell einen Kondensator nachrüsten.
+Manche Boards erlauben das erstmalige Flashen ohne den Kondensator, aber weitere Versuche funktionieren nur noch selten.  Ein Skript was das flashen in einer 
+Schleife solange probiert, bis es klappt, kann als Notlösung auch helfen.
+</details>
+
+<details>
+<summary>Der ESP32 crasht beim Booten und startet mehrfach neu</summary>
+
+Falls es kein Bug in der installierten Firmware ist, könnten Datenmüll im Flash-Speicher der Grund sein.
+Hier ließ sich das beheben durch ein komplettes Löschen und Neuflashen des Chips. Ein Backkup fast aller Daten über die Webapp ist möglich.
+Eigentlich sollte das nicht passieren. Ursache war hier das rüberflashen unterschiedlicher Firmwareversionen mit unterschiedlich großen Partitionen.
+</details>
 
 <details>
 <summary>Kann ich zwei oder mehr Tronferno-MCU im selben Haus verwenden</summary>
@@ -104,7 +125,7 @@ Die Astro/Dämmerungs-Funktion verwendet eine Tabelle für ein Halbjahr und der 
   Entweder eine Zeit die zwischen beiden realen Zeiten liegt, oder eine Zeit die in beiden Halbjahren entweder  niemals vor/nach Dämmerung ist.
   Die korrigierte Tabelle muss dann zu dem betreffenden Rollladen übertragen werden um wirksam zu sein.
   Die Vorhersage der Dämmerung in der Weboberfläche benutzt immer die aktuell voreingestellte Korrektur und die daraus erzeugte Tabelle.
-  Wenn die im Rollladen gespeicherte Tabelle eine andere ist, dann werden die Vorhersage-Zeiten nicht stimmen.
+  Wenn die im Rollladen gespeicherte Tabelle eine andere ist, dann werden die Vorhersage-Zeiten nicht damit übereinstimmen.
 </details>
 
 
