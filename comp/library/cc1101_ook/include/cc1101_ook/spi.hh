@@ -16,7 +16,7 @@ struct cc1101_settings {
  * \brief      Setup CC1101 SPI or disable CC1101
  * \param cfg  pointer to configuration object
  */
-void cc1101_ook_spi_setup(const struct cc1101_settings *cfg);
+bool cc1101_ook_spi_setup(const struct cc1101_settings *cfg);
 
 /**
  * \brief     disable CC1101 hardware before reboot (useless function?)

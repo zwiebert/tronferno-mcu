@@ -486,7 +486,7 @@ bool cc1101_ook_gdo_isConnected(int gdo_num, int gpio_num) {
   return result;
 }
 
-void cc1101_ook_spi_setup(const struct cc1101_settings *cfg) {
+bool cc1101_ook_spi_setup(const struct cc1101_settings *cfg) {
   if (SPI_HANDLE) {
     Write_CC_CmdStrobe(CC1101_SRES);
     ms_delay(50);
@@ -495,23 +495,25 @@ void cc1101_ook_spi_setup(const struct cc1101_settings *cfg) {
   }
 
   if (!cfg->enable) {
-    return;
+    return true;
   }
 
   if (!enable_cc1101(cfg)) {
     ESP_LOGE(TAG, "enabling SPI failed");
-    return;
+    return false;
   }
 
   if (!cc1101_init()) {
     ESP_LOGE(TAG, "init failed");
-    return;
+    return false;
   }
 
   if (!cc1101_ook_setDirection(false)) {
     ESP_LOGE(TAG, "enter RX state failed");
-    return;
+    return false;
   }
+
+  return true;
 }
 
 void cc1101_ook_spi_disable() {
@@ -539,7 +541,8 @@ bool cc1101_ook_gdo_isConnected(int gdo_num, int gpio_num) {
   return false;
 }
 
-void cc1101_ook_spi_setup(const struct cc1101_settings *cfg) {
+bool cc1101_ook_spi_setup(const struct cc1101_settings *cfg) {
+  return false;
 }
 void cc1101_ook_spi_disable() {
 }

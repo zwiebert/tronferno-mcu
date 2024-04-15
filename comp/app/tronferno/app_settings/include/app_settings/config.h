@@ -18,6 +18,7 @@
 
 enum tfmcu_errorT {
   TFMCU_ERR_CC1101_RFIN_NOT_CONNECTED,
+  TFMCU_ERR_CC1101_INIT_FAILED,
 };
 extern unsigned tfmcu_error_mask;
 void tfmcu_put_error(tfmcu_errorT error_code, bool value);

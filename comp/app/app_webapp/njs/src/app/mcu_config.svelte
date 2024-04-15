@@ -11,7 +11,10 @@
   import { onMount, onDestroy } from "svelte";
   import { ReloadProgress } from "../store/app_state.js";
   import NavTabs from "../app/nav_tabs.svelte";
-  import { McuErrorMask } from "../store/mcu_firmware.js";
+  import { McuErrorMask,
+    McuError_cc1101_gdo2_nc,
+    McuError_cc1101_init,
+  } from "../store/mcu_firmware.js";
 
   import McuConfigGpio from "../components/mcu_config/gpio.svelte";
   import McuConfigGpioSelect from "../components/mcu_config/gpio_select.svelte";
@@ -29,7 +32,7 @@
   let on_destroy = [];
 
   onMount(() => {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
+    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG | httpFetch.FETCH_ERROR_MASK);
   });
   onDestroy(() => {
     for (const fn of on_destroy) {
@@ -59,8 +62,6 @@
   }
 
   $: hasCc1101 = mcuConfig["rf-trx"] === "cc1101";
-
-  $: errorBit_cc1101_gpio_rfin = ($McuErrorMask & 0x01) !== 0;
 
   $: mcuConfigKeysNetwork = $McuConfigKeys.filter((val) => val === "network");
   $: mcuConfigKeysMQTT = $McuConfigKeys.filter((val) => val.startsWith("mqtt-"));
@@ -474,7 +475,7 @@
             {#if key === "rf-rx-pin"}
               <td>
                 <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} />
-                {#if errorBit_cc1101_gpio_rfin}
+                {#if $McuError_cc1101_gdo2_nc}
                   <span class="bg-red-400">(wire not connected)</span>
                 {/if}
               </td>
@@ -555,6 +556,9 @@
             {:else if key === "rf-trx"}
               <td>
                 <McuRfTrx name={key} bind:value={mcuConfig[key]} />
+                {#if $McuError_cc1101_init}
+                  <span class="bg-red-400">(CC1101 init failed)</span>
+                {/if}
               </td>
             {:else}
               <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>

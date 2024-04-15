@@ -43,8 +43,8 @@ endif()
 idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS  app_uout/include app_settings/include app_mqtt/include app_http_server/include app_cli/include app_misc/include
-    REQUIRES  cli config_kvs fernotron_app fernotron_uout firmware_update gpio main_loop net_mqtt_client txtio uout utils_debug utils_time
-    PRIV_REQUIRES app_webapp cc1101_ook cli fernotron_app fernotron_trx firmware_update gpio kvs main_loop net net_http_server net_connect
+    REQUIRES  cli net_connect config_kvs fernotron_app fernotron_uout firmware_update gpio main_loop net_mqtt_client txtio uout utils_debug utils_time
+    PRIV_REQUIRES app_webapp cc1101_ook cli fernotron_app fernotron_trx firmware_update gpio kvs main_loop net net_http_server 
                   nvs_flash storage txtio utils_debug utils_misc 
                   esp_wifi driver mbedtls app_update freertos 
     EMBED_TXTFILES app_cli/ca_cert.pem

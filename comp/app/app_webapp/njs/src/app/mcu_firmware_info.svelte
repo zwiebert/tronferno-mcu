@@ -1,7 +1,15 @@
 <script>
   "use strict";
   import { _ } from "../services/i18n";
-  import { McuBootCount, McuErrorMask, McuFirmwareBuildDate, McuChipId, McuFirmwareVersion } from "../store/mcu_firmware.js";
+  import {
+    McuBootCount,
+    McuErrorMask,
+    McuError_cc1101_gdo2_nc,
+    McuError_cc1101_init,
+    McuFirmwareBuildDate,
+    McuChipId,
+    McuFirmwareVersion,
+  } from "../store/mcu_firmware.js";
   import * as httpFetch from "../app/fetch.js";
   import { onMount } from "svelte";
 
@@ -12,7 +20,39 @@
   $: nu = $_("notifyUser");
 </script>
 
+<ul>
+  <li>MCU type: {$McuChipId}</li>
+  <li>Version: {$McuFirmwareVersion}</li>
+  <li>Build Date: {$McuFirmwareBuildDate}</li>
+  <li>Boot Count: {$McuBootCount}</li>
+  <li>Error Mask: {$McuErrorMask}</li>
+  {#if $McuErrorMask}
+    <ul>
+      {#if $McuError_cc1101_gdo2_nc}
+        <li><span class="bg-red-400">CC1101 GDO2 not connected.</span> Is it connected to the configured GPIO?</li>
+      {/if}
+      {#if $McuError_cc1101_init}
+        <li><span class="bg-red-400">CC1101 init failed.</span> Is the CC1101 SPI interface connected to the configured GPIOS?</li>
+      {/if}
+    </ul>
+  {/if}
+</ul>
 
+{#if $_("notifyUser").messages.length > 0}
+  <table>
+    <caption class="bg-red-400">{$_("notifyUser").caption}</caption>
+    {#each $_("notifyUser").messages as nu}
+      <tr>
+        <td>{nu.date}</td>
+        <td>{nu.text}</td>
+      </tr>
+    {/each}
+  </table>
+{/if}
+
+<hr />
+<a href="https://github.com/zwiebert/tronferno-mcu/commits/develop">develop-branch commit log on GitHub </a><br />
+<a href="https://github.com/zwiebert/tronferno-mcu/commits/master">master-branch commit log on GitHub</a>
 
 <style lang="scss">
   @import "../styles/app.scss";
@@ -30,28 +70,3 @@
     border-spacing: 0;
   }
 </style>
-
-
-<ul>
-  <li>MCU type: {$McuChipId}</li>
-  <li>Version: {$McuFirmwareVersion}</li>
-  <li>Build Date: {$McuFirmwareBuildDate}</li>
-  <li>Boot Count: {$McuBootCount}</li>
-  <li>Error Mask: {$McuErrorMask}</li>
-</ul>
-
-{#if $_("notifyUser").messages.length > 0}
-<table>
-  <caption class="bg-red-400">{$_("notifyUser").caption}</caption>
-  {#each $_("notifyUser").messages as nu}
-    <tr>
-      <td>{nu.date}</td>
-      <td>{nu.text}</td>
-    </tr>
-  {/each}
-</table>
-{/if}
-
-<hr>
-<a href="https://github.com/zwiebert/tronferno-mcu/commits/develop">develop-branch commit log on GitHub </a><br>
-<a href="https://github.com/zwiebert/tronferno-mcu/commits/master">master-branch commit log on GitHub</a>

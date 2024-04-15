@@ -251,7 +251,10 @@ void config_setup_cc1101() {
 
   struct cc1101_settings c = { .sclk = -1, .ss = -1, .miso = -1, .mosi = -1 };
   config_read_cc1101(&c);
-  cc1101_ook_spi_setup(&c);
+  if (!cc1101_ook_spi_setup(&c)) {
+    tfmcu_put_error(TFMCU_ERR_CC1101_INIT_FAILED, true);
+    return;
+  }
 
   auto rfin_gpio = config_read_rfin_gpio();
   tfmcu_put_error(TFMCU_ERR_CC1101_RFIN_NOT_CONNECTED, rfin_gpio >= 0 && !cc1101_ook_gdo_isConnected(2, rfin_gpio));
