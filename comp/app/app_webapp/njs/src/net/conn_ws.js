@@ -10,7 +10,8 @@ export function websocket() {
   ws = new WebSocket("ws://" + window.location.host + "/ws");
   // eslint-disable-next-line no-unused-vars
   ws.onopen = (evt) => {
-    //ws.send(JSON.stringify({ to: "tfmcu", cmd: { p: "?" } }));
+    // send something to open the websocket connection on the other end
+    ws.send(JSON.stringify({from:"wapp",to:"tfmcu",open_websocket:{}}));
     isOpen = true;
   };
   ws.onmessage = (evt) => {

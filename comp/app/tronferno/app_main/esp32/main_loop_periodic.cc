@@ -5,13 +5,11 @@
 
 
 #include "main_loop_periodic.h"
-
-#include <utils_misc/int_types.h>
-#include <utils_misc/int_macros.h>
-
-
 #include "main.hh"
+
+
 #include <cli/cli.h>
+#include <net/network_connection.hh>
 
 #include <app_settings/config.h>
 #include "utils_misc/int_macros.h"
@@ -43,7 +41,6 @@ void tmr_loopPeriodic100ms_start() {
     if ((count & (BIT(7) - 1)) == 0) { // 12,8 secs
       app_safeMode_increment(true);
     }
-
 #ifdef CONFIG_APP_USE_RTC_AUTO_UPD
     if ((count & (BIT(9) - 1)) == 0) { // 51,2 secs
         const time_t now = time(0);
@@ -62,6 +59,21 @@ void tmr_loopPeriodic100ms_start() {
             }
          }
       }
+    }
+#endif
+#ifdef CONFIG_NET_CONNECT_PAUSE_TIMES
+    int8_t nwc_pause_times[] =  {22,30,6,10};
+    if ((count & (BIT(9) - 1)) == 0) { // 51,2 secs
+        const time_t now = time(0);
+        struct tm tms;
+        if (auto tmp = localtime_r(&now, &tms)) {
+          if (tmp->tm_hour == nwc_pause_times[0] && tmp->tm_min == nwc_pause_times[1]) {
+            mainLoop_callFun(nwc_disconnect);
+          }
+           if (tmp->tm_hour == nwc_pause_times[0] && tmp->tm_min == nwc_pause_times[1]) {
+            mainLoop_callFun(nwc_connect_default);
+          }
+        }
     }
 #endif
     if ((count & (BIT(9) - 1)) == 0) { // 51,2 secs

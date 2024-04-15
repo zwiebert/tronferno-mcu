@@ -3,11 +3,8 @@
  * \brief  Run events in main task by setting event bits from periodic 100ms timer
  */
 #pragma once
+#include <stdbool.h>
 
-
-
-#include <utils_misc/int_types.h>
-#include <utils_misc/int_macros.h>
 
 /**
  * \brief  Flags to turn on/off a periodic event
@@ -28,7 +25,7 @@ union lfPerFlags {
   unsigned flagbits;  ///< all flags as bit representation for convenience
 };
 
-extern lfPerFlags mainLoop_PeriodicFlags; ///< enable/disable conditional periodic events
+extern union lfPerFlags mainLoop_PeriodicFlags; ///< enable/disable conditional periodic events
 
 /**
  * \brief Called every 100ms in main thread context

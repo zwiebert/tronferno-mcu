@@ -1,44 +1,55 @@
 #include "main.hh"
-#include <app_cli/cli_app.hh>
-#include "app_settings/config.h"
-#include "utils_time/run_time.h"
-#include "kvs/kvs_wrapper.h"
-#ifdef CONFIG_APP_USE_HTTP
-#include "app_http_server/setup.hh"
-#endif
-#include "utils_misc/int_types.h"
-#include "app_misc/timer.h"
-#include "app_misc/rtc.h"
-#include "app_settings/config.h"
-#include "app_settings/app_settings.hh"
-#include "fernotron/auto/fau_next_event.hh"
-#include "fernotron/alias/pairings.h"
-#include "fernotron/cuas/cuid_auto_set.h"
-#include "fernotron/sep/set_endpos.h"
-#include "fernotron/pos/positions_static.h"
-#include "fernotron/pos/positions_dynamic.h"
-#include "fernotron_trx/fer_trx_api.hh"
-#include "fernotron/fer_main.h"
-#include "fernotron/auto/fau_tdata_store.h"
-#include "kvs/kvs_wrapper.h"
-#include "net/ipnet.h"
-#include "storage/storage.h"
-#include "txtio/inout.h"
-
-#include <ctime>
-#include "config_kvs/config.h"
-#include "app_uout/status_output.h"
-#include "uout/uo_callbacks.h"
 #include "../app_private.hh"
-#include "fernotron/fer_pct.h"
-#include "main_loop/main_queue.hh"
+#include "main_loop_periodic.h"
+
+#ifdef CONFIG_APP_USE_HTTP
+#include <app_http_server/setup.hh>
+#endif
+#include <app_cli/cli_app.hh>
+#include <app_misc/rtc.h>
+#include <app_misc/timer.h>
+#include <app_settings/app_settings.hh>
+#include <app_settings/config.h>
+#include <app_uout/status_output.h>
+#include <fernotron/alias/pairings.h>
+#include <fernotron/auto/fau_next_event.hh>
+#include <fernotron/auto/fau_tdata_store.h>
+#include <fernotron/cuas/cuid_auto_set.h>
+#include <fernotron/fer_main.h>
+#include <fernotron/fer_pct.h>
+#include <fernotron/pos/positions_dynamic.h>
+#include <fernotron/pos/positions_static.h>
+#include <fernotron/sep/set_endpos.h>
+#include <fernotron_trx/fer_trx_api.hh>
+#include <kvs/kvs_wrapper.h>
+#include <main_loop/main_queue.hh>
+#include <net/ipnet.h>
+#include <storage/storage.h>
+#include <txtio/inout.h>
+#include <uout/uo_callbacks.h>
+#include <utils_time/run_time.h>
+#include <utils_misc/int_types.h>
 #include <config_kvs/register_settings.hh>
 #include <debug/log.h>
 #include <net/network_connection.hh>
 
+#include <esp_sntp.h>
+#include <esp_event.h>
+
+#include <freertos/FreeRTOS.h>
+#include <freertos/projdefs.h>
+
+#include <ctime>
+
 #define logtag "main"
 
 #define CONFIG_NETWORK_WAIT_FOR_AP_LOGINS_S  120
+
+void publish_ipAddress() {
+  char buf[20];
+  ipnet_addr_as_string(buf, 20);
+  uoCb_publish_ipAddress(buf);
+}
 
 void nwc_retryDefaultConnection_later(unsigned delay_secs) {
   static void *tmr;
@@ -85,31 +96,6 @@ void ntpApp_setup(void) {
   config_setup_ntpClient();
 }
 
-void main_setup_ip_dependent() {
-  static int once;
-  {
-    char buf[20];
-    ipnet_addr_as_string(buf, 20);
-    uoCb_publish_ipAddress(buf);
-  }
-  if (!once) {
-    once = 1;
-#ifdef CONFIG_APP_USE_NTP
-    ntpApp_setup();
-#endif
-#ifdef CONFIG_APP_USE_MQTT
-    config_setup_mqttAppClient();
-#endif
-#ifdef CONFIG_APP_USE_TCPS_TASK
-    config_ext_setup_cliTcpServer();
-#endif
-#ifdef CONFIG_APP_USE_HTTP
-    config_setup_httpServer();
-#endif
-
-  }
-}
-
 void lfPer100ms_mainFun() {
   if (mainLoop_PeriodicFlags.flagbits) {
 #ifdef CONFIG_APP_USE_SEP
@@ -125,27 +111,7 @@ void lfPer100ms_mainFun() {
   }
 }
 
-void mcu_init() {
-  if(!mainLoop_setup(32))
-    abort();
-
-  kvs_setup();
-  config_ext_setup_txtio();
-
-  config_setup_global();
-
-  io_puts("\r\n\r\n");
-
-  ESP_ERROR_CHECK(esp_event_loop_create_default());
-  cliApp_setup();
-#ifdef CONFIG_APP_USE_CLI_TASK
-  cli_setup_task(true);
-#else
-#error "currently unsupported" // FIXME: support CLI without its own task, or remove that APP_USE_CLI_TASK kconfig option
-#endif
-  next_event_te.fer_am_updateTimerEvent(time(NULL));
-  mainLoop_callFunByTimer(fer_am_loop, 1000, true);
-
+void init_gpio() {
 #ifdef CONFIG_APP_USE_GPIO_PINS
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
   struct pin_change_cb {
@@ -155,14 +121,19 @@ void mcu_init() {
   };
   gpio_INPUT_PIN_CHANGED_ISR_cb = pin_change_cb::cb;
 #endif
+  config_setup_gpio();
+}
 
+void init_fernotron() {
 #ifdef CONFIG_APP_USE_FER_RECEIVER
-    //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
-    struct msg_received_cb { static void IRAM_ATTR cb() {
-      mainLoop_callFun_fromISR(fer_rx_loop);}
-    };
-    Fer_Trx_API::register_callback_msgReceived_ISR(msg_received_cb::cb);
-  #endif
+  //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
+  struct msg_received_cb {
+    static void IRAM_ATTR cb() {
+      mainLoop_callFun_fromISR(fer_rx_loop);
+    }
+  };
+  Fer_Trx_API::register_callback_msgReceived_ISR(msg_received_cb::cb);
+#endif
 
 #ifdef CONFIG_APP_USE_FER_TRANSMITTER
   //  No lambda here, because section attributes (IRAM_ATTR) do not work on it
@@ -186,8 +157,18 @@ void mcu_init() {
   };
 #endif
 
+  next_event_te.fer_am_updateTimerEvent(time(NULL));
+  mainLoop_callFunByTimer(fer_am_loop, 1000, true);
+}
+
+void init_noisr_callbacks() {
+
+}
+
+void init_network_connection() {
 #ifdef CONFIG_APP_USE_NETWORK
   ipnet_CONNECTED_cb = main_setup_ip_dependent;
+
   enum nwConnection network = config_read_network_connection();
 
 #ifdef CONFIG_APP_USE_AP_FALLBACK
@@ -218,17 +199,45 @@ void mcu_init() {
 
   }
 
+  if (network_fallback != nwNone)
+    nwc_tryFallback_later();
 #endif // CONFIG_APP_USE_NETWORK
+}
+
+void mcu_init() {
+  if (esp_event_loop_create_default() != ESP_OK)
+    abort();
+  if (!mainLoop_setup(32))
+    abort();
+
+
+  // init early required components like kvs, txtio
+  kvs_setup();
+  config_ext_setup_txtio();
+  io_puts("\r\n\r\n");
+  config_setup_global();
+
+
+  // CLI
+  cliApp_setup();
+#ifdef CONFIG_APP_USE_CLI_TASK
+  cli_setup_task(true);
+#else
+#error "currently unsupported" // FIXME: support CLI without its own task, or remove that APP_USE_CLI_TASK kconfig option
+#endif
+
+  // Fernotron
+  init_fernotron();
+
+  // try to open default or fall-back connection
+  init_network_connection();
 
   if (auto smCt = app_safeMode_increment(); smCt > 6) {
     app_safe_mode = true;
   }
 
-  config_setup_gpio();
-
-  if (network_fallback != nwNone)
-    nwc_tryFallback_later();
-
+  // User defined/controllable GPIOs
+  init_gpio();
   app_timerISR_setup();
   stor_setup();
   main_setup();

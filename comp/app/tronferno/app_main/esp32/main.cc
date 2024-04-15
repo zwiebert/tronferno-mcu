@@ -17,8 +17,11 @@
 
 #include <esp_attr.h>
 #include <esp32/rom/ets_sys.h>
+
+#include "freertos/FreeRTOS.h"
 #include <freertos/projdefs.h>
 #include <freertos/task.h>
+
 #include <cstdio>
 
 int32_t boot_counter;
