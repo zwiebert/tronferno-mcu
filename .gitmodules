@@ -1,3 +1,6 @@
 [submodule "components-mcu"]
-	path = comp/components-mcu
+	path = external/components-mcu
 	url = https://github.com/zwiebert/components-mcu.git
+[submodule "external/tronferno-lib"]
+	path = external/tronferno-lib
+	url = https://github.com/zwiebert/tronferno-lib.git
