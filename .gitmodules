@@ -4,3 +4,6 @@
 [submodule "external/tronferno-lib"]
 	path = external/tronferno-lib
 	url = https://github.com/zwiebert/tronferno-lib.git
+[submodule "external/cc1101_ook"]
+	path = external/cc1101_ook
+	url = https://github.com/zwiebert/cc1101_ook.git

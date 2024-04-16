@@ -9,8 +9,13 @@ option(GPROF "enable gprof" OFF)
 if (NOT (BUILD_HOST_TESTS OR BUILD_DOXY))
   set(PROJECT_NAME "tronferno-mcu")
 
-set(EXTRA_COMPONENT_DIRS external/components-mcu external/tronferno-lib comp/app comp/library comp/config)
+
+
+file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components)
+set(EXTRA_COMPONENT_DIRS external/components-mcu comp/app comp/library comp/config)
 list(TRANSFORM EXTRA_COMPONENT_DIRS PREPEND   ${CMAKE_SOURCE_DIR}/../../)
+list(APPEND EXTRA_COMPONENT_DIRS ${external_components})
+
 set(COMPONENTS tronferno)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
@@ -28,9 +33,10 @@ project(tfmcu-test)
 set(proj_src_dir "${CMAKE_SOURCE_DIR}/../..")
 
 add_compile_definitions(USE_JSON) 
-
-set(COMPONENT_DIRECTORIES external/components-mcu  external/tronferno-lib/components comp/library comp/app comp/config)
-list(TRANSFORM COMPONENT_DIRECTORIES PREPEND   "${proj_src_dir}/")
+file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components)
+set(COMPONENT_DIRECTORIES external/components-mcu comp/app comp/library comp/config)
+list(TRANSFORM COMPONENT_DIRECTORIES PREPEND   ${CMAKE_SOURCE_DIR}/../../)
+list(APPEND COMPONENT_DIRECTORIES ${external_components})
 
 set(comp_compile_feats cxx_std_20)
 set(comp_compile_opts -O0 -ggdb  # -fanalyzer
@@ -53,6 +59,8 @@ add_subdirectory(${proj_src_dir}/comp/app/tronferno ${CMAKE_BINARY_DIR}/${BIN_CO
 message("all_inc_dirs: ${COMPONENT_LIBS_INC_DIRS}")
 message("all_libs: ${COMPONENT_LIBS}")
 message("all_tests: ${TEST_EXECUTABLES}")
+message("all_comp_dirs: ${COMPONENT_DIRECTORIES}")
+message("all_extra_comp_dirs: ${EXTRA_COMPONENT_DIRS}")
 
 doxy_create_input()
 
