@@ -1,9 +1,15 @@
-[submodule "components-mcu"]
-	path = external/components-mcu
-	url = https://github.com/zwiebert/components-mcu.git
 [submodule "external/tronferno-lib"]
 	path = external/tronferno-lib
 	url = https://github.com/zwiebert/tronferno-lib.git
 [submodule "external/cc1101_ook"]
 	path = external/cc1101_ook
 	url = https://github.com/zwiebert/cc1101_ook.git
+[submodule "external/components-misc"]
+	path = external/components-misc
+	url = https://github.com/zwiebert/components-misc.git
+[submodule "external/jsmnit"]
+	path = external/jsmnit
+	url = https://github.com/zwiebert/jsmnit.git
+[submodule "external/host-test-idf"]
+	path = external/host-test-idf
+	url = https://github.com/zwiebert/host-test-idf.git

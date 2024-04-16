@@ -12,7 +12,7 @@ if (NOT (BUILD_HOST_TESTS OR BUILD_DOXY))
 
 
 file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components)
-set(EXTRA_COMPONENT_DIRS external/components-mcu comp/app comp/library comp/config)
+set(EXTRA_COMPONENT_DIRS comp/app comp/library comp/config)
 list(TRANSFORM EXTRA_COMPONENT_DIRS PREPEND   ${CMAKE_SOURCE_DIR}/../../)
 list(APPEND EXTRA_COMPONENT_DIRS ${external_components})
 
@@ -34,7 +34,7 @@ set(proj_src_dir "${CMAKE_SOURCE_DIR}/../..")
 
 add_compile_definitions(USE_JSON) 
 file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components)
-set(COMPONENT_DIRECTORIES external/components-mcu comp/app comp/library comp/config)
+set(COMPONENT_DIRECTORIES comp/app comp/library comp/config)
 list(TRANSFORM COMPONENT_DIRECTORIES PREPEND   ${CMAKE_SOURCE_DIR}/../../)
 list(APPEND COMPONENT_DIRECTORIES ${external_components})
 
@@ -52,7 +52,7 @@ if(ASAN)
   add_compile_options(-fsanitize=address -fstack-protector-all)
 endif()
 
-include(${proj_src_dir}/external/components-mcu/test_host/host_test.cmake)
+include(${proj_src_dir}/external/host-test-idf/components/test_host/host_test.cmake)
 
 add_subdirectory(${proj_src_dir}/comp/app/tronferno ${CMAKE_BINARY_DIR}/${BIN_COMP_ROOT}/tronferno)
 
