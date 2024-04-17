@@ -9,7 +9,7 @@
 #include "app_uout/status_output.h"
 #include "app_settings/config.h"
 #include "app_misc/rtc.h"
-#include <uout/cli_out.h>
+#include <cli/cli_out.hh>
 #include "cli_internal.hh"
 #include "include/app_cli/cli_app.hh"
 #include "../app_misc/include/app_misc/kvstore.hh"

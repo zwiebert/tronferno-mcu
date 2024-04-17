@@ -11,7 +11,7 @@ if (NOT (BUILD_HOST_TESTS OR BUILD_DOXY))
 
 
 
-file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components)
+file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components ${CMAKE_SOURCE_DIR}/../../external/*/external/*/components)
 set(EXTRA_COMPONENT_DIRS comp/app comp/library comp/config)
 list(TRANSFORM EXTRA_COMPONENT_DIRS PREPEND   ${CMAKE_SOURCE_DIR}/../../)
 list(APPEND EXTRA_COMPONENT_DIRS ${external_components})
@@ -33,7 +33,7 @@ project(tfmcu-test)
 set(proj_src_dir "${CMAKE_SOURCE_DIR}/../..")
 
 add_compile_definitions(USE_JSON) 
-file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components)
+file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components ${CMAKE_SOURCE_DIR}/../../external/*/external/*/components)
 set(COMPONENT_DIRECTORIES comp/app comp/library comp/config)
 list(TRANSFORM COMPONENT_DIRECTORIES PREPEND   ${CMAKE_SOURCE_DIR}/../../)
 list(APPEND COMPONENT_DIRECTORIES ${external_components})

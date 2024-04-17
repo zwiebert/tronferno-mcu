@@ -146,7 +146,7 @@ process_parmPair(clpar p[], int len, class UoutWriter &td) {
   }
 
   if (scan) {
-    fer_alias_auto_set(g, m, c, cli_msgid, PRAS_TIMEOUT);
+    fer_alias_auto_set(g, m, c, PRAS_TIMEOUT);
   }
 
   if (read_all) {

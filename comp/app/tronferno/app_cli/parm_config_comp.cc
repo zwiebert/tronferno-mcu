@@ -8,7 +8,7 @@
 #include <app_uout/so_config.h>
 #include <config_kvs/comp_settings.hh>
 #include <config_kvs/config.h>
-#include <uout/cli_out.h>
+#include <cli/cli_out.hh>
 #include <txtio/comp_glue.hh>
 #include <net/network_connection.hh>
 

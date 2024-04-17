@@ -28,7 +28,7 @@
 #endif
 
 #ifdef TEST_HOST
-#define ets_printf printf
+#define io_printf printf
 #endif
 
 #include <alloca.h>
@@ -109,7 +109,7 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
 #ifdef CONFIG_APP_USE_FREERTOS
     case otok::k_stack: {
       int words = uxTaskGetStackHighWaterMark(NULL);
-      ets_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
+      io_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
     }
       break;
 #endif
@@ -168,9 +168,8 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
         app_doFirmwareUpdate(url);
       } else {
 #ifdef DISTRIBUTION
-        ets_printf("forbidden: ota update from given URL\n");
+        reply_message(td, "ota:failed", "ota update from URL is not allowed in release version");
 #else
-        ets_printf("doing ota update from given URL\n");
         app_doFirmwareUpdate(val);
 #endif
       }
@@ -181,7 +180,7 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
     default:
       // Echo parameter to test quoting in command lines
       if (strcmp(key, "echo") == 0) {
-        ets_printf("echo: <%s>\n", val);
+        io_printf("echo: <%s>\n", val);
         break;
       }
 #ifdef CONFIG_APP_USE_MQTT

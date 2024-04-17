@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 
 set(PROJECT_NAME "tronferno-mcu")
 
-file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components)
+file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components ${CMAKE_SOURCE_DIR}/../../external/*/external/*/components)
 set(EXTRA_COMPONENT_DIRS comp/app comp/library comp/config)
 list(TRANSFORM EXTRA_COMPONENT_DIRS PREPEND   ${CMAKE_SOURCE_DIR}/../../)
 list(APPEND EXTRA_COMPONENT_DIRS ${external_components})

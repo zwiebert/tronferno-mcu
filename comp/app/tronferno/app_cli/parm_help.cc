@@ -7,7 +7,7 @@
 
 #include "cli/cli.h"
 extern "C++" {
-#include <uout/cli_out.h>
+#include <cli/cli_out.hh>
 }
 #include "txtio/inout.h"
 #include "debug/dbg.h"

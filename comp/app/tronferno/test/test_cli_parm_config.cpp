@@ -80,7 +80,7 @@ void tst_parm_config_cu() {
     process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
     td.sj().close_root_object();
   }
-  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: cu=806789;\ncli_reply: ok\n", &td.wbuf_[0]);
+  TEST_ASSERT_EQUAL_STRING("tf: cli_reply: config: cu=806789;\ncli_reply: ok\n", &td.wbuf_[0]);
 }
   {
   UoutWriterTest td(SO_TGT_FLAG_JSON | SO_TGT_ANY);
@@ -103,7 +103,7 @@ void tst_parm_config_tz() {
     process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
     td.sj().close_root_object();
   }
-  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: tz=CET;\ncli_reply: ok\n", &td.wbuf_[0]);
+  TEST_ASSERT_EQUAL_STRING("tf: cli_reply: config: tz=CET;\ncli_reply: ok\n", &td.wbuf_[0]);
   }
   {
   UoutWriterTest td(SO_TGT_FLAG_JSON | SO_TGT_ANY);
@@ -126,7 +126,7 @@ void tst_parm_config_verbose() {
     process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
     td.sj().close_root_object();
   }
-  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: verbose=3;\ncli_reply: ok\n", &td.wbuf_[0]);
+  TEST_ASSERT_EQUAL_STRING("tf: cli_reply: config: verbose=3;\ncli_reply: ok\n", &td.wbuf_[0]);
   }
   {
   UoutWriterTest td(SO_TGT_FLAG_JSON | SO_TGT_ANY);
@@ -149,7 +149,7 @@ void tst_parm_config_longitude() {
     process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
     td.sj().close_root_object();
   }
-  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: longitude=13.45;\ncli_reply: ok\n", &td.wbuf_[0]);
+  TEST_ASSERT_EQUAL_STRING("tf: cli_reply: config: longitude=13.45;\ncli_reply: ok\n", &td.wbuf_[0]);
   }
   {
   UoutWriterTest td(SO_TGT_FLAG_JSON | SO_TGT_ANY);
@@ -172,7 +172,7 @@ void tst_parm_config_latitude() {
     process_parmConfig(parm, (sizeof parm / sizeof parm[0]), td);
     td.sj().close_root_object();
   }
-  TEST_ASSERT_EQUAL_STRING("tf: cli_reply=0: config: latitude=53.21;\ncli_reply: ok\n", &td.wbuf_[0]);
+  TEST_ASSERT_EQUAL_STRING("tf: cli_reply: config: latitude=53.21;\ncli_reply: ok\n", &td.wbuf_[0]);
 }
 {
   UoutWriterTest td(SO_TGT_FLAG_JSON | SO_TGT_ANY);

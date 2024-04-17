@@ -13,3 +13,6 @@
 [submodule "external/host-test-idf"]
 	path = external/host-test-idf
 	url = https://github.com/zwiebert/host-test-idf.git
+[submodule "external/util-components"]
+	path = external/util-components
+	url = https://github.com/zwiebert/util-components.git

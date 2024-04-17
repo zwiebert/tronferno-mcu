@@ -101,7 +101,7 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, class Uou
 
   case otok::k_cu: {
     if (is_val("auto")) {
-      fer_cuas_set(cli_msgid, 60);
+      fer_cuas_set(60);
       cli_replySuccess(td);
     } else {
       uint32_t cu = strtoul(val, NULL, 16);
