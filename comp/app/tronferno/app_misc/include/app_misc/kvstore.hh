@@ -6,7 +6,7 @@
 #pragma once
 
 #include <stddef.h>
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include "kvs/kvs_wrapper.h"
 
 bool kvs_store_string(const char *key, const char *val);

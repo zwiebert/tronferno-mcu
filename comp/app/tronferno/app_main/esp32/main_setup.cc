@@ -28,7 +28,7 @@
 #include <txtio/inout.h>
 #include <uout/uo_callbacks.h>
 #include <utils_time/run_time.h>
-#include <utils_misc/int_types.h>
+#include <stdint.h>
 #include <config_kvs/register_settings.hh>
 #include <debug/log.h>
 #include <net/network_connection.hh>

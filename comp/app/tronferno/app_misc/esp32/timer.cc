@@ -13,7 +13,7 @@
 #include "fernotron_trx/isr_timer_config.h"
 #include <fernotron_trx/fer_trx_api.hh>
 #include "txtio/inout.h"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 
 #include "sdkconfig.h"
 

@@ -5,7 +5,7 @@
  */
 
 #include "app_misc/opt_map.hh"
-#include <utils_misc/int_types.h>
+#include <stdint.h>
 #include <utility>
 #include <cstring>
 #include <algorithm>

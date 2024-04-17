@@ -15,7 +15,7 @@
 #include <fernotron_uout/fer_uo_publish.h>
 #include "utils_misc/int_macros.h"
 #include "kvs/kvs_wrapper.h"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include "cc1101_ook/spi.hh"
 #include "cc1101_ook/trx.hh"
 

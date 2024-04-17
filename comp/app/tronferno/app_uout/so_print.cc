@@ -2,7 +2,7 @@
 
 #include "so_out.h"
 
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include "app_misc/firmware.h"
 #include "app_misc/rtc.h"
 

@@ -8,7 +8,7 @@
 #include "fernotron_uout/fer_uo_publish.h"
 #include "app_settings/config.h"
 
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include "cli/mutex.hh"
 #include "net_http_server/esp32/http_server_esp32.h"
 

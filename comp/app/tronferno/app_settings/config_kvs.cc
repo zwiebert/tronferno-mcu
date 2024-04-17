@@ -16,7 +16,7 @@
 
 #include "utils_misc/int_macros.h"
 #include "kvs/kvs_wrapper.h"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include "utils_misc/stof.h"
 
 #ifdef CONFIG_TF_DEBUG

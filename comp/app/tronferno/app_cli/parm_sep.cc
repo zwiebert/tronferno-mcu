@@ -5,7 +5,7 @@
 #include "fernotron/pos/shutter_pct.h"
 #include "cli_internal.hh"
 #include "cli_fernotron.hh"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include "fernotron/alias/pairings.h"
 #include "fernotron/sep/set_endpos.h"
 #include "app_uout/status_output.h"

@@ -1,6 +1,6 @@
 
 #include "main.hh"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include "net/ipnet.h"
 #include "net/tcp_cli_server.h"
 #include "net/comp_glue.hh"

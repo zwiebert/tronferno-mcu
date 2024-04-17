@@ -8,7 +8,7 @@
 #include "app_settings/app_settings.hh"
 #include <config_kvs/config.h>
 
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include "utils_misc/itoa.h"
 #include <stdlib.h>
 #include <stdio.h>

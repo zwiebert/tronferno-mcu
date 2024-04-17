@@ -1,4 +1,4 @@
-#include <utils_misc/int_types.h>
+#include <stdint.h>
 class Fer_GmSet;
 
 void so_gmbitmask_to_str(char *dst, Fer_GmSet *mm);

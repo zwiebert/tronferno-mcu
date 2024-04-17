@@ -13,7 +13,7 @@
 
 #include <app_settings/config.h>
 #include "utils_misc/int_macros.h"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include "utils_time/run_time.h"
 #include "utils_time/ut_constants.hh"
 #include "main_loop/main_queue.hh"

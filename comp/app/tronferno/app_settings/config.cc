@@ -3,7 +3,7 @@
 
 #include "app_settings/app_settings.hh"
 
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include <ctype.h>
 #include <stdlib.h>
 

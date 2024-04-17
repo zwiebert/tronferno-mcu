@@ -16,8 +16,8 @@ int process_parmConfig(clpar p[], int len, class UoutWriter &td) {
 
   int arg_idx;
   int errors = 0;
-  u64 changed_mask = 0;
-  u64 processed_keys_mask = 0;
+  uint64_t changed_mask = 0;
+  uint64_t processed_keys_mask = 0;
   {
     so_object<void> cfgObj(soCfg_begin, soCfg_end, td);
 

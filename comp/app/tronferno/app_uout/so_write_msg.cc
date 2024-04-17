@@ -8,7 +8,7 @@
 #include "so_out.h"
 #include "so_print.h"
 #include "fernotron_uout/fer_uo_publish.h"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include "app_misc/firmware.h"
 #include "app_misc/rtc.h"
 #include "../app_misc/include/app_misc/kvstore.hh"

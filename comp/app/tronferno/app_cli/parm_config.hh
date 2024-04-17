@@ -3,7 +3,7 @@
 #include <uout/uout_writer.hh>
 #include <app_uout/so_types.h>
 #include <cli/cli_types.h>
-#include <utils_misc/int_types.h>
+#include <stdint.h>
 
 #define ENABLE_RESTART 1 // allow software reset
 
@@ -27,8 +27,8 @@ bool process_parmConfig_get_comp(otok kt, const char *val, class UoutWriter &td)
 
 int process_parmConfig_assign(KvsType kvsType, const char *kvsKey, StoreFun storeFun, const char *val);
 
-bool process_parmConfig_comp(otok kt, const char *key, const char *val, class UoutWriter &td, int &errors, u64 &changed_mask);
-bool process_parmConfig_app(otok kt, const char *key, const char *val, class UoutWriter &td, int &errors, u64 &changed_mask);
+bool process_parmConfig_comp(otok kt, const char *key, const char *val, class UoutWriter &td, int &errors, uint64_t &changed_mask);
+bool process_parmConfig_app(otok kt, const char *key, const char *val, class UoutWriter &td, int &errors, uint64_t &changed_mask);
 
-void parmConfig_reconfig_comp(u64 changed_mask);
-void parmConfig_reconfig_app(u64 changed_mask);
+void parmConfig_reconfig_comp(uint64_t changed_mask);
+void parmConfig_reconfig_app(uint64_t changed_mask);

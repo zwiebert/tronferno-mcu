@@ -35,7 +35,7 @@
 #include "utils_misc/bcd.h"
 #include "utils_misc/stof.h"
 #include "utils_misc/cstring_utils.h"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include <utils_misc/int_macros.h>
 
 #include <stdlib.h>
@@ -96,7 +96,7 @@ bool process_parmConfig_get_app(otok kt, const char *val, class UoutWriter &td) 
   }
 }
 
-bool process_parmConfig_app(otok kt, const char *key, const char *val, class UoutWriter &td, int &errors, u64 &changed_mask) {
+bool process_parmConfig_app(otok kt, const char *key, const char *val, class UoutWriter &td, int &errors, uint64_t &changed_mask) {
   switch (kt) {
 
   case otok::k_cu: {

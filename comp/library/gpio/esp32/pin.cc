@@ -40,7 +40,7 @@ static struct cfg_gpio *gpio_cfg;
 
 uint64_t inputGpioUsable;
 uint64_t outputGpioUsable;
-static u64 pins_in_use, pins_not_cli;
+static uint64_t pins_in_use, pins_not_cli;
 static volatile std::atomic<uint64_t> pin_int_mask;
 
 #define gpioUsableHigh
