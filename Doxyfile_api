@@ -179,26 +179,28 @@ STRIP_FROM_PATH        = comp/app/tronferno/app_cli/include \
                          comp/app/tronferno/app_settings/include \
                          comp/app/tronferno/app_uout/include \
                          comp/app/tronferno/app_webapp/include \
-                         comp/library/fernotron_app/include \
-                         comp/library/fernotron_lib/include \
-                         comp/library/fernotron_trx/include \
                          comp/library/gpio/include \
-                         comp/components-mcu/cli/include \
-                         comp/components-mcu/config_kvs/include \
-                         comp/components-mcu/firmware_update/include \
-                         comp/components-mcu/jsmn/include \
-                         comp/components-mcu/key_value_store/include \
-                         comp/components-mcu/nanopb/include \
-                         comp/components-mcu/net_http_server/include \
-                         comp/components-mcu/net/include \
-                         comp/components-mcu/net_mqtt/include \
-                         comp/components-mcu/stm32/include \
-                         comp/components-mcu/storage/include \
-                         comp/components-mcu/txtio/include \
-                         comp/components-mcu/uout/include \
-                         comp/components-mcu/utils_debug/include \
-                         comp/components-mcu/utils_misc/include \
-                         comp/components-mcu/utils_time/include
+                         external/components-misc/components/cli/include \
+                         external/components-misc/components/config_kvs/include \
+                         external/components-misc/components/firmware_update/include \
+                         external/components-misc/components/jsmn/include \
+                         external/components-misc/components/key_value_store/include \
+                         external/components-misc/components/nanopb/include \
+                         external/components-misc/components/net_http_server/include \
+                         external/components-misc/components/net/include \
+                         external/components-misc/components/net_mqtt/include \
+                         external/components-misc/components/stm32/include \
+                         external/components-misc/components/storage/include \
+                         external/components-misc/components/txtio/include \
+                         external/components-misc/components/uout/include \
+                         external/tronferno-lib/components/fernotron_trx/include \
+                         external/tronferno-lib/components/fernotron_app/include \
+                         external/tronferno-lib/components/fernotron_uout/include \
+                         external/util-components/components/utils_misc/include \
+                         external/util-components/components/utils_time/include \
+                         external/util-components/components/utils_debug/include \
+                         external/cc1101_ook/components/cc1101_ook/include \
+                         external/jsoneat/components/jsmn/include \
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -207,7 +209,39 @@ STRIP_FROM_PATH        = comp/app/tronferno/app_cli/include \
 # specify the list of include paths that are normally passed to the compiler
 # using the -I flag.
 
-STRIP_FROM_INC_PATH    =
+STRIP_FROM_INC_PATH    = comp/app/tronferno/app_cli/include \
+                         comp/config/app_config/include \
+                         comp/app/tronferno/app_http_server/include \
+                         comp/app/tronferno/app_main/include \
+                         comp/app/tronferno/app_misc/include \
+                         comp/app/tronferno/app_mqtt/include \
+                         comp/app/tronferno/app_settings/include \
+                         comp/app/tronferno/app_uout/include \
+                         comp/app/tronferno/app_webapp/include \
+                         comp/library/gpio/include \
+                         external/components-misc/components/cli/include \
+                         external/components-misc/components/config_kvs/include \
+                         external/components-misc/components/firmware_update/include \
+                         external/components-misc/components/jsmn/include \
+                         external/components-misc/components/key_value_store/include \
+                         external/components-misc/components/nanopb/include \
+                         external/components-misc/components/net_http_server/include \
+                         external/components-misc/components/net/include \
+                         external/components-misc/components/net_mqtt/include \
+                         external/components-misc/components/stm32/include \
+                         external/components-misc/components/storage/include \
+                         external/components-misc/components/txtio/include \
+                         external/components-misc/components/uout/include \
+                         external/tronferno-lib/components/fernotron_trx/include \
+                         external/tronferno-lib/components/fernotron_app/include \
+                         external/tronferno-lib/components/fernotron_uout/include \
+                         external/util-components/components/utils_misc/include \
+                         external/util-components/components/utils_time/include \
+                         external/util-components/components/utils_debug/include \
+                         external/cc1101_ook/components/cc1101_ook/include \
+                         external/jsoneat/components/jsmn/include \
+
+
 
 # If the SHORT_NAMES tag is set to YES, doxygen will generate much shorter (but
 # less readable) file names. This can be useful is your file systems doesn't

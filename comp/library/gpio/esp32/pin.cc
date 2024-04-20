@@ -8,8 +8,6 @@
 
 #include "rom/gpio.h"
 #include "gpio/pin.h"
-
-#include "txtio/inout.h"
 #include "uout/uo_callbacks.h"
 #include <utils_misc/int_macros.h>
 #include "freertos/FreeRTOS.h"

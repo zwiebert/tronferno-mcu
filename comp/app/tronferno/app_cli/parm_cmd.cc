@@ -4,8 +4,6 @@
 #include "fernotron/fer_main.h"
 #include "fernotron/pos/commands.h"
 #include "fernotron/pos/shutter_pct.h"
-#include "txtio/inout.h"
-
 #include "fernotron/auto/fau_tminutes.h"
 #include "utils_misc/bcd.h"
 #include "cli_internal.hh"

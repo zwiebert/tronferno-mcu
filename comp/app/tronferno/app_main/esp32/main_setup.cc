@@ -25,7 +25,6 @@
 #include <main_loop/main_queue.hh>
 #include <net/ipnet.h>
 #include <storage/storage.h>
-#include <txtio/inout.h>
 #include <uout/uo_callbacks.h>
 #include <utils_time/run_time.h>
 #include <stdint.h>
@@ -214,7 +213,7 @@ void mcu_init() {
   // init early required components like kvs, txtio
   kvs_setup();
   config_ext_setup_txtio();
-  io_puts("\r\n\r\n");
+  fputs("\r\n\r\n", stdout);
   config_setup_global();
 
 

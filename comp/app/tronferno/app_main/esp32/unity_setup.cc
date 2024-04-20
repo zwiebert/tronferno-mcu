@@ -4,15 +4,6 @@
  *  Created on: 27.02.2020
  *      Author: bertw
  */
-#if 0
-#include "kvs/kvs_wrapper.h"
-#include "storage/storage.h"
-#include "txtio/inout.h"
-#include "app_settings/config.h"
-#include "fernotron/pos/shutter_pct.h"
-#include "fernotron_trx/astro.h"
-#include "cli/mutex.hh"
-#endif
 
 
 void loop_eventBits_setup();

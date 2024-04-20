@@ -7,10 +7,10 @@
 #include "fernotron/sep/set_endpos.h"
 #include "fernotron/pos/shutter_pct.h"
 #include <fernotron/alias/pairings.h>
-#include "txtio/inout.h"
 #include "gpio/pin.h"
 #include "app_uout/status_output.h"
 #include <app_uout/so_msg.h>
+#include "../app_uout/so_print.h"
 #include <fernotron/auto/fau_tevent.hh>
 #include "fernotron/auto/fau_tdata_store.h"
 #include "kvs/kvs_wrapper.h"
@@ -21,6 +21,8 @@
 #include <app_settings/config.h>
 #include <cc1101_ook/trx.hh>
 #include "debug/dbg.h"
+
+#define logtag "app_cli"
 
 #ifdef CONFIG_APP_USE_FREERTOS
 #include "freertos/FreeRTOS.h"
@@ -46,7 +48,7 @@ const char cli_help_parmMcu[] = "'mcu' handles special commands and data\n\n"
 
 ;
 
-static void kvs_print_keys(const char *name_space);
+static void kvs_print_keys(class UoutWriter &td, const char *name_space);
 void cc1101_printCfg_asString(class UoutWriter &td);
 
 #define is_kt(k) (kt == otok::k_##k)
@@ -86,11 +88,12 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
       break;
 
     case otok::k_tm: {
-      void so_print_timer_event_minutes(uint8_t g, uint8_t m);
       if (strlen(val) == 2) {
         const uint8_t g = val[0] - '0';
         const uint8_t m = val[1] - '0';
-        so_print_timer_event_minutes(g, m);
+        db_loge(logtag, "tm");
+        td.so().print("test", "tm");
+        so_print_timer_event_minutes(td, g, m);
       }
     }
       break;
@@ -109,7 +112,7 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
 #ifdef CONFIG_APP_USE_FREERTOS
     case otok::k_stack: {
       int words = uxTaskGetStackHighWaterMark(NULL);
-      io_printf("Stack HighWaterMark: %d bytes\n b", words * 4);
+      td.so().print("StackHighWaterMarkInBytes",  words * 4);
     }
       break;
 #endif
@@ -118,15 +121,15 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
       Fer_TimerEvent tevt;
       time_t now_time = time(NULL);
       tevt.fer_am_get_next_timer_event(&now_time);
-      io_putd(tevt.te_getEventMinute()), io_putlf();
+      td.so().print("next_event_minute", tevt.te_getEventMinute());
       for (int i = 0; i < 8; ++i) {
-        io_print_hex_8((*tevt.te_getMaskUp())[i], true);
+        printf("0x%02x, ", (*tevt.te_getMaskUp())[i]);
       }
-      io_putlf();
+      puts("");
       for (int i = 0; i < 8; ++i) {
-        io_print_hex_8((*tevt.te_getMaskDown())[i], true);
+        printf("0x%02x, ", (*tevt.te_getMaskDown())[i]);
       }
-      io_putlf();
+      puts("");
     }
       break;
 #ifdef CONFIG_APP_USE_PAIRINGS
@@ -180,7 +183,7 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
     default:
       // Echo parameter to test quoting in command lines
       if (strcmp(key, "echo") == 0) {
-        io_printf("echo: <%s>\n", val);
+        td.so().print("echo",  val);
         break;
       }
 #ifdef CONFIG_APP_USE_MQTT
@@ -277,7 +280,7 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
 
 
       if (strcmp(key, "kvs-pk") == 0) {
-        kvs_print_keys(val);
+        kvs_print_keys(td, val);
         break;
       }
 
@@ -337,7 +340,7 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
   return 0;
 }
 
-static void kvs_print_keys(const char *name_space) {
+static void kvs_print_keys(class UoutWriter &td, const char *name_space) {
   kvs_foreach(name_space, KVS_TYPE_ANY,
 
   /// match any key name
@@ -346,8 +349,8 @@ static void kvs_print_keys(const char *name_space) {
       },0,
 
       /// print each key
-      [](const char *key, kvs_type_t type, void *args) -> kvs_cbrT {
-        io_printf("key: %s, type: %d\n", key, (int )type);
+      [](const char *key, kvs_type_t type, class UoutWriter &td) -> kvs_cbrT {
+        td.so().print(key, (int)type);
         return kvsCb_match;
-      }, nullptr);
+      }, td);
 }

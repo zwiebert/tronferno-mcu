@@ -12,7 +12,6 @@
 #include "app_settings/config.h"
 #include "fernotron_trx/isr_timer_config.h"
 #include <fernotron_trx/fer_trx_api.hh>
-#include "txtio/inout.h"
 
 #include "esp_sleep.h"
 #include "driver/gptimer.h"

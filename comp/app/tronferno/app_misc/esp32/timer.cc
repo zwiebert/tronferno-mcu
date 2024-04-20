@@ -12,16 +12,13 @@
 #include "app_settings/config.h"
 #include "fernotron_trx/isr_timer_config.h"
 #include <fernotron_trx/fer_trx_api.hh>
-#include "txtio/inout.h"
-#include "stdint.h"
-
-#include "sdkconfig.h"
 
 #include "driver/gptimer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
 
+#include "stdint.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>

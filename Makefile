@@ -191,12 +191,22 @@ DOXYFILE_PATH=$(THIS_ROOT)
 include doxygen_rules.mk
 
 
+
 $(DOXY_BUILD_PATH)/dev/input_files: $(DOXY_BUILD_PATH)/dev FORCE
-	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~$(THIS_ROOT)/~" > $@
-	cd comp/components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~$(THIS_ROOT)/comp/components-mcu/~" >> $@
+	git ls-files 'comp/**.h' 'comp/**.c' 'comp/**.hh' 'comp/**.cc' 'comp/**.cpp' | sed "s~^~$(THIS_ROOT)/~" > $@
+	cd external/components-misc && git ls-files 'components/**.c' 'components/**.cc' 'components/**.cpp' | sed "s~^~$(THIS_ROOT)/comp/components-mcu/~" >> $@
+	git -C external/components-misc ls-files 'components/**.h' 'components/**.hh' 'components/**.c' 'components/**.cc' 'components/**.cpp'  | sed "s~^~$(THIS_ROOT)/external/components-misc/~" >> $@
+	git -C external/tronferno-lib ls-files 'components/**.h' 'components/**.hh' 'components/**.c' 'components/**.cc' 'components/**.cpp'  | sed "s~^~$(THIS_ROOT)/external/tronferno-lib/~" >> $@
+	git -C external/util-components ls-files 'components/**.h' 'components/**.hh' 'components/**.c' 'components/**.cc' 'components/**.cpp'  | sed "s~^~$(THIS_ROOT)/external/util-components/~" >> $@
+	git -C external/cc1101_ook ls-files 'components/**.h' 'components/**.hh' 'components/**.c' 'components/**.cc' 'components/**.cpp'  | sed "s~^~$(THIS_ROOT)/external/cc1101_ook/~" >> $@
+	git -C external/jsoneat ls-files 'components/**.h' 'components/**.hh' 'components/**.c' 'components/**.cc' 'components/**.cpp'  | sed "s~^~$(THIS_ROOT)/external/jsoneat/~" >> $@
 $(DOXY_BUILD_PATH)/api/input_files: $(DOXY_BUILD_PATH)/api FORCE
-	git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/~" > $@
-	cd comp/components-mcu && git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/comp/components-mcu/~" >> $@
+	git ls-files 'comp/**.h' 'comp/**.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/~" > $@
+	git -C external/components-misc ls-files 'components/**.h' 'components/**.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/external/components-misc/~" >> $@
+	git -C external/tronferno-lib ls-files 'components/**.h' 'components/**.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/external/tronferno-lib/~" >> $@
+	git -C external/util-components ls-files 'components/**.h' 'components/**.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/external/util-components/~" >> $@
+	git -C external/cc1101_ook ls-files 'components/**.h' 'components/**.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/external/cc1101_ook/~" >> $@
+	git -C external/jsoneat ls-files 'components/**.h' 'components/**.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/external/jsoneat/~" >> $@
 
 $(DOXY_BUILD_PATH)/usr/input_files: $(DOXY_BUILD_PATH)/usr FORCE
 	echo "" > $@

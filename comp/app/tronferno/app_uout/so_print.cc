@@ -12,8 +12,8 @@
 #include "fernotron/auto/fau_tdata_store.h"
 #include <fernotron/fer_pct.h>
 #include "net/ipnet.h"
-#include "txtio/inout.h"
 #include "uout/uout_builder_json.hh"
+#include "uout/uout_writer.hh"
 #include "cli/cli_out.hh"
 #include "app_uout/status_output.h"
 #include <fernotron_uout/fer_uo_publish.h>
@@ -25,23 +25,18 @@
 #include <stdio.h>
 #include <time.h>
 
+#define io_puts(s) fputs((s), stdout)
+#define io_putc(c) fputc((c), stdout)
+#define io_putx8(n) fprintf(stdout, "%02x", (n))
 
-void print_timer_event_minute(const char *label, fer_au_minutesT mins) {
-  io_puts(label);
-  if (mins == MINUTES_DISABLED)
-    io_puts("=none\n");
-  else
-    io_putc('='), io_putd(mins), io_putlf();
-}
-
-void  so_print_timer_event_minutes(uint8_t g, uint8_t m) {
+void  so_print_timer_event_minutes(class UoutWriter &td, uint8_t g, uint8_t m) {
   Fer_TimerMinutes tm;
   if (Fer_TimerData tid; fer_stor_timerData_load(&tid, &g, &m, true) && fer_au_get_timer_minutes_from_timer_data_tm(&tm, &tid)) {
-    print_timer_event_minute("astro-down", tm.minutes[0]);
-    print_timer_event_minute("daily-up", tm.minutes[1]);
-    print_timer_event_minute("daily-down", tm.minutes[2]);
-    print_timer_event_minute("weekly-up", tm.minutes[3]);
-    print_timer_event_minute("weekly-down", tm.minutes[4]);
+    td.so().print("astro-down", tm.minutes[0]);
+    td.so().print("daily-up", tm.minutes[1]);
+    td.so().print("daily-down", tm.minutes[2]);
+    td.so().print("weekly-up", tm.minutes[3]);
+    td.so().print("weekly-down", tm.minutes[4]);
   }
 }
 

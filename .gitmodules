@@ -8,7 +8,7 @@
 	path = external/components-misc
 	url = https://github.com/zwiebert/components-misc.git
 [submodule "external/jsmnit"]
-	path = external/jsmnit
+	path = external/jsoneat
 	url = https://github.com/zwiebert/jsmnit.git
 [submodule "external/host-test-idf"]
 	path = external/host-test-idf
@@ -16,3 +16,9 @@
 [submodule "external/util-components"]
 	path = external/util-components
 	url = https://github.com/zwiebert/util-components.git
+[submodule "external/mbed-uout"]
+	path = external/mbed-uout
+	url = https://github.com/zwiebert/mbed-uout.git
+[submodule "external/mbed-mainloop"]
+	path = external/mbed-mainloop
+	url = https://github.com/zwiebert/mbed-mainloop.git

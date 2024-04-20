@@ -9,7 +9,6 @@
 extern "C++" {
 #include <cli/cli_out.hh>
 }
-#include "txtio/inout.h"
 #include "debug/dbg.h"
 #include "cli_internal.hh"
 #include <string.h>

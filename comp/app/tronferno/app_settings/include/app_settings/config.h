@@ -7,10 +7,8 @@
 
 
 #include "config_kvs/config.h"
-#include "txtio/inout.h"
 #include "fernotron/fer_pct.h"
 #include "fernotron_trx/astro.h"
-//#include "net/ethernet_setup.hh"
 #include "gpio/pin.h"
 #include <net/network_connection.hh>
 #include "stdbool.h"

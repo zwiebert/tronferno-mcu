@@ -14,7 +14,6 @@
 #include "../app_misc/include/app_misc/kvstore.hh"
 #include "app_settings/config.h"
 #include "net/ipnet.h"
-#include "txtio/inout.h"
 #include "uout/uout_builder_json.hh"
 #include "cli/cli_out.hh"
 #include "app_uout/status_output.h"
