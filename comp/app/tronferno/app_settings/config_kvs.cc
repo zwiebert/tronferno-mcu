@@ -44,11 +44,6 @@ bool config_item_modified(enum configAppItem item) {
     case CB_BAUD:
       kvsRead_i8(h, item, C.mcu_serialBaud);
       break;
-#ifdef CONFIG_APP_USE_MDR_TIME
-    case CB_DST:
-      kvsRead_u32(h, item, C.geo_dST);
-      break;
-#endif
     case CB_VERBOSE:
       config_ext_setup_txtio();
       break;

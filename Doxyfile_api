@@ -200,7 +200,9 @@ STRIP_FROM_PATH        = comp/app/tronferno/app_cli/include \
                          external/util-components/components/utils_time/include \
                          external/util-components/components/utils_debug/include \
                          external/cc1101_ook/components/cc1101_ook/include \
-                         external/jsoneat/components/jsmn/include \
+                         external/mbed-jsoneat/components/jsoneat/include \
+                         external/mbed-mainloop/components/main_loop/include \
+                         external/mbed-uout/components/uout/include \
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -239,7 +241,9 @@ STRIP_FROM_INC_PATH    = comp/app/tronferno/app_cli/include \
                          external/util-components/components/utils_time/include \
                          external/util-components/components/utils_debug/include \
                          external/cc1101_ook/components/cc1101_ook/include \
-                         external/jsoneat/components/jsmn/include \
+                         external/mbed-jsoneat/components/jsoneat/include \
+                         external/mbed-mainloop/components/main_loop/include \
+                         external/mbed-uout/components/uout/include \
 
 
 

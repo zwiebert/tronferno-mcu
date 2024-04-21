@@ -37,10 +37,6 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
 #endif
     "longitude=(DEG|?)\n"
     "latitude=(DEG|?)\n"
-#ifdef CONFIG_APP_USE_MDR_TIME
-                                   "time-zone=(N|?)    time zone hour offset\n"
-                                   "dst=(eu|0|1|?)     daylight saving time\n"
-#endif
 #ifdef CONFIG_APP_USE_POSIX_TIME
     "tz=(POSIX_TZ|?)    time zone for RTC/NTP\n"
 #endif

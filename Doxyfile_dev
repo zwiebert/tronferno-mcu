@@ -178,7 +178,9 @@ STRIP_FROM_PATH        = comp/app \
                          external/tronferno-lib/components \
                          external/util-components/components \
                          external/cc1101_ook/components \
-                         external/jsoneat/components \
+                         external/mbed-jsoneat/components \
+                         external/mbed-mainloop/components \
+                         external/mbed-uout/components \
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -194,7 +196,9 @@ STRIP_FROM_INC_PATH    = comp/app \
                          external/tronferno-lib/components \
                          external/util-components/components \
                          external/cc1101_ook/components \
-                         external/jsoneat/components \
+                         external/mbed-jsoneat/components \
+                         external/mbed-mainloop/components \
+                         external/mbed-uout/components \
 
 
 # If the SHORT_NAMES tag is set to YES, doxygen will generate much shorter (but

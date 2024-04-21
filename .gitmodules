@@ -22,3 +22,6 @@
 [submodule "external/mbed-jsoneat"]
 	path = external/mbed-jsoneat
 	url = https://github.com/zwiebert/mbed-jsoneat.git
+[submodule "external/mbed-net-lib"]
+	path = external/mbed-net-lib
+	url = https://github.com/zwiebert/mbed-net-lib.git

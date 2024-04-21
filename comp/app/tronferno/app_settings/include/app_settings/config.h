@@ -50,9 +50,6 @@ void cfg_tz2timezone(void);
 
 typedef struct {
   uint32_t mcu_serialBaud;
-#ifdef CONFIG_APP_USE_MDR_TIME
-  enum dst geo_dST;
-#endif
   int32_t app_rtcAdjust;
   enum receiver app_recv;
   enum transmitter app_transm;

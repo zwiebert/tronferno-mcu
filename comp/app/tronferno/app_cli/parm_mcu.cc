@@ -24,13 +24,10 @@
 
 #define logtag "app_cli"
 
-#ifdef CONFIG_APP_USE_FREERTOS
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#endif
-
 #ifdef TEST_HOST
 #define io_printf printf
+#else
+#include <esp_system.h>
 #endif
 
 #include <alloca.h>
@@ -108,14 +105,6 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
       }
     }
       break;
-
-#ifdef CONFIG_APP_USE_FREERTOS
-    case otok::k_stack: {
-      int words = uxTaskGetStackHighWaterMark(NULL);
-      td.so().print("StackHighWaterMarkInBytes",  words * 4);
-    }
-      break;
-#endif
 
     case otok::k_te: {
       Fer_TimerEvent tevt;
@@ -316,6 +305,41 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
       }
 
 #ifndef TEST_HOST
+      if (strcmp(key, "loglevel-get") == 0) {
+          td.so().print("loglevel", (int)esp_log_level_get(val));
+        break;
+      }
+      if (strcmp(key, "loglevel-none") == 0) {
+          esp_log_level_set(val, ESP_LOG_NONE);
+          td.so().print("loglevel", (int)esp_log_level_get(val));
+        break;
+      }
+      if (strcmp(key, "loglevel-error") == 0) {
+          esp_log_level_set(val, ESP_LOG_ERROR);
+          td.so().print("loglevel", (int)esp_log_level_get(val));
+        break;
+      }
+      if (strcmp(key, "loglevel-warn") == 0) {
+          esp_log_level_set(val, ESP_LOG_WARN);
+          td.so().print("loglevel", (int)esp_log_level_get(val));
+        break;
+      }
+      if (strcmp(key, "loglevel-info") == 0) {
+          esp_log_level_set(val, ESP_LOG_INFO);
+          td.so().print("loglevel", (int)esp_log_level_get(val));
+        break;
+      }
+      if (strcmp(key, "loglevel-debug") == 0) {
+          esp_log_level_set(val, ESP_LOG_DEBUG);
+          td.so().print("loglevel", (int)esp_log_level_get(val));
+        break;
+      }
+      if (strcmp(key, "loglevel-verbose") == 0) {
+          esp_log_level_set(val, ESP_LOG_VERBOSE);
+          td.so().print("loglevel", (int)esp_log_level_get(val));
+        break;
+      }
+
       if (strcmp(key, "free-heap-size") == 0) {
         if (*val == '?') {
           const uint32_t fhs = esp_get_free_heap_size();
@@ -354,3 +378,4 @@ static void kvs_print_keys(class UoutWriter &td, const char *name_space) {
         return kvsCb_match;
       }, td);
 }
+

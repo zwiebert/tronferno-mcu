@@ -87,16 +87,6 @@ void soCfg_TIMEZONE(class UoutWriter &td) {
 #endif
 }
 
-void soCfg_DST(class UoutWriter &td) {
-#ifdef CONFIG_APP_USE_MDR_TIME
-  {
-    enum dst geo_dst = config_read_dst();
-    const char *dst = (geo_dst == dstEU ? "eu" : (geo_dst == dstNone ? "0" : "1"));
-    td.so().print(comp_sett.get_optKeyStr(CB_DST), dst);
-  }
-#endif
-}
-
 void soCfg_GM_USED(class UoutWriter &td) {
   td.so().print(comp_sett.get_optKeyStr(CB_USED_MEMBERS), config_read_used_members(), 16);
 }

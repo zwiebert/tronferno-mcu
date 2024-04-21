@@ -30,15 +30,6 @@ const char* config_read_tz(char *d, unsigned d_size) {
   return config_read_item((CB_TZ), d, d_size, CONFIG_APP_GEO_TZ);
 }
 #endif
-#ifdef CONFIG_APP_USE_MDR_TIME
-float config_read_timezone() {
-  return config_read_item((CB_TIZO), MY_GEO_TIMEZONE);
-}
-
-enum dst config_read_dst() {
-  return config_read_item((CB_DST), MY_GEO_DST);
-}
-#endif
 #ifdef CONFIG_APP_USE_NETWORK
 enum nwConnection config_read_network_connection() {
   return static_cast<enum nwConnection>(config_read_item((CB_NETWORK_CONNECTION), nwWlanAp));
