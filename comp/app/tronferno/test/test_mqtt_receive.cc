@@ -1,7 +1,4 @@
 #include <unity.h>
-#ifdef TEST_HOST
-#include <test_runner.h>
-#endif
 
 #include "../mqtt_private.h"
 #include "app_mqtt/mqtt.h"
@@ -100,24 +97,28 @@ void tst_receive_cli_version_json() {
   TEST_ASSERT_EQUAL_INT(strlen(data_head), strlen(Data));
   TEST_ASSERT_EQUAL_MEMORY(data_head, Data, 48);
 }
-TEST_CASE("mqtt_receive", "[app_mqtt]")
-{
-  tst_receive_cli_version_json();
-  tst_receive_cli_version_txt();
-  tst_receive_cli_xxx();
 
+int main() {
+  UNITY_BEGIN();
 
+  RUN_TEST(tst_receive_cli_version_json);
+  RUN_TEST(tst_receive_cli_version_txt);
+  RUN_TEST(tst_receive_cli_xxx);
 #if 0 // pct,cmd,gpio topics no longer use CLI
-  tst_receive_GPO_21();
-  tst_receive_pct_56();
-  tst_receive_pct_56_a();
-  tst_receive_pct_56_agm();
+  RUN_TEST(tst_receive_GPO_21);
+  RUN_TEST(tst_receive_pct_56);
+  RUN_TEST(tst_receive_pct_56_a);
+  RUN_TEST(tst_receive_pct_56_agm);
 
-  tst_receive_cmd_stop();
-  tst_receive_cmd_stop_a();
-  tst_receive_cmd_stop_agm();
+  RUN_TEST(tst_receive_cmd_stop);
+  RUN_TEST(tst_receive_cmd_stop_a);
+  RUN_TEST(tst_receive_cmd_stop_agm);
 #endif
+
+  return UNITY_END();
 }
+
+
 
 void setUp() {
   cfg_mqtt c;

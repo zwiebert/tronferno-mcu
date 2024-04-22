@@ -135,53 +135,15 @@ $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 ############## On Host ########################
 HOST_TEST_BUILD_PATH=$(BUILD_BASE)/../host/test
-HOST_TEST_SRC_PATH=$(THIS_ROOT)/src/host_test
-
-.PHONY: test.cm.configure test.cm.build  test.cm.kconfgen
-
-# let menuconfig generate config/sdkconfig.(cmake|h)
-# disregard the rest of build/hos_test
-# we still keep some minimal sdkconfig.(cmake|h) for automated testing where we don't have esp-idf
-test.cm.menuconfig:
-	make flavor=host_test esp32-menuconfig esp32-reconfigure
-
-config_h:=$(THIS_ROOT)/src/host_test/config/sdkconfig.h
-config_cmake:=$(THIS_ROOT)/src/host_test/config/sdkconfig.cmake
-_config:=$(THIS_ROOT)/src/host_test/sdkconfig
-
-
-test.cm.kconfgen $(config_h) $(config_cmake): $(_config)
-	python -m kconfgen  --kconfig  $(THIS_ROOT)/comp/config/app_config/Kconfig.projbuild --config $(_config) --output header $(config_h) --output cmake $(config_cmake)
-test.cm.copy_config:
-	cp $(THIS_ROOT)/build/host_test/config/sdkconfig.h $(THIS_ROOT)/build/host_test/config/sdkconfig.cmake $(THIS_ROOT)/src/host_test/config/
-
-
-test.cm.configure:
-	rm -fr $(HOST_TEST_BUILD_PATH)
-	mkdir -p $(HOST_TEST_BUILD_PATH)/config
-	(cp $(THIS_ROOT)/build/host_test/config/sdkconfig.h $(THIS_ROOT)/build/host_test/config/sdkconfig.cmake $(HOST_TEST_BUILD_PATH)/config/ || \
-	cp $(THIS_ROOT)/src/host_test/config/sdkconfig.h $(THIS_ROOT)/src/host_test/config/sdkconfig.cmake $(HOST_TEST_BUILD_PATH)/config/)
-
-	cmake -B $(HOST_TEST_BUILD_PATH) -D BUILD_HOST_TESTS=ON -S  $(HOST_TEST_SRC_PATH) #-G Ninja)
-
-cm_build := make -C $(HOST_TEST_BUILD_PATH) -k -j  -s --no-print-dir $(make_verbose_opts)
-#cm_build := (cd $(HOST_TEST_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --verbose $(ninja_verbose_opts))
-
-	
-test.cm.build:
-	$(cm_build)
-
-test.cm.ctest: test.cm.build
-	cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure
-	
+HOST_TEST_SRC_PATH=$(THIS_ROOT)/src/host-test
+config_h:=$(HOST_TEST_BUILD_PATH)/config/sdkconfig.h
+config_cmake:=$(HOST_TEST_BUILD_PATH)/config/sdkconfig.cmake
+config_dir:=$(HOST_TEST_SRC_PATH)
+_config:=$(config_dir)/.config
+kconfigs=comp/config/app_config/Kconfig.projbuild external/*/Kconfig
 TEST ?= test.weather.test_
-test.cm.ctest.regex: test.cm.build
-	(cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure -R "$(TEST)")
 
-
-host-test-all:
-	make -s --no-print-directory  test.cm.configure test.cm.ctest
-
+include ./host_test_rules.mk
 
 
 ############# Doxygen ###################
@@ -193,20 +155,6 @@ include doxygen_rules.mk
 
 ext=external/*
 
-$(DOXY_BUILD_PATH)/api/input_files: $(DOXY_BUILD_PATH)/api FORCE
-	(git ls-files README.md 'comp/**.h' 'comp/**.hh' 'comp/**.cc' 'comp/**.cpp' | xargs realpath) > $@
-	for dir in $(ext) ; do \
-		(cd $${dir} && git ls-files README.md 'components/**.h' 'components/**.hh'  | xargs realpath) | fgrep include  >> $@ ; \
-	done
-
-$(DOXY_BUILD_PATH)/dev/input_files: $(DOXY_BUILD_PATH)/dev FORCE
-	(git ls-files README.md 'comp/**.h' 'comp/**.hh'  | xargs realpath) | fgrep include  > $@
-	for dir in $(ext) ; do \
-		(cd $${dir} && git ls-files README.md 'components/**.h' 'components/**.hh' 'components/**.c' 'components/**.cc' 'components/**.cpp' | xargs realpath) >> $@ ; \
-	done
-
-$(DOXY_BUILD_PATH)/usr/input_files: $(DOXY_BUILD_PATH)/usr FORCE
-	echo "" > $@
 	
 FORCE:
 
