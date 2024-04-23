@@ -11,7 +11,7 @@
 #include <config_kvs/config_kvs.h>
 #include <fernotron_trx/fer_trx_api.hh>
 #include <fernotron_trx/raw/fer_radio_trx.h>
-#include <fernotron/repeater/repeater.h>
+#include <fernotron_trx/repeater/repeater.h>
 #include <fernotron/txtio/fer_print.h>
 #include <fernotron_uout/fer_uo_publish.h>
 #include "utils_misc/int_macros.h"
