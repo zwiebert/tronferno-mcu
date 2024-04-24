@@ -1,6 +1,6 @@
 .PHONY: clean all test rebuild http_data print-help
 
-flavors = esp32 esp32dbg esp32wlan esp32lan esp32test
+flavors = esp32 esp32dbg esp32wlan esp32lan esp32test host-test host_test
 
 flavor ?= esp32
 
@@ -39,17 +39,22 @@ env:
 	env | grep IDF
 
 THIS_ROOT := $(realpath .)
-BUILD_BASE ?= $(THIS_ROOT)/build/$(flavor)
-esp32_build_dir := $(BUILD_BASE)
-esp32_src_dir := $(THIS_ROOT)/src/$(flavor)
-tmp_build_dir := /tmp/tronferno-mcu/build
+
+CMAKE_SRC_PATH :=$(THIS_ROOT)/src/$(flavor)
+BUILD_BASE ?=$(THIS_ROOT)/build/$(flavor)
+BUILD_PATH :=$(BUILD_BASE)
+
+tmp_build_dir :=/tmp/tronferno-mcu/build
+compile_commands_json_latest :=$(THIS_ROOT)/build/compile_commands.json
 
 esp32_cmake_generator := -G Ninja
+esp32_build_args :=$(esp32_cmake_generator) -C $(CMAKE_SRC_PATH) -B $(BUILD_PATH)  -p $(PORT)  $(esp32_build_opts)
+esp32_build_cmd :=idf.py $(esp32_build_args)
+esp32_cmake_cmd :=/usr/bin/cmake -S $(CMAKE_SRC_PATH) -B $(BUILD_PATH) $(esp32_cmake_generator)
 
-esp32_build_args := $(esp32_cmake_generator) -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
-esp32_build_cmd := idf.py $(esp32_build_args)
-esp32_cmake_cmd := /usr/bin/cmake -S $(esp32_src_dir) -B $(esp32_build_dir) $(esp32_cmake_generator)
 
+$(compile_commands_json_latest): FORCE
+	cp $(BUILD_BASE)/compile_commands.json $(compile_commands_json_latest)
 
 ######### ESP32 Targets ##################
 esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui gdbtui reconfigure
@@ -70,9 +75,9 @@ $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
 #need bash for "source" command
-SHELL := /bin/bash
+SHELL :=/bin/bash
 #provide IDF_PATH if not in env
-export IDF_PATH ?= "$(HOME)/esp/esp-idf"
+export IDF_PATH ?="$(HOME)/esp/esp-idf"
 .PHONY: idf_make
 #Rule for use in vscode, which does not inherit the idf exports
 #so we source $IDF_PAtH/export.sh for each run of make
@@ -86,6 +91,7 @@ idf_make:
 
 esp32-all:
 	$(esp32_build_cmd) reconfigure all
+	make $(compile_commands_json_latest)
 
 
 ############ Graphviz ######################
@@ -111,7 +117,7 @@ $(gv_build_dir):
 	
 .PHONY: FORCE
 ############ openocd ###################################
-esp32_ocd_sh :=  "$(esp32_src_dir)/esp32_ocd.sh" $(esp32_src_dir) $(esp32_build_dir)
+esp32_ocd_sh :=  "$(CMAKE_SRC_PATH)/esp32_ocd.sh" $(CMAKE_SRC_PATH) $(BUILD_PATH)
 
 esp32-flash-ocd:
 	$(esp32_ocd_sh) flash
@@ -133,13 +139,7 @@ endef
 $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
-############## On Host ########################
-HOST_TEST_BUILD_PATH=$(BUILD_BASE)/../host/test
-HOST_TEST_SRC_PATH=$(THIS_ROOT)/src/host-test
-config_h:=$(HOST_TEST_BUILD_PATH)/config/sdkconfig.h
-config_cmake:=$(HOST_TEST_BUILD_PATH)/config/sdkconfig.cmake
-config_dir:=$(HOST_TEST_SRC_PATH)
-_config:=$(config_dir)/.config
+############## On Host Tests ##############
 kconfigs=comp/config/app_config/Kconfig.projbuild external/*/Kconfig
 TEST ?= test.weather.test_
 
