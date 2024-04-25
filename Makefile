@@ -1,8 +1,8 @@
 .PHONY: clean all test rebuild http_data print-help
 
-flavors = esp32 esp32dbg esp32wlan esp32lan esp32test host-test host_test
+flavors = esp32-release esp32-debug host-test
 
-flavor ?= esp32
+flavor ?= esp32-release
 
 default: help
 
@@ -40,7 +40,7 @@ env:
 
 THIS_ROOT := $(realpath .)
 
-CMAKE_SRC_PATH :=$(THIS_ROOT)/src/$(flavor)
+CMAKE_SRC_PATH :=$(THIS_ROOT)/configs/$(flavor)
 BUILD_BASE ?=$(THIS_ROOT)/build/$(flavor)
 BUILD_PATH :=$(BUILD_BASE)
 
