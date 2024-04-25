@@ -8,10 +8,10 @@ option(GPROF "enable gprof" OFF)
 
 set(TARGET_PLATFORM_FILTER "host/.*")
 
-project(mbed-all-tests)
+project(tronferno-mcu-tests)
 
-file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components ${CMAKE_SOURCE_DIR}/../../external/*/external/*/components)
-set(EXTRA_COMPONENT_DIRS ${CMAKE_SOURCE_DIR}/../../components ${external_components})
+file(GLOB external_components ${CMAKE_CURRENT_LIST_DIR}/../../external/*/components ${CMAKE_CURRENT_LIST_DIR}/../../external/*/external/*/components)
+set(EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/../../components ${external_components})
 
 message("external_components: ${external_components}")
 
@@ -29,6 +29,6 @@ if(ASAN)
   add_compile_options(-fsanitize=address -fstack-protector-all)
 endif()
 
-include(${CMAKE_SOURCE_DIR}/../../external/host-test-idf/components/test_host/host_test.cmake)
-add_subdirectory(${CMAKE_SOURCE_DIR}/../../components/tronferno ${CMAKE_BINARY_DIR}/${BIN_COMP_ROOT}/tronferno)
+include(${CMAKE_CURRENT_LIST_DIR}/../../external/host-test-idf/components/test_host/host_test.cmake)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../../components/tronferno ${CMAKE_BINARY_DIR}/${BIN_COMP_ROOT}/tronferno)
 

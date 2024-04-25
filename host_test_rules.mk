@@ -45,27 +45,26 @@ test.cm.fullclean:
 
 ## create configuration using kconfig menuconfig
 
-$(BUILD_PATH) $(BUILD_PATH)/config:
-	mkdir -p $(BUILD_PATH)/config
+$(BUILD_PATH) $(BUILD_PATH)/config: FORCE
+	rm -fr $(BUILD_PATH)
+	mkdir -p $(BUILD_PATH)/config $(CMAKE_SRC_PATH)/config
 Kconfig.hosttestbuild:$(kconfigs)
 	ls $(kconfigs) | sed -E -e 's/^/rsource  \"/' -e 's/$$/\"/' >$@
 test.cm.menuconfig $(_config):Kconfig.hosttestbuild
-	mkdir -p $(CMAKE_SRC_PATH) && cd $(CMAKE_SRC_PATH) && menuconfig $(THIS_ROOT)/Kconfig.hosttestbuild
-$(config_h) $(config_cmake) $(config_json) config: $(BUILD_PATH)/config $(_config)
+	mkdir -p $(CMAKE_SRC_PATH) && cd $(CMAKE_SRC_PATH) && menuconfig $(THIS_ROOT)/Kconfig.hosttestbuild && touch $(_config)
+$(config_h) $(config_cmake) $(config_json) config: $(_config)
 	python -m kconfgen  --kconfig $(THIS_ROOT)/Kconfig.hosttestbuild --config $(_config) \
 		--output header $(config_h) --output cmake $(config_cmake) --output json $(config_json)
-	cp $(config_h) $(config_cmake) $(config_json) $(CMAKE_SRC_PATH)/config
+	mkdir -p $(CMAKE_SRC_PATH)/config && cp $(config_h) $(config_cmake) $(config_json) $(CMAKE_SRC_PATH)/config
 
 
 ## configure with Cmake, build with Ninja, run with Ctest
 
-test.cm.configure: $(config_h) $(config_cmake) $(config_json)
-	cmake -B $(BUILD_PATH) -S  $(CMAKE_SRC_PATH) -G Ninja
-test.cm.configure_no_kconfgen:
-	rm -fr $(BUILD_PATH)
-	mkdir -p $(BUILD_PATH)/config
+test.cm.configure:$(BUILD_PATH)/config $(config_h) $(config_cmake) $(config_json)
+	cmake -D BUILD_HOST_TESTS=ON -B $(BUILD_PATH)  -S  $(CMAKE_SRC_PATH) -G Ninja
+test.cm.configure_no_kconfgen: $(BUILD_PATH)/config $(CMAKE_SRC_PATH)/config/sdkconfig.h $(CMAKE_SRC_PATH)/config/sdkconfig.cmake
 	cp $(CMAKE_SRC_PATH)/config/sdkconfig.h $(CMAKE_SRC_PATH)/config/sdkconfig.cmake $(BUILD_PATH)/config/
-	cmake -B $(BUILD_PATH)  -S  $(CMAKE_SRC_PATH) -G Ninja
+	cmake  -D BUILD_HOST_TESTS=ON  -B $(BUILD_PATH)  -S  $(CMAKE_SRC_PATH) -G Ninja
 test.cm.build:
 	ninja -C $(BUILD_PATH) 
 	make $(compile_commands_json_latest)

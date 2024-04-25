@@ -46,6 +46,7 @@ BUILD_PATH :=$(BUILD_BASE)
 
 tmp_build_dir :=/tmp/tronferno-mcu/build
 compile_commands_json_latest :=$(THIS_ROOT)/build/compile_commands.json
+sdkconfig_h_latest :=$(THIS_ROOT)/build/sdkconfig.h
 
 esp32_cmake_generator := -G Ninja
 esp32_build_args :=$(esp32_cmake_generator) -C $(CMAKE_SRC_PATH) -B $(BUILD_PATH)  -p $(PORT)  $(esp32_build_opts)
@@ -53,8 +54,9 @@ esp32_build_cmd :=idf.py $(esp32_build_args)
 esp32_cmake_cmd :=/usr/bin/cmake -S $(CMAKE_SRC_PATH) -B $(BUILD_PATH) $(esp32_cmake_generator)
 
 
-$(compile_commands_json_latest): FORCE
+$(compile_commands_json_latest) $(sdkconfig_h_latest): FORCE
 	cp $(BUILD_BASE)/compile_commands.json $(compile_commands_json_latest)
+	cp $(BUILD_BASE)/config/sdkconfig.h $(sdkconfig_h_latest)
 
 ######### ESP32 Targets ##################
 esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui gdbtui reconfigure
@@ -140,7 +142,7 @@ $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
 ############## On Host Tests ##############
-kconfigs=components/app_config/Kconfig.projbuild external/*/Kconfig
+kconfigs:=components/*/Kconfig* external/*/Kconfig
 TEST ?= test.weather.test_
 
 include ./host_test_rules.mk

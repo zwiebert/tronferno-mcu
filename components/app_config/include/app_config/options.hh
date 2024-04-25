@@ -31,7 +31,7 @@ constexpr cfg_args_rfTrxT cfg_args_rfTrx = { "none", "rx-tx", "rx-itx", "cc1101"
 
 typedef int8_t otokBaseT;
 #if 1
-/// \brief options as enum (matching the string options in \link otok_strings \endlink )
+/// \brief options as enum (matching the string options in \ref otok_strings)
 enum class otok : otokBaseT  {
   NONE = -1,  // not existing
       /////////// begin of config keys //////////////////
@@ -63,7 +63,7 @@ enum class otok : otokBaseT  {
 };
 
 
-/// \brief options as null terminated strings (matching the enum options in \link otok \endlink )
+/// \brief options as null terminated strings (matching the enum options in \ref otok )
 constexpr const_cstringT otok_strings[] = {
      /////////// begin of config keys //////////////////
     "cu", "baud", "rtc", //
