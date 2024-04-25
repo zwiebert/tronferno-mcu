@@ -17,9 +17,9 @@ help:
 #==========================================
 .PHONY: http_proxy http_clean
 http_proxy:
-	cd comp/app/app_webapp && make BUILD_DIR=$(BUILD_BASE)/app_webapp proxy
+	cd components/app_webapp && make BUILD_DIR=$(BUILD_BASE)/app_webapp proxy
 http_clean:
-	cd comp/app/app_webapp && make BUILD_DIR=$(BUILD_BASE)/app_webapp clean
+	cd components//app_webapp && make BUILD_DIR=$(BUILD_BASE)/app_webapp clean
 
 
 ####### ESP32 build command ############
@@ -140,7 +140,7 @@ $(foreach tgt,$(esp32_test_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 
 ############## On Host Tests ##############
-kconfigs=comp/config/app_config/Kconfig.projbuild external/*/Kconfig
+kconfigs=components/app_config/Kconfig.projbuild external/*/Kconfig
 TEST ?= test.weather.test_
 
 include ./host_test_rules.mk

@@ -26,14 +26,14 @@ endef
 $(foreach tgt,$(doxy_flavors),$(eval $(call GEN_DOXY_RULE,$(tgt))))
 
 $(DOXY_BUILD_PATH)/api/input_files: $(DOXY_BUILD_PATH)/api FORCE
-	(git ls-files README.md 'comp/**.h' 'comp/**.hh' 'comp/**.cc' 'comp/**.cpp' | xargs realpath) > $@
-	for dir in $(ext) ; do \
+	-rm $@
+	for dir in . $(ext) ; do \
 		(cd $${dir} && git ls-files README.md 'components/**.h' 'components/**.hh'  | xargs realpath) | fgrep include  >> $@ ; \
 	done
 
 $(DOXY_BUILD_PATH)/dev/input_files: $(DOXY_BUILD_PATH)/dev FORCE
-	(git ls-files README.md 'comp/**.h' 'comp/**.hh'  | xargs realpath) | fgrep include  > $@
-	for dir in $(ext) ; do \
+	-rm $@
+	for dir in . $(ext) ; do \
 		(cd $${dir} && git ls-files README.md 'components/**.h' 'components/**.hh' 'components/**.c' 'components/**.cc' 'components/**.cpp' | xargs realpath) >> $@ ; \
 	done
 

@@ -11,8 +11,7 @@ set(TARGET_PLATFORM_FILTER "host/.*")
 project(mbed-all-tests)
 
 file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components ${CMAKE_SOURCE_DIR}/../../external/*/external/*/components)
-set(EXTRA_COMPONENT_DIRS ${CMAKE_SOURCE_DIR}/../../comp/app ${CMAKE_SOURCE_DIR}/../../comp/library ${CMAKE_SOURCE_DIR}/../../comp/config 
-                         ${external_components})
+set(EXTRA_COMPONENT_DIRS ${CMAKE_SOURCE_DIR}/../../components ${external_components})
 
 message("external_components: ${external_components}")
 
@@ -31,5 +30,5 @@ if(ASAN)
 endif()
 
 include(${CMAKE_SOURCE_DIR}/../../external/host-test-idf/components/test_host/host_test.cmake)
-add_subdirectory(${CMAKE_SOURCE_DIR}/../../comp/app/tronferno ${CMAKE_BINARY_DIR}/${BIN_COMP_ROOT}/tronferno)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../../components/tronferno ${CMAKE_BINARY_DIR}/${BIN_COMP_ROOT}/tronferno)
 

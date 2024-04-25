@@ -170,16 +170,16 @@ FULL_PATH_NAMES        = YES
 # will be relative from the directory where doxygen is started.
 # This tag requires that the tag FULL_PATH_NAMES is set to YES.
 
-STRIP_FROM_PATH        = comp/app/tronferno/app_cli/include \
-                         comp/config/app_config/include \
-                         comp/app/tronferno/app_http_server/include \
-                         comp/app/tronferno/app_main/include \
-                         comp/app/tronferno/app_misc/include \
-                         comp/app/tronferno/app_mqtt/include \
-                         comp/app/tronferno/app_settings/include \
-                         comp/app/tronferno/app_uout/include \
-                         comp/app/tronferno/app_webapp/include \
-                         comp/library/gpio/include \
+STRIP_FROM_PATH        = components/tronferno/app_cli/include \
+                         components/app_config/include \
+                         components/tronferno/app_http_server/include \
+                         components/tronferno/app_main/include \
+                         components/tronferno/app_misc/include \
+                         components/tronferno/app_mqtt/include \
+                         components/tronferno/app_settings/include \
+                         components/tronferno/app_uout/include \
+                         components/tronferno/app_webapp/include \
+                         components/gpio/include \
                          external/components-misc/components/cli/include \
                          external/components-misc/components/config_kvs/include \
                          external/components-misc/components/firmware_update/include \
@@ -211,16 +211,16 @@ STRIP_FROM_PATH        = comp/app/tronferno/app_cli/include \
 # specify the list of include paths that are normally passed to the compiler
 # using the -I flag.
 
-STRIP_FROM_INC_PATH    = comp/app/tronferno/app_cli/include \
-                         comp/config/app_config/include \
-                         comp/app/tronferno/app_http_server/include \
-                         comp/app/tronferno/app_main/include \
-                         comp/app/tronferno/app_misc/include \
-                         comp/app/tronferno/app_mqtt/include \
-                         comp/app/tronferno/app_settings/include \
-                         comp/app/tronferno/app_uout/include \
-                         comp/app/tronferno/app_webapp/include \
-                         comp/library/gpio/include \
+STRIP_FROM_INC_PATH    = components/tronferno/app_cli/include \
+                         components/app_config/include \
+                         components/tronferno/app_http_server/include \
+                         components/tronferno/app_main/include \
+                         components/tronferno/app_misc/include \
+                         components/tronferno/app_mqtt/include \
+                         components/tronferno/app_settings/include \
+                         components/tronferno/app_uout/include \
+                         components/tronferno/app_webapp/include \
+                         components/gpio/include \
                          external/components-misc/components/cli/include \
                          external/components-misc/components/config_kvs/include \
                          external/components-misc/components/firmware_update/include \
