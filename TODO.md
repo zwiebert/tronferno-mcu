@@ -1,6 +1,7 @@
 TODO
 ====
 
+* TODO: if cc1101 init fails, return zeros as register file (not random garbage)
 * TODO: Improve web app ?->OTA tab
 * TODO: Improve web app ?->Backup tab
 * TODO: Configure tcp terminal/telnet and maybe allow user settings

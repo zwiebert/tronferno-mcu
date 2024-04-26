@@ -1,4 +1,5 @@
 #Build webapp with node.js
+.PHONY: sdkconfig-js
 
 MCU_IP_ADDR ?= 192.168.1.69
 PROXY_TCP_PORT ?= 3000
@@ -27,7 +28,7 @@ ifneq ("$(wildcard $(SDKCONFIG_JSON))","")
 export SDKCONFIG_JS_DIR = $(BUILD_DIR)
 SDKCONFIG_JS = $(SDKCONFIG_JS_DIR)/sdkconfig.js
 
-$(SDKCONFIG_JS): FORCE
+$(SDKCONFIG_JS) sdkconfig-js: FORCE
 	(echo "export const sdkconfig = "; cat $(SDKCONFIG_JSON); echo ";") > $(SDKCONFIG_JS)
 	touch -r $(SDKCONFIG_JSON) $(SDKCONFIG_JS)
 else

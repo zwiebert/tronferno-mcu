@@ -220,7 +220,7 @@
     nav_tabs={[
       { name: $_("navTab.cfg.mcu.network.tab"), idx: 0 },
       { name: $_("navTab.cfg.mcu.misc.tab"), idx: 1 },
-      ...($GuiAcc.edit_rf_module && hasCc1101 ? [{ name: "CC1101", idx: 2 }] : []),
+      ...($GuiAcc.edit_rf_module && hasCc1101 && !$McuError_cc1101_init ? [{ name: "CC1101", idx: 2 }] : []),
     ]}
     name="mcc"
     vertical={false}
@@ -596,6 +596,7 @@
 
   {#if tabIdxMcc === 2}
     <hr />
+
     <CC1101 />
   {/if}
 
