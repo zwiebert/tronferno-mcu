@@ -41,7 +41,7 @@ env:
 THIS_ROOT := $(realpath .)
 
 CMAKE_SRC_PATH :=$(THIS_ROOT)/configs/$(flavor)
-BUILD_BASE ?=$(THIS_ROOT)/build/$(flavor)
+BUILD_BASE ?=$(THIS_ROOT)/configs/$(flavor)/build
 BUILD_PATH :=$(BUILD_BASE)
 
 tmp_build_dir :=/tmp/tronferno-mcu/build
@@ -53,8 +53,11 @@ esp32_build_args :=$(esp32_cmake_generator) -C $(CMAKE_SRC_PATH) -B $(BUILD_PATH
 esp32_build_cmd :=idf.py $(esp32_build_args)
 esp32_cmake_cmd :=/usr/bin/cmake -S $(CMAKE_SRC_PATH) -B $(BUILD_PATH) $(esp32_cmake_generator)
 
-
+# copy  the last used defines and includes into root/build 
+# this is intended if you have all configs in one IDE workspace
+# ...otherwise use the files in the actual build directory directly
 $(compile_commands_json_latest) $(sdkconfig_h_latest): FORCE
+	mkdir -p $(THIS_ROOT)/build/
 	cp $(BUILD_BASE)/compile_commands.json $(compile_commands_json_latest)
 	cp $(BUILD_BASE)/config/sdkconfig.h $(sdkconfig_h_latest)
 

@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "ESP-IDF",
+            "includePath": [],
+            "defines": [],
+            "forcedInclude": [
+                "${workspaceFolder}/config/sdkconfig.h"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

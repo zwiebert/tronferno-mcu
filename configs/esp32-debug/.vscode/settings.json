@@ -1,0 +1,16 @@
+{
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "editor.codeActionsOnSave": [],
+  "files.associations": {
+    "CMakeLists.txt": "cmake",
+    "regex": "cpp",
+    "*.ipp": "cpp"
+  },
+  "clang-tidy.buildPath": "build",
+  "window.title": "TronfernoMCU (esp32-debug)${separator}${activeEditorLong}",
+  "idf.port": "/dev/ttyUSB0",
+  "output.smartScroll.enabled": false,
+  "idf.adapterTargetName": "esp32",
+  "C_Cpp.errorSquiggles": "enabled",
+  "idf.flashType": "UART"
+}
