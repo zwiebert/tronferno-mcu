@@ -8,20 +8,11 @@
   
   It also tries to monitor the current position of the shutters if possible, so you can use voice commands like "alexa ... shutter bedroom 50%" succesfully most of the time and still be able to use a shutters internal timers (except random timer of course).
   
+### Documentation
+  * View [main documentation online](https://zwiebert.github.io/tronferno-mcu) 
+  * View [main documentation offline](docs/index.md) 
+  * Quickstart-Manual: [deutsch](docs/starter-de.md)
    
-  * Command interfaces: [CLI](docs/CLI.md) at USB or TCP/IP, [Webserver](docs/webserver.md) at [HTTP](docs/http.md), [MQTT](docs/mqtt.md)
-
-  * Supported by FHEM home server via specific [FHEM module](https://github.com/zwiebert/tronferno-fhem) for USB and TCP connection
-
-  * Can be integrated into homer servers using the built-in [MQTT client](docs/mqtt.md).
-  
-  * [Android App](https://github.com/zwiebert/tronferno-andro) available
-
-
-## Required Hardware
-
-See the [hardware](docs/hardware.md) document.
-
 
 ## Related Repositories
 
@@ -31,14 +22,7 @@ See the [hardware](docs/hardware.md) document.
 
  * [tronferno-fhem](https://github.com/zwiebert/tronferno-fhem): Perl module for integration into home server FHEM
 
- * [tronferno-andro](https://github.com/zwiebert/tronferno-andro): Android App (Obsolete. Use builtin the WebServer instead)
 
-
-### Documentation
-
-  * Quickstart-Manual: [deutsch](docs/starter-de.md)
-
-  * [CLI reference manual](https://github.com/zwiebert/tronferno-mcu/blob/master/docs/CLI.md) in the docs folder.
 
 
 ### History

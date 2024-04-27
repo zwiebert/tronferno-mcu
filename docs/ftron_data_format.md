@@ -68,7 +68,7 @@ Explaining the Device ID
    Group=1 and member= 0 targets all members of group 1. Other possible combinations:  group=0 member=0 (all)  group=0 member=1 (not so useful, but it works).
 
 
-  * ID of sun-sensor (9xxxx):  Each motor can store one sun-sensor ID in its memory. All motors which stored that ID will listen to the commands containing that ID. So one sun-sensor can control multiple motors, but one motor can not controlled by multiple sun-sensors.
+  * ID of sun-sensor (2xxxx):  Each motor can store one sun-sensor ID in its memory. All motors which stored that ID will listen to the commands containing that ID. So one sun-sensor can control multiple motors, but one motor can not controlled by multiple sun-sensors.
 
 
   * ID of a plain sender (1xxxx).  Each motor can store *multiple* plain senders and will listen to commands containing one of these IDs.  Like with sun-sensor, multiple motors can be controlled by one plain sender, because you can add its ID to as many motors you want.  But unlike sun-sensor, you can also have multiple plain senders each controlling the same motor. This makes them very versatile:  One plain sender could glued to the window frame and controls just the shutter on this  window. Another one could be glued near the door frame, and control the shutters on all the windows in a room.  Another one could control the entire floor, or even  the entire house.

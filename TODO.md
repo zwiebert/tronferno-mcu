@@ -1,6 +1,6 @@
 TODO
 ====
-
+* TODO: checkout RF Solution's AM-RRQ3-433P receiver module (used in Fernotron 2427)
 * TODO: if cc1101 init fails, return zeros as register file (not random garbage)
 * TODO: Improve web app ?->OTA tab
 * TODO: Improve web app ?->Backup tab
