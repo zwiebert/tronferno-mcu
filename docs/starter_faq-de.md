@@ -77,17 +77,19 @@ Gibt es mehrere Repeater, dann darf ein Sender nicht bei mehreren Repeatern auf 
 <summary>Welche minimale Konfiguration benötigt ein Tronferno der ausschließlich als Repeater verwendet werden soll?</summary>
 
 Wenn ein eigenständiger Repeater benötigt wird, dann beschränkt sich die Konfiguration auf:
-
-* Funkempfänger und Funksender GPIOs (Zahnrad->MCU->Allgemein->Elekrische_Ein_und_Ausgänge)  
-* Senderliste mit Funksender-IDs (Zahnrad->Sender->Repeater->Senderliste)  
-* Netzwerkzugang um die Senderliste per Weboberfläche bearbeiten zu können.  
-* Ohne Netzwerk wird die Senderliste über folgende undokumentierte (provisorische) Kommandozeilen-Option gesetzt oder abgefragt:  
-      * <pre>config rf-repeater=(ID-Liste|?)</pre>  
-      *  Beispiel für Senderliste mit drei IDs 10abcd, 201234 und 20abcd:  
-       <pre>config rf-repeater="10abcd20123420abcd";</pre>
-* Alle anderen Funktionen können soweit möglich deaktiviert werden oder können auf Defaultwerten verbleiben.
-* In späteren Versionen lassen sich eventuell noch weitere zum repeaten unnötige Funktionen abschalten
-
+<ul>
+<li> Funkempfänger und Funksender GPIOs (Zahnrad->MCU->Allgemein->Elekrische_Ein_und_Ausgänge)</li>
+<li> Senderliste mit Funksender-IDs (Zahnrad->Sender->Repeater->Senderliste)</li>
+<li> Netzwerkzugang um die Senderliste per Weboberfläche bearbeiten zu können.</li>
+<li> Ohne Netzwerk wird die Senderliste über folgende undokumentierte (provisorische) Kommandozeilen-Option gesetzt oder abgefragt:</li>
+<ul>
+      <li> <pre>config rf-repeater=(ID-Liste|?)</pre></li>
+      <li>  Beispiel für Senderliste mit drei IDs 10abcd, 201234 und 20abcd:  
+       <pre>config rf-repeater="10abcd20123420abcd";</pre></li>
+</ul>
+<li> Alle anderen Funktionen können soweit möglich deaktiviert werden oder können auf Defaultwerten verbleiben.</li>
+<li> In späteren Versionen lassen sich eventuell noch weitere zum repeaten unnötige Funktionen abschalten</li>
+</ul>
 
 </details>
 
@@ -110,13 +112,16 @@ Antwort: In Weboberfläche den Tab Zahnrad->Sender->Anmelden öffnen. Dort den A
 
 <details>
 <summary>Wie stelle ich die Endpunkte ein?</summary>
-
-* Weboberfläche Zahnrad->Empfänger->Endpunkte.
-* Ein Taster muss angeschlossen sein und konfiguriert sein:
-   * Taster an einem GPIO oder GPI und GND anschließen.
-   * Taster konfigurieren: Zahnrad->MCU->Allgemein->Elektrische-Ein-und-Ausgänge->Setz-Knopf
-   * Bis GPIO33 des ESP32 wird der interne PullUp-Widerstand verwendet.
-   * Reine GPIs (GPI34 und höher) brauchen einen externen PullUp-Widerstand (z.b. 1...10 kOhm) zwischen GPI und 3.3V.
+<ul>
+<li> Weboberfläche Zahnrad->Empfänger->Endpunkte.</li>
+<li> Ein Taster muss angeschlossen sein und konfiguriert sein:</li>
+<ul>
+   <li> Taster an einem GPIO oder GPI und GND anschließen.</li>
+   <li> Taster konfigurieren: Zahnrad->MCU->Allgemein->Elektrische-Ein-und-Ausgänge->Setz-Knopf</li>
+   <li> Bis GPIO33 des ESP32 wird der interne PullUp-Widerstand verwendet.</li>
+   <li> Reine GPIs (GPI34 und höher) brauchen einen externen PullUp-Widerstand (z.b. 1...10 kOhm) zwischen GPI und 3.3V.</li>
+</ul>
+</ul>
 
 </details>
 
@@ -155,7 +160,9 @@ Das ist möglich, aber sie werden nicht zusammenarbeiten sondern sind unabhängi
 
 Gründe für mehrere TronfernoMCUs:
 
-  * Verwalten von mehr als 7 Gruppen / 49 Empfängern (Limit pro Programmierzentrale-ID)
-  * Bewusstes Aufteilen von Gruppen auf getrennte Zentralen
-  * Verwendung eines TronfernoMCUs als Programmierzentrale und zusätzlich einen/mehrere als reinen Repeater/Funksignalverstärker.
+<ul>
+  <li> Verwalten von mehr als 7 Gruppen / 49 Empfängern (Limit pro Programmierzentrale-ID)</li>
+  <li> Bewusstes Aufteilen von Gruppen auf getrennte Zentralen</li>
+  <li> Verwendung eines TronfernoMCUs als Programmierzentrale und zusätzlich einen/mehrere als reinen Repeater/Funksignalverstärker.</li>
+</ul>
 </details>
