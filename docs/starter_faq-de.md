@@ -34,15 +34,15 @@ Eigentlich sollte das nicht passieren. Ursache war hier das rüberflashen unters
 
 <details>
 <summary>Der ESP32 friert ein</summary>
-
-   * Aktuelle Firmware Version flashen  
-   * Zurückflashen auf Firmware die noch funktioniert hat  
-   * USB Kabe austauschen  
-   * USB Netzteil austauschen  
-   * Lötstellen am USB Port des ESP32 mit Lupe kontrollieren  
-   * Im USB Terminal nach Backtrace-Logzeilen schauen und diese, die umgebenden Fehlermeldungen und unbedingt auch die Firmware-Versionsnummer in den Bugreport einfügen  
-        * Beispiel für Bactrace Zeile: `Backtrace: 0x400814ae:0x3ffbad20 0x4008ae15:0x3ffbad40 0x40092d72:0x3ffbad60 0x400ebc1f:0x3ffbadd0 0x400dea41:0x3ffbae00 0x400e19ad:0x3ffbaee0 0x400e99f9:0x3ffbafb0 0x400d734c:0x3ffbafe0 0x400d7091:0x3ffbb000 0x401981df:0x3ffbb020`  
-
+<ul>
+   <li>Aktuelle Firmware Version flashen  </li>
+   <li> Zurückflashen auf Firmware die noch funktioniert hat  </li>
+   <li> USB Kabe austauschen  </li>
+   <li> USB Netzteil austauschen  </li>
+   <li> Lötstellen am USB Port des ESP32 mit Lupe kontrollieren  </li>
+   <li> Im USB Terminal nach Backtrace-Logzeilen schauen und diese, die umgebenden Fehlermeldungen und unbedingt auch die Firmware-Versionsnummer in den Bugreport einfügen  </li>
+        <li> Beispiel für Bactrace Zeile: `Backtrace: 0x400814ae:0x3ffbad20 0x4008ae15:0x3ffbad40 0x40092d72:0x3ffbad60 0x400ebc1f:0x3ffbadd0 0x400dea41:0x3ffbae00 0x400e19ad:0x3ffbaee0 0x400e99f9:0x3ffbafb0 0x400d734c:0x3ffbafe0 0x400d7091:0x3ffbb000 0x401981df:0x3ffbb020`  </li>
+</ul>
 </details>
 
 <details>
@@ -78,12 +78,12 @@ Gibt es mehrere Repeater, dann darf ein Sender nicht bei mehreren Repeatern auf 
 
 Wenn ein eigenständiger Repeater benötigt wird, dann beschränkt sich die Konfiguration auf:
 
-* Funkempfänger und Funksender GPIOs (Zahnrad->MCU->Allgemein->Elekrische_Ein_und_Ausgänge)
-* Senderliste mit Funksender-IDs (Zahnrad->Sender->Repeater->Senderliste)
-* Netzwerkzugang um die Senderliste per Weboberfläche bearbeiten zu können.
-* Ohne Netzwerk wird die Senderliste über folgende undokumentierte (provisorische) Kommandozeilen-Option gesetzt oder abgefragt:
-      * <pre>config rf-repeater=(ID-Liste|?)</pre>
-      *  Beispiel für Senderliste mit drei IDs 10abcd, 201234 und 20abcd:
+* Funkempfänger und Funksender GPIOs (Zahnrad->MCU->Allgemein->Elekrische_Ein_und_Ausgänge)  
+* Senderliste mit Funksender-IDs (Zahnrad->Sender->Repeater->Senderliste)  
+* Netzwerkzugang um die Senderliste per Weboberfläche bearbeiten zu können.  
+* Ohne Netzwerk wird die Senderliste über folgende undokumentierte (provisorische) Kommandozeilen-Option gesetzt oder abgefragt:  
+      * <pre>config rf-repeater=(ID-Liste|?)</pre>  
+      *  Beispiel für Senderliste mit drei IDs 10abcd, 201234 und 20abcd:  
        <pre>config rf-repeater="10abcd20123420abcd";</pre>
 * Alle anderen Funktionen können soweit möglich deaktiviert werden oder können auf Defaultwerten verbleiben.
 * In späteren Versionen lassen sich eventuell noch weitere zum repeaten unnötige Funktionen abschalten
