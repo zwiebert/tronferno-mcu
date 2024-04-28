@@ -35,13 +35,13 @@ Eigentlich sollte das nicht passieren. Ursache war hier das rüberflashen unters
 <details>
 <summary>Der ESP32 friert ein</summary>
 
-  * Aktuelle Firmware Version flashen
-  * Zurückflashen auf Firmware die noch funktioniert hat
-  * USB Kabe austauschen
-  * USB Netzteil austauschen
-  * Lötstellen am USB Port des ESP32 mit Lupe kontrollieren
-  * Im USB Terminal nach Backtrace-Logzeilen schauen und diese, die umgebenden Fehlermeldungen und unbedingt auch die Firmware-Versionsnummer in den Bugreport einfügen
-     * Beispiel für Bactrace Zeile: `Backtrace: 0x400814ae:0x3ffbad20 0x4008ae15:0x3ffbad40 0x40092d72:0x3ffbad60 0x400ebc1f:0x3ffbadd0 0x400dea41:0x3ffbae00 0x400e19ad:0x3ffbaee0 0x400e99f9:0x3ffbafb0 0x400d734c:0x3ffbafe0 0x400d7091:0x3ffbb000 0x401981df:0x3ffbb020`
+   * Aktuelle Firmware Version flashen  
+   * Zurückflashen auf Firmware die noch funktioniert hat  
+   * USB Kabe austauschen  
+   * USB Netzteil austauschen  
+   * Lötstellen am USB Port des ESP32 mit Lupe kontrollieren  
+   * Im USB Terminal nach Backtrace-Logzeilen schauen und diese, die umgebenden Fehlermeldungen und unbedingt auch die Firmware-Versionsnummer in den Bugreport einfügen  
+        * Beispiel für Bactrace Zeile: `Backtrace: 0x400814ae:0x3ffbad20 0x4008ae15:0x3ffbad40 0x40092d72:0x3ffbad60 0x400ebc1f:0x3ffbadd0 0x400dea41:0x3ffbae00 0x400e19ad:0x3ffbaee0 0x400e99f9:0x3ffbafb0 0x400d734c:0x3ffbafe0 0x400d7091:0x3ffbb000 0x401981df:0x3ffbb020`  
 
 </details>
 
