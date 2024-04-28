@@ -1,6 +1,19 @@
 ## Tronferno FAQ Liste
 
 #### Fehlfunktionen, Bugs, Neustarts
+<details>
+<summary>Wie einen Bug melden</summary>
+Wenn der Bug seit mehr als einer Beta-Version vorhanden ist, dann ist er wohl noch unentdeckt.
+<ul>
+  <li>Bitte Versionsnummer angeben</li>
+  <li>Manche Fehler sind offensichtlich, aber ich habe es übersehen. Da reicht dann ein einfacher Hinweis</li>
+  <li>Ein Backup der Settings wäre nur hilfreich, wenn der Bug davon getriggert wird. Vielleicht von ungewöhnlich vielen Rollläden oder ungewöhnlich langen Namen, etc.  Oder falls das Backkup-File selbst fehlerhaft ist.</li>
+  <li>Wichtig sind die Beobachtungen was genau wann, wo, wie passiert ist. Wenig hilfreich sind Spekulationen/ Vermutungen über das warum. Oder ein "es funktioniert nicht" ohne Details.</li>
+  <li>Da die Hardware weitgehend einheitlich ist, tritt der Bug vermutlich nur unter bestimmten Umständen oder sehr sporadisch auf, sonst hätte ich ihn ja bereits selbst entdeckt.</li>
+  <li>Bei manchen Crashs erscheint ein Backtrace Log im USB Terminal, was die Fehlersuche extrem erleichtern kann</li>
+</ul>
+</details>
+
 
 <details>
 <summary>Informationen in dieser Doku sind falsch oder veraltet</summary>
@@ -41,7 +54,7 @@ Eigentlich sollte das nicht passieren. Ursache war hier das rüberflashen unters
    <li> USB Netzteil austauschen  </li>
    <li> Lötstellen am USB Port des ESP32 mit Lupe kontrollieren  </li>
    <li> Im USB Terminal nach Backtrace-Logzeilen schauen und diese, die umgebenden Fehlermeldungen und unbedingt auch die Firmware-Versionsnummer in den Bugreport einfügen  </li>
-        <li> Beispiel für Bactrace Zeile: `Backtrace: 0x400814ae:0x3ffbad20 0x4008ae15:0x3ffbad40 0x40092d72:0x3ffbad60 0x400ebc1f:0x3ffbadd0 0x400dea41:0x3ffbae00 0x400e19ad:0x3ffbaee0 0x400e99f9:0x3ffbafb0 0x400d734c:0x3ffbafe0 0x400d7091:0x3ffbb000 0x401981df:0x3ffbb020`  </li>
+        <li> Beispiel für Bactrace Zeile: <pre>Backtrace: 0x400814ae:0x3ffbad20 0x4008ae15:0x3ffbad40 0x40092d72:0x3ffbad60 0x400ebc1f:0x3ffbadd0 0x400dea41:0x3ffbae00 0x400e19ad:0x3ffbaee0 0x400e99f9:0x3ffbafb0 0x400d734c:0x3ffbafe0 0x400d7091:0x3ffbb000 0x401981df:0x3ffbb020</pre>  </li>
 </ul>
 </details>
 
