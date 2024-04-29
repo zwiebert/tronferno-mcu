@@ -2,17 +2,18 @@
 
 # Programmierzentrale, Funksignalverstärker und Netzwerk-Hub für Fernotron
 
-
-
-Die tronferno-mcu Firmware übernimmt Funktionen der originale Fernotron Geräte 2411-Programmierzentrale und 2427-Funksignalverstärker.
+Die tronferno-mcu Firmware implementiert die Funktionen der originale Fernotron Geräte 2411-Programmierzentrale und 2427-Funksignalverstärker.
 
 Zusätzlich werden moderne Funktionen wie Web-Bedienoberfläche und Heim-Server Integration geboten.
 
+Der Tronferno vermittelt zwischen dem Netzwerk (WebApp, MQTT, Homeserver) und der Fernotron Installation. Er sendet (und empfängt) Funk-Kommandos, speichert Informationen zu den Fernotron Geräten, und anderes mehr.
 
-Lies die [Feature Liste](features.md) für die  Liste aller Funktionen.
+### Dokumentation
 
-
-Lies den [Starter-Guide](starter-de.md) zum (einfachen) Aufbau des Gerätes.
+Möchtest du mehr erfahren, sind hier Links zu den Themen:
+  * [Funktionsumfang](features.md)
+  * [Aufbau und Inbetriebnahme](starter-de.md)
+  * [Fragen+Antworten, Problemlösungen](starter_faq-de.md)
 
 
 ## Repositories
@@ -25,11 +26,6 @@ Lies den [Starter-Guide](starter-de.md) zum (einfachen) Aufbau des Gerätes.
 
  * [tronferno-fhem](https://github.com/zwiebert/tronferno-fhem): Optionales Modul zur Integration in den Heim-Server FHEM. Stattdessen sollte, wenn ausreichend, nun MQTT benutzt werden.
 
-
-### Documentation
-
-  * Diese Seite in englischer Sprache: [this page in English](index.md)
-  * Fragen und Antworten Liste: [FAQ auf deutsch](starter_faq-de.md)
 
 
 ### History

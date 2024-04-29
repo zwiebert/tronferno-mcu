@@ -6,9 +6,13 @@
 The tronferno-mcu firmware can do the things the original Fernotron 2411 programming central and 2427 repeater can do, but adds some modern features like a web interface and home-server integration.
 
 
-Read the [feature-list](features.md) for a detailed list of provided features.
+### Documentation
 
-Read the [starter-guide](starter.md) to learn how to make it work. Its easy.
+If you want to learn more, here are links to some topics:
+
+  * [A list of features](features.md)
+  * [How you make it all work](starter.md)
+  * [FAQ list](starter_faq-de.md)
 
 
 ## Repositories
@@ -21,11 +25,6 @@ Read the [starter-guide](starter.md) to learn how to make it work. Its easy.
 
  * [tronferno-fhem](https://github.com/zwiebert/tronferno-fhem): Optional module for integration into home server FHEM. But just using MQTT works fine too.
 
-
-
-### Documentation
-
-  * This page in German language: [diese Seite auf deutsch](index-de.md)
 
 
 ### History
