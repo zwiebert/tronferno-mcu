@@ -1,3 +1,5 @@
+|Change Language: [Deutsch](hardware-de.md), English|
+
 #### MCU boards
 
 ##### ESP32
@@ -19,7 +21,6 @@
 
 
 #### More Info
-  * [GPIO pin numbers](pins.md)
   * [Schematic](schematic.pdf)
 
 <hr>

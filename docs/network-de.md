@@ -1,3 +1,5 @@
+|Change Language: Deutsch, [English](network.md)|
+
 ### Mit WLAN Access-Point verbinden für die erstmalige Konfiguration (oder zur Reparatur der Netzwerkverbindung)
 * aktiv nach dem ersten flashen (und wenn die Verbindung zum konfigurierten Netzwerk fehlschlägt)
 * Verbinden deinen Laptop oder Smartphone mit dem Tronferno-WLAN-Asccesspoint: SSID=tronferno, WLAN-Passwort: tronferno

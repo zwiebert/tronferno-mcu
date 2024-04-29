@@ -27,13 +27,14 @@ Der Tronferno vermittelt zwischen dem Netzwerk (WebApp, MQTT, Heimserver) und de
 
 
 ### Projekt-Historie
- * 2022: Web-App komplettiert. Alle Funktionen sind jetzt darüber steuerbar.
- * 2021: Web-App nun erzeugt mit Svelte/Tailwind statt Javascript/CSS
- * 2020: Rollladen Positionen anzeigen und anfahren nun möglich
- * 2018: Umstieg auf ESP32/esp-idf
- * 2017: Umstieg auf ESP8266/NonOS
- * 2017: Umstieg auf ATmega328p. Interne-Timer programmieren nun möglich
- * 2011: Erste Version für ATmega168/AVRStudio. Beschränkt auf einfache Kommandos (up/down/stop/...)
+ * 2011: Erstelle erste Version für einfach Kommandos. Läuft auf ATmega168/AVRStudio. 
+ * 2017: Wechsel auf ATmega328p.
+ * 2017: Implementiere Programmierung der internen Timer
+ * 2017: Wechsel auf ESP8266/NonOS
+ * 2018: Wechsel auf ESP32/esp-idf
+ * 2020: Implementiere Rollladen Positionen
+ * 2021: Baue Web-App mit Svelte/Tailwind statt Javascript/CSS
+ * 2022: Komplettiere Web-App. Alle Funktionen sind jetzt darüber steuerbar.
 
 ### Kontakt
 

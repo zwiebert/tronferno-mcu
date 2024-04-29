@@ -1,3 +1,5 @@
+|Change Language: Deutsch, [English](starter.md)|
+
 # Tronferno Schnellstart-Anleitung
 
 
@@ -52,7 +54,7 @@ Die [Hardware](hardware-de.md) besteht aus einem ESP32-Board und einem oder zwei
 
 #### Homeserver-Integration
 
-* HomeServer werden idR über [MQTT](mqtt.md) angebunden
+* HomeServer werden idR über [MQTT](mqtt-de.md) angebunden
 * Für FHEM existiert (aus historischen Gründen) neben MQTT spezielle Module die etwas mehr Funktionalität bieten.
    * [FHEM-Homeserver Modul (USB oder TCP/IP)](https://github.com/zwiebert/tronferno-fhem)
 * Automatisch erzeugte Konfigurationen für HomeServer findest du in der Weboberfläche.
@@ -69,12 +71,10 @@ Die [Hardware](hardware-de.md) besteht aus einem ESP32-Board und einem oder zwei
 
      
 #### Mehr Info
-  * [GPIO pin numbers](pins.md)
-  * [hardware](hardware.md)
+  * [hardware](hardware-de.md)
   * [configuration](mcu_config.md)
   * [CLI](cli.md)
-  * [network](network.md)
-  * [HTTP](http.md)
+  * [network](network-de.md)
   * [webserver](webserver.md)
   
 

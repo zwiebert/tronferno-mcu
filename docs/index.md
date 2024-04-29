@@ -24,7 +24,7 @@ The tronferno-mcu firmware can do the things the original Fernotron 2411 program
 
 ### Project-History
 
- * 2022: Web-App complete. All main features accessible.
+ * 2022: completing Web-App. All main features now accessible.
  * 2021: porting Web-App to Svelte/Tailwind from Javascript/CSS
  * 2020: implementing shutter positions
  * 2018: Moving to ESP32/esp-idf
