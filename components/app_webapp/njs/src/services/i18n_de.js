@@ -29,6 +29,9 @@ export const de = {
       ota: {
         tab: "OTA",
       },
+      feedback: {
+        tab: "Kontakt",
+      },
     },
     cfg: {
       mcu: {
@@ -126,9 +129,32 @@ export const de = {
         txt: "MQTT Klient",
       },
     },
+    help_feedback: {
+      header: "Fehler melden, Vorschläge, Rückmeldungen",
+      tt: {
+        header: `Du hast einen Bug entdeckt, oder möchtest ein neues Feature vorschlagen... Der bevorzugte Weg ist das eröffnen
+         eines Issues im GitHub-Repository. So können andere Nutzer sehen ob ein Bug bereits gemeldet wurde, oder können
+         hilfreiche Kommentare zu einem Vorschlag abgeben. Bitte vorher schauen ob ein Bug in einem der *beiden* Repositories
+         bereits gemeldet wurde.
+         Falls du auf GitHub nicht schreiben kannst, bitte stattdessen per E-Mail.
+          `,
+      },
+      issues: {
+        link_src: {
+          info: "Vorschläge und Fehler bitte hier einstellen (Englisch,Deutsch):",
+        },
+
+        link_bin: {
+          info: "Hier nur Fehler melden (Englisch,Deutsch):",
+        },
+        link_mail: {
+          info: "Mail an Autor/Maintainer (English,German):",
+        },
+      },
+    },
     mcu: {
       network: { header: "Netzwerk-Verbindungen und -Dienste", tt: { header: "--" } },
-      misc: { header: "Allgemeine Konfiguration", tt: { header: "--" } },
+      misc: { header: "Allgemeine Einstellungen", tt: { header: "--" } },
     },
 
     rx_names: {

@@ -22,6 +22,7 @@
   import PaneUserHelp from "../panes/user_help.svelte";
   import PaneBackup from "../panes/backup.svelte";
   import PaneHelpDoc from "../panes/help_doc.svelte";
+  import PaneHelpFeedback from "../panes/help_feedback.svelte";
   import PaneFirmwareEsp32 from "../panes/firmware_esp32.svelte";
   import PaneHSConfigHomeAssistant from "../panes/hsconfig_home_assistant.svelte";
   import PaneHSConfigFHEM from "../panes/hsconfig_fhem.svelte";
@@ -150,6 +151,7 @@
         ...($GuiAcc.hsc ? [{ name: $_("navTab.help.hsc.tab"), idx: 1 },] : []),
         ...($GuiAcc.bak ? [{ name: $_("navTab.help.backup.tab"), idx: 2 },] : []),
         { name: $_("navTab.help.doc.tab"), idx: 3 },
+        { name: $_("navTab.help.feedback.tab"), idx: 4 },
       ]}
        name="user_help" />
     </div>
@@ -176,6 +178,8 @@
       <PaneBackup />
     {:else if tabIdxUserHelp === 3}
       <PaneHelpDoc />
+    {:else if tabIdxUserHelp === 4}
+      <PaneHelpFeedback />
     {/if}
   {:else if !misc.DISTRO && tabIdxMain === 6}
     <PaneDeveloper />

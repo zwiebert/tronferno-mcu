@@ -161,7 +161,31 @@ include doxygen_rules.mk
 ext=external/*
 
 	
-FORCE:
+.PHONY:FORCE
+
+########### github pages ###############
+api_html=$(DOXY_BUILD_PATH)/api/html
+
+$(api_html):$(DOXY_BUILD_PATH)/api/input_files
+	make doxy-api-build
+docs/api:$(api_html)
+	-rm -rf docs/api
+	-mkdir -p docs
+	cp -r $</ $@/
+
+.PHONY: gh_pages
+
+git_current_branch=$(shell git branch --show-current)
+
+gh_pages:
+	-git branch -D $@
+	git checkout -b $@
+	make docs/api
+	git add docs/api && git commit -m "Update doc pages"
+	git push --set-upstream --force origin $@
+	git checkout $(git_current_branch)
+
+
 
 ############# CLI Terminal ##############
 MCU_IP_ADDR ?= 192.168.1.69

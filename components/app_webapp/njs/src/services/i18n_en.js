@@ -52,6 +52,9 @@ export const en = {
       doc: {
         tab: "\uD83D\uDCD6",
       },
+      feedback: {
+        tab: "Contact",
+      },
     },
 
     cfg: {
@@ -144,7 +147,6 @@ Restore: 1) Paste the content of the saved backup file into the text area 2) Cli
       home_page: {
         url: "https://zwiebert.github.io/tronferno-mcu",
         txt: "Online Documentation, Home-Page",
-
       },
       starter: {
         url: "docs/starter-de.md",
@@ -160,9 +162,34 @@ Restore: 1) Paste the content of the saved backup file into the text area 2) Cli
         txt: "MQTT Client",
       },
     },
+    help_feedback: {
+      header: "Report Bugs, Suggest Features, Give Feedback",
+      tt: {
+        header: `If you've encountered a bug, or want to suggest a new feature, the preferred of way to report/request, is by open a new "Issue" at
+          the GitHub repository. This way other users can check, if a bug is already reported or can comment or help with a feature request. Please check first both repositories if there is already an open issue about this topic.
+          `,
+      },
+      issues: {
+        link_src: {
+          info: "Feature requests and bug reports (English,German):",
+          url: "https://github.com/zwiebert/tronferno-mcu/issues",
+          txt: "tronferno-mcu/issues",
+        },
+        link_bin: {
+          info: "Bug reports (English,German):",
+          url: "https://github.com/zwiebert/tronferno-mcu-bin/issues",
+          txt: "tronferno-mcu-bin/issues",
+        },
+        link_mail: {
+          info: "Mail to author/maintainer (English,German):",
+          url: "mailto:tf.zwiebert@online.de",
+          txt: "mailto:tf.zwiebert@online.de",
+        },
+      },
+    },
 
-    network: { header: "Netzwerk-Verbindungen und -Dienste", tt: { header: "--" } },
-    misc: { header: "Allgemeine Konfiguration", tt: { header: "--" } },
+    network: { header: "Network-Connections and -Services", tt: { header: "--" } },
+    misc: { header: "Misc. Settings", tt: { header: "--" } },
     cc1101: {
       header: "CC1101 RF-Module Configuration (For Developers)",
       tt: {
