@@ -47,13 +47,13 @@ Die [Hardware](hardware-de.md) besteht aus einem ESP32-Board und einem oder zwei
 
 * Festlegen der GPIO-Pins an welchen die Funksender/Empfänger angeschlossen wurden.
 * ID der originalen 2411 Zentrale eintragen (Zettel im Batteriefach hinter den Batterien).  Diese ID kann auch automatisch konfiguriert werden (Knopf unter dem Text-Eingabefeld drücken und dann STOP auf der 2411 Zentrale drücken).
-* Einstellen der Anzahl Rolläden pro Gruppe, so dass unbenutzte Gruppen und Empfänger nicht die Weboberfläche zumüllen und unnütze Datenabfragen zu nicht existierenden Rolläden vermieden werden können.
+* Einstellen der Anzahl Rollläden pro Gruppe, so dass unbenutzte Gruppen und Empfänger nicht die Weboberfläche zu-müllen und unnütze Datenabfragen zu nicht existierenden Rollläden vermieden werden können.
 
 
 #### Homeserver-Integration
 
 * HomeServer werden idR über [MQTT](mqtt.md) angebunden
-* Für FHEM existiert neben MQTT spezielle Module die  etwas mehr Funktionalität bieten.
+* Für FHEM existiert (aus historischen Gründen) neben MQTT spezielle Module die etwas mehr Funktionalität bieten.
    * [FHEM-Homeserver Modul (USB oder TCP/IP)](https://github.com/zwiebert/tronferno-fhem)
 * Automatisch erzeugte Konfigurationen für HomeServer findest du in der Weboberfläche.
    * Navigation: ?->[HOME]
@@ -67,8 +67,6 @@ Die [Hardware](hardware-de.md) besteht aus einem ESP32-Board und einem oder zwei
 
 * [Fragen und Antworten (FAQ)](starter_faq-de.md)
 
-
-    
      
 #### Mehr Info
   * [GPIO pin numbers](pins.md)

@@ -15,5 +15,6 @@
   ],
   "output.smartScroll.enabled": false,
   "cmake.sourceDirectory": "${workspaceFolder}",
-  "C_Cpp.errorSquiggles": "enabled"
+  "C_Cpp.errorSquiggles": "enabled",
+  "cSpell.language": "en,de-DE"
 }

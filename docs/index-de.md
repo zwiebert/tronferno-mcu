@@ -1,12 +1,12 @@
 |Change Language: Deutsch, [English](index.md)|
 
-# Programmierzentrale, Funksignalverstärker und Netzwerk-Hub für Fernotron
+# Programmierzentrale, Funksignalverstärker und Netzwerk-Hub für Fernotron Installationen
 
-Die tronferno-mcu Firmware implementiert die Funktionen der originale Fernotron Geräte 2411-Programmierzentrale und 2427-Funksignalverstärker.
+Die tronferno-mcu Mikrocontroller-Firmware implementiert die Funktionen der originalen Fernotron 2411-Programmierzentrale und des 2427-Funksignalverstärker.
 
 Zusätzlich werden moderne Funktionen wie Web-Bedienoberfläche und Heim-Server Integration geboten.
 
-Der Tronferno vermittelt zwischen dem Netzwerk (WebApp, MQTT, Homeserver) und der Fernotron Installation. Er sendet (und empfängt) Funk-Kommandos, speichert Informationen zu den Fernotron Geräten, und anderes mehr.
+Der Tronferno vermittelt zwischen dem Netzwerk (WebApp, MQTT, Heimserver) und der Fernotron-Installation. Er sendet (und empfängt) Funkkommandos, speichert Informationen zu den Fernotron-Geräten, und anderes mehr.
 
 ### Dokumentation
 
@@ -18,7 +18,6 @@ Möchtest du mehr erfahren, sind hier Links zu den Themen:
 
 ## Repositories
 
-
  * [tronferno-mcu](https://github.com/zwiebert/tronferno-mcu) Source Distribution für Software Entwickler
 
  * [tronferno-mcu-bin](https://github.com/zwiebert/tronferno-mcu-bin): Binär-Distribution für Benutzer
@@ -28,16 +27,16 @@ Möchtest du mehr erfahren, sind hier Links zu den Themen:
 
 
 
-### History
- * 2022: WebGUI finished. All main features implemented.
- * 2021: Port WebGUI to Svelte/Tailwind
- * 2020: shutter positions implemented
- * 2018: Moving to ESP32/esp-idf
- * 2017: Moving to ESP8266/NonOS
- * 2017: Moved to ATmega328p. Support for timer programming.
- * 2011: First version on ATmega168/AVRStudio. Limited to plain commands up/down/stop/...
+### Projekt-Historie
+ * 2022: Web-App komplettiert. Alle Funktionen sind jetzt darüber steuerbar.
+ * 2021: Web-App nun erzeugt mit Svelte/Tailwind statt Javascript/CSS
+ * 2020: Rollladen Positionen anzeigen und anfahren nun möglich
+ * 2018: Umstieg auf ESP32/esp-idf
+ * 2017: Umstieg auf ESP8266/NonOS
+ * 2017: Umstieg auf ATmega328p. Interne-Timer programmieren nun möglich
+ * 2011: Erste Version für ATmega168/AVRStudio. Beschränkt auf einfache Kommandos (up/down/stop/...)
 
 ### Kontakt
 
-* Project-Autor und Wartung: Bert Winkelmann <tf.zwiebert@online.de>
-* Zum Melden von Bugs kannst du auch ein Issue auf GitHub eröffnen. English oder Deutsch.
+* [Fehler/Bug-Meldungen, Feature-Requests](https://github.com/zwiebert/tronferno-mcu/issues) (Englisch,Deutsch).
+* Project-Autor und Wartung: Bert Winkelmann <tf.zwiebert@online.de> (Deutsch,Englisch)
