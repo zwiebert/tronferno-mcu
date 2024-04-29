@@ -16,25 +16,27 @@
   $: repo_url = "https://github.com/zwiebert/tronferno-mcu/blob/" + tag_or_branch + "/";
 </script>
 
-
-
 <div class="main-area">
   <h4 class="text-center" use:tippy={{ content: $_("panes.help_doc.tt.header") }}>{$_("panes.help_doc.header")}</h4>
 
-  Document version:
+  <div class="area">
+    <a href={$_("panes.help_doc.home_page.url")} target="_blank" rel="noreferrer">{$_("panes.help_doc.home_page.txt")}</a>
 
-  <select bind:value={selected} >
-    <option value={0}>{version_number}</option>
-    <option value={1}>Latest Beta</option>
-    <option value={2}>Latest Master</option>
-  </select>
+  </div>
 
   <div class="area">
+    Document version:
+
+    <select bind:value={selected}>
+      <option value={0}>{version_number}</option>
+      <option value={1}>Latest Beta</option>
+      <option value={2}>Latest Master</option>
+    </select>
+
     <ul>
       <li><a href={repo_url + $_("panes.help_doc.starter.url")} target="_blank" rel="noreferrer">{$_("panes.help_doc.starter.txt")}</a></li>
       <li><a href={repo_url + $_("panes.help_doc.starter_faq.url")} target="_blank" rel="noreferrer">{$_("panes.help_doc.starter_faq.txt")}</a></li>
       <li><a href={repo_url + $_("panes.help_doc.mqtt.url")} target="_blank" rel="noreferrer">{$_("panes.help_doc.mqtt.txt")}</a></li>
- 
     </ul>
   </div>
 </div>

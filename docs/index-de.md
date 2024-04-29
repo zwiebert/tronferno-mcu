@@ -10,7 +10,6 @@ Der Tronferno vermittelt zwischen dem Netzwerk (WebApp, MQTT, Heimserver) und de
 
 ### Dokumentation
 
-Möchtest du mehr erfahren, sind hier Links zu den Themen:
   * [Funktionsumfang](features.md)
   * [Aufbau und Inbetriebnahme](starter-de.md)
   * [Fragen+Antworten, Problemlösungen](starter_faq-de.md)

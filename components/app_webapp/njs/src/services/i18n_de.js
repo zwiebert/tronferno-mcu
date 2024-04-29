@@ -111,6 +111,11 @@ export const de = {
         url: "docs/starter-de.md",
         txt: "Schnellstart Anleitung",
       },
+      home_page: {
+        url: "https://zwiebert.github.io/tronferno-mcu/index-de.html",
+        txt: "Online Documentation, Home-Page",
+
+      },
       starter_faq: {
         url: "docs/starter_faq-de.md",
         txt: "FAQ Liste",

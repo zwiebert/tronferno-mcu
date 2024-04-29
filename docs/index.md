@@ -7,10 +7,8 @@ The tronferno-mcu firmware can do the things the original Fernotron 2411 program
 
 ### Documentation
 
-If you want to learn more, here are links to some topics:
-
-  * [A list of features](features.md)
-  * [How you make it all work](starter.md)
+  * [Features](features.md)
+  * [How to make it work](starter.md)
   * [FAQ list](starter_faq-de.md)
 
 
@@ -26,9 +24,9 @@ If you want to learn more, here are links to some topics:
 
 ### Project-History
 
- * 2022: Web-App complete. All main features accessable.
+ * 2022: Web-App complete. All main features accessible.
  * 2021: porting Web-App to Svelte/Tailwind from Javascript/CSS
- * 2020: implenting shutter positions
+ * 2020: implementing shutter positions
  * 2018: Moving to ESP32/esp-idf
  * 2017: Moving to ESP8266/NonOS
  * 2017: Moving to ATmega328p. Support for timer programming.

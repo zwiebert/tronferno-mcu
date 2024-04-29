@@ -141,6 +141,11 @@ Restore: 1) Paste the content of the saved backup file into the text area 2) Cli
       tt: {
         header: "Access documentation on GitHub",
       },
+      home_page: {
+        url: "https://zwiebert.github.io/tronferno-mcu",
+        txt: "Online Documentation, Home-Page",
+
+      },
       starter: {
         url: "docs/starter-de.md",
         txt: "Getting Started",
