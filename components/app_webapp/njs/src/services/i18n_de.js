@@ -136,7 +136,7 @@ export const de = {
          eines Issues im GitHub-Repository. So können andere Nutzer sehen ob ein Bug bereits gemeldet wurde, oder können
          hilfreiche Kommentare zu einem Vorschlag abgeben. Bitte vorher schauen ob ein Bug in einem der *beiden* Repositories
          bereits gemeldet wurde.
-         Falls du auf GitHub nicht schreiben kannst, bitte stattdessen per E-Mail.
+         Falls du dich nicht extra auf GitHub anmelden möchtest, bitte stattdessen per E-Mail.
           `,
       },
       issues: {

@@ -15,7 +15,7 @@
 #### Konfiguration über Menutool
   * Das Tool erlaubt neben dem Flashen der Firmware die Einrichtung des Netzwerks. Weitere Konfiguration ist darüber nicht möglich.
   * Download [Firmware-ZIP-Archiv](https://codeload.github.com/zwiebert/tronferno-mcu-bin/zip/refs/heads/master) auf einen Linux- oder Windows-PC
-  * Bei Bedarf [Menutool Dokumentation](https://github.com/zwiebert/tronferno-mcu-bin/blob/beta/docs/menutool.md) lesen
+  * Bei Bedarf [Menutool Dokumentation](menutool-de.md) lesen
   * Starte menutool.sh (Linux) oder menutool.cmd (Windows)
   * Drücke "p". Nun wähle USB port an welchem der ESP32 mit dem PC verbunden ist 
   * Drücke "c". Konfigure die Kommandozeilenoptionen. Am Ende verlasse das Untermenu mit "y".

@@ -166,7 +166,10 @@ Restore: 1) Paste the content of the saved backup file into the text area 2) Cli
       header: "Report Bugs, Suggest Features, Give Feedback",
       tt: {
         header: `If you've encountered a bug, or want to suggest a new feature, the preferred of way to report/request, is by open a new "Issue" at
-          the GitHub repository. This way other users can check, if a bug is already reported or can comment or help with a feature request. Please check first both repositories if there is already an open issue about this topic.
+          the GitHub repository.
+           This way other users can check, if a bug is already reported or can comment or help with a feature request.
+           Please check first both repositories if there is already an open issue about this topic.
+           If you don't want register an account on GitHub, then use E-Mail instead.
           `,
       },
       issues: {
