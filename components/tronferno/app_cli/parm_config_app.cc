@@ -127,6 +127,7 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, class Uou
     }); it != std::end(cfg_args_rfTrx)) {
       int idx = std::distance(std::begin(cfg_args_rfTrx), it);
       set_optN(i8, idx, CB_RF_TRX);
+      SET_BIT64(changed_mask, CB_RF_TRX);
     }
   }
     break;

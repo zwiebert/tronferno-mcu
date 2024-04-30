@@ -11,7 +11,7 @@
   import { onMount, onDestroy } from "svelte";
   import { ReloadProgress } from "../store/app_state.js";
   import NavTabs from "../app/nav_tabs.svelte";
-  import { McuErrorMask,
+  import { McuErrorBits,
     McuError_cc1101_gdo2_nc,
     McuError_cc1101_init,
   } from "../store/mcu_firmware.js";

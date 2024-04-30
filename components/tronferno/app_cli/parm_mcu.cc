@@ -273,8 +273,8 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
         break;
       }
 
-      if (strcmp(key, "error-mask") == 0) {
-        td.so().print("error-mask", tfmcu_error_mask, 16);
+      if (strcmp(key, "error-bits") == 0) {
+        td.so().print("error-bits", tfmcu_error_bits, 10);
         break;
       }
 

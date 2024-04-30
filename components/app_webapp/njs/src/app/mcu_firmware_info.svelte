@@ -3,7 +3,7 @@
   import { _ } from "../services/i18n";
   import {
     McuBootCount,
-    McuErrorMask,
+    McuErrorBits,
     McuError_cc1101_gdo2_nc,
     McuError_cc1101_init,
     McuFirmwareBuildDate,
@@ -25,8 +25,8 @@
   <li>Version: {$McuFirmwareVersion}</li>
   <li>Build Date: {$McuFirmwareBuildDate}</li>
   <li>Boot Count: {$McuBootCount}</li>
-  <li>Error Mask: {$McuErrorMask}</li>
-  {#if $McuErrorMask}
+  <li>Error-Bits: {$McuErrorBits}</li>
+  {#if $McuErrorBits}
     <ul>
       {#if $McuError_cc1101_gdo2_nc}
         <li><span class="bg-red-400">CC1101 GDO2 not connected.</span> Is it connected to the configured GPIO?</li>

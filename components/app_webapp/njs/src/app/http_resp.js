@@ -3,7 +3,7 @@ import * as httpFetch from "../app/fetch.js";
 import * as appDebug from "../app/app_debug.js";
 import {
   McuBootCount,
-  McuErrorMask,
+  McuErrorBits,
   McuGitTagNames,
   McuFirmwareBuildDate,
   McuChipId,
@@ -118,8 +118,8 @@ export function http_handleResponses(obj) {
     if ("boot-count" in mcu) {
       McuBootCount.set(mcu["boot-count"]);
     }
-    if ("error-mask" in mcu) {
-      McuErrorMask.set(Number.parseInt(mcu["error-mask"], 16));
+    if ("error-bits" in mcu) {
+      McuErrorBits.set(mcu["error-bits"]);
     }
     if ("cc1101-status" in mcu) {
       Cc1101Status.set(mcu["cc1101-status"]);

@@ -23,7 +23,7 @@ set(srcs
 
     app_settings/config.cc app_settings/config_kvs.cc app_settings/config_comps.cc app_settings/app_settings.cc app_settings/json_save.cc
 
-    app_uout/so_print.cc app_uout/so_write_msg.cc app_uout/so_write_config.cc )
+    app_uout/so_print.cc app_uout/so_write_msg.cc app_uout/so_write_config.cc app_uout/uo_publish.cc )
 
 if(CONFIG_APP_USE_MQTT)
  list(APPEND srcs app_mqtt/mqtt.cc app_mqtt/mqtt_setup.cc)

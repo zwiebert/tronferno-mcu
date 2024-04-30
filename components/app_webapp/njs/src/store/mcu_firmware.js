@@ -2,9 +2,9 @@
 import { writable, derived } from "svelte/store";
 
 export const McuBootCount = writable(0);
-export const McuErrorMask = writable(0);
-export const McuError_cc1101_gdo2_nc = derived(McuErrorMask, (errbits) => { return (errbits & 0x01) !== 0; }) 
-export const McuError_cc1101_init = derived(McuErrorMask, (errbits) => { return (errbits & 0x02) !== 0; }) 
+export const McuErrorBits = writable(0);
+export const McuError_cc1101_gdo2_nc = derived(McuErrorBits, (errbits) => { return (errbits & 0x01) !== 0; }) 
+export const McuError_cc1101_init = derived(McuErrorBits, (errbits) => { return (errbits & 0x02) !== 0; }) 
 export const McuGitTagNames = writable([]);
 export const McuFirmwareVersion = writable("");
 export const McuFirmwareVersionNumber = derived(McuFirmwareVersion, (versionString) => {

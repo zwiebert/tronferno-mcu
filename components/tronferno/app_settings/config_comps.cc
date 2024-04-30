@@ -8,6 +8,7 @@
 #include "app_settings/config.h"
 #include "app_settings/app_settings.hh"
 #include "app_settings/config_defaults.h"
+#include <app_uout/uo_publish.hh>
 #include <config_kvs/config_kvs.h>
 #include <fernotron_trx/fer_trx_api.hh>
 #include <fernotron_trx/raw/fer_radio_trx.h>
@@ -28,9 +29,13 @@
 #endif
 #include <txtio/comp_glue.hh>
 
-unsigned tfmcu_error_mask;
+unsigned tfmcu_error_bits;
 void tfmcu_put_error(tfmcu_errorT error_code, bool value) {
-   PUT_BIT(tfmcu_error_mask, error_code, value);
+   auto old_error_bits = tfmcu_error_bits;
+   PUT_BIT(tfmcu_error_bits, error_code, value);
+   if (old_error_bits != tfmcu_error_bits) {
+     uoApp_publish_errorMask(tfmcu_error_bits);
+   }
 }
 
 #define CI(cb) static_cast<configItem>(cb)
@@ -246,26 +251,34 @@ const char *config_read_cc1101_config(char *buf, size_t len) {
   return NULL;
 }
 
-
-
 void config_setup_cc1101() {
+  // reset errors
+  tfmcu_put_error(TFMCU_ERR_CC1101_INIT_FAILED, false);
+  tfmcu_put_error(TFMCU_ERR_CC1101_RFIN_NOT_CONNECTED, false);
 
   struct cc1101_settings c = { .sclk = -1, .ss = -1, .miso = -1, .mosi = -1 };
   config_read_cc1101(&c);
+
+  // 1. Disable cc1101-spi if enabled
+  // 2. (Re-)Enable cc1101-spi if c.enabled is true
   if (!cc1101_ook_spi_setup(&c)) {
     tfmcu_put_error(TFMCU_ERR_CC1101_INIT_FAILED, true);
     return;
   }
 
+  if (!c.enable)
+     return;
+
+
+  // Check for correctly wiring of the cc1101 module
   auto rfin_gpio = config_read_rfin_gpio();
   tfmcu_put_error(TFMCU_ERR_CC1101_RFIN_NOT_CONNECTED, rfin_gpio >= 0 && !cc1101_ook_gdo_isConnected(2, rfin_gpio));
-
-  if (c.enable) {
-    char cc1101_config[97];
-    if (config_read_cc1101_config(cc1101_config, sizeof cc1101_config)) {
-        cc1101_ook_updConfig_fromSparse(cc1101_config);
-    }
+  
+  char cc1101_config[97];
+  if (config_read_cc1101_config(cc1101_config, sizeof cc1101_config)) {
+    cc1101_ook_updConfig_fromSparse(cc1101_config);
   }
+
 }
 
 void config_setup_repeater() {

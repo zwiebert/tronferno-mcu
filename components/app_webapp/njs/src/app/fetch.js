@@ -183,7 +183,7 @@ export function http_fetchByMask(mask, synchron) {
   }
 
   if (mask & FETCH_ERROR_MASK) {
-    add_kv(tfmcu, "mcu", "error-mask", "?");
+    add_kv(tfmcu, "mcu", "error-bits", "?");
   }
 
   if (mask & FETCH_CC1101_CONFIG) {

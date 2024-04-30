@@ -8,9 +8,10 @@
   },
   "clang-tidy.buildPath": "build",
   "window.title": "TronfernoMCU (esp32-debug)${separator}${activeEditorLong}",
-  "idf.port": "/dev/ttyUSB0",
+  "idf.port": "/home/bertw/start/ser/tronferno",
   "output.smartScroll.enabled": false,
   "idf.adapterTargetName": "esp32",
   "C_Cpp.errorSquiggles": "enabled",
-  "idf.flashType": "UART"
+  "idf.flashType": "UART",
+  "stm32-for-vscode.openOCDPath": false
 }
