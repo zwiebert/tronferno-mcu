@@ -1,6 +1,6 @@
-# CLI of TronFerno-MCU
+## Command Line Interface (CLI)
 
-This text describes the command line interface (CLI) of tronferno-mcu. The CLI can be accessed via a terminal or via front-ends like a smart phone app or an FHEM module..
+This (partially outdated) text describes the command line interface (CLI) of tronferno-mcu. The CLI can be accessed via a terminal or via front-ends like a smart phone app or an FHEM module..
 
 When using a terminal, local echo should be enabled, so you can see what you type. Backspace key is working.
  

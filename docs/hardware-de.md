@@ -1,5 +1,7 @@
 |Change Language: Deutsch, [English](hardware.md)|
 
+## Hardware
+
 #### Mikrocontroller-Board
 
   * Empfohlen: Board mit ESP32-WROOM, 4MB FLASH, WLAN, Optional: Ethernet mit PHY8710/8720 Chip.
