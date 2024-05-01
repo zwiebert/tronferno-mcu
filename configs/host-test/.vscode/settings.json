@@ -9,7 +9,7 @@
   "clang-tidy.buildPath": "build",
   "window.title": "TronfernoMCU (host-test)${separator}${activeEditorLong}",
   "cmake.generator": "Ninja",
-  "cmake.buildDirectory": "${workspaceFolder}/build",
+  "cmake.buildDirectory": "${sourceDirectory}/build",
   "cmake.configureArgs": [
     "-DBUILD_HOST_TESTS=ON"
   ],

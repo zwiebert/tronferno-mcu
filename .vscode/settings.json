@@ -1,0 +1,23 @@
+{
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "editor.codeActionsOnSave": [],
+  "files.associations": {
+    "CMakeLists.txt": "cmake",
+    "regex": "cpp",
+    "*.ipp": "cpp"
+  },
+      "clang-tidy.buildPath": "build/host-test",
+      "window.title": "TronfernoMCU${separator}${activeEditorLong}",
+      "cmake.generator": "Ninja",
+      "cmake.buildDirectory": "${sourceDirectory}/build",
+      "cmake.configureArgs": [
+        "-DBUILD_HOST_TESTS=ON"
+      ],
+      "idf.port": "/home/bertw/start/ser/tronferno",
+      "output.smartScroll.enabled": false,
+      "cmake.sourceDirectory": "${workspaceFolder}/configs/host-test",
+      "stm32-for-vscode.openOCDPath": false,
+      "idf.adapterTargetName": "esp32",
+      "C_Cpp.errorSquiggles": "enabled",
+      "idf.flashType": "UART",
+}

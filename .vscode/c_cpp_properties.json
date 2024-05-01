@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "ESP-IDF",
+            "includePath": [
+            ],
+            "defines": [],
+            "forcedInclude": [
+                "${workspaceFolder}/configs/esp32-debug/build/config/sdkconfig.h"
+            ],
+            "compilerPath": "/home/bertw/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20230928/xtensa-esp-elf/bin/xtensa-esp32-elf-gcc",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
