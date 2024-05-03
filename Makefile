@@ -24,8 +24,10 @@ http_clean:
 
 ####### ESP32 build command ############
 PORT ?=/dev/serial/by-path/pci-0000:03:00.0-usb-0:3.1:1.0-port0
-
 V ?= 0
+CMAKE_ARGS_GENERATOR ?= -G Ninja
+
+
 
 ifneq "$(V)" "0"
 esp32_build_opts += -v
@@ -48,10 +50,9 @@ tmp_build_dir :=/tmp/tronferno-mcu/build
 compile_commands_json_latest :=$(THIS_ROOT)/build/compile_commands.json
 sdkconfig_h_latest :=$(THIS_ROOT)/build/sdkconfig.h
 
-esp32_cmake_generator := -G Ninja
-esp32_build_args :=$(esp32_cmake_generator) -C $(CMAKE_SRC_PATH) -B $(BUILD_PATH)  -p $(PORT)  $(esp32_build_opts)
+esp32_build_args :=$(CMAKE_ARGS_GENERATOR) -C $(CMAKE_SRC_PATH) -B $(BUILD_PATH)  -p $(PORT)  $(esp32_build_opts)
 esp32_build_cmd :=idf.py $(esp32_build_args)
-esp32_cmake_cmd :=/usr/bin/cmake -S $(CMAKE_SRC_PATH) -B $(BUILD_PATH) $(esp32_cmake_generator)
+esp32_cmake_cmd :=/usr/bin/cmake -S $(CMAKE_SRC_PATH) -B $(BUILD_PATH) $(CMAKE_ARGS_GENERATOR)
 
 # copy  the last used defines and includes into root/build 
 # this is intended if you have all configs in one IDE workspace

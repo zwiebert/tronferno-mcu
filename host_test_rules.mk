@@ -61,12 +61,12 @@ $(config_h) $(config_cmake) $(config_json) config: $(_config)
 ## configure with Cmake, build with Ninja, run with Ctest
 
 test.cm.configure:$(BUILD_PATH)/config $(config_h) $(config_cmake) $(config_json)
-	cmake -D BUILD_HOST_TESTS=ON -B $(BUILD_PATH)  -S  $(CMAKE_SRC_PATH) -G Ninja
+	cmake -D BUILD_HOST_TESTS=ON -B $(BUILD_PATH)  -S  $(CMAKE_SRC_PATH) $(CMAKE_ARGS_GENERATOR)
 test.cm.configure_no_kconfgen: $(BUILD_PATH)/config $(CMAKE_SRC_PATH)/config/sdkconfig.h $(CMAKE_SRC_PATH)/config/sdkconfig.cmake
 	cp $(CMAKE_SRC_PATH)/config/sdkconfig.h $(CMAKE_SRC_PATH)/config/sdkconfig.cmake $(BUILD_PATH)/config/
-	cmake  -D BUILD_HOST_TESTS=ON  -B $(BUILD_PATH)  -S  $(CMAKE_SRC_PATH) -G Ninja
+	cmake  -D BUILD_HOST_TESTS=ON  -B $(BUILD_PATH)  -S  $(CMAKE_SRC_PATH) $(CMAKE_ARGS_GENERATOR)
 test.cm.build:
-	ninja -C $(BUILD_PATH) 
+	cmake --build $(BUILD_PATH) 
 	make $(compile_commands_json_latest)
 test.cm.ctest: test.cm.build
 	cd  $(BUILD_PATH) && ctest --output-on-failure

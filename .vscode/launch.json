@@ -12,14 +12,6 @@
             //"preLaunchTask": "adapter"
         },
         {
-            "name": "Attach GDB",
-            "type": "espidf",
-            "request": "attach",
-            "mode": "manual",
-            "debugPort": 3333,
-             //"preLaunchTask": "adapter"
-        },
-        {
             "name": "(ctest) Launch",
             "type": "cppdbg",
             "cwd": "${workspaceFolder}/configs/host-test/build",
@@ -29,7 +21,6 @@
                 "${cmake.testArgs}"
             ],
             "stopAtEntry": true,
-            // other options...
         }
           
     ]

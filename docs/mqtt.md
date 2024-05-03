@@ -37,6 +37,8 @@
       topic: tfmcu/15/pct data: ?    # Current percentage will be published at topic tfmcu/15/pct_out
 ```
 
+* tfmcu/+/ipct - inverse percentages 0 for open, 100 for close,  ? for query
+
 
 * tfmcu/cli  - Any [CLI](CLI.md) command can be send here
 
@@ -79,7 +81,9 @@
 
 * tfmcu/cli_out - Response (in JSON) of any CLI command sent to tfmcu/cli.
 
-* tfmcu/+/pct_out - current shutter position in percent (+ stands for shutter ID)
+* tfmcu/+/pct_out - current shutter position in percent (+ stands for shutter ID), 100 means open
+
+* tfmcu/+/ipct_out - current shutter position in inverse-percent (+ stands for shutter ID), 100 means closed
 
 * tfmc/gpi/+/level - change of level (0,1) on input pin (must have been set as input pin in config)
 

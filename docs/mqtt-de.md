@@ -30,6 +30,7 @@
      * Prozente zwischen 100 und 0 (wie 50%) funktionieren nur mit Empfängernummer aus einer Gruppe, nicht mit IDs.
      
 
+* tfmcu/+/ipct - invertierte Positionen/Prozente 0 für offen, 100 für geschlossen,  ? zum abfragen der aktuellen Position
 
 ```
     Beispiel:
@@ -79,7 +80,9 @@
 
 * tfmcu/cli_out - Ergebnis (in JSON Format) eines CLI Kommandos das an tfmcu/cli gesendet wurde.
 
-* tfmcu/+/pct_out - Aktuelle Position eines Empfängers in Prozent (Plus Zeichen wie oben beschrieben)
+* tfmcu/+/pct_out - Aktuelle Position eines Empfängers in Prozent (Plus Zeichen wie oben beschrieben), 100 für offen
+
+* tfmcu/+/ipct_out - Aktuelle Position eines Empfängers in invertierten Prozent (Plus Zeichen wie oben beschrieben), 100 für geschlossen
 
 * tfmc/gpi/+/level - Änderungen des Pegels (0,1) eines Eingangs-Pins (GPI) wenn dieser in der Konfiguration definiert wurde.
 
