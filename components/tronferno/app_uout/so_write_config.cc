@@ -285,6 +285,9 @@ void soCfg_all_fer(class UoutWriter &td, bool backup) {
   soCfg_LONGITUDE(td);
   soCfg_LATITUDE(td);
   soCfg_ASTRO_CORRECTION(td);
+#ifdef CONFIG_APP_USE_REPEATER
+if (backup) soCfg_RF_REPEATER(td);
+#endif
 }
 
 void soCfg_all_time(class UoutWriter &td, bool backup) {
