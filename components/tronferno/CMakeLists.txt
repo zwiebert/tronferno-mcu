@@ -46,7 +46,8 @@ idf_component_register(
     REQUIRES  cli net_connect config_kvs fernotron_app fernotron_uout firmware_update gpio main_loop net_mqtt_client  uout utils_debug utils_time
     PRIV_REQUIRES app_webapp cc1101_ook cli fernotron_app fernotron_trx firmware_update gpio kvs main_loop net net_http_server 
                   nvs_flash storage txtio utils_debug utils_misc 
-                  esp_wifi driver mbedtls app_update freertos 
+                  esp_wifi driver mbedtls app_update freertos
+                  espcoredump
     EMBED_TXTFILES app_cli/ca_cert.pem
     )
 
