@@ -1,6 +1,6 @@
 <script>
   "use strict";
-  import { _ } from "../services/i18n";
+  import { _, json } from "../services/i18n";
   import {
     McuBootCount,
     McuErrorBits,
@@ -17,7 +17,7 @@
     httpFetch.http_fetchByMask(httpFetch.FETCH_VERSION | httpFetch.FETCH_BOOT_COUNT | httpFetch.FETCH_ERROR_MASK);
   });
 
-  $: nu = $_("notifyUser");
+  $: nu = $json("notifyUser");
 </script>
 
 <ul>
@@ -38,10 +38,10 @@
   {/if}
 </ul>
 
-{#if $_("notifyUser").messages.length > 0}
+{#if $json("notifyUser").messages.length > 0}
   <table>
-    <caption class="bg-red-400">{$_("notifyUser").caption}</caption>
-    {#each $_("notifyUser").messages as nu}
+    <caption class="bg-red-400">{$json("notifyUser").caption}</caption>
+    {#each $json("notifyUser").messages as nu}
       <tr>
         <td>{nu.date}</td>
         <td>{nu.text}</td>

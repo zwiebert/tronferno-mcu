@@ -1,4 +1,4 @@
-import { getLocaleFromNavigator, init, addMessages, _ } from "svelte-i18n";
+import { getLocaleFromNavigator, init, addMessages, _, json } from "svelte-i18n";
 import {en} from "../services/i18n_en";
 import {de} from "../services/i18n_de";
 
@@ -13,4 +13,4 @@ function setupI18n() {
   });
 }
 
-export { _, setupI18n };
+export { _, setupI18n, json };
