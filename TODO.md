@@ -81,3 +81,9 @@ EXPERIMENTS
 CC1101-Neuftech:
 433.914 ... 433.973  (2411@58kHz Bandwith)
  == 433.9435 Mittelwert
+
+FEATURES
+========
+
+Settings-Backup
+ - ?? allow more than one snapshot and show the snapshots with calendar date and time 

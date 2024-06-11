@@ -69,7 +69,7 @@ export function set_gui_access_level(al) {
     debug: al < expert,
     ota: al < user,
     hsc: al < user,
-    bak: al < admin,
+    bak: al < user,
     rf_repeater: sdkconfig.APP_USE_REPEATER,
   });
 }

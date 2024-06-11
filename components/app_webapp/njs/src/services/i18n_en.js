@@ -123,17 +123,18 @@ export const en = {
 
     backup: {
       header: "Backup/Restore Settings",
-      create: "Create File",
-      open: "Open File",
-      load: "Load",
+      create: "Create Snapshot",
+      view: "View Snapshot",
+      open: "File to Text",
+      load: "Snapshot to Text",
       restore: "Restore",
-      toClipboard: "Copy to Clipboard",
+      toClipboard: "Text to Clipboard",
       tt: {
-        header: `Backup: 1) Click Create button to create a backup file on MCU. 2) Click the settings.json URL to open and save it. 
-Restore: 1) Paste the content of the saved backup file into the text area 2) Click restore button`,
-        create: "Create a backup file settings.json on the MCU. It can be downloaded by the URL next to this button",
-        open: "Open a saved backup file and show it in text area",
-        load: "Fetch the settings.json stored in MCU (!) and show it in the text area",
+        header: `Backup: 1) Click Create Snapshot button to save a snapshot of the current settings to MCU flash. 2) Click the View Snapshot link to open settings.json and then save it externally.
+Restore: 1) Paste the content of a settings.json file to the text area 2) Select parts you want to restore and click restore button`,
+        create: "Save current settings to internal file settings.json (located on MCU Flash ROM)",
+        open: "Open externally saved settings.json backup file and show it in text area",
+        load: "Fetch the settings.json internally stored in MCU (!) and show it in the text area",
         restore: "Overwrite the MCU Settings by the JSON data in the text area",
         toClipboard: "Copy JSON from text area to clipboard",
       },

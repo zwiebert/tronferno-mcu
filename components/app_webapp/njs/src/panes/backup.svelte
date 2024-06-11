@@ -17,6 +17,7 @@
   let text = backup_json;
 
   let pr_config_isChecked;
+  let pr_config_netconn_isChecked;
   let pr_auto_isChecked;
   let pr_shpref_isChecked;
   let pr_pair_isChecked;
@@ -31,8 +32,17 @@
     return JSON.stringify({ backup: backup }, undefined, 2);
   }
 
-  function post_config(obj) {
+  function post_config(obj, restore_netconn) {
     Object.entries(obj).forEach((el) => {
+      if (!restore_netconn) {
+        const key = el[0];
+        if (key.startsWith("wlan-"))
+          return;
+        if (key.startsWith("lan-"))
+          return;
+        if (key === "network")
+          return;
+      }
       let cmd = { config: {} };
       cmd.config[el[0]] = el[1];
       httpFetch.http_postCommand(cmd);
@@ -51,7 +61,7 @@
 
   function post_kvs(obj) {
     Object.entries(obj).forEach((el) => {
-      let cmd = { kvs: { } };
+      let cmd = { kvs: {} };
       cmd.kvs[el[0]] = el[1];
       httpFetch.http_postCommand(cmd);
     });
@@ -85,7 +95,7 @@
         let tfmcu = { mcu: { "test-sj": 0 } };
         httpFetch.http_postCommand(tfmcu);
       }}>{$_("panes.backup.create")}</button
-    > <a href="/f/backup/settings.json">Open in Browser</a><br />
+    > <a href="/f/backup/settings.json">View Snapshot</a><br />
   </div>
 
   <div class="area">
@@ -132,15 +142,18 @@
       <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.restore") }}>Select Parts to Restore</h5>
 
       <dl>
-        <dt><input type="checkbox" bind:checked={pr_config_isChecked} /> .config</dt>
+        <dt>
+          <label><input type="checkbox" bind:checked={pr_config_isChecked} /> .config</label>
+          <label><input type="checkbox" bind:checked={pr_config_netconn_isChecked} disabled={!pr_config_isChecked}/>..network_connection</label>
+        </dt>
         <dd>MCU configuration (network, gpios, ...)</dd>
-        <dt><input type="checkbox" bind:checked={pr_auto_isChecked} /> .auto</dt>
+        <dt><label><input type="checkbox" bind:checked={pr_auto_isChecked} /> .auto</label></dt>
         <dd>Receiver built-in automatic (timer, sun, ...)</dd>
-        <dt><input type="checkbox" bind:checked={pr_shpref_isChecked} /> .shpref</dt>
+        <dt><label><input type="checkbox" bind:checked={pr_shpref_isChecked} /> .shpref</label></dt>
         <dd>Receiver related config (names, run-times)</dd>
-        <dt><input type="checkbox" bind:checked={pr_pair_isChecked} /> .pair</dt>
+        <dt><label><input type="checkbox" bind:checked={pr_pair_isChecked} /> .pair</label></dt>
         <dd>Transmitter (rf-code) pairings to members of groups</dd>
-        <dt><input type="checkbox" bind:checked={pr_kvs_isChecked} /> .kvs</dt>
+        <dt><label><input type="checkbox" bind:checked={pr_kvs_isChecked} /> .kvs</label></dt>
         <dd>generic storage (transmitter names)</dd>
       </dl>
 
@@ -151,7 +164,7 @@
         on:click={() => {
           const obj = parse_json_to_object(text);
           if (pr_config_isChecked) {
-            post_config(obj.backup.settings.config);
+            post_config(obj.backup.settings.config, pr_config_netconn_isChecked);
           }
           if (pr_auto_isChecked) {
             post_auto(obj.backup.settings.auto);
