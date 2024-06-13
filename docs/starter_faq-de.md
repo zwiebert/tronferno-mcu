@@ -79,9 +79,11 @@ Die internen Timer müssen über TronfernoMCU programmiert worden sein, nicht di
 <p>
   Der (noch experimentelle aber funktionierende) Backup-Tab in der WebApp erlaubt Sichern und Wiederherstellen der Einstellungen (mit Ausnahme aller geheimen Passwörter). Die Sicherungs-Datei muss zunächst erstellt werden (Create Snapshot). Sie befindet sich dann im Dateisystem der MCU. Sie kann nun im Browser geöffnet und angezeigt werden und dann extern abgespeichert werden. Das Dateiformat ist JSON.
 
+</p>
 <p>
   Das Wiederherstellen erfolgt ebenfalls über den Backup-Tab der WebApp. Dazu eine Sicherungsdatei in den TextBereich kopieren, oder per Click auf den entsprechenden Button dort öffnen.  Vor dem eigentlichen Wiederherstellen noch auswählen welche Daten aus der Datei wiederhergestellt werden sollen.  Das Wiederherstellen der Netzwerkverbindungs-Daten würde man bei der Konfiguration einem neuen ESP32 aktivieren, der  noch als WIFI-Accesspoint arbeitet. Das WIFI-Passwort wird dabei leider nicht wiederhergestellt und muss in den Netzwerkeinstellungen manuell gesetzt werden. Ebenso das MQTT-Passwort.
 
+</p>
 <p>
 
   Eine andere, generelle Möglichkeit beim ESP32 ist, den Flash-ROM des ESP32 auszulesen und abzuspeichern. Dazu verwendet man das 
@@ -89,16 +91,18 @@ Die internen Timer müssen über TronfernoMCU programmiert worden sein, nicht di
  (esptool, esptool.py oder esptool.exe), welches auch Teil der Binärdistribution von Tronferno ist. 
 
 
+</p>
 <p>
 Auslesen des gesamten Flash-ROMs:
 
   <code>esptool.py -p PORT -b 460800 read_flash 0 ALL flash_contents.bin</code>
 
 Für PORT den entsprechenden COM-Port verwenden, an dem der ESP32 angeschlossen ist. Wiederherstellung dann mit der write_flash Option des esptool.
-
+</p>
 <p>
 Es könnte Sinn machen, die Datei partitions.csv ebenfalls zu sichern. So ließen sich einzelne Partitionen aus der flash_contents.bin Datei extrahieren und einzeln wiederherstellen. Das Wiederherstellen der Partitionen nvs und spiffs würde auch alle Einstellungen wiederherstellen aber die aktuelle Firmware-Version beibehalten. 
 
+</p>
 </details>
 
 
