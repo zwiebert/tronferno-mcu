@@ -1,5 +1,6 @@
 TODO
 ====
+* TODO: Add new HTTP_GET URI handler type for dynamic pages. uri_specific_handle_function(td) writes JSON to td similar to cmd.json, but using get instead of post. Will be used to serve settings.json from current settings instead of spiffs snapshot
 * TODO: checkout RF Solution's AM-RRQ3-433P receiver module (used in Fernotron 2427)
 * TODO: if cc1101 init fails, return zeros as register file (not random garbage)
 * TODO: Improve web app ?->OTA tab

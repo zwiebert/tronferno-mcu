@@ -17,7 +17,7 @@ set(COMPONENTS tronferno
 set(comp_compile_feats cxx_std_20)
 #set(comp_compile_opts "$<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>" )
 set(comp_compile_opts "-Wno-error=format=" "-Wno-format" # Workaround IDF-5.0
-${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++2a>" -Wno-missing-field-initializers)
+${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-fpermissive>" -Wno-missing-field-initializers)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
