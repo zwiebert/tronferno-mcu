@@ -168,6 +168,7 @@ export function http_fetchByMask(mask, synchron) {
 
   if (mask & FETCH_CONFIG) {
     add_kv(tfmcu, "config", "all", "?");
+    getFile("/f/cli/help/config");
   }
 
   if (mask & FETCH_CONFIG_GPIO_STRING) {
