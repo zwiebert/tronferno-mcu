@@ -5,9 +5,10 @@
   export let value = -1;
   export let max = 64;
   export let show_value = true;
+  export let disabled = false;
 </script>
 
-<select class="config-input" id="cfg_{name}" bind:value>
+<select class="config-input" id="cfg_{name}" bind:value disabled={disabled}>
   <option value={-1}>None</option>
   {#if value !== -1 && show_value}
     <option {value}>gpio{value}</option>

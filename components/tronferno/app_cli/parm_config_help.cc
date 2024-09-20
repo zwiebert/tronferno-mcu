@@ -15,6 +15,17 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
     "wlan-ssid=(SSID|?)\n"
     "wlan-password=PW\n"
 #endif
+#ifdef CONFIG_APP_USE_LAN
+    "lan-phy=(NAME|?)  Development board name (or PHY chip):\n"
+    "     ox32poe      Dev-board Olimex ESP32 POE.\n"
+    "     ox32gw       Dev-board Olimex ESP32 Gateway.\n"
+    "     wt32eth01    Dev-board WT32-ETH01.\n"
+    "     lan8720      PHY-chip LAN8720.\n"
+    "     rtl8201      PHY-chip RTL8201 (untested).\n"
+    "     ip101        PHY-chip IP101 (untested).\n"
+    "\n"
+    "lan-pwr-gpio=(N|-1)  GPIO to switch PHY power, or -1 for none. Ignored when specific board defined by lan-phy\n"
+#endif
 #ifdef CONFIG_APP_USE_NETWORK
     "network=(none|wlan|ap|lan|lan-wlan) ap opens wlan access-point at 192.168.4.1 (restart required)\n"
     "                                    lan-wlan  tries lan first and then wlan as fallback.\n"

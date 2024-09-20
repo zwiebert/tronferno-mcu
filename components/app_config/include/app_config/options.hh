@@ -22,8 +22,8 @@ constexpr cfg_args_networkT cfg_args_network = { "none", "wlan", "ap", "lan", "l
 #endif
 
 #ifdef CONFIG_APP_USE_LAN
-using cfg_args_lanPhyT = const char *[4];
-constexpr cfg_args_lanPhyT cfg_args_lanPhy = { "none", "lan8720", "rtl8201", "ip101", };
+using cfg_args_lanPhyT = const char *[7];
+constexpr cfg_args_lanPhyT cfg_args_lanPhy = { "none", "lan8720", "rtl8201", "ip101", "ox32gw", "ox32poe", "wt32eth01" };
 #endif
 
 using cfg_args_rfTrxT = const char *[4];

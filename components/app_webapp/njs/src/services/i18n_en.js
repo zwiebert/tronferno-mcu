@@ -508,7 +508,7 @@ First check the current direction with arrow buttons. If wrong, then reverse the
     rtc: "Date/Time",
     "rtc-auto-upd-enable": "RTC auto updates",
     tz: "Timezone (POSIX)",
-    "Van-phy": "PHY-Chip",
+    "lan-phy": "Board or PHY-Chip",
     "lan-pwr-gpio": "Power-ON/OFF GPIO",
     "wlan-ssid": "SSID",
     "wlan-password": "Password",

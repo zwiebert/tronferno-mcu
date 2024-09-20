@@ -271,7 +271,8 @@
                   </td>
                 {:else if key === "lan-pwr-gpio"}
                   <td>
-                    <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="36" />
+                    <McuConfigGpioSelect name={key} bind:value={mcuConfig[key]} max="36" disabled={mcuConfig["lan-phy"].startsWith("wt32") || mcuConfig["lan-phy"].startsWith("ox32")} />
+
                   </td>
                 {:else}
                   <td><input class="config-input text" type="text" id="cfg_{key}" name={key} bind:value={mcuConfig[key]} /></td>
