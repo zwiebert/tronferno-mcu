@@ -136,6 +136,8 @@ bool process_parmConfig_comp(otok kt, const char *key, const char *val, class Uo
     }); it != std::end(cfg_args_lanPhy)) {
       int idx = std::distance(std::begin(cfg_args_lanPhy), it);
       set_optN(i8, idx, CB_LAN_PHY);
+    } else {
+      return false;
     }
   }
     break;
