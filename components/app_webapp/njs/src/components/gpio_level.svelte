@@ -1,16 +1,25 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { Gpios } from "../store/gpio";
   import { McuConfig } from "../store/mcu_config.js";
   import * as httpFetch from "../app/fetch.js";
-  export let name;
-  export let force = false;
+  /**
+   * @typedef {Object} Props
+   * @property {any} name
+   * @property {boolean} [force]
+   */
+
+  /** @type {Props} */
+  let { name, force = false } = $props();
   //export let value;
 
-  $: level = $Gpios[name] || -1;
-  $: cfg = $McuConfig[name] || "x";
-  $: output_only = true;
+  let level = $derived($Gpios[name] || -1);
+  let cfg = $derived($McuConfig[name] || "x");
+  let output_only = $state(true);
+  
 
-  $: {
+  run(() => {
     if (force || /[Qiq]/.test(cfg)) {
       let cmd = { mcu: { } };
       cmd.mcu[name] = "?";
@@ -19,7 +28,7 @@
     } else {
       output_only = true;
     }
-}
+});
 
 
 </script>

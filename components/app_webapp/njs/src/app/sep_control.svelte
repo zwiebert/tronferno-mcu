@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   "use strict";
   import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
@@ -9,44 +11,16 @@
   import ShutterMove from "../app/shutter_move.svelte";
   import { Sep, SepMode } from "../store/sep";
 
-  $: upDown_enabled = false;
   let Button_Interval = null;
-  $: disable_button_envents = false;
   const sep_auth_key = $SepMode.auth_key;
 
-  $: isValidAddress = $M0 !== 0;
-  $: sep_auth_button_was_pressed = false;
 
-  $: isAuthenticated = sep_auth_button_was_pressed;
 
   let progress_interval = null;
-  $: progress_value = 0;
-  $: progress_max = 0;
 
-  $: {
-    if ($Sep["auth-success"]) {
-      auth_button_done(true);
-    }
-  }
 
-  $: {
-    if ($Sep["auth-terminated"]) {
-      auth_button_done(false);
-    }
-  }
 
-  $: {
-    if ($Sep["auth-button-error"]) {
-      auth_button_done(false);
-    }
-  }
 
-  $: {
-    if ($Sep["ui-timeout"]) {
-      upDown_enabled = false;
-      delete $Sep["ui-timeout"];
-    }
-  }
 
   onMount(() => {
     sep_disable();
@@ -140,6 +114,42 @@
 
     upDown_enabled = false;
   }
+  let upDown_enabled = $state(false);
+  
+  let disable_button_envents = $state(false);
+  
+  let isValidAddress = $derived($M0 !== 0);
+  let sep_auth_button_was_pressed = $state(false);
+  
+  let isAuthenticated = $state(false);
+  run(() => {
+    isAuthenticated = sep_auth_button_was_pressed;
+  });
+  let progress_value = $state(0);
+  
+  let progress_max = $state(0);
+  
+  run(() => {
+    if ($Sep["auth-success"]) {
+      auth_button_done(true);
+    }
+  });
+  run(() => {
+    if ($Sep["auth-terminated"]) {
+      auth_button_done(false);
+    }
+  });
+  run(() => {
+    if ($Sep["auth-button-error"]) {
+      auth_button_done(false);
+    }
+  });
+  run(() => {
+    if ($Sep["ui-timeout"]) {
+      upDown_enabled = false;
+      delete $Sep["ui-timeout"];
+    }
+  });
 </script>
 
 <div class="w-fit mr-auto ml-auto flex flex-col text-center px-1 border-none">
@@ -150,16 +160,16 @@
       <p>
         <button
           type="button"
-          on:click={sep_auth}
+          onclick={sep_auth}
           disabled={!isValidAddress || upDown_enabled || isAuthenticated}
           use:tippy={{ content: $_("app.sep.tt.authenticate") }}>{$_("app.sep.authenticate")}</button
         >
       </p>
       {#if 55 < progress_value}
-        <progress value={progress_value - 55} max={5} />
+        <progress value={progress_value - 55} max={5}></progress>
         <p>{$_("app.sep.auth_prog_wait")}</p>
       {:else if 0 < progress_value}
-        <progress value={progress_value} max={progress_max} />
+        <progress value={progress_value} max={progress_max}></progress>
         <p>{$_("app.sep.auth_prog_press")}</p>
       {/if}
     </div>
@@ -170,10 +180,10 @@
           class="w-24 h-16 text-lg"
           type="button"
           disabled={disable_button_envents}
-          on:touchstart={hClick_Down}
-          on:mousedown={hClick_Down}
-          on:touchend={hClick_Stop}
-          on:mouseup={hClick_Stop}
+          ontouchstart={hClick_Down}
+          onmousedown={hClick_Down}
+          ontouchend={hClick_Stop}
+          onmouseup={hClick_Stop}
         >
           &#x25bc;
         </button>
@@ -182,10 +192,10 @@
           class="w-24 h-16 text-lg"
           type="button"
           disabled={disable_button_envents}
-          on:touchstart={hClick_Up}
-          on:mousedown={hClick_Up}
-          on:mouseup={hClick_Stop}
-          on:touchend={hClick_Stop}
+          ontouchstart={hClick_Up}
+          onmousedown={hClick_Up}
+          onmouseup={hClick_Stop}
+          ontouchend={hClick_Stop}
         >
           &#x25b2;
         </button>
@@ -201,17 +211,17 @@
 
     <button
       type="button"
-      on:click={sep_enable}
+      onclick={sep_enable}
       disabled={!isValidAddress || upDown_enabled || !isAuthenticated}
       use:tippy={{ content: $_("app.sep.tt.enable") }}>{$_("app.sep.enable")}</button
     >
-    <button type="button" on:click={sep_disable} disabled={!upDown_enabled} use:tippy={{ content: $_("app.sep.tt.disable") }}>{$_("app.sep.disable")}</button>
+    <button type="button" onclick={sep_disable} disabled={!upDown_enabled} use:tippy={{ content: $_("app.sep.tt.disable") }}>{$_("app.sep.disable")}</button>
 
     <br />
-    <button type="button" on:click={sep_exit} use:tippy={{ content: $_("app.sep.tt.exit") }}>{$_("app.sep.exit")}</button>
+    <button type="button" onclick={sep_exit} use:tippy={{ content: $_("app.sep.tt.exit") }}>{$_("app.sep.exit")}</button>
   </div>
 </div>
 
 <style lang="scss">
-  @import "../styles/app.scss";
+  @use "../styles/app.scss" as *;
 </style>

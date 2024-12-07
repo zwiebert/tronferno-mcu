@@ -13,7 +13,7 @@
 
 <button
   type="button"
-  on:click={() => {
+  onclick={() => {
     $SepMode.auth_key = create_auth_key();
     $SepMode.enabled = true;
   }}

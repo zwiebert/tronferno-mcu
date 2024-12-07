@@ -1,10 +1,15 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   "use strict";
   import { G, M, Pct } from "../store/curr_shutter.js";
   import * as httpFetch from "../app/fetch.js";
   import { onMount, onDestroy } from "svelte";
 
-  $: pct = $Pct !== undefined ? $Pct : 0;
+  let pct;
+  run(() => {
+    pct = $Pct !== undefined ? $Pct : 0;
+  });
 
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_ALL_POS); // XXX: Need only one position to fetch
@@ -30,10 +35,10 @@
     min="0"
     max="100"
     value={pct}
-    on:change={(evt) => {
+    onchange={(evt) => {
       onPos(evt.target.value);
     }}
-    on:input={(evt) => {
+    oninput={(evt) => {
       pct = evt.target.value;
     }}
   />

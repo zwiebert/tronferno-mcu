@@ -4,6 +4,7 @@
 import App from "./app/main.svelte";
 import * as appState from "./app/app_state.svelte";
 import * as connWs from "./net/conn_ws.js";
+import { mount } from "svelte";
 
 export default function () {
   // testing.testing_init();
@@ -14,9 +15,9 @@ export default function () {
 
 function generate_html() {
   // eslint-disable-next-line no-unused-vars    
-  const app = new App({
-    target: document.body,
-    props: {
-    }
-  });
+  const app = mount(App, {
+      target: document.body,
+      props: {
+      }
+    });
 }

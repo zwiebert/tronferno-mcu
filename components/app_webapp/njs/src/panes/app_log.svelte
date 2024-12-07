@@ -1,18 +1,36 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { AppLog } from "../store/app_log.js";
 
-  export let rxonly = false;
+  /**
+   * @typedef {Object} Props
+   * @property {boolean} [rxonly]
+   */
 
-  $: showMqttRx = !rxonly;
-  $: showMqttTx = !rxonly;
-  $: showRc = true;
-  $: showSc = !rxonly;
+  /** @type {Props} */
+  let { rxonly = false } = $props();
 
-  $: {
+  let showMqttRx = $state(false);
+  run(() => {
+    showMqttRx = !rxonly;
+  });
+  let showMqttTx = $state(false);
+  run(() => {
+    showMqttTx = !rxonly;
+  });
+  let showRc = $state(true);
+  
+  let showSc = $state(false);
+  run(() => {
+    showSc = !rxonly;
+  });
+
+  run(() => {
     $AppLog;
     let elem = document.getElementById("app_log_div");
     if (elem) elem.scrollTop = elem.scrollHeight;
-  }
+  });
 </script>
 
 <div class="flex-row">

@@ -73,7 +73,7 @@
 }
 </script>
 
-<button id="test_rpm_start" type="button" on:click={() => {
+<button id="test_rpm_start" type="button" onclick={() => {
   httpFetch.http_fetchByMask(httpFetch.FETCH_SETTINGS_ALL);
   //http_postRequest("/cmd.json", {"mcu":{"test-rj":1}});
 }}>
@@ -82,10 +82,10 @@
 <hr>
 
 Random Periodic Movement Commands:
-<button id="test_rpm_start" type="button" on:click={() => testPressed(true)}>
+<button id="test_rpm_start" type="button" onclick={() => testPressed(true)}>
   Test Start
 </button>
-<button id="test_rpm_stop" type="button" on:click={() => testPressed(false)}>
+<button id="test_rpm_stop" type="button" onclick={() => testPressed(false)}>
   Test Stop
 </button>
 

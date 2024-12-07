@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
   import { GuiAcc } from "../store/app_state";
@@ -8,43 +10,43 @@
 
   import { McuGitTagNames, McuGitTagNameLatestMaster, McuGitTagNameLatestBeta } from "../store/mcu_firmware";
 
-  let fw_master = {
+  let fw_master = $state({
     name: $_("firmware.latest_master"),
     input: "none",
     get_ota_name: () => {
       return "tag:master";
     },
-  };
+  });
 
-  let fw_beta = {
+  let fw_beta = $state({
     name: $_("firmware.latest_beta"),
     input: "none",
     get_ota_name: () => {
       return "tag:beta";
     },
-  };
+  });
 
-  let fw_version = {
+  let fw_version = $state({
     name: $_("firmware.version"),
     input: "select",
     get_ota_name: () => {
       return "tag:" + fw_version.version;
     },
-  };
+  });
 
-  let fwbtns = [fw_master, fw_beta, fw_version];
+  let fwbtns = $state([fw_master, fw_beta, fw_version]);
 
-  $: {
+  run(() => {
     fw_master.version = $McuGitTagNameLatestMaster;
     fw_beta.version = $McuGitTagNameLatestBeta;
     fw_version.values = $McuGitTagNames;
     fwbtns = fwbtns;
-  }
+  });
 
-  $: fw_version_value0 = $McuGitTagNames[0];
-  $: {
+  let fw_version_value0 = $derived($McuGitTagNames[0]);
+  run(() => {
     fw_version.version = fw_version_value0;
-  }
+  });
 
   if (!misc.DISTRO) {
     let fw_url = {
@@ -63,7 +65,7 @@
   <div class="main-area">
     <h4 class="text-center" use:tippy={{ content: $_("panes.ota.tt.header") }}>{$_("panes.ota.header")}</h4>
 
-    <McuFirmwareUpd bind:fwbtns chip=""  />
+    <McuFirmwareUpd fwbtns={fwbtns} chip=""  />
     <div class="area">
       <McuFirmwareInfo />
     </div>

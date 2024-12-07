@@ -1,7 +1,13 @@
 <script>
-  export let name;
-  export let value;
-  export let has_lan = true;
+  /**
+   * @typedef {Object} Props
+   * @property {any} name
+   * @property {any} value
+   * @property {boolean} [has_lan]
+   */
+
+  /** @type {Props} */
+  let { name, value = $bindable(), has_lan = true } = $props();
 </script>
 
 <select class="config-input" id="cfg_{name}" bind:value>

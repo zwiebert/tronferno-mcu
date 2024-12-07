@@ -99,7 +99,6 @@
           const gm = g.toString() + m.toString();
 
           txt += genText_mqttItems_gm(g, m, $Names[gm]);
-
         }
     }
     return txt;
@@ -167,13 +166,15 @@
         misc.textToClipboard(mqttTextGm);
       }}>Copy configuration of {$GM} to clipboard</button
     ><br />
-    <textarea class="hscfg" value={mqttTextGm}  cols={56} rows={16} disabled={true} />
+    <textarea class="hscfg" value={mqttTextGm} cols={56} rows={16} disabled={true} />
   </div>
 
   <div class="area">
     <h5>Configuration files (work in progress)</h5>
     <table>
-      <tr><td>MQTT broker ID</td><td><input type="text" bind:value={oh_bridgeUID} /></td></tr>
+      <tbody>
+        <tr><td>MQTT broker ID</td><td><input type="text" bind:value={oh_bridgeUID} /></td></tr>
+      </tbody>
     </table>
 
     <button
@@ -181,13 +182,13 @@
         misc.textToClipboard(mqttTextThings);
       }}>Copy all configurations to clipboard</button
     ><br />
-    <textarea class="hscfg" value={mqttTextThings}  cols={56} rows={16} disabled={true} />
-<hr>
+    <textarea class="hscfg" value={mqttTextThings} cols={56} rows={16} disabled={true} />
+    <hr />
     <button
       on:click={() => {
         misc.textToClipboard(mqttTextItems);
       }}>Copy all configurations to clipboard</button
     ><br />
-    <textarea class="hscfg" value={mqttTextItems}  cols={56} rows={16} disabled={true} />
+    <textarea class="hscfg" value={mqttTextItems} cols={56} rows={16} disabled={true} />
   </div>
 </div>

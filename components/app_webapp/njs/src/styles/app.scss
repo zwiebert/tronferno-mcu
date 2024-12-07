@@ -1,31 +1,33 @@
+@use "sass:color";
+
 $color_a: hsl(70, 30%, 80%);
 $color_b: hsl(100, 50%, 50%);
 
 $color_bg_select: $color_b;
-$color_fg_select: lighten($color_a, 30%);
-$color_bg: lighten($color_a, 50%);
+$color_fg_select: color.adjust($color_a, $lightness: 30%);
+$color_bg: color.adjust($color_a, $lightness: 50%);
 $color_fg: hsl(0, 0%, 0%); // #278727;
 
 
 
 $color_bg_nav: $color_a;
 $color_bg_nav_select: $color_b;
-$color_bg_nav1: darken($color_bg_nav, 5%);
-$color_bg_nav1_select: darken($color_bg_nav_select, 5%);
-$color_bg_nav2: darken($color_bg_nav1, 5%);
-$color_bg_nav2_select: darken($color_bg_nav1_select, 5%);
-$color_bg_nav3: darken($color_bg_nav2, 5%);
-$color_bg_nav3_select: darken($color_bg_nav2_select, 5%);
+$color_bg_nav1: color.adjust($color_bg_nav, $lightness: -5%);
+$color_bg_nav1_select: color.adjust($color_bg_nav_select, $lightness: -5%);
+$color_bg_nav2: color.adjust($color_bg_nav1, $lightness: -5%);
+$color_bg_nav2_select: color.adjust($color_bg_nav1_select, $lightness: -5%);
+$color_bg_nav3: color.adjust($color_bg_nav2, $lightness: -5%);
+$color_bg_nav3_select: color.adjust($color_bg_nav2_select, $lightness: -5%);
 
-$color_bg_main_area: darken($color_bg_nav1, 5%);
-$color_border_main_area: darken($color_bg_main_area, 20%);
+$color_bg_main_area: color.adjust($color_bg_nav1, $lightness: -5%);
+$color_border_main_area: color.adjust($color_bg_main_area, $lightness: -20%);
 
-$color_bg_area: lighten($color_bg_main_area, 2.5%);
-$color_bg_weekday: darken($color_bg_area, 5%);
-$color_border_area: darken($color_bg_area, 20%);
-$color_border: darken($color_b, 5%);
+$color_bg_area: color.adjust($color_bg_main_area, $lightness: 2.5%);
+$color_bg_weekday: color.adjust($color_bg_area, $lightness: -5%);
+$color_border_area: color.adjust($color_bg_area, $lightness: -20%);
+$color_border: color.adjust($color_b, $lightness: -5%);
 
-$color_bg_textarea: lighten($color_bg_area, 30%);
+$color_bg_textarea: color.adjust($color_bg_area, $lightness: 30%);
 
 .bg-selected {
   background-color: $color_bg_select;
@@ -41,7 +43,7 @@ $color_bg_textarea: lighten($color_bg_area, 30%);
 
 
 .bg-area-selected {
-  background-color: darken($color_bg_area, 7.5%);
+  background-color: color.adjust($color_bg_area, $lightness: -7.5%);
 }
 
 .tabbt.is-selected {
@@ -56,7 +58,7 @@ $color_bg_textarea: lighten($color_bg_area, 30%);
 
 .bg-pct-groupXX {
   padding: 0;
-  background-color: darken($color_bg_area, 10%);
+  background-color: color.adjust($color_bg_area, $lightness: -10%);
 }
 
 .navtab-main {
@@ -192,12 +194,12 @@ button,
 input,
 .file_input {
   background-color: $color_bg;
-  border: thin solid darken($color_bg_area, 5%);
+  border: thin solid color.adjust($color_bg_area, $lightness: -5%);
   ;
 }
 
 button, .file_input {
-  background-color: lighten($color_bg_area, 10%);
+  background-color: color.adjust($color_bg_area, $lightness: 10%);
   padding: .5rem;
   margin: .5rem;
 }
@@ -208,8 +210,8 @@ button:active {
 }
 
 button:active {
-  background-color: darken($color_bg, 25%);
-  color: lighten($color_fg, 25%);
+  background-color: color.adjust($color_bg, $lightness: -25%);
+  color: color.adjust($color_fg, $lightness: 25%);
 }
 
 

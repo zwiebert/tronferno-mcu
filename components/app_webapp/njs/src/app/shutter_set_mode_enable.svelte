@@ -10,7 +10,7 @@
   import { SelectedId, SelectedIdIsValid } from "../store/id.js";
   import * as httpFetch from "../app/fetch.js";
 
-  $: name = $Name || "";
+  let name = $derived($Name || "");
 
   function onClick_SetByGM() {
     let tfmcu = { to: "tfmcu", cmd: { ...$Address, c: "set" } };
@@ -44,19 +44,19 @@
 
 {#if $SetModeSrcRadio === 0}
   <ShutterSelectGM />
-  <button class="sb text-sm rounded-full" on:click={onClick_SetByGM} use:tippy={{ content: $_("app.setMode.tt.set_mode") }}>
+  <button class="sb text-sm rounded-full" onclick={onClick_SetByGM} use:tippy={{ content: $_("app.setMode.tt.set_mode") }}>
     {$_("app.setMode.set_mode")}
   </button>
 {:else if $SetModeSrcRadio === 1}
   <IdSelector />
-  <button class="sb text-sm rounded-full" on:click={onClick_SetByAddr} disabled={!$SelectedIdIsValid}> {$_("app.setMode.set_mode")} </button>
+  <button class="sb text-sm rounded-full" onclick={onClick_SetByAddr} disabled={!$SelectedIdIsValid}> {$_("app.setMode.set_mode")} </button>
 {:else if $SetModeSrcRadio === 3}
-  <button on:click={enterSetMode} use:tippy={{ content: $_("app.setMode.tt.set_button") }}> {$_("app.setMode.set_button")} </button>
+  <button onclick={enterSetMode} use:tippy={{ content: $_("app.setMode.tt.set_button") }}> {$_("app.setMode.set_button")} </button>
 {/if}
 
 {#if $SetModeSrcProgress > 0}
   <br />
-  <progress value={$SetModeSrcProgress} max={60} />
+  <progress value={$SetModeSrcProgress} max={60}></progress>
 {/if}
 
 <div class="text-center"><br /></div>

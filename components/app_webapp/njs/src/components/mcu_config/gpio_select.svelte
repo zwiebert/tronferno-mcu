@@ -1,11 +1,23 @@
 <script>
   import { McuGpiosFree } from "../../store/mcu_config.js";
 
-  export let name;
-  export let value = -1;
-  export let max = 64;
-  export let show_value = true;
-  export let disabled = false;
+  /**
+   * @typedef {Object} Props
+   * @property {any} name
+   * @property {any} [value]
+   * @property {number} [max]
+   * @property {boolean} [show_value]
+   * @property {boolean} [disabled]
+   */
+
+  /** @type {Props} */
+  let {
+    name,
+    value = $bindable(-1),
+    max = 64,
+    show_value = true,
+    disabled = false
+  } = $props();
 </script>
 
 <select class="config-input" id="cfg_{name}" bind:value disabled={disabled}>

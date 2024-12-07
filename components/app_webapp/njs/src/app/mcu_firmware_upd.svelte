@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { _ } from "../services/i18n";
   import * as httpFetch from "../app/fetch.js";
   import * as misc from "../app/misc.js";
@@ -7,20 +9,23 @@
   ("use strict");
   import { ReloadProgress } from "../store/app_state.js";
 
-  export let fwbtns = [];
-  export let chip = "";
 
   import { onMount, onDestroy } from "svelte";
+  /**
+   * @typedef {Object} Props
+   * @property {any} [fwbtns]
+   * @property {string} [chip]
+   */
+
+  /** @type {Props} */
+  let { fwbtns = [], chip = "" } = $props();
 
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_VERSION | httpFetch.FETCH_GIT_TAGS);
   });
 
-  let netota_intervalID = 0;
-  let netota_isInProgress = false;
-  $: fw_choosen = $McuFirmwareReleaseStatus === "beta" ? 1 : 0;
-  $: fw_comp = compare_version($McuFirmwareVersionNumber, fwbtns[fw_choosen].version);
-  $: fw_updown = fw_comp < 0 ? "Upgrade" : fw_comp > 0 ? "Downgrade" : fw_comp === 0 ? "Re-Install" : "Install";
+  let netota_intervalID = $state(0);
+  let netota_isInProgress = $state(false);
 
   function netota_FetchFeedback() {
     let netmcu = { to: "tfmcu" };
@@ -67,8 +72,18 @@
     }
     return 1;
   }
-
-  $: {
+  let fw_choosen = $state(0);
+  run(() => {
+    fw_choosen = $McuFirmwareReleaseStatus === "beta" ? 1 : 0;
+  });
+  function get_ota_name() {
+    console.log("fwbtns",fwbtns);
+    //return netFirmwareOTA(fwbtns[fw_choosen].get_ota_name());
+  
+  } 
+  let fw_comp = $derived(compare_version($McuFirmwareVersionNumber, fwbtns[fw_choosen].version));
+  let fw_updown = $derived(fw_comp < 0 ? "Upgrade" : fw_comp > 0 ? "Downgrade" : fw_comp === 0 ? "Re-Install" : "Install");
+  run(() => {
     if (netota_isInProgress) {
       if ($McuFirmwareUpdState === 0) {
         //
@@ -79,7 +94,7 @@
         netota_isInProgress = false;
       }
     }
-  }
+  });
 </script>
 
 <div class="area">
@@ -97,7 +112,7 @@
       <dt>
         <input
           checked={fw_choosen === i}
-          on:change={() => {
+          onchange={() => {
             fw_choosen = i;
           }}
           type="radio"
@@ -127,7 +142,7 @@
   </span>
   {/if}
 
-  <button type="button" disabled={fw_choosen < 0 || $McuFirmwareUpdState === 1} on:click={() => netFirmwareOTA(fwbtns[fw_choosen].get_ota_name())}>
+  <button type="button" disabled={fw_choosen < 0 || $McuFirmwareUpdState === 1} onclick={() => netFirmwareOTA(fwbtns[fw_choosen].get_ota_name())}>
     Start Download and Installation
   </button>
 
@@ -139,7 +154,7 @@
       <br />
       <strong>
         {$_("app.msg_firmwareUpdSuccess")}
-        <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}>
+        <button id="mrtb" type="button" onclick={() => misc.req_mcuRestart()}>
           {$_("app.restartMcu")}
         </button>
         <br />
@@ -157,7 +172,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/app.scss";
+  @use "../styles/app.scss" as *;
   table,
   th,
   td {

@@ -12,16 +12,15 @@
     httpFetch.getJson("/f/backup/settings.json");
   });
 
-  $: backup_json = stringify_object_to_json($Backup);
 
-  let text = backup_json;
+  let text = $state(backup_json);
 
-  let pr_config_isChecked;
-  let pr_config_netconn_isChecked;
-  let pr_auto_isChecked;
-  let pr_shpref_isChecked;
-  let pr_pair_isChecked;
-  let pr_kvs_isChecked;
+  let pr_config_isChecked = $state();
+  let pr_config_netconn_isChecked = $state();
+  let pr_auto_isChecked = $state();
+  let pr_shpref_isChecked = $state();
+  let pr_pair_isChecked = $state();
+  let pr_kvs_isChecked = $state();
 
   function parse_json_to_object(text) {
     const backup = JSON.parse(text);
@@ -80,6 +79,7 @@
       httpFetch.http_postCommand({ shpref: el });
     });
   }
+  let backup_json = $derived(stringify_object_to_json($Backup));
 </script>
 
 <div class="main-area">
@@ -91,7 +91,7 @@
 
     <button
       use:tippy={{ content: $_("panes.backup.tt.create") }}
-      on:click={() => {
+      onclick={() => {
         let tfmcu = { mcu: { "test-sj": 0 } };
         httpFetch.http_postCommand(tfmcu);
       }}>{$_("panes.backup.create")}</button
@@ -102,7 +102,7 @@
     <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.restore") }}>View/Edit Backup (JSON)</h5>
 
     <div class="mr-2">
-      <textarea class="w-full" bind:value={text} wrap="hard" style="font-size:6pt" cols={56} rows={16} disabled={false} />
+      <textarea class="w-full" bind:value={text} wrap="hard" style="font-size:6pt" cols={56} rows={16} disabled={false}></textarea>
     </div>
     <div class="flex flex-row">
       <label class="file_input whitespace-nowrap" use:tippy={{ content: $_("panes.backup.tt.open") }}>
@@ -111,7 +111,7 @@
           class="hidden"
           type="file"
           accept=".json"
-          on:change={(e) => {
+          onchange={(e) => {
             e.target.files[0].text().then((txt) => {
               text = stringify_object_to_json(parse_json_to_object(txt));
             });
@@ -123,14 +123,14 @@
         <button
           class=""
           use:tippy={{ content: $_("panes.backup.tt.toClipboard") }}
-          on:click={() => {
+          onclick={() => {
             misc.textToClipboard(text);
           }}>{$_("panes.backup.toClipboard")}</button
         >
         <button
           class=""
           use:tippy={{ content: $_("panes.backup.tt.load") }}
-          on:click={() => {
+          onclick={() => {
             text = backup_json;
             httpFetch.getJson("/f/backup/settings.json");
           }}>{$_("panes.backup.load")}</button
@@ -161,7 +161,7 @@
         disabled={!(pr_config_isChecked || pr_auto_isChecked || pr_shpref_isChecked || pr_pair_isChecked || pr_kvs_isChecked)}
         class="text-sm"
         use:tippy={{ content: $_("panes.backup.tt.restore") }}
-        on:click={() => {
+        onclick={() => {
           const obj = parse_json_to_object(text);
           if (pr_config_isChecked) {
             post_config(obj.backup.settings.config, pr_config_netconn_isChecked);

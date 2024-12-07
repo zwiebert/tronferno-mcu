@@ -168,6 +168,7 @@
 
 <div id="autodiv" class="auto">
   <table class="top_table">
+    <tbody>
     <tr>
       <td use:tippy={{ content: $_("app.auto.tt.daily") }}>{$_("app.auto.daily")}</td>
       <td>
@@ -265,6 +266,7 @@
         <input class="cb" type="checkbox" bind:checked={autoData.isManual} />
       </td>
     </tr>
+  </tbody>
   </table>
 
   <br />

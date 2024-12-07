@@ -97,6 +97,7 @@
 
 <div id="aliasdiv">
   <table>
+    <tbody>
     <tr>
       <td use:tippy={{ content: $_("app.id.tt.chose_regIds") }}>
         <ShutterGM radio={false} groups={false} />
@@ -164,11 +165,12 @@
         <td> <TransmitterNames edit={editTxNames} /></td>
       </tr>
     {/if}
+    </tbody>
   </table>
 </div>
 
 <style lang="scss">
-  @import "../styles/app.scss";
+  @use "../styles/app.scss" as *;
 
   table,
   td,

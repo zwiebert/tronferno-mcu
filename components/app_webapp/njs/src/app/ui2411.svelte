@@ -8,9 +8,9 @@
 
 
 
-  $: name = $Name || "";
-  $: vm = $G ? ($M0 ? $M0 : "A") : "";
-  $: vg = $G ? $G : "A";
+  let name = $derived($Name || "");
+  let vm = $derived($G ? ($M0 ? $M0 : "A") : "");
+  let vg = $derived($G ? $G : "A");
 
   function shn_fromHtml_toMcu(val) {
     let tfmcu = { to: "tfmcu", shpref: { g: $G, m: $M0, "tag.NAME": val } };
@@ -95,6 +95,7 @@
 </script>
 
 <style lang="scss">
+  @use "sass:color";
   $color_bg: white;
   $color_fg: black;
   $color_border: grey;
@@ -106,8 +107,8 @@
   }
 
   button:active {
-  background-color: darken($color_bg, 5%);
-  color: lighten($color_fg, 5%);
+  background-color: color.adjust($color_bg, $lightness: -5%);
+  color: color.adjust($color_fg, $lightness: 5%);
   }
 
   .ft2411-sbt {
@@ -147,21 +148,21 @@
       class="text-lg  pt-1 pb-2 pl-2 pr-4"
       style="border-bottom-right-radius: 100%;"
       type="button"
-      on:click={hClick_G}>
+      onclick={hClick_G}>
       G
     </button>
     <button
       class="text-lg pt-1 pb-2  pl-4 pr-2"
       style="border-bottom-left-radius: 100%;"
       type="button"
-      on:click={hClick_M}>
+      onclick={hClick_M}>
       E
     </button>
   </div>
 
 <div class="flex flex-col items-center">
 
-    <button id="sub" class="w-32 h-10 ft2411-udbt mt-4" type="button" on:click={hClick_Up}>
+    <button id="sub" class="w-32 h-10 ft2411-udbt mt-4" type="button" onclick={hClick_Up}>
       &#x25b2;
     </button>
 
@@ -169,21 +170,21 @@
     <button
       class="h-24 w-8 m-2 mr-6 ft2411-mbt"
       type="button"
-      on:click={hClick_Menu}>
+      onclick={hClick_Menu}>
       M
     </button>
 
     <button
       class="m-2 ft2411-sbt"
       type="button"
-      on:click={hClick_Stop}>
+      onclick={hClick_Stop}>
       STOP
     </button>
 
     <button
       class="h-24 w-8 m-2 ml-6 ft2411-mbt"
       type="button"
-      on:click={hClick_OK}>
+      onclick={hClick_OK}>
       OK
     </button>
 
@@ -192,7 +193,7 @@
     <button
       class="w-32 h-10 ft2411-udbt"
       type="button"
-      on:click={hClick_Down}>
+      onclick={hClick_Down}>
       &#x25bc;
     </button>
 

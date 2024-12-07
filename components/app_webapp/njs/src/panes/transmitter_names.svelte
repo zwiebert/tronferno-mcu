@@ -86,28 +86,30 @@
 
   <div class="area" style={$SelectedIdIsValid && $Aliases[$SelectedId] ? "" : "visibility:hidden"} id="divPairAll">
     <table id="aliasTable">
-      <tr>
-        <th />
-        {#each [1, 2, 3, 4, 5, 6, 7] as m}
-          {#if m <= $GmuMaxM}
-            <th>{m}</th>
+      <tbody>
+        <tr>
+          <th></th>
+          {#each [1, 2, 3, 4, 5, 6, 7] as m}
+            {#if m <= $GmuMaxM}
+              <th>{m}</th>
+            {/if}
+          {/each}
+        </tr>
+        {#each [1, 2, 3, 4, 5, 6, 7] as g}
+          {#if $Gmu[g] > 0}
+            <tr>
+              <th>g{g}</th>
+              {#each [1, 2, 3, 4, 5, 6, 7] as m}
+                {#if m <= $Gmu[g]}
+                  <td class={$G === 0 || (g === $G && ($M0 === 0 || m === $M0)) ? "bg-selected" : ""}
+                    ><input id="cbAlias_{g}{m}" type="checkbox" disabled={true} /></td
+                  >
+                {/if}
+              {/each}
+            </tr>
           {/if}
         {/each}
-      </tr>
-      {#each [1, 2, 3, 4, 5, 6, 7] as g}
-        {#if $Gmu[g] > 0}
-          <tr>
-            <th>g{g}</th>
-            {#each [1, 2, 3, 4, 5, 6, 7] as m}
-              {#if m <= $Gmu[g]}
-                <td class={$G === 0 || (g === $G && ($M0 === 0 || m === $M0)) ? "bg-selected" : ""}
-                  ><input id="cbAlias_{g}{m}" type="checkbox" disabled={true} /></td
-                >
-              {/if}
-            {/each}
-          </tr>
-        {/if}
-      {/each}
+      </tbody>
     </table>
   </div>
 </div>

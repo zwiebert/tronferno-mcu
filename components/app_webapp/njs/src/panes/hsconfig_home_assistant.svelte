@@ -62,7 +62,9 @@
   <h4 class="text-center" use:tippy={{ content: $_("panes.hs_config.home_assistant.tt.header") }}>{$_("panes.hs_config.home_assistant.header")}</h4>
   <div class="area">
     <table>
-      <tr><td>Discovery Prefix</td><td><input type="text" bind:value={discovery_prefix} /></td></tr>
+      <tbody>
+        <tr><td>Discovery Prefix</td><td><input type="text" bind:value={discovery_prefix} /></td></tr>
+      </tbody>
     </table>
 
     <button

@@ -38,6 +38,7 @@
 <div id="posviewdiv">
   {#each gmu as shutterCt, g}
     <table id="pvtable{g}" class="pvgroup">
+      <tbody>
       <tr>
         {#if g > 0 && shutterCt > 0}
           <th on:click={() => set_gm(g, 0)}>
@@ -50,6 +51,7 @@
           {/each}
         {/if}
       </tr>
+    </tbody>
     </table>
   {/each}
 </div>

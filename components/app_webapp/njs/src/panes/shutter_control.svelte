@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   "use strict";
   import { _ } from "../services/i18n";
   import { onMount } from "svelte";
@@ -18,10 +20,10 @@
     }, 500);
   });
 
-  $: {
+  run(() => {
     $GM;
     httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
-  }
+  });
 </script>
 
 <div class="main-area">

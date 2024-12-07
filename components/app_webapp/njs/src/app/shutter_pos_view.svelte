@@ -1,17 +1,20 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { Pcts, Names } from "../store/shutters.js";
   import {G,M0 } from "../store/curr_shutter.js";
 
-  export let g;
-  export let m;
+  let { g, m } = $props();
 
   const gm = g.toString() + m.toString();
 
-  let pct = 50;
+  let pct = $state(50);
 
-  $: pct = $Pcts[gm] || 0;
-  $: name = gm + ($Names[gm] ? " " + $Names[gm] : "");
-  $: selected = $G === 0 || ($G === g && ($M0 === m || $M0 === 0));
+  run(() => {
+    pct = $Pcts[gm] || 0;
+  });
+  let name = $derived(gm + ($Names[gm] ? " " + $Names[gm] : ""));
+  let selected = $derived($G === 0 || ($G === g && ($M0 === m || $M0 === 0)));
 
 </script>
 
@@ -36,7 +39,7 @@
 </style>
 
 <div class="pvbar-border {selected ? "pvbar-sel" : ""}" >
-  <div class="pvbar" id="pv{gm}" style="height:{100 - pct}%" />
+  <div class="pvbar" id="pv{gm}" style="height:{100 - pct}%"></div>
 </div>
 <br />
 <span class="{selected ? "pvname-sel" : "pvname-unsel"}">{name}</span>

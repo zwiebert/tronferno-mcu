@@ -1,6 +1,5 @@
 <script>
-  export let name;
-  export let value;
+  let { name, value = $bindable() } = $props();
 </script>
 
 <select class="config-input" id="cfg_{name}" bind:value>

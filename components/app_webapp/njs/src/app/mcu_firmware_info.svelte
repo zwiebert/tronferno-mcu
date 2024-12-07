@@ -17,7 +17,7 @@
     httpFetch.http_fetchByMask(httpFetch.FETCH_VERSION | httpFetch.FETCH_BOOT_COUNT | httpFetch.FETCH_ERROR_MASK);
   });
 
-  $: nu = $json("notifyUser");
+  let nu = $derived($json("notifyUser"));
 </script>
 
 <ul>
@@ -41,12 +41,14 @@
 {#if $json("notifyUser").messages.length > 0}
   <table>
     <caption class="bg-red-400">{$json("notifyUser").caption}</caption>
-    {#each $json("notifyUser").messages as nu}
-      <tr>
-        <td>{nu.date}</td>
-        <td>{nu.text}</td>
-      </tr>
-    {/each}
+    <tbody>
+      {#each $json("notifyUser").messages as nu}
+        <tr>
+          <td>{nu.date}</td>
+          <td>{nu.text}</td>
+        </tr>
+      {/each}
+    </tbody>
   </table>
 {/if}
 
@@ -55,7 +57,7 @@
 <a href="https://github.com/zwiebert/tronferno-mcu/commits/master">master-branch commit log on GitHub</a>
 
 <style lang="scss">
-  @import "../styles/app.scss";
+  @use "../styles/app.scss" as *;
   table,
   th,
   td {

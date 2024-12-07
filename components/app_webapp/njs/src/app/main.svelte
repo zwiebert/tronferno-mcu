@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   "use strict";
   import Layout from "../app/layout.svelte";
   import Wapp from "../app/wapp.svelte";
@@ -10,9 +12,9 @@
 
   setupI18n();
 
-  $: {
+  run(() => {
     misc.set_gui_access_level($GuiUserLevel);
-  }
+  });
 
 </script>
 

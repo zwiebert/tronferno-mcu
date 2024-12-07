@@ -7,7 +7,13 @@
   import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
 
-  export let disabled = false;
+  /**
+   * @typedef {Object} Props
+   * @property {boolean} [disabled]
+   */
+
+  /** @type {Props} */
+  let { disabled = false } = $props();
 
   function hClick_Sun() {
     httpFetch.http_postShutterCommand("sun-down");
@@ -24,7 +30,7 @@
     class="sb text-lg rounded-l-full rounded-r-full"
     type="button"
     {disabled}
-    on:click={hClick_Sun}
+    onclick={hClick_Sun}
     use:tippy={{ content: $_("app.sun.tt.move_sun_down") }}
   >
     {$_("app.sun.move_sun_down")}
@@ -35,7 +41,7 @@
       id="sspb"
       class="sb text-lg rounded-r-full"
       type="button"
-      on:click={hClick_SunPos}
+      onclick={hClick_SunPos}
       use:tippy={{ content: $_("app.sun.tt.set_sun_pos") }}
     >
       {$_("app.sun.set_sun_pos")}

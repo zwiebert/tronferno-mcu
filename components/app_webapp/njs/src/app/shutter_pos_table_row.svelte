@@ -1,19 +1,23 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { Pcts, Names } from "../store/shutters.js";
   import { G, M0, M, GM } from "../store/curr_shutter.js";
   import * as httpFetch from "../app/fetch.js";
 
-  export let g;
-  export let m;
+  let { g, m } = $props();
 
   const gm = g.toString() + m.toString();
 
-  $: pct = $Pcts[gm] || 0;
-  $: ge = g.toString() + (m ? m.toString() : "A");
-  $: name = $Names[gm] ? " " + $Names[gm] : "";
-  $: selected = $G === 0 || ($G === g && ($M0 === m || $M0 === 0));
+  let pct = $state(0);
+  run(() => {
+    pct = $Pcts[gm] || 0;
+  });
+  let ge = $derived(g.toString() + (m ? m.toString() : "A"));
+  let name = $derived($Names[gm] ? " " + $Names[gm] : "");
+  let selected = $derived($G === 0 || ($G === g && ($M0 === m || $M0 === 0)));
 
-  let sliderElement;
+  let sliderElement = $state();
 
   function onPos(g, m, pct) {
     let tfmcu = { to: "tfmcu" };
@@ -37,7 +41,7 @@
   }
 </script>
 
-<tr class="align-middle" on:click={set_gm}>
+<tr class="align-middle" onclick={set_gm}>
   <th class="{selected ? 'bg-area-selected' : ''}">{ge}</th>
   <td class="text-left w-full">{name}</td>
 
@@ -50,8 +54,8 @@
       min="0"
       max="100"
       value={pct}
-      on:change={hChange_Pos}
-      on:input={(evt) => {
+      onchange={hChange_Pos}
+      oninput={(evt) => {
         pct = evt.target.value;
       }}
     />

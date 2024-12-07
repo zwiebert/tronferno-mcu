@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: `<tr>` cannot be a child of `<table>`. `<table>` only allows these children: `<caption>`, `<colgroup>`, `<tbody>`, `<thead>`, `<tfoot>`, `<style>`, `<script>`, `<template>`. The browser will 'repair' the HTML (by moving, removing, or inserting elements) which breaks Svelte's assumptions about the structure of your components. -->
 <script>
   "use strict";
   import { _ } from "../services/i18n";
@@ -154,26 +155,30 @@
   <div class="area" id="divPairAll" style={$SelectedIdIsValid ? "" : "visibility:hidden"}>
     <h5 use:tippy={{ content: $_("app.id.tt.registeredToTheseRx") }}>{rxSymbol(selectedId) + selectedId + " " + $TxName}</h5>
     <table id="aliasTable">
-      <tr>
-        <th />
-        {#each [1, 2, 3, 4, 5, 6, 7] as m}
-          {#if m <= $GmuMaxM}
-            <th>{m}</th>
-          {/if}
-        {/each}
-      </tr>
+      <thead>
+        <tr>
+          <th />
+          {#each [1, 2, 3, 4, 5, 6, 7] as m}
+            {#if m <= $GmuMaxM}
+              <th>{m}</th>
+            {/if}
+          {/each}
+        </tr>
+      </thead>
       {#each [1, 2, 3, 4, 5, 6, 7] as g}
         {#if $Gmu[g] > 0}
-          <tr>
-            <th>g{g}</th>
-            {#each [1, 2, 3, 4, 5, 6, 7] as m}
-              {#if m <= $Gmu[g]}
-                <td class={$G === 0 || (g === $G && ($M0 === 0 || m === $M0)) ? "bg-selected" : ""}>
-                  <input id="cbAlias_{g}{m}" type="checkbox" disabled={!selectedId_isValid} />
-                </td>
-              {/if}
-            {/each}
-          </tr>
+          <tbody>
+            <tr>
+              <th>g{g}</th>
+              {#each [1, 2, 3, 4, 5, 6, 7] as m}
+                {#if m <= $Gmu[g]}
+                  <td class={$G === 0 || (g === $G && ($M0 === 0 || m === $M0)) ? "bg-selected" : ""}>
+                    <input id="cbAlias_{g}{m}" type="checkbox" disabled={!selectedId_isValid} />
+                  </td>
+                {/if}
+              {/each}
+            </tr>
+          </tbody>
         {/if}
       {/each}
     </table>
@@ -185,7 +190,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/app.scss";
+  @use "../styles/app.scss" as *;
 
   table,
   td,

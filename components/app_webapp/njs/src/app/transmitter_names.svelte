@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   "use strict";
   import { _ } from "../services/i18n";
   import { G, M0, Name } from "../store/curr_shutter.js";
@@ -10,9 +12,12 @@
 
   export const edit = true;
 
-  $: GMName = $TxName || "";
+  let GMName;
+  run(() => {
+    GMName = $TxName || "";
+  });
 
-  $: {
+  run(() => {
     if ($SelectedIdIsValid) {
       const key = "TXN." + $SelectedId;
       let tfmcu = { to: "tfmcu", kvs: {} };
@@ -20,7 +25,7 @@
 
       httpFetch.http_postCommand(tfmcu);
     }
-  }
+  });
 
   function storeName_toMcu(id, name) {
     const key = "TXN." + id;
@@ -36,7 +41,7 @@
 </script>
 
 <div class="text-center">
-  <input type="text" name="name"  class="w-full" disabled={!edit || !$SelectedIdIsValid} bind:value={GMName} on:change={hChange_Name} />
+  <input type="text" name="name"  class="w-full" disabled={!edit || !$SelectedIdIsValid} bind:value={GMName} onchange={hChange_Name} />
 </div>
 
 <style lang="scss">

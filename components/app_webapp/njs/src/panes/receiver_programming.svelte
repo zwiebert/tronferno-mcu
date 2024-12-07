@@ -17,8 +17,8 @@
   import PaneShutterEndpos from "../panes/shutter_end_pos.svelte";
   import PaneShutterDurations from "../panes/shutter_durations.svelte";
 
-  $: tabIdxRx = $TabIdx["receiver"] || 0;
-  $: tabIdxSet = $TabIdx["set"] || 0;
+  let tabIdxRx = $derived($TabIdx["receiver"] || 0);
+  let tabIdxSet = $derived($TabIdx["set"] || 0);
 </script>
 
 <div class="navtab-sub2">

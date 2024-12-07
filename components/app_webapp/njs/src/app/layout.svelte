@@ -3,10 +3,10 @@
 </script>
 
 <style global lang="scss">
+  @use "../styles/app.scss" as *;
   @tailwind base;
   @tailwind components;
   @tailwind utilities;
-  @import "../styles/app.scss";
 
   button,input,select {
     @apply rounded;

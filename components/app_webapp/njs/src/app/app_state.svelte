@@ -1,4 +1,4 @@
-<script context="module">
+<script module>
 'use strict';
 import * as httpFetch from "../app/fetch.js";
 

@@ -40,12 +40,12 @@
     }
   });
 
-  $: tabIdxMain = $TabIdx["main"] || 0;
-  $: tabIdxSettings = $TabIdx["settings"] || 0;
-  $: tabIdxSender = $TabIdx["sender"] || 0;
-  $: tabIdxPositions = $TabIdx["positions"] || 0;
-  $: tabIdxUserHelp = $TabIdx["user_help"] || 0;
-  $: tabIdxHSConfig = $TabIdx["hs_config"] || 0;
+  let tabIdxMain = $derived($TabIdx["main"] || 0);
+  let tabIdxSettings = $derived($TabIdx["settings"] || 0);
+  let tabIdxSender = $derived($TabIdx["sender"] || 0);
+  let tabIdxPositions = $derived($TabIdx["positions"] || 0);
+  let tabIdxUserHelp = $derived($TabIdx["user_help"] || 0);
+  let tabIdxHSConfig = $derived($TabIdx["hs_config"] || 0);
 
   function getUserLevelHeader(ul) {
     return ul < 0

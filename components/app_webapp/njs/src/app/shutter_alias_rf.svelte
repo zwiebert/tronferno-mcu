@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   "use strict";
   import { _ } from "../services/i18n";
   import * as httpFetch from "../app/fetch.js";
@@ -10,29 +12,9 @@
   import { onMount, onDestroy } from "svelte";
   import tippy from "sveltejs-tippy";
 
-  $: AliasesAllKeys = Object.keys($Aliases);
-  $: AliasesPairedKeys = AliasesAllKeys.filter((key) => alias_isKeyPairedToM(key, $G, $M0));
-  $: selectedId = $SelectedId;
-  $: selectedId_isValid = id_isValid(selectedId);
 
-  $: isPaired = false;
-  $: {
-    AliasesPairedKeys;
-    isPaired = alias_isKeyPairedToM($SelectedId, $G, $M0);
-  }
 
-  $: {
-    $Pras;
-    if ($Pras && $Pras.success) {
-      selectedId = $SelectedId = $Pras.a;
-      console.log($Pras);
-    }
-  }
 
-  $: {
-    AliasesPairedKeys;
-    aliasTable_updHtml(selectedId);
-  }
 
   function id_isValid(id) {
     const re = /^[12]0[0-9A-Fa-f]{4}$/;
@@ -106,6 +88,30 @@
       }
     }
   }
+  let AliasesAllKeys = $derived(Object.keys($Aliases));
+  let AliasesPairedKeys = $derived(AliasesAllKeys.filter((key) => alias_isKeyPairedToM(key, $G, $M0)));
+  run(() => {
+    $Pras;
+    if ($Pras && $Pras.success) {
+      selectedId = $SelectedId = $Pras.a;
+      console.log($Pras);
+    }
+  });
+  let selectedId;
+  run(() => {
+    selectedId = $SelectedId;
+  });
+  let selectedId_isValid = $derived(id_isValid(selectedId));
+  let isPaired = $state(false);
+  
+  run(() => {
+    AliasesPairedKeys;
+    isPaired = alias_isKeyPairedToM($SelectedId, $G, $M0);
+  });
+  run(() => {
+    AliasesPairedKeys;
+    aliasTable_updHtml(selectedId);
+  });
 </script>
 
 <div id="aliasdiv text-center">
@@ -113,11 +119,11 @@
     <div class="flex flex-row items-center justify-center">
       <ShutterGM radio={false} /> 
     </div>
-    <button id="alias_pair" type="button" on:click={hClick_Pair} use:tippy={{ content: $_("app.id.tt.register_rf") }}>{$_("fernotron.Register")}</button>
+    <button id="alias_pair" type="button" onclick={hClick_Pair} use:tippy={{ content: $_("app.id.tt.register_rf") }}>{$_("fernotron.Register")}</button>
     RF-> {$GMH}
-    <button id="alias_unpair" type="button" on:click={hClick_UnPair} use:tippy={{ content: $_("app.id.tt.register_rf") }}>{$_("fernotron.Unregister")}</button>
+    <button id="alias_unpair" type="button" onclick={hClick_UnPair} use:tippy={{ content: $_("app.id.tt.register_rf") }}>{$_("fernotron.Unregister")}</button>
     <br />
-    <button class="rounded-full" type="button" on:click={hClick_Set} use:tippy={{ content: $_("app.id.tt.set_function") }}>SET</button>
+    <button class="rounded-full" type="button" onclick={hClick_Set} use:tippy={{ content: $_("app.id.tt.set_function") }}>SET</button>
 
     {#if $Pras}
       <br />
@@ -126,16 +132,16 @@
       {:else if $Pras.timeout}
         <span class="bg-red-400">Timeout</span>
       {:else if $Pras.success}
-        <label class="bg-green-400">Found: <button type="button" on:click={() => select_id($Pras.a)}>{$Pras.a}</button></label>
+        <label class="bg-green-400">Found: <button type="button" onclick={() => select_id($Pras.a)}>{$Pras.a}</button></label>
       {:else}
-        <label class="bg-gray-300">Nothing to do for: <button type="button" on:click={() => select_id($Pras.a)}>{$Pras.a}</button></label>
+        <label class="bg-gray-300">Nothing to do for: <button type="button" onclick={() => select_id($Pras.a)}>{$Pras.a}</button></label>
       {/if}
     {/if}
   </div>
 </div>
 
 <style lang="scss">
-  @import "../styles/app.scss";
+  @use "../styles/app.scss" as *;
 
   table,
   td,

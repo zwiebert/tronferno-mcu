@@ -9,11 +9,12 @@
     httpFetch.http_fetchByMask(httpFetch.FETCH_VERSION);
   });
 
-  $: version_number = $McuFirmwareVersion.match(/[0-9.]+/) || "develop";
-  $: selected = 0;
-  $: tag_or_branches = [version_number, "develop", "master"];
-  $: tag_or_branch = tag_or_branches[selected];
-  $: repo_url = "https://github.com/zwiebert/tronferno-mcu/blob/" + tag_or_branch + "/";
+  let version_number = $derived($McuFirmwareVersion.match(/[0-9.]+/) || "develop");
+  let selected = $state(0);
+  
+  let tag_or_branches = $derived([version_number, "develop", "master"]);
+  let tag_or_branch = $derived(tag_or_branches[selected]);
+  let repo_url = $derived("https://github.com/zwiebert/tronferno-mcu/blob/" + tag_or_branch + "/");
 </script>
 
 <div class="main-area">

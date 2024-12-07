@@ -17,11 +17,7 @@
     }
   });
 
-  $: mcuConfig = $McuConfig;
-  $: RepeaterIDs = new Set("rf-repeater" in mcuConfig ? $McuConfig["rf-repeater"].match(/.{6}/g) : []);
-  $: selectedId_isValid = id_isValid($SelectedId);
 
-  $: selectedRepId = "";
 
   function id_isValid(id) {
     const re = /^[12]0[0-9A-Fa-f]{4}$/;
@@ -51,6 +47,11 @@
   function rxOptTxt(id) {
     return (id.startsWith("20") ? "\u263C " : "\u2195 ") + id + " " + ($TxNames[id] || "");
   }
+  let mcuConfig = $derived($McuConfig);
+  let RepeaterIDs = $derived(new Set("rf-repeater" in mcuConfig ? $McuConfig["rf-repeater"].match(/.{6}/g) : []));
+  let selectedId_isValid = $derived(id_isValid($SelectedId));
+  let selectedRepId = $state("");
+  
 </script>
 
 <div id="aliasdiv text-center">
@@ -68,7 +69,7 @@
     use:tippy={{ content: $_("app.repeater.ids.tt.add_button") }}
       type="button"
       disabled={!selectedId_isValid || RepeaterIDs.has($SelectedId)}
-      on:click={() => {
+      onclick={() => {
         add_repeaterID($SelectedId);
       }}>{$_("app.repeater.ids.add_button") + " " + $SelectedId}</button
     >
@@ -77,7 +78,7 @@
     use:tippy={{ content: $_("app.repeater.ids.tt.remove_button") }}
       type="button"
       disabled={!RepeaterIDs.has(selectedRepId)}
-      on:click={() => {
+      onclick={() => {
         remove_repeaterID(selectedRepId);
       }}>{$_("app.repeater.ids.remove_button") + " " + (RepeaterIDs.has(selectedRepId) ? selectedRepId : "")}</button
     >
@@ -85,7 +86,7 @@
 </div>
 
 <style lang="scss">
-  @import "../styles/app.scss";
+  @use "../styles/app.scss" as *;
 
   table,
   td,

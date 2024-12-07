@@ -4,13 +4,19 @@
   import ShutterPosTableRow from "../app/shutter_pos_table_row.svelte";
   import { onMount } from "svelte";
 
-  export let show_group = 0;
+  /**
+   * @typedef {Object} Props
+   * @property {number} [show_group]
+   */
+
+  /** @type {Props} */
+  let { show_group = 0 } = $props();
 
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_GMU | httpFetch.FETCH_ALL_POS);
   });
 
-  $: gmu = $Gmu;
+  let gmu = $derived($Gmu);
 </script>
 
 <div id="postablediv">

@@ -1,6 +1,5 @@
 <script>
-  export let name;
-  export let value;
+  let { name, value = $bindable() } = $props();
 
   let gpio_number = parseInt(name.substring(4), 10);
 </script>

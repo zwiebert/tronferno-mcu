@@ -5,7 +5,8 @@
   import { SetModeDstG, SetModeDstM } from "../store/shutter_set_mode.js";
   import * as httpFetch from "../app/fetch.js";
 
-  $: transmitCountDown = 0;
+  let transmitCountDown = $state(0);
+  
 
   function onClick_registerCu() {
     let tfmcu = { to: "tfmcu", auto: { g: $SetModeDstG, m: $SetModeDstM, f: "k" } };
@@ -29,6 +30,6 @@
   type="button"
   use:tippy={{ content: $_("app.setMode.tt.register_cu_bt") }}
   disabled={transmitCountDown > 0}
-  on:click={onClick_registerCu}>{transmitCountDown > 0 ? "-" + transmitCountDown + "-" : $_("app.auto.sendData")}</button
+  onclick={onClick_registerCu}>{transmitCountDown > 0 ? "-" + transmitCountDown + "-" : $_("app.auto.sendData")}</button
 >
 

@@ -5,7 +5,6 @@
   export let value;
   export let changed;
 
-
   let gmu = [...$Gmu];
 
   $: {
@@ -16,10 +15,9 @@
     update_gmu($Gmu);
   }
 
-
   function update_gmu(arr) {
     gmu = [...arr];
-  } 
+  }
 
   function update_value(gmu) {
     let val = "";
@@ -37,23 +35,22 @@
 
     value = val;
   }
-
-
-
 </script>
 
 <table id="gmu-table" class="border-black border-2">
-  <caption  class="{changed ? 'font-bold' : 'font-normal'}">{caption}</caption>
-  <tr>
-    {#each { length: 7 } as _, i}
-      <td>G{i + 1}</td>
-    {/each}
-  </tr>
-  <tr>
-    {#each gmu as n, i}
-      {#if i > 0}
-        <td><input bind:value={gmu[i]} id="gmu{i}" style="width:2em;" type="number" min="0" max="7" /></td>
-      {/if}
-    {/each}
-  </tr>
+  <caption class={changed ? "font-bold" : "font-normal"}>{caption}</caption>
+  <tbody>
+    <tr>
+      {#each { length: 7 } as _, i}
+        <td>G{i + 1}</td>
+      {/each}
+    </tr>
+    <tr>
+      {#each gmu as n, i}
+        {#if i > 0}
+          <td><input bind:value={gmu[i]} id="gmu{i}" style="width:2em;" type="number" min="0" max="7" /></td>
+        {/if}
+      {/each}
+    </tr>
+  </tbody>
 </table>

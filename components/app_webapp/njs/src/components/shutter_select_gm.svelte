@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   "use strict";
   import { _ } from "../services/i18n";
   import { G, M, GM, GMH, RadioCode, RadioCodeEnabled } from "../store/curr_shutter.js";
@@ -7,19 +9,32 @@
   import { GuiAcc } from "../store/app_state";
   import * as httpFetch from "../app/fetch.js";
 
-  export let radio = true;
-  export let groups = true;
+  /**
+   * @typedef {Object} Props
+   * @property {boolean} [radio]
+   * @property {boolean} [groups]
+   */
 
-  $: GMR = $GM;
+  /** @type {Props} */
+  let { radio = true, groups = true } = $props();
 
-  $: names = Object.values($Names);
-  $: a = "A " + ($Names["00"] || "");
-  $: showRadioCode = GMR === "RadioCode" && $GuiAcc.radio_code && radio;
+  let GMR = $state(0);
+  run(() => {
+    GMR = $GM;
+  });
 
-  $: use_motorCode = showRadioCode;
-  let motorCode = $RadioCode;
-  $: motorCode_isValid = false;
-  $: target = use_motorCode ? motorCode : $GMH;
+  let names = $derived(Object.values($Names));
+  let a = $derived("A " + ($Names["00"] || ""));
+  let showRadioCode = $state(false);
+  run(() => {
+    showRadioCode = GMR === "RadioCode" && $GuiAcc.radio_code && radio;
+  });
+
+  let use_motorCode = $derived(showRadioCode);
+  let motorCode = $state($RadioCode);
+  let motorCode_isValid = $state(false);
+  
+  let target = $derived(use_motorCode ? motorCode : $GMH);
 
   function get_motorCode(mc) {
     const re = /^9?0[a-fA-F0-9]{4}$/;
@@ -35,26 +50,26 @@
     return mc;
   }
 
-  $: {
+  run(() => {
     if (!$GuiAcc.radio_code || !radio) showRadioCode = false;
-  }
+  });
 
-  $: {
+  run(() => {
     const mc = get_motorCode(motorCode);
     const rce = GMR === "RadioCode";
     $RadioCodeEnabled = rce;
     motorCode_isValid = mc !== "invalid";
 
     if (rce && motorCode_isValid) $RadioCode = mc;
-  }
+  });
 
-  $: {
+  run(() => {
     if (!showRadioCode) {
       $G = Number.parseInt(GMR.substr(0, 1));
       $M = Number.parseInt(GMR.substr(1, 1));
       httpFetch.http_fetchByMask(httpFetch.FETCH_SHUTTER_NAME);
     }
-  }
+  });
 </script>
 
 <select bind:value={GMR}>

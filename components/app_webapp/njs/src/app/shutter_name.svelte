@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   "use strict";
   import { _ } from "../services/i18n";
   import { G, M0, Name } from "../store/curr_shutter.js";
@@ -7,7 +9,10 @@
   import { Names } from "../store/shutters.js";
   import tippy from "sveltejs-tippy";
   
-  $: GMName = $Name || "";
+  let GMName;
+  run(() => {
+    GMName = $Name || "";
+  });
 
   function storeName_toMcu(g, m, name) {
     let tfmcu = { to: "tfmcu", shpref: { g: g, m: m, "tag.NAME": name } };
@@ -36,10 +41,10 @@
 </script>
 
 <div class="text-center">
-  <input type="text" name="name" bind:value={GMName} on:change={hChange_Name} />
+  <input type="text" name="name" bind:value={GMName} onchange={hChange_Name} />
   <br />
   {#if $GuiAcc.restore_shutter_names}
-  <button type="button" use:tippy={{ content: $_("app.names.tt.restoreNames") }} on:click={names_fromBrowserStorage_toMcu}>{$_("app.names.restoreNames")}</button>
+  <button type="button" use:tippy={{ content: $_("app.names.tt.restoreNames") }} onclick={names_fromBrowserStorage_toMcu}>{$_("app.names.restoreNames")}</button>
   {/if}
 </div>
 
