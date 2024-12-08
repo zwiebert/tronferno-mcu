@@ -130,7 +130,7 @@ process_parmSend(clpar p[], int len, class UoutWriter &td) {
    if (has_pct) {
       cli_replyResult(td, fer_cmd_moveShutterToPct(addr, g, m, pct, repeats));
     } else if (has_cmd) {
-      cli_replyResult(td, fer_cmd_sendShutterCommand(addr, g, m, cmd, cmd == fer_if_cmd_ToggleRotationDirection || fer_if_cmd_Program ? 0 : repeats));
+      cli_replyResult(td, fer_cmd_sendShutterCommand(addr, g, m, cmd, cmd == fer_if_cmd_ToggleRotationDirection || cmd == fer_if_cmd_Program ? 0 : repeats));
     } else {
       cli_replyFailure(td);
     }
