@@ -1,0 +1,4 @@
+<map id="fer_sbT" name="fer_sbT">
+<area shape="rect" id="node1" title="Raw message w/o checksum." alt="" coords="9,204,80,281"/>
+<area shape="rect" id="node2" href="$structFer__Cmd.html" title="Plain message or header for extended messages (w/o checksum)" alt="" coords="5,5,84,141"/>
+</map>

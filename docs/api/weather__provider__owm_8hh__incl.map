@@ -1,0 +1,7 @@
+<map id="/home/bertw/proj/mcu/tronferno&#45;mcu/external/components&#45;misc/components/weather/include/weather/weather_provider_owm.hh" name="/home/bertw/proj/mcu/tronferno&#45;mcu/external/components&#45;misc/components/weather/include/weather/weather_provider_owm.hh">
+<area shape="rect" id="node1" title="get weather data from api.openweathermap.org" alt="" coords="26,5,270,91"/>
+<area shape="rect" id="node2" href="$weather__provider_8hh.html" title="Interface for weather data provider." alt="" coords="5,139,160,165"/>
+<area shape="rect" id="node5" title=" " alt="" coords="184,139,243,165"/>
+<area shape="rect" id="node3" href="$weather__data_8hh.html" title="weather data like temperature, humidity, ..." alt="" coords="17,213,148,240"/>
+<area shape="rect" id="node4" title=" " alt="" coords="52,288,113,315"/>
+</map>

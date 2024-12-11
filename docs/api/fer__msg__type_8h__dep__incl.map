@@ -1,0 +1,16 @@
+<map id="fernotron_trx/raw/fer_msg_type.h" name="fernotron_trx/raw/fer_msg_type.h">
+<area shape="rect" id="node1" title="kinds of messages" alt="" coords="493,5,651,47"/>
+<area shape="rect" id="node2" href="$fer__msg__plain_8h.html" title="Data structure of plain messages or header of extended messages." alt="" coords="493,95,651,136"/>
+<area shape="rect" id="node3" href="$commands_8h.html" title="commands to move or stop a shutter with position support" alt="" coords="221,191,419,218"/>
+<area shape="rect" id="node4" href="$fer__fsb_8h.html" title="Plain raw message." alt="" coords="493,184,651,225"/>
+<area shape="rect" id="node7" href="$fer__api_8h_source.html" title=" " alt="" coords="5,273,200,359"/>
+<area shape="rect" id="node10" href="$fer__msg__attachment_8h.html" title="Extended messages." alt="" coords="776,184,933,225"/>
+<area shape="rect" id="node14" href="$repeater_8h_source.html" title=" " alt="" coords="958,184,1125,225"/>
+<area shape="rect" id="node5" href="$fer__msg__tx_8h.html" title="Send raw messages." alt="" coords="443,295,600,337"/>
+<area shape="rect" id="node6" href="$fer__rawmsg__build_8h.html" title="builder functions to construct (extended) raw messages" alt="" coords="624,295,781,337"/>
+<area shape="rect" id="node8" href="$fer__msg__tx__queue_8h_source.html" title=" " alt="" coords="224,273,419,359"/>
+<area shape="rect" id="node9" href="$fer__trx__incoming__event_8hh_source.html" title=" " alt="" coords="805,273,1005,359"/>
+<area shape="rect" id="node11" href="$fer__print_8h.html" title="Print raw message as formatted text to standard output (for debug purposes)." alt="" coords="1029,295,1168,337"/>
+<area shape="rect" id="node12" href="$fer__radio__trx_8h.html" title="RF transceiver." alt="" coords="1192,295,1349,337"/>
+<area shape="rect" id="node13" href="$fer__rawmsg__buffer_8h.html" title="Global static buffers for raw messages." alt="" coords="1373,295,1531,337"/>
+</map>

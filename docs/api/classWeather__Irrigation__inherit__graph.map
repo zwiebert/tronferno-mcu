@@ -1,0 +1,4 @@
+<map id="Weather_Irrigation" name="Weather_Irrigation">
+<area shape="rect" id="node1" title="/ref Weather based automatic irrigation (work on progress)" alt="" coords="30,292,205,384"/>
+<area shape="rect" id="node2" href="$classWeather.html" title="create and maintain weather data archive of last seven days" alt="" coords="5,5,229,244"/>
+</map>

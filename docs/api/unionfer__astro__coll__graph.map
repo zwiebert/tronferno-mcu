@@ -1,0 +1,5 @@
+<map id="fer_astro" name="fer_astro">
+<area shape="rect" id="node1" title="Block of astro rows." alt="" coords="21,329,101,407"/>
+<area shape="rect" id="node2" href="$unionfer__astro__row.html" title="Astro row." alt="" coords="5,160,116,267"/>
+<area shape="rect" id="node3" href="$structfer__time.html" title="Minute/Hour pair used in timers." alt="" coords="22,5,99,97"/>
+</map>

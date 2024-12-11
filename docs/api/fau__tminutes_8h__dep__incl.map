@@ -1,0 +1,5 @@
+<map id="fernotron/auto/fau_tminutes.h" name="fernotron/auto/fau_tminutes.h">
+<area shape="rect" id="node1" title="Represent when each kind of timer will be scheduled for a given day and g/m. Calculate the next event..." alt="" coords="5,5,145,47"/>
+<area shape="rect" id="node2" href="$fau__tevent_8hh_source.html" title=" " alt="" coords="5,95,145,136"/>
+<area shape="rect" id="node3" href="$fau__next__event_8hh_source.html" title=" " alt="" coords="5,184,145,225"/>
+</map>

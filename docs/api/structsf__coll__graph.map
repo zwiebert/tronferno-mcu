@@ -1,0 +1,5 @@
+<map id="sf" name="sf">
+<area shape="rect" id="node1" title="struct holding the RF messaga data plus some data about how and when to send" alt="" coords="5,344,179,509"/>
+<area shape="rect" id="node2" href="$unionfer__sbT.html" title="Raw message w/o checksum." alt="" coords="57,204,127,281"/>
+<area shape="rect" id="node3" href="$structFer__Cmd.html" title="Plain message or header for extended messages (w/o checksum)" alt="" coords="53,5,131,141"/>
+</map>

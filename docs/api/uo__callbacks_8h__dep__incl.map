@@ -1,0 +1,8 @@
+<map id="uout/uo_callbacks.h" name="uout/uo_callbacks.h">
+<area shape="rect" id="node1" title="pub/sub interface to publish asynchronously to MQTT servers, HTTP&#45;client web&#45;sockets,..." alt="" coords="201,5,351,32"/>
+<area shape="rect" id="node2" href="$txtio__setup_8hh_source.html" title=" " alt="" coords="5,109,155,136"/>
+<area shape="rect" id="node3" href="$tcp__cli__server__setup_8hh.html" title="Create TCP server for interactive and non&#45;interactive CLI clients." alt="" coords="179,80,373,165"/>
+<area shape="rect" id="node4" href="$fer__uo__publish_8h.html" title="publish fernotron_app state" alt="" coords="398,102,538,143"/>
+<area shape="rect" id="node5" href="$components_2tronferno_2app__uout_2include_2app__uout_2so__msg_8h_source.html" title=" " alt="" coords="394,213,542,240"/>
+<area shape="rect" id="node6" href="$status__output_8h.html" title=" " alt="" coords="375,288,561,315"/>
+</map>

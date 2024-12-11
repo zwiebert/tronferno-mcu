@@ -1,0 +1,6 @@
+<map id="fer_wdtimer" name="fer_wdtimer">
+<area shape="rect" id="node1" title="Block of weekly/daily timer rows." alt="" coords="5,469,107,635"/>
+<area shape="rect" id="node2" href="$structfer__timer.html" title="Up/Down pair used in timers." alt="" coords="15,175,97,252"/>
+<area shape="rect" id="node4" href="$structfer__timer__row.html" title="A row containing 2 timers." alt="" coords="107,315,221,392"/>
+<area shape="rect" id="node3" href="$structfer__time.html" title="Minute/Hour pair used in timers." alt="" coords="17,5,95,97"/>
+</map>

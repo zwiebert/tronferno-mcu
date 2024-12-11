@@ -1,0 +1,4 @@
+<map id="Fer_MsgTimer" name="Fer_MsgTimer">
+<area shape="rect" id="node1" title="Vocabulary type of a message to set the RTC and any automatics/timers." alt="" coords="27,541,141,663"/>
+<area shape="rect" id="node2" href="$structFer__TimerData.html" title="Vocabulary type to represent Fernotron automatic movements." alt="" coords="5,5,163,479"/>
+</map>

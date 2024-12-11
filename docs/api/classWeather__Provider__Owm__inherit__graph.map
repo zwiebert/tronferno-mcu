@@ -1,0 +1,4 @@
+<map id="Weather_Provider_Owm" name="Weather_Provider_Owm">
+<area shape="rect" id="node1" title="Weather_Provider subclass for api.openweathermap.org" alt="" coords="5,145,184,267"/>
+<area shape="rect" id="node2" href="$classWeather__Provider.html" title="Interface class of a weather data provider." alt="" coords="7,5,183,97"/>
+</map>

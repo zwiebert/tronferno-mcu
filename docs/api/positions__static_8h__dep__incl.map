@@ -1,0 +1,5 @@
+<map id="fernotron/pos/positions_static.h" name="fernotron/pos/positions_static.h">
+<area shape="rect" id="node1" title="Store and retrieve shutter positions (persistently)" alt="" coords="18,5,190,47"/>
+<area shape="rect" id="node2" href="$shutter__pct_8h.html" title="include positions_static.h and positions_dynamic.h" alt="" coords="25,95,183,136"/>
+<area shape="rect" id="node3" href="$commands_8h.html" title="commands to move or stop a shutter with position support" alt="" coords="5,184,203,211"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="fer_timer" name="fer_timer">
+<area shape="rect" id="node1" title="Up/Down pair used in timers." alt="" coords="5,175,88,252"/>
+<area shape="rect" id="node2" href="$structfer__time.html" title="Minute/Hour pair used in timers." alt="" coords="8,5,85,97"/>
+</map>

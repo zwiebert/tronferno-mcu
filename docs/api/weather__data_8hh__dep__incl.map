@@ -1,0 +1,8 @@
+<map id="/home/bertw/proj/mcu/tronferno&#45;mcu/external/components&#45;misc/components/weather/include/weather/weather_data.hh" name="/home/bertw/proj/mcu/tronferno&#45;mcu/external/components&#45;misc/components/weather/include/weather/weather_data.hh">
+<area shape="rect" id="node1" title="weather data like temperature, humidity, ..." alt="" coords="125,5,425,76"/>
+<area shape="rect" id="node2" href="$weather_8hh.html" title="create and maintain weather data archive of last seven days" alt="" coords="5,265,268,335"/>
+<area shape="rect" id="node4" href="$weather__provider_8hh.html" title="Interface for weather data provider." alt="" coords="263,124,507,209"/>
+<area shape="rect" id="node3" href="$weather__irrigation_8hh.html" title="calculations about when to irrigate based on weather data" alt="" coords="15,391,259,476"/>
+<area shape="rect" id="node5" href="$weather__provider__owm_8hh.html" title="get weather data from api.openweathermap.org" alt="" coords="292,257,536,343"/>
+<area shape="rect" id="node6" href="$weather__provider__random_8hh.html" title="provide random mock weather data for testing purposes" alt="" coords="560,257,804,343"/>
+</map>

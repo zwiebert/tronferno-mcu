@@ -1,0 +1,10 @@
+<map id="app_config/options.hh" name="app_config/options.hh">
+<area shape="rect" id="node1" title="defines strings used in user interface" alt="" coords="334,5,498,32"/>
+<area shape="rect" id="node2" href="$opt__map_8hh.html" title="mapping options strings to enum otok" alt="" coords="5,80,171,107"/>
+<area shape="rect" id="node3" href="$app__register__settings_8hh.html" title="Settings for application components." alt="" coords="335,393,526,435"/>
+<area shape="rect" id="node4" href="$app__settings_8hh.html" title="Settings for application components." alt="" coords="57,319,269,345"/>
+<area shape="rect" id="node5" href="$comp__settings_8hh.html" title="Settings for shared components." alt="" coords="296,244,507,271"/>
+<area shape="rect" id="node7" href="$settings_8hh.html" title=" " alt="" coords="333,80,499,107"/>
+<area shape="rect" id="node6" href="$config__kvs_8h.html" title="read settings from kvs storage by cb_type" alt="" coords="343,319,519,345"/>
+<area shape="rect" id="node8" href="$settings__template_8hh_source.html" title=" " alt="" coords="323,155,469,196"/>
+</map>

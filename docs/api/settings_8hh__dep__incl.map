@@ -1,0 +1,8 @@
+<map id="config_kvs/settings.hh" name="config_kvs/settings.hh">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,172,32"/>
+<area shape="rect" id="node2" href="$app__register__settings_8hh.html" title="Settings for application components." alt="" coords="65,319,256,360"/>
+<area shape="rect" id="node3" href="$settings__template_8hh_source.html" title=" " alt="" coords="87,80,234,121"/>
+<area shape="rect" id="node4" href="$app__settings_8hh.html" title="Settings for application components." alt="" coords="55,244,267,271"/>
+<area shape="rect" id="node5" href="$comp__settings_8hh.html" title="Settings for shared components." alt="" coords="198,169,409,196"/>
+<area shape="rect" id="node6" href="$config__kvs_8h.html" title="read settings from kvs storage by cb_type" alt="" coords="341,244,517,271"/>
+</map>

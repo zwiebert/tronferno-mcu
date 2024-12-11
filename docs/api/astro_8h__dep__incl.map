@@ -1,0 +1,9 @@
+<map id="fernotron_trx/astro.h" name="fernotron_trx/astro.h">
+<area shape="rect" id="node1" title="civil dusk timer calculations" alt="" coords="228,5,384,32"/>
+<area shape="rect" id="node2" href="$components_2tronferno_2app__settings_2include_2app__settings_2config_8h.html" title="Application settings." alt="" coords="41,109,201,136"/>
+<area shape="rect" id="node5" href="$fer__trx__api_8hh.html" title="C++&#45;API for sending and receiving Fernotron RF messages." alt="" coords="229,102,383,143"/>
+<area shape="rect" id="node7" href="$fer__api_8h_source.html" title=" " alt="" coords="407,80,602,165"/>
+<area shape="rect" id="node3" href="$app__settings_8hh.html" title="Settings for application components." alt="" coords="5,221,217,247"/>
+<area shape="rect" id="node4" href="$app__register__settings_8hh.html" title="Settings for application components." alt="" coords="16,303,207,344"/>
+<area shape="rect" id="node6" href="$fer__print_8h.html" title="Print raw message as formatted text to standard output (for debug purposes)." alt="" coords="242,213,381,255"/>
+</map>

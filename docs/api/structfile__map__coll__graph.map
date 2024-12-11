@@ -1,0 +1,5 @@
+<map id="file_map" name="file_map">
+<area shape="rect" id="node1" title="map URI to web content" alt="" coords="131,189,210,281"/>
+<area shape="rect" id="node2" href="$classContentReader.html" title="base class for serving file like things" alt="" coords="5,5,160,127"/>
+<area shape="rect" id="node3" href="$structweb__content.html" title="describe web content" alt="" coords="184,13,336,119"/>
+</map>

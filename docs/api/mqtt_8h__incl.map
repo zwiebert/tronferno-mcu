@@ -1,0 +1,5 @@
+<map id="app_mqtt/mqtt.h" name="app_mqtt/mqtt.h">
+<area shape="rect" id="node1" title="component which connects mqtt client to CLI and uout/callbacks" alt="" coords="29,5,160,32"/>
+<area shape="rect" id="node2" href="$mqtt_8hh.html" title="C++ wrapper of MQTT client library." alt="" coords="5,80,184,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="59,155,130,181"/>
+</map>

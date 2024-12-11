@@ -1,0 +1,18 @@
+<map id="app_settings" name="app_settings">
+<area shape="rect" id="node1" href="dir_d5ab540a0f1a46eeb09591e85a946aef.html" title="app_settings" alt="" coords="147,5,253,53"/>
+<area shape="rect" id="node2" href="dir_7f852cf003bf0a82b92f7cba237f50d9.html" title="fernotron_trx" alt="" coords="5,197,112,245"/>
+<area shape="rect" id="edge4-headlabel" href="dir_000010_000053.html" title="1" alt="" coords="56,171,65,185"/>
+<area shape="rect" id="node3" href="dir_98438063e3988470581efef61b04cf9b.html" title="config_kvs" alt="" coords="288,101,379,149"/>
+<area shape="rect" id="edge5-headlabel" href="dir_000010_000011.html" title="5" alt="" coords="286,76,295,91"/>
+<area shape="rect" id="node4" href="dir_a79599a21c415120241a198b95c2c35d.html" title="fernotron" alt="" coords="80,101,163,149"/>
+<area shape="rect" id="edge6-headlabel" href="dir_000010_000046.html" title="1" alt="" coords="154,85,163,100"/>
+<area shape="rect" id="node5" href="dir_caef551bd632be6ebe9ef36c30380f1c.html" title="utils_misc" alt="" coords="131,293,219,341"/>
+<area shape="rect" id="edge7-headlabel" href="dir_000010_000017.html" title="2" alt="" coords="182,268,191,283"/>
+<area shape="rect" id="node6" href="dir_f498004299f8484a07de79a6be8d1f27.html" title="app_config" alt="" coords="238,197,330,245"/>
+<area shape="rect" id="edge8-headlabel" href="dir_000010_000000.html" title="2" alt="" coords="270,170,279,184"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000053_000017.html" title="2" alt="" coords="133,268,142,283"/>
+<area shape="rect" id="edge9-headlabel" href="dir_000011_000017.html" title="2" alt="" coords="234,308,243,323"/>
+<area shape="rect" id="edge10-headlabel" href="dir_000011_000000.html" title="2" alt="" coords="307,178,317,192"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000046_000053.html" title="7" alt="" coords="86,180,96,194"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000046_000017.html" title="2" alt="" coords="167,266,176,281"/>
+</map>

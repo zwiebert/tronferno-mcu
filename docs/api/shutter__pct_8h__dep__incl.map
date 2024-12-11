@@ -1,0 +1,4 @@
+<map id="fernotron/pos/shutter_pct.h" name="fernotron/pos/shutter_pct.h">
+<area shape="rect" id="node1" title="include positions_static.h and positions_dynamic.h" alt="" coords="25,5,183,47"/>
+<area shape="rect" id="node2" href="$commands_8h.html" title="commands to move or stop a shutter with position support" alt="" coords="5,95,203,121"/>
+</map>

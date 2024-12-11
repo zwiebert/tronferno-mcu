@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classWeather__Provider.html" title="Interface class of a weather data provider." alt="" coords="5,31,143,57"/>
+<area shape="rect" id="node2" href="$classWeather__Provider__Owm.html" title="Weather_Provider subclass for api.openweathermap.org" alt="" coords="201,5,379,32"/>
+<area shape="rect" id="node3" href="$classWeather__Provider__Random.html" title="Weather_Provider subclass for random mock weather data" alt="" coords="191,56,389,83"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="parm_handlers" name="parm_handlers">
+<area shape="rect" id="node1" title="describing an array of parm_handler" alt="" coords="15,175,133,252"/>
+<area shape="rect" id="node2" href="$structparm__handler.html" title="describing a CLI parameter handler, so it can be found by the framework" alt="" coords="5,5,143,112"/>
+</map>

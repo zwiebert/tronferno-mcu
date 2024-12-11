@@ -1,0 +1,12 @@
+<map id="uout/uo_types.h" name="uout/uo_types.h">
+<area shape="rect" id="node1" title="API parameter and return types." alt="" coords="288,5,415,32"/>
+<area shape="rect" id="node2" href="$so__types_8h_source.html" title=" " alt="" coords="5,184,161,211"/>
+<area shape="rect" id="node4" href="$status__output_8h.html" title=" " alt="" coords="214,363,401,389"/>
+<area shape="rect" id="node5" href="$cli_8h.html" title="cli framework" alt="" coords="236,80,304,107"/>
+<area shape="rect" id="node7" href="$uo__callbacks_8h.html" title="pub/sub interface to publish asynchronously to MQTT servers, HTTP&#45;client web&#45;sockets,..." alt="" coords="428,80,579,107"/>
+<area shape="rect" id="node3" href="$components_2tronferno_2app__uout_2include_2app__uout_2so__msg_8h_source.html" title=" " alt="" coords="233,288,381,315"/>
+<area shape="rect" id="node6" href="$cli__app_8hh_source.html" title=" " alt="" coords="186,184,325,211"/>
+<area shape="rect" id="node8" href="$txtio__setup_8hh_source.html" title=" " alt="" coords="514,184,663,211"/>
+<area shape="rect" id="node9" href="$tcp__cli__server__setup_8hh.html" title="Create TCP server for interactive and non&#45;interactive CLI clients." alt="" coords="687,155,882,240"/>
+<area shape="rect" id="node10" href="$fer__uo__publish_8h.html" title="publish fernotron_app state" alt="" coords="349,177,489,218"/>
+</map>

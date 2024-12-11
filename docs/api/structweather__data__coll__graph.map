@@ -1,0 +1,3 @@
+<map id="weather_data" name="weather_data">
+<area shape="rect" id="node1" title="struct to hold weather data we got from Weather_Provider" alt="" coords="5,5,188,303"/>
+</map>

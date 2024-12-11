@@ -1,0 +1,13 @@
+<map id="fer_raw_msg" name="fer_raw_msg">
+<area shape="rect" id="node1" title="Full size raw message." alt="" coords="263,1259,370,1336"/>
+<area shape="rect" id="node2" href="$unionfer__astro.html" title="Block of astro rows." alt="" coords="23,929,103,1007"/>
+<area shape="rect" id="node3" href="$unionfer__astro__row.html" title="Astro row." alt="" coords="5,175,116,281"/>
+<area shape="rect" id="node4" href="$structfer__time.html" title="Minute/Hour pair used in timers." alt="" coords="82,5,159,97"/>
+<area shape="rect" id="node8" href="$structfer__timer.html" title="Up/Down pair used in timers." alt="" coords="141,189,223,267"/>
+<area shape="rect" id="node5" href="$unionfer__rtc.html" title="RTC row." alt="" coords="346,1075,410,1152"/>
+<area shape="rect" id="node6" href="$structfer__rtc__sd.html" title="Structured RTC message row (fer_fpr00 ). Programs the devices internal RTC." alt="" coords="338,344,447,905"/>
+<area shape="rect" id="node7" href="$unionfer__wdtimer.html" title="Block of weekly/daily timer rows." alt="" coords="206,1031,307,1196"/>
+<area shape="rect" id="node9" href="$structfer__timer__row.html" title="A row containing 2 timers." alt="" coords="200,586,313,663"/>
+<area shape="rect" id="node10" href="$unionfer__cmd__row.html" title="Plain message or header for extended messages (with checksum)" alt="" coords="446,1060,553,1167"/>
+<area shape="rect" id="node11" href="$structFer__Cmd.html" title="Plain message or header for extended messages (w/o checksum)" alt="" coords="472,557,551,693"/>
+</map>

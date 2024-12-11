@@ -1,0 +1,14 @@
+<map id="fernotron/fer_pct.h" name="fernotron/fer_pct.h">
+<area shape="rect" id="node1" title="class Pct to represent shutter opening percentage" alt="" coords="424,5,567,32"/>
+<area shape="rect" id="node2" href="$components_2tronferno_2app__settings_2include_2app__settings_2config_8h.html" title="Application settings." alt="" coords="31,87,191,114"/>
+<area shape="rect" id="node5" href="$pairings_8h.html" title="Map Fernotron controller 3&#45;byte&#45;addresses to an a/g/m addresses." alt="" coords="216,87,401,114"/>
+<area shape="rect" id="node6" href="$fau__tminutes_8h.html" title="Represent when each kind of timer will be scheduled for a given day and g/m. Calculate the next event..." alt="" coords="425,80,565,121"/>
+<area shape="rect" id="node9" href="$positions__dynamic_8h.html" title="Keep track of positions for a currently moving shutter." alt="" coords="589,80,761,121"/>
+<area shape="rect" id="node12" href="$positions__static_8h.html" title="Store and retrieve shutter positions (persistently)" alt="" coords="785,80,957,121"/>
+<area shape="rect" id="node3" href="$app__settings_8hh.html" title="Settings for application components." alt="" coords="5,177,217,203"/>
+<area shape="rect" id="node4" href="$app__register__settings_8hh.html" title="Settings for application components." alt="" coords="16,259,207,300"/>
+<area shape="rect" id="node7" href="$fau__tevent_8hh_source.html" title=" " alt="" coords="425,169,565,211"/>
+<area shape="rect" id="node8" href="$fau__next__event_8hh_source.html" title=" " alt="" coords="425,259,565,300"/>
+<area shape="rect" id="node10" href="$shutter__pct_8h.html" title="include positions_static.h and positions_dynamic.h" alt="" coords="700,169,859,211"/>
+<area shape="rect" id="node11" href="$commands_8h.html" title="commands to move or stop a shutter with position support" alt="" coords="681,266,878,293"/>
+</map>

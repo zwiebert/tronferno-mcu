@@ -1,0 +1,7 @@
+<map id="/home/bertw/proj/mcu/tronferno&#45;mcu/external/components&#45;misc/components/weather/include/weather/weather.hh" name="/home/bertw/proj/mcu/tronferno&#45;mcu/external/components&#45;misc/components/weather/include/weather/weather.hh">
+<area shape="rect" id="node1" title="create and maintain weather data archive of last seven days" alt="" coords="66,5,329,76"/>
+<area shape="rect" id="node2" href="$weather__provider_8hh.html" title="Interface for weather data provider." alt="" coords="5,124,160,151"/>
+<area shape="rect" id="node3" href="$weather__data_8hh.html" title="weather data like temperature, humidity, ..." alt="" coords="75,199,205,225"/>
+<area shape="rect" id="node5" title=" " alt="" coords="235,124,304,151"/>
+<area shape="rect" id="node4" title=" " alt="" coords="109,273,171,300"/>
+</map>

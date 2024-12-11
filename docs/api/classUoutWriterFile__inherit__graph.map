@@ -1,0 +1,5 @@
+<map id="UoutWriterFile" name="UoutWriterFile">
+<area shape="rect" id="node1" title="Build data and, while building, write them to a file while building." alt="" coords="8,447,160,553"/>
+<area shape="rect" id="node2" href="$classUoutWriter.html" title="Abstract class which contains various data builders." alt="" coords="21,175,147,399"/>
+<area shape="rect" id="node3" href="$classUoutRawWriter.html" title="Abstract class which implements public write methods and operators which then call an abstract privat..." alt="" coords="5,5,163,127"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="Weather_Provider_Owm::fetch_weather_data" name="Weather_Provider_Owm::fetch_weather_data">
+<area shape="rect" id="node1" title="Fetch weather data from provider." alt="" coords="5,39,184,80"/>
+<area shape="rect" id="node2" href="$classWeather__Provider__Owm.html#a7b882bfface4707ee80b8ddd1828ad6c" title="fetch data from api.openweathermap.org" alt="" coords="232,5,411,47"/>
+<area shape="rect" id="node3" href="$classWeather__Provider__Owm.html#a30bd1ff417fd4fb3ffd946f847b952cf" title="Get URL stored in *this &#45;or&#45; configured URL." alt="" coords="232,71,411,112"/>
+</map>

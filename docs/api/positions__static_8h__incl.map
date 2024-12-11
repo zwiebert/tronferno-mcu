@@ -1,0 +1,7 @@
+<map id="fernotron/pos/positions_static.h" name="fernotron/pos/positions_static.h">
+<area shape="rect" id="node1" title="Store and retrieve shutter positions (persistently)" alt="" coords="100,5,272,47"/>
+<area shape="rect" id="node2" href="$fer__pct_8h.html" title="class Pct to represent shutter opening percentage" alt="" coords="60,95,203,121"/>
+<area shape="rect" id="node4" title=" " alt="" coords="222,169,305,196"/>
+<area shape="rect" id="node3" title=" " alt="" coords="12,244,83,271"/>
+<area shape="rect" id="node5" href="$int__macros_8h.html" title="Basic helper macros for integers." alt="" coords="22,169,198,196"/>
+</map>

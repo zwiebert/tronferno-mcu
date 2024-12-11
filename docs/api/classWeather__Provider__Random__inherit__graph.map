@@ -1,0 +1,4 @@
+<map id="Weather_Provider_Random" name="Weather_Provider_Random">
+<area shape="rect" id="node1" title="Weather_Provider subclass for random mock weather data" alt="" coords="5,145,204,223"/>
+<area shape="rect" id="node2" href="$classWeather__Provider.html" title="Interface class of a weather data provider." alt="" coords="17,5,193,97"/>
+</map>

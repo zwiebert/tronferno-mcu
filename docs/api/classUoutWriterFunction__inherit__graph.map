@@ -1,0 +1,5 @@
+<map id="UoutWriterFunction" name="UoutWriterFunction">
+<area shape="rect" id="node1" title="Build data and, while building, write them in chunks using a user provided callback function object (..." alt="" coords="5,447,189,553"/>
+<area shape="rect" id="node2" href="$classUoutWriter.html" title="Abstract class which contains various data builders." alt="" coords="34,175,161,399"/>
+<area shape="rect" id="node3" href="$classUoutRawWriter.html" title="Abstract class which implements public write methods and operators which then call an abstract privat..." alt="" coords="19,5,176,127"/>
+</map>

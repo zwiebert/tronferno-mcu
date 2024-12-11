@@ -1,0 +1,8 @@
+<map id="UoutWriter" name="UoutWriter">
+<area shape="rect" id="node1" title="Abstract class which contains various data builders." alt="" coords="308,175,435,399"/>
+<area shape="rect" id="node3" href="$classUoutWriterBuilder.html" title="Build data without an actual data sink for passing to external builder functions expecting a UoutWrit..." alt="" coords="5,461,169,539"/>
+<area shape="rect" id="node4" href="$classUoutWriterConsole.html" title="build data and write to local or remote console (file or socket descriptor)" alt="" coords="194,447,365,553"/>
+<area shape="rect" id="node5" href="$classUoutWriterFile.html" title="Build data and, while building, write them to a file while building." alt="" coords="389,447,541,553"/>
+<area shape="rect" id="node6" href="$classUoutWriterFunction.html" title="Build data and, while building, write them in chunks using a user provided callback function object (..." alt="" coords="565,447,749,553"/>
+<area shape="rect" id="node2" href="$classUoutRawWriter.html" title="Abstract class which implements public write methods and operators which then call an abstract privat..." alt="" coords="293,5,450,127"/>
+</map>

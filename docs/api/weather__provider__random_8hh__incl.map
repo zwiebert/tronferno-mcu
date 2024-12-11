@@ -1,0 +1,7 @@
+<map id="/home/bertw/proj/mcu/tronferno&#45;mcu/external/components&#45;misc/components/weather/include/weather/weather_provider_random.hh" name="/home/bertw/proj/mcu/tronferno&#45;mcu/external/components&#45;misc/components/weather/include/weather/weather_provider_random.hh">
+<area shape="rect" id="node1" title="provide random mock weather data for testing purposes" alt="" coords="27,5,271,91"/>
+<area shape="rect" id="node2" href="$weather__provider_8hh.html" title="Interface for weather data provider." alt="" coords="5,139,160,165"/>
+<area shape="rect" id="node5" title=" " alt="" coords="185,139,250,165"/>
+<area shape="rect" id="node3" href="$weather__data_8hh.html" title="weather data like temperature, humidity, ..." alt="" coords="17,213,148,240"/>
+<area shape="rect" id="node4" title=" " alt="" coords="52,288,113,315"/>
+</map>

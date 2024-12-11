@@ -1,0 +1,5 @@
+<map id="fer_timer_row" name="fer_timer_row">
+<area shape="rect" id="node1" title="A row containing 2 timers." alt="" coords="5,315,119,392"/>
+<area shape="rect" id="node2" href="$structfer__timer.html" title="Up/Down pair used in timers." alt="" coords="21,175,103,252"/>
+<area shape="rect" id="node3" href="$structfer__time.html" title="Minute/Hour pair used in timers." alt="" coords="23,5,101,97"/>
+</map>

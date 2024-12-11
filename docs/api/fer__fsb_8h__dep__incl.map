@@ -1,0 +1,8 @@
+<map id="fernotron_trx/raw/fer_fsb.h" name="fernotron_trx/raw/fer_fsb.h">
+<area shape="rect" id="node1" title="Plain raw message." alt="" coords="387,5,544,47"/>
+<area shape="rect" id="node2" href="$fer__msg__tx_8h.html" title="Send raw messages." alt="" coords="5,117,163,158"/>
+<area shape="rect" id="node3" href="$fer__rawmsg__build_8h.html" title="builder functions to construct (extended) raw messages" alt="" coords="187,117,344,158"/>
+<area shape="rect" id="node4" href="$fer__api_8h_source.html" title=" " alt="" coords="368,95,563,180"/>
+<area shape="rect" id="node5" href="$fer__msg__tx__queue_8h_source.html" title=" " alt="" coords="587,95,781,180"/>
+<area shape="rect" id="node6" href="$fer__trx__incoming__event_8hh_source.html" title=" " alt="" coords="805,95,1005,180"/>
+</map>

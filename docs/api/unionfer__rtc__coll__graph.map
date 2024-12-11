@@ -1,0 +1,4 @@
+<map id="fer_rtc" name="fer_rtc">
+<area shape="rect" id="node1" title="RTC row." alt="" coords="28,629,92,707"/>
+<area shape="rect" id="node2" href="$structfer__rtc__sd.html" title="Structured RTC message row (fer_fpr00 ). Programs the devices internal RTC." alt="" coords="5,5,115,567"/>
+</map>

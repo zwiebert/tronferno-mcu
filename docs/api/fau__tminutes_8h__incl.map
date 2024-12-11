@@ -1,0 +1,24 @@
+<map id="fernotron/auto/fau_tminutes.h" name="fernotron/auto/fau_tminutes.h">
+<area shape="rect" id="node1" title="Represent when each kind of timer will be scheduled for a given day and g/m. Calculate the next event..." alt="" coords="206,5,346,47"/>
+<area shape="rect" id="node2" href="$fer__pct_8h.html" title="class Pct to represent shutter opening percentage" alt="" coords="74,102,217,129"/>
+<area shape="rect" id="node3" title=" " alt="" coords="8,273,78,300"/>
+<area shape="rect" id="node4" title=" " alt="" coords="235,191,318,218"/>
+<area shape="rect" id="node6" href="$timer__data_8h.html" title="vocabulary types to program Fernotron automatic (timers)" alt="" coords="387,95,534,136"/>
+<area shape="rect" id="node22" title=" " alt="" coords="558,102,622,129"/>
+<area shape="rect" id="node5" href="$int__macros_8h.html" title="Basic helper macros for integers." alt="" coords="35,191,211,218"/>
+<area shape="rect" id="node7" title=" " alt="" coords="680,191,750,218"/>
+<area shape="rect" id="node8" title=" " alt="" coords="774,191,845,218"/>
+<area shape="rect" id="node9" title=" " alt="" coords="870,191,936,218"/>
+<area shape="rect" id="node10" href="$cstring__utils_8hh_source.html" title=" " alt="" coords="392,184,528,225"/>
+<area shape="rect" id="node16" href="$dbg_8h_source.html" title=" " alt="" coords="553,191,656,218"/>
+<area shape="rect" id="node11" title=" " alt="" coords="323,273,390,300"/>
+<area shape="rect" id="node12" title=" " alt="" coords="414,273,506,300"/>
+<area shape="rect" id="node13" href="$allocator__malloc_8hh_source.html" title=" " alt="" coords="148,273,298,300"/>
+<area shape="rect" id="node14" title=" " alt="" coords="236,348,314,375"/>
+<area shape="rect" id="node15" title=" " alt="" coords="133,348,212,375"/>
+<area shape="rect" id="node17" href="$log_8h_source.html" title=" " alt="" coords="530,273,585,300"/>
+<area shape="rect" id="node19" title=" " alt="" coords="609,273,680,300"/>
+<area shape="rect" id="node20" title=" " alt="" coords="704,273,779,300"/>
+<area shape="rect" id="node21" title=" " alt="" coords="803,273,878,300"/>
+<area shape="rect" id="node18" title=" " alt="" coords="516,348,600,375"/>
+</map>

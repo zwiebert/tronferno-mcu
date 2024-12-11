@@ -1,0 +1,5 @@
+<map id="UoutWriterConsole" name="UoutWriterConsole">
+<area shape="rect" id="node1" title="build data and write to local or remote console (file or socket descriptor)" alt="" coords="5,447,176,553"/>
+<area shape="rect" id="node2" href="$classUoutWriter.html" title="Abstract class which contains various data builders." alt="" coords="27,175,154,399"/>
+<area shape="rect" id="node3" href="$classUoutRawWriter.html" title="Abstract class which implements public write methods and operators which then call an abstract privat..." alt="" coords="12,5,169,127"/>
+</map>
