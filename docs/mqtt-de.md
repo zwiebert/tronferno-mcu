@@ -86,6 +86,7 @@
 
 * tfmc/gpi/+/level - Änderungen des Pegels (0,1) eines Eingangs-Pins (GPI) wenn dieser in der Konfiguration definiert wurde.
 
+* tfmcu/rf/+/rx_out - Funk-Kommando (gesendet oder empfangen) als Text (stop, down, up, sun-down, sun-up, ...)
 
 #### Beispiele
 

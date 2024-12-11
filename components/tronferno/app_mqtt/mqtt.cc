@@ -5,7 +5,6 @@
  *      Author: bertw
  */
 
-
 #include "app_mqtt/mqtt.h"
 
 #include "mqtt_private.h"
@@ -53,22 +52,32 @@ char *Topic, *Data;
 void AppNetMqtt::publish_gmp(const so_arg_gmp_t gmp) {
   char topic[64], data[16];
 
-  snprintf(topic, 64, "%s%u%u/pct_out", TOPIC_ROOT, gmp.g, gmp.m);
-  snprintf(data, 16, "%u", gmp.p);
+  snprintf(topic, sizeof topic, "%s%u%u/pct_out", TOPIC_ROOT, gmp.g, gmp.m);
+  snprintf(data, sizeof data, "%u", gmp.p);
   publish(topic, data, true);
 
-  snprintf(topic, 64, "%s%u%u/ipct_out", TOPIC_ROOT, gmp.g, gmp.m);
-  snprintf(data, 16, "%u", 100 - gmp.p);
+  snprintf(topic, sizeof topic, "%s%u%u/ipct_out", TOPIC_ROOT, gmp.g, gmp.m);
+  snprintf(data, sizeof data, "%u", 100 - gmp.p);
   publish(topic, data, true);
 }
 
 void AppNetMqtt::publishPinChange(int gpio_num, bool level) {
   char topic[64];
   const char *data = level ? "1" : "0";
-  snprintf(topic, 64, "%sgpi/%d/level", TOPIC_ROOT, gpio_num);
+  snprintf(topic, sizeof topic, "%sgpi/%d/level", TOPIC_ROOT, gpio_num);
   publish(topic, data, true);
 }
 
+void AppNetMqtt::publish_plainCmd(const so_arg_plain_cmd_t *pl_cmd) {
+  char topic[64];
+
+  if (pl_cmd->flags.addrType_central) {
+    snprintf(topic, sizeof topic, "%s/%06lx%u%u/rf_out", TOPIC_ROOT, pl_cmd->plain_msg->a, pl_cmd->plain_msg->g, pl_cmd->plain_msg->m);
+  } else {
+    snprintf(topic, sizeof topic, "%s/%06lx/rf_out", TOPIC_ROOT, pl_cmd->plain_msg->a);
+  }
+  publish(topic, pl_cmd->cmd_string, true);
+}
 
 static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
   // No lock required: esp_mqtt_client_publish is thread safe
@@ -76,13 +85,28 @@ static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
     MyMqtt.publishPinChange(pch->gpio_num, pch->level);
   if (auto gmp = uoCb_gmpFromMsg(msg))
     MyMqtt.publish_gmp(*gmp);
+  if (auto plCmd = uoCb_plainCmdFromMsg(msg))
+    MyMqtt.publish_plainCmd(plCmd);
   if (auto json = uoCb_jsonFromMsg(msg)) {
-    if (msg.flags.evt.uo_evt_flag_timerChange)
-      MyMqtt.publish("tfmcu/timer_out", json, true);
+    char topic[64];
+    if (msg.flags.evt.uo_evt_flag_timerChange) {
+      snprintf(topic, sizeof topic, "%stimer_out", TOPIC_ROOT);
+      MyMqtt.publish(topic, json, true);
+    }
+#if 0
+    if (msg.flags.evt.uo_evt_flag_rfMsgReceived) {
+      snprintf(topic, sizeof topic, "%srfrx_out", TOPIC_ROOT);
+      MyMqtt.publish(topic, json, true);
+    }
+    if (msg.flags.evt.uo_evt_flag_msgSent) {
+      snprintf(topic, sizeof topic, "%srftx_out", TOPIC_ROOT);
+      MyMqtt.publish(topic, json, true);
+    }
+#endif
   }
 }
 
-void AppNetMqtt::connected ()  {
+void AppNetMqtt::connected() {
   char topic[64];
 
   // subscribe topics on MQTT server
@@ -107,6 +131,8 @@ void AppNetMqtt::connected ()  {
   flags.evt.pin_change = true;
   flags.evt.uo_evt_flag_pctChange = true;
   flags.evt.uo_evt_flag_timerChange = true;
+  flags.evt.uo_evt_flag_rfMsgReceived = true;
+  flags.evt.uo_evt_flag_msgSent = true;
   flags.fmt.raw = true;
   flags.fmt.json = true;
   uoCb_subscribe(io_mqttApp_uoutPublish_cb, flags);
@@ -126,7 +152,7 @@ void AppNetMqtt::connected ()  {
     }
 }
 
-void AppNetMqtt::disconnected ()  {
+void AppNetMqtt::disconnected() {
   // unsubscribe from uout-component
   uoCb_unsubscribe(io_mqttApp_uoutPublish_cb);
 }
@@ -141,10 +167,9 @@ void io_mqttApp_process_cmdline(char *cmdline, UoutWriter &td) {
   }
 }
 
-void AppNetMqtt::received(const char *topic, int topic_len, const char *data, int data_len)  {
+void AppNetMqtt::received(const char *topic, int topic_len, const char *data, int data_len) {
   received_cmdl(topic, topic_len, data, data_len, io_mqttApp_process_cmdline);
 }
-
 
 struct c_map {
   const char *fs;
@@ -152,15 +177,15 @@ struct c_map {
 };
 
 constexpr struct c_map const fc_map[] = { //
-    { "down", fer_if_cmd_DOWN }, //
-        { "up", fer_if_cmd_UP }, //
-        { "stop", fer_if_cmd_STOP }, //
-        { "sun-down", fer_if_cmd_SunDOWN }, //
-        { "sun-up", fer_if_cmd_SunUP }, //
-        { "sun-inst", fer_if_cmd_SunINST }, //
-        //{"sun-test", fer_if_cmd_Program},//
-        { "set", fer_if_cmd_SET },  //
-    };
+  { "down", fer_if_cmd_DOWN}, //
+  { "up", fer_if_cmd_UP}, //
+  { "stop", fer_if_cmd_STOP}, //
+  { "sun-down", fer_if_cmd_SunDOWN}, //
+  { "sun-up", fer_if_cmd_SunUP}, //
+  { "sun-inst", fer_if_cmd_SunINST}, //
+  //{"sun-test", fer_if_cmd_Program},//
+  { "set", fer_if_cmd_SET},  //
+};
 
 static fer_if_cmd parm_to_ferCMD(const char *token, size_t token_len) {
   for (int i = 0; i < (sizeof(fc_map) / sizeof(fc_map[0])); ++i) {
@@ -172,15 +197,15 @@ static fer_if_cmd parm_to_ferCMD(const char *token, size_t token_len) {
 }
 
 static so_arg_agm_t topic_to_Agm(const char *addr, unsigned addr_len) {
-  so_arg_agm_t r{};
+  so_arg_agm_t r { };
   if (addr_len == 2) {
     r.g = addr[0] - '0';
     r.m = addr[1] - '0';
   } else if (addr_len == 6) {
-    std::from_chars(addr, addr+6, r.a, 16);
+    std::from_chars(addr, addr + 6, r.a, 16);
 
   } else if (addr_len == 8) {
-    std::from_chars(addr, addr+6, r.a, 16);
+    std::from_chars(addr, addr + 6, r.a, 16);
     r.g = addr[6] - '0';
     r.m = addr[7] - '0';
   } else {
@@ -189,7 +214,7 @@ static so_arg_agm_t topic_to_Agm(const char *addr, unsigned addr_len) {
   if (!r.a) {
     r.a = fer_config.cu;
   }
-    return r;
+  return r;
 }
 
 static void io_mqtt_publish_sub_topic_get_json(UoutWriter &td, const char *sub_topic) {
@@ -202,7 +227,6 @@ static void io_mqtt_publish_sub_topic_get_json(UoutWriter &td, const char *sub_t
 
   MyMqtt.publish(topic, json);
 }
-
 
 void AppNetMqtt::received_cmdl(const char *topic, int topic_len, const char *data, int data_len, proc_cmdline_funT proc_cmdline_fun) {
   UoutWriterBuilder td { SO_TGT_MQTT | SO_TGT_FLAG_JSON };
@@ -249,12 +273,12 @@ void AppNetMqtt::received_cmdl(const char *topic, int topic_len, const char *dat
         if (agm.a != fer_config.cu)
           return;
         if (Pct pos = fer_simPos_getPct_whileMoving(agm.g, agm.m)) {
-          publish_gmp({agm.g, agm.m, pos});
+          publish_gmp( { agm.g, agm.m, pos });
         }
       } else {
         int pct = -1;
         if (auto res = std::from_chars(data, data + data_len, pct, 10); res.ec == std::errc()) {
-           fer_cmd_moveShutterToPct(agm.a, agm.g, agm.m, pct, 2);
+          fer_cmd_moveShutterToPct(agm.a, agm.g, agm.m, pct, 2);
         }
       }
     } else if (topic_endsWith(topic, topic_len, TOPIC_IPCT_END)) {
@@ -269,13 +293,13 @@ void AppNetMqtt::received_cmdl(const char *topic, int topic_len, const char *dat
         if (agm.a != fer_config.cu)
           return;
         if (Pct pos = fer_simPos_getPct_whileMoving(agm.g, agm.m)) {
-          publish_gmp({agm.g, agm.m, pos});
+          publish_gmp( { agm.g, agm.m, pos });
         }
       } else {
         int pct = -1;
         if (auto res = std::from_chars(data, data + data_len, pct, 10); res.ec == std::errc()) {
-           pct = 100 - pct;
-           fer_cmd_moveShutterToPct(agm.a, agm.g, agm.m, pct, 2);
+          pct = 100 - pct;
+          fer_cmd_moveShutterToPct(agm.a, agm.g, agm.m, pct, 2);
         }
       }
     } else if (topic_endsWith(topic, topic_len, TOPIC_CMD_END)) {
@@ -318,7 +342,6 @@ void io_mqttApp_test1() {
 
 bool io_mqttApp_HassConfig(const class Fer_GmSet &gmSet, bool remove, const char *hass_root_topic) {
 
-
   for (auto it = gmSet.begin(1); it; ++it) {
     uint8_t g = it.getG();
     uint8_t m = it.getM();
@@ -326,7 +349,6 @@ bool io_mqttApp_HassConfig(const class Fer_GmSet &gmSet, bool remove, const char
 
     char name[32] = "";
     fer_shPref_strByM_load(name, sizeof name, "NAME", g, m);
-
 
     const char topic_fmt[] = "%s/cover/" UNIQUE_ID "/config";
     const size_t topic_size = (sizeof topic_fmt) + strlen(hass_root_topic) + strlen(gm);
@@ -351,7 +373,7 @@ bool io_mqttApp_HassConfig(const class Fer_GmSet &gmSet, bool remove, const char
           "\"pl_cls\":\"down\","//
           "\"pl_stop\":\"stop\""//
           "}";
-      const size_t data_size = (sizeof data_fmt) + strlen(gm)*3 + strlen(name) + strlen(TOPIC_ROOT);
+      const size_t data_size = (sizeof data_fmt) + strlen(gm) * 3 + strlen(name) + strlen(TOPIC_ROOT);
       char data[data_size];
       if (data_size <= snprintf(data, data_size, data_fmt //
           , gm // 1
@@ -366,5 +388,4 @@ bool io_mqttApp_HassConfig(const class Fer_GmSet &gmSet, bool remove, const char
 
   return true;
 }
-
 

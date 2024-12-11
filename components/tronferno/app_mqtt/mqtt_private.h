@@ -34,6 +34,8 @@ public:
    */
   void publish_gmp(const so_arg_gmp_t gmp);
 
+  void publish_plainCmd(const so_arg_plain_cmd_t *pl_cmd);
+
   /**
    * \brief           Publish level change for Input pin
    * \param gpio_num  GPIO number of input pin

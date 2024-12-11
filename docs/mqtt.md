@@ -87,6 +87,7 @@
 
 * tfmc/gpi/+/level - change of level (0,1) on input pin (must have been set as input pin in config)
 
+* tfmcu/rf/+/rx_out - radio-command (both transmitted or received) as text (stop, down, up, sun-down, sun-up, ...)
 
 #### Examples
 
