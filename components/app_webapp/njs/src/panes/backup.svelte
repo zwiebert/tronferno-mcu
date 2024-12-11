@@ -13,7 +13,10 @@
   });
 
 
+  let backup_json = $derived(stringify_object_to_json($Backup));
+
   let text = $state(backup_json);
+
 
   let pr_config_isChecked = $state();
   let pr_config_netconn_isChecked = $state();
@@ -79,7 +82,6 @@
       httpFetch.http_postCommand({ shpref: el });
     });
   }
-  let backup_json = $derived(stringify_object_to_json($Backup));
 </script>
 
 <div class="main-area">
