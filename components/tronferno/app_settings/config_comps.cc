@@ -31,11 +31,11 @@
 
 unsigned tfmcu_error_bits;
 void tfmcu_put_error(tfmcu_errorT error_code, bool value) {
-   auto old_error_bits = tfmcu_error_bits;
-   PUT_BIT(tfmcu_error_bits, error_code, value);
-   if (old_error_bits != tfmcu_error_bits) {
-     uoApp_publish_errorMask(tfmcu_error_bits);
-   }
+  auto old_error_bits = tfmcu_error_bits;
+  PUT_BIT(tfmcu_error_bits, error_code, value);
+  if (old_error_bits != tfmcu_error_bits) {
+    uoApp_publish_errorMask(tfmcu_error_bits);
+  }
 }
 
 #define CI(cb) static_cast<configItem>(cb)
@@ -185,7 +185,7 @@ struct cfg_astro* config_read_astro(struct cfg_astro *c) {
     kvsRead_i8(h, CB_ASTRO_CORRECTION, c->astroCorrection);
 
 #ifndef CONFIG_APP_USE_POSIX_TIME
-      kvsRead_blob(h, CI(CB_TIZO), c->geo_timezone);
+    kvsRead_blob(h, CI(CB_TIZO), c->geo_timezone);
 #else
     char tz[64] = CONFIG_APP_GEO_TZ;
     kvsRead_charArray(h, CI(CB_TZ), tz);
@@ -240,7 +240,7 @@ struct cc1101_settings* config_read_cc1101(struct cc1101_settings *c) {
   return 0;
 }
 
-const char *config_read_cc1101_config(char *buf, size_t len) {
+const char* config_read_cc1101_config(char *buf, size_t len) {
   if (len < 97)
     return NULL;
 
@@ -267,16 +267,18 @@ void config_setup_cc1101() {
   }
 
   if (!c.enable)
-     return;
-
+    return;
 
   // Check for correctly wiring of the cc1101 module
   auto rfin_gpio = config_read_rfin_gpio();
   tfmcu_put_error(TFMCU_ERR_CC1101_RFIN_NOT_CONNECTED, rfin_gpio >= 0 && !cc1101_ook_gdo_isConnected(2, rfin_gpio));
-  
+
   char cc1101_config[97];
   if (config_read_cc1101_config(cc1101_config, sizeof cc1101_config)) {
-    cc1101_ook_updConfig_fromSparse(cc1101_config);
+    if (!cc1101_ook_updConfig_fromSparse(cc1101_config)) {
+      tfmcu_put_error(TFMCU_ERR_CC1101_INIT_FAILED, true);
+      return;
+    }
   }
 
 }
@@ -292,7 +294,7 @@ void config_ext_setup_txtio() {
   flags.evt.uo_evt_flag_pctChange = true;
   flags.evt.uo_evt_flag_rfMsgReceived = true;
   config_setup_txtio(&flags);
-  fer_verbosity =  txtio_verbose;
+  fer_verbosity = txtio_verbose;
 }
 
 void config_ext_setup_cliTcpServer() {
