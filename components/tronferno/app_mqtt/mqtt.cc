@@ -72,9 +72,9 @@ void AppNetMqtt::publish_plainCmd(const so_arg_plain_cmd_t *pl_cmd) {
   char topic[64];
 
   if (pl_cmd->flags.addrType_central) {
-    snprintf(topic, sizeof topic, "%s/%06lx%u%u/rf_out", TOPIC_ROOT, (long unsigned) pl_cmd->plain_msg->a, pl_cmd->plain_msg->g, pl_cmd->plain_msg->m);
+    snprintf(topic, sizeof topic, "%s%06lx%u%u/rf_out", TOPIC_ROOT, (long unsigned) pl_cmd->plain_msg->a, pl_cmd->plain_msg->g, pl_cmd->plain_msg->m);
   } else {
-    snprintf(topic, sizeof topic, "%s/%06lx/rf_out", TOPIC_ROOT, (long unsigned) pl_cmd->plain_msg->a);
+    snprintf(topic, sizeof topic, "%s%06lx/rf_out", TOPIC_ROOT, (long unsigned) pl_cmd->plain_msg->a);
   }
   publish(topic, pl_cmd->cmd_string, true);
 }
