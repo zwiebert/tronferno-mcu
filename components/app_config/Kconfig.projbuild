@@ -12,7 +12,7 @@ menu "Tronferno Project Configuration"
     config APP_USE_HTTP_SERVE_JS_MAP
         depends on APP_USE_HTTP
         bool "Serve wapp.js.map file"
-        default y
+        default n
 
     config APP_USE_HTTP_SERVE_CSS_MAP
         depends on APP_USE_HTTP
