@@ -17,6 +17,7 @@
   import PaneReceiverProgramming from "../panes/receiver_programming.svelte";
   import Pane2411 from "../panes/2411.svelte";
   import PaneAppLog from "../panes/app_log.svelte";
+  import PaneRfCapture from "../panes/rf_capture.svelte";
   import PaneDeveloper from "../panes/developer.svelte";
   import PaneUserLevel from "../panes/user_level.svelte";
   import PaneUserHelp from "../panes/user_help.svelte";
@@ -92,6 +93,7 @@
           { name: $_("navTab.cfg.receiver.tab"), idx: 7 },
           { name: $_("navTab.cfg.transmitter.tab"), idx: 1 },
           { name: "Log", idx: 6 },
+          { name: "RF", idx: 8 },
         ]}
         name="settings"
       />
@@ -140,6 +142,8 @@
       <PaneShutterName />
     {:else if tabIdxSettings === 6}
       <PaneAppLog />
+    {:else if tabIdxSettings === 8}
+      <PaneRfCapture />
     {/if}
   {:else if tabIdxMain === 5}
     <PaneUserLevel />

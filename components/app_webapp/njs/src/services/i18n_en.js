@@ -120,6 +120,15 @@ export const en = {
         header: "Firmware information and Over the Air firmware update from GitHub zwiebert/tronferno-mcu-bin repository",
       },
     },
+    rfcap: {
+      header: "RF Capture",
+      do_capture: "Start Capture",
+      tt: {
+        header: "Capture raw radio data and display as hex-dump. ",
+        do_capture: "Click here to capture received RF raw data. 1) Hold Stop Button on a Fernotron Transmitter 2) Click this button 3) Data will be displayed after a second in textarea below",
+      },
+    },
+
 
     backup: {
       header: "Backup/Restore Settings",

@@ -13,6 +13,7 @@
 #include "../app_uout/so_print.h"
 #include <fernotron/auto/fau_tevent.hh>
 #include "fernotron/auto/fau_tdata_store.h"
+#include <fernotron_trx/raw/rf_capture.hh>
 #include "kvs/kvs_wrapper.h"
 #include "utils_misc/bcd.h"
 #include "app_misc/rtc.h"
@@ -172,7 +173,7 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
     default:
       // Echo parameter to test quoting in command lines
       if (strcmp(key, "echo") == 0) {
-        td.so().print("echo",  val);
+        td.so().print("echo", val);
         break;
       }
 #ifdef CONFIG_APP_USE_MQTT
@@ -267,11 +268,33 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
         break;
       }
 
-
       if (strcmp(key, "kvs-pk") == 0) {
         kvs_print_keys(td, val);
         break;
       }
+
+#ifdef CONFIG_TRONFERNO_ENABLE_RF_CAPTURE
+      if (strcmp(key, "rf-capture") == 0) {
+        if (strcmp(val, "?") == 0) {
+          uint8_t *buf;
+          unsigned buf_size;
+          if (rfCapture_get(&buf, &buf_size)) {
+            td.sj().add_key("rf-capture");
+            td.sj().add_array();
+            for (unsigned i = 0; i < buf_size; ++i) {
+              auto c = buf[i];
+              td.sj().read_json_from_function([c](char *dst, size_t dst_size) -> int {
+                return snprintf(dst, dst_size, "%u", c);
+              });
+            }
+            td.sj().close_array();
+          }
+        } else {
+          rfCapture_init(atoi(val));
+        }
+        break;
+      }
+#endif
 
       if (strcmp(key, "error-bits") == 0) {
         td.so().print("error-bits", tfmcu_error_bits, 10);
@@ -306,37 +329,37 @@ int process_parmMcu(clpar p[], int len, class UoutWriter &td) {
 
 #ifndef TEST_HOST
       if (strcmp(key, "loglevel-get") == 0) {
-          td.so().print("loglevel", (int)esp_log_level_get(val));
+        td.so().print("loglevel", (int) esp_log_level_get(val));
         break;
       }
       if (strcmp(key, "loglevel-none") == 0) {
-          esp_log_level_set(val, ESP_LOG_NONE);
-          td.so().print("loglevel", (int)esp_log_level_get(val));
+        esp_log_level_set(val, ESP_LOG_NONE);
+        td.so().print("loglevel", (int) esp_log_level_get(val));
         break;
       }
       if (strcmp(key, "loglevel-error") == 0) {
-          esp_log_level_set(val, ESP_LOG_ERROR);
-          td.so().print("loglevel", (int)esp_log_level_get(val));
+        esp_log_level_set(val, ESP_LOG_ERROR);
+        td.so().print("loglevel", (int) esp_log_level_get(val));
         break;
       }
       if (strcmp(key, "loglevel-warn") == 0) {
-          esp_log_level_set(val, ESP_LOG_WARN);
-          td.so().print("loglevel", (int)esp_log_level_get(val));
+        esp_log_level_set(val, ESP_LOG_WARN);
+        td.so().print("loglevel", (int) esp_log_level_get(val));
         break;
       }
       if (strcmp(key, "loglevel-info") == 0) {
-          esp_log_level_set(val, ESP_LOG_INFO);
-          td.so().print("loglevel", (int)esp_log_level_get(val));
+        esp_log_level_set(val, ESP_LOG_INFO);
+        td.so().print("loglevel", (int) esp_log_level_get(val));
         break;
       }
       if (strcmp(key, "loglevel-debug") == 0) {
-          esp_log_level_set(val, ESP_LOG_DEBUG);
-          td.so().print("loglevel", (int)esp_log_level_get(val));
+        esp_log_level_set(val, ESP_LOG_DEBUG);
+        td.so().print("loglevel", (int) esp_log_level_get(val));
         break;
       }
       if (strcmp(key, "loglevel-verbose") == 0) {
-          esp_log_level_set(val, ESP_LOG_VERBOSE);
-          td.so().print("loglevel", (int)esp_log_level_get(val));
+        esp_log_level_set(val, ESP_LOG_VERBOSE);
+        td.so().print("loglevel", (int) esp_log_level_get(val));
         break;
       }
 
@@ -374,7 +397,7 @@ static void kvs_print_keys(class UoutWriter &td, const char *name_space) {
 
       /// print each key
       [](const char *key, kvs_type_t type, class UoutWriter &td) -> kvs_cbrT {
-        td.so().print(key, (int)type);
+        td.so().print(key, (int) type);
         return kvsCb_match;
       }, td);
 }

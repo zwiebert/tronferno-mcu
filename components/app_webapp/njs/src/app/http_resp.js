@@ -1,6 +1,7 @@
 "use strict";
 import * as httpFetch from "../app/fetch.js";
 import * as appDebug from "../app/app_debug.js";
+import { RfCapture } from "../store/rf.js";
 import {
   McuBootCount,
   McuErrorBits,
@@ -120,6 +121,9 @@ export function http_handleResponses(obj) {
     }
     if ("error-bits" in mcu) {
       McuErrorBits.set(mcu["error-bits"]);
+    }
+    if ("rf-capture" in mcu) {
+      RfCapture.set(mcu["rf-capture"]);
     }
     if ("cc1101-status" in mcu) {
       Cc1101Status.set(mcu["cc1101-status"]);
