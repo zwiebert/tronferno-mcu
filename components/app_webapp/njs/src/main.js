@@ -10,7 +10,11 @@ export default function () {
   // testing.testing_init();
   generate_html();
   appState.init();
-  setTimeout(() => { connWs.websocket(); }, 1000);
+  setTimeout(() => {
+     connWs.websocket();
+     setInterval( connWs.ws_keepAlive, 5000)
+
+   }, 1000);
 }
 
 function generate_html() {

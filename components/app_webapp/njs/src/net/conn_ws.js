@@ -11,6 +11,7 @@ export function websocket() {
   // eslint-disable-next-line no-unused-vars
   ws.onopen = (evt) => {
     // send something to open the websocket connection on the other end
+    console.log("ws.onopen");
     ws.send(JSON.stringify({from:"wapp",to:"tfmcu",open_websocket:{}}));
     isOpen = true;
   };
@@ -44,5 +45,12 @@ export function ws_sendObject(obj) {
   const json = JSON.stringify(obj);
   console.log("ws.send: ", json);
   ws.send(json);
+  return true;
+}
+export function ws_keepAlive() {
+  if (!isOpen || !ws) {
+    return false;
+  }
+  ws.send("");
   return true;
 }

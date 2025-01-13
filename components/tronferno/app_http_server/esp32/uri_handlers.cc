@@ -120,7 +120,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   }
 
 
-  {
+  if (*buf) {
     LockGuard lock(cli_mutex);
     auto td = UoutWriterFunction({std::bind(ws_write, req, _1, _2, _3)}, SO_TGT_WS | SO_TGT_FLAG_JSON);
     cli_process_json((char*)buf, td);// parse and process received command

@@ -11,20 +11,11 @@
   /** @type {Props} */
   let { rxonly = false } = $props();
 
-  let showMqttRx = $state(false);
-  run(() => {
-    showMqttRx = !rxonly;
-  });
-  let showMqttTx = $state(false);
-  run(() => {
-    showMqttTx = !rxonly;
-  });
+  let showMqttRx = $state(!rxonly);
+  let showMqttTx = $state(!rxonly);
   let showRc = $state(true);
-  
-  let showSc = $state(false);
-  run(() => {
-    showSc = !rxonly;
-  });
+  let showSc = $state(!rxonly);
+
 
   run(() => {
     $AppLog;
