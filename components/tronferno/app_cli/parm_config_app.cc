@@ -106,7 +106,7 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, class Uou
     } else {
       uint32_t cu = strtoul(val, NULL, 16);
 
-      if (!(GET_BYTE_2(cu) == FER_ADDR_TYPE_CentralUnit && GET_BYTE_3(cu) == 0)) {
+      if (!FER_U32_TEST_TYPE(cu, FER_ADDR_TYPE_CentralUnit)) {
         return cli_replyFailure(td);
       }
       (void) set_optN(u32, cu, CB_CUID);
