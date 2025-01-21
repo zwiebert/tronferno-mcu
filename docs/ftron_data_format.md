@@ -14,12 +14,13 @@ Basics
 
 Fernotron works uni-directional:
 
-A controller device transmits a message on 434 MHz and all receiving devices listen and filter out the messages addressed to them, or the group they belong to. They cannot acknowledge to the sender, that they received the data.  They can only give feedback to the user itself, by moving the shutter a bit when they have succesfully received a command which not involves moving the shutter directly.
+A controller device transmits a message on 434 MHz with OOK modulation. The receiver devices will listen to any messages addressed to them. Because its uni-directional, a receiver  cannot acknowledge to the sender, that it received the data successfully.  It can only give feedback to the human user, by moving the shutter a bit when they have succesfully received a command which not involves moving the shutter directly anyway.
 
 
 Each device has an unique ID. On motors this ID is usually printed on the motor itself and on some sticker on the cable. That ID can be used to access the motor without having to press the physical set button, which may not easy accessible.
 
-Controller devices like 2411 or 2431 have an ID too, but its not printed on anywhere. They can be only seen by looking at the messages they send.
+Controller devices like 2411 or 2431 have an ID too. Most of them have that ID not printed on anywhere. They can be only seen by looking at the messages they send.
+The ID of the 2411 can be found on a label inside the battery compartment.
 
 
 Each message has a single address field.  This address can contain a Sender ID (like From:) *or* an Receiver ID (like To:).
@@ -33,7 +34,7 @@ Additionally, each receiver keeps a list in its persistent memory, containing se
 Message "Envelope"
 ==================
 
-Simple messages like up/down/stop are are encoded into 5 bytes.  If you counted 6 bytes in log output ... yes its really 6, but the 6th contains just a check-sum of that 5 bytes. You may have looked at the data, which actually is sent via 434 MHz, and it looks much more than just 6 bytes ... ok, there really are 12 words of 10bit. The lower 8bit of each word pair is identical to one of the 6 bytes  (word 0/1 = byte 0, word 2/3 = byte 1, ...  word 10/11 = byte 6). The 2 extra bit in each word contain bit parity and indicate if a word is odd or even-numbered.  ... so its really only 5 data bytes. These contain all the addressing info:
+Simple messages like up/down/stop are are encoded into 5 bytes.  If you counted 6 bytes in log output ... yes its really 6, but the 6th byte contains just a check-sum of that 5 bytes. You may have looked at the data, which actually is sent via 434 MHz, and it looks much more than just 6 bytes ... ok, there really are 12 words of 10bit. The lower 8bit of each word pair is identical to one of the 6 bytes  (word 0/1 = byte 0, word 2/3 = byte 1, ...  word 10/11 = byte 6). The 2 extra bit in each word contain bit parity and indicate if a word is odd or even-numbered.  ... so its really only 5 data bytes. These contain all the addressing info:
 ```
  bytes 0,1,2: this is the address-field which contains the 3 byte device ID
  byte 3 high nibble: A counter which may increment with each button press
@@ -56,7 +57,7 @@ Explaining the Device ID
 
    * ID of central unit (8xxxx). Its printed on a label inside the battery compartment.
 
-  Example: To pair a motor with a central unit, you first press the set button on the motor. Now you send a "Stop" command to Number 3 of Group 2.  The 5-byte command sent will contain:
+  Example: To pair a motor with a central unit, you first press the set button on the motor. Now you send the "Timer-Data" to Number 3 of Group 2.  The data sent will contain:
 
     * ID of the central Unit, which will the motor store in its local persistent memory.
     * The group number (1...7) and a group-member number (1...7) which will also be stored. 
@@ -83,7 +84,7 @@ When pressing a button, a message is sent not only once, but will be repeated as
 
 So the receiver could identify and disregard duplicates because the counter stays the same.  The counter acts like a message ID.
 
-Unlike the other buttons, holding down the stop button on a 2411 increments the counter for each repeat. So each 'Stop' message is not a duplicate but an original. So stop will never be disregarded.
+Unlike the other buttons, holding down the stop button on a 2411 increments the counter for each repeat. So each 'Stop' message is not a duplicate but an original. So stop will never be disregarded. For a 2406 the counter stays unchanged for repeated 'Stop' messages.
 
 
 

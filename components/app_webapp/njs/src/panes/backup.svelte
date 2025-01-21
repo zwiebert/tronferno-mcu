@@ -13,9 +13,7 @@
   });
 
 
-  let backup_json = $derived(stringify_object_to_json($Backup));
-
-  let text = $state(backup_json);
+  let text = $state(stringify_object_to_json($Backup));
 
 
   let pr_config_isChecked = $state();
@@ -133,7 +131,7 @@
           class=""
           use:tippy={{ content: $_("panes.backup.tt.load") }}
           onclick={() => {
-            text = backup_json;
+            text = stringify_object_to_json($Backup);
             httpFetch.getJson("/f/backup/settings.json");
           }}>{$_("panes.backup.load")}</button
         >

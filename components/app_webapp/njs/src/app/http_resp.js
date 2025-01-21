@@ -14,7 +14,7 @@ import {
 } from "../store/mcu_firmware.js";
 import { TxNames } from "../store/id.js";
 import * as cuas from "../app/cuas.js";
-import { McuSettings, McuConfig, Gmu, Cc1101Config, Cc1101Status, Backup } from "../store/mcu_config.js";
+import { McuSettings, McuConfig, Gmu, Cc1101Config, Cc1101Status, Backup, Cuas } from "../store/mcu_config.js";
 import { Pcts, Prefs, Aliases, Autos, Names } from "../store/shutters.js";
 import { McuDocs } from "../store/mcu_docs.js";
 import { Gpios } from "../store/gpio.js";
@@ -76,6 +76,11 @@ export function http_handleResponses(obj) {
   if ("config" in obj) {
     handle_config(obj.config);
   }
+  
+  if ("cuas" in obj) {
+    Cuas.set(obj.cuas);
+  }
+
 
   if ("pct" in obj) {
     Pcts.update(obj.pct);

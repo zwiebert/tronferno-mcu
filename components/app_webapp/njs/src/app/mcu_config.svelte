@@ -5,7 +5,7 @@
   import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
   import { GuiAcc, TabIdx } from "../store/app_state";
-  import { McuConfig, McuConfigKeys, Gmu } from "../store/mcu_config.js";
+  import { McuConfig, McuConfigKeys, Gmu, Cuas } from "../store/mcu_config.js";
   import { McuDocs_cliHelpConfig } from "../store/mcu_docs.js";
   import * as httpFetch from "../app/fetch.js";
   import * as cuas from "../app/cuas.js";
