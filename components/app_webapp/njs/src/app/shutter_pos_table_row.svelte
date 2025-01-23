@@ -1,6 +1,4 @@
 <script>
-  import { run } from 'svelte/legacy';
-
   import { Pcts, Names } from "../store/shutters.js";
   import { G, M0, M, GM } from "../store/curr_shutter.js";
   import * as httpFetch from "../app/fetch.js";
@@ -9,8 +7,8 @@
 
   const gm = g.toString() + m.toString();
 
-  let pct = $state(0);
-  run(() => {
+  let pct = $state($Pcts[gm] || 0);
+  $effect(() => {
     pct = $Pcts[gm] || 0;
   });
   let ge = $derived(g.toString() + (m ? m.toString() : "A"));

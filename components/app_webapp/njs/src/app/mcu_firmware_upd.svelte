@@ -1,6 +1,4 @@
 <script>
-  import { run } from 'svelte/legacy';
-
   import { _ } from "../services/i18n";
   import * as httpFetch from "../app/fetch.js";
   import * as misc from "../app/misc.js";
@@ -72,10 +70,10 @@
     }
     return 1;
   }
-  let fw_choosen = $state(0);
-  run(() => {
-    fw_choosen = $McuFirmwareReleaseStatus === "beta" ? 1 : 0;
-  });
+ 
+  let fw_choosen_usr = $state(-1);
+  let fw_choosen = $derived(fw_choosen_usr >= 0 ? fw_choosen_usr : ($McuFirmwareReleaseStatus === "beta" ? 1 : 0) );
+
   function get_ota_name() {
     console.log("fwbtns",fwbtns);
     //return netFirmwareOTA(fwbtns[fw_choosen].get_ota_name());
@@ -83,7 +81,7 @@
   } 
   let fw_comp = $derived(compare_version($McuFirmwareVersionNumber, fwbtns[fw_choosen].version));
   let fw_updown = $derived(fw_comp < 0 ? "Upgrade" : fw_comp > 0 ? "Downgrade" : fw_comp === 0 ? "Re-Install" : "Install");
-  run(() => {
+  $effect(() => {
     if (netota_isInProgress) {
       if ($McuFirmwareUpdState === 0) {
         //
@@ -113,7 +111,7 @@
         <input
           checked={fw_choosen === i}
           onchange={() => {
-            fw_choosen = i;
+            fw_choosen_usr = i;
           }}
           type="radio"
           name="amount"

@@ -1,12 +1,10 @@
 <script>
-  import { run } from 'svelte/legacy';
-
   "use strict";
   import { _ } from "../services/i18n";
   import * as httpFetch from "../app/fetch.js";
   import { G, M0, GMH } from "../store/curr_shutter.js";
   import ShutterGM from "../app/shutter_gm.svelte";
-  import { SelectedId } from "../store/id.js";
+  import { SelectedId, SelectedIdIsValid } from "../store/id.js";
   import { Aliases } from "../store/shutters.js";
   import { Pras } from "../store/alias.js";
   import { onMount, onDestroy } from "svelte";
@@ -90,27 +88,17 @@
   }
   let AliasesAllKeys = $derived(Object.keys($Aliases));
   let AliasesPairedKeys = $derived(AliasesAllKeys.filter((key) => alias_isKeyPairedToM(key, $G, $M0)));
-  run(() => {
-    $Pras;
+  $effect(() => {
     if ($Pras && $Pras.success) {
-      selectedId = $SelectedId = $Pras.a;
+      $SelectedId = $Pras.a;
       console.log($Pras);
     }
   });
-  let selectedId;
-  run(() => {
-    selectedId = $SelectedId;
-  });
-  let selectedId_isValid = $derived(id_isValid(selectedId));
-  let isPaired = $state(false);
   
-  run(() => {
-    AliasesPairedKeys;
-    isPaired = alias_isKeyPairedToM($SelectedId, $G, $M0);
-  });
-  run(() => {
-    AliasesPairedKeys;
-    aliasTable_updHtml(selectedId);
+  $effect(() => {
+    if (AliasesPairedKeys) {
+      aliasTable_updHtml($SelectedId);
+    }
   });
 </script>
 

@@ -1,6 +1,4 @@
 <script>
-  import { run } from 'svelte/legacy';
-
   "use strict";
   import { _ } from "../services/i18n";
   import { G, M, GM, GMH, RadioCode, RadioCodeEnabled } from "../store/curr_shutter.js";
@@ -18,17 +16,14 @@
   /** @type {Props} */
   let { radio = true, groups = true } = $props();
 
-  let GMR = $state(0);
-  run(() => {
+  let GMR = $state(0); // GM or radio
+  $effect(() => {
     GMR = $GM;
   });
 
   let names = $derived(Object.values($Names));
   let a = $derived("A " + ($Names["00"] || ""));
-  let showRadioCode = $state(false);
-  run(() => {
-    showRadioCode = GMR === "RadioCode" && $GuiAcc.radio_code && radio;
-  });
+  let showRadioCode = $derived(GMR === "RadioCode" && $GuiAcc.radio_code && radio);
 
   let use_motorCode = $derived(showRadioCode);
   let motorCode = $state($RadioCode);
@@ -50,11 +45,8 @@
     return mc;
   }
 
-  run(() => {
-    if (!$GuiAcc.radio_code || !radio) showRadioCode = false;
-  });
 
-  run(() => {
+  $effect(() => {
     const mc = get_motorCode(motorCode);
     const rce = GMR === "RadioCode";
     $RadioCodeEnabled = rce;
@@ -63,7 +55,7 @@
     if (rce && motorCode_isValid) $RadioCode = mc;
   });
 
-  run(() => {
+  $effect(() => {
     if (!showRadioCode) {
       $G = Number.parseInt(GMR.substr(0, 1));
       $M = Number.parseInt(GMR.substr(1, 1));

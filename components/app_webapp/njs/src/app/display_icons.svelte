@@ -1,13 +1,19 @@
 <script>
-  import { run } from 'svelte/legacy';
-
   "use strict";
   import { GM, Auto } from "../store/curr_shutter.js";
   import * as httpFetch from "../app/fetch.js";
+  import { onMount } from "svelte";
 
-  run(() => {
-    $GM;
+  function fetch_data(gm) {
     httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO | httpFetch.FETCH_SHUTTER_NAME);
+  }
+
+  onMount(() => {
+    fetch_data($GM);
+  });
+
+  $effect(() => {
+    fetch_data($GM);
   });
 
 

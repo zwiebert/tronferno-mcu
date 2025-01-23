@@ -1,14 +1,12 @@
 <script>
-  import { run } from 'svelte/legacy';
-
   "use strict";
   import { G, M, Pct } from "../store/curr_shutter.js";
   import * as httpFetch from "../app/fetch.js";
   import { onMount, onDestroy } from "svelte";
 
-  let pct;
-  run(() => {
-    pct = $Pct !== undefined ? $Pct : 0;
+  let pct = $state($Pct || 0);
+  $effect(() => {
+    pct = $Pct || 0;
   });
 
   onMount(() => {

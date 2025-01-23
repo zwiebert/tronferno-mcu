@@ -1,7 +1,6 @@
 <script>
   import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
-  import { run } from 'svelte/legacy';
   import * as httpFetch from "../app/fetch.js";
   import { RfCapture } from "../store/rf.js";
 

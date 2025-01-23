@@ -1,6 +1,4 @@
 <script>
-  import { run } from 'svelte/legacy';
-
   "use strict";
   import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
@@ -31,7 +29,6 @@
 
   function auth_button_done(success) {
     isAuthenticated = success;
-    sep_auth_button_was_pressed = success;
     clearInterval(progress_interval);
     progress_interval = null;
     progress_value = 0;
@@ -119,32 +116,27 @@
   let disable_button_envents = $state(false);
   
   let isValidAddress = $derived($M0 !== 0);
-  let sep_auth_button_was_pressed = $state(false);
-  
   let isAuthenticated = $state(false);
-  run(() => {
-    isAuthenticated = sep_auth_button_was_pressed;
-  });
   let progress_value = $state(0);
   
   let progress_max = $state(0);
   
-  run(() => {
+  $effect(() => {
     if ($Sep["auth-success"]) {
       auth_button_done(true);
     }
   });
-  run(() => {
+  $effect(() => {
     if ($Sep["auth-terminated"]) {
       auth_button_done(false);
     }
   });
-  run(() => {
+  $effect(() => {
     if ($Sep["auth-button-error"]) {
       auth_button_done(false);
     }
   });
-  run(() => {
+  $effect(() => {
     if ($Sep["ui-timeout"]) {
       upDown_enabled = false;
       delete $Sep["ui-timeout"];

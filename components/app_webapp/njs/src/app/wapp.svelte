@@ -93,7 +93,7 @@
           { name: $_("navTab.cfg.receiver.tab"), idx: 7 },
           { name: $_("navTab.cfg.transmitter.tab"), idx: 1 },
           { name: "Log", idx: 6 },
-          { name: "RF", idx: 8 },
+          ...($GuiAcc.rf_capture ? [{ name: "RF", idx: 8 }] : []),
         ]}
         name="settings"
       />

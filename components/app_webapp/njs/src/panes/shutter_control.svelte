@@ -1,6 +1,4 @@
 <script>
-  import { run } from 'svelte/legacy';
-
   "use strict";
   import { _ } from "../services/i18n";
   import { onMount } from "svelte";
@@ -16,14 +14,19 @@
 
   onMount(() => {
     setTimeout(() => {
-      httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
+      fetch_data($GM);
     }, 500);
   });
 
-  run(() => {
-    $GM;
-    httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
+  $effect(() => {
+    if ($ShowAutomatic) {
+      fetch_data($GM);
+    }
   });
+
+  function fetch_data(gm) {
+    httpFetch.http_fetchByMask(httpFetch.FETCH_AUTO);
+  }
 </script>
 
 <div class="main-area">

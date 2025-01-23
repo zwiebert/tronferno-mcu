@@ -1,6 +1,4 @@
 <script>
-  import { run } from "svelte/legacy";
-
   ("use strict");
   import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
@@ -39,24 +37,26 @@
     }
   });
 
-  run(() => {
+  $effect(() => {
     console.log("McuDocs_cliHelpConfig", $McuDocs_cliHelpConfig, $McuDocs_cliHelpConfig["network"]);
   });
   let tabIdxMcc = $derived($TabIdx["mcc"] || 0);
 
-  let mcuConfigNames = $derived({}); // localized GUI labels
-  run(() => {
-    for (let key of $McuConfigKeys) {
-      mcuConfigNames[key] = $_({ id: "mcuConfigNames." + key, default: key });
+  let mcuConfigNames = $derived(makeMcuConfigNames($McuConfigKeys)); // localized GUI labels
+  function makeMcuConfigNames(mcuCfgKeys) {
+    let result = {};
+    for (let key of mcuCfgKeys) {
+      result[key] = $_({ id: "mcuConfigNames." + key, default: key });
     }
-  });
+    return result;
+  }
 
-  let mcuConfig = $state({});
+  let mcuConfig = $state({...$McuConfig});
   function updateMcuConfig(obj) {
     mcuConfig = { ...obj };
   }
 
-  run(() => {
+  $effect(() => {
     updateMcuConfig($McuConfig);
   });
 
@@ -107,7 +107,7 @@
     )
   );
 
-  run(() => {
+  $effect(() => {
     console.log("mcuConfigKeysCc1101Pin: ", mcuConfigKeysCc1101Pin);
     console.log("mcuConfigKeysMisc: ", mcuConfigKeysMisc);
     console.log("$McuConfigKeys: ", $McuConfigKeys);

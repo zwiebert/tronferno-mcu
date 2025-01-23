@@ -71,6 +71,7 @@ export function set_gui_access_level(al) {
     hsc: al < user,
     bak: al < user,
     rf_repeater: sdkconfig.APP_USE_REPEATER,
+    rf_capture:al < admin,
   });
 }
 

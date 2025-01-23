@@ -1,6 +1,4 @@
 <script>
-  import { run } from 'svelte/legacy';
-
   import { _ } from "../services/i18n";
   import tippy from "sveltejs-tippy";
   import { GuiAcc } from "../store/app_state";

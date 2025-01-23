@@ -1,6 +1,4 @@
 <script>
-  import { run } from 'svelte/legacy';
-
   "use strict";
   import { _ } from "../services/i18n";
   import { G, M0, Name } from "../store/curr_shutter.js";
@@ -9,8 +7,8 @@
   import { Names } from "../store/shutters.js";
   import tippy from "sveltejs-tippy";
   
-  let GMName;
-  run(() => {
+  let GMName = $state($Name || "");
+  $effect(() => {
     GMName = $Name || "";
   });
 

@@ -1,13 +1,13 @@
 <script>
-  import { run } from 'svelte/legacy';
+  import { onMount } from 'svelte';
 
   import { Gpios } from "../store/gpio";
   import { McuConfig } from "../store/mcu_config.js";
   import * as httpFetch from "../app/fetch.js";
   /**
    * @typedef {Object} Props
-   * @property {any} name
-   * @property {boolean} [force]
+   * @property {any} name      gpioN 
+   * @property {boolean} [force]   
    */
 
   /** @type {Props} */
@@ -16,20 +16,23 @@
 
   let level = $derived($Gpios[name] || -1);
   let cfg = $derived($McuConfig[name] || "x");
-  let output_only = $state(true);
+  let output_only = $derived(!(force || /[Qiq]/.test(cfg)));
   
+  onMount(() => {
+      fetch_level(name);
+  });
 
-  run(() => {
+  $effect(() => {
     if (force || /[Qiq]/.test(cfg)) {
-      let cmd = { mcu: { } };
-      cmd.mcu[name] = "?";
-      httpFetch.http_postCommand(cmd);
-      output_only = false;
-    } else {
-      output_only = true;
+      fetch_level(name);
     }
-});
+  });
 
+function fetch_level(gpio_name) {
+      let cmd = { mcu: { } };
+      cmd.mcu[gpio_name] = "?";
+      httpFetch.http_postCommand(cmd);
+}
 
 </script>
 

@@ -1,6 +1,4 @@
 <script>
-  import { run } from 'svelte/legacy';
-
   import { AppLog } from "../store/app_log.js";
 
   /**
@@ -16,11 +14,13 @@
   let showRc = $state(true);
   let showSc = $state(!rxonly);
 
-
-  run(() => {
-    $AppLog;
+  function scroll_top(appLog) {
     let elem = document.getElementById("app_log_div");
     if (elem) elem.scrollTop = elem.scrollHeight;
+  }
+
+  $effect(() => {
+    scroll_top($AppLog);
   });
 </script>
 
