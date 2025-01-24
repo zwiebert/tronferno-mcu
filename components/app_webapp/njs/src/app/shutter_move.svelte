@@ -16,23 +16,19 @@
 
 </script>
 
-<style lang="scss">
-@use "../styles/app.scss" as *;
-
-</style>
 
 <div id="sdi" class="inline-block">
   <div class="flex flex-row items-center">
 
-    <button class="w-24 h-16 text-lg rounded-l-full" type="button" onclick={hClick_Down}>
+    <button class="sb w-24 h-16 text-lg rounded-l-full" type="button" onclick={hClick_Down}>
       &#x25bc;
     </button>
 
-    <button class="m-2 w-16 h-16 text-lg rounded-full" type="button" onclick={hClick_Stop}>
+    <button class="sb m-2 w-16 h-16 text-lg rounded-full" type="button" onclick={hClick_Stop}>
       STOP
     </button>
 
-    <button class="w-24 h-16 text-lg rounded-r-full" type="button" onclick={hClick_Up}>
+    <button class="sb w-24 h-16 text-lg rounded-r-full" type="button" onclick={hClick_Up}>
       &#x25b2;
     </button>
 

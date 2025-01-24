@@ -171,18 +171,6 @@
 
 <style lang="scss">
   @use "../styles/app.scss" as *;
-  table,
-  th,
-  td {
-    border-color: $color_border_main_area;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 0.75rem;
-    overflow: hidden;
-    border-collapse: collapse;
-    margin: 0rem;
-    padding: 0rem 0.25rem;
-  }
 
   .loader {
     display: inline-block;

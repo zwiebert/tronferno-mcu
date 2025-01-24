@@ -1,4 +1,6 @@
 @use "sass:color";
+@use "../styles/tailwind.css" as *;
+
 
 $color_a: hsl(70, 30%, 80%);
 $color_b: hsl(100, 50%, 50%);
@@ -28,6 +30,8 @@ $color_border_area: color.adjust($color_bg_area, $lightness: -20%);
 $color_border: color.adjust($color_b, $lightness: -5%);
 
 $color_bg_textarea: color.adjust($color_bg_area, $lightness: 30%);
+
+@layer utilities {
 
 .bg-selected {
   background-color: $color_bg_select;
@@ -189,13 +193,8 @@ h3 {
 }
 
 
-select,
-button,
-input,
-.file_input {
-  background-color: $color_bg;
+select, button, input, .file_input {
   border: thin solid color.adjust($color_bg_area, $lightness: -5%);
-  ;
 }
 
 button, .file_input {
@@ -241,4 +240,6 @@ textarea.hscfg {
   font-size:9pt;
   color: black;
   background-color: $color_bg_textarea;
+}
+
 }

@@ -214,6 +214,3 @@
   </div>
 </div>
 
-<style lang="scss">
-  @use "../styles/app.scss" as *;
-</style>

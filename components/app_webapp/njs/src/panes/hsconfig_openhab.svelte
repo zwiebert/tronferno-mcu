@@ -161,7 +161,7 @@
       <ShutterGM radio={false} />
     </div>
 
-    <button
+    <button class="sb"
       on:click={() => {
         misc.textToClipboard(mqttTextGm);
       }}>Copy configuration of {$GM} to clipboard</button
@@ -177,14 +177,14 @@
       </tbody>
     </table>
 
-    <button
+    <button class="sb"
       on:click={() => {
         misc.textToClipboard(mqttTextThings);
       }}>Copy all configurations to clipboard</button
     ><br />
     <textarea class="hscfg" value={mqttTextThings} cols={56} rows={16} disabled={true} />
     <hr />
-    <button
+    <button class="sb"
       on:click={() => {
         misc.textToClipboard(mqttTextItems);
       }}>Copy all configurations to clipboard</button

@@ -127,21 +127,3 @@
     {/if}
   </div>
 </div>
-
-<style lang="scss">
-  @use "../styles/app.scss" as *;
-
-  table,
-  td,
-  tr {
-    border-color: $color_border_main_area;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 0.75rem;
-    overflow: hidden;
-    border-collapse: collapse;
-    margin: 0 auto;
-    padding: 0rem 0.25rem;
-    border-gap: 0;
-  }
-</style>

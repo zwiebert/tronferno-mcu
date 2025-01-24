@@ -37,7 +37,7 @@
   }
 </script>
 
-<table id="gmu-table" class="border-black border-2">
+<table id="gmu-table" class="border-none">
   <caption class={changed ? "font-bold" : "font-normal"}>{caption}</caption>
   <tbody>
     <tr>

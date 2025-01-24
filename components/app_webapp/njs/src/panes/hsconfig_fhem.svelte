@@ -180,7 +180,7 @@
 
     <h5 class="text-left">Generated Device Definitions</h5>
     <button
-      class="block"
+      class="sb block"
       on:click={() => {
         misc.textToClipboard(defmodText);
       }}>Copy definitions to clipboard</button
@@ -190,7 +190,7 @@
 
     <h5 class="text-left">Generated Device Deletions</h5>
     <button
-      class="block"
+      class="sb block"
       on:click={() => {
         misc.textToClipboard(deleteText);
       }}>Copy deletions to clipboard</button

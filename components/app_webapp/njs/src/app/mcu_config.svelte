@@ -442,7 +442,7 @@
             {/each}
           </tbody>
         </table>
-        <div class="area"><button id="id_cuasb" type="button" onclick={hClick_ScanCU}> {$_("app.wizard_cuas")} </button> <span id="id_cuasStatus"></span></div>
+        <div class="area"><button class="sb" id="id_cuasb" type="button" onclick={hClick_ScanCU}> {$_("app.wizard_cuas")} </button> <span id="id_cuasStatus"></span></div>
       </div>
     {/if}
 
@@ -582,7 +582,7 @@
         <label use:tippy={{ content: $_("app.cfg.mcu.user_gpio.tt.add_label") }}
           >{$_("app.cfg.mcu.user_gpio.add_label")}
           <McuConfigGpioSelect name="wizard_gpio" bind:value={wiz_gpio} show_value={false} />
-          <button type="button" disabled={wiz_gpio === -1} onclick={wiz_addGpio}>{$_("app.cfg.mcu.user_gpio.add_button")}</button>
+          <button class="sb" type="button" disabled={wiz_gpio === -1} onclick={wiz_addGpio}>{$_("app.cfg.mcu.user_gpio.add_button")}</button>
           {@html wiz_gpio_status}
         </label>
       </div>
@@ -650,9 +650,9 @@
     {/if}
   {/if}
 
-  <button type="button" onclick={hClick_Reload}>{$_("app.reload")}</button>
-  <button type="button" onclick={hClick_Save}>{$_("app.save")}</button>
-  <button type="button" onclick={hClick_RestartMcu}> {$_("app.restartMcu")}</button>
+  <button class="sb" type="button" onclick={hClick_Reload}>{$_("app.reload")}</button>
+  <button class="sb" type="button" onclick={hClick_Save}>{$_("app.save")}</button>
+  <button class="sb" type="button" onclick={hClick_RestartMcu}> {$_("app.restartMcu")}</button>
 
   {#if tabIdxMcc === 2}
     <hr />

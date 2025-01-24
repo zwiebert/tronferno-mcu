@@ -43,7 +43,7 @@
 <div class="main-area text-center">
   <h4 class="text-center" use:tippy={{ content: $_("panes.rfcap.tt.header") }}>{$_("panes.rfcap.header")}</h4>
 
-  <button type="button" onclick={do_capture} use:tippy={{ content: $_("panes.rfcap.tt.do_capture") }}>{$_("panes.rfcap.do_capture")}</button>
+  <button class="sb" type="button" onclick={do_capture} use:tippy={{ content: $_("panes.rfcap.tt.do_capture") }}>{$_("panes.rfcap.do_capture")}</button>
 
 
 <div>

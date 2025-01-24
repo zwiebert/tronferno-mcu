@@ -73,7 +73,7 @@
 }
 </script>
 
-<button id="test_rpm_start" type="button" onclick={() => {
+<button class="sb" id="test_rpm_start" type="button" onclick={() => {
   httpFetch.http_fetchByMask(httpFetch.FETCH_SETTINGS_ALL);
   //http_postRequest("/cmd.json", {"mcu":{"test-rj":1}});
 }}>
@@ -82,15 +82,20 @@
 <hr>
 
 Random Periodic Movement Commands:
-<button id="test_rpm_start" type="button" onclick={() => testPressed(true)}>
+<button class="sb" id="test_rpm_start" type="button" onclick={() => testPressed(true)}>
   Test Start
 </button>
-<button id="test_rpm_stop" type="button" onclick={() => testPressed(false)}>
+<button class="sb" id="test_rpm_stop" type="button" onclick={() => testPressed(false)}>
   Test Stop
 </button>
-
+<div class="broken-css">
 <ul>
   <li>ScreenWidth: {window.screen.width}</li>
   <li>ScreenHeight: {window.screen.height}</li>
   <li>PixelRatio: {window.devicePixelRatio}</li>
 </ul>
+</div>
+
+
+<style lang="scss">
+</style>

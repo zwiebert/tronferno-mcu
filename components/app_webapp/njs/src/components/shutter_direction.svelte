@@ -38,11 +38,11 @@
 
 <div class="inline-block">
   <div class="flex flex-row items-center">
-    <button class="w-16 h-16 text-lg rounded-l-full rounded-r-full" type="button" onclick={hClick_Down} use:tippy={{ content: $_("app.rotDir.tt.test_down") }}>
+    <button class="sb w-16 h-16 text-lg rounded-l-full rounded-r-full" type="button" onclick={hClick_Down} use:tippy={{ content: $_("app.rotDir.tt.test_down") }}>
       {$_("app.rotDir.test_down")}
     </button>
 
-    <button class="m-2 w-32 h-16 text-lg rounded-l-full rounded-r-full" type="button" onclick={hClick_RotDir} use:tippy={{ content: $_("app.rotDir.tt.toggle") }}>
+    <button class="sb m-2 w-32 h-16 text-lg rounded-l-full rounded-r-full" type="button" onclick={hClick_RotDir} use:tippy={{ content: $_("app.rotDir.tt.toggle") }}>
       <div class="flex flex-row">
         <div class="h-4 w-4"><FaArrowsAltV /></div>
         {$_("app.rotDir.toggle")}
@@ -50,12 +50,9 @@
       </div>
     </button>
 
-    <button class="w-16 h-16 text-lg rounded-l-full rounded-r-full" type="button" onclick={hClick_Up} use:tippy={{ content: $_("app.rotDir.tt.test_up") }}>
+    <button class="sb w-16 h-16 text-lg rounded-l-full rounded-r-full" type="button" onclick={hClick_Up} use:tippy={{ content: $_("app.rotDir.tt.test_up") }}>
       {$_("app.rotDir.test_up")}
     </button>
   </div>
 </div>
 
-<style lang="scss">
-  @use "../styles/app.scss" as *;
-</style>

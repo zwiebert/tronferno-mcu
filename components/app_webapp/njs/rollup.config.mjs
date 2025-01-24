@@ -120,7 +120,6 @@ export default {
         console.log(warning.code);
         handler(warning);
       },
-      scss: { renderSync: true, includePaths: ["../styles"] },
     }),
     css({ output: "wapp.css" }),
     // If you have external dependencies installed from

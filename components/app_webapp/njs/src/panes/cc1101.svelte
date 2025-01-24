@@ -646,7 +646,7 @@
     </tbody>
   </table>
 
-  <button
+  <button class="sb"
     type="button"
     use:tippy={{
       content: "Scan frequency of original 2411 and use that frequency as CC1101 carrier frequency. Hold the STOP button on your 2411 during the entire scan!",
@@ -669,7 +669,7 @@
   </table>
 
   <button
-    class={fetchStatusTimer === null ? "" : "text-red-800"}
+    class={"sb" + fetchStatusTimer === null ? "" : "text-red-800"}
     type="button"
     on:click={() => {
       if (fetchStatusTimer === null) {
@@ -684,16 +684,16 @@
   >
 </div>
 
-<button
+<button class="sb"
   type="button"
   use:tippy={{ content: "Modify CC1101 config registers, but don't save them permanently (These changes will be lost after MCU Restart)" }}
   on:click={apply_changes}>Apply Changes</button
 >
 <br />
-<button type="button" use:tippy={{ content: "Get current CC1101 Config Registers from MCU" }} on:click={reload}>{$_("app.reload")}</button>
-<button type="button" use:tippy={{ content: "Save CC1101 config registers to MCU permanently" }} on:click={save_changes}>{$_("app.save")}</button>
+<button class="sb" type="button" use:tippy={{ content: "Get current CC1101 Config Registers from MCU" }} on:click={reload}>{$_("app.reload")}</button>
+<button class="sb" type="button" use:tippy={{ content: "Save CC1101 config registers to MCU permanently" }} on:click={save_changes}>{$_("app.save")}</button>
 
-<button type="button" use:tippy={{ content: "Erase saved CC1101 configuration registers on MCU" }} on:click={reset_to_defaults}>Reset to Defaults</button>
+<button class="sb" type="button" use:tippy={{ content: "Erase saved CC1101 configuration registers on MCU" }} on:click={reset_to_defaults}>Reset to Defaults</button>
 <br />
 
 <style lang="scss">

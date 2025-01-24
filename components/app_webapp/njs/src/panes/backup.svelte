@@ -89,7 +89,7 @@
   <div class="area">
     <h5 class="text-center" use:tippy={{ content: $_("panes.backup.tt.create") }}>Create a Backup</h5>
 
-    <button
+    <button class="sb"
       use:tippy={{ content: $_("panes.backup.tt.create") }}
       onclick={() => {
         let tfmcu = { mcu: { "test-sj": 0 } };
@@ -120,15 +120,13 @@
       </label>
 
       <div class="w-full flex flex-row-reverse">
-        <button
-          class=""
+        <button class="sb"
           use:tippy={{ content: $_("panes.backup.tt.toClipboard") }}
           onclick={() => {
             misc.textToClipboard(text);
           }}>{$_("panes.backup.toClipboard")}</button
         >
-        <button
-          class=""
+        <button class="sb"
           use:tippy={{ content: $_("panes.backup.tt.load") }}
           onclick={() => {
             text = stringify_object_to_json($Backup);
@@ -159,7 +157,7 @@
 
       <button
         disabled={!(pr_config_isChecked || pr_auto_isChecked || pr_shpref_isChecked || pr_pair_isChecked || pr_kvs_isChecked)}
-        class="text-sm"
+        class="sb text-sm"
         use:tippy={{ content: $_("panes.backup.tt.restore") }}
         onclick={() => {
           const obj = parse_json_to_object(text);

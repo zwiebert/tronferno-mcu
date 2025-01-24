@@ -51,7 +51,7 @@
   <IdSelector />
   <button class="sb text-sm rounded-full" onclick={onClick_SetByAddr} disabled={!$SelectedIdIsValid}> {$_("app.setMode.set_mode")} </button>
 {:else if $SetModeSrcRadio === 3}
-  <button onclick={enterSetMode} use:tippy={{ content: $_("app.setMode.tt.set_button") }}> {$_("app.setMode.set_button")} </button>
+  <button class="sb" onclick={enterSetMode} use:tippy={{ content: $_("app.setMode.tt.set_button") }}> {$_("app.setMode.set_button")} </button>
 {/if}
 
 {#if $SetModeSrcProgress > 0}

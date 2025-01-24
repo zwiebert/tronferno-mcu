@@ -142,7 +142,7 @@
           <input class="w-20" id="shpMvut" type="number" min="0" bind:value={mvut} step="0.1" />
         </td>
         <td>
-          <button id="shp_MvutButton" on:click={hClick_Up}>Start/Stop</button>
+          <button class="sb" id="shp_MvutButton" on:click={hClick_Up}>Start/Stop</button>
         </td>
       </tr>
       <tr>
@@ -151,7 +151,7 @@
           <input class="w-20" id="shpMvdt" type="number" min="0" bind:value={mvdt} step="0.1" />
         </td>
         <td>
-          <button id="shp_MvdtButton" on:click={hClick_Down}>Start/Stop</button>
+          <button class="sb" id="shp_MvdtButton" on:click={hClick_Down}>Start/Stop</button>
         </td>
       </tr>
       <tr>
@@ -160,14 +160,14 @@
           <input class="w-20" id="shpSpMvdt" type="number" min="0" bind:value={mvspdt} step="0.1" />
         </td>
         <td>
-          <button id="shp_SpMvdtButton" on:click={hClick_Sun}>Start/Stop</button>
+          <button class="sb" id="shp_SpMvdtButton" on:click={hClick_Sun}>Start/Stop</button>
         </td>
       </tr>
     </tbody>
   </table>
 
-  <button id="shp_reload" type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
-  <button id="shp_save" type="button" on:click={hClick_Save}>{$_("app.save")}</button>
+  <button class="sb" id="shp_reload" type="button" on:click={hClick_Reload}>{$_("app.reload")}</button>
+  <button class="sb" id="shp_save" type="button" on:click={hClick_Save}>{$_("app.save")}</button>
 </div>
 
 <style lang="scss">

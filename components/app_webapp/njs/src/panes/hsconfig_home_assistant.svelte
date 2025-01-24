@@ -67,13 +67,13 @@
       </tbody>
     </table>
 
-    <button
+    <button class="sb"
       on:click={() => {
         let tfmcu = { mcu: { "hs-hass-send-config": discovery_prefix } };
         httpFetch.http_postCommand(tfmcu);
       }}>Create entities in HomeAssistant via MQTT discover</button
     ><br />
-    <button
+    <button class="sb"
       on:click={() => {
         let tfmcu = { mcu: { "hs-hass-remove-config": discovery_prefix } };
         httpFetch.http_postCommand(tfmcu);
@@ -81,7 +81,7 @@
     ><br />
   </div>
   <div class="area">
-    <button
+    <button class="sb"
       on:click={() => {
         misc.textToClipboard(mqttText);
       }}>Copy configuration to clipboard</button
