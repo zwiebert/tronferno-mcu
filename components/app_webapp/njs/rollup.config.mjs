@@ -6,7 +6,7 @@ import strip from "@rollup/plugin-strip";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import svelte from "rollup-plugin-svelte";
-import sveltePreprocess from "svelte-preprocess";
+import { sveltePreprocess } from "svelte-preprocess";
 import { terser } from "@wwa/rollup-plugin-terser";
 import css from "rollup-plugin-css-only";
 import alias from "@rollup/plugin-alias";
