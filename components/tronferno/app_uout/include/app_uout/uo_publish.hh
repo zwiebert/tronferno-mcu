@@ -1,0 +1,1 @@
+void uoApp_publish_errorMask(unsigned error_bits);

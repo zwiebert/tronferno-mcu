@@ -1,3 +1,27 @@
-[submodule "components-mcu"]
-	path = comp/components-mcu
-	url = https://github.com/zwiebert/components-mcu.git
+[submodule "external/tronferno-lib"]
+	path = external/tronferno-lib
+	url = https://github.com/zwiebert/tronferno-lib.git
+[submodule "external/cc1101_ook"]
+	path = external/cc1101_ook
+	url = https://github.com/zwiebert/cc1101_ook.git
+[submodule "external/components-misc"]
+	path = external/components-misc
+	url = https://github.com/zwiebert/components-misc.git
+[submodule "external/host-test-idf"]
+	path = external/host-test-idf
+	url = https://github.com/zwiebert/host-test-idf.git
+[submodule "external/util-components"]
+	path = external/util-components
+	url = https://github.com/zwiebert/util-components.git
+[submodule "external/mbed-uout"]
+	path = external/mbed-uout
+	url = https://github.com/zwiebert/mbed-uout.git
+[submodule "external/mbed-mainloop"]
+	path = external/mbed-mainloop
+	url = https://github.com/zwiebert/mbed-mainloop.git
+[submodule "external/mbed-jsoneat"]
+	path = external/mbed-jsoneat
+	url = https://github.com/zwiebert/mbed-jsoneat.git
+[submodule "external/mbed-net-lib"]
+	path = external/mbed-net-lib
+	url = https://github.com/zwiebert/mbed-net-lib.git

@@ -1,0 +1,136 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+        {
+            "label": "build app",
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "flavor=esp32-debug",
+                "my_target=esp32-all",
+                "idf_make"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "echo": true
+            },
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "clean app",
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "my_target=esp32-fullclean",
+                "flavor=esp32-debug",
+                "idf_make"
+            ],
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "label": "flash app",
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "esp32-flash-ocd"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "echo": true
+            }
+        },
+        {
+            "label": "monitor",
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "esp32-monitor"
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "menuconfig",
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "flavor=esp32-debug",
+                "esp32-menuconfig"
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "host test ctest",
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "host-test-ctest"
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": {
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^([^:]+):(\\d+):\\[(\\w+)\\]:FAIL:\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 4,
+                    "message": 5
+                }
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true,
+            }
+        },
+        {
+            "label": "host test all",
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "host-test-all"
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": {
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^([^:]+):(\\d+):\\[(\\w+)\\]:FAIL:\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 4,
+                    "message": 5
+                }
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true,
+            }
+        }
+
+    ]
+}

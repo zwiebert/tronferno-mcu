@@ -1,3 +1,7 @@
+|Change Language: [Deutsch](network-de.md), English|
+
+## Network
+
 ### WLAN Access-Point
 * Purpose: to do the first time basic configuration by web browser 
 * active after initial flashing the firmware until you reconfigure "network" option

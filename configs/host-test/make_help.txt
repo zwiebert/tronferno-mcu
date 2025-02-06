@@ -1,0 +1,37 @@
+How to build on ESP32
+=====================
+
+Make Variables
+==============
+
+BUILD_BASE           base directory for builds (default: BUILD_BASE=build)
+flavor               selects a subfolder in ./src directory. (default: esp32)
+
+Make Targets
+============
+
+
+Documentation
+-------------
+
+help:                print this help text
+doxy-XXX-build:      build documentation using doxygen.  XXX can be one of: usr, dev, api
+doxy-XXX-view        build and view documentation in browser
+doxy-XXX-auto        autobuild and view documentation in browser
+
+
+Testing on Host
+---------------
+test.cm.configure:   configure host tests
+test.cm.build:       compile host test
+test.cm.ctest:       run host test
+test.cm.ctest.regex  run matching host test   (make test.cm.ctest.regex TEST=my_regex) 
+host-test-all:       configure, build, run all tests
+
+On-Chip-Testing
+---------------
+Note: on chip testing ist currently not working at all
+esp32-test-build:    build test firmware
+esp32-test-flash:    build and flash test firmware
+esp32-test-run:      run python script to check test results
+esp32-test-all:      build, flash and run tests

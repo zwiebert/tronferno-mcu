@@ -1,0 +1,245 @@
+@use "sass:color";
+@use "../styles/tailwind.css" as *;
+
+
+$color_a: hsl(70, 30%, 80%);
+$color_b: hsl(100, 50%, 50%);
+
+$color_bg_select: $color_b;
+$color_fg_select: color.adjust($color_a, $lightness: 30%);
+$color_bg: color.adjust($color_a, $lightness: 50%);
+$color_fg: hsl(0, 0%, 0%); // #278727;
+
+
+
+$color_bg_nav: $color_a;
+$color_bg_nav_select: $color_b;
+$color_bg_nav1: color.adjust($color_bg_nav, $lightness: -5%);
+$color_bg_nav1_select: color.adjust($color_bg_nav_select, $lightness: -5%);
+$color_bg_nav2: color.adjust($color_bg_nav1, $lightness: -5%);
+$color_bg_nav2_select: color.adjust($color_bg_nav1_select, $lightness: -5%);
+$color_bg_nav3: color.adjust($color_bg_nav2, $lightness: -5%);
+$color_bg_nav3_select: color.adjust($color_bg_nav2_select, $lightness: -5%);
+
+$color_bg_main_area: color.adjust($color_bg_nav1, $lightness: -5%);
+$color_border_main_area: color.adjust($color_bg_main_area, $lightness: -20%);
+
+$color_bg_area: color.adjust($color_bg_main_area, $lightness: 2.5%);
+$color_bg_weekday: color.adjust($color_bg_area, $lightness: -5%);
+$color_border_area: color.adjust($color_bg_area, $lightness: -20%);
+$color_border: color.adjust($color_b, $lightness: -5%);
+
+$color_bg_textarea: color.adjust($color_bg_area, $lightness: 30%);
+
+@layer utilities {
+
+.bg-selected {
+  background-color: $color_bg_select;
+}
+
+.fg-selected {
+  color: $color_fg_select;
+}
+
+.bg-area {
+  background-color: $color_bg_area;
+}
+
+
+.bg-area-selected {
+  background-color: color.adjust($color_bg_area, $lightness: -7.5%);
+}
+
+.tabbt.is-selected {
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+}
+
+.is-active {
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+}
+
+.bg-pct-groupXX {
+  padding: 0;
+  background-color: color.adjust($color_bg_area, $lightness: -10%);
+}
+
+.navtab-main {
+  border-radius: .5rem;
+  padding: 0;
+  background-color: $color_bg_nav;
+  border: thin dotted $color_border;
+
+  .tabbt.is-selected {
+    background-color: $color_bg_nav_select;
+    color: $color_fg_select;
+  }
+}
+
+.navtab-sub {
+  border-radius: .5rem;
+  padding: 0;
+  background-color: $color_bg_nav1;
+  border: thin dotted $color_border;
+
+  .tabbt.is-selected {
+    background-color: $color_bg_nav1_select;
+    color: $color_fg_select;
+  }
+}
+
+.navtab-sub2 {
+  border-radius: .5rem;
+  padding: 0;
+  background-color: $color_bg_nav2;
+  border: thin dotted $color_border;
+
+  .tabbt.is-selected {
+    background-color: $color_bg_nav2_select;
+    color: $color_fg_select;
+  }
+}
+
+.navtab-sub3 {
+  border-radius: .5rem;
+  padding: 0;
+  background-color: $color_bg_nav3;
+  border: thin dotted $color_border;
+
+  .tabbt.is-selected {
+    background-color: $color_bg_nav3_select;
+    color: $color_fg_select;
+  }
+}
+
+.main-area {
+  border-radius: .75rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: $color_bg_main_area;
+  border: thin solid $color_border_main_area;
+}
+
+.area {
+  border-radius: .75rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: $color_bg_area;
+  border: thin solid $color_border_area;
+}
+
+html {
+  font-size: 100%;
+  background-color: $color_bg;
+  color: $color_fg;
+}
+
+.help-text-v0 {
+  display: none;
+}
+
+.help-text-v1 {
+  font-size: 90%;
+}
+
+.cb {
+  width: 1em;
+  height: 1em;
+}
+
+h3 {
+  text-align: center;
+  margin-top: 0px;
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+  grid-area: header;
+  justify-self: stretch;
+  align-self: start;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  50.01% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@media only screen and (max-device-width: 360px) {
+  .full-width {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+
+  .top_table {
+    width: inherit;
+    //@extend .full-width; 
+  }
+}
+
+
+select, button, input, .file_input {
+  border: thin solid color.adjust($color_bg_area, $lightness: -5%);
+}
+
+button, .file_input {
+  background-color: color.adjust($color_bg_area, $lightness: 10%);
+  padding: .5rem;
+  margin: .5rem;
+}
+
+button:active {
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+}
+
+button:active {
+  background-color: color.adjust($color_bg, $lightness: -25%);
+  color: color.adjust($color_fg, $lightness: 25%);
+}
+
+
+input {
+  background-color: white;
+}
+
+.conf-table label {
+  padding: 2px;
+  margin-right: 3px;
+}
+
+.config-input.text {
+  width: inherit;
+}
+
+.config-input.number {
+  width: 5rem;
+}
+
+.auto-weekday {
+  background-color: $color_bg_weekday;
+}
+
+textarea.hscfg {
+  width: 98%;
+  font-size:9pt;
+  color: black;
+  background-color: $color_bg_textarea;
+}
+
+}
