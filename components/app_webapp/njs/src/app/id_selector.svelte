@@ -6,7 +6,7 @@
   import { G, M0 } from "../store/curr_shutter.js";
   import ShutterGM from "../app/shutter_gm.svelte";
   import TransmitterNames from "../app/transmitter_names.svelte";
-  import { SelectedId, SelectedIdIsValid, TxNames } from "../store/id.js";
+  import { SelectedId, SelectedIdIsValid, SelectedIdIsValidSunSensor, TxNames } from "../store/id.js";
   import { Aliases } from "../store/shutters.js";
   import { ReceivedAddresses } from "../store/alias.js";
   import { onMount, onDestroy } from "svelte";
@@ -144,7 +144,7 @@
           use:tippy={{ content: $_("app.id.tt.test_selectedId") }}
           disabled={!$SelectedIdIsValid}
           on:click={() => {
-            httpFetch.http_postCommand({ cmd: { a: $SelectedId, c: "sun-test" } });
+            httpFetch.http_postCommand({ cmd: { a: $SelectedId, c: "sun-test", r: 0 } });
           }}>{$_("app.id.test_selectedId")}</button
         >
         <button
@@ -153,7 +153,7 @@
           use:tippy={{ content: $_("app.id.tt.send_stop") }}
           disabled={!$SelectedIdIsValid}
           on:click={() => {
-            httpFetch.http_postCommand({ cmd: { a: $SelectedId, c: "stop" } });
+            httpFetch.http_postCommand({ cmd: { a: $SelectedId, c: "stop", r: 0 } });
           }}>{$_("app.id.send_stop")}</button
         >
       </td>
