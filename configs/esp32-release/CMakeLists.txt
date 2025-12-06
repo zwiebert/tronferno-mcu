@@ -11,7 +11,7 @@ set(COMPONENTS tronferno
                bootloader
                esptool_py
                partition_table
-               soc log spi_flash micro-ecc efuse driver esp_rom)
+               soc log spi_flash micro-ecc efuse esp_rom)
 
 #set environment variables to be used in components
 set(comp_compile_feats cxx_std_20)
