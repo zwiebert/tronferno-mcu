@@ -130,7 +130,7 @@ static bool pin_set_gpio_mode(gpio_num_t gpio_number, mcu_pin_mode mode, mcu_pin
   gpio_mode_t gpio_mode = pin_mode_table[mode];
 
   if (gpio_mode != GPIO_MODE_DISABLE)
-    gpio_pad_select_gpio(gpio_number);
+    esp_rom_gpio_pad_select_gpio(gpio_number);
   if (ESP_OK == gpio_set_direction(gpio_number, gpio_mode)) {
     if (gpio_mode == GPIO_MODE_INPUT) {
       gpio_pull_mode_t pm = level == PIN_LOW ? GPIO_PULLDOWN_ONLY : level == PIN_HIGH ? GPIO_PULLUP_ONLY :

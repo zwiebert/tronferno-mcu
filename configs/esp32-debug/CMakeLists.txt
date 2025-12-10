@@ -17,13 +17,14 @@ set(COMPONENTS tronferno
 set(comp_compile_feats cxx_std_20)
 #set(comp_compile_opts "$<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>" )
 set(comp_compile_opts "-Wno-error=format=" "-Wno-format" # Workaround IDF-5.0
-${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-fpermissive>" -Wno-missing-field-initializers)
+ ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-fpermissive>"
+ "$<$<COMPILE_LANGUAGE:C,CXX>:-include>" "$<$<COMPILE_LANGUAGE:C,CXX>:esp_attr.h>"
+ -Wno-error=switch
+ -Wno-missing-field-initializers)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 add_compile_definitions(MCU_ESP32 MCU_TYPE="esp32")
-add_compile_options("SHELL:-include esp_attr.h") # "SHELL:-include esp_log.h")
-#add_compile_options(-include esp_log.h)
 #add_compile_definitions(MQTT_SUPPORTED_FEATURE_TRANSPORT_ERR_REPORTING)
 
 if(DEFINED ENV{DISTRO})
