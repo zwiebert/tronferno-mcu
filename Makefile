@@ -33,10 +33,6 @@ ifneq "$(V)" "0"
 esp32_build_opts += -v
 endif
 
-# Add the python binary of python-venv to the path to make idf.py work in Eclipse
-# XXX: maybe its better to do this from the shell script which starts Eclipse (which runs export.sh anyway)
-export PATH := $(IDF_PYTHON_ENV_PATH)/bin:$(PATH) 
-
 env:
 	env | grep IDF
 
@@ -51,7 +47,7 @@ compile_commands_json_latest :=$(THIS_ROOT)/build/compile_commands.json
 sdkconfig_h_latest :=$(THIS_ROOT)/build/sdkconfig.h
 
 esp32_build_args :=$(CMAKE_ARGS_GENERATOR) -C $(CMAKE_SRC_PATH) -B $(BUILD_PATH)  -p $(PORT)  $(esp32_build_opts)
-esp32_build_cmd :=idf.py $(esp32_build_args)
+esp32_build_cmd :=./idf.sh $(esp32_build_args)
 esp32_cmake_cmd :=/usr/bin/cmake -S $(CMAKE_SRC_PATH) -B $(BUILD_PATH) $(CMAKE_ARGS_GENERATOR)
 
 # copy  the last used defines and includes into root/build 
@@ -82,17 +78,6 @@ $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 #need bash for "source" command
 SHELL :=/bin/bash
-#provide IDF_PATH if not in env
-export IDF_PATH ?="$(HOME)/esp/esp-idf"
-.PHONY: idf_make
-#Rule for use in vscode, which does not inherit the idf exports
-#so we source $IDF_PAtH/export.sh for each run of make
-#
-#usage: make idf_target my_target=<target>
-#example: make idf_target my_target=esp32-all  (instead of make esp32-all)
-#
-idf_make:
-	(source "$(IDF_PATH)/export.sh" && make $(my_target))
 
 
 esp32-all:

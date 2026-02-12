@@ -18,6 +18,7 @@ set(comp_compile_feats cxx_std_20)
 set(comp_compile_opts "$<$<COMPILE_LANGUAGE:CXX>:-fpermissive>"
  "$<$<COMPILE_LANGUAGE:C,CXX>:-include>" "$<$<COMPILE_LANGUAGE:C,CXX>:esp_attr.h>"
  -Wno-error=switch
+ -Wno-error=type-limits
  -Wno-missing-field-initializers)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)

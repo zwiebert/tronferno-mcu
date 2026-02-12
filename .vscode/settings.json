@@ -6,18 +6,26 @@
     "regex": "cpp",
     "*.ipp": "cpp"
   },
-      "clang-tidy.buildPath": "build/host-test",
-      "window.title": "TronfernoMCU${separator}${activeEditorLong}",
-      "cmake.generator": "Ninja",
-      "cmake.buildDirectory": "${sourceDirectory}/build",
-      "cmake.configureArgs": [
-        "-DBUILD_HOST_TESTS=ON"
-      ],
-      "idf.port": "/home/bertw/start/ser/tronferno",
-      "output.smartScroll.enabled": false,
-      "cmake.sourceDirectory": "${workspaceFolder}/configs/host-test",
-      "stm32-for-vscode.openOCDPath": false,
-      "idf.adapterTargetName": "esp32",
-      "C_Cpp.errorSquiggles": "enabled",
-      "idf.flashType": "UART",
+  "clang-tidy.buildPath": "build/host-test",
+  "window.title": "TronfernoMCU${separator}${activeEditorLong}",
+  "cmake.generator": "Ninja",
+  "cmake.buildDirectory": "${sourceDirectory}/build",
+  "cmake.configureArgs": [
+    "-DBUILD_HOST_TESTS=ON"
+  ],
+  "cmake.sourceDirectory": "${workspaceFolder}",
+  "output.smartScroll.enabled": false,
+  "stm32-for-vscode.openOCDPath": false,
+  "C_Cpp.errorSquiggles": "enabled",
+  "idf.buildPath": "${workspaceFolder}/configs/esp-idf/esp32-debug/build",
+  "idf.sdkconfigFilePath": "${workspaceFolder}/configs/esp-idf/esp32-debug/sdkconfig",
+  "idf.sdkconfigDefaults": ["${workspaceFolder}/configs/esp-idf/esp32-debug/sdkconfig.defaults"],
+  "idf.port": "/dev/ttyUSB0",
+  "idf.flashType": "JTAG",
+  "idf.currentSetup": "/home/bertw/.espressif/v6.0-beta2/esp-idf",
+  "idf.monitorPort": "/dev/ttyUSB0",
+  "idf.openOcdConfigs": [
+    "/home/bertw/esp/ft2232.cfg",
+    "target/esp32.cfg"
+  ]
 }

@@ -8,10 +8,15 @@
   },
   "clang-tidy.buildPath": "build",
   "window.title": "TronfernoMCU (esp32-debug)${separator}${activeEditorLong}",
-  "idf.port": "/home/bertw/start/ser/tronferno",
   "output.smartScroll.enabled": false,
-  "idf.adapterTargetName": "esp32",
   "C_Cpp.errorSquiggles": "enabled",
-  "idf.flashType": "UART",
-  "stm32-for-vscode.openOCDPath": false
+  "stm32-for-vscode.openOCDPath": false,
+  "idf.port": "/dev/ttyUSB1",
+  "idf.adapterTargetName": "esp32",
+  "idf.flashType": "JTAG",
+  "idf.currentSetup": "/home/bertw/.espressif/v6.0-beta2/esp-idf",
+  "idf.openOcdConfigs": [
+    "/home/bertw/esp/ft2232.cfg",
+    "target/esp32.cfg"
+  ]
 }

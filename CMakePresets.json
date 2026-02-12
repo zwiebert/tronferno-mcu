@@ -1,0 +1,51 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "default",
+            "binaryDir": "configs/esp-idf/esp32-debug/build",
+            "displayName": "Development Configuration",
+            "description": "Fast builds for development and debugging",
+            "cacheVariables": {
+                "PRESET_NAME": "default",
+                "IDF_TARGET": "esp32",
+                "SDKCONFIG_DEFAULTS": "configs/esp-idf/esp32-debug/sdkconfig.defaults",
+                "SDKCONFIG": "configs/esp-idf/esp32-debug/sdkconfig"
+            }
+        },
+        {
+            "name": "host-test",
+            "binaryDir": "configs/host-test/build",
+            "displayName": "build test programs and run ctest on host",
+            "description": "host testing",
+            "cacheVariables": {
+                "PRESET_NAME": "host-test",
+                "BUILD_HOST_TESTS":{"type":"BOOL", "value":"ON"}
+            }
+        },
+        {
+            "name": "esp32-debug",
+            "binaryDir": "configs/esp-idf/esp32-debug/build",
+            "displayName": "Development Configuration",
+            "description": "Fast builds for development and debugging",
+            "cacheVariables": {
+                "PRESET_NAME": "esp32-debug",
+                "IDF_TARGET": "esp32",
+                "SDKCONFIG_DEFAULTS": "configs/esp-idf/esp32-debug/sdkconfig.defaults",
+                "SDKCONFIG": "configs/esp-idf/esp32-debug/sdkconfig"
+            }
+        },
+        {
+            "name": "esp32-release",
+            "binaryDir": "configs/esp-idf/esp32-release/build",
+            "displayName": "Release Build",
+            "cacheVariables": {
+                "PRESET_NAME": "esp32-release",
+                "LINKER_DEMANGLE":{"type":"BOOL", "value":"ON"},
+                "IDF_TARGET": "esp32",
+                "SDKCONFIG_DEFAULTS": "configs/esp-idf/esp32-release/sdkconfig.defaults",
+                "SDKCONFIG": "configs/esp-idf/esp32-release/sdkconfig"
+            }
+        }
+    ]
+}
