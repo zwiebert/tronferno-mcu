@@ -152,10 +152,8 @@ export const de = {
         },
       },
     },
-    mcu: {
-      network: { header: "Netzwerk-Verbindungen und -Dienste", tt: { header: "--" } },
-      misc: { header: "Allgemeine Einstellungen", tt: { header: "--" } },
-    },
+    network: { header: "Netzwerk-Verbindungen und -Dienste", tt: { header: "--" } },
+    misc: { header: "Allgemeine Einstellungen", tt: { header: "--" } },
 
     rx_names: {
       header: "Empfängernamen",
@@ -238,6 +236,14 @@ export const de = {
               Da diese nicht automatisch erfolgen kann, muss der User diese An-/Abmeldungen hier zusätzlich noch einmal durchführen. 
               Runde Knöpfe auf dieser Seite testen oder ändern die realen An-/Abmeldung. 
                `,
+      },
+    },
+
+    guiacc: {
+      header: "GUI Zugriffsbeschränkung",
+      tt: {
+        header:
+          "Experimentell: Verstecke Bereiche der GUI je nach gewähltem Benutzer-Level (z.B. Konfigurationen versteckt unterhalb Administrator-Level)",
       },
     },
   },

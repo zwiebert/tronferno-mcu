@@ -10,7 +10,7 @@
   let { rxonly = false } = $props();
 
   let showMqttRx = $state(!rxonly);
-  let showMqttTx = $state(!rxonly);
+  let showMqttTx = $state(false);
   let showRc = $state(true);
   let showSc = $state(!rxonly);
 
