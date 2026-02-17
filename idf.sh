@@ -10,7 +10,7 @@ then
    then
      echo "variable exists: IDF_PATH=<$IDF_PATH>"
        export IDF_PATH_FORCE=1
-       "$IDF_PATH./export.sh"
+       . "$IDF_PATH/export.sh"
    else
      echo "using path <$HOME/esp/esp-idf>"
        export IDF_PATH="$HOME/esp/esp-idf"

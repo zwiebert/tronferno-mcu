@@ -14,7 +14,7 @@ set(COMPONENTS tronferno
                soc log spi_flash micro-ecc efuse esp_rom)
 
 #set environment variables to be used in components
-set(comp_compile_feats cxx_std_20)
+set(comp_compile_feats cxx_std_26)
 #set(comp_compile_opts "$<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>" )
 set(comp_compile_opts "-Wno-error=format=" "-Wno-format" # Workaround IDF-5.0
  ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-fpermissive>"
