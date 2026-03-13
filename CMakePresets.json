@@ -3,7 +3,7 @@
     "configurePresets": [
         {
             "name": "default",
-            "binaryDir": "configs/esp-idf/esp32-debug/build",
+            "binaryDir": "build/esp32-debug",
             "displayName": "Development Configuration",
             "description": "Fast builds for development and debugging",
             "cacheVariables": {
@@ -15,7 +15,7 @@
         },
         {
             "name": "host-test",
-            "binaryDir": "configs/host-test/build",
+            "binaryDir": "build/host-test",
             "displayName": "build test programs and run ctest on host",
             "description": "host testing",
             "cacheVariables": {
@@ -25,7 +25,7 @@
         },
         {
             "name": "esp32-debug",
-            "binaryDir": "configs/esp-idf/esp32-debug/build",
+            "binaryDir": "build/esp32-debug",
             "displayName": "Development Configuration",
             "description": "Fast builds for development and debugging",
             "cacheVariables": {
@@ -37,7 +37,7 @@
         },
         {
             "name": "esp32-release",
-            "binaryDir": "configs/esp-idf/esp32-release/build",
+            "binaryDir": "build/esp32-release",
             "displayName": "Release Build",
             "cacheVariables": {
                 "PRESET_NAME": "esp32-release",

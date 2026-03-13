@@ -2,13 +2,15 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.16)
 
-
-if("${PRESET_NAME}" STREQUAL "host-test")
 option(BUILD_HOST_TESTS "build host test" OFF)
 option(CMAKE_EXPORT_COMPILE_COMMANDS "generate compilation database for clang-tidy" ON)
 option(BUILD_DOXY "build doxy docs" OFF)
 option(ASAN "enable compiler sanitizer" OFF)
 option(GPROF "enable gprof" OFF)
+
+
+if("${PRESET_NAME}" STREQUAL "host-test" OR ${BUILD_HOST_TESTS} STREQUAL "ON")
+
 
 set(TARGET_PLATFORM_FILTER "host/.*")
 

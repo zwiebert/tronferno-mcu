@@ -36,7 +36,7 @@ host-test-ctest-regex: #(usage: make host-test-ctest-regex  TEST=my_regex)
 config_h:=$(BUILD_PATH)/config/sdkconfig.h
 config_cmake:=$(BUILD_PATH)/config/sdkconfig.cmake
 config_json:=$(BUILD_PATH)/config/sdkconfig.json
-_config:=$(CMAKE_SRC_PATH)/.config
+_config:=$(CONFIG_PATH)/.config
 
 
 test.cm.fullclean:
@@ -47,23 +47,23 @@ test.cm.fullclean:
 
 $(BUILD_PATH) $(BUILD_PATH)/config: FORCE
 	rm -fr $(BUILD_PATH)
-	mkdir -p $(BUILD_PATH)/config $(CMAKE_SRC_PATH)/config
+	mkdir -p $(BUILD_PATH)/config $(CONFIG_PATH)/config
 Kconfig.hosttestbuild:$(kconfigs)
 	ls $(kconfigs) | sed -E -e 's/^/rsource  \"/' -e 's/$$/\"/' >$@
 test.cm.menuconfig $(_config):Kconfig.hosttestbuild
-	mkdir -p $(CMAKE_SRC_PATH) && cd $(CMAKE_SRC_PATH) && menuconfig $(THIS_ROOT)/Kconfig.hosttestbuild && touch $(_config)
+	mkdir -p $(CONFIG_PATH) && cd $(CONFIG_PATH) && menuconfig $(THIS_ROOT)/Kconfig.hosttestbuild && touch $(_config)
 $(config_h) $(config_cmake) $(config_json) config: $(_config)
 	python -m kconfgen  --kconfig $(THIS_ROOT)/Kconfig.hosttestbuild --config $(_config) \
 		--output header $(config_h) --output cmake $(config_cmake) --output json $(config_json)
-	mkdir -p $(CMAKE_SRC_PATH)/config && cp $(config_h) $(config_cmake) $(config_json) $(CMAKE_SRC_PATH)/config
+	mkdir -p $(CONFIG_PATH)/config && cp $(config_h) $(config_cmake) $(config_json) $(CONFIG_PATH)/config
 
 
-## configure with Cmake, build with Ninja, run with Ctest
+## configure with Cmake, build, run with Ctest
 
 test.cm.configure:$(BUILD_PATH)/config $(config_h) $(config_cmake) $(config_json)
-	cmake -D BUILD_HOST_TESTS=ON -B $(BUILD_PATH)  -S  $(CMAKE_SRC_PATH) $(CMAKE_ARGS_GENERATOR)
-test.cm.configure_no_kconfgen: $(BUILD_PATH)/config $(CMAKE_SRC_PATH)/config/sdkconfig.h $(CMAKE_SRC_PATH)/config/sdkconfig.cmake
-	cp $(CMAKE_SRC_PATH)/config/sdkconfig.h $(CMAKE_SRC_PATH)/config/sdkconfig.cmake $(BUILD_PATH)/config/
+	cmake -D BUILD_HOST_TESTS=ON -B $(BUILD_PATH)  -S  $(CMAKE_SRC_PATH) $(CMAKE_ARGS_GENERATOR) 
+test.cm.configure_no_kconfgen: $(BUILD_PATH)/config $(CONFIG_PATH)/config/sdkconfig.h $(CONFIG_PATH)/config/sdkconfig.cmake
+	cp $(CONFIG_PATH)/config/sdkconfig.h $(CONFIG_PATH)/config/sdkconfig.cmake $(BUILD_PATH)/config/
 	cmake  -D BUILD_HOST_TESTS=ON  -B $(BUILD_PATH)  -S  $(CMAKE_SRC_PATH) $(CMAKE_ARGS_GENERATOR)
 test.cm.build:
 	cmake --build $(BUILD_PATH) 

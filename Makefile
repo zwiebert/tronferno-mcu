@@ -37,16 +37,19 @@ env:
 	env | grep IDF
 
 THIS_ROOT := $(realpath .)
-
-CMAKE_SRC_PATH :=$(THIS_ROOT)/configs/$(flavor)
-BUILD_BASE ?=$(THIS_ROOT)/configs/$(flavor)/build
+CMAKE_SRC_PATH :=$(THIS_ROOT)
+CONFIG_PATH :=$(THIS_ROOT)/configs/$(flavor)
+SDKCONFIG_DEFAULTS := $(CONFIG_PATH)/sdkconfig.defaults
+SDKCONFIG := $(CONFIG_PATH)/sdkconfig
+BUILD_BASE ?=$(THIS_ROOT)/build/$(flavor)
 BUILD_PATH :=$(BUILD_BASE)
 
 tmp_build_dir :=/tmp/tronferno-mcu/build
 compile_commands_json_latest :=$(THIS_ROOT)/build/compile_commands.json
 sdkconfig_h_latest :=$(THIS_ROOT)/build/sdkconfig.h
 
-esp32_build_args :=$(CMAKE_ARGS_GENERATOR) -C $(CMAKE_SRC_PATH) -B $(BUILD_PATH)  -p $(PORT)  $(esp32_build_opts)
+esp32_build_args :=$(CMAKE_ARGS_GENERATOR) -C $(CMAKE_SRC_PATH) -B $(BUILD_PATH)  -p $(PORT)  $(esp32_build_opts) \
+-D SDKCONFIG_DEFAULTS=$(SDKCONFIG_DEFAULTS) -D SDKCONFIG=$(SDKCONFIG)
 esp32_build_cmd :=./idf.sh $(esp32_build_args)
 esp32_cmake_cmd :=/usr/bin/cmake -S $(CMAKE_SRC_PATH) -B $(BUILD_PATH) $(CMAKE_ARGS_GENERATOR)
 
