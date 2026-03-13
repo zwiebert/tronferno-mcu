@@ -37,7 +37,7 @@ enum class otok : otokBaseT  {
       /////////// begin of config keys //////////////////
       k_cu, k_baud, k_rtc, //
       k_network, k_wlan_ssid, k_wlan_password, k_ntp_server, k_lan_phy, k_lan_pwr_gpio, //
-      k_longitude, k_latitude, k_timezone, k_dst, k_tz, k_verbose, //
+      k_longitude, k_latitude, k_tz, k_verbose, //
       k_mqtt_enable, k_mqtt_url, k_mqtt_user, k_mqtt_password, k_mqtt_client_id, k_mqtt_root_topic, //
       k_http_enable, k_http_user, k_http_password, //
       k_gm_used, //
@@ -68,7 +68,7 @@ constexpr const_cstringT otok_strings[] = {
      /////////// begin of config keys //////////////////
     "cu", "baud", "rtc", //
     "network", "wlan-ssid", "wlan-password", "ntp-server", "lan-phy", "lan-pwr-gpio", //
-    "longitude", "latitude", "timezone", "dst", "tz", "verbose", //
+    "longitude", "latitude", "tz", "verbose", //
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-client-id", "mqtt-root-topic", //
     "http-enable", "http-user", "http-password", //
     "gm-used", //

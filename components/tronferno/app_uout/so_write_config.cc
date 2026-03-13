@@ -81,12 +81,6 @@ void soCfg_LATITUDE(class UoutWriter &td) {
   td.so().print(comp_sett.get_optKeyStr(CB_LATITUDE), config_read_latitude(), 2);
 }
 
-void soCfg_TIMEZONE(class UoutWriter &td) {
-#ifndef CONFIG_APP_USE_POSIX_TIME
-  td.so().print(comp_sett.get_optKeyStr(CB_TIMEZONE), config_read_timezone(), 5);
-#endif
-}
-
 void soCfg_GM_USED(class UoutWriter &td) {
   td.so().print(comp_sett.get_optKeyStr(CB_USED_MEMBERS), config_read_used_members(), 16);
 }

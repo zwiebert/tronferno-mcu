@@ -22,7 +22,7 @@
   "idf.sdkconfigDefaults": ["${workspaceFolder}/configs/esp-idf/esp32-debug/sdkconfig.defaults"],
   "idf.port": "/dev/ttyUSB0",
   "idf.flashType": "JTAG",
-  "idf.currentSetup": "/home/bertw/.espressif/v6.0-beta2/esp-idf",
+  "idf.currentSetup": "/home/bertw/.espressif/v5.5.3/esp-idf",
   "idf.monitorPort": "/dev/ttyUSB0",
   "idf.openOcdConfigs": [
     "/home/bertw/esp/ft2232.cfg",
