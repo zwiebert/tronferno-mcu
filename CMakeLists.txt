@@ -7,6 +7,7 @@ option(CMAKE_EXPORT_COMPILE_COMMANDS "generate compilation database for clang-ti
 option(BUILD_DOXY "build doxy docs" OFF)
 option(ASAN "enable compiler sanitizer" OFF)
 option(GPROF "enable gprof" OFF)
+option(LINKER_DEMANGLE "demangle c++ liner error messages" ON)
 
 
 if("${PRESET_NAME}" STREQUAL "host-test" OR ${BUILD_HOST_TESTS} STREQUAL "ON")
