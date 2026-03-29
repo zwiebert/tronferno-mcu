@@ -196,7 +196,6 @@ void soMsg_inet_print_address(class UoutWriter &td) {
   char buf[20];
   ipnet_addr_as_string(buf, 20);
   td.so().print("ipaddr", buf);
-  td.write("\ntf: ipaddr: "), td.write(buf), td.write(";\n");
 }
 
 #endif

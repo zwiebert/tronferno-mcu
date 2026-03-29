@@ -20,10 +20,10 @@
   "idf.buildPath": "${workspaceFolder}/configs/esp-idf/esp32-debug/build",
   "idf.sdkconfigFilePath": "${workspaceFolder}/configs/esp-idf/esp32-debug/sdkconfig",
   "idf.sdkconfigDefaults": ["${workspaceFolder}/configs/esp-idf/esp32-debug/sdkconfig.defaults"],
-  "idf.port": "/dev/ttyUSB0",
-  "idf.flashType": "JTAG",
+  "idf.port": "/dev/ttyUSB1",
+  "idf.flashType": "UART",
   "idf.currentSetup": "/home/bertw/.espressif/v5.5.3/esp-idf",
-  "idf.monitorPort": "/dev/ttyUSB0",
+  "idf.monitorPort": "/dev/ttyUSB1",
   "idf.openOcdConfigs": [
     "/home/bertw/esp/ft2232.cfg",
     "target/esp32.cfg"
