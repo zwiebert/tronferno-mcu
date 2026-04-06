@@ -8,7 +8,7 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
 #ifdef CONFIG_APP_USE_RTC_AUTO_UPD
     "rtc-auto-upd-enable=(0|1|?)   enable automatic updating reveiver's RTC (when DST changes)\n"
 #endif
-#ifndef MCU_ESP32
+#ifndef ESP_PLATFORM
     "baud=(N|?)         serial baud rate\n"
 #endif
 #ifdef CONFIG_APP_USE_WLAN

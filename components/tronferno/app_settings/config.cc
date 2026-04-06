@@ -36,7 +36,7 @@ enum nwConnection config_read_network_connection() {
 }
 #endif
 
-#ifndef MCU_ESP32
+#ifndef ESP_PLATFORM
 uint32_t config_read_baud() {
   return config_read_item(CB_BAUD, CONFIG_APP_UART_BAUD_RATE);
 }

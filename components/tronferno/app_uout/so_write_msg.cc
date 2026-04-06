@@ -59,7 +59,7 @@ void soMsg_mcu_run_time(class UoutWriter &td) {
   td.so().print("run-time", run_time_s());
 
 }
-#ifdef MCU_ESP32
+#ifdef ESP_PLATFORM
 #include "esp_app_desc.h"
 void soMsg_mcu_version(class UoutWriter &td) {
   char buf[64];

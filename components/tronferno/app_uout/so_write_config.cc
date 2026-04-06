@@ -44,7 +44,7 @@
 
 
 void soCfg_BAUD(class UoutWriter &td) {
-#ifndef MCU_ESP32
+#ifndef ESP_PLATFORM
   td.so().print(comp_sett.get_optKeyStr(CB_BAUD), config_read_baud());
 #endif
 }

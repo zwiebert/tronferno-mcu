@@ -2202,7 +2202,7 @@ INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = USE_MQTT \
                          USE_NETWORK \
                          USE_WS \
-                         MCU_ESP32
+                         ESP_PLATFORM
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
