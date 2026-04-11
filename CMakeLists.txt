@@ -57,11 +57,6 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/components/tronferno ${CMAKE_BINARY_D
 
 else()
 
-if("${PRESET_NAME}" STREQUAL "")
-    set(CACHE{SDKCONFIG_DEFAULTS} VALUE "configs/esp-idf/esp32-debug/sdkconfig.defaults" )
-    set(CACHE{SDKCONFIG} VALUE "configs/esp-idf/esp32-debug/sdkconfig" )
-endif()
-
 set(PROJECT_NAME "tronferno-mcu")
 
 option(LINKER_DEMANGLE "set linker option --demangle" OFF)

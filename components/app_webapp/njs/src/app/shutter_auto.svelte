@@ -192,7 +192,7 @@
       <td>
         <input class="cb" type="checkbox" bind:checked={autoData.hasWeekly} />
       </td>
-      <td />
+      <td></td>
     </tr>
 
     {#if autoData.hasWeekly}

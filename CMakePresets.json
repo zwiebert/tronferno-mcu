@@ -9,8 +9,8 @@
             "cacheVariables": {
                 "PRESET_NAME": "default",
                 "IDF_TARGET": "esp32",
-                "SDKCONFIG_DEFAULTS": "configs/esp-idf/esp32-debug/sdkconfig.defaults",
-                "SDKCONFIG": "configs/esp-idf/esp32-debug/sdkconfig"
+                "SDKCONFIG_DEFAULTS": "configs/esp32-debug/sdkconfig.defaults",
+                "SDKCONFIG": "configs/esp32-debug/sdkconfig"
             }
         },
         {
@@ -31,8 +31,8 @@
             "cacheVariables": {
                 "PRESET_NAME": "esp32-debug",
                 "IDF_TARGET": "esp32",
-                "SDKCONFIG_DEFAULTS": "configs/esp-idf/esp32-debug/sdkconfig.defaults",
-                "SDKCONFIG": "configs/esp-idf/esp32-debug/sdkconfig"
+                "SDKCONFIG_DEFAULTS": "configs/esp32-debug/sdkconfig.defaults",
+                "SDKCONFIG": "configs/esp32-debug/sdkconfig"
             }
         },
         {
@@ -43,8 +43,8 @@
                 "PRESET_NAME": "esp32-release",
                 "LINKER_DEMANGLE":{"type":"BOOL", "value":"ON"},
                 "IDF_TARGET": "esp32",
-                "SDKCONFIG_DEFAULTS": "configs/esp-idf/esp32-release/sdkconfig.defaults",
-                "SDKCONFIG": "configs/esp-idf/esp32-release/sdkconfig"
+                "SDKCONFIG_DEFAULTS": "configs/esp32-release/sdkconfig.defaults",
+                "SDKCONFIG": "configs/esp32-release/sdkconfig"
             }
         }
     ]

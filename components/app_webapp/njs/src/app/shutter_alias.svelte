@@ -157,7 +157,7 @@
     <table id="aliasTable">
       <thead>
         <tr>
-          <th />
+          <th></th>
           {#each [1, 2, 3, 4, 5, 6, 7] as m}
             {#if m <= $GmuMaxM}
               <th>{m}</th>

@@ -17,15 +17,18 @@
   "output.smartScroll.enabled": false,
   "stm32-for-vscode.openOCDPath": false,
   "C_Cpp.errorSquiggles": "enabled",
-  "idf.buildPath": "${workspaceFolder}/configs/esp-idf/esp32-debug/build",
-  "idf.sdkconfigFilePath": "${workspaceFolder}/configs/esp-idf/esp32-debug/sdkconfig",
-  "idf.sdkconfigDefaults": ["${workspaceFolder}/configs/esp-idf/esp32-debug/sdkconfig.defaults"],
   "idf.port": "/dev/ttyUSB1",
   "idf.flashType": "UART",
-  "idf.currentSetup": "/home/bertw/.espressif/v5.5.3/esp-idf",
+  "idf.currentSetup": "/home/bertw/.espressif/v6.0/esp-idf",
   "idf.monitorPort": "/dev/ttyUSB1",
   "idf.openOcdConfigs": [
     "/home/bertw/esp/ft2232.cfg",
     "target/esp32.cfg"
+  ],
+  "clangd.path": "/home/bertw/.espressif/tools/esp-clang/esp-20.1.1_20250829/esp-clang/bin/clangd",
+  "clangd.arguments": [
+    "--background-index",
+    "--query-driver=**",
+    "--compile-commands-dir=/home/bertw/proj/mcu/tronferno-mcu/build/projconf/esp32-release"
   ]
 }
