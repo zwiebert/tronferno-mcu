@@ -1,8 +1,6 @@
 <script>
+import "../styles/tailwind.css";
+import "../styles/app.scss";
 </script>
 
-<style global lang="scss">
-  @use "../styles/app.scss" as *;
-  
-</style>
 

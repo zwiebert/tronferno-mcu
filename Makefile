@@ -6,20 +6,12 @@ flavor ?= esp32-release
 
 default: help
 
-clean : esp32-test-clean esp32-fullclean http_clean
+clean : esp32-test-clean esp32-fullclean
 	make -C test/esp32 clean
 
 
 help:
 	@less docs/make_help.txt
-
-#PROXY (env: MCU_IP_ADDR, PROXY_TCP_PORT)
-#==========================================
-.PHONY: http_proxy http_clean
-http_proxy:
-	cd components/app_webapp && make BUILD_DIR=$(BUILD_BASE)/app_webapp proxy
-http_clean:
-	cd components//app_webapp && make BUILD_DIR=$(BUILD_BASE)/app_webapp clean
 
 
 ####### ESP32 build command ############

@@ -4,7 +4,7 @@ import { ReloadProgress } from "../store/app_state.js";
 //import { set } from "svelte/store";
 import { GuiAcc } from "../store/app_state";
 import * as httpFetch from "../app/fetch.js";
-import { sdkconfig } from "config/sdkconfig.js";
+import sdkconfig from "sdkconfig";
 
 export const NODE_ENV_DEV = true;
 export const PROD = false;
@@ -40,8 +40,6 @@ export function req_mcuRestart() {
   req_reloadStart();
   //setTimeout(function(){ location.reload(); }, 10000);
 }
-
-
 
 export function set_gui_access_level(al) {
   const developer = -1;

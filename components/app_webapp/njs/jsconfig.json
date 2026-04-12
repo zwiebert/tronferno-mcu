@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "target": "ESNext",
+    "baseUrl": ".",
+    "paths": {
+      "sdkconfig": ["./src/config/sdkconfig.json"]
+    },
+    "checkJs": true
+  },
+  "include": ["src/**/*", "src/config/sdkconfig.json"]
+}
