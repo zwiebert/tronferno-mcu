@@ -11,9 +11,8 @@ option(LINKER_DEMANGLE "demangle c++ liner error messages" ON)
 
 
 if("${PRESET_NAME}" STREQUAL "host-test" OR ${BUILD_HOST_TESTS} STREQUAL "ON")
+### unit testing on host
 
-
-set(TARGET_PLATFORM_FILTER "host/.*")
 set(ESP_PLATFORM TRUE)
 set(IDF_TARGET "linux")
 
@@ -40,9 +39,8 @@ set(EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/components ${external_compone
 
 message("external_components: ${external_components}")
 
-set(comp_compile_feats cxx_std_20)
-set(comp_compile_opts -O0 -ggdb  # -fanalyzer
-)
+set(CMAKE_CXX_STANDARD 20)
+add_compile_options(-O0 -ggdb )
 
 if(${GPROF})
   add_link_options(-pg)
@@ -58,6 +56,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/external/host-test-idf/components/test_host/ho
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/components/tronferno ${CMAKE_BINARY_DIR}/${BIN_COMP_ROOT}/tronferno)
 
 else()
+### ESP32 firmware
 
 set(PROJECT_NAME "tronferno-mcu")
 
@@ -74,39 +73,21 @@ set(COMPONENTS tronferno
                soc log spi_flash micro-ecc efuse esp_rom)
 
 #set environment variables to be used in components
-set(comp_compile_feats cxx_std_20)
-#set(comp_compile_opts "$<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>" )
-set(comp_compile_opts "-Wno-error=format=" "-Wno-format" # Workaround IDF-5.0
- ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-fpermissive>"
- "$<$<COMPILE_LANGUAGE:C,CXX>:-include>" "$<$<COMPILE_LANGUAGE:C,CXX>:esp_attr.h>"
- -Wno-error=type-limits
- -Wno-error=switch
- -Wno-missing-field-initializers)
+set(CMAKE_CXX_STANDARD 20)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 add_compile_definitions(MCU_TYPE="esp32")
-#add_compile_definitions(MQTT_SUPPORTED_FEATURE_TRANSPORT_ERR_REPORTING)
 
 if(DEFINED ENV{DISTRO})
-add_compile_definitions(DISTRIBUTION)
-endif()
-if(DEFINED ENV{FLAVOR_LAN})
-add_compile_definitions(FLAVOR_LAN)
+  add_compile_definitions(DISTRIBUTION)
 endif()
 
 if(${LINKER_DEMANGLE})
   add_link_options(-Wl,--demangle)
 endif()
 
-function(component_compile_features)
-    target_compile_features(${COMPONENT_LIB} PRIVATE ${ARGV})
-endfunction()
-
-project(tronferno-mcu esptool_py)
-
-
-include(CTest)
+project(tronferno-mcu)
 
 
 endif()

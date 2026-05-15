@@ -47,9 +47,8 @@ idf_component_register(
                   nvs_flash storage txtio utils_debug utils_misc 
                   esp_wifi esp_driver_gptimer mbedtls app_update freertos
                   espcoredump
-    EMBED_TXTFILES app_cli/ca_cert.pem
     )
 
 
-component_compile_options(${comp_compile_opts} -lfreertos)
-component_compile_features(${comp_compile_feats})
+target_compile_options(${COMPONENT_LIB} PRIVATE "SHELL:-include sdkconfig.h" -lfreertos -Wno-error=missing-field-initializers)
+ 

@@ -4,8 +4,8 @@ idf_component_register(SRC_DIRS "."
                        PRIV_REQUIRES tronferno  uout kvs unity  utils_misc app_config config_kvs kvs cli
 )
 
-component_compile_options(${comp_compile_opts})
-component_compile_features(${comp_compile_feats})
+ 
+ 
 
 
 

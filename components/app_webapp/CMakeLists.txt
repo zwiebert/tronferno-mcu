@@ -2,7 +2,7 @@ if(NOT UNIT_TESTING)
 
 set(PACKAGE_JSON "${CMAKE_CURRENT_SOURCE_DIR}/njs/package.json")
 set(PACKAGE_LOCK "${CMAKE_CURRENT_SOURCE_DIR}/njs/package-lock.json")
-set(NPM_INSTALL_STAMP "${CMAKE_CURRENT_SOURCE_DIR}/njs/.npm_install.stamp")
+set(NPM_NODE_MODULES "${CMAKE_CURRENT_SOURCE_DIR}/njs/node_modules")
 
 
 
@@ -23,11 +23,10 @@ list(TRANSFORM C_PATHS APPEND ".c")
 if(NOT CMAKE_BUILD_EARLY_EXPANSION)
 
 add_custom_command(
-    OUTPUT "${NPM_INSTALL_STAMP}"
+    OUTPUT "${NPM_NODE_MODULES}"
     COMMAND npm install
-    COMMAND ${CMAKE_COMMAND} -E touch "${NPM_INSTALL_STAMP}"
+    COMMAND ${CMAKE_COMMAND} -E touch "${NPM_NODE_MODULES}"
     DEPENDS "${PACKAGE_JSON}" "${PACKAGE_LOCK}"
-    BYPRODUCTS "${CMAKE_CURRENT_SOURCE_DIR}/njs/node_modules"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/njs"
     COMMENT "Checking and installing npm dependencies..."
     VERBATIM
@@ -41,7 +40,7 @@ file(GLOB_RECURSE WEB_SOURCES
 add_custom_command(
     OUTPUT ${GZBR_PATHS}
     COMMAND ${CMAKE_COMMAND} -E env "BUILD_DIR=${CMAKE_CURRENT_BINARY_DIR}" npm run build
-    DEPENDS "${NPM_INSTALL_STAMP}" ${WEB_SOURCES}
+    DEPENDS "${NPM_NODE_MODULES}" ${WEB_SOURCES}
     WORKING_DIRECTORY "${COMPONENT_DIR}/njs" # Where your package.json is
     COMMENT "Running Vite build..."
     VERBATIM

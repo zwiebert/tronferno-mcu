@@ -19,7 +19,7 @@
   "C_Cpp.errorSquiggles": "enabled",
   "idf.port": "/dev/ttyUSB1",
   "idf.flashType": "UART",
-  "idf.currentSetup": "/home/bertw/.espressif/v6.0/esp-idf",
+  "idf.currentSetup": "/home/bertw/.espressif/v6.0.1/esp-idf",
   "idf.monitorPort": "/dev/ttyUSB1",
   "idf.openOcdConfigs": [
     "/home/bertw/esp/ft2232.cfg",

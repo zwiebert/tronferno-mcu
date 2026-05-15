@@ -19,7 +19,7 @@
 #include "esp_intr_alloc.h"
 #include "hal/timer_types.h"
 #include "stdint.h"
-#include "sdkconfig.h"
+ 
 #include "soc/timer_group_struct.h"
 #include <esp32/rom/ets_sys.h>
 
