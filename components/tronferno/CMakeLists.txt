@@ -1,8 +1,3 @@
-set(srcs_all)
-set(pub_req_all)
-set(priv_req_all)
-set(embed_txtfiles_all)
-
 set(srcs
     app_cli/cli.cc
     app_cli/parm_help.cc
@@ -17,28 +12,32 @@ set(srcs
     app_cli/cli_to_json.cc
 
 
-    app_main/main_setup.cc app_main/esp32/main.cc app_main/esp32/main_setup.cc app_main/esp32/main_loop.cc app_main/esp32/main_loop_periodic.cc app_main/esp32/unity_setup.cc 
-
-    app_misc/esp32/kvstore.cc app_misc/rtc.cc  app_misc/opt_map_consteval.cc
+    app_main/main_setup.cc app_misc/rtc.cc  app_misc/opt_map_consteval.cc
 
     app_settings/config.cc app_settings/config_kvs.cc app_settings/config_comps.cc app_settings/app_settings.cc app_settings/json_save.cc
 
     app_uout/so_print.cc app_uout/so_write_msg.cc app_uout/so_write_config.cc app_uout/uo_publish.cc )
+
+set(platform_srcs app_main/esp32/main.cc app_main/esp32/main_setup.cc app_main/esp32/main_loop.cc
+                  app_main/esp32/main_loop_periodic.cc app_main/esp32/unity_setup.cc
+                  app_misc/esp32/kvstore.cc app_misc/host/kvstore.cc)
 
 if(CONFIG_APP_USE_MQTT)
  list(APPEND srcs app_mqtt/mqtt.cc app_mqtt/mqtt_setup.cc)
  endif()
 
  if(CONFIG_APP_USE_HTTP)
- list(APPEND srcs  app_http_server/web_content.cc app_http_server/esp32/uri_handlers.cc)
+ list(APPEND srcs  app_http_server/web_content.cc)
+ list(APPEND platform_srcs app_http_server/esp32/uri_handlers.cc)
  endif()
 
 if(CONFIG_APP_USE_TIMER_TASK)
- list(APPEND srcs "app_misc/esp32/timer_task.cc")
+ list(APPEND platform_srcs "app_misc/esp32/timer_task.cc")
 else()
- list(APPEND srcs "app_misc/esp32/timer.cc")
+ list(APPEND platform_srcs "app_misc/esp32/timer.cc")
 endif()
 
+include("${CMAKE_CURRENT_LIST_DIR}/../../source_filter.cmake")
 
 idf_component_register(
     SRCS ${srcs}

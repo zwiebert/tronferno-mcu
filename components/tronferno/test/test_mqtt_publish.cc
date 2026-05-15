@@ -1,4 +1,7 @@
 #include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
 
 #include "net_mqtt_client/mqtt.hh"
 #include "app_mqtt/mqtt.h"
@@ -22,14 +25,12 @@ void tst_publish_Pct() {
 }
 
 
-int main() {
-  UNITY_BEGIN();
-
-  RUN_TEST(tst_publish_Pct);
-  RUN_TEST(tst_publish_pinChange);
-
-  return UNITY_END();
+TEST_CASE("mqtt_publish", "[app_mqtt]")
+{
+  tst_publish_Pct();
+  tst_publish_pinChange();
 }
+
 
 void setUp() {
   cfg_mqtt c;

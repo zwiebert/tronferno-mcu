@@ -1,4 +1,7 @@
 #include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
 
 #include "../app_cli/parm_config.hh"
 #include "../app_cli/cli_internal.hh"
@@ -183,16 +186,12 @@ void tst_parm_config_latitude() {
 }
 }
 
-
-int main() {
-  UNITY_BEGIN();
-
-  RUN_TEST(tst_parm_config_latitude);
-  RUN_TEST(tst_parm_config_longitude);
-  RUN_TEST(tst_parm_config_verbose);
-  RUN_TEST(tst_parm_config_tz);
-  RUN_TEST(tst_parm_config_cu);
-  RUN_TEST(tst_parm_config_empty);
-
-  return UNITY_END();
+TEST_CASE("parm_config", "[app_cli]")
+{
+  tst_parm_config_latitude();
+  tst_parm_config_longitude();
+  tst_parm_config_verbose();
+  tst_parm_config_tz();
+  tst_parm_config_cu();
+  tst_parm_config_empty();
 }

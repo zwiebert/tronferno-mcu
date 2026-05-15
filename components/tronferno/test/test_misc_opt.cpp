@@ -1,4 +1,7 @@
 #include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
 
 #include <app_misc/opt_map.hh>
 #include <app_uout/so_types.h>
@@ -13,11 +16,7 @@ static void testOptMap1() {
 
 }
 
-
-int main() {
-  UNITY_BEGIN();
-
-  RUN_TEST(testOptMap1);
-
-  return UNITY_END();
+TEST_CASE("","") {
+  testOptMap1();
 }
+

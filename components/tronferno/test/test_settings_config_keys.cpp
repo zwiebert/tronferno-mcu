@@ -1,4 +1,8 @@
 #include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
+
 
 #include "app_settings/config.h"
 #include "app_settings/app_settings.hh"
@@ -24,10 +28,7 @@ void test_config_keys2() {
 
 }
 
-int main() {
-  UNITY_BEGIN();
-
-  RUN_TEST(test_config_keys2);
-
-  return UNITY_END();
+TEST_CASE("test config keys", "[config]")
+{
+  test_config_keys2();
 }

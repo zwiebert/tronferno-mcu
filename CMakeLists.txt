@@ -14,6 +14,8 @@ if("${PRESET_NAME}" STREQUAL "host-test" OR ${BUILD_HOST_TESTS} STREQUAL "ON")
 
 
 set(TARGET_PLATFORM_FILTER "host/.*")
+set(ESP_PLATFORM TRUE)
+set(IDF_TARGET "linux")
 
 project(tronferno-mcu-tests)
 

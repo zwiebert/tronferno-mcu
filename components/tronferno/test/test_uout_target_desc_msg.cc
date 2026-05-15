@@ -1,4 +1,7 @@
 #include <unity.h>
+#ifdef TEST_HOST
+#include <test_runner.h>
+#endif
 
 //#define final
 #include <uout/uout_writer.hh>
@@ -77,11 +80,8 @@ void test_td2() {
 }
 
 
-int main() {
-  UNITY_BEGIN();
-
-  RUN_TEST(test_td);
-  RUN_TEST(test_td2);
-
-  return UNITY_END();
+TEST_CASE("td", "[app_uout]")
+{
+  test_td();
+  test_td2();
 }
