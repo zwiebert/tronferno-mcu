@@ -8,13 +8,13 @@ static FileContentReader file_content_reader;
 
 static const struct file_map uri_file_map[] = { //
     { .uri = "/", .type = "text/html", .wc = wapp_html_gz_fm }, //
-        { .uri = "/f/js/wapp.js", .type = "text/javascript", .wc = wapp_js_gz_fm }, //
+        { .uri = "/f/wapp.js", .type = "text/javascript", .wc = wapp_js_gz_fm }, //
 #ifdef CONFIG_APP_USE_HTTP_SERVE_JS_MAP
-        { .uri = "/f/js/wapp.js.map", .type = "application/json", .wc = wapp_js_map_gz_fm }, //
+        { .uri = "/f/wapp.js.map", .type = "application/json", .wc = wapp_js_map_gz_fm }, //
 #endif
-        { .uri = "/f/css/wapp.css", .type = "text/css", .wc = wapp_css_gz_fm }, //
+        { .uri = "/f/wapp.css", .type = "text/css", .wc = wapp_css_gz_fm }, //
 #ifdef CONFIG_APP_USE_HTTP_SERVE_CSS_MAP
-        { .uri = "/f/css/wapp.css.map", .type = "application/json", .wc =  wapp_css_map_gz_fm }, //
+        { .uri = "/f/wapp.css.map", .type = "application/json", .wc =  wapp_css_map_gz_fm }, //
 #endif
         { .uri = "/f/cli/help/send", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmSend } }, //
         { .uri = "/f/cli/help/auto", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmTimer } }, //
